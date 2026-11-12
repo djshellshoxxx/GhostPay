@@ -139,6 +139,31 @@ describe('recommendProfile', () => {
     expect(() => recommendProfile({ bogus: 'casual' })).toThrow(AnswerError);
     expect(() => recommendProfile({ constructor: 'x' })).toThrow(AnswerError);
   });
+  it('rejects non-plain questionnaire objects instead of treating them as unanswered', () => {
+    expect(() => recommendProfile(new Date(0))).toThrow(AnswerError);
+    class AnswerInstance {
+      audience = 'adversary';
+    }
+    expect(() => recommendProfile(new AnswerInstance())).toThrow(AnswerError);
+  });
+  it('rejects answers inherited from an attacker-controlled prototype', () => {
+    const inherited = Object.create({
+      audience: 'adversary',
+      amounts: 'large',
+      waiting: 'hours',
+    }) as unknown;
+    expect(() => recommendProfile(inherited)).toThrow(AnswerError);
+  });
+  it('accepts null-prototype plain records with own validated answers', () => {
+    const valid = Object.assign(Object.create(null), {
+      audience: 'casual',
+      amounts: 'small',
+      waiting: 'instant',
+    }) as unknown;
+    const result = recommendProfile(valid);
+    expect(result.profile).toBe('everyday');
+    expect(result.complete).toBe(true);
+  });
   it('property: any valid answer set yields a valid profile; instant never maximum', () => {
     const opt = <Q extends keyof typeof QUESTIONS>(q: Q) => fc.constantFrom(...QUESTIONS[q]);
     fc.assert(

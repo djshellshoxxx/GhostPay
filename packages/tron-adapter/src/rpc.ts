@@ -1,4 +1,4 @@
-import { fail } from './errors.js';
+import { fail, TronAdapterError } from './errors.js';
 
 /** Minimal JSON-over-HTTP node API (java-tron full node / TronGrid `/wallet/*`). Injectable for tests. */
 export interface TronRpc {
@@ -15,6 +15,40 @@ export interface HttpRpcOptions {
 }
 
 const MAX_BODY_BYTES = 8 * 1024 * 1024;
+
+/**
+ * Reads the body as UTF-8 text through the byte cap, so a hostile node cannot make the tab buffer an unbounded body:
+ * a declared `Content-Length` above it is refused unread, and the download is cancelled as soon as the streamed
+ * bytes pass it.
+ * @throws {TronAdapterError} `INVALID_RESPONSE` past the cap; stream errors propagate as thrown.
+ */
+async function readCapped(res: Response, max: number): Promise<string> {
+  if (Number(res.headers.get('content-length')) > max) {
+    await res.body?.cancel().catch(() => undefined);
+    return fail('INVALID_RESPONSE');
+  }
+  if (res.body === null) return '';
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel().catch(() => undefined);
+      return fail('INVALID_RESPONSE');
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) {
+    all.set(c, off);
+    off += c.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
 
 /** https only (localhost / 127.0.0.1 may use http for a local devnet). */
 export function createHttpRpc(o: HttpRpcOptions): TronRpc {
@@ -50,8 +84,13 @@ export function createHttpRpc(o: HttpRpcOptions): TronRpc {
         return fail('TRANSPORT_FAILURE');
       }
       if (!res.ok) return fail('TRANSPORT_FAILURE');
-      const text = await res.text();
-      if (text.length > MAX_BODY_BYTES) return fail('INVALID_RESPONSE');
+      let text: string;
+      try {
+        text = await readCapped(res, MAX_BODY_BYTES);
+      } catch (e) {
+        if (e instanceof TronAdapterError) throw e;
+        return fail(signal?.aborted === true ? 'ABORTED' : 'TRANSPORT_FAILURE');
+      }
       try {
         return JSON.parse(text) as unknown;
       } catch {

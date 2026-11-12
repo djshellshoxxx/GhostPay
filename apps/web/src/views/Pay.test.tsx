@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment } from '@ghostpay/invoice-schema';
-import { bytesToHex } from '@noble/hashes/utils.js';
+import { SIGNING_DOMAIN, canonicalize, decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment, type Invoice } from '@ghostpay/invoice-schema';
+import { keccak_256 } from '@noble/hashes/sha3.js';
+import { bytesToHex, concatBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -18,7 +19,11 @@ import { makeServices, renderApp, setHash } from '../test/render';
 import type { Services } from '../lib/services';
 import { receiptJson, signReceipt } from '../lib/receipts';
 import * as payExec from '../lib/payExec';
+import * as embedHost from '../lib/embedHost';
 import { withSessionSecrets } from '../lib/session';
+import { PERMIT_TYPES, eip712DomainSeparator, erc20MetadataAbi } from '@ghostpay/chain-adapters';
+import { privateKeyToAccount } from 'viem/accounts';
+import { encodeFunctionResult } from 'viem/utils';
 
 beforeEach(() => {
   clearSession();
@@ -52,11 +57,43 @@ function chainSeeing(wallet: MockWallet) {
     }
     if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
     if (method === 'eth_gasPrice') return '0x3b9aca00';
+    // Base Sepolia is OP Stack: its GasPriceOracle prices no L1 data or operator fee here.
+    if (method === 'eth_call' && (params[0] as { to?: unknown }).to === '0x420000000000000000000000000000000000000F') return `0x${'0'.repeat(64)}`;
     throw new Error(`unexpected ${method}`);
   });
 }
 
 describe('Pay: invoice reading and review', () => {
+  it('allows the same receipt file after a failed read and preserves a newer selection while the old read finishes', async () => {
+    const { parsed, fragment } = await makeParsed();
+    const receipt = withSessionSecrets((secrets) => signReceipt({
+      invoiceDigest: `0x${bytesToHex(invoiceDigest(parsed.invoice))}`,
+      chainId: parsed.invoice.chainId, txHash: `0x${'a'.repeat(64)}`,
+      stealthAddress: `0x${'b'.repeat(40)}`, asset: parsed.invoice.token, amountMinorUnits: '99750000', issuedAt: NOW,
+    }, secrets.signingKey));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    await user.click(screen.getByLabelText('I consent to opening private receipt details on this screen.'));
+    const input = screen.getByLabelText<HTMLInputElement>('Signed seller receipt JSON');
+    const file = new File([receiptJson(receipt)], 'receipt.json', { type: 'application/json' });
+    let finishRead: ((text: string) => void) | undefined;
+    const read = vi.spyOn(File.prototype, 'text').mockImplementationOnce(() => new Promise<string>((resolve) => { finishRead = resolve; })).mockResolvedValue(receiptJson(receipt));
+    try {
+      await user.upload(input, file);
+      await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+      expect(input.files).toHaveLength(0);
+      await user.upload(input, file);
+      expect(input.files?.[0]).toBe(file);
+      await act(async () => { finishRead?.('invalid JSON'); await Promise.resolve(); });
+      await screen.findByText('Receipt not accepted');
+      expect(input.files?.[0]).toBe(file);
+      await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+      await screen.findByText(/The signature matches the valid invoice-signing key/);
+      expect(read).toHaveBeenCalledTimes(2);
+      expect(input.files).toHaveLength(0);
+    } finally { read.mockRestore(); }
+  });
+
   it('accepts a signed receipt only when its invoice digest and expected payment fields match', async () => {
     const { parsed, fragment } = await makeParsed();
     const receiptFields = {
@@ -92,6 +129,12 @@ describe('Pay: invoice reading and review', () => {
     await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
     expect(await screen.findByText(/The signature matches the explicitly trusted key/)).toBeTruthy();
     expect(screen.getByText(/does not independently prove an on-chain payment/)).toBeTruthy();
+    // The trusted key is still entered. A receipt signed by the valid invoice key, but not by the key the payer
+    // named, must be refused rather than accepted through the invoice key.
+    await user.upload(upload, new File([receiptJson(correct)], 'invoice-key.json', { type: 'application/json' }));
+    await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+    expect(await screen.findByText('Receipt not accepted')).toBeTruthy();
+    expect(screen.queryByText(/The signature matches/)).toBeNull();
     const next = await makeParsed({ tokenAmount: '101' });
     window.history.replaceState(null, '', `/${next.fragment}`);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
@@ -225,6 +268,22 @@ describe('Pay: invoice reading and review', () => {
     expect(window.location.hash).toBe('');
   });
 
+  it('manually clears an invoice fragment on a double-slash pathname while preserving origin, path and query', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false, rpcUrls: { '84532': 'https://rpc.test' } }));
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const origin = window.location.origin;
+    const pathAndQuery = '//other.test/invoice?view=pay';
+    window.history.replaceState(null, '', `${origin}${pathAndQuery}${fragment}`);
+    renderApp(makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    const user = userEvent.setup();
+    await screen.findByRole('heading', { name: 'Review payment' });
+    expect(window.location.hash).toBe(fragment);
+    await user.click(screen.getByRole('button', { name: 'Remove link from address bar' }));
+    expect(window.location.origin).toBe(origin);
+    expect(`${window.location.pathname}${window.location.search}`).toBe(pathAndQuery);
+    expect(window.location.hash).toBe('');
+  });
+
   it('prompts for a passphrase, rejects a wrong one, and opens the invoice only after decryption', async () => {
     const passphrase = 'cedar orbit velvet lantern meadow';
     generateSession();
@@ -290,6 +349,70 @@ describe('Pay: invoice reading and review', () => {
     void user;
   });
 
+  it('fails closed with a rejection, not a blank page, for a validly signed link whose expiry is 2^53-1 (G1-01)', async () => {
+    // Signed by hand: the seller's own key signs a hostile invoice the schema used to accept.
+    const { parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const hostile: Invoice = { ...parsed.invoice, expiresAt: Number.MAX_SAFE_INTEGER };
+    const digest = keccak_256(concatBytes(utf8ToBytes(SIGNING_DOMAIN), utf8ToBytes(canonicalize(hostile))));
+    const sig = withSessionSecrets((secrets) => bytesToHex(secp256k1.sign(digest, secrets.signingKey, { prehash: false, lowS: true })));
+    const fragment = `#gpi=v1.${encodeBase64Url(utf8ToBytes(canonicalize({ alg: 'none', inv: hostile, sig })))}`;
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('Invoice rejected')).toBeTruthy();
+    expect(screen.getByRole('alert').textContent).toMatch(/not valid and was rejected\. \(field: expiresAt\)/);
+    expect(screen.getByRole('heading', { name: 'Pay an invoice' })).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
+  });
+
+  it('shows a fixed token amount as the total, the fiat figure as the seller’s unchecked statement, and warns on a mismatch (L2-F4)', async () => {
+    const { fragment } = await makeParsed({ tokenAmount: '1000', lineItems: [{ description: 'Consulting', quantity: '1', unitPrice: '10.00' }] });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    const row = (label: string): string | null | undefined => screen.getByText(label, { selector: 'dt' }).nextElementSibling?.textContent;
+    expect(row('Invoice total')).toBe('1000 USDC (fixed token amount)');
+    expect(row('Seller-stated fiat total')).toBe('USD 10.00 (not converted or checked by this app)');
+    expect(screen.getByText('Check the amount')).toBeTruthy();
+    expect(screen.getByText(/fixed amount of 1000 USDC differs by more than 1 % from the seller-stated total of USD 10\.00/)).toBeTruthy();
+    // A warning only: nothing blocks the payment.
+    expect(screen.queryByText('This payment cannot proceed')).toBeNull();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(false);
+    // The printed bill names the same amount due.
+    window.print = vi.fn();
+    await user.click(screen.getByRole('button', { name: 'Print bill' }));
+    const bill = screen.getByTestId('printable-bill');
+    expect(within(bill).getByText('Amount due', { selector: 'dt' }).nextElementSibling?.textContent).toBe('1000 USDC');
+    expect(within(bill).queryByText('Total', { selector: 'dt' })).toBeNull();
+  });
+
+  it('labels the fiat figure of a fixed-token invoice as unchecked, without a warning when it matches the stablecoin amount', async () => {
+    const { fragment } = await makeParsed();
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    expect(screen.getByText('Seller-stated fiat total', { selector: 'dt' }).nextElementSibling?.textContent).toMatch(/^USD 100\.00 \(not converted or checked/);
+    expect(screen.getByText('Invoice total', { selector: 'dt' }).nextElementSibling?.textContent).toBe('100 USDC (fixed token amount)');
+    expect(screen.queryByText('Check the amount')).toBeNull();
+  });
+
+  it('shows the fixed amount of a token off the allowlist in base units with its address, not scaled by assumed decimals (B2-R3)', async () => {
+    // Signed by hand: the Create page offers allowlisted tokens only.
+    const { parsed } = await makeParsed();
+    const unlisted = `0x${'ab'.repeat(20)}`;
+    const inv: Invoice = { ...parsed.invoice, token: unlisted, amountPolicy: { mode: 'fixed_token', tokenAmount: '1000000' } };
+    const digest = keccak_256(concatBytes(utf8ToBytes(SIGNING_DOMAIN), utf8ToBytes(canonicalize(inv))));
+    const sig = withSessionSecrets((secrets) => bytesToHex(secp256k1.sign(digest, secrets.signingKey, { prehash: false, lowS: true })));
+    const fragment = `#gpi=v1.${encodeBase64Url(utf8ToBytes(canonicalize({ alg: 'none', inv, sig })))}`;
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('This token is not on the allowlist for this chain.')).toBeTruthy();
+    const amount = `1000000 base units of token ${unlisted}`;
+    const row = (label: string): string | null | undefined => screen.getByText(label, { selector: 'dt' }).nextElementSibling?.textContent;
+    expect(row('Invoice total')).toBe(`${amount} (fixed token amount)`);
+    expect(row('Pricing')).toBe(`Fixed: ${amount}`);
+    window.print = vi.fn();
+    await user.click(screen.getByRole('button', { name: 'Print bill' }));
+    const bill = screen.getByTestId('printable-bill');
+    expect(within(bill).getByText('Amount due', { selector: 'dt' }).nextElementSibling?.textContent).toBe(amount);
+    expect(within(bill).getByText('Pay with', { selector: 'dt' }).nextElementSibling?.textContent).toBe(unlisted);
+  });
+
   it('rejects an oversized fragment', async () => {
     openWith(`#gpi=v1.${'A'.repeat(30_000)}`, makeServices());
     expect((await screen.findByRole('alert')).textContent).toMatch(/16 KiB/);
@@ -333,15 +456,30 @@ describe('Pay: invoice reading and review', () => {
   });
 
   it('shows the no-feed message for fiat-priced invoices', async () => {
-    const { fragment } = await makeParsed({ amountMode: 'fiat_quote' });
-    const rpc = mockRpc(84532, () => '0x');
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
-    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    // OP Sepolia has no registered feed (Base Sepolia gained ETH/USD and USDC/USD from the saved Chainlink evidence).
+    const { fragment } = await makeParsed({ amountMode: 'fiat_quote', chainId: 11155420, token: '0x5fd84259d66cd46123540766be93dfe6d43130d7' });
+    const rpc = mockRpc(11155420, () => '0x');
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '11155420': 'https://rpc.test' } }));
+    openWith(fragment, makeServices({ loadManifest: loaded(11155420), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     expect(await screen.findByText(/No price feed is configured for USDC\/USD/)).toBeTruthy();
   });
 });
 
 describe('Pay: sending', () => {
+  it('shows the connected wallet chain ID ungrouped', async () => {
+    const wallet = new MockWallet();
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const user = openWith(fragment, makeServices({
+      loadManifest: loaded(84532),
+      createRpc: readBackRpc(),
+      discoverWallets: () => Promise.resolve([walletInfo(wallet)]),
+    }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    expect(await screen.findByText(/chain 84532\b/)).toBeTruthy();
+    expect(screen.queryByText(/84,532/)).toBeNull();
+  });
+
   async function toPrepared(wallet: MockWallet, services: Services): Promise<ReturnType<typeof userEvent.setup>> {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const user = openWith(fragment, { ...services, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) });
@@ -400,6 +538,25 @@ describe('Pay: sending', () => {
     expect(screen.getByText(/not yet confirmed/)).toBeTruthy();
   });
 
+  it.each(['verified', 'pending'] as const)('retains a %s submission when notifying the embedding page fails', async (state) => {
+    const wallet = new MockWallet();
+    const notify = vi.spyOn(embedHost, 'notifyEmbedDone').mockImplementation(() => { throw new Error('parent postMessage failed'); });
+    try {
+      const createRpc = state === 'verified' ? () => Promise.resolve(withManifestChain(chainSeeing(wallet))) : readBackRpc();
+      const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc }));
+      await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+      await screen.findByRole('heading', { name: 'Submitted' });
+      const hash = `0x${'9'.repeat(64)}`;
+      expect(notify).toHaveBeenCalledWith({ status: 'submitted', chainId: 84532, txHash: hash });
+      expect(document.body.textContent).toContain(hash);
+      expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+      expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+      expect(screen.getByText(state === 'verified' ? /included in block 100/ : /not yet confirmed/)).toBeTruthy();
+      expect(document.body.textContent).not.toContain('parent postMessage failed');
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    } finally { notify.mockRestore(); }
+  });
+
   it('verifies on the user RPC when one is configured and offers a local receipt', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const wallet = new MockWallet();
@@ -417,6 +574,37 @@ describe('Pay: sending', () => {
     expect(download).not.toHaveBeenCalled();
     await user.click(screen.getByRole('button', { name: 'Download local receipt' }));
     expect(download).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('proof-disclaimer').textContent).toMatch(/not independent proof of payment/i);
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(document.querySelector('[data-qr-kind="proof"], [data-qr-kind="caution"]')).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
+    // The printable bill is part of the review page and carries the bearer-link warning for a non-passphrase link.
+    const printSpy = vi.fn();
+    window.print = printSpy;
+    await user.click(screen.getByRole('button', { name: 'Print bill' }));
+    expect(printSpy).toHaveBeenCalledOnce();
+    expect(screen.getByTestId('bearer-warning').textContent).toMatch(/anyone who sees this paper/i);
+  });
+
+  it('never says included for a mined transaction it could not compare, and marks the proof unverified (L2-F3)', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const wallet = new MockWallet();
+    // The RPC has a receipt for the hash but never returns the transaction itself.
+    const rpc = mockRpc(84532, (method) => {
+      if (method === 'eth_getTransactionByHash') return null;
+      if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+      if (method === 'eth_gasPrice') return '0x3b9aca00';
+      throw new Error(`unexpected ${method}`);
+    });
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();
+    expect(screen.getByText(/did not return the transaction itself, so it could not be compared with the preview/)).toBeTruthy();
+    expect(screen.getByText(/Status: unverified/)).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/included in block|Independently verified/);
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(document.querySelector('[data-qr-kind="caution"]')).not.toBeNull();
+    expect(screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value).toContain('"status": "unconfirmed"');
   });
 
   it('REFUSES (shows an error, not success) when the wallet mutates the transaction', async () => {
@@ -542,6 +730,25 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect((await screen.findAllByRole('alert')).map((a) => a.textContent).join(' ')).toMatch(/needs an RPC/);
   });
 
+  it('v2 invoice whose seller declines buffers offers none (ADR-0023)', async () => {
+    const { fragment } = await makeParsed({ bufferPolicy: { accepted: false, maxWei: '0', minWei: '0', refund: 'none' } });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('The seller does not accept a gas buffer for this invoice.')).toBeTruthy();
+    expect(screen.queryByLabelText(/Add a gas buffer/)).toBeNull();
+  });
+
+  it('v2 invoice with a seller minimum raises a smaller estimate to it and says so (ADR-0023)', async () => {
+    const { fragment } = await makeParsed({ bufferPolicy: { accepted: true, maxWei: '1000000000000000', minWei: '500000000000000', refund: 'none' } });
+    const wallet = new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const rpc = chainSeeing(wallet);
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(await screen.findByLabelText(/Add a gas buffer/));
+    const notice = await screen.findByText(/Extra 0\.0005 ETH/);
+    expect(notice.textContent).toMatch(/Raised to the seller's minimum/);
+    expect(notice.textContent).toMatch(/never refunded/);
+  });
+
   it('native invoices offer no gas buffer', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
@@ -594,6 +801,37 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect(wallet.calls.some((c) => c.method === 'eth_signTypedData_v4')).toBe(false);
   });
 
+  it('a signed permit the token rejects is explained, nothing is sent, and the next Prepare uses an exact approval (spec 04)', async () => {
+    const { fragment } = await makeParsed();
+    const payer = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+    const usdc = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const;
+    const domain = { name: 'USDC', version: '2', chainId: 84532, verifyingContract: usdc } as const;
+    const sig = await payer.signTypedData({ domain, types: PERMIT_TYPES, primaryType: 'Permit', message: { owner: payer.address, spender: FAKE_ROUTER, value: 100_000_000n, nonce: 0n, deadline: BigInt(NOW + 20 * 60) } });
+    const wallet = new MockWallet({ account: payer.address, typedDataSignature: sig });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method !== 'eth_call') return base.request(method, params);
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x3644e515')) return eip712DomainSeparator(domain);
+      if (data.startsWith('0xd505accf')) throw new Error('execution reverted'); // token refuses the permit
+      return `0x${'0'.repeat(64)}`; // allowance 0, nonces 0
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    expect((await screen.findAllByRole('alert', {}, { timeout: 5000 })).map((a) => a.textContent).join(' ')).toMatch(/token rejected this permit signature/);
+    expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
+    expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeTruthy();
+    expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
+  });
+
   it('permit token with enough allowance already skips the permit signature (spec 04 already_allowed)', async () => {
     const { fragment } = await makeParsed();
     const wallet = new MockWallet();
@@ -629,6 +867,117 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await screen.findByText(/could not be simulated/);
     expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();
     expect(wallet.sent).toBeUndefined();
+  });
+});
+
+describe('Pay: validity is rechecked before the initial approval', () => {
+  /** ERC-20 buffer flow (approval required) prepared at `startSeconds`; returns a clock setter and the wallet. */
+  async function toPreparedBuffer(startSeconds: (expiresAt: number) => number, opts: { wallet?: MockWallet; allowanceAfterSend?: boolean; beforeReceipt?: () => Promise<void> } = {}): Promise<{ user: ReturnType<typeof userEvent.setup>; wallet: MockWallet; setNow: (s: number) => void; expiresAt: number }> {
+    const { fragment, parsed } = await makeParsed();
+    const wallet = opts.wallet ?? new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method === 'eth_call') return opts.allowanceAfterSend === true && wallet.sent !== undefined ? `0x${(10n ** 12n).toString(16).padStart(64, '0')}` : `0x${'0'.repeat(64)}`;
+      if (method === 'eth_getTransactionReceipt' && opts.beforeReceipt !== undefined) return opts.beforeReceipt().then(() => base.request(method, params));
+      if (method === 'eth_estimateGas') return '0xfde8';
+      return base.request(method, params);
+    });
+    const expiresAt = parsed.invoice.expiresAt;
+    let clock = startSeconds(expiresAt) * 1000;
+    const user = openWith(fragment, makeServices({ nowMs: () => clock, loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByLabelText(/Add a gas buffer/));
+    await screen.findByText(/Extra 0\.00024 ETH/);
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    return { user, wallet, setNow: (sec) => { clock = sec * 1000; }, expiresAt };
+  }
+  const approveButton = (): HTMLElement => screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' });
+
+  it('P1: an invoice that expired after prepare asks the wallet for nothing, not even the approval', async () => {
+    const t = await toPreparedBuffer((e) => e - 30);
+    t.setNow(t.expiresAt);
+    await t.user.click(approveButton());
+    await screen.findByText(/invoice has expired/);
+    expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+  it('P2: a buffer quote past its 60 s TTL asks the wallet for nothing, not even the approval', async () => {
+    const t = await toPreparedBuffer(() => NOW);
+    t.setNow(NOW + 61);
+    await t.user.click(approveButton());
+    await screen.findByText(/gas buffer quote expired/);
+    expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+
+  it.each(['invoice', 'buffer'] as const)('keeps the confirmed approval and hash when the %s expires before payment', async (expiry) => {
+    let releaseSend: (() => void) | undefined;
+    class DeferredApprovalWallet extends MockWallet {
+      public override async request(args: Parameters<MockWallet['request']>[0]): Promise<unknown> {
+        const result = await super.request(args);
+        if (args.method === 'eth_sendTransaction') await new Promise<void>((resolve) => { releaseSend = resolve; });
+        return result;
+      }
+    }
+    const wallet = new DeferredApprovalWallet();
+    const t = await toPreparedBuffer((expiresAt) => expiry === 'invoice' ? expiresAt - 30 : NOW, { wallet, allowanceAfterSend: true });
+    await t.user.click(approveButton());
+    await waitFor(() => expect(releaseSend).toBeDefined());
+    t.setNow(expiry === 'invoice' ? t.expiresAt : NOW + 61);
+    act(() => { releaseSend?.(); });
+    await screen.findByText(/approval was confirmed.*but no payment was sent/i);
+    expect(document.body.textContent).toMatch(/no payment was sent/i);
+    expect(document.body.textContent).toContain(`0x${'9'.repeat(64)}`);
+    expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
+    expect(screen.queryByText('Token approval needed first')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Revoke approval' })).toBeTruthy();
+    await t.user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await screen.findByText(/approval was confirmed.*but no payment was sent/i);
+    expect(screen.getByText('Token approval confirmed')).toBeTruthy();
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  });
+
+  it('keeps payment ambiguity when the wallet loses its payment response after confirmed approval', async () => {
+    class LostPaymentResponseWallet extends MockWallet {
+      public override async request(args: Parameters<MockWallet['request']>[0]): Promise<unknown> {
+        const result = await super.request(args);
+        if (args.method === 'eth_sendTransaction' && this.calls.filter((c) => c.method === 'eth_sendTransaction').length === 2) throw new Error('wallet disconnected after handoff');
+        return result;
+      }
+    }
+    const wallet = new LostPaymentResponseWallet();
+    const t = await toPreparedBuffer(() => NOW, { wallet, allowanceAfterSend: true });
+    await t.user.click(approveButton());
+    await screen.findByText(/unknown outcome and may already have been submitted/i);
+    expect(document.body.textContent).not.toMatch(/no payment was sent/i);
+    expect(screen.getByText('Token approval confirmed')).toBeTruthy();
+    t.setNow(NOW + 61);
+    await t.user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await screen.findByText(/gas buffer quote expired/i);
+    expect(document.body.textContent).not.toMatch(/no payment was sent/i);
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(2);
+  });
+
+  it('keeps the approval hash when the invoice changes after broadcast but before confirmation', async () => {
+    let releaseReceipt: (() => void) | undefined;
+    const t = await toPreparedBuffer(() => NOW, {
+      allowanceAfterSend: true,
+      beforeReceipt: () => new Promise<void>((resolve) => { releaseReceipt = resolve; }),
+    });
+    await t.user.click(approveButton());
+    await waitFor(() => expect(releaseReceipt).toBeDefined());
+    const next = await makeParsed({ tokenAmount: '101' });
+    act(() => {
+      window.history.replaceState(null, '', `/${next.fragment}`);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    await screen.findByRole('heading', { name: 'Review payment' });
+    act(() => { releaseReceipt?.(); });
+    const warning = await screen.findByText(/This was a approval for the invoice/);
+    expect(warning.textContent).toContain(`0x${'9'.repeat(64)}`);
+    expect(screen.queryByText('Token approval confirmed')).toBeNull();
+    expect(t.wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
   });
 });
 
@@ -679,5 +1028,218 @@ describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     openWith(fragment, makeServices({ loadManifest: () => Promise.resolve({ status: 'loaded', manifest: backedManifest(84532), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }) }));
     expect(await screen.findByText('UNSIGNED DEV MANIFEST (test)')).toBeTruthy();
+  });
+});
+
+describe('Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1)', () => {
+  /** Records the payment as handed to the wallet, then loses the response: the outcome is unknown. */
+  class LostResponseWallet extends MockWallet {
+    public override async request(args: Parameters<MockWallet['request']>[0]): Promise<unknown> {
+      const result = await super.request(args);
+      if (args.method === 'eth_sendTransaction') throw new Error('wallet disconnected after handoff');
+      return result;
+    }
+  }
+  const sendButton = (): HTMLElement => screen.getByRole('button', { name: 'Send payment in my wallet' });
+
+  async function sendTwice(wallet: MockWallet, user: ReturnType<typeof userEvent.setup>): Promise<void> {
+    await user.click(sendButton());
+    await screen.findByText(/unknown outcome and may already have been submitted/i);
+    expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
+    // The retry is refused before the wallet is asked (the first payment was mined, so the dry run reverts).
+    await user.click(sendButton());
+    await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Send payment in my wallet' }).disabled).toBe(false); });
+    const alerts = screen.getAllByRole('alert').map((a) => a.textContent ?? '').join(' | ');
+    expect(alerts).toMatch(/may already have been submitted/i);
+    expect(alerts).toMatch(/Check your wallet/i);
+    expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  }
+
+  it('native payment: a failing dry run on the retry keeps the unknown-outcome warning', async () => {
+    const wallet = new LostResponseWallet();
+    const rpc = withManifestChain(mockRpc(84532, (m) => {
+      if (m === 'eth_call' && wallet.sent !== undefined) throw new Error('execution reverted');
+      return m === 'eth_getTransactionByHash' || m === 'eth_getTransactionReceipt' ? null : '0x';
+    }));
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    await sendTwice(wallet, user);
+  });
+
+  it('native payment: an invoice that expired before the retry keeps the unknown-outcome warning', async () => {
+    const wallet = new LostResponseWallet();
+    const { fragment, parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    let clock = NOW * 1000;
+    const user = openWith(fragment, makeServices({ nowMs: () => clock, loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    await user.click(sendButton());
+    await screen.findByText(/unknown outcome and may already have been submitted/i);
+    clock = parsed.invoice.expiresAt * 1000;
+    await user.click(sendButton());
+    await screen.findByText(/The invoice expired/);
+    expect(document.body.textContent).toMatch(/may already have been submitted/i);
+    expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  });
+
+  it('ERC-2612 permit payment: a failing dry run on the retry keeps the unknown-outcome warning', async () => {
+    const { fragment } = await makeParsed();
+    const payer = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+    const usdc = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const;
+    const domain = { name: 'USDC', version: '2', chainId: 84532, verifyingContract: usdc } as const;
+    const sig = await payer.signTypedData({ domain, types: PERMIT_TYPES, primaryType: 'Permit', message: { owner: payer.address, spender: FAKE_ROUTER, value: 100_000_000n, nonce: 0n, deadline: BigInt(NOW + 20 * 60) } });
+    const wallet = new LostResponseWallet({ account: payer.address, typedDataSignature: sig });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method !== 'eth_call') return base.request(method, params);
+      if (wallet.sent !== undefined) throw new Error('execution reverted');
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x3644e515')) return eip712DomainSeparator(domain);
+      return `0x${'0'.repeat(64)}`; // allowance 0, nonces 0, permit simulation succeeds
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20WithPermit')).toBeTruthy();
+    await sendTwice(wallet, user);
+  });
+
+  it('pre-approved ERC-20 payment: a failing dry run on the retry keeps the unknown-outcome warning', async () => {
+    const { fragment } = await makeParsed();
+    const wallet = new LostResponseWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method !== 'eth_call') return base.request(method, params);
+      if (wallet.sent !== undefined) throw new Error('execution reverted');
+      return `0x${(10n ** 12n).toString(16).padStart(64, '0')}`;
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeNull();
+    await sendTwice(wallet, user);
+  });
+});
+
+describe('Pay: invoice expiry never hides a payment that was already handed to the wallet (R05-2)', () => {
+  async function toPreparedAt(clock: () => number, createRpc: Services['createRpc'], wallet: MockWallet): Promise<ReturnType<typeof userEvent.setup>> {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const user = openWith(fragment, makeServices({ nowMs: clock, loadManifest: loaded(84532), createRpc, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    return user;
+  }
+
+  it('keeps the Submitted panel, receipt download and proof after the review tick sees the invoice expire', async () => {
+    let clock = NOW * 1000;
+    const wallet = new MockWallet();
+    const user = await toPreparedAt(() => clock, readBackRpc(), wallet);
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await screen.findByRole('heading', { name: 'Submitted' });
+    expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+
+    clock = (NOW + 24 * 3600 + 1) * 1000;
+    // The real 5-second review tick observes the expiry.
+    await screen.findByText('This invoice has expired.', {}, { timeout: 8000 });
+    // Let the context refresh that the expiry triggers settle before checking what is still shown.
+    await act(() => new Promise((resolve) => { setTimeout(resolve, 300); }));
+    expect(screen.queryByRole('heading', { name: 'Submitted' })).not.toBeNull();
+    expect(screen.queryByRole('button', { name: 'Download local receipt' })).not.toBeNull();
+    expect(screen.getByRole('heading', { name: 'Submitted' }).parentElement?.textContent).toContain('9'.repeat(64));
+  }, 20000);
+
+  it('records a send that completes after the expiry tick as submitted for this invoice and leaves the busy state', async () => {
+    let clock = NOW * 1000;
+    let releaseLookup: (() => void) | undefined;
+    const gate = new Promise<void>((resolve) => { releaseLookup = resolve; });
+    const createRpc: Services['createRpc'] = () => Promise.resolve(withManifestChain(mockRpc(84532, (m) => {
+      if (m === 'eth_getTransactionByHash') return gate.then(() => null);
+      return m === 'eth_getTransactionReceipt' ? null : '0x';
+    })));
+    const wallet = new MockWallet();
+    const user = await toPreparedAt(() => clock, createRpc, wallet);
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await waitFor(() => { expect(wallet.sent).toBeDefined(); });
+    // The wallet returned the hash; verification is still running when the invoice expires.
+    clock = (NOW + 24 * 3600 + 1) * 1000;
+    await screen.findByText('This invoice has expired.', {}, { timeout: 8000 });
+    act(() => { releaseLookup?.(); });
+    await screen.findByRole('heading', { name: 'Submitted' }, { timeout: 5000 });
+    expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+    expect(screen.queryByText('Previous invoice transaction may have been submitted')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  }, 20000);
+});
+
+describe('Pay: the gas buffer opt-in belongs to one invoice (R05-3)', () => {
+  function bufferChain(wallet: MockWallet): ReturnType<typeof mockRpc> {
+    const base = chainSeeing(wallet);
+    return mockRpc(84532, (method, params) => {
+      if (method === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (method === 'eth_estimateGas') return '0xfde8';
+      return base.request(method, params);
+    });
+  }
+  async function switchTo(fragment: string): Promise<void> {
+    act(() => {
+      window.history.replaceState(null, '', `/${fragment}`);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    await screen.findByRole('heading', { name: 'Review payment' });
+  }
+
+  it('a newly opened ERC-20 invoice starts with the gas buffer unticked and no stale estimate', async () => {
+    const first = await makeParsed();
+    const second = await makeParsed({ tokenAmount: '101' });
+    const wallet = new MockWallet();
+    const rpc = bufferChain(wallet);
+    const user = openWith(first.fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(await screen.findByLabelText<HTMLInputElement>(/Add a gas buffer/));
+    await screen.findByText(/Extra 0\.00024 ETH/);
+
+    await switchTo(second.fragment);
+    await screen.findByText('Fixed: 101 USDC');
+    const box = await screen.findByLabelText<HTMLInputElement>(/Add a gas buffer/);
+    expect(box.checked).toBe(false);
+    expect(screen.queryByText(/Extra 0\.00024 ETH/)).toBeNull();
+  });
+
+  it('a seller-declined v2 invoice opened after ticking the buffer elsewhere can still be prepared', async () => {
+    const first = await makeParsed();
+    const second = await makeParsed({ bufferPolicy: { accepted: false, maxWei: '0', minWei: '0', refund: 'none' } });
+    const wallet = new MockWallet();
+    const rpc = bufferChain(wallet);
+    const user = openWith(first.fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByLabelText<HTMLInputElement>(/Add a gas buffer/));
+    await screen.findByText(/Extra 0\.00024 ETH/);
+
+    await switchTo(second.fragment);
+    expect(await screen.findByText('The seller does not accept a gas buffer for this invoice.')).toBeTruthy();
+    expect(screen.queryByLabelText(/Add a gas buffer/)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.queryAllByRole('alert').map((a) => a.textContent ?? '').join(' | ')).not.toMatch(/does not accept a gas buffer/);
+    expect(screen.queryByText('payERC20WithBuffer')).toBeNull();
   });
 });

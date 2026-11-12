@@ -19,9 +19,12 @@ fee, and the relayer's hot-key address. That is inherent to the product.
 
 | Data | Where | Retention |
 |---|---|---|
-| Rate-limit bucket keyed by `HMAC-SHA256(random salt, IP)` truncated to 128 bits, with a token counter and a timestamp | process memory only | until the salt rotates (config `saltRotationHours`, maximum 24 h; all buckets are dropped at rotation), until LRU eviction (bounded by `rateLimit.maxKeys`), or process exit |
+| Rate-limit bucket keyed by `HMAC-SHA256(random salt, IP)` truncated to 128 bits (for `/v1/quote` also one keyed by the same HMAC of the IPv4 /24 or IPv6 /48 network), with a token counter and a timestamp | process memory only | until the salt rotates (config `saltRotationHours`, maximum 24 h; all buckets are dropped at rotation), until LRU eviction (bounded by `rateLimit.maxKeys`), or process exit |
 | Rate-limit bucket keyed by `HMAC-SHA256(same salt, lowercase owner address)`, truncated | process memory only | same as above |
-| Per-chain daily gas spend counter and circuit-breaker outcome window | process memory only | UTC day / sliding window; contain no user data |
+| Per-chain daily gas spend counter, circuit-breaker outcome window and recent mined-sweep outcomes (time and reverted or not) | process memory only | UTC day / sliding window (mined outcomes: `breaker.windowSize` entries within `lossBudget.windowSeconds`); contain no user data |
+| Loss-budget entries keyed by `HMAC-SHA256(same salt, destination)` and by the hashed client network bucket and its /24 or /48 group, with amounts | process memory only | evicted for a newer entry once their `lossBudget.windowSeconds` window is over (tables bounded by `lossBudget.maxKeys`), or process exit; hashes from earlier salt periods cannot be linked |
+| A broadcast sweep whose receipt wait timed out: its order as broadcast (public on-chain with its `txHash`) and the amounts reserved for it | process memory only | until a later receipt lookup finds it, at most 8 per chain and 24 h, or process exit |
+| State journal (`state.file`): per chain the UTC day index and wei reserved that day; per transaction that may still spend gas: hot-key nonce, transaction hash (public on-chain once broadcast), reserved wei, gas price, status, creation time. No owner, destination, token, amount, fee, signature, IP or request id | the configured file, mode 0600, plus `<file>.lock` (pid, hostname, heartbeat time) | budget: overwritten each UTC day; a transaction record is deleted when its receipt settles it, when reconciliation shows it was never broadcast, or after 24 h unfound |
 | Prometheus request, sweep and breaker counters | process memory only | process lifetime; labels are bounded and contain no user addresses or IPs |
 | Structured log lines | stdout (operator decides where it goes) | operator-controlled; see below |
 
@@ -41,7 +44,7 @@ A test in `src/api.test.ts` scans the log output for these values.
 
 ## What is NOT retained
 
-No database, no files, no cookies, no analytics, and no third-party calls other than the configured JSON-RPC endpoints
+No database, no files other than the state journal above, no cookies, no analytics, and no third-party calls other than the configured JSON-RPC endpoints
 and the optional operator-configured HTTPS alert webhook. Request bodies are discarded after the response. The quote
 token is stateless (an HMAC), so quotes are not stored.
 

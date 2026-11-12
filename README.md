@@ -8,16 +8,38 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
+The latest integrated candidate is **[draft PR #98](https://github.com/djshellshoxxx/GhostPay/pull/98)**, exact head `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`,
+combining product, merchant, CLI and beta-spec work. It is **not merged into main**.
+Hosted checks on this exact head passed, but the inherited [#84 SonarCloud security-rating D](https://github.com/djshellshoxxx/GhostPay/runs/128302927200)
+has not been cleared by an exact-head SonarCloud report. Independent security review,
+test-only B0 payment-to-recovery acceptance, trusted testnet manifests, release provenance
+and authorization remain open. Draft [#100](https://github.com/djshellshoxxx/GhostPay/pull/100) is a separate workflow
+security change, not part of #98. The 18 privacy proposals merged as PR #99 are **future-only**.
+
+Review the [product handoff](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md),
+[CLI handoff](docs/handoffs/CLI_COMPLETION_HANDOFF.md),
+[completion gates](docs/audits/08-completion-gates.md), and version-controlled
+[User Guide](docs/wiki/User-Guide.md) / [Developer Guide](docs/wiki/Developer-Guide.md).
+The older test counts below are historical snapshots only.
+
 | Question | Honest answer |
 |---|---|
 | Is it audited? | **No.** Only self-run and AI-assisted reviews exist ([`docs/audits/`](docs/audits/)). There is no independent third-party audit. |
-| Is anything deployed? | **No.** No contract is deployed on any chain; [`deployments/`](deployments/) holds only a schema and a README. Without a manifest the web app disables payment. |
-| Which chains are enabled in code? | Ethereum Sepolia and Base Sepolia (testnets). Mainnets are listed in `packages/chain-adapters/src/config/chains.ts` with `enabled: false`. |
-| Has it run against a real wallet, RPC provider or chain? | **No.** The wallet, RPC and relayer interactions in the test suites are mocks (the relayer additionally has a local anvil end-to-end test). |
-| Is anyone hosting it? | **No.** Hosting is intentionally not configured; see [Hosting](#hosting). |
+| Are public-chain deployments qualified? | **No.** Local test deployments exist only as fixtures; [`deployments/`](deployments/) holds no qualified public deployment. Without an accepted manifest the web app disables ordinary payment. |
+| Which chains are enabled in code? | Seven testnets are enabled in [`chains.ts`](packages/chain-adapters/src/config/chains.ts): Ethereum, Base, OP and Arbitrum Sepolia, Polygon Amoy, BNB Smart Chain Testnet and Avalanche Fuji. Mainnets remain disabled. |
+| What execution evidence exists? | Unit tests, local Anvil integrations and hosted Chromium journeys are recorded in the handoffs. They do not qualify real wallets, funded public-chain operations, Safari or physical devices. |
+| Is production hosting qualified? | **No.** A Pages prototype is documented, but no qualified production host is recorded. See [Hosting](#hosting). |
 | Can I use it with real money? | **No.** Do not. Contracts are immutable once deployed and the audit round has open findings. |
 
 Open work is tracked in the audits: [completeness audit](docs/audits/01-completeness-audit.md) (gap list G-01..G-33), [contracts review](docs/audits/02-security-review-contracts.md), [client and relayer review](docs/audits/03-security-review-client-relayer.md) and [design analysis](docs/audits/04-independent-design-analysis.md). Several fixes are being applied by other contributors while this README is written; where a document describes a change that may not have landed yet it says so.
+
+## Screenshots
+
+Captured from the Vite dev server (`npm run dev --workspace @ghostpay/web`) on a clean checkout, with no deployment manifest loaded, so payment is disabled. The app currently ships with minimal, largely unstyled markup.
+
+| Seller keys (keys stay in memory by default) | About and privacy (who learns what) |
+|---|---|
+| ![Seller keys page of the GhostPay web app](docs/screenshots/seller-keys.png) | ![About and privacy page listing what GhostPay does not hide](docs/screenshots/privacy.png) |
 
 ## Package map
 
@@ -28,18 +50,28 @@ Open work is tracked in the audits: [completeness audit](docs/audits/01-complete
 | `packages/invoice-schema` | Invoice schema, strict parser, signing, AES-GCM envelope, `#gpi=v1.` link format. |
 | `packages/chain-adapters` | Chain and token allowlists, fee maths, deployment-manifest validation, RPC, log scanning, router and sweep builders, quote reading. |
 | `packages/btc-silent-payments` | BIP-352 Silent Payments: keys, addresses, sender derivation, scanning, spend-key derivation, Bitcoin `ChainAdapter`, and signed PSBT/raw-tx sweeps (`buildSpendTransaction`, software keys only). Used by the web app's Bitcoin view. Official vectors pass; mainnet stays disabled. |
-| `packages/policy-scheme` | Client side of the policy-account scheme `0x47500002` (policy hash, limits tree, scheme-2 meta-address, derivation, EIP-712, calldata, `GhostPayPolicyRouter` calldata). Experimental ([ADR-0014](docs/adr/ADR-LOG.md)); not used by the web app or relayer. |
+| `packages/policy-scheme` | Client side of the policy-account scheme `0x47500002` (policy hash, limits tree, scheme-2 meta-address, derivation, EIP-712 and calldata). Used by the web app's disabled experimental testnet feature; not ordinary invoices or the relayer. See [ADR-0027](docs/adr/ADR-0027-policy-end-to-end-gates.md). |
 | `packages/relayer-guard` | Relayer abuse controls: circuit breaker, trusted-proxy client IP, token-bucket limiter, loss budget, and a challenge module (HMAC question challenge; raises bot cost only). The relayer uses the guard controls; challenge storage is optional and is not proof of identity. |
 | `packages/secret-box` | Closure-held secret bytes with scoped wiping (guardrail, not a security boundary). Used for web session secret handling. |
 | `packages/tx-review` | Pre-sign decoder and reviewer for transactions and EIP-712 payloads. Used by web sweep transaction review. |
 | `packages/address-safety` | Address and display-text safety checks (strict parse, lookalikes, fingerprints, payee trust, text sanitising). Used by web sweep and display-text flows. |
 | `packages/ops-monitor` | Operator-run, read-only chain-side probes (manifest drift, fee-recipient health, release integrity, hot key, announcement rate, RPC disagreement). **Not wired in anywhere; never run against a live network.** |
-| `apps/web` | React 19 + Vite static app: seller keys, invoice creation, pay, scan, sweep, settings. |
+| `apps/web` | React 19 + Vite static app: seller keys, invoice creation, pay, scan, sweep, receipt verification, public device pairing, local reconciliation, backups and settings. Full and lean builds intentionally expose different optional features; see the [product guide](docs/user/product-guide.md). |
 | `apps/relayer` | Node gas-sponsorship relay service for sweeps (stateless quotes, simulation, budgets, circuit breaker). |
 | `deployments/` | Manifest schema and format notes. No real manifests yet. See [`docs/DEPLOYMENT_MANIFEST.md`](docs/DEPLOYMENT_MANIFEST.md). |
 | `test-vectors/` | Pinned scheme-1 vectors and their provenance. |
 | `scripts/`, `.github/workflows/` | Release build, verification and CI scripts (being added; see [`docs/operators/release-and-verify.md`](docs/operators/release-and-verify.md)). |
 | `docs/` | Specifications, ADRs, threat model, audits, user guides, operator runbooks, feature reviews. |
+
+**Further workspaces** (all pre-audit; most are testnet proofs of concept or pure-logic libraries; each has a README with its own limits). The list above is not exhaustive: `ls packages` is authoritative.
+
+- Product and CLI: `packages/cli` (`ghostpay` binary: invoices, webhooks, schedules, splits, batch payouts, exports, sandbox, doctor; offline by default), `sdk`, `plugin-api`, `payment-uri`, `qr-exchange`, `i18n`, `donation`, `sandbox`.
+- Merchant: `merchant-billing`, `merchant-hooks`, `merchant-ledger`, `merchant-multisig`.
+- Other chains: `btc-family`, `btc-payjoin`, `chain-evm-extra` (config-only manifests), `chain-solana` / `solana-stealth`, `chain-tron` / `tron-adapter`.
+- Privacy options (testnet PoC): `amount-blur`, `hops`, `hygiene`, `metadata-hardening`, `payer-sponsor`, `payer-hiding-contracts`, `privacy-pipeline`, `privacy-profiles`, `confidential-amounts`, `confidential-contracts`, `external-pools*`, `pool-*` (shielded pool; the circuits use an INSECURE DEV CEREMONY; `pool-prover` and `pool-circuits` are GPL-3.0 toolchain packages, licence is an open owner decision), `net-transport`, `net-harness`, `pir-two-server`, `scan-source`.
+- Usability logic (pure, no UI): the `ux-*` packages.
+
+Several of these (for example `cli`, `payment-uri`, `qr-exchange`) are built by `npm run build:libs`; `apps/web` imports only the packages named below.
 
 Workspace wiring is checked by `@ghostpay/*` imports. The web app uses `chain-adapters`, `core-crypto`, `invoice-schema`, `btc-silent-payments`, `secret-box`, `tx-review`, and `address-safety`; the relayer uses `chain-adapters` and `relayer-guard`. Other packages remain standalone unless their package-specific documentation says otherwise.
 
@@ -65,15 +97,20 @@ npm run release:repro        # scripts/repro-check.sh
 
 CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs these jobs; docs-only pull requests (only `docs/` or `*.md` changed) skip the heavy ones:
 
-- `ts-check`: `npm run typecheck`, `npm run lint`, `npm run build --workspace @ghostpay/web`, `npm audit --omit=dev --audit-level=high`.
+- `ts-typecheck` (`npm run typecheck`), `ts-lint` (`npm run lint`) and `ts-check` (`npm run build`, the build-profile and example guard tests, `node scripts/i18n/check.mjs`, `npm audit --omit=dev --audit-level=high`) run in parallel.
 - `ts-test` (matrix `core-crypto`, `btc-silent-payments`, `web`, `rest`): `npm test` per workspace; `rest` is every other workspace except `apps/relayer`.
 - `ts-test-relayer`: `forge build` in `packages/contracts`, then `npm test -w apps/relayer` with `REQUIRE_ANVIL=1` (anvil e2e).
 - `e2e`: `npx playwright install --with-deps chromium`, then `npm run test:e2e --workspace @ghostpay/web`.
 - `contracts-test` (`forge build --sizes`, `forge test`), `contracts-coverage` (`forge coverage --ir-minimum --report summary --report lcov --report-file lcov.info`), `contracts-static` (`forge fmt --check`, `bash scripts/check-natspec.sh`, `forge snapshot --check`), `contracts-slither` (slither 0.11.6, solc 0.8.28, `--fail-medium`).
-- `secrets-and-egress`: `scripts/scan-secrets.sh`, `scripts/check-actions-pinned.sh`.
-- Required-check gates: `typescript` (needs `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
+- `secrets-and-egress`: `scripts/scan-secrets.sh`, `scripts/check-actions-pinned.sh`, `scripts/check-tx-origin.sh`.
+- Required-check gates: `typescript` (needs `ts-typecheck`, `ts-lint`, `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
 
-Not verified by me while updating this README (read from `package.json` and the workflow only, not run): every command in this section, including the `release:*` scripts and `npm audit`.
+The commands above describe the available gates. Executed checks, source revisions and unavailable
+checks for this assignment are recorded in the [product completion ledger](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md).
+Do not interpret a listed command as a passing result. The following October results are retained as
+historical evidence; their earlier failures and skips do not establish the current branch's status.
+
+Re-checked 2026-11-11 (Node 22.22.0, sandbox without Foundry or internet): `npm ci --ignore-scripts` and `npm run build:libs` succeed and the apps/web dev server serves the app. A full `npm test` was not completed: it stops at `@ghostpay/confidential-contracts` (`hardhat test` needs to download a Solidity compiler, which the sandbox could not reach) and later workspaces, including `apps/web`, did not finish within the time cap. Every workspace that ran before that point passed. The older snapshot below predates many added packages.
 
 Verified on a clean checkout of an earlier `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). The newer [`docs/remote/STATUS.md`](docs/remote/STATUS.md) records per-package counts and coverage from the latest local run (2026-10-21: e.g. btc-silent-payments 299, policy-scheme 60, relayer 193, forge 377 tests in 23 suites) and its failures (one `forge coverage --ir-minimum` test fails). Counts change as work lands; treat them as a snapshot, not a guarantee. Note: CI sets `REQUIRE_ANVIL=1` for the relayer, but `apps/relayer/src/e2e.anvil.test.ts` does not read it yet (only `packages/policy-scheme` does), so that e2e can still skip silently there.
 
@@ -87,11 +124,14 @@ FOUNDRY_PROFILE=dev forge test              # quick loop
 bash scripts/check-natspec.sh
 ```
 
-> **`foundry.toml` contains a sandbox-specific line:** `solc = "/home/user/tools/solc"`. On any other machine replace it with `solc_version = "0.8.28"` locally (CI does this with `sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml`). Do not commit that change without deciding how to make the file portable. Tests under `test/audit/` are adversarial proofs of concept from the contracts review (they assert that weaknesses are real); a baseline run without them is `forge test --no-match-path 'test/audit/*'`.
+`packages/contracts/foundry.toml` pins portable `solc_version = "0.8.28"`. For offline development,
+use the same compiler in Foundry's cache or set `FOUNDRY_SOLC` to its local path; no configuration edit
+is needed. Run the complete test suite, including the adversarial cases under `test/audit/`.
 
 Forge result when this README was first written: 231 tests passed without `test/audit/`, plus 43 audit PoC tests. [`docs/remote/STATUS.md`](docs/remote/STATUS.md) (2026-10-21 run) records 377 passing in 23 suites, `forge fmt --check` and `forge snapshot --check` passing, and one test failing only under `forge coverage --ir-minimum`.
 
-Not run anywhere yet: mainnet-fork tests, Firefox/Safari end-to-end, any real wallet. Run only locally (sandbox, not in CI): Echidna and mutation testing, below.
+This product work does not establish public-chain acceptance, Firefox/Safari coverage or physical-wallet
+qualification. Echidna and mutation results below belong to their linked local-run reports.
 
 ### GhostPayPolicyRouter
 
@@ -123,7 +163,7 @@ Start with these, in order:
 5. [Threat model](docs/threat-model/THREAT_MODEL.md) and [Security policy](SECURITY.md)
 6. [Deployment manifest](docs/DEPLOYMENT_MANIFEST.md) and [third-party register](THIRD_PARTY.md)
 
-For users (plain language): [docs/user/](docs/user/README.md). For operators: [docs/operators/](docs/operators/) (relayer runbook, deployment runbook, mirror hosting, local scanner and RPC, chain-enablement checklist, release and verification). Per-feature security reviews: [docs/reviews/](docs/reviews/).
+For users (plain language): the [product guide](docs/user/product-guide.md), [merchant setup](docs/guides/getting-started-merchants.md), [technology attribution](docs/user/technology-attribution.md), and [user-guide index](docs/user/README.md). The built website includes local Help and Privacy pages. For operators: [docs/operators/](docs/operators/) (relayer runbook, deployment runbook, mirror hosting, local scanner and RPC, chain-enablement checklist, release and verification). Per-feature security reviews: [docs/reviews/](docs/reviews/).
 
 Older, broader planning documents (partly superseded; stale parts are annotated in place):
 
@@ -155,11 +195,11 @@ Full text: [privacy limits](docs/user/privacy-limits.md) and the [threat model](
 - Payer, amount, token, timing and the use of the GhostPay router are public on-chain.
 - **A sweep can undo the privacy:** the payer knows the stealth address, so the payer (and anyone) can follow the funds to your destination wallet. Use a fresh destination. A relayer sees owner, destination, amount and timing. Gasless is not unlinkable (audit D1, D8).
 - An invoice link is a bearer secret: anyone with it can read the invoice. Browsers may keep the link in their history database even though the app clears the address bar (audit S3-03).
-- A compromised frontend can steal keys. The deployment manifest, which decides the router and fee-recipient addresses, is **not yet authenticated**: its signature is not verified and nothing is read back from the chain (audit S3-01, in progress). The in-app release-hash widget cannot detect a tampered host (S3-04).
-- The seller's scanner can display unverified, payer-supplied amounts for announcements that did not go through the router (S3-02, in progress).
+- A compromised frontend can steal keys. The ordinary payment path checks manifest signatures against bundled release keys and verifies deployment readback. Real release trust roots and deployment evidence remain prerequisites. The in-app release-hash widget cannot detect a tampered host.
+- Announcement discovery is separate from verified payment evidence. Unverified payer-supplied metadata, imported history and seller-signed receipts must not establish payment. The disabled scheme-2 flow has its own remaining acceptance gates.
 - The fee recipient is immutable: if it is blacklisted by a token issuer or cannot receive ETH, checkout for that asset stops until a new router is deployed (audit D5 / contracts M-01).
 - Fiat-priced invoices are disabled in practice: no oracle feed addresses are configured (ADR-0012).
-- Policy accounts (scheme `0x47500002`) are contracts only: no client support, no recovery path. Do not use them.
+- Policy accounts (scheme `0x47500002`) have an experimental testnet client behind a disabled feature flag. The complete supported flow and lost-key recovery remain unqualified; see [ADR-0027](docs/adr/ADR-0027-policy-end-to-end-gates.md).
 
 ## Hosting
 

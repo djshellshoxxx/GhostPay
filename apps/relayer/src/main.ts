@@ -14,22 +14,33 @@ async function main(): Promise<void> {
   const hotKeyAddress = privateKeyToAccount(`0x${Buffer.from(hotKey).toString('hex')}`).address;
   const releaseKeys = parseReleaseKeys(env['GHOSTPAY_RELEASE_PUBKEYS']);
   const config = loadConfigFile(env['RELAYER_CONFIG'] ?? './relayer.config.json', env['DEPLOYMENTS_DIR'] ?? '../../deployments', { env, hotKeyAddress, releaseKeys });
-  const relayer = await buildRelayer({ config, hotKey, quoteSecret, ...(previousQuoteSecret === undefined ? {} : { previousQuoteSecret }), logger });
-  await relayer.server.listen();
-  logger.log('info', 'listening', {});
   let stopping = false;
-  const stop = (): void => {
+  // `exitCode` 1 after a lost state lock, so `Restart=on-failure` / the container policy brings the relayer back.
+  const stop = (exitCode = 0): void => {
     if (stopping) return;
     stopping = true;
     logger.log('info', 'shutdown_started', {});
-    relayer.dispose();
+    // Drain first (queued and in-flight sweeps still write the journal), then release the state lock: releasing it
+    // earlier would let a starting replacement take the state over while this process still writes it.
     relayer.server.close().then(
-      () => process.exit(0),
-      () => process.exit(1),
+      () => {
+        relayer.dispose();
+        process.exit(exitCode);
+      },
+      () => {
+        relayer.dispose();
+        process.exit(1);
+      },
     );
   };
-  process.on('SIGTERM', stop);
-  process.on('SIGINT', stop);
+  const relayer = await buildRelayer({
+    config, hotKey, quoteSecret, ...(previousQuoteSecret === undefined ? {} : { previousQuoteSecret }), logger,
+    onLockLost: () => stop(1),
+  });
+  await relayer.server.listen();
+  logger.log('info', 'listening', {});
+  process.on('SIGTERM', () => stop());
+  process.on('SIGINT', () => stop());
 }
 
 // Node's default process diagnostics can expose provider URLs or request details; emit only a fixed class.
@@ -42,7 +53,7 @@ for (const event of ['uncaughtException', 'unhandledRejection'] as const) {
 
 main().catch((e: unknown) => {
   // Startup errors name variables/paths only (ConfigError); never print arbitrary objects.
-  const msg = e instanceof Error && (e.name === 'ConfigError' || e.name === 'ChainAdapterError') ? e.message : 'startup failed';
+  const msg = e instanceof Error && (e.name === 'ConfigError' || e.name === 'ChainAdapterError' || e.name === 'StateError') ? e.message : 'startup failed';
   process.stderr.write(`fatal: ${msg}\n`);
   process.exit(1);
 });

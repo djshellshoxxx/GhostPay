@@ -1,0 +1,10 @@
+# GhostPay release-signing trust root (SSH allowed-signers format, see ssh-keygen(1) "ALLOWED SIGNERS").
+#
+# THIS FILE INTENTIONALLY CONTAINS NO KEYS YET. Until the repository owner adds the release-signing public key,
+# scripts/verify-tag.sh and the release workflow REFUSE every tag (fail closed). See README.md in this directory.
+#
+# One line per key, for example (placeholder only, commented out):
+#   releases@ghostpay.invalid namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA...
+#
+# Optional per-key validity: valid-after="20260101" / valid-before="20270101" (checked against the tag time).
+# Remove a key here to revoke it. CI reads this file from the DEFAULT BRANCH, not from the tagged commit.

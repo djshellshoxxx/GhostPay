@@ -1,14 +1,15 @@
 import type { Address, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { buildSweepTypedData } from '@ghostpay/chain-adapters';
-import type { ChainClient, OrderState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
+import type { ChainClient, MinedReceipt, OrderState, PermitTokenState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
 import type { RelayerConfig } from './config.js';
-import { SimulationRevert } from './errors.js';
+import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import type { AlertSink } from './alerts.js';
 import { createLogger, type Logger } from './log.js';
 import type { PolicyGate } from './policy.js';
 import { buildRelayer, type Relayer } from './runtime.js';
 import type { QuoteResponse } from './service.js';
+import type { StateJournal } from './stateStore.js';
 
 export const CHAIN_ID = 11155111;
 export const SWEEP_CONTRACT: Address = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
@@ -37,7 +38,14 @@ export class FakeChain implements ChainClient {
   public allowance = 10n ** 30n;
   public receipt: ReceiptSummary = { status: 'success', gasUsed: 100_000n };
   public rpcDown = false;
+  /** The node refuses the transaction: `sendSweep` throws {@link SendRefused} (provably not broadcast). */
   public sendFails = false;
+  /**
+   * Outcome-unknown send: `accepted` records the transaction as broadcast before throwing (the node took it, the
+   * answer was lost); otherwise nothing reached the node. Neither changes `pendingNonce`: tests set the node's view.
+   * `withHash` throws {@link SendOutcomeUnknown} with the signed hash like the viem client; otherwise a plain error.
+   */
+  public sendUnknown: { readonly accepted: boolean; readonly withHash?: boolean } | undefined;
   public simulateError: Error | undefined;
   public readonly simulationFailures = new Map<number, Error>();
   /** Awaited inside simulation; useful for testing admission races before reservation. */
@@ -47,6 +55,9 @@ export class FakeChain implements ChainClient {
   public sendGate: Promise<void> | undefined;
   /** Awaited inside `waitForReceipt`. */
   public receiptGate: Promise<void> | undefined;
+  /** What a later `getReceipt` lookup finds (`null`: not mined yet). */
+  public lookup: MinedReceipt | null = null;
+  public lookups = 0;
   public readonly sent: { call: SweepCall; opts: SendOptions }[] = [];
   public readonly used = new Set<string>();
   public inFlight = 0;
@@ -86,13 +97,36 @@ export class FakeChain implements ChainClient {
     if (this.used.has(`${call.sweep.owner}:${call.sweep.nonce.toString()}`)) throw new SimulationRevert('NonceAlreadyUsed');
     return { gasLimit: this.gasLimit, gasEstimate: this.gasEstimate };
   }
+  /** Hashes passed to `onSigned`, in order (the journal must see each one before its broadcast). */
+  public readonly signed: Hex[] = [];
   public async sendSweep(call: SweepCall, opts: SendOptions): Promise<Hex> {
     this.inFlight += 1;
     this.maxInFlight = Math.max(this.maxInFlight, this.inFlight);
     if (this.sendGate !== undefined) await this.sendGate;
+    // Like the viem client: the hash is known once signed, before anything reaches the node.
+    const next: Hex = `0x${(this.counter + 1).toString(16).padStart(64, '0')}`;
+    const signedHash: Hex = this.sendFails ? `0x${'ff'.repeat(31)}${(this.counter & 0xff).toString(16).padStart(2, '0')}` : next;
+    try {
+      opts.onSigned?.(signedHash);
+    } catch {
+      this.inFlight -= 1;
+      throw new SendRefused();
+    }
+    this.signed.push(signedHash);
     if (this.sendFails) {
       this.inFlight -= 1;
-      throw new Error('send failed');
+      throw new SendRefused();
+    }
+    if (this.sendUnknown !== undefined) {
+      this.inFlight -= 1;
+      const { accepted, withHash } = this.sendUnknown;
+      this.counter += 1;
+      const hash: Hex = `0x${this.counter.toString(16).padStart(64, '0')}`;
+      if (accepted) {
+        this.sent.push({ call, opts });
+        this.used.add(`${call.sweep.owner}:${call.sweep.nonce.toString()}`);
+      }
+      throw withHash === true ? new SendOutcomeUnknown(hash) : new Error('socket hang up');
     }
     this.sent.push({ call, opts });
     this.used.add(`${call.sweep.owner}:${call.sweep.nonce.toString()}`);
@@ -108,6 +142,15 @@ export class FakeChain implements ChainClient {
     this.inFlight -= 1;
     return this.receipt;
   }
+  /** What `readPermitState` answers (nulls: that token call reverted); `rpcDown` rejects like a transport failure. */
+  public permitState: PermitTokenState = { nonce: 0n, domainSeparator: null };
+  public readPermitState(): Promise<PermitTokenState> {
+    return this.rpcDown ? Promise.reject(new Error('down')) : Promise.resolve(this.permitState);
+  }
+  public getReceipt(): Promise<MinedReceipt | null> {
+    this.lookups += 1;
+    return this.rpcDown ? Promise.reject(new Error('down')) : Promise.resolve(this.lookup);
+  }
 }
 
 export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
@@ -122,7 +165,7 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     quoteTtlSeconds: 120,
     minDeadlineSeconds: 30,
     maxDeadlineSeconds: 1800,
-    rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 },
+    rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000, quoteGroupPerMinute: 6000, quoteGroupBurst: 1000 },
     breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 },
     lossBudget: { windowSeconds: 3600, perKeyWei: 10n ** 16n, globalWei: 10n ** 17n, maxKeys: 100 },
     queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
@@ -164,6 +207,7 @@ export interface HarnessOptions {
   readonly policy?: PolicyGate;
   readonly fake?: FakeChain;
   readonly alerts?: AlertSink;
+  readonly journal?: StateJournal;
 }
 
 export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
@@ -180,6 +224,7 @@ export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
     now: () => clock.ms,
     ...(o.policy === undefined ? {} : { policy: o.policy }),
     ...(o.alerts === undefined ? {} : { alerts: o.alerts }),
+    ...(o.journal === undefined ? {} : { journal: o.journal }),
   });
   const addr = await relayer.server.listen();
   return {
@@ -231,6 +276,8 @@ export interface PrepareOptions {
   deadlineOffset?: number;
   nonce?: bigint;
   signerKey?: Hex;
+  /** Key of the order's owner (default {@link OWNER_KEY}); also the default signer. */
+  ownerKey?: Hex;
   chainId?: number;
   destination?: Address;
   permitValue?: bigint;
@@ -246,17 +293,19 @@ export async function prepare(h: Harness, o: PrepareOptions = {}): Promise<Prepa
   const amount = o.amount ?? 100_000_000n;
   const token = o.token ?? USDC;
   const destination = o.destination ?? DEST;
-  const quote = await h.relayer.service.quote({ chainId: CHAIN_ID, token, owner: OWNER, destination, amount });
+  const ownerKey = o.ownerKey ?? OWNER_KEY;
+  const owner = o.ownerKey === undefined ? OWNER : privateKeyToAccount(ownerKey).address;
+  const quote = await h.relayer.service.quote({ chainId: CHAIN_ID, token, owner, destination, amount });
   const fee = o.fee ?? BigInt(quote.fee);
   const feeTo = o.feeTo ?? quote.feeTo;
   const deadline = BigInt(Math.floor(h.clock.ms / 1000) + (o.deadlineOffset ?? 600));
-  const order = { token, owner: OWNER, destination, feeTo, amount, fee, deadline, nonce: o.nonce ?? 1n };
+  const order = { token, owner, destination, feeTo, amount, fee, deadline, nonce: o.nonce ?? 1n };
   const td = buildSweepTypedData(o.chainId ?? CHAIN_ID, SWEEP_CONTRACT, order);
-  const sig = await privateKeyToAccount(o.signerKey ?? OWNER_KEY).signTypedData({ domain: td.domain, types: td.types, primaryType: td.primaryType, message: td.message });
+  const sig = await privateKeyToAccount(o.signerKey ?? ownerKey).signTypedData({ domain: td.domain, types: td.types, primaryType: td.primaryType, message: td.message });
   const body: Record<string, unknown> = {
     chainId: CHAIN_ID,
     sweep: {
-      token, owner: OWNER, destination, feeTo,
+      token, owner, destination, feeTo,
       amount: amount.toString(), fee: fee.toString(), deadline: deadline.toString(), nonce: order.nonce.toString(),
     },
     sweepSig: sig,

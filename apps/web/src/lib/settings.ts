@@ -1,4 +1,5 @@
 import { validateRpcUrl } from '@ghostpay/chain-adapters';
+import { validateSettingsDelayRange } from '@ghostpay/qr-exchange';
 import { UserFacingError } from './errors';
 
 /** Non-secret preferences. RPC URLs are stored in plain text in this browser; the Settings page says so. */
@@ -28,14 +29,13 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
 });
 
 export const SETTINGS_KEY = 'ghostpay.settings.v1';
-const MAX_DELAY_SEC = 24 * 3600;
 
 /** Validates a user-entered RPC URL (https/wss only, no credentials, no fragment). Returns the normalized URL. */
 export function checkRpcUrl(raw: string): string {
   try {
     return validateRpcUrl(raw.trim());
   } catch {
-    throw new UserFacingError('RPC URL rejected: use https:// or wss://, with no username, password or fragment.');
+    throw new UserFacingError({ key: 'error.settings.rPCURLRejectedUseHttpsOrWssWithNoUsername' });
   }
 }
 
@@ -47,19 +47,19 @@ export function checkRelayerUrl(raw: string): string {
   try {
     u = new URL(trimmed);
   } catch {
-    throw new UserFacingError('Relayer URL is not a valid URL.');
+    throw new UserFacingError({ key: 'error.settings.relayerURLIsNotAValidURL' });
   }
   if (u.protocol !== 'https:' || u.username !== '' || u.password !== '' || u.search !== '' || u.hash !== '') {
-    throw new UserFacingError('Relayer URL must be https:// with no credentials, query or fragment.');
+    throw new UserFacingError({ key: 'error.settings.relayerURLMustBeHttpsWithNoCredentialsQueryOr' });
   }
   return u.origin + u.pathname.replace(/\/+$/, '');
 }
 
 /** Delay bounds must be whole seconds, 0 <= min <= max <= 24 h. */
 export function checkDelayRange(minSec: number, maxSec: number): void {
-  const ok = (n: number): boolean => Number.isInteger(n) && n >= 0 && n <= MAX_DELAY_SEC;
-  if (!ok(minSec) || !ok(maxSec) || minSec > maxSec) {
-    throw new UserFacingError('Delay range must be whole seconds, minimum at most maximum, up to 24 hours.');
+  try { validateSettingsDelayRange(minSec, maxSec); }
+  catch {
+    throw new UserFacingError({ key: 'error.settings.delayRangeMustBeWholeSecondsMinimumAtMostMaximum' });
   }
 }
 
@@ -134,11 +134,13 @@ export function loadSettings(storage: Pick<Storage, 'getItem'> | undefined = saf
   }
 }
 
-/** Storage-failure-tolerant save. Returns false when storage is unavailable. */
+/** Saves only validated non-secret preferences. Returns false when storage is unavailable. */
 export function saveSettings(s: Settings, storage: Pick<Storage, 'setItem'> | undefined = safeLocalStorage()): boolean {
   try {
     if (storage === undefined) return false;
-    storage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    // Structural typing permits callers to carry extra fields. Never persist those fields or their
+    // toJSON hooks: this storage boundary is deliberately separate from encrypted key backups.
+    storage.setItem(SETTINGS_KEY, JSON.stringify(sanitizeSettings(s)));
     return true;
   } catch {
     return false;
@@ -152,3 +154,5 @@ function safeLocalStorage(): Storage | undefined {
     return undefined;
   }
 }
+
+// i18n-use: error.settings.rPCURLRejectedUseHttpsOrWssWithNoUsername error.settings.relayerURLIsNotAValidURL error.settings.relayerURLMustBeHttpsWithNoCredentialsQueryOr error.settings.delayRangeMustBeWholeSecondsMinimumAtMostMaximum

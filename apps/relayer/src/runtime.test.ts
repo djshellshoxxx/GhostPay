@@ -77,3 +77,109 @@ describe('buildRelayer key separation', () => {
     await expect(buildRelayer({ ...common, quoteSecret: new Uint8Array(64).fill(0).map((x, i) => i < 32 ? 3 : x) })).rejects.toThrow(/must not equal or begin with the hot key/);
   });
 });
+
+describe('state journal wiring', () => {
+  it('opens an in-memory journal for state.ephemeral and a locked file journal for state.file', async () => {
+    const { mkdtempSync, rmSync, existsSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const { openJournal } = await import('./runtime.js');
+    const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
+    try {
+      expect(openJournal(testConfig(), Date.now).lock).toBeUndefined();
+      const stateFile = join(dir, 'state.json');
+      const relayer = await buildRelayer({
+        config: testConfig({ stateFile }),
+        hotKey: new Uint8Array(32).fill(3),
+        quoteSecret: new Uint8Array(32).fill(9),
+        logger: createLogger(() => undefined),
+        clients: new Map([[11155111, new FakeChain()]]),
+      });
+      expect(existsSync(`${stateFile}.lock`)).toBe(true);
+      // A second writer on the same state file is refused while the first holds a fresh lock.
+      writeFileSync(`${stateFile}.lock`, JSON.stringify({ pid: process.pid + 1, host: 'other', token: 'f'.repeat(32), beatMs: Date.now() }));
+      expect(() => openJournal(testConfig({ stateFile }), Date.now)).toThrow(/locked by another/);
+      relayer.dispose();
+      expect(existsSync(`${stateFile}.lock`)).toBe(true); // not ours any more, so dispose leaves it
+      rmSync(`${stateFile}.lock`);
+      writeFileSync(stateFile, '{"version":9}');
+      expect(() => openJournal(testConfig({ stateFile }), Date.now)).toThrow(/state file is invalid/);
+      expect(existsSync(`${stateFile}.lock`)).toBe(false); // a failed open releases the lock it took
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('re-review M1: retries transient heartbeat failures, then reports the lock lost before it can go stale', async () => {
+    const { vi } = await import('vitest');
+    const { mkdirSync, mkdtempSync, rmSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    let clock = 1_000_000;
+    let lostCalls = 0;
+    const lines: string[] = [];
+    try {
+      const stateFile = join(dir, 'state.json');
+      const relayer = await buildRelayer({
+        config: testConfig({ stateFile }),
+        hotKey: new Uint8Array(32).fill(3),
+        quoteSecret: new Uint8Array(32).fill(9),
+        logger: createLogger((l) => lines.push(l)),
+        clients: new Map([[11155111, new FakeChain()]]),
+        now: () => clock,
+        onLockLost: () => { lostCalls += 1; },
+      });
+      rmSync(`${stateFile}.lock`);
+      mkdirSync(`${stateFile}.lock`); // heartbeat now fails with an I/O error
+      clock += 10_000;
+      vi.advanceTimersByTime(10_000);
+      clock += 10_000;
+      vi.advanceTimersByTime(10_000);
+      expect(lostCalls).toBe(0); // 20 s without a beat: still retrying
+      expect(lines.join('\n')).toContain('state_lock_heartbeat_failed');
+      expect(relayer.metrics.render()).toContain('relayer_state_lock_heartbeat_failures_total 2');
+      clock += 10_000;
+      vi.advanceTimersByTime(10_000);
+      expect(lostCalls).toBe(1); // 30 s: given up before another process could take the stale lock
+      vi.advanceTimersByTime(30_000);
+      expect(lostCalls).toBe(1); // reported once
+      relayer.dispose();
+    } finally {
+      vi.useRealTimers();
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('stops admitting work when the lock heartbeat finds the lock taken over', async () => {
+    const { vi } = await import('vitest');
+    const { mkdtempSync, rmSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    const lines: string[] = [];
+    try {
+      const stateFile = join(dir, 'state.json');
+      const relayer = await buildRelayer({
+        config: testConfig({ stateFile }),
+        hotKey: new Uint8Array(32).fill(3),
+        quoteSecret: new Uint8Array(32).fill(9),
+        logger: createLogger((l) => lines.push(l)),
+        clients: new Map([[11155111, new FakeChain()]]),
+      });
+      vi.advanceTimersByTime(10_000); // own heartbeat: fine
+      expect(relayer.service.health().status).toBe('ok');
+      writeFileSync(`${stateFile}.lock`, JSON.stringify({ pid: process.pid + 1, host: 'other', token: 'f'.repeat(32), beatMs: Date.now() }));
+      vi.advanceTimersByTime(10_000);
+      await Promise.resolve();
+      expect(lines.join('\n')).toContain('state_lock_lost');
+      expect(relayer.service.health().status).toBe('shutting_down');
+      relayer.dispose();
+    } finally {
+      vi.useRealTimers();
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

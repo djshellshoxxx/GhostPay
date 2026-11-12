@@ -21,7 +21,7 @@ All bodies are `application/json`, at most 16 KiB (`MAX_BODY_BYTES`). Unknown ke
 
 | Route | Purpose |
 |---|---|
-| `GET /healthz` | `{ status: 'ok' \| 'degraded' \| 'shutting_down', chains: [{ chainId, breaker: 'closed' \| 'open' \| 'half_open' }] }`; 503 when every breaker is open or during shutdown |
+| `GET /healthz` | `{ status: 'ok' \| 'degraded' \| 'shutting_down', chains: [{ chainId, breaker: 'closed' \| 'open' \| 'half_open', minedReverts: 'normal' \| 'sustained' }] }`; 503 when any breaker is not healthy, mined reverts are sustained on any chain, or during shutdown (`apps/relayer/src/service.ts`, `server.ts`) |
 | `GET /v1/info` | version, fee policy (`F-SPONSOR`, gas multiplier 110 %, min 50 bps, cap 300 bps, quote TTL, deadline window) and per chain `{ chainId, name, sweepRelayer, feeTo, tokens: [{ address, symbol, decimals, permit }] }` |
 | `POST /v1/quote` | request `{ chainId: number, token, owner, destination, amount }` (addresses 0x-hex, `amount` decimal string >= 1) -> `{ fee: string, feeTo, expiresAt: number, quoteToken: string }` |
 | `POST /v1/sweep` | request below -> `{ txHash }` |
@@ -37,13 +37,13 @@ All bodies are `application/json`, at most 16 KiB (`MAX_BODY_BYTES`). Unknown ke
   },
   "sweepSig": "0x<65 bytes r||s||v>",    // EIP-712 over domain GhostPaySweepRelayer/1/chainId/contract; exactly 65 bytes
   "permit": { "value": "1000000", "deadline": "1760000000", "v": 27, "r": "0x<32>", "s": "0x<32>" },   // optional
-  "quoteToken": "v1.<expiresAt>.<fee>.<hmac-sha256 hex>"
+  "quoteToken": "v2.<keyId>.<expiresAt>.<fee>.<hmac-sha256 hex>"
 }
 ```
 
 `permit` present -> `sweepWithPermit` (token must have `permit: true`, `permit.value >= amount`); absent -> `sweep`
 (allowance already granted). The quote token is stateless: the HMAC (secret `QUOTE_SECRET`) covers the string
-`ghostpay-quote-v1\n<chainId>\n<token>\n<owner>\n<destination>\n<amount>\n<fee>\n<feeTo>\n<expiresAt>` (addresses
+`ghostpay-quote-v2\n<keyId>\n<chainId>\n<token>\n<owner>\n<destination>\n<amount>\n<fee>\n<feeTo>\n<expiresAt>` (addresses
 lower-cased), compared in constant time. Single use is enforced by the contract nonce, not the server.
 
 Sweep checks, in order (`README`): chain and token allowlist (`chain_not_supported`, `token_not_supported`, 422) ->
@@ -53,8 +53,9 @@ permit flag and value -> `feeTo` equals the relayer's -> quote authentic (`inval
 per-owner rate limit -> `PolicyGate` -> breaker -> **admission control** (a stateless `eth_call` pre-simulation outside
 the lane, at most 8 concurrent, `503 busy` beyond that; a client IP may hold at most `ceil(0.75 * queue.maxPending)` lane
 slots, else `429 rate_limited_ip`) -> serial per-chain lane: gas-price cap, balance floor, **fee floor** (the signed fee
-must still cover `gasUnits * current gas price` in token units, else `422 fee_below_cost`), `simulateContract`, gas limit,
-daily budget -> send. Other classes: `invalid_*` 400, `unsupported_media_type` 415,
+must still cover `gasUnits * current gas price` in token units, else `422 fee_below_cost`), the deadline again after the
+queue wait (`deadline_too_soon` 422 unless more than `min` remains), `simulateContract`, gas limit, the deadline once
+more right after that simulation (same class), daily budget -> send. Other classes: `invalid_*` 400, `unsupported_media_type` 415,
 `body_too_large` 413, `invalid_url` 400, `rate_limited_ip`/`rate_limited_owner` 429, `origin_not_allowed` 403,
 `queue_full`/`busy`/`shutting_down`/`rpc_unavailable`/`send_failed`/`budget_exhausted` 503, `not_found` 404,
 `method_not_allowed` 405, `internal_error` 500.
@@ -69,7 +70,7 @@ immediately before signing.
 
 JSON file (`RELAYER_CONFIG`, default `./relayer.config.json`; example `relayer.config.example.json`) plus environment.
 Strict validation: unknown keys, wildcard or non-https origins, plain-http or credentialed RPC URLs and non-stable tokens
-stop startup. Top-level keys in the example: `listen`, `allowedOrigins`, `trustProxyHops`, `quoteTtlSeconds`,
+stop startup, with an error naming the unknown key. Top-level keys in the example: `listen`, `allowedOrigins`, `trustedProxies`, `quoteTtlSeconds`,
 `deadline { minSeconds, maxSeconds }`, `rateLimit`, `breaker`, `queue`, `shutdownGraceSeconds`, `chains[]` with
 `chainId`, `rpcUrl` or `rpcUrlEnv`, `feeTo`, `tokens[] { address, usdStable: true }`, `nativeUsdPrice`, `gasUnits
 { sweep, sweepWithPermit }`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Operator numbers have no
@@ -84,8 +85,11 @@ defaults on purpose; the example values are placeholders, not measurements.
 | `<rpcUrlEnv name>` | RPC URL kept out of the file, e.g. `RPC_URL_84532` |
 
 Chain id 31337 is accepted only with `allowDevChain: true` (and loopback http only with `allowInsecureLocalhostRpc`).
-`trustProxyHops > 0` requires a loopback `listen.host` (otherwise clients could spoof `X-Forwarded-For`); there is no
-trusted-proxy allowlist, so a container that must bind `0.0.0.0` falls back to the socket address. At startup each
+`trustedProxies` lists the reverse proxy's addresses or CIDR blocks: `X-Forwarded-For` is believed only from a listed TCP
+peer and walked from the right past listed hops; otherwise the socket address is the client. Use loopback for a proxy on
+the same host and, for the compose recipe, the backend subnet pinned in `deploy/docker-compose.yml` (`172.30.10.0/24`, as
+in `deploy/config/relayer.config.example.json`, with `listen.host` `0.0.0.0`). The former hop count `trustProxyHops` is
+refused at startup with an error naming it and pointing to `trustedProxies`. At startup each
 chain's `sweepRelayer` must have contract code on the configured RPC (`eth_getCode`); when a manifest exists for the chain the
 relayer also runs `verifyManifest` + `assertManifestVerified` once and refuses to start with `MANIFEST_READBACK_FAILED` (single
 RPC, no periodic re-check, signature not verified; `apps/relayer/DEVIATIONS.md` item 21).

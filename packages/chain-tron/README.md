@@ -4,6 +4,11 @@ Testnet proof of concept (unaudited, private): Tron address codec, secp256k1 ste
 (thin wrappers over `@ghostpay/core-crypto` ERC-5564 scheme-1), TRC-20 request builders, and a
 structural `ChainAdapter`-shaped skeleton. No network calls, no signing, no contracts.
 
+**Not interoperable with `@ghostpay/tron-adapter`.** This package encodes TRON meta-addresses with the core-crypto
+`st:eth:0x` tag (see `DEVIATIONS.md` item 4); `packages/tron-adapter` (`src/meta.ts`) encodes them with `st:trx:0x`.
+The CLI imports this package and the web app imports `@ghostpay/tron-adapter`, so a meta-address from one is not
+accepted by the other as written.
+
 ## Modules
 - `address.ts`: `0x41 || keccak256(X||Y)[12:]`, base58check (sha256d, Bitcoin alphabet), `41…` hex, EVM 20-byte conversion, strict validation (`INVALID_CHECKSUM`, `INVALID_PREFIX`, `INVALID_LENGTH`, `INVALID_ADDRESS`).
 - `stealth.ts`: `deriveTronStealthPayment`, `checkTronAnnouncement`, `deriveTronStealthSecret`, `tronAddressOfSecret`. Same maths and view tag as core-crypto; only presentation differs.

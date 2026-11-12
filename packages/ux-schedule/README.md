@@ -12,3 +12,10 @@ Nothing here ever sends funds. Every due item carries `needsUserConfirm: true`; 
 needs an explicit acknowledgement echoing recipient and amount.
 
 Specs: docs/remote/usability/specs/schedule-*.md. Wiring: docs/remote/usability/wiring/ux-schedule.md.
+
+Runtime counts reject NaN/infinity; catch-up limits and last-handled instants must be
+safe integers. Finite integer catch-up counts retain the existing 1..20 clamp.
+Calendar tests cover month-end/leap-day behavior, DST gaps/folds and an explicit change
+of injected zone. Hosts should pin a schedule's zone: changing the resolver recalculates
+UTC occurrences and can produce another confirmation prompt for the same civil date.
+The monotonic `lastHandledMs` boundary remains respected and no prompt sends funds.

@@ -9,12 +9,14 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --coverage",
     "lint": "eslint --config ../../eslint.config.js src",
-    "start": "node dist/main.js"
+    "start": "node dist/main.js",
+    "ops": "node dist/ops.js",
+    "smoke:container": "bash deploy/smoke-anvil.sh"
   },
   "dependencies": {
     "@ghostpay/chain-adapters": "0.1.0",
     "@ghostpay/relayer-guard": "0.1.0",
-    "viem": "2.57.7"
+    "viem": "2.57.13"
   },
   "devDependencies": {
     "@types/node": "26.6.5",

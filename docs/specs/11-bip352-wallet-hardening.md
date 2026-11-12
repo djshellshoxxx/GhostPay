@@ -1,5 +1,7 @@
 # 11 BIP-352 wallet hardening, label handling, payer UX
 
+> **Implementation status (2026-11-11, commit 364b1f18):** there is no `VITE_FLAG_BITCOIN` flag. Web gating is the `GHOSTPAY_LOCAL_BUILD_PROFILE` lean/full build profile (`apps/web/vite.config.ts`); the Bitcoin view is mounted in the full profile (`apps/web/src/App.tsx`).
+
 Priority P2 | Effort M (5-7 d) | Owner: btc-silent-payments + web (flagged) | Deps: ADR on ChainAdapter union types (gap item 15)
 Sources: research s3 (BIP-352 text retrieved 2026-10-21), DOC-10..DOC-14; MULTICHAIN s3; package DEVIATIONS.
 
