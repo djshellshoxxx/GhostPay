@@ -7,7 +7,7 @@ import {
 } from '@ghostpay/invoice-schema';
 import { ANNOUNCEMENT_TOPIC, decodePaymentCalldata, tokensForChain, type Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { getAddress, keccak256, parseTransaction, recoverTransactionAddress, type Address } from 'viem';
+import { getAddress, keccak256, parseTransaction, recoverTransactionAddress, toHex, type Address } from 'viem';
 import { verifyReceipt } from '../src/lib/receipts';
 import { generateKeys, openFresh } from './helpers';
 import { ANVIL_ACCOUNTS, APP_RPC, Anvil, loadDevnet, type DevnetState } from './devnet/chain';
@@ -215,12 +215,21 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // Build provenance: the page's own same-origin fetch of build-info.json names the commit under test.
     const info = await sp.evaluate(async () => {
       const r = await fetch('./build-info.json', { cache: 'no-store' });
-      return { status: r.status, type: r.headers.get('content-type'), body: await r.json() as { app: string; commit: string } };
+      return { status: r.status, type: r.headers.get('content-type'), body: await r.json() as { app: string; commit: string; manifestsSha256: string } };
     });
     expect(info.status).toBe(200);
     expect(info.type).toContain('application/json');
     expect(info.body.app).toBe('ghostpay-web');
     expect(info.body.commit).toBe(gitHead());
+    // The bundled manifest is exactly this run's signed 84532 manifest (same digest rule as vite.config.ts and
+    // build-pages.sh), and it describes the contracts that are really on this chain.
+    const manifestText = readFileSync(join(dn.deploymentsDir, '84532.json'), 'utf8');
+    expect(info.body.manifestsSha256).toBe(sha256(JSON.stringify({ '84532': manifestText })));
+    const manifest = JSON.parse(manifestText) as { chainId: number; router: string; bytecodeHashes: { router: string; sweepRelayer: string }; sweepRelayer: string };
+    expect(manifest.chainId).toBe(84532);
+    expect(await anvil.call<string>('eth_chainId')).toBe('0x14a34');
+    expect(keccak256(await anvil.call<Hex>('eth_getCode', [manifest.router, 'latest']))).toBe(manifest.bytecodeHashes.router);
+    expect(keccak256(await anvil.call<Hex>('eth_getCode', [manifest.sweepRelayer, 'latest']))).toBe(manifest.bytecodeHashes.sweepRelayer);
     expect(await sp.locator('meta[name="ghostpay-build"]').getAttribute('content')).toBe(gitHead());
     // The app entry, its modules and the stylesheet were all loaded relative to the sub-path.
     expect(net.requests.some((r) => r.type === 'script' && /^\/GhostPay\/assets\/index-[\w-]+\.js$/.test(new URL(r.url).pathname))).toBe(true);
@@ -521,7 +530,9 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(sp.getByText(/^Finished\./)).toContainText(' 1 payments found');
     await expect(scanMatches(sp)).toHaveCount(1);
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
-    await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
+    await expect(sp.getByRole('status').filter({ hasText: 'Observation saved in the encrypted reconciliation vault.' })).toHaveCount(1, { timeout: 30_000 });
+    await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible();
+    await expect(l.locator('li.card').filter({ hasText: payHash.toLowerCase() }).filter({ hasText: 'Router-verified when scanned' })).toHaveCount(1);
 
     // The swept address cannot be swept again from the reopened profile either.
     const rawBefore = net.sentRaw.length;
@@ -592,10 +603,17 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(l.getByText(/^1 historical observation; 1 registered invoice; 1 archived receipt/)).toBeVisible({ timeout: 30_000 });
     await l.getByRole('button', { name: 'Activate previewed historical records' }).click();
     await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
-    await expect(l).toContainText(payHash.toLowerCase());
-    // Re-adding the freshly rescanned, verified observation does not count the payment twice.
+    const record = l.locator('li.card').filter({ hasText: payHash.toLowerCase() }).filter({ hasText: 'Block ' });
+    await expect(record).toHaveCount(1);
+    await expect(record).toContainText('Imported historical observation — untrusted until independently rescanned.');
+    await expect(record).toContainText(digest);
+    await expect(l.getByText('Linked to a verified observation.')).toBeVisible();
+    // Adding the freshly rescanned, verified observation upgrades that same record instead of counting the payment twice.
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
-    await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible({ timeout: 30_000 });
+    await expect(record).toContainText('Router-verified when scanned; historical observation, not current payment proof.', { timeout: 30_000 });
+    await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible();
+    await expect(record).toHaveCount(1);
+    await expect(record).toContainText(digest);
 
     // Already swept: the restored keys see the dust balance and refuse; nothing new on chain.
     await scanMatches(rp).getByRole('button', { name: 'Sweep this payment' }).click();
@@ -690,6 +708,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
     const net = new PagesNetwork(dn, siteOrigin(baseURL));
     const c = await newContext(browser, baseURL, net);
     try {
+      const head = await anvil.head();
       const page = await c.newPage();
       for (const bad of ['http://example.com', 'https://user:pass@rpc.devnet.e2e.test', 'not a url']) {
         // A fresh load per value, so each refusal message belongs to this attempt only.
@@ -718,6 +737,9 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await page.getByRole('button', { name: 'Test Base Sepolia' }).click();
       await expect(page.getByText('Connected. The endpoint reports the expected chain id.')).toBeVisible({ timeout: 30_000 });
       expect(await storedSettings(page)).toEqual({ rpcUrls: { '84532': APP_RPC } });
+      // On chain: nothing happened while the endpoints were refused (automine is on, so any transaction would show).
+      expect(await anvil.head()).toBe(head);
+      expect(net.sentRaw).toHaveLength(0);
       net.expectClean();
     } finally {
       await c.close();
@@ -741,7 +763,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
       // The payment context needs the RPC (manifest cross-check, amounts): the review says so and Continue stays disarmed.
-      await expect(p.getByRole('alert').first()).toBeVisible({ timeout: 60_000 });
+      await expect(p.getByRole('alert').filter({ hasText: 'Blocked by a safety check (RPC_FAILURE).' })).toBeVisible({ timeout: 60_000 });
       await expect(p.getByRole('button', { name: 'Continue' })).toBeDisabled();
       await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);
       await expect(p.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
@@ -753,7 +775,8 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await s.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
       await s.getByLabel('Start block').fill('0');
       await s.getByRole('button', { name: 'Start scan' }).click();
-      await expect(s.locator('section[aria-labelledby="scan-h"]').getByRole('alert').first()).toBeVisible({ timeout: 60_000 });
+      await expect(s.locator('section[aria-labelledby="scan-h"]').getByRole('alert').filter({ hasText: 'Blocked by a safety check (RPC_FAILURE).' })).toBeVisible({ timeout: 60_000 });
+      await expect(s.getByText(/^Finished\./)).toHaveCount(0);
       await expect(scanMatches(s)).toHaveCount(0);
       expect(net.rpcDownHits).toBeGreaterThan(0);
 
@@ -796,11 +819,21 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       payer.wallet.rejectSends = true;
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
-      await expect(p.getByText('You rejected the request in your wallet.', { exact: false }).first()).toBeVisible({ timeout: 30_000 });
+      await expect(p.getByRole('alert').filter({ hasText: 'You rejected the request in your wallet.' })).toBeVisible({ timeout: 30_000 });
       expect(payer.wallet.rejected).toHaveLength(1);
       expect(payer.wallet.hashes).toHaveLength(0);
       await expect(p.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
-      expect((await walletJournal(p)).filter((j) => j.hash !== undefined)).toEqual([]);
+      // The tab journal keeps the attempt without a hash ("a wallet may have broadcast even when its response was lost"),
+      // so this tab refuses to ask the wallet again for the same payment; still nothing is sent.
+      expect(await walletJournal(p)).toMatchObject([{ status: 'unknown', chainId: 84532, kind: 'payment' }]);
+      expect((await walletJournal(p))[0]?.hash).toBeUndefined();
+      payer.wallet.rejectSends = false;
+      await openFresh(p, invoice);
+      await reviewToFinalCheck(p, dn.router, payer.wallet.name);
+      await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+      expect(payer.wallet.sends).toHaveLength(0);
+      expect(payer.wallet.hashes).toHaveLength(0);
       // Unpaid on chain: the payer sent nothing, and the seller's scan of the whole chain finds no payment for its keys.
       expect(await anvil.nonce(ACCOUNTS.rejectPayer)).toBe(nonce);
       expect(await anvil.balance(ACCOUNTS.rejectPayer)).toBe(balance);
@@ -860,10 +893,18 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await anvil.call('evm_mine', []);
       const chainNow = Number(BigInt((await anvil.call<{ timestamp: string }>('eth_getBlockByNumber', ['latest', false])).timestamp));
       expect(chainNow).toBeGreaterThan(parsed.invoice.expiresAt);
+      const callsBefore = net.calls.length;
       await q.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
-      await expect(q.page.getByRole('alert').first()).toBeVisible({ timeout: 30_000 });
+      await expect(q.page.getByRole('alert').filter({ hasText: 'Blocked: a dry run of this transaction fails (it would revert). Nothing was sent.' })).toBeVisible({ timeout: 30_000 });
       await expect(q.page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
+      expect(q.wallet.sends).toHaveLength(0);
       expect(q.wallet.hashes).toHaveLength(0);
+      // The app's own dry run of the router call is what failed; replayed here, the router reverts with Expired().
+      const dryRun = net.calls.slice(callsBefore).find((call) => ['eth_call', 'eth_estimateGas'].includes(call.method) && (call.params[0] as { to?: string } | undefined)?.to?.toLowerCase() === dn.router.toLowerCase());
+      expect(dryRun).toBeDefined();
+      const expiredSelector = keccak256(toHex('Expired()')).slice(0, 10);
+      const replay = await anvil.call('eth_call', [dryRun?.params[0], 'latest']).then(() => 'succeeded', (e: unknown) => (e instanceof Error ? e.message : String(e)));
+      expect(replay.toLowerCase()).toContain(expiredSelector.slice(2));
       expect(await anvil.nonce(ACCOUNTS.expiryPayer)).toBe(nonce);
       await scanFromZero(s, false);
       await expect(s.getByText(/^Finished\./)).toContainText(' 0 payments found');

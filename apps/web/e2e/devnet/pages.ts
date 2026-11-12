@@ -68,6 +68,8 @@ export class PagesNetwork {
   readonly outsideBase: SeenRequest[] = [];
   /** JSON-RPC methods the app sent, in order. */
   readonly methods: string[] = [];
+  /** The same calls with their parameters (e.g. to replay a dry run the app refused on). */
+  readonly calls: { readonly method: string; readonly params: readonly unknown[] }[] = [];
   /** Raw signed transactions the app broadcast itself (sweeps). */
   readonly sentRaw: Hex[] = [];
   /** When true the RPC is unreachable (connection refused), as if the provider were down. */
@@ -122,6 +124,7 @@ export class PagesNetwork {
       const parsed = JSON.parse(body) as { method?: string; params?: unknown[] } | { method?: string; params?: unknown[] }[];
       for (const call of [parsed].flat()) {
         this.methods.push(String(call.method));
+        this.calls.push({ method: String(call.method), params: call.params ?? [] });
         if (call.method === 'eth_sendRawTransaction') this.sentRaw.push(call.params?.[0] as Hex);
       }
     } catch {
