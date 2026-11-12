@@ -58,7 +58,8 @@ Details: [privacy limits](../user/privacy-limits.md), [receive and scan](../user
 4. **Seller (Scan and receive):** set the RPC, start a scan. The checkpoint survives closing and reopening the browser; the next scan resumes from it.
 5. **Sweep:** choose **Directly**. The one-time address pays its own gas:
    - **Native coin payments** can always be swept directly: the fee is deducted from the amount.
-   - **ERC-20 payments** need native coin at the one-time address. Ask the payer for a **gas buffer** when you create the invoice (Create invoice, "Gas buffer policy"), or send a small amount of native coin to the one-time address yourself, knowing that this links your funding wallet to it on-chain. A browser wallet cannot sign for a one-time address and is never asked to.
+   - **ERC-20 payments** need native coin at the one-time address to pay its own gas. This build has no payer gas buffer: buffer-policy invoices (v2, ADR-0024) are made only by the full profile and refused by this one. To sweep an ERC-20 payment directly, first send a small amount of native coin to the one-time address yourself. That transfer links your funding wallet to the one-time address on-chain. The Sweep view says so when the gas is missing. A browser wallet cannot sign for a one-time address and is never asked to.
+   - So the direct sweep supported end to end by this release is **native coin**. ERC-20 direct sweeps work with self-funded gas but are not covered by the local-chain acceptance run (the devnet tokens are not on the app's allowlist).
    - The optional relayed sweep needs a relayer URL that you configure yourself. None is provided or required.
 6. **Receipt:** sign a receipt for a finalized payment. A receipt is a seller statement; the on-chain transaction is the settlement evidence.
 
@@ -84,13 +85,22 @@ curl -fsS "$base/index.html" | sha256sum
 Needs Node 22, `npm ci --ignore-scripts` and `npm run build:libs`.
 
 ```bash
-bash scripts/pages/build-pages.sh "$PWD/../ghostpay-pages"
+GHOSTPAY_PAGES_DEV=1 bash scripts/pages/build-pages.sh "$PWD/../ghostpay-pages"
 ```
 
-The output directory must not exist and must be outside `apps/web`. It produces:
+The output directory must not exist and must be outside `apps/web`. Without `GHOSTPAY_PAGES_DEV=1` the script makes a release build: it refuses a modified tree under `apps/web`, `packages` or `scripts`, and `GP_COMMIT` must equal `HEAD`. Build the workspace libraries from source first (`rm -rf packages/*/dist && npm run build:libs`); the script uses them as they are.
+
+| Variable | Meaning |
+|---|---|
+| `GHOSTPAY_PAGES_ORIGIN` | The serving origin, `https://host[:port]` with no path. Recorded in the evidence and the banner. Required when manifests are bundled. A `*.github.io` origin is treated as shared. |
+| `GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet` | Accept a shared `*.github.io` origin for a build with testnet manifests. Without it such a build is refused (GP-PAGES-01). |
+| `GHOSTPAY_PAGES_DEPLOYMENTS_DIR`, `GHOSTPAY_RELEASE_PUBKEYS` | Release-signed testnet manifests and their public keys. |
+| `GHOSTPAY_PAGES_DEV=1` | Test build: a modified tree and a plain-http loopback origin are accepted; the banner and evidence say it is not a release. |
+
+It produces:
 
 - `site/`: exactly what is published. Relative asset references (`./assets/...`), so it works under `/GhostPay/` or any other path. Includes `.nojekyll` and the mirror banner. `_headers` and the public `deployments/` README are removed, because GitHub Pages ignores headers and manifests are compiled into the bundle.
-- `evidence/`: `SHA256SUMS` of every published file, the lean module report, `pages-evidence.json` (commit, enabled testnet chain ids, manifest digest, lockfile digest) and the build log.
+- `evidence/`: `SHA256SUMS` of every published file, the lean module report, `pages-evidence.json` (commit, release or development build, serving origin and whether it is shared, enabled testnet chain ids, manifest digest, lockfile digest) and the build log.
 
 What the build enforces (it stops on any failure):
 
@@ -133,9 +143,18 @@ Starts anvil, deploys the contracts, switches the chain to the Base Sepolia id (
 
 Nothing deploys automatically. Publishing jobs are never cancelled by a newer run. Permissions are `contents: read` except the deploy job (`pages: write`, `id-token: write`).
 
+### Serving origin (read before publishing)
+
+A GitHub project site is served at `https://<owner>.github.io/<repo>/`. Browsers isolate storage and scripts per **origin**, not per path, and this account publishes more than fifteen other project sites on `https://djshellshoxxx.github.io` (2026-11-12). Any of them, now or later, can open the GhostPay page in a same-origin window or frame, script it and read its local storage, including the encrypted vault and settings (GP-PAGES-01). Use one of these instead:
+
+- a custom domain for this repository's Pages site (Settings > Pages > Custom domain, plus `GHOSTPAY_PAGES_ORIGIN=https://<domain>`), or
+- a dedicated GitHub account or organization that publishes no other Pages site and has no `<owner>.github.io` user site.
+
+The workflow defaults `GHOSTPAY_PAGES_ORIGIN` to the account's `github.io` origin. On that origin the demonstration build carries a warning in its banner, and a build with testnet manifests is refused unless the repository variable `GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN` is `testnet`.
+
 ### Publishing (owner)
 
-1. Settings > Pages > Build and deployment > Source: **GitHub Actions**. (The old `gh-pages` branch from the prototype is then unused; keep it or delete it.)
+1. Settings > Pages > Build and deployment > Source: **GitHub Actions**. (The old `gh-pages` branch from the prototype is then unused; keep it or delete it.) Choose the serving origin above and set the repository variable `GHOSTPAY_PAGES_ORIGIN` if it is not the default.
 2. Settings > Environments > `github-pages`: deployment branches **main only**; add required reviewers if you want a second approval.
 3. Merge the release pull request to `main`.
 4. Actions > Pages > Run workflow on `main` with **deploy** checked.

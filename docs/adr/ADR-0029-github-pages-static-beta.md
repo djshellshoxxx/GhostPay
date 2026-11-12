@@ -11,7 +11,7 @@ The owner's GitHub Pages release directive (2026-11-12) makes one static, client
 1. Publish only the **lean** EVM profile (`GHOSTPAY_LOCAL_BUILD_PROFILE=lean`), built by `scripts/pages/build-pages.sh` and independently verified by `scripts/pages/verify-pages-site.mjs`, through `.github/workflows/pages.yml` (manual dispatch on `main`, `github-pages` environment).
 2. The default site is a **demonstration**: no deployment manifest, so payments are disabled on every chain. A Pages build refuses mainnet manifests outright; enabling a mainnet needs a different host and a new ADR.
 3. Every Pages instance shows a mirror banner that states the payment state and the missing header protections (ADR-0015 item 5).
-4. Testnet payments are enabled only by committing a release-signed testnet manifest and setting the public verification keys (`GHOSTPAY_RELEASE_PUBKEYS` repository variable).
+4. Testnet payments are enabled only by committing a release-signed testnet manifest and setting the public verification keys (`GHOSTPAY_RELEASE_PUBKEYS` repository variable), and only on a dedicated origin unless the owner explicitly accepts the shared `github.io` origin for test assets.
 
 ## ADR-0015 gates against this decision
 
@@ -22,6 +22,7 @@ The owner's GitHub Pages release directive (2026-11-12) makes one static, client
 | 3. Deployed and smoke-tested testnet deployment with a manifest | **Open** | Owner: authorized testnet deployment; see `docs/pages/README.md`, "External testnet qualification" |
 | 4. Owner decisions: fee recipient, licence, terms, privacy notice, sanctions, legal advice | **Open** | Owner |
 | 5. Header-capable primary host; GitHub Pages only as a labelled degraded mirror | Partly met | Banner implemented and verified; no header-capable primary host exists, so the Pages instance is currently the only one. Owner decides whether that is acceptable for a demonstration |
+| (new) Origin isolation, GP-PAGES-01 | **Open** | `https://djshellshoxxx.github.io` is shared with more than fifteen other Pages sites of the account, which can script a same-origin GhostPay page and read its storage. `build-pages.sh` records the origin, warns in the banner and refuses testnet manifests on a shared origin unless `GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet`. Owner: custom domain or dedicated account |
 
 ## Consequences
 
