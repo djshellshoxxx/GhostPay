@@ -59,7 +59,7 @@ Merchants who pin the SDK compute the SHA-384 of the exact file they embed; a ch
 
 ## Hosting
 
-Prototype hosting on GitHub Pages (base path, CSP limits, theme overlay): [`docs/remote/pages-prototype.md`](../../docs/remote/pages-prototype.md). This is not a hardened production host, and no official host exists.
+GitHub Pages static beta (lean profile, demonstration build unless a signed testnet manifest is bundled, CSP and header limits, verification): [`docs/pages/README.md`](../../docs/pages/README.md), built by `scripts/pages/build-pages.sh` and published only by a manual run of `.github/workflows/pages.yml` on `main`. This is not a hardened production host; see ADR-0015 and the proposed ADR-0029.
 
 ## User-facing guides
 
