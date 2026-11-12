@@ -574,7 +574,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(await webStorageContains(rp, KEYSTORE_PASS)).toBe(false);
 
     await configureRpc(rp, APP_RPC);
-    expect(await storedSettings(rp)).toMatchObject({ rpcUrls: { '84532': APP_RPC } });
+    expect(await storedSettings(rp)).toMatchObject({ rpcUrls: { '84532': new URL(APP_RPC).href } });
 
     // Rescan from block 0 in the new profile: the same single payment, final.
     await scanFromZero(rp, false);
@@ -587,7 +587,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const l = ledger(rp);
     await l.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }).click();
     await expect(l.getByText('No records saved.')).toBeVisible({ timeout: 30_000 });
-    await l.getByLabel('Encrypted reconciliation backup file').setInputFiles({ name: 'ghostpay-reconciliation-encrypted.json', mimeType: 'application/json', buffer: Buffer.from(reconciliationBackup, 'utf8') });
+    await l.getByLabel('Encrypted reconciliation backup file', { exact: true }).and(l.locator('input[type="file"]')).setInputFiles({ name: 'ghostpay-reconciliation-encrypted.json', mimeType: 'application/json', buffer: Buffer.from(reconciliationBackup, 'utf8') });
     await l.getByRole('button', { name: 'Preview encrypted backup' }).click();
     await expect(l.getByText(/^1 historical observation; 1 registered invoice; 1 archived receipt/)).toBeVisible({ timeout: 30_000 });
     await l.getByRole('button', { name: 'Activate previewed historical records' }).click();

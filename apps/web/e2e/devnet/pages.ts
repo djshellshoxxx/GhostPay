@@ -102,9 +102,11 @@ export class PagesNetwork {
     // Registered last, so it takes precedence for the RPC origin.
     await context.route(`${APP_RPC}/**`, (route) => this.forward(route));
     if (options.presetRpc !== false) {
-      await context.addInitScript((rpc) => {
+      // Only on the site's own documents: about:blank (openFresh) has no storage and would throw into the page.
+      await context.addInitScript(({ rpc, origin }) => {
+        if (window.location.origin !== origin) return;
         window.localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ rpcUrls: { '84532': rpc } }));
-      }, APP_RPC);
+      }, { rpc: APP_RPC, origin: this.siteOrigin });
     }
   }
 
@@ -191,7 +193,7 @@ export async function createPagesInvoice(page: Page, baseURL: string, o: PagesIn
   await page.getByLabel('Item 1 description').fill(o.description);
   await page.getByLabel('Item 1 unit price').fill('50.00');
   if (o.expiryHours !== undefined) await page.getByLabel('Invoice valid for (hours)').fill(String(o.expiryHours));
-  if (o.register === true) await page.getByLabel('Register this invoice in my encrypted reconciliation vault for automatic local matching').check();
+  if (o.register === true) await page.getByRole('checkbox', { name: 'Register this invoice in my encrypted reconciliation vault for automatic local matching' }).check();
   await page.getByRole('button', { name: 'Create invoice link' }).click();
   const box = page.getByRole('textbox', { name: 'Link', exact: true });
   await expect(box).toBeVisible();
