@@ -61,7 +61,8 @@ send whose outcome is unknown blocks the chain's lane (`send_unsettled` 503 + `R
 whether its nonce was used. A mined revert also counts against the owner.
 
 Quote pricing: `gas.griefReserveBps` (default 0, max 5000) is added to the gas term before the F-SPONSOR formula, so the fee
-carries a margin for gas lost when an owner drains or revokes first. `quoteTtlSeconds` is at most 60 (default 60).
+carries a margin for gas lost when an owner drains or revokes first; how to derive a value from measured gas and the
+observed mined-revert rate is in `docs/audits/26-relayer-completion.md` section 4a. `quoteTtlSeconds` is at most 60 (default 60).
 
 Other classes: `invalid_*` 400 (field-level validation), `unsupported_media_type` 415, `body_too_large` 413,
 `rate_limited_ip` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
