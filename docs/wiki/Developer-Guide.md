@@ -21,7 +21,7 @@ node packages/cli/dist/bin.js --help
 npm run test:e2e --workspace @ghostpay/web
 npm run ci:scan-secrets
 npm run ci:check-actions
-node --test scripts/tests/verify-release.test.mjs
+node --test scripts/tests/*.test.mjs
 ```
 
 For contracts: `cd packages/contracts && forge build && forge fmt --check && forge test`. For CLI commands, flags, explicit online consent and exit codes see [CLI README](https://github.com/djshellshoxxx/GhostPay/blob/364b1f185fcc2adaedab4ce7b4b14e676b1da3b7/packages/cli/README.md). Commands are documented, **not asserted to have been run by this docs update**.
