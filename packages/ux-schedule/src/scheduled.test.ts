@@ -81,6 +81,21 @@ describe('state machine', () => {
     expect(ec(confirm(p, ack, fixed(NOW + 1000 + 60_001)))).toBe('expired');
     expect(tick(p, fixed(NOW + 10 * MS_DAY)).state).toBe('expired'); // straight from pending
   });
+  it('never records a confirmation after max-age expiry if the clock advances during acknowledgement', () => {
+    const p = mk({ maxAgeMs: 60_000 });
+    const expiresAt = p.dueAtMs + p.maxAgeMs;
+    let reads = 0;
+    const advancingClock = () => expiresAt + reads++;
+    const result = confirm(p, ack, advancingClock);
+    // Either reject the now-expired confirmation or bind it to the validated instant.
+    // A confirmed record may never be stamped later than its deadline.
+    if (result.ok) {
+      expect(result.value.state).toBe('confirmed');
+      expect(result.value.stateChangedAtMs).toBeLessThanOrEqual(expiresAt);
+    } else {
+      expect(result.error.code).toBe('expired');
+    }
+  });
   it('requires explicit user confirmation and matching details', () => {
     const p = mk({ dueAtMs: NOW });
     expect(ec(confirm(p, { ...ack, userConfirmed: false as unknown as true }, fixed(NOW)))).toBe(
