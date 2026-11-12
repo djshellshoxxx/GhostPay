@@ -98,7 +98,7 @@ export function parseArgs(argv: readonly string[], spec: OptSpec): Parsed {
     if (eq !== -1) value = arg.slice(eq + 1);
     else {
       const next = argv[i + 1];
-      if (next === undefined || (next.startsWith('--') && next !== '--'))
+      if (next === undefined || next.startsWith('--'))
         throw usageError('MISSING_VALUE', `--${name} needs a value.`);
       value = next;
       i++;
