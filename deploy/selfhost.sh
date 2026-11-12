@@ -343,7 +343,13 @@ if [[ -n "$tarball" ]]; then
   # Only a complete bundle (has index.html) that differs from the one being installed replaces the backup, and the
   # old backup is removed only after the new copy succeeded, so a failed or repeated run never loses the last good copy.
   prev="${distdir}.prev"
-  if [[ -f "$distdir/index.html" ]]; then
+  # A sibling marker (outside the served tree) exists from just before the live tree is emptied until the copy
+  # finishes. If it is present, an earlier install died part-way: the live tree is partial and must never replace
+  # the backup. (An atomic directory swap is not used: nginx bind-mounts this directory and would keep the old one.)
+  installing="${distdir}.installing"
+  if [[ -e "$installing" ]]; then
+    echo "an earlier install of $distdir did not finish; its partial contents are not backed up (keeping $prev)"
+  elif [[ -f "$distdir/index.html" ]]; then
     if [[ -f "$distdir/build-info.json" ]] && grep -qF "\"commit\":\"$commit\"" "$distdir/build-info.json"; then
       echo "live bundle is already $commit; keeping the existing backup in $prev"
     else
@@ -360,8 +366,10 @@ if [[ -n "$tarball" ]]; then
       echo "previous bundle saved to $prev"
     fi
   fi
+  : > "$installing" || die "could not create $installing; aborting before any change"
   find "$distdir" -mindepth 1 -delete
   cp -a "$top"/. "$distdir"/
+  rm -f "$installing"
   # Build-version check: the served build-info.json must name the commit we just verified.
   if [[ -f "$distdir/build-info.json" ]]; then
     grep -qF "\"commit\":\"$commit\"" "$distdir/build-info.json" \
