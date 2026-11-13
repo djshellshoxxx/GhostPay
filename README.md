@@ -24,9 +24,13 @@ Its corrected head `68aca93bc19e4c9d91fa37212d9b8c502b4ce884` passed
 [application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374154941),
 [Pages qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374154915) and
 [beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374155075);
-it is still draft and unintegrated. New [Pages post-deploy smoke test #142](https://github.com/djshellshoxxx/GhostPay/pull/142)
-tests same-origin project-subpath containment, with local Node RED/GREEN evidence and hosted CI pending.
-These are test/release infrastructure changes, not demonstrated deployed-client vulnerabilities.
+it is still draft and unintegrated. The isolated [Pages post-deploy smoke correction #142](https://github.com/djshellshoxxx/GhostPay/pull/142)
+at tested source `83fec506a11d6eada06a2d046f74769a7c7f6b63` strengthens same-origin
+project-subpath containment. Its [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43380983039)
+passed 24/24 jobs, and [Pages build/browser qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43380982983)
+passed both applicable jobs. The live post-deployment smoke, deployment and release jobs were
+**skipped**. The draft is still unintegrated; these infrastructure checks do not establish a deployed-client
+vulnerability, a successful live smoke test or authorization to publish.
 
 The earlier [combined beta PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)
 and its [source-pinned handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md) remain preserved as **historical,
