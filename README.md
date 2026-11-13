@@ -19,8 +19,14 @@ The isolated [Pages release-verifier correction #138](https://github.com/djshell
 was separately qualified by [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43361570866)
 and [Pages acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43361570930), but is **draft and not integrated**
 into #137. The [Pages RPC-status regression/correction #141](https://github.com/djshellshoxxx/GhostPay/pull/141)
-confirmed an expected failing test at [test-only head](https://github.com/djshellshoxxx/GhostPay/actions/runs/43367179500);
-its corrected head requires fresh qualification. This is local test-infrastructure work, not a deployed-client vulnerability.
+confirmed an expected failing test at [test-only head](https://github.com/djshellshoxxx/GhostPay/actions/runs/43367179500).
+Its corrected head `68aca93bc19e4c9d91fa37212d9b8c502b4ce884` passed
+[application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374154941),
+[Pages qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374154915) and
+[beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374155075);
+it is still draft and unintegrated. New [Pages post-deploy smoke test #142](https://github.com/djshellshoxxx/GhostPay/pull/142)
+tests same-origin project-subpath containment, with local Node RED/GREEN evidence and hosted CI pending.
+These are test/release infrastructure changes, not demonstrated deployed-client vulnerabilities.
 
 The earlier [combined beta PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)
 and its [source-pinned handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md) remain preserved as **historical,
