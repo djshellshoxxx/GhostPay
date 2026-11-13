@@ -32,6 +32,15 @@ passed both applicable jobs. The live post-deployment smoke, deployment and rele
 **skipped**. The draft is still unintegrated; these infrastructure checks do not establish a deployed-client
 vulnerability, a successful live smoke test or authorization to publish.
 
+A separate [combined Pages qualification draft #143](https://github.com/djshellshoxxx/GhostPay/pull/143)
+now stages **exactly the seven tested source/test files** from #138, #141 and #142 on an isolated branch
+based on #137, with handoff only as its eighth changed path. Head `b5e77c50ae33a99683e67406393d53e79d4f8e99`
+is **draft, unmerged and not deployed**. Its fresh [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545664),
+[Pages qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403547522) and
+[beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545627) were pending or in progress
+at this source-pinned check. The owner’s separate backup-verification and device-sleep fixes remain outstanding,
+and even a successful #143 CI result would not qualify their eventual combined integration.
+
 The earlier [combined beta PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)
 and its [source-pinned handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md) remain preserved as **historical,
 unmerged, non-Pages development**. CLI, server, relayer, native apps and other non-Pages release variants are **paused**;
