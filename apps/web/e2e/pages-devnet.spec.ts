@@ -1,5 +1,6 @@
 import { expect, test, type APIRequestContext, type Browser, type BrowserContext, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { createHash } from 'node:crypto';
+import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import {
@@ -137,6 +138,43 @@ function tamperInvoiceLink(link: string): string {
   url.hash = FRAGMENT_PREFIX + encodeBase64Url(new TextEncoder().encode(canonicalize(envelope)));
   return url.toString();
 }
+
+
+/**
+ * Pages transport fidelity: an upstream HTTP error is not a successful JSON-RPC transport.
+ * This is a local-only proxy acceptance regression, not a public endpoint check.
+ */
+test('Pages RPC proxy preserves upstream HTTP failure status', async ({ browser, baseURL }) => {
+  const upstreamBody = JSON.stringify({ jsonrpc: '2.0', id: 1, error: { code: -32000, message: 'RPC unavailable' } });
+  const upstream = createServer((_req, res) => {
+    res.writeHead(503, { 'content-type': 'application/json' });
+    res.end(upstreamBody);
+  });
+  await new Promise<void>((resolve) => upstream.listen(0, '127.0.0.1', resolve));
+  try {
+    const address = upstream.address();
+    if (address === null || typeof address === 'string') throw new Error('missing local RPC port');
+    const localState: DevnetState = { ...dn, rpcUrl: `http://127.0.0.1:${address.port}` };
+    const context = await newContext(browser, baseURL, new PagesNetwork(localState, siteOrigin(baseURL)));
+    try {
+      const page = await context.newPage();
+      await openSite(page);
+      const result = await page.evaluate(async (rpc) => {
+        const response = await fetch(`${rpc}/`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_chainId', params: [] }),
+        });
+        return { status: response.status, body: await response.text() };
+      }, APP_RPC);
+      expect(result).toEqual({ status: 503, body: upstreamBody });
+    } finally {
+      await context.close();
+    }
+  } finally {
+    await new Promise<void>((resolve, reject) => upstream.close((err) => err ? reject(err) : resolve()));
+  }
+});
 
 // ---------------------------------------------------------------------------------------------------------------------
 // The journey: one seller profile (persistent IndexedDB/localStorage across the steps), payers and a restore profile.
