@@ -39,7 +39,7 @@ is **draft, unmerged and not deployed**. Exact-source [application CI](https://g
 passed **24/24** jobs, [Pages qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403547522)
 passed **2/2** build/browser jobs (3 release/deploy/live-smoke jobs skipped), and
 [beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545627) passed **1/1** job.
-The subsequent handoff-only branch commit does not expand this exact-source qualification.
+The subsequent handoff-only head `e4df113763c6ce253d1e6aa72eaf4919cafa2ba7` also passed [application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555238), [Pages build/browser (2 passed; 3 release/deploy/live-smoke skips)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555186) and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555180); this verifies the same staged source, not the pending owner backup/device-sleep fixes.
 The owner's separately owned backup-verification and device-sleep fixes remain outstanding;
 #143's results do not qualify their eventual combined integration or any public deployment.
 
