@@ -6,10 +6,11 @@
 //   1. build-info.json is served and names the expected commit (retried until --timeout-s: Pages propagates slowly);
 //   2. index.html is text/html, carries the meta CSP with script-src 'self', and its entry script is served as JavaScript;
 //   3. in Chromium: the app renders its main navigation, offers only the lean EVM views, shows no page errors, and makes
-//      no request to any origin other than the site itself while idle on the home view (no analytics, no default RPC).
+//      no request outside the site's project subpath while idle on the home view (no analytics, no default RPC).
 // Read-only: it never connects a wallet, creates keys or contacts an RPC.
 import { chromium } from '@playwright/test';
 import { existsSync } from 'node:fs';
+import { requestWithinPublishedSite } from './smoke-url.mjs';
 
 const args = process.argv.slice(2);
 const url = args[0];
@@ -82,8 +83,7 @@ try {
   const foreign = [];
   const errors = [];
   page.on('request', (r) => {
-    const u = new URL(r.url());
-    if (u.protocol !== 'data:' && u.protocol !== 'blob:' && u.origin !== site.origin) foreign.push(r.url());
+    if (!requestWithinPublishedSite(r.url(), site)) foreign.push(r.url());
   });
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('requestfailed', (r) => {
@@ -101,7 +101,7 @@ try {
   }
   await page.waitForTimeout(3000);
   if (errors.length > 0) fail(`page errors: ${errors.join(' | ')}`);
-  if (foreign.length > 0) fail(`requests to other origins while idle: ${foreign.join(', ')}`);
+  if (foreign.length > 0) fail(`requests outside the published Pages project while idle: ${foreign.join(', ')}`);
   console.log(`browser ok: navigation [${labels.join(', ')}], no page errors, no third-party requests`);
 } finally {
   await browser.close();

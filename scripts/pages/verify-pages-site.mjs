@@ -72,7 +72,9 @@ function extOf(rel) {
 /** Every src/href in an HTML document must be a relative same-site path (no scheme, no leading slash, no `//`). */
 export function checkHtml(rel, html) {
   const problems = [];
-  const csp = /<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]*)"/i.exec(html);
+  // Comments are inert HTML: do not accept a commented CSP or reject commented-out tags.
+  const liveHtml = html.replace(/<!--[\s\S]*?-->/g, '');
+  const csp = /<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]*)"/i.exec(liveHtml);
   if (csp === null) problems.push(`${rel}: missing meta Content-Security-Policy`);
   else {
     const policy = csp[1] ?? '';
@@ -82,27 +84,27 @@ export function checkHtml(rel, html) {
     // The app entry runs same-origin modules only; static help pages run no script at all.
     if (!/(?:^|;)\s*script-src '(?:self|none)'\s*(?:;|$)/.test(policy)) problems.push(`${rel}: CSP script-src must be exactly 'self' or 'none'`);
   }
-  for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+  for (const m of liveHtml.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
     if (!/\bsrc\s*=/.test(m[1] ?? '')) problems.push(`${rel}: inline <script> without src`);
     else if ((m[2] ?? '').trim() !== '') problems.push(`${rel}: <script src> with an inline body`);
   }
-  if (/\son[a-z]+\s*=/i.test(html.replace(/<!--[\s\S]*?-->/g, ''))) problems.push(`${rel}: inline event handler attribute`);
-  if (/<base\b/i.test(html)) problems.push(`${rel}: <base> element (breaks relative references)`);
-  for (const m of html.matchAll(/\s(?:src|href)\s*=\s*"([^"]*)"/gi)) {
-    const ref = m[1] ?? '';
+  if (/\son[a-z]+\s*=/i.test(liveHtml)) problems.push(`${rel}: inline event handler attribute`);
+  if (/<base\b/i.test(liveHtml)) problems.push(`${rel}: <base> element (breaks relative references)`);
+  for (const m of liveHtml.matchAll(/\s(?:src|href)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'<>]+))/gi)) {
+    const ref = m[1] ?? m[2] ?? m[3] ?? '';
     if (ref === '' || ref.startsWith('#')) continue;
     if (/^(?:https?:)?\/\//i.test(ref) || ref.startsWith('/')) {
       // External links are allowed only as plain navigation (<a>), never as loaded resources.
-      const tag = html.lastIndexOf('<', m.index ?? 0);
-      const isAnchor = /^<a\b/i.test(html.slice(tag, tag + 3));
+      const tag = liveHtml.lastIndexOf('<', m.index ?? 0);
+      const isAnchor = /^<a\b/i.test(liveHtml.slice(tag, tag + 3));
       if (!(isAnchor && /^https:\/\//i.test(ref))) problems.push(`${rel}: non-relative reference "${ref.slice(0, 80)}"`);
     } else if (/^[a-z][a-z0-9+.-]*:/i.test(ref) && !/^mailto:/i.test(ref)) {
       problems.push(`${rel}: reference with scheme "${ref.slice(0, 40)}"`);
     }
   }
   // An external <a target=_blank> must not hand the opener to the destination.
-  for (const m of html.matchAll(/<a\b[^>]*target\s*=\s*"_blank"[^>]*>/gi)) {
-    if (!/rel\s*=\s*"[^"]*noopener/i.test(m[0])) problems.push(`${rel}: target=_blank link without rel=noopener`);
+  for (const m of liveHtml.matchAll(/<a\b[^>]*\btarget\s*=\s*(?:"_blank"|'_blank'|_blank)[^>]*>/gi)) {
+    if (!/\brel\s*=\s*(?:"[^"]*\bnoopener\b[^"]*"|'[^']*\bnoopener\b[^']*'|[^\s>]*\bnoopener\b[^\s>]*)/i.test(m[0])) problems.push(`${rel}: target=_blank link without rel=noopener`);
   }
   return problems;
 }

@@ -101,6 +101,29 @@ test('HTML: inline scripts, handlers, <base> and absolute or external resource r
   assert.deepEqual(checkHtml('x.html', INDEX.replace('</body>', '<a href="https://eips.ethereum.org/EIPS/eip-5564" rel="noopener noreferrer">EIP</a></body>')), []);
 });
 
+test('HTML: commented CSP is not an active browser policy', () => {
+  const commented = INDEX.replace(CSP, `<!-- ${CSP} -->`);
+  assert.ok(checkHtml('x.html', commented).some((p) => p.includes('missing meta Content-Security-Policy')));
+});
+
+test('HTML: external script and image refs are refused regardless of attribute quoting', () => {
+  for (const html of [
+    INDEX.replace('src="./assets/index-abc.js"', "src='https://cdn.example.org/payload.js'"),
+    INDEX.replace('href="./favicon.svg"', 'href=//cdn.example.org/favicon.svg'),
+    INDEX.replace('src="./assets/index-abc.js"', 'src=/OtherSite/assets/index.js'),
+  ]) {
+    assert.ok(checkHtml('x.html', html).some((p) => p.includes('non-relative reference')));
+  }
+  assert.deepEqual(checkHtml('x.html', INDEX.replace('src="./assets/index-abc.js"', "src='./assets/index-abc.js'")), []);
+});
+
+test('HTML: comments cannot introduce fake scripts and single-quoted blank targets require noopener', () => {
+  assert.deepEqual(checkHtml('x.html', `${INDEX}<!-- <script>alert('comment only')</script> -->`), []);
+  const bad = INDEX.replace('</body>', "<a href='https://example.org/' target='_blank'>x</a></body>");
+  assert.ok(checkHtml('x.html', bad).some((p) => p.includes('rel=noopener')));
+  assert.deepEqual(checkHtml('x.html', bad.replace("target='_blank'", "target='_blank' rel='noopener noreferrer'")), []);
+});
+
 test('secret-shaped strings and public anvil keys are refused; curve constants are not', () => {
   assert.ok(checkText('a.js', 'k="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"').length > 0);
   assert.ok(checkText('a.js', 'u="https://mainnet.infura.io/v3/0123456789abcdef0123456789abcdef"').length > 0);
