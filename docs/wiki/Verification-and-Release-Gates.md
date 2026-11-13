@@ -2,9 +2,11 @@
 
 [Home](Home.md) · [User Guide](User-Guide.md) · [Developer Guide](Developer-Guide.md)
 
-**Source snapshot:** unmerged integration draft [#98](https://github.com/djshellshoxxx/GhostPay/pull/98), commit `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`. Last GitHub evidence inspection: 2026-11-11. This is a traceability index, not a change of approved requirements or a release approval.
+**Historical non-Pages source snapshot (not the current beta target):** unmerged integration draft [#98](https://github.com/djshellshoxxx/GhostPay/pull/98), commit `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`; historic evidence inspected November 11, 2026. **Active** November 13 Pages-only source/status is recorded below. This is a traceability index, not a change of requirements or release approval.
 
 ## Pages-only qualification snapshot — 2026-11-13 UTC
+
+**Latest independently queried exact-head qualification:** unmerged [#144](https://github.com/djshellshoxxx/GhostPay/pull/144) at `000b6eb6607d6beb5e77061a225ecda2ba67da0f`, with corrected manifest-lookup regression source/test unchanged since `a1cf848fc1d9c8a02663a09d1aa7b5e9daeb279d`, passed [application 43504242854](https://github.com/djshellshoxxx/GhostPay/actions/runs/43504242854) **24/24**, [Pages 43504242599](https://github.com/djshellshoxxx/GhostPay/actions/runs/43504242599) **2/2 applicable**, [beta 43504242383](https://github.com/djshellshoxxx/GhostPay/actions/runs/43504242383) **1/1**, [hosting 43504242504](https://github.com/djshellshoxxx/GhostPay/actions/runs/43504242504) **2/2**. Three Pages release/deploy/live-smoke jobs were deliberately **skipped**. This remains **draft, unmerged, unhosted** and excludes owner-controlled backup/idle-lock fixes; new #144 handoff-only `639373ab80af5b757eff59ba09fb0aaf4f79a65e` requires fresh CI. This is source-to-test evidence, not public-host, security-review or release approval.
 
 This is the **active** development scope. All CLI, relayer, server, native, non-EVM/full-profile and other non-Pages implementations below are preserved as **historical qualification records**, not authorized current feature work. Source: unmerged [Pages candidate #137](https://github.com/djshellshoxxx/GhostPay/pull/137) `ac08062ec540d429a0bfb24f3aab042be5d212eb`, stacked on [combined draft #135](https://github.com/djshellshoxxx/GhostPay/pull/135) `f88aaf2fe27a7656d15fed50670d841879da92ad`; `main` is unchanged at `bd2652bf1853948594522140a6a0fe0cbe54e32b`. None of these drafts is merged or released.
 
