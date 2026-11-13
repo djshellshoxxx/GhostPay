@@ -51,7 +51,7 @@ commit `65f521425a55110544d4b26c1182e3743fa219fa` also passed its own exact-head
 [Pages build/browser (2 passed, 3 release/deploy/live-smoke skips)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43436272057),
 and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43436272310).
 This is not owner GP-PAGES-02/04 integration or public-host/release qualification; the later handoff-only
-commit `ab427ab81c7bc18a6d908c5201cf86450cf3f21f` requires its own CI.
+commit `ab427ab81c7bc18a6d908c5201cf86450cf3f21f` also passed [application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43445646512), [Pages build/browser qualification (2 passed; 3 release/deploy/live-smoke skips)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43445646454), and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43445646590).
 
 The owner's separately owned backup-verification and device-sleep fixes remain outstanding;
 #143's results do not qualify their eventual combined integration or any public deployment.
