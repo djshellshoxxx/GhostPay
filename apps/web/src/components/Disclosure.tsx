@@ -16,9 +16,16 @@ export function useManifest(chainId: number | undefined): ManifestState | undefi
   useEffect(() => {
     if (chainId === undefined) return;
     let live = true;
-    void services.loadManifest(chainId).then((value) => {
-      if (live) setState({ chainId, value });
-    });
+    // A rejected (or synchronously throwing) service must not leave the fee disclosure
+    // showing "loading" indefinitely or surface provider error details to the user.
+    void Promise.resolve()
+      .then(() => services.loadManifest(chainId))
+      .then(
+        (value) => { if (live) setState({ chainId, value }); },
+        () => {
+          if (live) setState({ chainId, value: { status: 'invalid', reason: 'The deployment manifest could not be loaded.' } });
+        },
+      );
     return () => {
       live = false;
     };
