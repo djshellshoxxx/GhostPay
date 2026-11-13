@@ -10,6 +10,7 @@
 // Read-only: it never connects a wallet, creates keys or contacts an RPC.
 import { chromium } from '@playwright/test';
 import { existsSync } from 'node:fs';
+import { requestWithinPublishedSite } from './smoke-url.mjs';
 
 const args = process.argv.slice(2);
 const url = args[0];
@@ -82,8 +83,7 @@ try {
   const foreign = [];
   const errors = [];
   page.on('request', (r) => {
-    const u = new URL(r.url());
-    if (u.protocol !== 'data:' && u.protocol !== 'blob:' && u.origin !== site.origin) foreign.push(r.url());
+    if (!requestWithinPublishedSite(r.url(), site)) foreign.push(r.url());
   });
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('requestfailed', (r) => {
