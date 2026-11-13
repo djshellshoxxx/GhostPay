@@ -34,12 +34,14 @@ vulnerability, a successful live smoke test or authorization to publish.
 
 A separate [combined Pages qualification draft #143](https://github.com/djshellshoxxx/GhostPay/pull/143)
 now stages **exactly the seven tested source/test files** from #138, #141 and #142 on an isolated branch
-based on #137, with handoff only as its eighth changed path. Head `b5e77c50ae33a99683e67406393d53e79d4f8e99`
-is **draft, unmerged and not deployed**. Its fresh [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545664),
-[Pages qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403547522) and
-[beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545627) were pending or in progress
-at this source-pinned check. The owner’s separate backup-verification and device-sleep fixes remain outstanding,
-and even a successful #143 CI result would not qualify their eventual combined integration.
+based on #137, with handoff only as its eighth changed path. Combined source/test commit `b5e77c50ae33a99683e67406393d53e79d4f8e99`
+is **draft, unmerged and not deployed**. Exact-source [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545664)
+passed **24/24** jobs, [Pages qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403547522)
+passed **2/2** build/browser jobs (3 release/deploy/live-smoke jobs skipped), and
+[beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545627) passed **1/1** job.
+The subsequent handoff-only branch commit does not expand this exact-source qualification.
+The owner's separately owned backup-verification and device-sleep fixes remain outstanding;
+#143's results do not qualify their eventual combined integration or any public deployment.
 
 The earlier [combined beta PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)
 and its [source-pinned handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md) remain preserved as **historical,
