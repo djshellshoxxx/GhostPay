@@ -21,12 +21,12 @@ export function gitHead(): string {
   return execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 }
 
-function post(rpcUrl: string, body: string): Promise<string> {
+function post(rpcUrl: string, body: string): Promise<{ status: number; body: string }> {
   return new Promise((resolve, reject) => {
     const req = request(new URL(rpcUrl), { method: 'POST', headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(body) }, timeout: 15_000 }, (res) => {
       const chunks: Buffer[] = [];
       res.on('data', (c: Buffer) => chunks.push(c));
-      res.on('end', () => { resolve(Buffer.concat(chunks).toString('utf8')); });
+      res.on('end', () => { resolve({ status: res.statusCode ?? 502, body: Buffer.concat(chunks).toString('utf8') }); });
     });
     req.on('timeout', () => req.destroy(new Error('anvil request timed out')));
     req.on('error', reject);
@@ -118,13 +118,13 @@ export class PagesNetwork {
     } catch {
       this.foreign.push('unparseable RPC body');
     }
-    let reply: string;
+    let reply: { status: number; body: string };
     try {
       reply = await post(this.state.rpcUrl, body);
     } catch {
       return route.abort('connectionreset');
     }
-    return route.fulfill({ status: 200, headers: CORS, contentType: 'application/json', body: reply });
+    return route.fulfill({ status: reply.status, headers: CORS, contentType: 'application/json', body: reply.body });
   }
 
   /** Nothing foreign was contacted and nothing left the /GhostPay/ sub-path (on GitHub Pages: another site). */
