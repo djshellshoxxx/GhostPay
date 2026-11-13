@@ -40,6 +40,14 @@ passed **24/24** jobs, [Pages qualification](https://github.com/djshellshoxxx/Gh
 passed **2/2** build/browser jobs (3 release/deploy/live-smoke jobs skipped), and
 [beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545627) passed **1/1** job.
 The subsequent handoff-only head `e4df113763c6ce253d1e6aa72eaf4919cafa2ba7` also passed [application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555238), [Pages build/browser (2 passed; 3 release/deploy/live-smoke skips)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555186) and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555180); this verifies the same staged source, not the pending owner backup/device-sleep fixes.
+
+The subsequent #143 handoff-only head `9c48a482b866ada394ec5086e1b5f84da266fa3f` also passed
+[application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427844178),
+[Pages build/browser (2 passed, 3 release/deploy/live-smoke jobs skipped)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427842734)
+and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427842680).
+That commit changed handoff text only, not the previously tested Pages source. The latest subsequent handoff-only
+commit `65f521425a55110544d4b26c1182e3743fa219fa` requires its own CI and does not expand release qualification.
+
 The owner's separately owned backup-verification and device-sleep fixes remain outstanding;
 #143's results do not qualify their eventual combined integration or any public deployment.
 
