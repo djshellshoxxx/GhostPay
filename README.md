@@ -45,8 +45,13 @@ The subsequent #143 handoff-only head `9c48a482b866ada394ec5086e1b5f84da266fa3f`
 [application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427844178),
 [Pages build/browser (2 passed, 3 release/deploy/live-smoke jobs skipped)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427842734)
 and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427842680).
-That commit changed handoff text only, not the previously tested Pages source. The latest subsequent handoff-only
-commit `65f521425a55110544d4b26c1182e3743fa219fa` requires its own CI and does not expand release qualification.
+That commit changed handoff text only, not the previously tested Pages source. The subsequent handoff-only
+commit `65f521425a55110544d4b26c1182e3743fa219fa` also passed its own exact-head
+[application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43436272127),
+[Pages build/browser (2 passed, 3 release/deploy/live-smoke skips)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43436272057),
+and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43436272310).
+This is not owner GP-PAGES-02/04 integration or public-host/release qualification; the later handoff-only
+commit `ab427ab81c7bc18a6d908c5201cf86450cf3f21f` requires its own CI.
 
 The owner's separately owned backup-verification and device-sleep fixes remain outstanding;
 #143's results do not qualify their eventual combined integration or any public deployment.
