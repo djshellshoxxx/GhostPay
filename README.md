@@ -8,15 +8,31 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
-The latest integrated candidate is **[draft PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)**
-(branch `nodata/jolly-rubin-u4zd45`). It continues combined head #121 with the #122–#127 fix ports (#129–#134),
-the latest relayer work (#118), the release/hosting/crypto-review workstream (#115) and the docs PRs. It is
-**not merged into main**. Its exact-head status, test evidence, integration matrix and open items are in the
-[beta candidate handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md). The inherited
-[#84 SonarCloud security-rating D](https://github.com/djshellshoxxx/GhostPay/runs/128302927200) has not been cleared
-by an exact-head SonarCloud report. Independent security review, trusted testnet manifests, a published
-release-signing key, release provenance and owner authorization remain open. The 18 privacy proposals merged as
-PR #99 are **future-only**.
+**Current active development scope (November 2026): static GitHub Pages browser client only.** The latest
+independently owned, unmerged Pages candidate is **[draft PR #137](https://github.com/djshellshoxxx/GhostPay/pull/137)**
+at exact source `ac08062ec540d429a0bfb24f3aab042be5d212eb`. Its hosted [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43316935399)
+passed 24/24 jobs, and [Pages artifact/browser acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43316935362)
+passed against local Anvil. These are pre-release test results **only**; PR #137 is not merged, the site is not
+published, and these checks do not constitute independent audit or public-testnet qualification.
+
+The isolated [Pages release-verifier correction #138](https://github.com/djshellshoxxx/GhostPay/pull/138)
+was separately qualified by [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43361570866)
+and [Pages acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43361570930), but is **draft and not integrated**
+into #137. The [Pages RPC-status regression/correction #141](https://github.com/djshellshoxxx/GhostPay/pull/141)
+confirmed an expected failing test at [test-only head](https://github.com/djshellshoxxx/GhostPay/actions/runs/43367179500);
+its corrected head requires fresh qualification. This is local test-infrastructure work, not a deployed-client vulnerability.
+
+The earlier [combined beta PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)
+and its [source-pinned handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md) remain preserved as **historical,
+unmerged, non-Pages development**. CLI, server, relayer, native apps and other non-Pages release variants are **paused**;
+they must not be described as part of the active static-site beta. The 18 privacy proposals in PR #99 remain
+**future-only**. See [Pages release scope and limitations](docs/pages/README.md) and the version-controlled
+[Pages qualification matrix](docs/wiki/Verification-and-Release-Gates.md).
+
+The inherited [SonarCloud rating D report](https://github.com/djshellshoxxx/GhostPay/runs/128302927200)
+remains unresolved without accepted exact-head Security Rating A evidence. Release also requires ADR-0029 owner
+approval, a dedicated hosting origin, signed testnet manifests, an externally qualified testnet deployment,
+independent security review, provenance and separate explicit owner publication authorization. No real funds.
 
 Review the [product handoff](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md),
 [CLI handoff](docs/handoffs/CLI_COMPLETION_HANDOFF.md),
