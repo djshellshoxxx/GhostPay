@@ -47,19 +47,39 @@ function closure(start, byName) {
 // Deferred (later-preserved) packages that the web build still links for its separate BTC/Solana/TRON views.
 const WEB_DEFERRED = ['@ghostpay/btc-silent-payments', '@ghostpay/solana-stealth', '@ghostpay/tron-adapter'];
 
-test('apps/web workspace dependency closure is the reviewed allowlist', () => {
-  assert.deepEqual(closure('apps/web', workspaceIndex()), [
-    '@ghostpay/address-safety',
-    '@ghostpay/btc-silent-payments',
-    '@ghostpay/chain-adapters',
-    '@ghostpay/core-crypto',
-    '@ghostpay/invoice-schema',
-    '@ghostpay/qr-exchange',
-    '@ghostpay/secret-box',
-    '@ghostpay/solana-stealth',
-    '@ghostpay/tron-adapter',
-    '@ghostpay/tx-review',
-  ]);
+// REVIEWED = the lean-core milestone's owner-reviewed allowlist (unchanged from the reviewed branch).
+const WEB_REVIEWED = [
+  '@ghostpay/address-safety',
+  '@ghostpay/btc-silent-payments',
+  '@ghostpay/chain-adapters',
+  '@ghostpay/core-crypto',
+  '@ghostpay/invoice-schema',
+  '@ghostpay/qr-exchange',
+  '@ghostpay/secret-box',
+  '@ghostpay/solana-stealth',
+  '@ghostpay/tron-adapter',
+  '@ghostpay/tx-review',
+];
+// PENDING_OWNER_REVIEW = present on the consolidated integration branch but NOT owner-reviewed for lean core.
+// The owner must accept (move to REVIEWED) or remove each one. Closure must equal REVIEWED + PENDING exactly:
+// a new dep fails, and a PENDING entry that left the closure fails too, so the list never grows or lingers silently.
+// A WEB_DEFERRED package must never be listed here.
+const WEB_PENDING_OWNER_REVIEW = [
+  '@ghostpay/net-transport', // 61e790da: apps/web direct dep (with scan-source)
+  '@ghostpay/payment-uri', // bff25c1d: apps/web direct dep
+  '@ghostpay/pir-two-server', // 62e6a449: transitive via @ghostpay/scan-source
+  '@ghostpay/policy-scheme', // ca9bbbd7: apps/web direct dep
+  '@ghostpay/scan-source', // 61e790da: apps/web direct dep
+  '@ghostpay/ux-vault', // 5ee84c91: apps/web direct dep
+];
+
+test('apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list', () => {
+  assert.equal(WEB_PENDING_OWNER_REVIEW.filter((n) => WEB_DEFERRED.includes(n) || WEB_REVIEWED.includes(n)).length, 0);
+  assert.deepEqual(
+    closure('apps/web', workspaceIndex()),
+    [...WEB_REVIEWED, ...WEB_PENDING_OWNER_REVIEW].sort(),
+    'apps/web closure must equal REVIEWED + WEB_PENDING_OWNER_REVIEW (not owner-reviewed: ' + WEB_PENDING_OWNER_REVIEW.join(', ') + ')',
+  );
 });
 
 test('apps/relayer workspace dependency closure is the reviewed allowlist', () => {
@@ -135,10 +155,13 @@ test('core web flow sources never reach deferred BTC/Solana/TRON/registry code',
   assert.deepEqual(violations, []);
 });
 
+// AppShell.tsx is the extracted shell body of App.tsx (5a3b6aac): both files are the app shell role.
+// AppLean.tsx mounts AppShell, which imports the deferred registry view; see LEAN_CORE_GATE_PORT doc.
+const SHELL_FILES = ['App.tsx', 'AppShell.tsx'];
 test('only the app shell mounts the deferred views', () => {
   const importers = sourceFiles(SRC)
     .filter((f) => !isDeferred(f))
     .filter((f) => importsOf(f).some((s) => /features\/(btc|solana|tron|registry)\//.test(s) || WEB_DEFERRED.includes(s)))
     .map((f) => relative(SRC, f).split('\\').join('/'));
-  assert.deepEqual(importers, ['App.tsx']);
+  assert.deepEqual(importers, SHELL_FILES);
 });
