@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, captureSessionGuard, withSessionSecrets } from './session';
+import { clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, captureSessionGuard, verifyDownloadedBackup, withSessionSecrets } from './session';
 import {
   authorizeEncryptedVault,
   authorizeKeyExport,
@@ -320,9 +320,21 @@ describe('L1-01: only keys with a copy elsewhere may be wiped', () => {
     expect(await loadedKeysRecoverable(store)).toBe(false);
     generateSession();
     expect(await loadedKeysRecoverable(store)).toBe(false);
+    // GP-PAGES-02: a download is not proof that the file reached the disk; only the verified file makes the keys recoverable.
+    const downloaded = await exportKeystore(PASS, { N: 1 << 14 });
     markKeystoreDownloaded(captureSessionGuard());
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: false });
+    expect(await loadedKeysRecoverable(store)).toBe(false);
+    await verifyDownloadedBackup(downloaded, PASS);
     expect(await loadedKeysRecoverable(store)).toBe(true);
     generateSession();
+    // A saved vault that names the loaded keys but whose passphrase was never proved here is not a recoverable copy either.
+    await store.putIfEmpty(await exportKeystore(PASS, { N: 1 << 14 }));
+    await readEncryptedVault(store);
+    expect(getSessionBackup()).toMatchObject({ backedUp: false, verified: false, vaultStepUp: true });
+    expect(await loadedKeysRecoverable(store)).toBe(false);
+    await store.delete((await store.get())!);
+    generateSession();                                  // the step-up armed by that read belongs to the previous keys (L1-02)
     await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
     expect(getSessionBackup()?.backedUp).toBe(true);
     expect(await loadedKeysRecoverable(store)).toBe(true);

@@ -48,10 +48,11 @@ interface Stored {
  */
 interface Custody {
   /**
-   * The user holds a copy outside this browser profile: the keys were imported (a keystore, or hex with its signing key)
-   * or a keystore was downloaded.
+   * A copy outside this browser profile. `verified`: the keys were imported (a keystore, or hex with its signing key), or a
+   * downloaded keystore was opened again with its passphrase and holds exactly these keys. `unverified`: a keystore was
+   * downloaded, but nothing proves the file reached the disk intact (GP-PAGES-02); it lifts the backup gate, not the wipe.
    */
-  readonly external: boolean;
+  readonly external: 'none' | 'unverified' | 'verified';
   /**
    * The user holds the spending and viewing keys outside this browser profile, so payments to them stay sweepable without
    * this tab: they were imported, also as hex whose signing key was generated here (C-R10).
@@ -69,6 +70,12 @@ interface Custody {
 export interface SessionBackup {
   /** A copy of the loaded keys exists outside this tab's memory. Until then the idle lock wipes them only if `signerOnly` (L1-01). */
   readonly backedUp: boolean;
+  /**
+   * That copy is proven: imported keys, a vault record whose passphrase the user chose or proved, or a downloaded keystore
+   * verified against the loaded keys. A download alone is `backedUp` but not `verified`, and the idle lock keeps the keys
+   * until it is (GP-PAGES-02).
+   */
+  readonly verified: boolean;
   /**
    * Not backed up, but only the invoice-signing key generated at a hex import lacks a copy: payments stay sweepable with
    * the typed hex, so the idle lock may wipe the keys; nothing can be signed with that signing key afterwards (C-R10).
@@ -112,9 +119,10 @@ export function getSessionBackup(): SessionBackup | undefined {
 
 function setCustody(next: Custody | undefined, notify: boolean): void {
   custody = next;
-  const backedUp = next !== undefined && (next.external || next.vaultStored);
-  const summary = next === undefined ? undefined : { backedUp, signerOnly: !backedUp && next.paymentKeysExternal, waived: next.waived, vaultStepUp: next.vaultRecord !== undefined };
-  const same = summary?.backedUp === backupSummary?.backedUp && summary?.signerOnly === backupSummary?.signerOnly && summary?.waived === backupSummary?.waived && summary?.vaultStepUp === backupSummary?.vaultStepUp;
+  const backedUp = next !== undefined && (next.external !== 'none' || next.vaultStored);
+  const verified = next !== undefined && (next.external === 'verified' || next.vaultStored);
+  const summary = next === undefined ? undefined : { backedUp, verified, signerOnly: !backedUp && next.paymentKeysExternal, waived: next.waived, vaultStepUp: next.vaultRecord !== undefined };
+  const same = summary?.backedUp === backupSummary?.backedUp && summary?.verified === backupSummary?.verified && summary?.signerOnly === backupSummary?.signerOnly && summary?.waived === backupSummary?.waived && summary?.vaultStepUp === backupSummary?.vaultStepUp;
   if (same && (summary === undefined) === (backupSummary === undefined)) return;
   backupSummary = summary;
   if (notify) for (const l of backupListeners) l();
@@ -125,9 +133,12 @@ function updateCustody(guard: () => void, change: (c: Custody) => Custody): void
   if (custody !== undefined) setCustody(change(custody), true);
 }
 
-/** Records that the loaded keys were downloaded as an encrypted keystore; `guard` must still accept the session. */
+/**
+ * Records that the loaded keys were downloaded as an encrypted keystore; `guard` must still accept the session. The copy
+ * counts as unverified until {@link verifyDownloadedBackup} opens the file again (GP-PAGES-02); a verified copy stays verified.
+ */
 export function markKeystoreDownloaded(guard: () => void): void {
-  updateCustody(guard, (c) => ({ ...c, external: true }));
+  updateCustody(guard, (c) => ({ ...c, external: c.external === 'verified' ? 'verified' : 'unverified' }));
 }
 
 /** Records the typed waiver: invoices and the meta-address may be shared before a backup exists (L1-01). */
@@ -140,9 +151,14 @@ export function sessionVaultRecord(): string | undefined {
   return custody?.vaultRecord;
 }
 
-/** True when a copy exists outside this browser profile (imported keys or a downloaded keystore). */
+/** True when a proven copy exists outside this browser profile (imported keys, or a downloaded keystore verified against them). */
 export function sessionHasExternalCopy(): boolean {
-  return custody?.external === true;
+  return custody?.external === 'verified';
+}
+
+/** True when a keystore was downloaded but never verified against the loaded keys (GP-PAGES-02). */
+export function sessionHasUnverifiedCopy(): boolean {
+  return custody?.external === 'unverified';
 }
 
 /**
@@ -223,7 +239,7 @@ function install(next: SessionSecrets, origin: Origin): SessionPublic {
   current = box(next);
   const vault = origin.from === 'vault' ? origin.record : undefined;
   const imported = origin.from === 'import' || origin.from === 'import-new-signer';
-  setCustody({ external: origin.from === 'import', paymentKeysExternal: imported, vaultRecord: vault, vaultStored: vault !== undefined, waived: false }, false);
+  setCustody({ external: origin.from === 'import' ? 'verified' : 'none', paymentKeysExternal: imported, vaultRecord: vault, vaultStored: vault !== undefined, waived: false }, false);
   emit();
   return publicSummary;
 }
@@ -343,33 +359,61 @@ export function captureSessionGuard(): () => void {
 }
 
 /**
- * Verifies an explicit spending step-up against the saved encrypted vault and the currently loaded public identity.
- * The decrypted key bytes and temporary scalars are wiped before this promise resolves.
+ * Decrypts `ciphertext` with `passphrase` and checks that it holds exactly the loaded keys: meta-address, invoice signer
+ * and the spending and viewing public keys. Loads and replaces nothing. The decrypted key bytes and temporary scalars are
+ * wiped before this promise settles, also when `assertOpen` throws. Resolves to a guard for the same keys.
  */
-export async function verifyVaultForCurrentSession(ciphertext: string, passphrase: string): Promise<() => void> {
+async function matchLoadedSession(ciphertext: string, passphrase: string, assertOpen: () => void, mismatch: UserFacingError): Promise<() => void> {
   const guard = captureSessionGuard();
   const expected = publicSummary;
   if (expected === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
+  assertOpen();
   const secrets = await decryptKeystore(ciphertext, passphrase);
   let spending: SecretScalar | undefined;
   let viewing: SecretScalar | undefined;
   let signing: SecretScalar | undefined;
   try {
+    assertOpen();
+    guard();
     spending = secretScalarFromBytes(secrets.spendingKey);
     viewing = secretScalarFromBytes(secrets.viewingKey);
     signing = secretScalarFromBytes(secrets.signingKey);
     const candidate = summarize({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
-    if (candidate.metaAddress !== expected.metaAddress || candidate.signerPublicKey !== expected.signerPublicKey) {
-      throw new UserFacingError({ key: 'error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller' });
+    if (candidate.metaAddress !== expected.metaAddress || candidate.signerPublicKey !== expected.signerPublicKey || candidate.spendingPublicKey !== expected.spendingPublicKey || candidate.viewingPublicKey !== expected.viewingPublicKey) {
+      throw mismatch;
     }
     guard();
     return guard;
+  } catch (e) {
+    if (e instanceof UserFacingError) throw e;
+    throw mismatch;
   } finally {
     if (spending !== undefined) zeroize(spending);
     if (viewing !== undefined) zeroize(viewing);
     if (signing !== undefined) zeroize(signing);
     wipe(secrets.spendingKey, secrets.viewingKey, secrets.signingKey);
   }
+}
+
+/**
+ * Verifies an explicit spending step-up against the saved encrypted vault and the currently loaded public identity.
+ * The decrypted key bytes and temporary scalars are wiped before this promise resolves.
+ */
+export async function verifyVaultForCurrentSession(ciphertext: string, passphrase: string): Promise<() => void> {
+  return matchLoadedSession(ciphertext, passphrase, () => undefined, new UserFacingError({ key: 'error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller' }));
+}
+
+/**
+ * "Verify backup" (GP-PAGES-02): opens a downloaded keystore file with its passphrase and, only on an exact match with the
+ * loaded keys, records the copy as verified, which lets the idle lock and an explicit wipe treat the keys as recoverable.
+ * Nothing is loaded or replaced; a wrong passphrase, a damaged file or another seller's keystore change nothing. Rejects
+ * when `signal` aborts or the keys change meanwhile; every secret is wiped on every path.
+ */
+export async function verifyDownloadedBackup(text: string, passphrase: string, signal?: AbortSignal): Promise<void> {
+  const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError({ key: 'error.session.theBackupVerificationWasClosed' }); };
+  const guard = await matchLoadedSession(text, passphrase, assertOpen, new UserFacingError({ key: 'error.session.theBackupFileDoesNotHoldTheLoadedSellerKeys' }));
+  assertOpen();
+  updateCustody(guard, (c) => ({ ...c, external: 'verified' }));
 }
 
 /** Best-effort wipe and forget. */
@@ -431,7 +475,7 @@ export async function importKeystore(text: string, passphrase: string, signal?: 
   }
 }
 
-// i18n-use: error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd error.session.spendingAndViewingKeysMustDiffer error.session.loadOrGenerateSellerKeysFirstSellerKeys error.session.sellerKeysChangedDuringThisActionTryAgain error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller error.session.theKeystoreImportWasClosed error.session.sellerKeysChangedWhileTheKeystoreWasUnlockingTryAgain error.session.theKeystoreContainsInvalidKeys
+// i18n-use: error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd error.session.spendingAndViewingKeysMustDiffer error.session.loadOrGenerateSellerKeysFirstSellerKeys error.session.sellerKeysChangedDuringThisActionTryAgain error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller error.session.theKeystoreImportWasClosed error.session.sellerKeysChangedWhileTheKeystoreWasUnlockingTryAgain error.session.theKeystoreContainsInvalidKeys error.session.theBackupVerificationWasClosed error.session.theBackupFileDoesNotHoldTheLoadedSellerKeys
 
 // i18n-use: error.session.spendingFormat
 
