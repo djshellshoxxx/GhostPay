@@ -87,6 +87,30 @@ describe('gas buffer re-check before the wallet is asked (spec 13)', () => {
   });
 });
 
+describe('invoice and quote expiry at the final send (A3-2)', () => {
+  it('refuses with nothing sent when the invoice expired after prepare', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const exp = ctx.review.invoice.expiresAt;
+    let now = exp - 60;
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    expect(built.preview.deadline).toBe(BigInt(exp - 1)); // integration: last payable second
+    now = exp + 30;
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/invoice has expired.*Nothing was sent/);
+    expect(wallet.sent).toBeUndefined();
+  });
+  it('refuses with nothing sent when the buffer quote expired after prepare', async () => {
+    const { ctx, session, wallet } = await setup();
+    let now = NOW;
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => now };
+    const q: BufferQuote = { bufferWei: 1n, maxFeePerGas: 1n, gasLimit: 1n, safetyBps: 0n, quotedAt: NOW, expiresAt: NOW + 60, gasSource: 'default' };
+    const built = await preparePayment(session, ctx, { usePermit: false, buffer: q }, rt, noStatus);
+    now = NOW + 61;
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/gas buffer quote expired/);
+    expect(wallet.sent).toBeUndefined();
+  });
+});
+
 describe('native payment end to end (mock wallet, mock RPC)', () => {
   it('prepares, passes the gate, sends and verifies on the user RPC', async () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
