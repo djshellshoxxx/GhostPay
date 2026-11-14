@@ -1,5 +1,8 @@
 # Verification and Release Gates
 
+[Independent browser response-bound draft #158](https://github.com/djshellshoxxx/GhostPay/pull/158) verified test-first **RED** at `ce1b57d8a4776041cb58151eee247c9b3efb596e`: [application CI 43622773262](https://github.com/djshellshoxxx/GhostPay/actions/runs/43622773262) failed one `relayerClient.test.ts` regression because all 80 streamed KiB chunks were consumed, exceeding the test's early-read expectation. The minimal browser-only source correction `9a84764e70603e5f4e0b7bac13bdb6eeec6e469b` now enforces the 16 KiB cap during stream reads, with the test unchanged. **GREEN is pending fresh exact-head CI** ([application run 43628431827](https://github.com/djshellshoxxx/GhostPay/actions/runs/43628431827)); no claim of a reproduced remote exploit, independent audit or release. Neither this draft nor standalone #156 has been integrated into owner #157.
+
+
 [Home](Home.md) · [User Guide](User-Guide.md) · [Developer Guide](Developer-Guide.md)
 
 ## Current owner integration and isolated QR correction — 2026-11-14 UTC
