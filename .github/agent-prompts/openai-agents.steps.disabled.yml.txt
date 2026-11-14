@@ -1,3 +1,8 @@
+# NOT A WORKFLOW. This is a bare step list moved out of .github/workflows (A5-2).
+# It has no on:/jobs:/permissions: and was never runnable. Owner must rewrite it with explicit
+# on:, jobs:, least-privilege permissions and OPENAI_API_KEY scoped away from the agent step
+# before enabling. Content below is verbatim.
+
 
 - name: Run development agent
   env:

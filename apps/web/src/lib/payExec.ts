@@ -8,6 +8,8 @@ import {
   assertApproveTx,
   assertPermitSigner,
   assertBufferStillSufficient,
+  assertInvoiceFresh,
+  assertNotExpiredAtSend,
   assertReadyToSend,
   buildApproveTx,
   buildFinal,
@@ -194,7 +196,8 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
     return buildFinal(ctx, { nowSeconds: now, ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }) });
   }
   if (rt.rpc === undefined) throw new UserFacingError('A permit payment needs an RPC to read the token. Configure one in Settings or use approval.');
-  const deadline = now + 20 * 60;
+  assertInvoiceFresh(ctx.review.invoice, now);
+  const deadline = Math.min(now + 20 * 60, ctx.review.invoice.expiresAt, ctx.review.invoice.amountPolicy.mode === 'fiat_quote' ? ctx.review.invoice.quote.expiresAt : Number.POSITIVE_INFINITY);
   const td = await buildPermit(rt.rpc, {
     chainId: ctx.chain.chainId,
     token: token.address,
@@ -217,6 +220,7 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
   const guard = (): void => {
     assertCurrent?.();
     assertReadyToSend(built, ctx);
+    assertNotExpiredAtSend(built, ctx, rt.nowSeconds());
     if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
   };
   guard();

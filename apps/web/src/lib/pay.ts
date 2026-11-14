@@ -253,6 +253,20 @@ export const DEADLINE_SECONDS = 20 * 60;
 const builtPaymentContexts = new WeakMap<BuiltPayment, PayContext>();
 const builtBufferQuotes = new WeakMap<BuiltPayment, BufferQuote>();
 
+/** Refuses when the invoice (or, for fiat-priced invoices, the seller's quote) has expired at `nowSeconds`. */
+export function assertInvoiceFresh(inv: Invoice, nowSeconds: number): void {
+  const expiry = checkExpiry(inv, nowSeconds);
+  if (expiry.invoiceExpired) throw new UserFacingError('This invoice has expired. Nothing was sent. Ask the seller for a new invoice.');
+  if (inv.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) throw new UserFacingError('The seller’s price quote has expired. Nothing was sent. Ask for a new invoice.');
+}
+
+/** Final-send expiry gate: invoice, fiat quote and (when present) the gas buffer quote, against the current clock. */
+export function assertNotExpiredAtSend(built: BuiltPayment, ctx: PayContext, nowSeconds: number): void {
+  assertInvoiceFresh(ctx.review.invoice, nowSeconds);
+  const quote = builtBufferQuotes.get(built);
+  if (quote !== undefined && nowSeconds >= quote.expiresAt) throw new UserFacingError('The gas buffer quote expired. Nothing was sent. Prepare the payment again.');
+}
+
 /** Builds the transaction and the preview from the SAME call; the UI renders `preview` and sends `tx`. */
 export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayment {
   if (opts.buffer !== undefined) {
@@ -260,7 +274,11 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
     if (opts.nowSeconds >= opts.buffer.expiresAt) throw new UserFacingError('The gas buffer quote expired. Refresh it and review again.');
     if (opts.buffer.bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The gas buffer exceeds the safety cap.');
   }
-  const deadline = BigInt(opts.deadlineSeconds ?? opts.nowSeconds + DEADLINE_SECONDS);
+  const inv = ctx.review.invoice;
+  // A3-2: the router deadline is the only on-chain expiry gate, so it never outlives the invoice (or a fiat quote).
+  const cap = Math.min(inv.expiresAt, inv.amountPolicy.mode === 'fiat_quote' ? inv.quote.expiresAt : Number.POSITIVE_INFINITY);
+  assertInvoiceFresh(inv, opts.nowSeconds);
+  const deadline = BigInt(Math.min(opts.deadlineSeconds ?? opts.nowSeconds + DEADLINE_SECONDS, cap));
   const built = ctx.request.build({
     deadline,
     now: BigInt(opts.nowSeconds),
