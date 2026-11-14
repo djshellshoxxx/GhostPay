@@ -5,7 +5,7 @@ import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblemMessage, validateKeystoreEnvelope } from '../lib/keystore';
-import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, verifyDownloadedBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { multipartIfNeeded } from '../lib/qrMultipart';
@@ -64,13 +64,19 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const [importPass, setImportPass] = useState('');
   const [importText, setImportText] = useState<string | undefined>();
   const operation = useRef<AbortController | null>(null);
-  const operationKind = useRef<'export' | 'import' | 'unlock' | undefined>(undefined);
+  const operationKind = useRef<'export' | 'import' | 'unlock' | 'verify' | undefined>(undefined);
   const mounted = useRef(false);
   const generation = useRef(0);
   const fileInput = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [backupQr, setBackupQr] = useState<string | undefined>(undefined);
   const [backupSmaller, setBackupSmaller] = useState(false);
+  // "Verify backup" (GP-PAGES-02): its own file, passphrase and busy flag, so an aborted verify or a failed unlock never
+  // leaves the other form disabled.
+  const verifyFileInput = useRef<HTMLInputElement | null>(null);
+  const [verifyFile, setVerifyFile] = useState<File | undefined>(undefined);
+  const [verifyPass, setVerifyPass] = useState('');
+  const [verifyBusy, setVerifyBusy] = useState(false);
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
   // Public meta-address named by the saved vault, if it is a readable keystore.
   const [vaultMeta, setVaultMeta] = useState<string | undefined>(undefined);
@@ -105,6 +111,14 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const resetFilePicker = (): void => {
     if (fileInput.current !== null) fileInput.current.value = '';
   };
+  const resetVerify = (): void => {
+    if (verifyFileInput.current !== null) verifyFileInput.current.value = '';
+    setVerifyFile(undefined); setVerifyPass(''); setVerifyBusy(false);
+  };
+  const cancelVerify = (): void => {
+    if (operationKind.current === 'verify') stopOperation();
+    resetVerify();
+  };
   const stopOperation = (): void => {
     generation.current += 1;
     operation.current?.abort(); operation.current = null;
@@ -130,12 +144,13 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const forgetTyped = (): void => {
     setSpend(''); setViewKey(''); setSigning('');
     suggestPass(); suggestVaultPass(); setImportPass(''); setVaultUnlockPass('');
-    setExportStepUp(''); setSaveStepUp(''); setDeletePass('');
+    setExportStepUp(''); setSaveStepUp(''); setDeletePass(''); setVerifyPass('');
   };
   useEffect(() => subscribeAppLock(() => {
     const kind = operationKind.current;
     stopOperation();
     setBusy(false);
+    resetVerify();
     // A pending local-vault save/delete has its own lifetime; do not label it cancelled or enable a duplicate.
     if (kind === 'unlock') setVaultBusy(false);
     setImportText(undefined); setFile(undefined); resetFilePicker();
@@ -148,10 +163,10 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     operationKind.current = undefined;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
     forgetTyped(); setImportText(undefined); setFile(undefined);
-    resetFilePicker();
+    resetFilePicker(); resetVerify();
     setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined);
   }, [app.session]);
-  const startOperation = (kind: 'export' | 'import' | 'unlock'): AbortController => {
+  const startOperation = (kind: 'export' | 'import' | 'unlock' | 'verify'): AbortController => {
     stopOperation();
     const controller = new AbortController(); operation.current = controller; operationKind.current = kind; return controller;
   };
@@ -252,6 +267,30 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
       } catch (error) {
         if (!currentOperation(controller)) return;
         setImportPass(''); setBusy(false); fail(error);
+      } finally {
+        if (operation.current === controller) operationKind.current = undefined;
+      }
+    })();
+  };
+
+  const onVerifyBackup = (e: FormEvent): void => {
+    e.preventDefault();
+    if (verifyFile === undefined) { setMessage({ kind: 'error', text: { key: 'sellerKeys.verify.chooseFile' } }); return; }
+    if (verifyFile.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: { key: 'sellerKeys.notKeystore' } }); return; }
+    const controller = startOperation('verify');
+    const selected = verifyFile; const passphrase = verifyPass;
+    setVerifyBusy(true); setMessage({ kind: 'ok', text: { key: 'sellerKeys.verify.checking' } });
+    void (async () => {
+      try {
+        const text = await selected.text();
+        if (!currentOperation(controller)) return;
+        await verifyDownloadedBackup(text, passphrase, controller.signal);
+        if (!currentOperation(controller)) return;
+        resetVerify();
+        done({ key: 'sellerKeys.verify.ok' });
+      } catch (error) {
+        if (!currentOperation(controller)) return;
+        setVerifyPass(''); setVerifyBusy(false); fail(error);
       } finally {
         if (operation.current === controller) operationKind.current = undefined;
       }
@@ -425,8 +464,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
             {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
           </form>
           {confirmReplace && (
-            <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.title') : t('sellerKeys.unlockReplaces.title')}>
-              <p>{backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.body') : t('sellerKeys.unlockReplaces.body')}</p>
+            <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.title') : backup?.backedUp === true ? t('sellerKeys.unlockReplacesUnverified.title') : t('sellerKeys.unlockReplaces.title')}>
+              <p>{backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.body') : backup?.backedUp === true ? t('sellerKeys.unlockReplacesUnverified.body') : t('sellerKeys.unlockReplaces.body')}</p>
               <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { unlockVault(true); }}>{t('sellerKeys.unlockReplaces.confirm')}</button>{' '}
               <button type="button" className="btn" onClick={() => { setConfirmReplace(false); }}>{t('sellerKeys.cancel')}</button>
             </Notice>
@@ -532,6 +571,24 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
             </>
           )}
 
+          <section className="panel" aria-labelledby="verify-backup-h">
+            <h4 id="verify-backup-h">{t('sellerKeys.verify.heading')}</h4>
+            <p>{backup?.verified === true ? t('sellerKeys.verify.verified') : t('sellerKeys.verify.explain')}</p>
+            <form onSubmit={onVerifyBackup} className="stack" autoComplete="off">
+              <Field label={t('sellerKeys.verify.file')}>{(id) => <>
+                <input id={id} aria-describedby={verifyFile === undefined ? undefined : `${id}-file`} ref={verifyFileInput} type="file" accept="application/json,.json" onChange={(e) => {
+                  const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
+                  if (chosen === undefined) return;
+                  cancelVerify(); setVerifyFile(chosen);
+                }} />
+                {verifyFile !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={verifyFile.name} /></bdi></p>}
+              </>}</Field>
+              <Field label={t('sellerKeys.verify.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-verify-backup" value={verifyPass} onChange={(e) => { if (operationKind.current === 'verify') stopOperation(); setVerifyBusy(false); setVerifyPass(e.target.value); }} />}</Field>
+              <button type="submit" className="btn" disabled={verifyBusy || verifyFile === undefined || verifyPass === ''}>{t('sellerKeys.verify.submit')}</button>
+              {verifyBusy && <button type="button" className="btn" onClick={cancelVerify}>{t('sellerKeys.verify.cancel')}</button>}
+            </form>
+          </section>
+
           <section className="panel" aria-labelledby="vault-save-h">
             <h3 id="vault-save-h">{t('sellerKeys.vaultOptionalHeading')}</h3>
             <p>
@@ -562,8 +619,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           </button>
           {confirmWipe && (
             // The typed hex still sweeps payments when only the signing key generated for it is unsaved (C-R10).
-            <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.wipeSignerOnly.title') : t('sellerKeys.wipeUnsaved.title')}>
-              <p>{backup?.signerOnly === true ? t('sellerKeys.wipeSignerOnly.body') : t('sellerKeys.wipeUnsaved.body')}</p>
+            <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.wipeSignerOnly.title') : backup?.backedUp === true ? t('sellerKeys.wipeUnverified.title') : t('sellerKeys.wipeUnsaved.title')}>
+              <p>{backup?.signerOnly === true ? t('sellerKeys.wipeSignerOnly.body') : backup?.backedUp === true ? t('sellerKeys.wipeUnverified.body') : t('sellerKeys.wipeUnsaved.body')}</p>
               <button type="button" className="btn btn-danger" onClick={wipe}>{t('sellerKeys.wipeUnsaved.confirm')}</button>{' '}
               <button type="button" className="btn" onClick={() => { setConfirmWipe(false); }}>{t('sellerKeys.cancel')}</button>
             </Notice>

@@ -81,9 +81,15 @@ describe('BackupPanel', () => {
     await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), PASS);
     await user.type(screen.getByLabelText('Repeat passphrase'), PASS);
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
-    await waitFor(() => { expect(status('backup-item-keys')).toMatch(/^Done: A copy of these keys exists outside this tab/); }, { timeout: 60_000 });
+    // GP-PAGES-02: a download alone is not Done; only the verified file is.
+    await waitFor(() => { expect(status('backup-item-keys')).toMatch(/^Downloaded, not verified: An encrypted keystore was downloaded, but nothing proves/); }, { timeout: 60_000 });
     expect(tagStatus()).toMatch(/^Not started/);
-  }, 120_000);
+    const text = await blobs[0]!.text();
+    await user.upload(screen.getByLabelText('Downloaded keystore file'), new File([text], 'ghostpay-keystore.json', { type: 'application/json' }));
+    await user.type(screen.getByLabelText('Keystore passphrase'), PASS);
+    await user.click(screen.getByRole('button', { name: 'Verify backup' }));
+    await waitFor(() => { expect(status('backup-item-keys')).toMatch(/^Done: A verified copy of these keys exists outside this tab/); }, { timeout: 60_000 });
+  }, 180_000);
 
   const storeHistory = async (chains: readonly number[]): Promise<void> => {
     const session = getSessionPublic();

@@ -330,6 +330,17 @@ async function exportKeystore(page: Page, opts: { stepUp: boolean }): Promise<st
   return readFileSync(path, 'utf8');
 }
 
+/** "Verify backup" (GP-PAGES-02) with the exact downloaded file: only then does the wipe treat the keys as recoverable. */
+async function verifyBackup(page: Page, keystore: string): Promise<void> {
+  await nav(page).getByRole('button', { name: 'Seller keys' }).click();
+  await expect(page.getByText('This backup is not verified yet')).toBeVisible();
+  await keysView(page).getByLabel('Downloaded keystore file', { exact: true }).setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') });
+  await keysView(page).getByLabel('Keystore passphrase', { exact: true }).fill(BACKUP_PASS);
+  await keysView(page).getByRole('button', { name: 'Verify backup' }).click();
+  await kdfExpect(keysView(page).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible();
+  await expect(page.getByText('This backup is not verified yet')).toHaveCount(0);
+}
+
 async function importKeystore(page: Page, keystore: string): Promise<void> {
   await nav(page).getByRole('button', { name: 'Seller keys' }).click();
   const fileInput = keysView(page).getByLabel('Keystore file', { exact: true });
@@ -610,6 +621,8 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
     const s = await openSeller(open);
     const identity = await identityOf(s);
     const keystore = await exportKeystore(s, { stepUp: false });
+    // A download alone would make the wipe below ask first (GP-PAGES-02); the verified file does not.
+    await verifyBackup(s, keystore);
     const link = await createInvoice(s);
     const payer = await openPayer(open, sim);
     await payAndDetect(payer.page, sim, link, s);

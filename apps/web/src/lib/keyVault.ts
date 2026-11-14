@@ -14,6 +14,7 @@ import {
 } from './session';
 import { decryptKeystore, validateKeystoreEnvelope, type KeystoreOptions } from './keystore';
 import { UserFacingError } from './errors';
+import { isClosedConnection, isQuotaError } from './reconciliationVault';
 
 /** Store interface kept deliberately small so the browser adapter can be replaced in tests. */
 export interface KeyVaultStore {
@@ -46,21 +47,59 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
 
   private db(): Promise<IDBDatabase> {
     if (typeof indexedDB === 'undefined') return Promise.reject(new UserFacingError({ key: 'error.keyVault.encryptedBrowserStorageIsUnavailable' }));
-    this.dbPromise ??= new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
+    if (this.dbPromise !== undefined) return this.dbPromise;
+    let settled = false;
+    const pending = new Promise<IDBDatabase>((resolve, reject) => {
+      let request: IDBOpenDBRequest;
+      try {
+        request = indexedDB.open(DB_NAME, DB_VERSION);
+      } catch {
+        reject(new UserFacingError({ key: 'error.keyVault.couldNotOpenEncryptedBrowserStorage' }));
+        return;
+      }
       request.onupgradeneeded = () => {
         if (!request.result.objectStoreNames.contains(STORE_NAME)) request.result.createObjectStore(STORE_NAME);
       };
-      request.onsuccess = () => { resolve(request.result); };
-      request.onerror = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotOpenEncryptedBrowserStorage' })); };
-      request.onblocked = () => { reject(new UserFacingError({ key: 'error.keyVault.encryptedBrowserStorageIsBlockedByAnotherTab' })); };
+      request.onsuccess = () => {
+        const db = request.result;
+        // A blocked open can still succeed later, after it was reported and a newer open took over: that one wins.
+        if (settled) { db.close(); return; }
+        settled = true;
+        // Another tab upgraded the database, or the browser closed the connection: the next call opens again.
+        db.onversionchange = () => { db.close(); if (this.dbPromise === pending) this.dbPromise = undefined; };
+        db.onclose = () => { if (this.dbPromise === pending) this.dbPromise = undefined; };
+        resolve(db);
+      };
+      const fail = (key: 'error.keyVault.couldNotOpenEncryptedBrowserStorage' | 'error.keyVault.encryptedBrowserStorageIsBlockedByAnotherTab'): void => {
+        if (settled) return;
+        settled = true;
+        reject(new UserFacingError({ key }));
+      };
+      request.onerror = () => { fail('error.keyVault.couldNotOpenEncryptedBrowserStorage'); };
+      request.onblocked = () => { fail('error.keyVault.encryptedBrowserStorageIsBlockedByAnotherTab'); };
     });
-    return this.dbPromise;
+    this.dbPromise = pending;
+    // A failed or blocked open is retried by the next call; it must never replace a newer attempt.
+    void pending.catch(() => { if (this.dbPromise === pending) this.dbPromise = undefined; });
+    return pending;
   }
 
-  async get(): Promise<string | undefined> {
-    const db = await this.db();
-    return new Promise((resolve, reject) => {
+  /** Runs `operate` on the cached connection; one the browser already closed is dropped and the operation runs once more on a fresh open. */
+  private async withDb<T>(operate: (db: IDBDatabase) => Promise<T>): Promise<T> {
+    const pending = this.db();
+    const db = await pending;
+    try {
+      return await operate(db);
+    } catch (error) {
+      if (!isClosedConnection(error)) throw error;
+      if (this.dbPromise === pending) this.dbPromise = undefined;
+      try { db.close(); } catch { /* already closed */ }
+      return operate(await this.db());
+    }
+  }
+
+  get(): Promise<string | undefined> {
+    return this.withDb((db) => new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readonly');
       const request = tx.objectStore(STORE_NAME).get(RECORD_KEY);
       let result: string | undefined;
@@ -77,15 +116,15 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
       };
       tx.onerror = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotReadEncryptedBrowserStorage' })); };
       tx.onabort = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotReadEncryptedBrowserStorage' })); };
-    });
+    }));
   }
 
   async putIfEmpty(ciphertext: string, stillCurrent: () => void): Promise<void> {
-    const db = await this.db();
-    stillCurrent();
-    await new Promise<void>((resolve, reject) => {
+    await this.withDb((db) => new Promise<void>((resolve, reject) => {
+      stillCurrent();
       const tx = db.transaction(STORE_NAME, 'readwrite');
       let exists = false;
+      let full = false;
       let stale: Error | undefined;
       const request = tx.objectStore(STORE_NAME).add(ciphertext, RECORD_KEY);
       // Last point before the transaction can commit: abort it if the initiating session has been revoked meanwhile.
@@ -95,19 +134,22 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
           tx.abort();
         }
       };
-      request.onerror = () => { if (request.error?.name === 'ConstraintError') exists = true; };
+      request.onerror = () => {
+        if (request.error?.name === 'ConstraintError') exists = true;
+        else if (isQuotaError(request.error)) full = true;
+      };
       const failed = (): void => {
-        reject(stale ?? new UserFacingError({ key: exists ? 'error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving' : 'error.keyVault.saveFailed' }));
+        if (!full && isQuotaError(tx.error)) full = true;
+        reject(stale ?? new UserFacingError({ key: exists ? 'error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving' : full ? 'error.keyVault.encryptedBrowserStorageIsFull' : 'error.keyVault.saveFailed' }));
       };
       tx.oncomplete = () => { resolve(); };
       tx.onerror = failed;
       tx.onabort = failed;
-    });
+    }));
   }
 
   async delete(expected: string): Promise<void> {
-    const db = await this.db();
-    await new Promise<void>((resolve, reject) => {
+    await this.withDb((db) => new Promise<void>((resolve, reject) => {
       // Compare and delete inside one readwrite transaction so another tab cannot replace the record in between.
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
@@ -120,7 +162,7 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
       tx.oncomplete = () => { if (changed) reject(new VaultChangedError()); else resolve(); };
       tx.onerror = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotDeleteEncryptedBrowserStorage' })); };
       tx.onabort = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotDeleteEncryptedBrowserStorage' })); };
-    });
+    }));
   }
 }
 

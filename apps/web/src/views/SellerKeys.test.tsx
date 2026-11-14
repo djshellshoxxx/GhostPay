@@ -221,8 +221,10 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const click = vi.fn();
     const created: string[] = [];
+    const blobs: Blob[] = [];
     URL.createObjectURL = (b: Blob | MediaSource): string => {
       created.push((b as Blob).type);
+      blobs.push(b as Blob);
       return 'blob:test';
     };
     URL.revokeObjectURL = (): void => undefined;
@@ -256,12 +258,93 @@ describe('Seller keys', () => {
     expect(within(parts).getAllByText(/Part 1 of \d+/).length).toBeGreaterThan(0);
     expect(window.localStorage.length).toBe(0);
     // L1-01: the downloaded keystore is a backup, so the banner and the sharing gate are gone.
-    expect(getSessionBackup()?.backedUp).toBe(true);
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: false });
     expect(screen.queryByText('These seller keys have no backup')).toBeNull();
     expect(screen.getByText(getSessionPublic()!.metaAddress)).toBeTruthy();
+    // GP-PAGES-02: a download alone is not proof that the file reached the disk: the banner says so, the checklist and
+    // the wipe do not treat the keys as recoverable.
+    expect(screen.getByText('This backup is not verified yet')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    expect(screen.getByText('Wipe keys whose backup is not verified?')).toBeTruthy();
+    expect(getSessionPublic()).toBeDefined();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    // Verify backup: the exact downloaded file and its passphrase make the copy count.
+    const text = await blobs[0]!.text();
+    await user.upload(screen.getByLabelText('Downloaded keystore file'), new File([text], 'ghostpay-keystore.json', { type: 'application/json' }));
+    await user.type(screen.getByLabelText('Keystore passphrase'), 'a long passphrase');
+    const pub = getSessionPublic();
+    await user.click(screen.getByRole('button', { name: 'Verify backup' }));
+    await waitFor(() => { expect(screen.getAllByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/).length).toBeGreaterThan(0); }, { timeout: 30_000 });
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: true });
+    expect(getSessionPublic()).toBe(pub);
+    expect(screen.queryByText('This backup is not verified yet')).toBeNull();
+    expect(screen.getByLabelText('Keystore passphrase')).toHaveProperty('value', '');
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
     expect(getSessionPublic()).toBeUndefined();
     expect(screen.getByRole('button', { name: 'Generate new keys' })).toBeTruthy();
+  });
+
+  it('GP-PAGES-02: Verify backup refuses a wrong passphrase, another seller\'s keystore and a damaged file, changing nothing', async () => {
+    const PASS = 'a long passphrase';
+    generateSession();
+    const other = await keySession.exportKeystore(PASS, { N: 1 << 14 });
+    const pub = generateSession();
+    const mine = await keySession.exportKeystore(PASS, { N: 1 << 14 });
+    keySession.markKeystoreDownloaded(keySession.captureSessionGuard());
+    const user = await open();
+    const attempt = async (name: string, text: string, pass: string): Promise<void> => {
+      await user.upload(screen.getByLabelText('Downloaded keystore file'), new File([text], name, { type: 'application/json' }));
+      await user.type(screen.getByLabelText('Keystore passphrase'), pass);
+      await user.click(screen.getByRole('button', { name: 'Verify backup' }));
+      await waitFor(() => { expect(screen.getByRole('alert')).toBeTruthy(); }, { timeout: 30_000 });
+    };
+    await attempt('mine.json', mine, 'not the passphrase');
+    expect(screen.getByRole('alert').textContent).toMatch(/passphrase|decrypt/i);
+    await attempt('other.json', other, PASS);
+    expect(screen.getByRole('alert').textContent).toMatch(/does not hold the loaded seller keys/);
+    const damaged = JSON.parse(mine) as { ciphertext: string };
+    damaged.ciphertext = (damaged.ciphertext[0] === '0' ? '1' : '0') + damaged.ciphertext.slice(1);
+    await attempt('damaged.json', JSON.stringify(damaged), PASS);
+    expect(screen.getByRole('alert')).toBeTruthy();
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: false });
+    expect(getSessionPublic()).toEqual(pub);
+    // Every refusal clears the typed passphrase and leaves the form usable.
+    expect(screen.getByLabelText('Keystore passphrase')).toHaveProperty('value', '');
+    expect(screen.getByRole('button', { name: 'Download encrypted keystore' })).not.toHaveProperty('disabled', true);
+  });
+
+  it('GP-PAGES-02: a cancelled verification and a failed vault unlock leave every other form enabled', async () => {
+    const PASS = 'a long passphrase';
+    generateSession();
+    await saveEncryptedVault(PASS, { N: 1 << 14 });
+    const mine = await keySession.exportKeystore(PASS, { N: 1 << 14 });
+    keySession.markKeystoreDownloaded(keySession.captureSessionGuard());
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const real = keySession.verifyDownloadedBackup;
+    vi.spyOn(keySession, 'verifyDownloadedBackup').mockImplementation(async (text, pass, signal) => { await gate; return real(text, pass, signal); });
+    const user = await open();
+    await user.upload(screen.getByLabelText('Downloaded keystore file'), new File([mine], 'mine.json', { type: 'application/json' }));
+    await user.type(screen.getByLabelText('Keystore passphrase'), PASS);
+    await user.click(screen.getByRole('button', { name: 'Verify backup' }));
+    await waitFor(() => { expect(screen.getByRole('button', { name: 'Cancel verification' })).toBeTruthy(); });
+    expect(screen.getByRole('button', { name: 'Verify backup' })).toHaveProperty('disabled', true);
+    // The vault unlock form is independent of the pending verification.
+    expect(screen.getByRole('button', { name: 'Delete encrypted vault' })).toHaveProperty('disabled', false);
+    await user.click(screen.getByRole('button', { name: 'Cancel verification' }));
+    release();
+    await act(async () => { await Promise.resolve(); });
+    expect(screen.queryByRole('button', { name: 'Cancel verification' })).toBeNull();
+    // The saved vault is a proven copy, the cancelled download is not: nothing recorded the file as verified.
+    expect(keySession.sessionHasExternalCopy()).toBe(false);
+    // A failed unlock does not disable Verify backup either.
+    await user.type(screen.getByLabelText('Vault passphrase'), 'wrong passphrase here');
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    await waitFor(() => { expect(screen.getByRole('alert')).toBeTruthy(); }, { timeout: 30_000 });
+    await user.upload(screen.getByLabelText('Downloaded keystore file'), new File([mine], 'mine.json', { type: 'application/json' }));
+    await user.type(screen.getByLabelText('Keystore passphrase'), PASS);
+    expect(screen.getByRole('button', { name: 'Verify backup' })).toHaveProperty('disabled', false);
+    expect(screen.getByRole('button', { name: 'Download encrypted keystore' })).toHaveProperty('disabled', false);
   });
 
   it('C-R4: asks before wiping keys that have no backup', async () => {

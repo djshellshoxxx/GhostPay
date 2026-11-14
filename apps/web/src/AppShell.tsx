@@ -19,6 +19,9 @@ import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { notifyAppLock } from './lib/appLock';
+
+/** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
+export const IDLE_CHECK_MS = 20_000;
 import { SOURCE_TRANSLATOR, useI18nOptional } from './i18n/context';
 import type { MessageKey } from './i18n/catalog';
 import { ShellProfileContext } from './lib/buildProfile';
@@ -126,9 +129,17 @@ export function AppShell(props: AppShellProps): ReactNode {
   // banner, because wiping them would lose every payment sent to their meta-address. Hex keys imported without their
   // signing key are wiped too: the hex loads them again, and the notice says that the signing key generated here is gone (C-R10).
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
     const minutes = settings.lockTimeoutMin;
+    const timeoutMs = minutes * 60_000;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    // Wall-clock deadline (GP-PAGES-04): a sleeping device pauses timers, so the lock also checks `Date.now()` against the
+    // last activity when the page becomes visible or focused, on an interval, and before activity re-arms it; `locked`
+    // makes one idle period lock once.
+    let lastActivity = Date.now();
+    let locked = false;
     const lock = (): void => {
+      if (locked) return;
+      locked = true;
       services.vault.lock();
       // Key hex and passphrases typed into a view go too, whether or not the keys are wiped below (G2-05). The Bitcoin,
       // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard (G2-02).
@@ -142,7 +153,8 @@ export function AppShell(props: AppShellProps): ReactNode {
         try { unchanged(); } catch { return; }
         const signerLost = getSessionBackup()?.signerOnly === true;
         if (!recoverable && !signerLost) {
-          setLive({ key: 'app.idle.kept' });
+          // A downloaded keystore that was never verified does not count: the file may never have reached the disk (GP-PAGES-02).
+          setLive({ key: getSessionBackup()?.backedUp === true ? 'app.idle.keptUnverified' : 'app.idle.kept' });
           return;
         }
         clearSession();
@@ -150,17 +162,32 @@ export function AppShell(props: AppShellProps): ReactNode {
         setLive({ key: 'app.idle.wiped' });
       });
     };
+    const overdue = (): boolean => Date.now() - lastActivity >= timeoutMs;
+    const check = (): void => { if (overdue()) lock(); };
     const arm = (): void => {
+      // Activity after a sleep that passed the deadline locks first; the activity then starts the next idle period.
+      check();
+      lastActivity = Date.now();
+      locked = false;
       if (timer !== undefined) clearTimeout(timer);
-      timer = setTimeout(lock, minutes * 60_000);
+      timer = setTimeout(lock, timeoutMs);
     };
+    const onVisibility = (): void => { if (document.visibilityState === 'visible') check(); };
     arm();
+    const interval = setInterval(check, IDLE_CHECK_MS);
     window.addEventListener('pointerdown', arm);
     window.addEventListener('keydown', arm);
+    window.addEventListener('focus', check);
+    window.addEventListener('pageshow', check);
+    document.addEventListener('visibilitychange', onVisibility);
     return () => {
       if (timer !== undefined) clearTimeout(timer);
+      clearInterval(interval);
       window.removeEventListener('pointerdown', arm);
       window.removeEventListener('keydown', arm);
+      window.removeEventListener('focus', check);
+      window.removeEventListener('pageshow', check);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [services, settings.lockTimeoutMin]);
 
@@ -235,6 +262,12 @@ export function AppShell(props: AppShellProps): ReactNode {
         </nav>
       </header>
       <main id="main" tabIndex={-1} ref={main}>
+        {session !== undefined && backup?.backedUp === true && backup.verified === false && (
+          <Notice kind="warn" title={t('app.backup.unverified.title')}>
+            {t('app.backup.unverified.body')}
+            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.unverified.action')}</button></>}
+          </Notice>
+        )}
         {session !== undefined && backup?.backedUp === false && (
           // Payments stay sweepable from typed hex when only the signing key generated for it is unsaved (C-R10).
           <Notice kind="warn" title={backup.signerOnly ? t('app.backup.signerOnly.title') : t('app.backup.title')}>

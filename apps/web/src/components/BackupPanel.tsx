@@ -6,7 +6,7 @@ import { Notice } from './Common';
 import { displayMessage } from '../lib/errors';
 import { TagArchive, displayArchiveNote, type ArchiveExportResult } from './TagArchive';
 
-type ItemStatus = 'notStarted' | 'done' | 'downloaded' | 'downloadedGaps' | 'deleted' | 'failed';
+type ItemStatus = 'notStarted' | 'done' | 'downloaded' | 'downloadedGaps' | 'downloadedUnverified' | 'deleted' | 'failed';
 
 /** What the last tag archive export of one set of loaded keys did, with its details; kept here so leaving the view does not reset the checklist. */
 let lastTagOutcome: { readonly session: unknown; readonly result: ArchiveExportResult; readonly at: number; /** Tags were deleted in this panel after the archive. */ readonly deleted: boolean } | undefined;
@@ -37,7 +37,8 @@ export function BackupPanel(): ReactNode {
 
   const tags = tagResult !== undefined && tagResult.session === app.session ? tagResult : undefined;
   const result = tags?.result;
-  const keyStatus: ItemStatus = backup?.backedUp === true ? 'done' : 'notStarted';
+  // A download alone is not Done: nothing proves the file reached the disk until it is verified (GP-PAGES-02).
+  const keyStatus: ItemStatus = backup?.verified === true ? 'done' : backup?.backedUp === true ? 'downloadedUnverified' : 'notStarted';
   const tagStatus: ItemStatus = result === undefined ? 'notStarted'
     : !result.ok ? 'failed'
     : tags?.deleted === true && result.recordCount > 0 ? 'deleted'
@@ -54,6 +55,7 @@ export function BackupPanel(): ReactNode {
     done: t('backup.status.done'),
     downloaded: t('backup.status.downloaded'),
     downloadedGaps: t('backup.status.downloadedGaps'),
+    downloadedUnverified: t('backup.status.downloadedUnverified'),
     deleted: t('backup.status.deleted'),
     failed: t('backup.status.failed'),
   };
@@ -72,7 +74,7 @@ export function BackupPanel(): ReactNode {
       <ol className="stack">
         <li data-testid="backup-item-keys">
           <p><strong>{t('backup.keys.heading')}</strong></p>
-          {status(keyStatus, keyStatus === 'done' ? t('backup.keys.done') : t('backup.keys.notStarted'))}
+          {status(keyStatus, keyStatus === 'done' ? t('backup.keys.done') : keyStatus === 'downloadedUnverified' ? t('backup.keys.unverified') : t('backup.keys.notStarted'))}
           <button type="button" className="btn" onClick={goToKeystore}>{t('backup.keys.go')}</button>
         </li>
         <li data-testid="backup-item-tags">

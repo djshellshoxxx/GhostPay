@@ -2,7 +2,7 @@
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, generateSession, getSessionPublic, hasSession, importSession, revealViewingKey } from './lib/session';
+import { captureSessionGuard, clearSession, generateSession, getSessionPublic, hasSession, importSession, markKeystoreDownloaded, revealViewingKey } from './lib/session';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault } from './lib/keyVault';
 import { SETTINGS_KEY } from './lib/settings';
 import { subscribeAppLock } from './lib/appLock';
@@ -198,6 +198,80 @@ describe('App shell', () => {
       expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because they have no backup yet.');
       expect(hasSession()).toBe(true);
       expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+  });
+});
+
+describe('GP-PAGES-02 and GP-PAGES-04: unverified downloads and sleep-aware idle lock', () => {
+  it('keeps keys whose only copy is an unverified download at idle lock, and says so', async () => {
+    setKeyVaultStoreForTests(new MemoryKeyVaultStore());
+    generateSession();
+    markKeystoreDownloaded(captureSessionGuard());
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      expect(screen.getByText('This backup is not verified yet')).toBeTruthy();
+      expect(screen.queryByText('These seller keys have no backup')).toBeNull();
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(hasSession()).toBe(true);
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because their downloaded backup is not verified yet.');
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+  });
+
+  /** Recoverable keys and a one-minute lock; returns the idle-lock count seen by the views. */
+  function armed(): { reasons: string[] } {
+    setKeyVaultStoreForTests(new MemoryKeyVaultStore());
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    const reasons: string[] = [];
+    subscribeAppLock((reason) => { reasons.push(reason); });
+    return { reasons };
+  }
+
+  it('locks at once when the page becomes visible after a sleep that passed the deadline, once per idle period', async () => {
+    vi.useFakeTimers();
+    try {
+      const { reasons } = armed();
+      renderApp(makeServices());
+      await act(async () => { await vi.advanceTimersByTimeAsync(30_000); });
+      expect(hasSession()).toBe(true);
+      // The device sleeps: the wall clock moves on, no timer fires.
+      vi.setSystemTime(Date.now() + 31_000);
+      await act(async () => { document.dispatchEvent(new Event('visibilitychange')); await vi.advanceTimersByTimeAsync(0); });
+      expect(hasSession()).toBe(false);
+      expect(reasons).toEqual(['idle']);
+      // Focus, pageshow and the interval do not lock the same idle period again.
+      await act(async () => { window.dispatchEvent(new Event('focus')); window.dispatchEvent(new Event('pageshow')); await vi.advanceTimersByTimeAsync(61_000); });
+      expect(reasons).toEqual(['idle']);
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+  });
+
+  it('the first activity after such a sleep locks before it re-arms, and the interval catches a paused timer', async () => {
+    vi.useFakeTimers();
+    try {
+      const { reasons } = armed();
+      renderApp(makeServices());
+      vi.setSystemTime(Date.now() + 61_000);
+      await act(async () => { fireEvent.pointerDown(window); await vi.advanceTimersByTimeAsync(0); });
+      expect(hasSession()).toBe(false);
+      expect(reasons).toEqual(['idle']);
+      // That pointerdown started a new idle period; the interval check sees the next overdue deadline without any event.
+      importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
+      fireEvent.keyDown(window);
+      vi.setSystemTime(Date.now() + 61_000);
+      await act(async () => { await vi.advanceTimersByTimeAsync(20_000); });
+      expect(hasSession()).toBe(false);
+      expect(reasons).toEqual(['idle', 'idle']);
     } finally {
       vi.useRealTimers();
       setKeyVaultStoreForTests(undefined);
