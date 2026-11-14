@@ -8,15 +8,70 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
-The latest integrated candidate is **[draft PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)**
-(branch `nodata/jolly-rubin-u4zd45`). It continues combined head #121 with the #122–#127 fix ports (#129–#134),
-the latest relayer work (#118), the release/hosting/crypto-review workstream (#115) and the docs PRs. It is
-**not merged into main**. Its exact-head status, test evidence, integration matrix and open items are in the
-[beta candidate handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md). The inherited
-[#84 SonarCloud security-rating D](https://github.com/djshellshoxxx/GhostPay/runs/128302927200) has not been cleared
-by an exact-head SonarCloud report. Independent security review, trusted testnet manifests, a published
-release-signing key, release provenance and owner authorization remain open. The 18 privacy proposals merged as
-PR #99 are **future-only**.
+**Newer owner-controlled Pages draft is not yet fully CI-qualified (November 14, 2026):** [#150](https://github.com/djshellshoxxx/GhostPay/pull/150) at exact `36bcdb7470caf7e563b4f72cadc209504137fd6f` proposes GP-PAGES-02 backup-file verification, GP-PAGES-04 sleep-aware idle locking, and key/reconciliation IndexedDB recovery. Its [application CI 43559443897](https://github.com/djshellshoxxx/GhostPay/actions/runs/43559443897) **failed** one stale `apps/web/src/views/Settings.test.tsx:39` wording assertion (2,554 other tests passed; 1 skipped) after the new text explicitly included **unverified downloads**. [Pages/Anvil 43559443937](https://github.com/djshellshoxxx/GhostPay/actions/runs/43559443937) passed 2 applicable jobs (3 publication checks skipped), while [beta 43559443884](https://github.com/djshellshoxxx/GhostPay/actions/runs/43559443884) and [hosting 43559443850](https://github.com/djshellshoxxx/GhostPay/actions/runs/43559443850) also passed. These checks do **not** override the failed application gate. A test-only diagnostic was posted to the owner PR; no owner code was edited or correction verified. **#145 remains the most recent fully qualified staged candidate**. Neither draft is merged, hosted or released.
+
+**Latest independently CI-qualified staged Pages-only candidate (2026-11-14 UTC):** [draft PR #145](https://github.com/djshellshoxxx/GhostPay/pull/145) at exact `c8d4c42bee724bacd244bc90b0259c961d27e84f`, preserving the corrected IndexedDB source `06743ad8187d72849b35f3074818e771245e1a3f`. Its [application CI 43553330056](https://github.com/djshellshoxxx/GhostPay/actions/runs/43553330056) **24/24 passed**, [Pages/Anvil 43553330007](https://github.com/djshellshoxxx/GhostPay/actions/runs/43553330007) **2 applicable passed / 3 release, deployment and live-smoke jobs skipped**, [beta 43553329978](https://github.com/djshellshoxxx/GhostPay/actions/runs/43553329978) and [hosting 43553329955](https://github.com/djshellshoxxx/GhostPay/actions/runs/43553329955) passed. These results cover an **unmerged local-chain browser build**, not a public Pages deployment, external testnet or funds-safe release. The owner [Pages baseline #137](https://github.com/djshellshoxxx/GhostPay/pull/137) still reserves GP-PAGES-02 backup verification and GP-PAGES-04 sleep-aware locking. SonarCloud Security Rating A, ADR-0029, dedicated origin, approved signed testnet manifests, external-wallet acceptance, independent review and explicit release authorization remain open. [i18n draft #147](https://github.com/djshellshoxxx/GhostPay/pull/147) at `c6a9033` separately passed [application CI 43558537015](https://github.com/djshellshoxxx/GhostPay/actions/runs/43558537015) after restoring English for unreviewed scan-privacy disclosures, but **native translation review is pending**; it is not merged into #145. Non-Pages versions are preserved with development paused. See [release-gate traceability](docs/wiki/Verification-and-Release-Gates.md).
+
+**Current active development scope (November 2026): static GitHub Pages browser client only.** The owner-controlled, unmerged Pages baseline is **[draft PR #137](https://github.com/djshellshoxxx/GhostPay/pull/137)**
+at exact source `ac08062ec540d429a0bfb24f3aab042be5d212eb`. Its hosted [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43316935399)
+passed 24/24 jobs, and [Pages artifact/browser acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43316935362)
+passed against local Anvil. These are pre-release test results **only**; PR #137 is not merged, the site is not
+published, and these checks do not constitute independent audit or public-testnet qualification.
+
+The isolated [Pages release-verifier correction #138](https://github.com/djshellshoxxx/GhostPay/pull/138)
+was separately qualified by [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43361570866)
+and [Pages acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43361570930), but is **draft and not integrated**
+into #137. The [Pages RPC-status regression/correction #141](https://github.com/djshellshoxxx/GhostPay/pull/141)
+confirmed an expected failing test at [test-only head](https://github.com/djshellshoxxx/GhostPay/actions/runs/43367179500).
+Its corrected head `68aca93bc19e4c9d91fa37212d9b8c502b4ce884` passed
+[application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374154941),
+[Pages qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374154915) and
+[beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43374155075);
+it is still draft and unintegrated. The isolated [Pages post-deploy smoke correction #142](https://github.com/djshellshoxxx/GhostPay/pull/142)
+at tested source `83fec506a11d6eada06a2d046f74769a7c7f6b63` strengthens same-origin
+project-subpath containment. Its [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43380983039)
+passed 24/24 jobs, and [Pages build/browser qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43380982983)
+passed both applicable jobs. The live post-deployment smoke, deployment and release jobs were
+**skipped**. The draft is still unintegrated; these infrastructure checks do not establish a deployed-client
+vulnerability, a successful live smoke test or authorization to publish.
+
+A separate [combined Pages qualification draft #143](https://github.com/djshellshoxxx/GhostPay/pull/143)
+now stages **exactly the seven tested source/test files** from #138, #141 and #142 on an isolated branch
+based on #137, with handoff only as its eighth changed path. Combined source/test commit `b5e77c50ae33a99683e67406393d53e79d4f8e99`
+is **draft, unmerged and not deployed**. Exact-source [application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545664)
+passed **24/24** jobs, [Pages qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403547522)
+passed **2/2** build/browser jobs (3 release/deploy/live-smoke jobs skipped), and
+[beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43403545627) passed **1/1** job.
+The subsequent handoff-only head `e4df113763c6ce253d1e6aa72eaf4919cafa2ba7` also passed [application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555238), [Pages build/browser (2 passed; 3 release/deploy/live-smoke skips)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555186) and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43410555180); this verifies the same staged source, not the pending owner backup/device-sleep fixes.
+
+The subsequent #143 handoff-only head `9c48a482b866ada394ec5086e1b5f84da266fa3f` also passed
+[application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427844178),
+[Pages build/browser (2 passed, 3 release/deploy/live-smoke jobs skipped)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427842734)
+and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43427842680).
+That commit changed handoff text only, not the previously tested Pages source. The subsequent handoff-only
+commit `65f521425a55110544d4b26c1182e3743fa219fa` also passed its own exact-head
+[application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43436272127),
+[Pages build/browser (2 passed, 3 release/deploy/live-smoke skips)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43436272057),
+and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43436272310).
+This is not owner GP-PAGES-02/04 integration or public-host/release qualification; the later handoff-only
+commit `ab427ab81c7bc18a6d908c5201cf86450cf3f21f` also passed [application CI (24/24)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43445646512), [Pages build/browser qualification (2 passed; 3 release/deploy/live-smoke skips)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43445646454), and [beta acceptance (1/1)](https://github.com/djshellshoxxx/GhostPay/actions/runs/43445646590).
+
+**New Pages-only error-handling correction:** isolated [draft PR #144](https://github.com/djshellshoxxx/GhostPay/pull/144) adds a rejection regression for the seven-chain fee disclosure in `apps/web/src/views/About.test.tsx`. Test-only `8c3d52585bf25b63b1678a7bbd2ecd836ebcdb2e` had [application CI 43455414593](https://github.com/djshellshoxxx/GhostPay/actions/runs/43455414593) fail its web unit-test job (intended RED; exact assertion log not independently inspected); Pages, beta and hosting workflows completed success. Minimal browser-hook correction `a1cf848fc1d9c8a02663a09d1aa7b5e9daeb279d` retains the failing-test assertion and handles rejected or throwing manifest lookup without leaking the exception. Its [application](https://github.com/djshellshoxxx/GhostPay/actions/runs/43464568479), [Pages](https://github.com/djshellshoxxx/GhostPay/actions/runs/43464568525), [beta](https://github.com/djshellshoxxx/GhostPay/actions/runs/43464568464), and [hosting](https://github.com/djshellshoxxx/GhostPay/actions/runs/43464568558) qualification **completed successfully on that exact corrected SHA**: application CI 24/24 jobs (including the web regression), Pages build/Anvil acceptance passed with release/deploy/live-smoke jobs intentionally skipped, beta acceptance passed and hosting kit passed. This evidence qualifies staged source/tests only, not an approved release. This is not an authorization bypass claim, merge, or deployment.
+
+The owner's separately owned backup-verification and device-sleep fixes remain outstanding;
+#143's results do not qualify their eventual combined integration or any public deployment.
+
+The earlier [combined beta PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)
+and its [source-pinned handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md) remain preserved as **historical,
+unmerged, non-Pages development**. CLI, server, relayer, native apps and other non-Pages release variants are **paused**;
+they must not be described as part of the active static-site beta. The 18 privacy proposals in PR #99 remain
+**future-only**. See [Pages release scope and limitations](docs/pages/README.md) and the version-controlled
+[Pages qualification matrix](docs/wiki/Verification-and-Release-Gates.md).
+
+The inherited [SonarCloud rating D report](https://github.com/djshellshoxxx/GhostPay/runs/128302927200)
+remains unresolved without accepted exact-head Security Rating A evidence. Release also requires ADR-0029 owner
+approval, a dedicated hosting origin, signed testnet manifests, an externally qualified testnet deployment,
+independent security review, provenance and separate explicit owner publication authorization. No real funds.
 
 Review the [product handoff](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md),
 [CLI handoff](docs/handoffs/CLI_COMPLETION_HANDOFF.md),
