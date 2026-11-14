@@ -1243,3 +1243,31 @@ describe('Pay: the gas buffer opt-in belongs to one invoice (R05-3)', () => {
     expect(screen.queryByText('payERC20WithBuffer')).toBeNull();
   });
 });
+
+describe('Pay: expiry at the final send (A3-2)', () => {
+  it('refuses with nothing sent when the invoice expires between final check and send, before the review tick', async () => {
+    const { parsed, fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const exp = parsed.invoice.expiresAt;
+    let clock = (exp - 60) * 1000;
+    const wallet = new MockWallet();
+    const info: WalletInfo = { id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: wallet };
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    setHash(fragment);
+    renderApp(makeServices({
+      loadManifest: (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id) }),
+      createRpc: () => Promise.resolve(withManifestChain(mockRpc(84532, (m) => (m === 'eth_getTransactionByHash' || m === 'eth_getTransactionReceipt' ? null : '0x')))),
+      nowMs: () => clock,
+      discoverWallets: () => Promise.resolve([info]),
+    }));
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    clock = (exp + 30) * 1000;
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    expect(await screen.findByText(/invoice has expired/i)).toBeTruthy();
+    expect(wallet.sent).toBeUndefined();
+    expect(screen.queryByRole('heading', { name: 'Submitted' })).toBeNull();
+  });
+});
