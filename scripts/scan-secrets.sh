@@ -20,7 +20,8 @@ PATTERNS='(PRIVATE KEY-----|0x[0-9a-fA-F]{64}\b.*(private|secret)|(private|secre
 hits="$(git grep -nIiE "$PATTERNS" -- . \
   ':!docs' ':!.github' ':!scripts/scan-secrets.sh' ':!**/test/**' ':!**/*.test.ts' ':!test-vectors' \
   ':!**/*.md' ':!packages/contracts/lib' || true)"
-hits="$(printf '%s\n' "$hits" | grep -v -F "$ALLOW_PUBLIC_DEV_KEYS" || true)"
+# Strip only the exact allowlisted substring, then re-match, so another secret on the same line still fails.
+hits="$(printf '%s\n' "$hits" | sed "s/$ALLOW_PUBLIC_DEV_KEYS//g" | grep -iE "$PATTERNS" || true)"
 if [ -n "$hits" ]; then
   printf '%s\n' "$hits"
   echo "ERROR: possible secret"; status=1
