@@ -19,6 +19,7 @@ A scan is not itself transaction or key-import authorization: the relevant flow 
   default; on import, tick only what you want. Trust changes need confirmation. Everything is applied together, or nothing is.
 - **Move seller keys:** only as the encrypted keystore (red SECRET frame, passphrase required). *Show as several
   smaller codes* helps weak cameras.
+- **Protect decryption-key links:** an invoice URL or QR containing its own decryption key is a bearer capability: anyone who sees it can read that invoice, even when it is marked testnet, unverified or CAUTION. Keep it private, and do not rely on the QR colour alone to indicate confidentiality or trust.
 - **Receipts:** a seller receipt shows the seller's key signed it for this invoice. It is not proof of payment on its own.
 - **Camera trouble:** allow the camera in site settings, use HTTPS, close other apps using the camera, or use
   *Or paste QR text* / *Read a QR from an image*.
