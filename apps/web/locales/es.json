@@ -2163,6 +2163,8 @@
     "sellerKeys.wipeUnverified.title": "¿Borrar claves cuya copia de seguridad no está verificada?",
     "sellerKeys.wipeUnverified.body": "Se descargó un keystore, pero nada prueba que el archivo haya llegado intacto al disco. Si no fue así, borrar estas claves las pierde para siempre, y ningún pago enviado a su metadirección podrá recuperarse. Verifica primero la copia de seguridad salvo que estés seguro de que el archivo está a salvo.",
     "sellerKeys.unlockReplacesUnverified.title": "Las claves cargadas ahora tienen una copia de seguridad sin verificar",
-    "sellerKeys.unlockReplacesUnverified.body": "Se descargó un keystore, pero nada prueba que el archivo haya llegado intacto al disco. Desbloquear la bóveda guardada reemplaza las claves cargadas; si el archivo está dañado, ningún pago enviado a su metadirección podrá recuperarse. Verifica primero la copia de seguridad salvo que estés seguro de que el archivo está a salvo."
+    "sellerKeys.unlockReplacesUnverified.body": "Se descargó un keystore, pero nada prueba que el archivo haya llegado intacto al disco. Desbloquear la bóveda guardada reemplaza las claves cargadas; si el archivo está dañado, ningún pago enviado a su metadirección podrá recuperarse. Verifica primero la copia de seguridad salvo que estés seguro de que el archivo está a salvo.",
+    "error.reconciliationVault.encryptedReconciliationStorageIsFull": "El almacenamiento cifrado de conciliación está lleno en este perfil del navegador. No se escribió nada. Libera espacio (por ejemplo, archiva y elimina registros antiguos) e inténtalo de nuevo.",
+    "error.keyVault.encryptedBrowserStorageIsFull": "El almacenamiento cifrado del navegador está lleno en este perfil. La bóveda no se guardó. Libera espacio e inténtalo de nuevo, o conserva el keystore descargado como copia de seguridad."
   }
 }

@@ -2163,6 +2163,8 @@
     "sellerKeys.wipeUnverified.title": "Wipe keys whose backup is not verified?",
     "sellerKeys.wipeUnverified.body": "A keystore was downloaded, but nothing proves that the file reached the disk intact. If it did not, wiping these keys loses them for good, and every payment sent to their meta-address can then never be swept. Verify the backup first unless you are sure the file is safe.",
     "sellerKeys.unlockReplacesUnverified.title": "The keys loaded now have an unverified backup",
-    "sellerKeys.unlockReplacesUnverified.body": "A keystore was downloaded, but nothing proves that the file reached the disk intact. Unlocking the saved vault replaces the loaded keys; if the file is damaged, every payment sent to their meta-address can then never be swept. Verify the backup first unless you are sure the file is safe."
+    "sellerKeys.unlockReplacesUnverified.body": "A keystore was downloaded, but nothing proves that the file reached the disk intact. Unlocking the saved vault replaces the loaded keys; if the file is damaged, every payment sent to their meta-address can then never be swept. Verify the backup first unless you are sure the file is safe.",
+    "error.reconciliationVault.encryptedReconciliationStorageIsFull": "Encrypted reconciliation storage is full in this browser profile. Nothing was written. Free storage space (for example, archive and delete old records) and try again.",
+    "error.keyVault.encryptedBrowserStorageIsFull": "Encrypted browser storage is full in this profile. The vault was not saved. Free storage space and try again, or keep the downloaded keystore as your backup."
   }
 }

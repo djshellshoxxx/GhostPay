@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { IdbReconciliationVaultStore } from './reconciliationVault';
+import { fakeDb, installOpenFactory } from '../test/fakeIndexedDb';
 
 interface PendingOpen {
   result: IDBDatabase;
@@ -71,5 +72,58 @@ describe('encrypted reconciliation IndexedDB connection recovery', () => {
     requests[0]!.result = staleDb;
     requests[0]!.onsuccess?.();
     expect(close).toHaveBeenCalledOnce();
+  });
+});
+
+describe('encrypted reconciliation IndexedDB: closed connections and a full quota', () => {
+  it('opens again after the browser closed the connection (close event)', async () => {
+    const { requests, open } = installOpenFactory();
+    const store = new IdbReconciliationVaultStore();
+    const first = store.read('scope');
+    const db = fakeDb();
+    requests[0]!.result = db;
+    requests[0]!.onsuccess?.();
+    await expect(first).resolves.toBeNull();
+    (db as unknown as { onclose: () => void }).onclose();
+    const second = store.read('scope');
+    expect(open).toHaveBeenCalledTimes(2);
+    requests[1]!.result = fakeDb({ getResult: 'cipher' });
+    requests[1]!.onsuccess?.();
+    await expect(second).resolves.toBe('cipher');
+  });
+
+  it('drops a dead connection whose transaction() throws InvalidStateError and retries the operation once', async () => {
+    const { requests, open } = installOpenFactory();
+    const store = new IdbReconciliationVaultStore();
+    const dead = fakeDb({ throwOnTransaction: 'InvalidStateError' });
+    const read = store.read('scope');
+    requests[0]!.result = dead;
+    requests[0]!.onsuccess?.();
+    await vi.waitFor(() => { expect(open).toHaveBeenCalledTimes(2); });
+    requests[1]!.result = fakeDb({ getResult: 'cipher' });
+    requests[1]!.onsuccess?.();
+    await expect(read).resolves.toBe('cipher');
+    expect(dead.close).toHaveBeenCalled();
+    // Any other synchronous failure is reported, not retried.
+    const store2 = new IdbReconciliationVaultStore();
+    const failing = store2.read('scope');
+    requests[2]!.result = fakeDb({ throwOnTransaction: 'NotFoundError' });
+    requests[2]!.onsuccess?.();
+    await expect(failing).rejects.toThrow();
+    expect(open).toHaveBeenCalledTimes(3);
+  });
+
+  it('reports a full storage quota as such, and the compare-and-swap does not claim a commit', async () => {
+    const { requests } = installOpenFactory();
+    const store = new IdbReconciliationVaultStore();
+    const swap = store.compareAndSwap('scope', null, 'next-cipher', () => undefined);
+    requests[0]!.result = fakeDb({ putError: { name: 'QuotaExceededError' } });
+    requests[0]!.onsuccess?.();
+    await expect(swap).rejects.toThrow(/storage is full/);
+    const other = new IdbReconciliationVaultStore();
+    const failed = other.compareAndSwap('scope', null, 'next-cipher', () => undefined);
+    requests[1]!.result = fakeDb({ putError: { name: 'UnknownError' } });
+    requests[1]!.onsuccess?.();
+    await expect(failed).rejects.toThrow(/did not commit/);
   });
 });

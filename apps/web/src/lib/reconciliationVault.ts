@@ -87,6 +87,10 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
           db.close();
           if (this.dbPromise === pending) this.dbPromise = undefined;
         };
+        // The browser closed the connection itself (site data cleared, storage failure): the next call opens again.
+        db.onclose = () => {
+          if (this.dbPromise === pending) this.dbPromise = undefined;
+        };
         resolve(db);
       };
       const fail = (message: MessageDescriptor): void => {
@@ -105,9 +109,24 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
     });
     return pending;
   }
-  public async read(key: string): Promise<string | null> {
-    const db = await this.db();
-    return new Promise((resolve, reject) => {
+  /**
+   * Runs `operate` on the cached connection. A connection the browser already closed (its `transaction()` throws an
+   * InvalidStateError) is dropped and the operation runs once more on a fresh open; every other failure is reported as is.
+   */
+  private async withDb<T>(operate: (db: IDBDatabase) => Promise<T>): Promise<T> {
+    const pending = this.db();
+    const db = await pending;
+    try {
+      return await operate(db);
+    } catch (error) {
+      if (!isClosedConnection(error)) throw error;
+      if (this.dbPromise === pending) this.dbPromise = undefined;
+      try { db.close(); } catch { /* already closed */ }
+      return operate(await this.db());
+    }
+  }
+  public read(key: string): Promise<string | null> {
+    return this.withDb((db) => new Promise((resolve, reject) => {
       const tx = db.transaction('vaults', 'readonly');
       const request = tx.objectStore('vaults').get(key);
       let value: string | null = null;
@@ -120,18 +139,17 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
       tx.oncomplete = () => resolve(value);
       tx.onabort = tx.onerror = () =>
         reject(new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageCouldNotBeRead' }));
-    });
+    }));
   }
-  public async compareAndSwap(
+  public compareAndSwap(
     key: string,
     expected: string | null,
     next: string,
     guard: () => void,
   ): Promise<boolean> {
     if (next.length > MAX_VAULT_BYTES) fail({ key: 'error.reconciliationVault.encryptedReconciliationDataExceedsItsSafetyLimit' });
-    const db = await this.db();
-    guard();
-    return new Promise((resolve, reject) => {
+    return this.withDb((db) => new Promise((resolve, reject) => {
+      guard();
       const tx = db.transaction('vaults', 'readwrite');
       const store = tx.objectStore('vaults');
       const request = store.get(key);
@@ -150,6 +168,10 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
                 tx.abort();
               }
             };
+            // A full origin quota is reported as such, not as an unexplained failed commit; nothing was written.
+            write.onerror = () => {
+              if (isQuotaError(write.error)) failure = new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageIsFull' });
+            };
             swapped = true;
           }
         } catch (error) {
@@ -158,12 +180,24 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
         }
       };
       tx.oncomplete = () => resolve(swapped);
-      tx.onabort = tx.onerror = () =>
+      tx.onabort = tx.onerror = () => {
+        if (failure === undefined && isQuotaError(tx.error)) failure = new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageIsFull' });
         reject(
           failure instanceof Error ? failure : new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationWriteDidNotCommit' }),
         );
-    });
+      };
+    }));
   }
+}
+
+/** `transaction()` on a connection the browser closed throws this; the adapters then open again once. */
+export function isClosedConnection(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && (error as { name?: unknown }).name === 'InvalidStateError';
+}
+
+/** The origin's storage quota is exhausted (Chromium and Firefox name it so; Safari reports it on the transaction). */
+export function isQuotaError(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && (error as { name?: unknown }).name === 'QuotaExceededError';
 }
 
 const browserStore = new IdbReconciliationVaultStore();
@@ -189,7 +223,7 @@ export async function createCurrentReconciliationVault(
     throw error;
   }
 }
-// i18n-use: error.reconciliationVault.invalidReconciliationScope error.reconciliationVault.encryptedReconciliationDataExceedsItsSafetyLimit error.reconciliationVault.invalidEncryptedReconciliationFormat error.reconciliationVault.encryptedReconciliationDataBelongsToAnotherSellerOrChainScope error.reconciliationVault.invalidEncryptedReconciliationFields error.reconciliationVault.invalidReconciliationDocumentOrRecordLimit error.reconciliationVault.invalidReconciliationReorgCutoff error.reconciliationVault.invalidReconciliationReorgCutoffTime error.reconciliationVault.invalidReconciliationProvenance error.reconciliationVault.reconciliationRecordHasAnotherScope error.reconciliationVault.duplicateReconciliationRecords error.reconciliationVault.invalidReconciliationTombstone error.reconciliationVault.duplicateReconciliationTombstones error.reconciliationVault.registeredInvoiceHasAnotherScope error.reconciliationVault.duplicateRegisteredInvoice error.reconciliationVault.duplicateRegisteredInvoiceNonce error.reconciliationVault.duplicateArchivedReceipt error.reconciliationVault.invalidArchivedReceipt error.reconciliationVault.archivedReceiptHasAnotherScope error.reconciliationVault.invalidArchivedReceiptTimestamp error.reconciliationVault.thisHistoricalObservationWasInvalidatedByAReorg error.reconciliationVault.thisRecordAlreadyHasADifferentInvoiceAnnotation error.reconciliationVault.theReconciliationVaultIsLocked error.reconciliationVault.reconciliationVaultActionBecameStale error.reconciliationVault.invalidReconciliationViewingKey error.reconciliationVault.reconciliationPlaintextExceedsItsSafetyLimit error.reconciliationVault.couldNotDecryptOrValidateTheReconciliationData error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved error.reconciliationVault.importedHistoryCannotBeMatchedAutomatically error.reconciliationVault.onlyACurrentUnlinkedVerifiedScanObservationCanBeMatched error.reconciliationVault.currentReconciliationObservationsExceedTheirSafetyLimit error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch error.reconciliationVault.anotherRegisteredInvoiceAlreadyUsesThisNonce error.reconciliationVault.onlyAValidSignedReceiptCanBeArchived error.reconciliationVault.invalidReorgBlock error.reconciliationVault.invalidReorgObservationScope error.reconciliationVault.invalidCanonicalBlockHash error.reconciliationVault.reorgInvalidationWasSavedButItsHistoryReachedTheSafety error.reconciliationVault.createACurrentImportPreviewBeforeActivation error.reconciliationVault.theReconciliationSafetyStateChangedPreviewThisBackupAgainBefore error.reconciliationVault.thisBackupWouldExceedTheInvoiceRegistrationOrReceiptArchive error.reconciliationVault.encryptedReconciliationStorageIsUnavailable error.reconciliationVault.closeOtherGhostPayTabsToOpenEncryptedReconciliationStorage error.reconciliationVault.encryptedReconciliationStorageCouldNotBeRead error.reconciliationVault.encryptedReconciliationWriteDidNotCommit error.reconciliationVault.theCurrentSellerScopeChanged error.reconciliationVault.theReconciliationVaultReachedItsInvalidationCapacityAndIsRead
+// i18n-use: error.reconciliationVault.invalidReconciliationScope error.reconciliationVault.encryptedReconciliationDataExceedsItsSafetyLimit error.reconciliationVault.invalidEncryptedReconciliationFormat error.reconciliationVault.encryptedReconciliationDataBelongsToAnotherSellerOrChainScope error.reconciliationVault.invalidEncryptedReconciliationFields error.reconciliationVault.invalidReconciliationDocumentOrRecordLimit error.reconciliationVault.invalidReconciliationReorgCutoff error.reconciliationVault.invalidReconciliationReorgCutoffTime error.reconciliationVault.invalidReconciliationProvenance error.reconciliationVault.reconciliationRecordHasAnotherScope error.reconciliationVault.duplicateReconciliationRecords error.reconciliationVault.invalidReconciliationTombstone error.reconciliationVault.duplicateReconciliationTombstones error.reconciliationVault.registeredInvoiceHasAnotherScope error.reconciliationVault.duplicateRegisteredInvoice error.reconciliationVault.duplicateRegisteredInvoiceNonce error.reconciliationVault.duplicateArchivedReceipt error.reconciliationVault.invalidArchivedReceipt error.reconciliationVault.archivedReceiptHasAnotherScope error.reconciliationVault.invalidArchivedReceiptTimestamp error.reconciliationVault.thisHistoricalObservationWasInvalidatedByAReorg error.reconciliationVault.thisRecordAlreadyHasADifferentInvoiceAnnotation error.reconciliationVault.theReconciliationVaultIsLocked error.reconciliationVault.reconciliationVaultActionBecameStale error.reconciliationVault.invalidReconciliationViewingKey error.reconciliationVault.reconciliationPlaintextExceedsItsSafetyLimit error.reconciliationVault.couldNotDecryptOrValidateTheReconciliationData error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved error.reconciliationVault.importedHistoryCannotBeMatchedAutomatically error.reconciliationVault.onlyACurrentUnlinkedVerifiedScanObservationCanBeMatched error.reconciliationVault.currentReconciliationObservationsExceedTheirSafetyLimit error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch error.reconciliationVault.anotherRegisteredInvoiceAlreadyUsesThisNonce error.reconciliationVault.onlyAValidSignedReceiptCanBeArchived error.reconciliationVault.invalidReorgBlock error.reconciliationVault.invalidReorgObservationScope error.reconciliationVault.invalidCanonicalBlockHash error.reconciliationVault.reorgInvalidationWasSavedButItsHistoryReachedTheSafety error.reconciliationVault.createACurrentImportPreviewBeforeActivation error.reconciliationVault.theReconciliationSafetyStateChangedPreviewThisBackupAgainBefore error.reconciliationVault.thisBackupWouldExceedTheInvoiceRegistrationOrReceiptArchive error.reconciliationVault.encryptedReconciliationStorageIsUnavailable error.reconciliationVault.closeOtherGhostPayTabsToOpenEncryptedReconciliationStorage error.reconciliationVault.encryptedReconciliationStorageCouldNotBeRead error.reconciliationVault.encryptedReconciliationWriteDidNotCommit error.reconciliationVault.encryptedReconciliationStorageIsFull error.reconciliationVault.theCurrentSellerScopeChanged error.reconciliationVault.theReconciliationVaultReachedItsInvalidationCapacityAndIsRead
 
 // i18n-use: error.reconciliationVault.invoiceCapacity
 
