@@ -68,21 +68,42 @@ export function subscribeReconciliationChanges(refresh: () => void): () => void 
 export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
   private dbPromise: Promise<IDBDatabase> | undefined;
   private db(): Promise<IDBDatabase> {
-    this.dbPromise ??= new Promise((resolve, reject) => {
+    if (this.dbPromise) return this.dbPromise;
+    let settled = false;
+    const pending = new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open('ghostpay-reconciliation-encrypted', 1);
       request.onupgradeneeded = () => {
         request.result.createObjectStore('vaults');
       };
       request.onsuccess = () => {
         const db = request.result;
-        db.onversionchange = () => db.close();
+        // A blocked open can succeed after it was rejected and a newer open has started.
+        if (settled) {
+          db.close();
+          return;
+        }
+        settled = true;
+        db.onversionchange = () => {
+          db.close();
+          if (this.dbPromise === pending) this.dbPromise = undefined;
+        };
         resolve(db);
       };
-      request.onerror = () => reject(new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageIsUnavailable' }));
+      const fail = (message: MessageDescriptor): void => {
+        if (settled) return;
+        settled = true;
+        reject(new UserFacingError(message));
+      };
+      request.onerror = () => fail({ key: 'error.reconciliationVault.encryptedReconciliationStorageIsUnavailable' });
       request.onblocked = () =>
-        reject(new UserFacingError({ key: 'error.reconciliationVault.closeOtherGhostPayTabsToOpenEncryptedReconciliationStorage' }));
+        fail({ key: 'error.reconciliationVault.closeOtherGhostPayTabsToOpenEncryptedReconciliationStorage' });
     });
-    return this.dbPromise;
+    this.dbPromise = pending;
+    // Failed opens must not poison future operations; never replace a newer attempt.
+    void pending.catch(() => {
+      if (this.dbPromise === pending) this.dbPromise = undefined;
+    });
+    return pending;
   }
   public async read(key: string): Promise<string | null> {
     const db = await this.db();
