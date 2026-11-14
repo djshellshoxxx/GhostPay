@@ -4,7 +4,7 @@ import { ed25519 } from '@noble/curves/ed25519.js';
 import { manifestSigningBytes, type ReleaseKey } from '@ghostpay/chain-adapters';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { mockRpc } from '../test/mockRpc';
-import { loadManifest, verifyManifestState } from './manifest';
+import { loadManifest, verifyManifestForFlow, verifyManifestState } from './manifest';
 
 const ok = (body: string, status = 200): Promise<Response> => Promise.resolve(new Response(body, { status }));
 
@@ -90,6 +90,24 @@ describe('loadManifest', () => {
     });
     it('passes through absent/invalid states', async () => {
       expect(await verifyManifestState({ status: 'absent' }, base)).toEqual({ status: 'absent' });
+    });
+  });
+  describe('verifyManifestForFlow (A7-3)', () => {
+    const base = mockRpc(84532, () => { throw new Error('unexpected'); });
+    const state = { status: 'loaded', manifest: backedManifest(84532) } as const;
+    it('fails closed with no RPC: a loaded manifest becomes invalid, never loaded', async () => {
+      const s = await verifyManifestForFlow(state, undefined);
+      expect(s.status).toBe('invalid');
+      expect(s.status === 'invalid' && s.reason).toMatch(/RPC.*needed/);
+    });
+    it('fails closed on a readback mismatch', async () => {
+      expect((await verifyManifestForFlow(state, withManifestChain(base, { feeRecipient: '0x00000000000000000000000000000000deadbeef' }))).status).toBe('invalid');
+    });
+    it('keeps a matching manifest and passes non-loaded states through, with or without an RPC', async () => {
+      expect((await verifyManifestForFlow(state, withManifestChain(base))).status).toBe('loaded');
+      expect(await verifyManifestForFlow({ status: 'absent' }, undefined)).toEqual({ status: 'absent' });
+      const invalid = { status: 'invalid', reason: 'x' } as const;
+      expect(await verifyManifestForFlow(invalid, base)).toEqual(invalid);
     });
   });
 });
