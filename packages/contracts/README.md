@@ -80,7 +80,7 @@ Newer figures (2026-10-21: 377 tests in 23 suites, `forge fmt --check` and `forg
 (includes the audit regression/PoC tests under `test/audit/`). `forge coverage --ir-minimum` (production sources only): lines 99.25 % (264/266),
 branches 100 % (39/39), functions 100 % (72/72); the two uncovered "lines" are the new assembly `call` statements, which the coverage instrumentation
 does not count although the tests execute them (verified by the gas-bound regression tests). Under `--ir-minimum` the instrumented bytecode differs from the
-release build and `Sweep.audit.t.sol::test_crossRelayerAndCrossChainReplayRejected` fails in coverage mode only (it switches `chainid`; the cause under instrumentation was not investigated and the contract it exercises, the sweep relayer, is unchanged apart from comments); it passes in the normal run. `.gas-snapshot` is committed.
+release build and `Sweep.audit.t.sol::test_crossRelayerAndCrossChainReplayRejected` failed in coverage mode only at that time (test-harness bug, since fixed: a `block.chainid` local is re-read after `vm.chainId` under via-IR, see `docs/remote/STATUS.md`; the sweep relayer contract was not at fault and is unchanged); it passed in the normal run. `.gas-snapshot` is committed.
 Static analysis: Slither 0 medium/high results with the CI exclusions and also **without** the `arbitrary-send-erc20,incorrect-equality` exclusions
 (both sites carry an inline `slither-disable-next-line` with rationale); Mythril was run once by the audit. Echidna and mutation testing were run locally only (see "Echidna and mutation testing"); neither is in CI. Forge's built-in
 linter reports no findings (justified inline `forge-lint: disable` comments only). No fork test against a live network was run; the "fork-style"
