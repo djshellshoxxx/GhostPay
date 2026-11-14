@@ -48,11 +48,11 @@ Details: [privacy limits](../user/privacy-limits.md), [receive and scan](../user
 - **RPC URL per chain.** No provider is built in and no provider is substituted silently. Only `https://` and `wss://` URLs without a username, password or fragment are accepted. The app checks `eth_chainId` before use. A configured second RPC is used as a cross-check; if it cannot be opened the scan stops instead of continuing with one provider.
 - **Your own node.** Give it an HTTPS or WSS endpoint, or choose the local-proxy scan path in Settings, which accepts `http://127.0.0.1`, `http://localhost` or `http://[::1]` for scanning.
 - **Scan privacy.** A "private path required" setting (Tor Browser or a local proxy) blocks the scan when that path is not available instead of falling back to a direct connection.
-- **Idle lock.** After the configured idle time the app locks local tags and records, and clears seller keys from memory when they can be loaded again (encrypted storage or a backup). Keys that exist only in the tab are kept loaded and the app tells you to back them up.
+- **Idle lock.** After the configured idle time the app locks local tags and records, and clears seller keys from memory when they can be loaded again (encrypted storage, imported keys, or a downloaded backup that you verified). Keys that exist only in the tab, or whose only copy is a downloaded file you have not verified yet, are kept loaded and the app tells you to back them up or verify the backup. The deadline is a wall-clock check: a device that slept past it locks as soon as the page is visible or used again.
 
 ### Typical flow (testnet beta)
 
-1. **Seller keys:** create keys, set a passphrase, then **back up** (encrypted file) and keep it somewhere else. Keys without a backup are lost if the tab closes.
+1. **Seller keys:** create keys, set a passphrase, then **back up** (encrypted file), **verify the backup** (pick the downloaded file and type its passphrase; the app decrypts it locally, compares it with the loaded keys and loads nothing) and keep the file somewhere else. Keys without a backup are lost if the tab closes; a download alone shows as "not verified".
 2. **Create invoice:** choose the testnet, token, amount and expiry. Copy the link or show the QR code.
 3. **Buyer (Pay):** open the link, review chain, token, amount and destination, connect a browser wallet on the right network, confirm. The wallet sends the transaction directly; no relayer is involved. Reloading during a pending payment keeps its hash and blocks a duplicate.
 4. **Seller (Scan and receive):** set the RPC, start a scan. The checkpoint survives closing and reopening the browser; the next scan resumes from it.

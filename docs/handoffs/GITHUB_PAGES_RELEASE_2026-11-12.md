@@ -35,3 +35,4 @@ Owner actions:
 
 Engineering:
 - Any open item listed under "Security findings" in the release matrix.
+- GP-PAGES-02 (Verify backup) and GP-PAGES-04 (sleep-aware idle lock) are implemented on `claude/vigilant-johnson-yjgq94` (from the PR #145 head), with IndexedDB connection recovery for the seller key vault and the reconciliation store; see `docs/handoffs/PAGES_BETA_CONTINUATION_2026-11-14.md`. They need review and integration into the Pages stack.
