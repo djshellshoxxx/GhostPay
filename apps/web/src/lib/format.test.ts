@@ -37,6 +37,11 @@ describe('fiat', () => {
     expect(formatFiat(5n, 'USD')).toBe('USD 0.05');
     expect(formatFiat(500n, 'JPY')).toBe('JPY 500');
   });
+  it('formats negative minor units with a single leading minus (regression RED baseline)', () => {
+    expect(formatFiat(-5n, 'USD')).toBe('USD -0.05');
+    expect(formatFiat(-12_345n, 'USD')).toBe('USD -123.45');
+    expect(formatFiat(-2n, 'JPY')).toBe('JPY -2');
+  });
   it('rounds tax half up', () => {
     expect(taxFor(10_000n, 500)).toBe(500n);
     expect(taxFor(1n, 5000)).toBe(1n);
