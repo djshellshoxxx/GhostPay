@@ -29,24 +29,60 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh pr list --state open --limit 100 --json number,headRefName,isDraft --jq \
-            '.[] | select(.headRefName | startswith("codex/ghostpay-cloud-")) | select(.isDraft == false) | .number' |
-          while IFS= read -r number; do
+          # Fail closed: any API error, missing field or unmet gate skips the PR (never merges).
+          # Only owner-account (or this repo's own Actions bot) PRs from this repository's own
+          # branches are considered; each needs a current-head human approval from a write+ reviewer.
+          ALLOWED_AUTHORS=' djshellshoxxx app/github-actions '
+          gh pr list --state open --limit 100 \
+            --json number,headRefName,isDraft,isCrossRepository,author --jq \
+            '.[] | select(.headRefName | startswith("codex/ghostpay-cloud-")) | select(.isDraft == false) | [.number, .isCrossRepository, .author.login] | @tsv' |
+          while IFS=$'\t' read -r number cross author; do
             [ -n "$number" ] || continue
-            head="$(gh pr view "$number" --json headRefOid --jq '.headRefOid')"
-            checks="$(gh api "repos/$GITHUB_REPOSITORY/commits/$head/check-runs?per_page=100")"
+            if [ "$cross" != "false" ]; then
+              echo "PR #$number skipped: head is not in this repository"; continue
+            fi
+            case "$ALLOWED_AUTHORS" in
+              *" $author "*) ;;
+              *) echo "PR #$number skipped: author '$author' not in allowlist"; continue ;;
+            esac
+            if ! head="$(gh pr view "$number" --json headRefOid --jq '.headRefOid')" || [ -z "$head" ]; then
+              echo "PR #$number skipped: cannot read head SHA"; continue
+            fi
+            if ! checks="$(gh api "repos/$GITHUB_REPOSITORY/commits/$head/check-runs?per_page=100")"; then
+              echo "PR #$number skipped: cannot read check runs"; continue
+            fi
             valid=true
             for name in 'typescript' 'contracts' 'e2e' 'secrets-and-egress'; do
               status="$(printf '%s' "$checks" | jq -r --arg name "$name" \
-                '([.check_runs[] | select(.name == $name)] | last | .conclusion) // "missing"')"
+                '([.check_runs[] | select(.name == $name)] | last | .conclusion) // "missing"')" || status=error
               if [ "$status" != "success" ]; then
                 echo "PR #$number awaiting $name ($status)"
                 valid=false
               fi
             done
             if [ "$valid" != true ]; then continue; fi
-            # GitHub still enforces additional reviews and branch protection.
-            gh pr merge "$number" --squash --delete-branch ||
+            # Latest review per reviewer; need an APPROVED one on the current head from a
+            # non-author, non-bot reviewer with write/maintain/admin permission.
+            if ! reviews="$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$number/reviews?per_page=100" |
+              jq -s -r --arg head "$head" --arg author "$author" '
+                add | map(select(.state != "PENDING" and .user != null))
+                | group_by(.user.login) | map(sort_by(.submitted_at) | last)
+                | map(select(.state == "APPROVED" and .commit_id == $head
+                    and .user.login != ($author | sub("^app/"; ""))
+                    and (.user.login | endswith("[bot]") | not) and .user.type != "Bot"))
+                | .[].user.login')"; then
+              echo "PR #$number skipped: cannot read reviews"; continue
+            fi
+            approved=false
+            for reviewer in $reviews; do
+              if perm="$(gh api "repos/$GITHUB_REPOSITORY/collaborators/${reviewer}/permission" --jq '.permission')"; then
+                case "$perm" in admin|maintain|write) approved=true ;; esac
+              fi
+            done
+            if [ "$approved" != true ]; then
+              echo "PR #$number skipped: no current-head APPROVED review from a write-permission non-author human"; continue
+            fi
+            gh pr merge "$number" --squash --delete-branch --match-head-commit "$head" ||
               echo "::warning::PR #$number is not yet mergeable under GitHub rules"
           done
 
