@@ -139,7 +139,7 @@ jobs:
               fi
               if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi
               if [ "$shard" = 0 ]; then
-                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs
+                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs
               fi
               ;;
           esac
