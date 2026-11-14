@@ -1,0 +1,324 @@
+From 2642db398864d12849d0eebf44c8427b88f7fa99 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 4 Nov 2026 07:24:34 +0000
+Subject: [PATCH 1/4] fix(web-scan): re-verify RPC-failed router claims once;
+ window head follows the latest page
+
+Qodo on #70:
+- A router claim whose check threw (transport error, or the block changed
+  mid-check) on a final page was passed by the saved checkpoint and never
+  re-verified. verifyClaimedPayment now marks those results `retryable`
+  (also when only the second provider failed); runScan flags the match
+  `recheck`, and persistable() holds the checkpoint at such a claim when it
+  lies strictly after the run start. A claim at the run start was already
+  retried, so it is passed: one retry per claim, the scan always moves
+  forward and a claim built to always throw cannot pin the checkpoint.
+- reachableHead now tracks the latest page's head instead of the highest
+  seen, so a provider head that falls between pages no longer marks a
+  completed scan partial or shifts its privacy windows.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01KtKj8jKCxc3mPzqqbW35tq
+---
+ apps/web/src/lib/scanClient.test.ts          | 82 ++++++++++++++++++++
+ apps/web/src/lib/scanClient.ts               | 25 +++++-
+ apps/web/src/views/Scan.test.tsx             |  5 +-
+ packages/chain-adapters/src/payments.test.ts | 22 ++++++
+ packages/chain-adapters/src/payments.ts      | 23 ++++--
+ 5 files changed, 148 insertions(+), 9 deletions(-)
+
+diff --git a/apps/web/src/lib/scanClient.test.ts b/apps/web/src/lib/scanClient.test.ts
+index 1d958b9..3f49254 100644
+--- a/apps/web/src/lib/scanClient.test.ts
++++ b/apps/web/src/lib/scanClient.test.ts
+@@ -1078,6 +1078,22 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
+     expect(res.telemetry?.anonymity).toMatchObject({ count7d: 0, count30d: 1, partial: true });
+   });
+ 
++  it('ends the privacy windows at the latest page head when the provider head falls between pages, so a scan that reaches it is complete (A5)', async () => {
++    const keys = generateKeySet();
++    const stranger = encodeMetaAddress(generateKeySet());
++    // 7 days at 2 s is 302,400 blocks: block 377,601 opens the window ending at head 680,000, and lies 20,000 blocks
++    // before the window that would end at the obsolete head 700,000.
++    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 377_601, index: 0, caller: FAKE_ROUTER });
++    const base = chainWith(700_000, [routed.log]);
++    // The first page sees head 700,000; every later page sees 680,000 (a load-balanced backend that was ahead).
++    let reads = 0;
++    const client = { ...base, blockNumber: () => Promise.resolve(reads++ === 0 ? 700_000n : 680_000n) };
++    const res = await runScan({ chain, manifest, client, cursor: { nextBlock: 0n }, ...keyArgs(keys) });
++    expect(reads).toBeGreaterThan(1);
++    expect(res.cursor.nextBlock).toBe(680_001n);
++    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: false });
++  });
++
+   it('counts a router announcement once in the privacy set when a mid-run reorg replays its block (A5)', async () => {
+     const keys = generateKeySet();
+     const stranger = encodeMetaAddress(generateKeySet());
+@@ -1262,6 +1278,72 @@ describe('two-provider replay-tail checkpoint anchor', () => {
+     });
+   });
+ 
++  describe('router claim whose check failed in transit on a final page (one bounded retry)', () => {
++    const HEAD = 120_000;
++    const SETTLED = BigInt(HEAD) + 1n - 100n; // the replay-tail checkpoint of a run that reaches the head
++    /** chainWith, but eth_getTransactionReceipt throws (a transport failure) while `failing()` says so. */
++    const flaky = (logs: RpcLog[], failing: () => boolean): ReturnType<typeof chainWith> => {
++      const base = chainWith(HEAD, logs);
++      return { ...base, request: (method, params) => (method === 'eth_getTransactionReceipt' && failing()
++        ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'timeout'))
++        : base.request(method, params)) };
++    };
++
++    it('saves the checkpoint at the claim, so a resume with a working RPC reports the payment verified', async () => {
++      const s = setup(); const cp = memStore();
++      let failures = 1;
++      const client = flaky([s.mine.log], () => failures-- > 0);
++      const first = await scan(s, KEY, { client, checkpoints: cp.store });
++      expect(first.cursor.nextBlock).toBe(BigInt(HEAD) + 1n);
++      expect(first.matches.map((m) => [m.stealthAddress, m.receipt, m.recheck])).toEqual([[s.mine.stealthAddress, 'claimed', true]]);
++      // Not 119,901 (the head's replay tail): block 120 is final, but its payment was never actually checked.
++      const saved = cp.store.load(chain.chainId, KEY);
++      expect(saved).toEqual({ nextBlock: 120n, last: { number: 119n, hash: blockHash(119) } });
++      const second = await scan(s, KEY, { client, cursor: saved!, checkpoints: cp.store });
++      expect(second.matches.map((m) => [m.stealthAddress, m.receipt, m.recheck])).toEqual([[s.mine.stealthAddress, 'verified', undefined]]);
++      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(SETTLED);
++    });
++
++    it('gives each claim whose check always throws exactly one retry, then saves past it: the checkpoint is never pinned', async () => {
++      const s = setup(); const cp = memStore();
++      const later = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 30_000, index: 2, caller: FAKE_ROUTER });
++      const client = flaky([s.mine.log, later.log], () => true);
++      const resume = () => scan(s, KEY, { client, cursor: cp.store.load(chain.chainId, KEY) ?? { nextBlock: 0n }, checkpoints: cp.store });
++      const first = await resume();
++      expect(first.matches.map((m) => [m.receipt, m.recheck])).toEqual([['claimed', true], ['claimed', true]]);
++      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(120n);
++      // Run 2 starts AT block 120 and fails there again: that was its retry, so only the later claim is still owed one.
++      const second = await resume();
++      expect(second.matches.map((m) => m.announcement.blockNumber)).toEqual([120n, 30_000n]);
++      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(30_000n);
++      // Run 3 starts at 30,000, fails once more and moves on to the head's replay tail.
++      const third = await resume();
++      expect(third.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[30_000n, 'claimed']]);
++      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(SETTLED);
++      const fourth = await resume();
++      expect(fourth.matches).toEqual([]);
++      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(SETTLED);
++    });
++
++    it('does not rewind for claims their evidence refutes (no matching transfer, or not router-posted): A5 progress holds', async () => {
++      const s = setup(); const cp = memStore();
++      const base = chainWith(HEAD, s.logs);
++      // The receipt is readable but carries no token Transfer: a definitive "not this payment", not a transient failure.
++      const client: ReturnType<typeof chainWith> = { ...base, request: async (method, params) => {
++        const r = await base.request(method, params);
++        if (method !== 'eth_getTransactionReceipt' || r === null) return r;
++        const receipt = r as { readonly logs: readonly RpcLog[] };
++        return { ...receipt, logs: receipt.logs.filter((l) => l.topics[0] !== TRANSFER_TOPIC) };
++      } };
++      const res = await scan(s, KEY, { client, checkpoints: cp.store, maxPages: 1 });
++      expect(res.matches.map((m) => [m.stealthAddress, m.receipt, m.recheck]).sort()).toEqual([
++        [s.mine.stealthAddress, 'claimed', undefined],
++        [s.mine2.stealthAddress, 'claimed', undefined],
++      ].sort());
++      expect(cp.saves).toEqual([{ nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) } }]);
++    });
++  });
++
+   it('writes nothing when cancelled while the tail corroboration is pending', async () => {
+     const s = setup(); const cp = memStore(); const secondary = chainWith(2500, [s.mine.log]);
+     let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+diff --git a/apps/web/src/lib/scanClient.ts b/apps/web/src/lib/scanClient.ts
+index f7cf829..ac02796 100644
+--- a/apps/web/src/lib/scanClient.ts
++++ b/apps/web/src/lib/scanClient.ts
+@@ -43,6 +43,12 @@ export interface ScanMatch {
+    * `pending`: not yet final.
+    */
+   readonly receipt: ReceiptStatus;
++  /**
++   * Set on a `claimed` router match whose check could not be completed (an RPC failure or a reorg race, see
++   * `PaymentVerification.retryable`), as opposed to one its evidence refuted. The saved checkpoint is held at its block
++   * so the next run checks it again, once (see `persistable`). Absent otherwise.
++   */
++  readonly recheck?: true;
+ }
+ 
+ export interface ScanProgress {
+@@ -265,7 +271,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+       secondaryLag = secondaryHead !== undefined && !res.truncated && res.head > secondaryHead + BigInt(p.chain.finalityDepth) ? { secondaryHead, head: res.head } : undefined;
+       const pageRouterOnly = res.routerOnlyBlocks ?? [];
+       const pageHead = secondaryHead !== undefined && secondaryHead < res.head ? secondaryHead : res.head;
+-      if (reachableHead === undefined || pageHead > reachableHead) reachableHead = pageHead;
++      // The latest page's head, not the highest seen: a provider head that falls between pages (a load-balanced backend
++      // that was ahead) must not leave the privacy windows ending at blocks the completed scan was never offered.
++      reachableHead = pageHead;
+       skipped += res.skipped;
+       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
+       if (res.reorg !== undefined) {
+@@ -392,7 +400,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+           ? verification.final ? 'verified' : 'pending'
+           : 'claimed';
+         const workerMatch = workerMatches.get(claim.announcement.id);
+-        const match: ScanMatch = { chainId: p.chain.chainId, announcement: claim.announcement, stealthAddress: claim.stealthAddress, metadata: claim.metadata, viaRouter: claim.viaRouter, tagMatches: workerMatch?.tagMatches ?? true, receipt };
++        const recheck = receipt === 'claimed' && verification?.retryable === true;
++        const match: ScanMatch = { chainId: p.chain.chainId, announcement: claim.announcement, stealthAddress: claim.stealthAddress, metadata: claim.metadata, viaRouter: claim.viaRouter, tagMatches: workerMatch?.tagMatches ?? true, receipt, ...(recheck ? { recheck } : {}) };
+         pageMatches.push(match);
+       }
+       // Don't commit evidence from a partially processed/cancelled page.
+@@ -556,6 +565,13 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
+  * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
+  * earliest `pending` match, and never moves behind where this run started.
+  *
++ * A `claimed` match marked `recheck` (its check failed on an RPC error or a reorg race, not on the evidence) holds the
++ * checkpoint at its block too, so a final block is never passed with a payment nobody actually checked. That retry is
++ * given exactly once: only a match strictly after this run's start (`p.cursor.nextBlock`) holds the checkpoint. A claim
++ * at the start itself was already the retry (this run began there, and its check failed again), so it is passed. A
++ * claim crafted to fail its check every time (a receipt over the response cap, say) therefore costs one extra run and
++ * cannot pin the checkpoint: every run still saves a position after the one it started from.
++ *
+  * With a second provider, whichever anchor is saved (the replay-tail block, or the page end when the cursor itself is saved)
+  * must hold the ba0fd59 invariant: its hash is read from both providers plus a second primary read after the secondary
+  * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
+@@ -569,6 +585,11 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
+   if (settled > next) next = settled;
+   // A payment check that saw a lower head than the log fetch can leave a match pending below either edge: re-scan it.
+   for (const m of matches) if (m.receipt === 'pending' && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
++  // One retry per check that could not be completed; strictly after the run start, so the scan always moves forward.
++  for (const m of matches) {
++    const block = m.announcement.blockNumber;
++    if (m.recheck === true && block > p.cursor.nextBlock && block < next) next = block;
++  }
+   if (next < floor) next = floor;
+   if (next >= cursor.nextBlock) {
+     if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;
+diff --git a/apps/web/src/views/Scan.test.tsx b/apps/web/src/views/Scan.test.tsx
+index b1e8684..c2909fc 100644
+--- a/apps/web/src/views/Scan.test.tsx
++++ b/apps/web/src/views/Scan.test.tsx
+@@ -109,7 +109,10 @@ describe('Scan and receive', () => {
+     const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, amount: 2_500_000n });
+     const { encodeMetaAddress, generateKeySet } = await import('@ghostpay/core-crypto');
+     const other = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 121, index: 1, caller: FAKE_ROUTER });
+-    const rpc = chainWithLogs(84532, 500, [mine.log, other.log]);
++    // The RPC answers that it does not know the transaction: a settled "unverified", not a check to retry, so the
++    // checkpoint is the plain finality tail (an RPC error here would hold it at block 120 for one retry instead).
++    const unknownTx = (method: string): unknown => (method === 'eth_getTransactionReceipt' || method === 'eth_getTransactionByHash' ? null : undefined);
++    const rpc = chainWithLogs(84532, 500, [mine.log, other.log], unknownTx);
+     const checkpoints = memoryCheckpoints();
+     const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), checkpoints, createScanWorker: () => new InlineWorker() }));
+     await user.type(screen.getByLabelText('Start block'), '100');
+diff --git a/packages/chain-adapters/src/payments.test.ts b/packages/chain-adapters/src/payments.test.ts
+index be7d14d..28c6870 100644
+--- a/packages/chain-adapters/src/payments.test.ts
++++ b/packages/chain-adapters/src/payments.test.ts
+@@ -267,6 +267,28 @@ describe('verifyClaimedPayment', () => {
+     expect(v2.status).toBe('received');
+     expect(v2.observedBalance).toBeUndefined();
+   });
++  it('marks only transient failures retryable (transport throw, block changed mid-check), never a verdict from evidence', async () => {
++    const { claim } = make();
++    const down = await verifyClaimedPayment(base(await node({ failAll: true }), claim));
++    expect(down).toMatchObject({ status: 'unverified-claim', retryable: true });
++    const thrown = await verifyClaimedPayment(base({ ...(await node({ claim, transferLogs: [transferLog(claim)] })), request: () => Promise.reject(new Error('timeout')) }, claim));
++    expect(thrown).toMatchObject({ status: 'unverified-claim', retryable: true });
++    const native = make({ token: 'native' }).claim;
++    const raced = await verifyClaimedPayment(base(await node({ ...directEvidence(native), reorgAfterEvidence: true }), native));
++    expect(raced).toMatchObject({ status: 'unverified-claim', retryable: true });
++    expect(raced.reason).toMatch(/block changed/);
++    // A second provider that cannot answer leaves the claim as uncertain as a primary that cannot.
++    const good = () => node({ claim, transferLogs: [transferLog(claim)] });
++    const secondaryDown = await verifyClaimedPayment({ ...base(await good(), claim), secondaryClient: await node({ failAll: true }) });
++    expect(secondaryDown).toMatchObject({ status: 'unverified-claim', retryable: true });
++    for (const settled of [
++      await verifyClaimedPayment(base(await node({ claim, transferLogs: [] }), claim)),
++      await verifyClaimedPayment(base(await node({ claim, canonicalHash: `0x${'ee'.repeat(32)}`, transferLogs: [transferLog(claim)] }), claim)),
++      await verifyClaimedPayment(base(await good(), make({ caller: FAKE.announcer }).claim)),
++      await verifyClaimedPayment({ ...base(await good(), claim), secondaryClient: await node({ claim, transferLogs: [] }) }),
++      await verifyClaimedPayment(base(await good(), claim)),
++    ]) expect(settled).not.toHaveProperty('retryable');
++  });
+   it('requires chain-bound allowlisted metadata and reconciled exact evidence', async () => {
+     const evil = '0x00000000000000000000000000000000deadbeef' as Address;
+     const { claim: unknownToken } = make({ token: evil });
+diff --git a/packages/chain-adapters/src/payments.ts b/packages/chain-adapters/src/payments.ts
+index f217bee..42fc14f 100644
+--- a/packages/chain-adapters/src/payments.ts
++++ b/packages/chain-adapters/src/payments.ts
+@@ -43,6 +43,14 @@ export interface PaymentVerification {
+   readonly evidenceId?: string;
+   /** Domain-separated digest of the direct transaction facts compared across providers. */
+   readonly evidenceBinding?: Hex;
++  /**
++   * Set only on an `unverified-claim` whose evidence could not be READ, not one the evidence refuted: an RPC exception
++   * ("Your RPC could not confirm this payment.", also from the second provider), or a reorg race ("The payment block
++   * changed while its evidence was being checked"). The same check may succeed later, so a scanner should re-run it
++   * before moving its checkpoint past the claim. Absent on every verdict reached from evidence. A hostile claim can make
++   * its own check throw every time, so callers must bound the retries (the web scanner allows exactly one).
++   */
++  readonly retryable?: true;
+ }
+ 
+ const TRANSFER_TOPIC: Hex = keccak256(toBytes('Transfer(address,address,uint256)'));
+@@ -114,7 +122,7 @@ export interface VerifyClaimInput {
+  * canonical receipt and transaction show the exact announcement and a router call carrying at least that value.
+  * A balance alone is never evidence of this payment. A lying RPC can fake all of it; configure a second provider to
+  * compare evidence. Reads never throw: RPC
+- * failures degrade to `unverified-claim`.
++ * failures degrade to `unverified-claim`, marked `retryable` (as is a reorg race during the check).
+  *
+  * @param i Input.
+  * @returns Verification result with confirmation depth against `chain.finalityDepth`.
+@@ -125,7 +133,8 @@ export async function verifyClaimedPayment(i: VerifyClaimInput): Promise<Payment
+   if (i.secondaryClient !== undefined) {
+     const secondary = await verifyClaimedPaymentOnClient({ chain: i.chain, client: i.secondaryClient, router: i.router, announcer: i.announcer, claim: i.claim });
+     if (secondary.status !== 'received' || secondary.evidenceId !== primary.evidenceId || secondary.evidenceBinding !== primary.evidenceBinding || secondary.final !== primary.final || secondary.evidence.join('|') !== primary.evidence.join('|')) {
+-      return withoutEvidenceId(primary, 'The two RPC providers did not agree on the payment evidence.');
++      // A second provider that could not answer leaves the claim as uncertain as a primary that could not.
++      return withoutEvidenceId(primary, 'The two RPC providers did not agree on the payment evidence.', secondary.retryable);
+     }
+   }
+   if (primary.evidenceId !== undefined && i.consumedTransfers?.has(primary.evidenceId) === true) {
+@@ -135,10 +144,11 @@ export async function verifyClaimedPayment(i: VerifyClaimInput): Promise<Payment
+   return primary;
+ }
+ 
+-function withoutEvidenceId(result: PaymentVerification, reason: string): PaymentVerification {
++function withoutEvidenceId(result: PaymentVerification, reason: string, retryable?: true): PaymentVerification {
+   return {
+     status: 'unverified-claim',
+     reason,
++    ...(retryable === true ? { retryable } : {}),
+     confirmations: result.confirmations,
+     final: result.final,
+     ...(result.observedBalance === undefined ? {} : { observedBalance: result.observedBalance }),
+@@ -153,9 +163,10 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
+   let evidenceId: string | undefined;
+   let evidenceBinding: Hex | undefined;
+   let confirmations = 0n;
+-  const done = (status: PaymentVerification['status'], reason: string | undefined, observed: bigint | undefined): PaymentVerification => ({
++  const done = (status: PaymentVerification['status'], reason: string | undefined, observed: bigint | undefined, retryable?: true): PaymentVerification => ({
+     status,
+     ...(reason === undefined ? {} : { reason }),
++    ...(retryable === true ? { retryable } : {}),
+     confirmations,
+     final: confirmations >= BigInt(chain.finalityDepth),
+     ...(observed === undefined ? {} : { observedBalance: observed }),
+@@ -204,13 +215,13 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
+     // A reorg may happen while the receipt and transaction were being read. Never release stale evidence.
+     const confirmedBlock = await client.getBlock(a.blockNumber);
+     if (confirmedBlock === null || confirmedBlock.hash.toLowerCase() !== a.blockHash.toLowerCase()) {
+-      return done('unverified-claim', 'The payment block changed while its evidence was being checked. Rescan before relying on it.', observed);
++      return done('unverified-claim', 'The payment block changed while its evidence was being checked. Rescan before relying on it.', observed, true);
+     }
+     evidenceId = supportingId;
+     evidenceBinding = direct.binding;
+   } catch {
+     // Providers are replaceable interfaces; even an unexpected transport exception must not expose URLs or payloads.
+-    return done('unverified-claim', 'Your RPC could not confirm this payment.', observed);
++    return done('unverified-claim', 'Your RPC could not confirm this payment.', observed, true);
+   }
+   return done('received', undefined, observed);
+ }
+-- 
+2.43.0
+

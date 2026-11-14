@@ -3,14 +3,17 @@ import { privateKeyToAccount } from 'viem/accounts';
 import type { Address } from 'viem';
 import { createViemChainPort, type ChainPort } from './chain.js';
 import { buildConfig, type PoolEntry } from './config.js';
+import { loadPoolRelayerKey } from './key.js';
 import { createLogger } from './log.js';
 import { PoolRelayerHttpServer } from './server.js';
 import { PoolRelayerService } from './service.js';
 
 /**
- * Entry point. Environment (no secrets in files or logs):
+ * Entry point. Environment (no secrets in logs):
  *
- * - `POOL_RELAYER_KEY`   hot key, 0x-hex 32 bytes (testnet funds only; never commit, never log)
+ * - `POOL_RELAYER_KEY_FILE` path to a mode-600 file holding the hot key as hex (preferred; testnet funds only)
+ * - `POOL_RELAYER_KEY`   the hot key itself, 32-byte hex (refused under NODE_ENV=production unless ALLOW_SECRET_ENV=1;
+ *   never commit, never log). Set exactly one of the two.
  * - `POOL_RELAYER_FEE_TO` fee recipient address
  * - `POOL_RELAYER_POOLS` JSON `[{ "chainId": 31337, "pool": "0x..", "rpcUrl": "http://127.0.0.1:8545", "rate": ["1","1"] }]`
  * - `POOL_RELAYER_VKEY`  path to `withdraw.vkey.json`
@@ -24,10 +27,7 @@ async function main(): Promise<void> {
     if (v === undefined || v === '') throw new Error(`missing env ${k}`);
     return v;
   };
-  const key = need('POOL_RELAYER_KEY');
-  if (!/^0x[0-9a-fA-F]{64}$/.test(key)) throw new Error('POOL_RELAYER_KEY is not a 32-byte hex key');
-  const account = privateKeyToAccount(key as `0x${string}`);
-  delete env['POOL_RELAYER_KEY'];
+  const account = privateKeyToAccount(loadPoolRelayerKey(env));
   const raw = JSON.parse(need('POOL_RELAYER_POOLS')) as { chainId: number; pool: Address; rpcUrl: string; rate?: [string, string] }[];
   const pools: PoolEntry[] = raw.map((p) => ({ chainId: p.chainId, pool: p.pool, rate: { num: BigInt(p.rate?.[0] ?? '1'), den: BigInt(p.rate?.[1] ?? '1') } }));
   const csv = (k: string): string[] => (env[k] ?? '').split(',').map((s) => s.trim()).filter((s) => s !== '');

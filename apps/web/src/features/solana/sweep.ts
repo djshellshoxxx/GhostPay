@@ -1,3 +1,4 @@
+import type { MessageDescriptor } from '../../lib/errors';
 import { base58 } from '@scure/base';
 import {
   buildStealthSweepTx,
@@ -25,7 +26,7 @@ export interface SweepReview {
   readonly totalLamports: bigint;
   readonly feeLamports: bigint;
   readonly sendLamports: bigint;
-  readonly warnings: readonly string[];
+  readonly warnings: readonly MessageDescriptor[];
 }
 
 export interface SignedSweep {
@@ -43,18 +44,18 @@ export function formatSol(lamports: bigint): string {
 export function reviewSweep(wallet: SolWallet, found: FoundPayment, destination: string): SweepReview {
   const dest = parseSolanaAddress(destination.trim());
   if (dest === found.stealthAddress) {
-    throw new SolViewError('Choose a different address than the one-time address being swept.');
+    throw new SolViewError({ key: 'chainView.error.sameAddress' });
   }
   const send = found.balanceLamports - SWEEP_FEE_LAMPORTS;
-  if (send <= 0n) throw new SolViewError('The balance does not cover the network fee.');
-  const warnings = [
-    'Sweeping links this one-time address to the destination on-chain. Use a fresh destination if that matters.',
+  if (send <= 0n) throw new SolViewError({ key: 'sol.error.balanceFee' });
+  const warnings: MessageDescriptor[] = [
+    { key: 'chainView.sweep.links' },
   ];
   if (send < NEW_ACCOUNT_MIN_LAMPORTS) {
-    warnings.push(`If the destination does not exist yet, amounts below ${formatSol(NEW_ACCOUNT_MIN_LAMPORTS)} are rejected by the network.`);
+    warnings.push({ key: 'sol.sweep.minimum', values: { amount: formatSol(NEW_ACCOUNT_MIN_LAMPORTS) } });
   }
   if (found.tokenReceiptCount > 0) {
-    warnings.push('The funding transaction also credited tokens. This view sweeps SOL only; tokens stay at the one-time address.');
+    warnings.push({ key: 'sol.sweep.tokensStay' });
   }
   return {
     networkLabel: wallet.net.label,
@@ -80,7 +81,7 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
   const { rpc, wallet, found, review, signal } = p;
   const balance = await getBalance(rpc, found.stealthAddress, signal);
   if (balance !== review.totalLamports) {
-    throw new SolViewError('The balance changed since the scan. Scan again before sweeping.');
+    throw new SolViewError({ key: 'sol.error.balanceChanged' });
   }
   const lifetime = await getLatestBlockhash(rpc, 'finalized', signal);
   const tx = await buildStealthSweepTx({
@@ -90,13 +91,18 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
     amount: review.sendLamports,
     lifetime,
   });
+  if (signal?.aborted === true) throw new SolViewError({ key: 'sol.error.aborted' });
   const spendKey = deriveSpendKey(wallet.keys.spendSecret, found.tweak, base58.decode(found.stealthAddress));
   try {
     const signed = signWithStealthKey(tx, spendKey);
     const sig = signed.transaction.signatures[parseSolanaAddress(found.stealthAddress)];
-    if (sig == null) throw new SolViewError('Signing failed.');
+    if (sig == null) throw new SolViewError({ key: 'sol.error.signing' });
     return { signature: base58.encode(sig), wireBase64: toWireBase64(signed) };
   } finally {
     zeroize(spendKey);
   }
 }
+
+// i18n-use: chainView.error.sameAddress sol.error.balanceFee chainView.sweep.links sol.sweep.minimum sol.sweep.tokensStay sol.error.balanceChanged sol.error.signing
+
+// i18n-use: sol.error.aborted

@@ -2,13 +2,17 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
-import { manifestDigest, validateManifest } from '@ghostpay/chain-adapters';
+import { canonicalManifestJson, loadDeployment, manifestDigest, validateManifest, verifyObjectManifestSignature } from '@ghostpay/chain-adapters';
+import { keccak256, toBytes } from 'viem/utils';
+import { ESLint, Linter } from 'eslint';
 import { afterEach, describe, expect, it } from 'vitest';
 import { BROAD, applyConnectSrc, connectSrc, parseOrigins } from '../scripts/csp.mjs';
 import { emitEmbedSri } from '../scripts/embed-sri.mjs';
 import { parseReleaseKeys, validateDeployments } from '../scripts/validate-deployments.mjs';
 import { fakeManifestJson } from './test/fakeManifest';
+import { prepareManifestFixture } from '../e2e/prepare-manifest.mjs';
 
 const dirs: string[] = [];
 const tmp = (): string => {
@@ -53,6 +57,21 @@ describe('validate-deployments (build step for the bundled manifests)', () => {
     writeFileSync(join(d, '84532.json'), JSON.stringify({ ...base, signature: `0x${hex(secp256k1.sign(digest, sk, { prehash: false, lowS: true }))}` }));
     expect(await validateDeployments(d, [pub])).toEqual([]);
   });
+  it.each(['', 'GhostPay/receipt/v1\n'])('refuses a structured manifest signed with foreign domain %j at build time', async (domain) => {
+    const sk = secp256k1.utils.randomSecretKey();
+    const pub = hex(secp256k1.getPublicKey(sk, true));
+    const base = JSON.parse(fakeManifestJson(84532)) as Record<string, unknown>;
+    const manifest = validateManifest(base, 84532);
+    const d = tmp();
+    const signDigest = (digest: string): string => {
+      const bytes = Uint8Array.from(digest.slice(2).match(/../g) ?? [], (h) => parseInt(h, 16));
+      return JSON.stringify({ ...base, signature: `0x${hex(secp256k1.sign(bytes, sk, { prehash: false, lowS: true }))}` });
+    };
+    writeFileSync(join(d, '84532.json'), signDigest(manifestDigest(manifest)));
+    expect(await validateDeployments(d, [pub])).toEqual([]);
+    writeFileSync(join(d, '84532.json'), signDigest(keccak256(toBytes(domain + canonicalManifestJson(manifest)))));
+    expect((await validateDeployments(d, [pub])).join()).toMatch(/signature is missing or invalid/);
+  });
   it('parses release keys strictly', () => {
     expect(parseReleaseKeys(undefined)).toEqual([]);
     expect(parseReleaseKeys('')).toEqual([]);
@@ -61,6 +80,38 @@ describe('validate-deployments (build step for the bundled manifests)', () => {
     expect(() => parseReleaseKeys(Array.from({ length: 9 }, () => k).join(','))).toThrow(/at most 8/);
     expect(() => parseReleaseKeys('04' + 'ab'.repeat(64))).toThrow(/compressed/);
     expect(() => parseReleaseKeys('0xabc')).toThrow(/compressed/);
+  });
+});
+
+describe('Playwright-only structured manifest fixture', () => {
+  const template = fileURLToPath(new URL('../e2e/fixtures/84532.json', import.meta.url));
+  it('prepares a verified new-domain manifest without changing the authored source fixture', () => {
+    const original = readFileSync(template, 'utf8');
+    const prepared = prepareManifestFixture({ tempRoot: tmp() });
+    const text = readFileSync(join(prepared.directory, '84532.json'), 'utf8');
+    expect(readFileSync(template, 'utf8')).toBe(original);
+    expect(Object.keys(prepared).sort()).toEqual(['directory', 'publicKey']);
+    expect(verifyObjectManifestSignature(loadDeployment(text, 84532), [prepared.publicKey]).status).toBe('valid');
+    expect(canonicalManifestJson(loadDeployment(text, 84532))).toBe(canonicalManifestJson(loadDeployment(original, 84532)));
+    const generated = JSON.parse(text) as Record<string, unknown>;
+    const source = JSON.parse(original) as Record<string, unknown>;
+    expect(generated['signature']).not.toBe(source['signature']);
+  });
+  it('has reproducible fixture bytes in separate temporary directories', () => {
+    const a = prepareManifestFixture({ tempRoot: tmp() });
+    const b = prepareManifestFixture({ tempRoot: tmp() });
+    expect(a.directory).not.toBe(b.directory);
+    expect(a.publicKey).toBe(b.publicKey);
+    expect(readFileSync(join(a.directory, '84532.json'), 'utf8')).toBe(readFileSync(join(b.directory, '84532.json'), 'utf8'));
+  });
+  it('refuses a non-fixture deployment or a mismatched chain', () => {
+    const d = tmp();
+    const file = join(d, 'input.json');
+    const original = JSON.parse(readFileSync(template, 'utf8')) as Record<string, unknown>;
+    writeFileSync(file, JSON.stringify({ ...original, router: '0x5555555555555555555555555555555555555555' }));
+    expect(() => prepareManifestFixture({ templateFile: file, tempRoot: d })).toThrow(/authored fake/);
+    writeFileSync(file, JSON.stringify({ ...original, chainId: 1 }));
+    expect(() => prepareManifestFixture({ templateFile: file, tempRoot: d })).toThrow(/chainId/);
   });
 });
 
@@ -79,6 +130,40 @@ describe('connect-src tightening (S3-11)', () => {
     for (const bad of ['http://a.test', 'https://a.test/path', 'https://u:p@a.test', 'https://a.test/?q=1', 'ftp://a.test', 'nope', 'https://a.test/#x']) {
       expect(() => parseOrigins(bad)).toThrow(/GHOSTPAY_CONNECT_ORIGINS/);
     }
+  });
+});
+
+describe('release boundary: preserved scan-source code stays out of apps/web (audit L8-04)', () => {
+  const RESTRICTED = ['createScanSource', 'createPir2Source', 'createLightSource', 'createQuorumSource', 'describeScanMode', 'SCAN_MODE_CLAIMS'];
+  const web = fileURLToPath(new URL('..', import.meta.url));
+  const repo = join(web, '..', '..');
+  const ruleFor = async (cwd: string, file: string): Promise<Linter.RuleEntry | undefined> => {
+    const eslint = new ESLint({ cwd, overrideConfigFile: join(repo, 'eslint.config.js') });
+    const config = (await eslint.calculateConfigForFile(file)) as Linter.Config | undefined;
+    return config?.rules?.['no-restricted-imports'];
+  };
+
+  it('ESLint refuses the preserved factories and claims in apps/web, from the app directory and from the root', async () => {
+    const appFile = join(web, 'src', 'lib', 'scanPrivacy.ts');
+    for (const cwd of [web, repo]) {
+      const rule = await ruleFor(cwd, appFile);
+      expect(rule, cwd).toBeDefined();
+      const linter = new Linter();
+      const lint = (code: string): string[] => linter.verify(code, [{ rules: { 'no-restricted-imports': rule } }], 'probe.js').map((m) => m.message);
+      for (const name of RESTRICTED) {
+        expect(lint(`import { ${name} } from '@ghostpay/scan-source';`).join('\n'), name).toMatch(new RegExp(`'${name}' import from '@ghostpay/scan-source' is restricted`));
+      }
+      expect(lint("import * as scan from '@ghostpay/scan-source';")).toHaveLength(1);
+      expect(lint("export { createScanSource } from '@ghostpay/scan-source';")).toHaveLength(1);
+      expect(lint("import { createIndexerSource, padWindow, ScanSourceError, TESTNET_CHAIN_IDS } from '@ghostpay/scan-source';")).toEqual([]);
+    }
+    // Scoped to apps/web: the package itself (and every other workspace) may use its own factories.
+    expect(await ruleFor(repo, join(repo, 'packages', 'scan-source', 'src', 'create.ts'))).toBeUndefined();
+  });
+
+  it('every restricted name is a real export of @ghostpay/scan-source', async () => {
+    const mod = (await import('@ghostpay/scan-source')) as Record<string, unknown>;
+    for (const name of RESTRICTED) expect(mod[name], name).toBeDefined();
   });
 });
 

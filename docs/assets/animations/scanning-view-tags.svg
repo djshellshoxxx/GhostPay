@@ -124,8 +124,8 @@ svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-s
 <rect id="risk" class="box bad" x="640" y="380" width="240" height="110" rx="8"/>
 <text class="t ta b" x="760.0" y="414.5">Limits</text>
 <text class="t ta m s" x="760.0" y="431.5">wrong tag by payer = missed</text>
-<text class="t ta m s" x="760.0" y="448.5">payment (deep scan planned,</text>
-<text class="t ta m s" x="760.0" y="465.5">not built); ask for the tx hash</text>
+<text class="t ta m s" x="760.0" y="448.5">payment; opt-in deep scan</text>
+<text class="t ta m s" x="760.0" y="465.5">checks router announcements</text>
 <rect class="hlr a k10" x="325" y="490" width="250" height="70" rx="12"/>
 <rect class="hlr a k10" x="635" y="375" width="250" height="120" rx="12"/>
 <text class="t b" x="24" y="570">Steps</text>

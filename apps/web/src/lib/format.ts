@@ -34,9 +34,11 @@ export function fiatDecimals(currency: string): number {
 export function formatFiat(minorUnits: bigint, currency: string): string {
   const d = fiatDecimals(currency);
   const base = 10n ** BigInt(d);
-  const whole = minorUnits / base;
-  const frac = (minorUnits % base).toString().padStart(d, '0');
-  return `${currency} ${whole.toString()}${d === 0 ? '' : `.${frac}`}`;
+  const negative = minorUnits < 0n;
+  const abs = negative ? -minorUnits : minorUnits;
+  const whole = abs / base;
+  const frac = (abs % base).toString().padStart(d, '0');
+  return `${currency} ${negative ? '-' : ''}${whole.toString()}${d === 0 ? '' : `.${frac}`}`;
 }
 
 /** Shortens a long hex string for display; the full value is always available elsewhere in the UI. */
@@ -55,9 +57,14 @@ export function formatCountdown(ms: number): string {
   return h > 0 ? `${String(h)}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
-/** UTC timestamp for a unix-seconds value, locale independent. */
+/**
+ * UTC timestamp for a unix-seconds value, locale independent. Total: a value outside the Date range (or not a number)
+ * renders as `invalid time` instead of throwing, so an untrusted time can never take down a render (G1-01).
+ */
 export function formatUnix(seconds: number): string {
-  return new Date(seconds * 1000).toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
+  const date = new Date(seconds * 1000);
+  if (Number.isNaN(date.getTime())) return 'invalid time';
+  return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
 }
 
 /** Rounds `subtotal * rateBps / 10_000` half-up. */

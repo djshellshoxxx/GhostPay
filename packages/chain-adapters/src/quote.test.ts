@@ -2,7 +2,8 @@ import fc from 'fast-check';
 import { encodeAbiParameters, getAddress } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
-import { FEEDS, createAggregatorReader, fiatToTokenAmount, findFeed, readPrice, type AggregatorReader, type RoundData } from './quote.js';
+import { findChain } from './config/chains.js';
+import { FEEDS, createAggregatorReader, fiatToTokenAmount, findFeed, isQuoteAvailable, readPrice, type AggregatorReader, type RoundData } from './quote.js';
 import { createClient } from './rpc.js';
 import { fakeTransport, noSleep } from './rpc.testutil.js';
 import { SEPOLIA } from './fixtures.testutil.js';
@@ -57,9 +58,48 @@ describe('readPrice', () => {
     const r: AggregatorReader = { decimals: () => Promise.reject(new Error('secret https://k@x')), latestRoundData: () => Promise.resolve(round()) };
     await expect(readPrice(r, FEED, opts)).rejects.toThrow(/^QUOTE_FAILED: feed read failed$/);
   });
-  it('registry is empty until verified', () => {
-    expect(FEEDS).toHaveLength(0);
+  it('registry holds only sourced, checksummed, testnet entries; mainnets and unsourced feeds stay absent', () => {
+    for (const f of FEEDS) {
+      expect(getAddress(f.address)).toBe(f.address);
+      expect(f.sourceRef).toMatch(/^docs\/chains\/SOURCES-\d{4}-\d{2}-\d{2}\.md \(retrieved \d{4}-\d{2}-\d{2}\)$/);
+      expect(f.sourceRef).not.toMatch(/https?:/);
+      expect(findChain(f.chainId)?.testnet).toBe(true);
+      expect(f.quote).toBe('USD');
+    }
     expect(findFeed(1, 'ETH', 'USD')).toBeUndefined();
+    expect(findFeed(8453, 'ETH', 'USD')).toBeUndefined();
+    expect(findFeed(10, 'ETH', 'USD')).toBeUndefined();
+    expect(findFeed(42161, 'ETH', 'USD')).toBeUndefined();
+    expect(findFeed(11155111, 'ETH', 'USD')?.address).toBe('0x694AA1769357215DE4FAC081bf1f309aDC325306');
+    expect(findFeed(11155111, 'ETH', 'EUR')).toBeUndefined();
+  });
+  it('testnet feeds match the saved Chainlink reference data (report 10, sha256 0c61b93d... / 8a170a72...)', () => {
+    // Proxy address, `decimals` (not display `decimalPlaces`) and `heartbeat` copied from the saved evidence JSON.
+    const expected = [
+      [11155111, 'ETH', '0x694AA1769357215DE4FAC081bf1f309aDC325306', 3600],
+      [11155111, 'USDC', '0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E', 86400],
+      [84532, 'ETH', '0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1', 1200],
+      [84532, 'USDC', '0xd30e2101a97dcbAeBCBC04F14C3f624E67A35165', 86400],
+    ] as const;
+    for (const [chainId, base, address, heartbeatSec] of expected) {
+      const f = findFeed(chainId, base, 'USD');
+      expect(f).toBeDefined();
+      expect(f?.address).toBe(address);
+      expect(f?.decimals).toBe(8);
+      expect(f?.heartbeatSec).toBe(heartbeatSec);
+      expect(f?.sourceRef).toBe('docs/chains/SOURCES-2026-11-04.md (retrieved 2026-11-04)');
+    }
+    expect(FEEDS).toHaveLength(expected.length);
+    // The hidden Sepolia `eth-usd-nops` proxy must never be registered.
+    expect(FEEDS.some((f) => f.address === '0xD9d6f482B88C43B256fD481826890dffC8544B13')).toBe(false);
+  });
+  it('isQuoteAvailable is true only where a feed exists', () => {
+    expect(isQuoteAvailable(11155111, 'ETH', 'USD')).toBe(true);
+    expect(isQuoteAvailable(11155111, 'USDC', 'USD')).toBe(true);
+    expect(isQuoteAvailable(11155111, 'EURC', 'USD')).toBe(false);
+    expect(isQuoteAvailable(84532, 'ETH', 'USD')).toBe(true);
+    expect(isQuoteAvailable(84532, 'USDC', 'USD')).toBe(true);
+    expect(isQuoteAvailable(1, 'ETH', 'USD')).toBe(false);
   });
 });
 
@@ -142,8 +182,10 @@ describe('createAggregatorReader (ABI round trip through a fake node)', () => {
 
 import { hasFeedsForChain as _hasFeeds, FEEDS as _FEEDS } from './quote.js';
 describe('hasFeedsForChain (G-03)', () => {
-  it('is false for every chain while FEEDS holds no verified entry, and tracks FEEDS', () => {
+  it('tracks FEEDS exactly and is false for unknown chains', () => {
     for (const c of [1, 11155111, 84532, 999]) expect(_hasFeeds(c)).toBe(_FEEDS.some((f) => f.chainId === c));
-    expect(_FEEDS).toHaveLength(0);
+    expect(_hasFeeds(999)).toBe(false);
+    expect(_hasFeeds(84532)).toBe(true);
+    expect(_hasFeeds(8453)).toBe(false);
   });
 });

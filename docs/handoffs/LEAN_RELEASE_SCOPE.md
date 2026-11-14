@@ -1,5 +1,7 @@
 # GhostPay lean release scope
 
+> **2026-11-12: the GitHub Pages release directive is the current priority.** Read [GITHUB_PAGES_RELEASE_2026-11-12.md](GITHUB_PAGES_RELEASE_2026-11-12.md) first: it freezes work outside the static EVM Pages beta and lists the remaining tasks. The boundary below still applies inside that scope.
+
 **Status: owner-approved working boundary, 2026-10-24 UTC.** Documentation only; not release acceptance, an audit, or permission to enable payments or use production funds. Application baseline: `main` at `a6a2a1c5cbccb7d97c36decba78a99fa83e8a6f8`; recheck the live ref.
 
 ## One EVM path first

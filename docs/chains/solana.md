@@ -52,3 +52,7 @@ See ADR-0017 section 7. The main limits:
 - ATA rent moves on chain.
 - The fee payer links transactions.
 - Payer and amount are public.
+
+## Qualification status (2026-11)
+
+Tested locally (108 tests in `solana-stealth`) and integration-tested in CI against a local validator (`scripts/integration/solana-local.e2e.mjs`); not externally qualified; mainnet disabled in the web app. Scanning and fetching use `finalized` commitment. One defect fixed: a signature re-served by the RPC in non-adjacent positions produced duplicate payment records; detections are now deduplicated per scan on `(signature, stealth address)`. Evidence and open items: [QUALIFICATION-2026-11.md](QUALIFICATION-2026-11.md).

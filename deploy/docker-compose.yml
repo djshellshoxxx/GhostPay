@@ -34,6 +34,13 @@ services:
     volumes:
       - ./config/relayer.config.json:/etc/ghostpay/relayer.config.json:ro
       - ../deployments:/etc/ghostpay/deployments:ro
+      # Durable relayer state (daily budget + unsettled transactions): the ONLY writable path besides /tmp. The config's
+      # "state.file" must be /var/lib/ghostpay-relayer/state.json. The volume inherits the image directory's owner
+      # (65532): if you override GHOSTPAY_API_UID, chown the volume to it. Run ONE api container per volume. Back it up
+      # per docs/operators/relayer-runbook.md; never delete it while transactions are unsettled.
+      - api-state:/var/lib/ghostpay-relayer
+    # Health: the image's HEALTHCHECK runs `node dist/ops.js health` (GET /healthz on 127.0.0.1:8787).
+    stop_grace_period: 30s
     tmpfs:
       - /tmp:size=16m,mode=1777,noexec,nosuid,nodev
     networks: [backend]
@@ -87,11 +94,28 @@ services:
 networks:
   # backend: web <-> api. The api container needs outbound access to your chain RPC endpoints, so it is not `internal`.
   # Egress filtering (allow only your RPC hosts) is a host-firewall task; see README.
-  backend: {}
-  frontend: {}
+  #
+  # Subnets are pinned so the client-address trust settings can name them (audit L5-05):
+  # - the TLS terminator on the host reaches nginx through the published port, so nginx sees the gateway of one of these
+  #   networks (the host) as the peer and believes X-Forwarded-For only from the gateways (nginx/nginx.conf
+  #   set_real_ip_from);
+  # - nginx (web) reaches the api from the backend subnet, so the relayer's trustedProxies is that subnet
+  #   (config/relayer.config.example.json).
+  # If a range collides with a network on your host, `up` fails; change it here and in both places above together.
+  backend:
+    ipam:
+      config:
+        - subnet: 172.30.10.0/24
+          gateway: 172.30.10.1
+  frontend:
+    ipam:
+      config:
+        - subnet: 172.30.11.0/24
+          gateway: 172.30.11.1
 
 volumes:
   tor-data: {}
+  api-state: {}
 
 secrets:
   relayer_key:

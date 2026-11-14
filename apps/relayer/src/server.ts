@@ -9,6 +9,7 @@ import {
   monotonicNow,
   resolveClientIp,
 } from '@ghostpay/relayer-guard';
+import { nullAlerts, type AlertSink } from './alerts.js';
 import type { RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
 import type { Metrics } from './metrics.js';
@@ -25,6 +26,9 @@ export interface HttpDeps {
   readonly config: RelayerConfig;
   readonly service: RelayerService;
   readonly ipLimiter: RateLimiter;
+  /** `/v1/quote` limiter keyed by the client's network group (IPv4 /24, IPv6 /48). */
+  readonly quoteGroupLimiter: RateLimiter;
+  readonly alerts?: AlertSink;
   readonly logger?: Logger;
   readonly metrics?: Metrics;
   /** Monotonic ms clock for the global quote budget (default: `performance.now`). */
@@ -197,6 +201,18 @@ export class RelayerHttpServer {
     return { key: bucketKey(r.ip), group: groupKey(r.ip) };
   }
 
+  /**
+   * Process-wide `/v1/quote` budget (S3-07). A refusal here means many networks are quoting at once (RELAYER-01):
+   * it is counted and alerted so an operator sees a drain instead of only 429s.
+   */
+  private takeQuoteBudget(): void {
+    const g = this.quoteBudget.take('quote');
+    if (g.ok) return;
+    this.d.metrics?.inc('relayer_quote_budget_denied_total');
+    (this.d.alerts ?? nullAlerts).send({ kind: 'quote_budget_exhausted' });
+    throw new RelayerError(429, 'rate_limited_global', Math.max(1, Math.ceil(g.retryAfterMs / 1000)));
+  }
+
   private async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const c: Ctx = {
       req,
@@ -294,15 +310,17 @@ export class RelayerHttpServer {
         const limit = this.d.ipLimiter.take(clientKey, clientGroupKey);
         if (!limit.ok) throw new RelayerError(429, 'rate_limited_ip', limit.retryAfterSeconds);
         if (path === '/v1/quote') {
-          const g = this.quoteBudget.take('quote');
-          if (!g.ok)
-            throw new RelayerError(429, 'rate_limited_global', Math.max(1, Math.ceil(g.retryAfterMs / 1000)));
+          // Many /32s or /64s of one network share a group budget, so one network cannot drain the global one (L5-03).
+          const group = this.d.quoteGroupLimiter.take(clientGroupKey);
+          if (!group.ok) throw new RelayerError(429, 'rate_limited_ip', group.retryAfterSeconds);
         }
         const ct = req.headers['content-type'];
         if (ct === undefined || !JSON_TYPE.test(ct)) throw new RelayerError(415, 'unsupported_media_type');
         const body = parseJson(await readBody(req, MAX_BODY_BYTES));
         if (path === '/v1/quote') {
-          this.send(c, 200, await this.d.service.quote(parseQuoteRequest(body)));
+          const quote = parseQuoteRequest(body);
+          this.takeQuoteBudget(); // only a well-formed request spends the process-wide budget
+          this.send(c, 200, await this.d.service.quote(quote));
         } else {
           this.send(
             c,

@@ -1,0 +1,16 @@
+/* GitHub Pages mirror banner (scripts/pages/build-pages.sh). Same-origin stylesheet: the meta CSP allows no inline style. */
+.gp-pages-mirror {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  font: 0.875rem/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #1f1600;
+  background: #ffd76a;
+  border-bottom: 2px solid #8a6500;
+  overflow-wrap: anywhere;
+}
+.gp-pages-mirror strong { font-weight: 700; }
+.gp-pages-mirror a { color: #1f1600; text-decoration: underline; }
+@media (prefers-color-scheme: dark) {
+  .gp-pages-mirror { color: #fff4d6; background: #4a3700; border-bottom-color: #ffd76a; }
+  .gp-pages-mirror a { color: #fff4d6; }
+}

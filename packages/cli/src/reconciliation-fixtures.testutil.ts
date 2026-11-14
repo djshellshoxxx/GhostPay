@@ -1,0 +1,43 @@
+import { encodeAbiParameters, encodeFunctionData } from 'viem/utils';
+import { buildNativeMetadata, deriveStealthPayment } from '@ghostpay/core-crypto';
+import { ghostPayRouterAbi } from '@ghostpay/chain-adapters';
+import { createInvoice, signInvoice } from '@ghostpay/invoice-schema';
+import { checkpointKeyId, createKeystoreApi, createReconciliationApi } from '@ghostpay/ux-vault/portable';
+import { G, G2, KEY_BYTES, NOW, SIGNER, SPEC, counterRandom } from './fixtures.testutil.js';
+import { BLOCK, TX, ROUTER, PIN, pad, rawLog, observation, paymentWorld } from './payment-fixtures.testutil.js';
+import { MemoryReconciliationStore } from './backup-data.js';
+
+export const RECON_PASS = 'birch-velvet-otter-copper-archer-quartz';
+export const META = `st:eth:0x${G}${G2}`;
+export const SELLER_ID = checkpointKeyId(G, G2);
+export const VIEW_HEX = '00'.repeat(31) + '02';
+const core = createReconciliationApi();
+const keyCodec = createKeystoreApi();
+export async function reconciliationWorld() {
+  const world = paymentWorld();
+  const payment = deriveStealthPayment(META, counterRandom());
+  const ephemeral = `0x${Buffer.from(payment.ephemeralPublicKey).toString('hex')}` as const;
+  const metadata = `0x${Buffer.from(buildNativeMetadata(payment.viewTag[0]!, 100n)).toString('hex')}` as const;
+  const recipient = payment.stealthAddress.toLowerCase();
+  const sourceLog = rawLog();
+  const log = { ...sourceLog, topics: [(sourceLog['topics'] as string[])[0], (sourceLog['topics'] as string[])[1], pad(recipient), pad(ROUTER)], data: encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [ephemeral, metadata]) };
+  const current = { ...observation(), log, expected: { recipient, asset: 'native', amount: '100' } };
+  world.state.logs = [log];
+  world.state.receipt = { ...(world.state.receipt as Record<string, unknown>), logs: [log] };
+  world.state.tx = { ...(world.state.tx as Record<string, unknown>), input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payNative', args: [payment.stealthAddress, 100n, 1_900_000_000n, ephemeral, metadata] }) };
+  world.io.files.set('claim.json', JSON.stringify(current));
+  world.io.files.set('current.json', JSON.stringify({ version: 1, observations: [current] }));
+  world.io.files.set('pass.txt', RECON_PASS); world.io.files.set('view.hex', VIEW_HEX);
+  world.io.files.set('seller.json', await keyCodec.encryptKeystore({ spendingKey: Uint8Array.from(Buffer.from('00'.repeat(31) + '01', 'hex')), viewingKey: Uint8Array.from(Buffer.from(VIEW_HEX, 'hex')), signingKey: KEY_BYTES.slice() }, { metaAddress: META, signer: SIGNER }, RECON_PASS, { N: 16384 }));
+  const invoice = createInvoice({ ...SPEC, chainId: 11155111, token: 'native', amountPolicy: { mode: 'fixed_token', tokenAmount: '100' }, signer: SIGNER }, counterRandom());
+  const signed = signInvoice(invoice, KEY_BYTES);
+  world.io.files.set('invoice.json', JSON.stringify(signed));
+  const vault = new core.ReconciliationVault(new MemoryReconciliationStore(), { sellerKeyId: SELLER_ID, chainId: 11155111 }, () => undefined, () => NOW * 1000);
+  await vault.unlock(Uint8Array.from(Buffer.from(VIEW_HEX, 'hex')));
+  await vault.registerInvoice(core.registrationFromInvoice(invoice, NOW * 1000));
+  world.io.files.set('history.json', await vault.exportEncrypted()); vault.lock();
+  const recordId = `${SELLER_ID}:11155111:${TX}:${recipient}:${BLOCK}:4`;
+  return { ...world, current, signed, recordId, recipient };
+}
+export const RECON_CREDS = ['--keystore', 'seller.json', '--passphrase-file', 'pass.txt'];
+export const RECON_LIVE = ['--observations', 'current.json', '--manifest', 'manifest.json', '--manifest-digest', PIN, '--online', '--rpc-file', 'rpc.txt'];

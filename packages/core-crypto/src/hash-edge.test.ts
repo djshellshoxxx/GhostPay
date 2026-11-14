@@ -85,14 +85,40 @@ describe('hash edge cases (ADR-0001)', () => {
     expect(codeOf(() => deriveStealthSecret(ann, keys))).toBe('ZERO_HASH');
   });
 
-  it('reduced hash >= n works end-to-end for recipient (address and secret)', () => {
+  it('hash >= n works end-to-end for the recipient (match, address and secret)', () => {
+    // Every 32-byte value >= n starts with 0xff, so the tag cannot be chosen here: it is the unreduced first byte.
     const raw = N + 12345n; // reduces to 12345
+    expect(raw >= N && raw < 1n << 256n).toBe(true);
+    const d = () => digestWith(raw);
+    expect(bytesToNumberBE(d())).toBe(raw);
+    const h = 12345n;
+    forced.queue.push(d());
+    const pay = deriveStealthPayment(meta, seededRng('edge-5n'));
+    expect(pay.viewTag[0]).toBe(0xff);
+    expect(pay.stealthAddress).toBe(addrOfPriv((spend + h) % N));
+    const ann = {
+      stealthAddress: pay.stealthAddress,
+      ephemeralPublicKey: hex(pay.ephemeralPublicKey),
+      metadata: hex(pay.metadataPrefix),
+    };
+    forced.queue.push(d());
+    expect(checkAnnouncement(ann, keys.viewingSecret, keys.spendingPublicKey).matches).toBe(true);
+    forced.queue.push(d());
+    const secret = deriveStealthSecret(ann, keys);
+    expect(bytesToNumberBE(unsafeRevealSecret(secret))).toBe((spend + h) % N);
+    expect(forced.queue.length).toBe(0);
+  });
+
+  it('an in-range hash with a forced view tag works end-to-end for the recipient (address and secret)', () => {
+    // Overwriting the first byte with 0x42 brings the value below n: this case covers an arbitrary tag, not reduction.
+    const raw = N + 12345n;
     const tag = 0x42;
     const d = () => {
       const x = numberToBytesBE(raw, 32);
-      x[0] = tag; // keep high bits irrelevant: recompute reduction from the final bytes
+      x[0] = tag;
       return x;
     };
+    expect(bytesToNumberBE(d()) < N).toBe(true);
     const h = bytesToNumberBE(d()) % N;
     forced.queue.push(d());
     const pay = deriveStealthPayment(meta, seededRng('edge-5'));

@@ -2,6 +2,10 @@ name: Release
 # Runs on a pushed version tag. Produces a DRAFT GitHub release with a deterministic web-bundle tarball,
 # SHA256SUMS, CycloneDX SBOM, release-manifest.json and a build-provenance attestation.
 #
+# The tag signature IS cryptographically verified (scripts/verify-tag.sh) against the pinned trust root
+# .github/release-signers/allowed_signers, read from the default branch. That file ships with no key: until the owner
+# adds the release-signing public key, every run fails closed at the tag check (human gate).
+#
 # It does NOT publish anywhere: no IPFS, ENS, Tor or Pages (hosting is intentionally not enabled; see the
 # disabled stub at the bottom). A maintainer must approve the `release` environment (Settings > Environments >
 # release > Required reviewers) before the build and draft jobs run, and must publish the draft by hand.
@@ -27,28 +31,40 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Tag must be an annotated tag carrying a signature block
+          fetch-depth: 0   # full history: the tagged commit must be reachable from the default branch
+      - name: Verify tag signature against the pinned trust root (default-branch copy)
+        id: tagcheck
         env:
           TAG: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          # actions/checkout may leave a lightweight ref; fetch the tag object itself (read-only token).
+          set -euo pipefail
+          # actions/checkout may leave a lightweight ref; fetch the tag object itself (read-only token), plus the
+          # default branch. The verifier and the trust root are taken from the DEFAULT BRANCH, not from the tagged
+          # commit, so a tag on an unreviewed commit cannot bring its own key or its own verifier.
           auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            fetch --force --no-tags origin "refs/tags/$TAG:refs/tags/$TAG"
-          type="$(git cat-file -t "refs/tags/$TAG")"
-          if [ "$type" != "tag" ]; then echo "::error::$TAG is not an annotated tag"; exit 1; fi
-          if ! git cat-file tag "refs/tags/$TAG" | grep -qE -- '-----BEGIN (PGP|SSH) SIGNATURE-----'; then
-            echo "::error::$TAG has no PGP/SSH signature block"; exit 1
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" fetch --force --no-tags origin \
+            "+refs/tags/$TAG:refs/tags/$TAG" "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH"
+          base="refs/remotes/origin/$DEFAULT_BRANCH"
+          trust="$RUNNER_TEMP/release-trust"
+          mkdir -p "$trust"
+          if ! git show "$base:scripts/verify-tag.sh" > "$trust/verify-tag.sh"; then
+            echo "::error::scripts/verify-tag.sh is not on $DEFAULT_BRANCH; merge it before releasing"; exit 1
           fi
-          # This only proves a signature is PRESENT. Verifying it needs the maintainer public key and is a
-          # manual step for maintainers and users (docs/operators/release-and-verify.md).
-          echo "Signature block present on $TAG (not cryptographically verified in CI)."
+          # A missing file becomes an empty trust root, which verify-tag.sh rejects (fail closed).
+          git show "$base:.github/release-signers/allowed_signers" > "$trust/allowed_signers" 2>/dev/null || : > "$trust/allowed_signers"
+          git show "$base:.github/release-signers/pgp-keys.asc" > "$trust/pgp-keys.asc" 2>/dev/null || rm -f "$trust/pgp-keys.asc"
+          # Signed by a pinned key, annotated, named $TAG, pointing at the checked-out commit, reachable from the
+          # default branch. Adding the first key is an owner action (.github/release-signers/README.md).
+          bash "$trust/verify-tag.sh" --allowed-signers "$trust/allowed_signers" --pgp-keys "$trust/pgp-keys.asc" \
+            --ancestor-of "$base" "$TAG" "$(git rev-parse HEAD)"
+          echo "tag_object=$(git rev-parse "refs/tags/$TAG")" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
           cache: npm
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: v1.8.5
       - run: npm ci --ignore-scripts
@@ -66,6 +82,8 @@ jobs:
       - run: npm test
         env:
           REQUIRE_ANVIL: "1"
+      - name: Release tooling tests (verify-tag, verify-release, manifest channel)
+        run: node --test scripts/tests/release-*.test.mjs
       - run: bash scripts/scan-secrets.sh
       - run: bash scripts/check-actions-pinned.sh
       - run: npm audit --omit=dev --audit-level=high
@@ -80,25 +98,61 @@ jobs:
       contents: read
       id-token: write       # sigstore signing identity for the attestation
       attestations: write   # store the attestation
+    outputs:
+      tag_object: ${{ steps.tagcheck.outputs.tag_object }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
+      - name: Re-verify the tag after approval (it may have moved while waiting)
+        id: tagcheck
+        env:
+          TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          # actions/checkout may leave a lightweight ref; fetch the tag object itself (read-only token), plus the
+          # default branch. The verifier and the trust root are taken from the DEFAULT BRANCH, not from the tagged
+          # commit, so a tag on an unreviewed commit cannot bring its own key or its own verifier.
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" fetch --force --no-tags origin \
+            "+refs/tags/$TAG:refs/tags/$TAG" "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH"
+          base="refs/remotes/origin/$DEFAULT_BRANCH"
+          trust="$RUNNER_TEMP/release-trust"
+          mkdir -p "$trust"
+          if ! git show "$base:scripts/verify-tag.sh" > "$trust/verify-tag.sh"; then
+            echo "::error::scripts/verify-tag.sh is not on $DEFAULT_BRANCH; merge it before releasing"; exit 1
+          fi
+          # A missing file becomes an empty trust root, which verify-tag.sh rejects (fail closed).
+          git show "$base:.github/release-signers/allowed_signers" > "$trust/allowed_signers" 2>/dev/null || : > "$trust/allowed_signers"
+          git show "$base:.github/release-signers/pgp-keys.asc" > "$trust/pgp-keys.asc" 2>/dev/null || rm -f "$trust/pgp-keys.asc"
+          # Signed by a pinned key, annotated, named $TAG, pointing at the checked-out commit, reachable from the
+          # default branch. Adding the first key is an owner action (.github/release-signers/README.md).
+          bash "$trust/verify-tag.sh" --allowed-signers "$trust/allowed_signers" --pgp-keys "$trust/pgp-keys.asc" \
+            --ancestor-of "$base" "$TAG" "$(git rev-parse HEAD)"
+          echo "tag_object=$(git rev-parse "refs/tags/$TAG")" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
           cache: npm
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: v1.8.5
       - name: Deterministic release build
         env:
           VERSION: ${{ github.ref_name }}
           OUT_DIR: ${{ github.workspace }}/release-out
+          GP_REQUIRE_RELEASE: "1"   # fail unless the manifest channel is "release" (tagged commit, clean tree)
         run: bash scripts/release-build.sh
-      - name: Self-check the produced hashes
-        working-directory: release-out
-        run: sha256sum --check SHA256SUMS
+      - name: Self-check the produced artifacts
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          (cd release-out && sha256sum --check SHA256SUMS)
+          bash scripts/verify-release.sh "release-out/ghostpay-web-$TAG.tar.gz" release-out/SHA256SUMS \
+            "$(git rev-parse HEAD)" release-out/release-manifest.json
       - name: Attest build provenance
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
@@ -123,6 +177,24 @@ jobs:
         with:
           name: release-artifacts
           path: release-out
+      - name: Tag must still be the verified tag object for the built commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+          VERIFIED_TAG_OBJECT: ${{ needs.build.outputs.tag_object }}
+        run: |
+          set -euo pipefail
+          [[ "$VERIFIED_TAG_OBJECT" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::no verified tag object from the build job"; exit 1; }
+          ref="$(gh api "repos/$REPO/git/ref/tags/$TAG" --jq '.object.type + " " + .object.sha')"
+          if [ "$ref" != "tag $VERIFIED_TAG_OBJECT" ]; then
+            echo "::error::refs/tags/$TAG is now '$ref'; the build verified tag object $VERIFIED_TAG_OBJECT"; exit 1
+          fi
+          tagged="$(gh api "repos/$REPO/git/tags/$VERIFIED_TAG_OBJECT" --jq '.object.sha')"
+          manifest_commit="$(jq -r .commit release-out/release-manifest.json)"
+          channel="$(jq -r .channel release-out/release-manifest.json)"
+          [ "$tagged" = "$manifest_commit" ] || { echo "::error::tag points at $tagged, manifest records $manifest_commit"; exit 1; }
+          [ "$channel" = "release" ] || { echo "::error::manifest channel is '$channel', not release"; exit 1; }
       - name: Create DRAFT release (never published automatically)
         env:
           GH_TOKEN: ${{ github.token }}

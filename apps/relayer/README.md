@@ -18,7 +18,7 @@ Errors are `{"error":{"code":"<class>"}}` with a fixed class and nothing else.
 
 | Route | Purpose |
 |---|---|
-| `GET /healthz` | `{status, chains:[{chainId, breaker}]}`; `degraded` (503) when any chain's breaker is open or half-open (S3-05), `shutting_down` during shutdown |
+| `GET /healthz` | `{status, chains:[{chainId, breaker, minedReverts}]}`; `degraded` (503) when any chain's breaker is open or half-open (S3-05) or its mined reverts are `sustained` (L5-02), `shutting_down` during shutdown |
 | `GET /metrics` | Prometheus text; 404 unless `metricsTokenEnv` is configured, then requires `Authorization: Bearer <token>` |
 | `GET /v1/info` | version, fee policy (min 50 bps, cap 300 bps, gas x1.10), quote TTL, deadline window, per chain: `sweepRelayer`, `feeTo`, token allowlist |
 | `POST /v1/quote` | `{chainId, token, owner, destination, amount}` -> `{fee, feeTo, expiresAt, quoteToken}` (`fee` decimal string, `expiresAt` unix seconds) |
@@ -38,15 +38,42 @@ chain and token allowlist (`chain_not_supported`, `token_not_supported` 422) -> 
 unexpired (`quote_expired` 410), `sweep.fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) ->
 deadline in `(now+min, now+max]`, max 1800 s (`deadline_too_soon/far`) -> contract static rules (`invalid_order`) ->
 signature recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
-proven owner) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker -> serial per-chain lane:
-gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), `simulateContract` (revert class: `nonce_used`
-409, `expired`, `invalid_signature`, `token_transfer_failed`, `permit_value_too_low`, `invalid_order`,
-`simulation_reverted` 422; RPC failure `rpc_unavailable` 503), gas limit (`gas_limit_too_high`), daily budget
-(`budget_exhausted` 503 + `Retry-After`) -> send (`send_failed` 503).
+proven owner) -> per-owner failure counter (`owner_failure_limit` 429 + `Retry-After`: 3 costly user-attributable
+failures per hour, spec 04) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker (`breaker_open` 503) ->
+loss budget probe (`loss_budget_exhausted` 429 + `Retry-After`) -> serial per-chain lane: receipt lookups for earlier
+timed-out sweeps (never fail the job), gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), order state
+(`nonce_used`, `insufficient_token_balance`, `insufficient_allowance`), permit ladder (allowance already covers -> the permit
+is dropped and plain `sweep` is used; otherwise a permit that has expired or expires before `sweep.deadline` ->
+`permit_expired` 422 before simulation), `simulateContract` (revert class: `nonce_used` 409, `expired`, `invalid_signature`,
+`token_transfer_failed`, `permit_value_too_low`, `invalid_order`, `simulation_reverted` 422; with a permit still needed a
+generic transfer revert is classified from the token's `nonces(owner)` and `DOMAIN_SEPARATOR()`, read only on this
+failure path: `permit_nonce_consumed` (signed for the previous nonce: the permit was used elsewhere),
+`permit_signature_invalid` (does not recover to the owner under the token's domain), `permit_unsupported_token` (no
+`DOMAIN_SEPARATOR`/`nonces`), otherwise `permit_failed` (the permit looks valid, so the transfer or a non-standard token
+failed; also when the two reads fail), all 422; RPC failure `rpc_unavailable` 503), gas limit (`gas_limit_too_high`), fee
+covers the estimated gas (`fee_below_gas_cost` 422), gas price re-read (cap; `gas_price_moved` 503 beyond
+`gas.maxMovePercent`), deadline again after the queue wait (`deadline_too_soon` 422 unless more than `deadline.minSeconds`
+remain), second simulation with the same checks, the deadline once more (same class; a slow simulation can use up the
+margin), loss budget reservation (`loss_budget_exhausted` 429), daily budget (`budget_exhausted` 503 + `Retry-After`) ->
+state journal record (`state_unavailable` 503 + `Retry-After` when it cannot be written; nothing is signed) -> sign ->
+journal the transaction hash (`state_unavailable` 503 on failure; nothing is broadcast) -> send (`send_failed` 503). A
+send whose outcome is unknown blocks the chain's lane (`send_unsettled` 503 + `Retry-After`) until reconciliation shows
+whether its nonce was used. A mined revert also counts against the owner.
+
+Quote pricing: `gas.griefReserveBps` (default 0, max 5000) is added to the gas term before the F-SPONSOR formula, so the fee
+carries a margin for gas lost when an owner drains or revokes first; how to derive a value from measured gas and the
+observed mined-revert rate is in `docs/audits/26-relayer-completion.md` section 4a. `quoteTtlSeconds` is at most 60 (default 60).
 
 Other classes: `invalid_*` 400 (field-level validation), `unsupported_media_type` 415, `body_too_large` 413,
 `rate_limited_ip` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
 `internal_error` 500.
+
+**Client contract (pre-broadcast classes).** Every 4xx class above is returned before the relayer broadcasts: `send` is
+the last step and its failure is `send_failed` 503, and nothing after a successful send returns an error. `nonce_used` 409
+can mean the order is already on chain. Errors use the envelope `{ "error": { "code": "<class>" } }`. The web client
+releases a relayed-sweep signing lock only for a 4xx with this envelope and a class in
+`apps/web/src/lib/relayerClient.ts` `PRE_BROADCAST_CODES` (or `invalid_*` at 400); its test cross-checks that list against
+this source. Adding a 4xx after `send`, or reusing a listed class for a post-broadcast condition, breaks that contract.
 
 ## Configuration
 
@@ -83,6 +110,41 @@ estimated gas cost against `gas.coverPercent` (default 100%), and refuses if `et
 `gas.maxMovePercent` (default 25%) between simulations. Quote gas prices are cached for `gas.quoteCacheSeconds` (default 3).
 Non-stable tokens are unsupported in v1.
 
+### Restart safety (state journal)
+
+`state` is required: `{ "file": "/var/lib/ghostpay-relayer/state.json" }` (absolute path; its directory must be writable
+by the service user and is the only path the relayer writes) or `{ "ephemeral": true }` (development only; refused when
+`NODE_ENV=production`, and a restart then forgets the spent budget and unsettled transactions).
+
+The journal (`src/stateStore.ts`) holds, per chain, the UTC day and wei reserved against `dailyBudgetWei`, and one record
+per transaction that may still spend gas: hot-key nonce, local transaction hash, reserved wei, gas price and status
+(`reserved` -> `signed` -> `pending`). The record is written before signing and the hash before the broadcast; every write
+is a whole-file atomic replace (temp file, fsync, rename, directory fsync). On start:
+
+| Record status at restart | Meaning | Action |
+|---|---|---|
+| `reserved` | crashed before signing; nothing can be on chain | reservation released, record deleted |
+| `signed` | signed, broadcast outcome unknown | lane blocked (`send_unsettled`) until a receipt is found or the node's pending nonce passes it (then treated as broadcast), or until `queue.receiptTimeoutSeconds` passes with the nonce still free (then released). The nonce is never reused while it may be in a mempool |
+| `pending` | accepted by the RPC | receipt looked up at the start of later jobs; settled from the receipt; dropped after 24 h unfound (reservation kept for its day) |
+
+A file that does not parse is a startup error, never a silent reset. The day only moves forward, so a wall clock stepped
+back does not grant a new daily budget: a new day starts only when both the wall clock and the monotonic clock have
+passed UTC midnight, so a wall clock stepped or flapping forward gets no fresh budget either; a saved day more than one
+day ahead (a wrong reading that was persisted) keeps its spending on today's day instead of pinning the budget. The wall
+clock is still trusted at process start (run NTP). `<state>.lock` is a single-writer heartbeat
+lock with a random per-process token: created exclusively, 10 s heartbeat, taken over when stale for 30 s (15 s when it
+names this host and pid, i.e. a restarted container); a fresh lock without a token (an older version) also blocks. Every
+journal write first checks the token (fencing), so a process that lost the lock cannot write or start a send
+(`state_unavailable`). A heartbeat I/O error is retried; another token on the lock, or 25 s without a successful beat,
+counts as lost: the process drains and exits 1 so the supervisor restarts it. On SIGTERM the lock is released only after
+the drain. The fence is check-then-write, so a holder paused for longer than 30 s (VM pause, SIGSTOP) can still write
+once after a takeover; do not run a second instance on the same state while one may be paused. Settlement writes are applied in memory even when the write fails and are persisted by the next write
+(`/healthz` reports `degraded` meanwhile), so a failed removal can never be restored and released twice. Running two relayers with the same hot key on
+separate state files is unsupported: there is no distributed coordination. Not persisted (reset on restart, all bounded
+by the persisted daily budget): rate-limit buckets, the per-key loss budget, the per-owner failure counter, the breaker
+window. Operator commands (`node dist/ops.js check-config|state|health|reconcile-report`) are read-only; see
+`docs/operators/relayer-runbook.md`.
+
 ## Run
 
 ```
@@ -92,7 +154,8 @@ RELAYER_CONFIG=/etc/ghostpay/relayer.config.json node apps/relayer/dist/main.js
 ```
 
 HTTPS is terminated by the host (reverse proxy); list its IPs or CIDRs in `trustedProxies` so the rate-limit bucket can
-use `X-Forwarded-For` only when the socket peer is trusted. An empty list ignores that header. `SIGTERM`/`SIGINT` start a
+use `X-Forwarded-For` only when the socket peer is trusted. An empty list ignores that header. Behind the compose recipe's
+nginx that is the pinned backend subnet (`deploy/config/README.md`). `SIGTERM`/`SIGINT` start a
 graceful shutdown: stop listening, refuse new work, let queued and in-flight transactions settle, force-close after
 `shutdownGraceSeconds`. Deployment: `Dockerfile` (distroless, non-root; build from the repo root) and
 `deploy/ghostpay-relayer.service`.
@@ -105,7 +168,8 @@ current key.
 ## Threat notes
 
 - **Privacy-preserving by construction, not by promise:** logs can only carry `requestId, route, status, chainId, txHash,
-  errorClass`; raw IPs are hashed with a rotating in-memory salt; nothing is persisted. See `PRIVACY.md`. The relayer
+  errorClass`; raw IPs are hashed with a rotating in-memory salt; the only file written is the state journal, which
+holds no user data (nonce, tx hash, wei amounts; records deleted on settlement). See `PRIVACY.md`. The relayer
   and its RPC provider do see owner, destination and amount of each sweep (inherent; documented).
 - **Cannot redirect funds:** the order is signed by the stealth key and verified on-chain; the relayer can only decline
   or delay. A malicious operator can censor and can observe, and can send a sweep later than the user expected
@@ -114,9 +178,10 @@ current key.
   gas limit cap, per-chain daily budget, balance floor, error-rate breaker with half-open probe, one in-flight transaction
   per chain with a bounded queue, 16 KiB body cap, header/request timeouts, connection cap.
 - **Quote integrity:** HMAC binds the whole order; tampering or replaying across chains/tokens/owners fails.
-- **Not covered:** per-owner limits apply to `/v1/sweep` only (quotes are unauthenticated, IP-limited only); a distributed
-  attacker with many IPs is bounded by the budget, queue and breaker, not by rate limits; in-memory state means a restart
-  resets limits and budget counters (the daily budget is then per process-day, not persisted); there is no sanctions
+- **Not covered:** per-owner limits apply to `/v1/sweep` only (quotes are unauthenticated, limited only per client IP,
+  per client network group and process-wide, see RELAYER-01 below); a distributed
+  attacker with many IPs is bounded by the budget, queue and breaker, not by rate limits; a restart resets rate limits,
+  the per-key loss budget and the failure counter (the daily budget and unsettled transactions are persisted); there is no sanctions
   screening unless the operator supplies a `PolicyGate` (default allows all, ADR-0006).
 - **Hot key:** keep the balance low (the `minBalanceWei` floor opens the breaker). The key is used only to sign these
   transactions; the contract moves tokens `owner -> destination/feeTo` and never holds them.
@@ -124,22 +189,35 @@ current key.
 ## Tests
 
 `npm test -w @ghostpay/relayer` (vitest, coverage thresholds 95/90/95/95 enforced). Unit and in-process HTTP tests
-use an injected fake chain client; `src/chain.test.ts` drives the real viem client against a fake JSON-RPC transport;
+use an injected fake chain client; `src/config.test.ts` also checks that the compose recipe in `deploy/` agrees with
+itself (pinned subnets, nginx `set_real_ip_from` and `/api/` route allowlist, `deploy/config/relayer.config.example.json`)
+and runs `deploy/selfhost.sh --dry-run` on scratch copies for its `trustedProxies` warning (needs bash and python3);
+`src/chain.test.ts` drives the real viem client against a fake JSON-RPC transport;
 `src/e2e.anvil.test.ts` deploys the compiled `GhostPaySweepRelayer` and `PermitToken` from `packages/contracts/out` on a
 local anvil and sweeps through the relayer (skipped when anvil or the artifacts are missing; `ANVIL_BIN` overrides
-`/home/user/tools/foundry/anvil`; run `forge build` first). The anvil test uses throwaway keys and `anvil_setBalance`. CI sets `REQUIRE_ANVIL=1` for this workspace (`ts-test-relayer`), but `e2e.anvil.test.ts` does not read that variable yet (only `packages/policy-scheme` does), so a missing anvil still skips there.
+`/home/user/tools/foundry/anvil`; run `forge build` first). The anvil test uses throwaway keys and `anvil_setBalance`. With
+`CI=true` or `REQUIRE_ANVIL=1` (set by the `ts-test-relayer` CI job) a missing anvil or artifact is a failing test, not
+a skip. The anvil suite covers the permit sweep, replay refusal, the front-run permit fallback, owner-drains-first loss
+accounting, and a restart while a broadcast is pending (no nonce reuse; budget equals gas paid).
+`src/restart.test.ts` covers recovery from every journal status, journal write failures before and after the
+broadcast, and permit failure classification; `src/stateStore.test.ts` the file format, atomic writes and the lock.
+The anvil test files reference audit G-09 (`src/e2e.anvil.test.ts`).
 
 ## Unverified
 
 No test against a public testnet RPC; no load test; Docker image and systemd unit were not built or run in the authoring
-sandbox; mainnet behaviour (manifest + `ALLOW_MAINNET`) is covered by config tests only; gas units in the example config
-are placeholders.
+sandbox; the compose recipe's client-address path (TLS terminator, nginx `real_ip`, relayer `trustedProxies`) is checked
+statically only (no Docker daemon or nginx); mainnet behaviour (manifest + `ALLOW_MAINNET`) is covered by config tests
+only; gas units in the example config are placeholders.
 
 ## Abuse controls and operations (relayer-guard wiring)
 
 - `trustedProxies` (CIDR list, default empty) replaces `trustProxyHops`. `X-Forwarded-For` is honoured only when the socket peer is listed, walked right to left; a broken chain gets `400 invalid_client_address`. Buckets are IPv4 /32 and IPv6 /64, hashed with the rotating salt (S3-07).
-- Breaker: every admission is a permit settled on every path; user-attributable results (simulation revert, nonce used, caps) are neutral; `breaker.probeTimeoutSeconds` expires a stuck probe (S3-05). A mined revert after a passing simulation is charged to `lossBudget` (per network bucket and per destination, plus global; `429 loss_budget_exhausted`) and does not feed the breaker (S3-06).
-- `rateLimit.quoteGlobalPerMinute/Burst`: process-wide `/v1/quote` budget (`429 rate_limited_global`); quote-path gas price is reused for 3 s.
-- Alerts: `alertWebhookUrlEnv` names an env var holding an https URL; JSON `{kind, chainId, text}` is posted on breaker open, low balance, loss/daily budget exhaustion and mined reverts (de-duplicated per kind and chain, 60 s). No request data is ever included.
-- Metrics (`/metrics`): `relayer_http_requests_total`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_loss_budget_denied_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_queue_pending`.
+- Breaker: every admission is a permit settled on every path; user-attributable results (simulation revert, nonce used, caps) are neutral; an RPC failure on any in-lane read, the gas price included, counts as a failure (L5-10), while the gas price cap (`gas_price_too_high`) stays neutral; `breaker.probeTimeoutSeconds` expires a stuck probe (S3-05). A broadcast sweep's permit is settled when its receipt wait ends, not at broadcast (L5-06): a mined sweep is a success, a receipt timeout a failure. So a half-open probe stays in flight until its receipt (other sweeps get `breaker_open` meanwhile). It expires and re-opens the breaker only when it is not settled within `breaker.probeTimeoutSeconds` (the in-lane work up to its broadcast) plus `queue.receiptTimeoutSeconds` (its receipt wait), 60 + 120 s by default, so the receipt decides a broadcast probe: keep `queue.receiptTimeoutSeconds` above the chain's usual confirmation time. A mined revert after a passing simulation is charged to `lossBudget` (per network bucket and per destination, plus global; `429 loss_budget_exhausted`) and does not feed the breaker (S3-06): its permit is settled neutral, which frees a half-open probe without closing the breaker.
+- Loss budget (L5-02, L5-04): each sweep makes one reservation that charges its destination, its network bucket and that bucket's group (IPv4 /24, IPv6 /48), each up to `perKeyWei`, and the global cap once. A quarter of `globalWei` is kept for sweeps whose keys and groups lost nothing in the current window, so sources that keep losing cannot spend it. That is not a service guarantee: a network group (IPv4 /24, IPv6 /48) new to the window is clean until its first loss and destinations are free, so enough distinct groups, one loss each, can still use up that quarter and refuse every sweep until the window ends (open, like RELAYER-01 below). Size `globalWei` with that in mind: the quarter lasts for about (`globalWei` / 4) / (gas cost of one sweep) such first losses. Keys and groups live in two tables of `maxKeys` entries that evict only entries from an earlier window; while a table is full of live entries, newcomers share one overflow entry per kind (destination, network), counted by `relayer_loss_budget_overflow_total`. Mined reverts that reach the breaker's own thresholds (at least `breaker.minSamples` reverts making up at least `breaker.failureRatio` of the last `breaker.windowSize` mined sweeps within `lossBudget.windowSeconds`) send a `mined_revert_rate` alert and report `minedReverts: "sustained"` and `degraded` on `/healthz`, without opening the breaker.
+- `rateLimit.quoteGroupPerMinute/Burst` (default 60 per minute, burst 20): `/v1/quote` budget per client IPv4 /24 or IPv6 /48 (`429 rate_limited_ip`), checked before `rateLimit.quoteGlobalPerMinute/Burst`, the process-wide `/v1/quote` budget (`429 rate_limited_global`, counted as `relayer_quote_budget_denied_total` and alerted as `quote_budget_exhausted`), which only a well-formed quote request spends (L5-03). Keep the group values well below the global ones. The quote-path gas price is reused for `gas.quoteCacheSeconds` (3 s) and concurrent quotes that find it cold share one lookup.
+- Open item (RELAYER-01): enough networks together can still exhaust the global quote budget and so refuse every quote, and with it every relayed sweep; each network group only buys `quoteGroupPerMinute` of it. The durable fix, pricing the fee at sweep time so that quotes need no global budget, is not implemented.
+- Alerts: `alertWebhookUrlEnv` names an env var holding an https URL; JSON `{kind, chainId, text}` is posted on breaker open, low balance, loss/daily budget exhaustion, mined reverts, a sustained mined-revert rate (`mined_revert_rate`), receipt timeouts and a refusing global quote budget (`quote_budget_exhausted`) (de-duplicated per kind and chain, 60 s). No request data is ever included.
+- Receipt timeouts (L5-06): a sweep whose receipt is not seen within `queue.receiptTimeoutSeconds` counts as a breaker failure (the sweep's own permit is settled with it, see Breaker above) and sends a `receipt_timeout` alert. Its daily-budget and loss reservations are kept, and the start of each later job on that chain looks its receipt up again (`eth_getTransactionReceipt`, at most 8 per chain, dropped after 24 h): once mined it is settled like any receipt (unused budget returned, a revert charged). Open item: nothing replaces (fee bump) or cancels a stuck transaction; the lane moves on after the timeout with the nonce re-read from the pending count.
+- Metrics (`/metrics`): `relayer_http_requests_total`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_receipt_timeouts_total`, `relayer_loss_budget_denied_total`, `relayer_loss_budget_overflow_total`, `relayer_quote_budget_denied_total`, `relayer_owner_failures_total`, `relayer_permit_skipped_total`, `relayer_permit_failures_total{class}`, `relayer_permit_diagnosis_failures_total`, `relayer_send_outcome_unknown_total`, `relayer_send_not_broadcast_total`, `relayer_state_restored_total`, `relayer_state_write_failures_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_daily_budget_remaining_wei`, `relayer_queue_pending`, `relayer_unsettled_transactions{state=pending|unknown}`, `relayer_hot_balance_wei` (last pre-send read). `/healthz` adds `sends: settled|unsettled` per chain. Alert kind `state_write_failed` is new.
 - Unverified: nothing here has run behind a real proxy, Prometheus or webhook receiver.

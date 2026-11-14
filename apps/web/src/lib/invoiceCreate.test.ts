@@ -1,7 +1,14 @@
 import { parseFragment } from '@ghostpay/invoice-schema';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildInvoiceLink, computeTotals, tokenChoices, tokenDecimals, type InvoiceForm } from './invoiceCreate';
 import { clearSession, generateSession } from './session';
+
+// Records the signing key each invoice was signed with, to check how long that copy stays readable (L1-07).
+const signingKeys = vi.hoisted(() => [] as Uint8Array[]);
+vi.mock('@ghostpay/invoice-schema', async (original) => {
+  const actual = await original<typeof import('@ghostpay/invoice-schema')>();
+  return { ...actual, signInvoice: (invoice: Parameters<typeof actual.signInvoice>[0], key: Uint8Array) => { signingKeys.push(key); return actual.signInvoice(invoice, key); } };
+});
 
 const NOW = 1_800_000_000;
 const FORM: InvoiceForm = {
@@ -66,6 +73,16 @@ describe('buildInvoiceLink', () => {
     expect(c.invoice.memo).toBeUndefined();
   });
 
+  it('normalizes a decomposed memo to NFC like a line description, and signs the normalized text', async () => {
+    const decomposed = 'Cafe\u0301 order'; // "e" followed by a combining acute accent
+    expect(decomposed).not.toBe(decomposed.normalize('NFC'));
+    const c = await buildInvoiceLink({ ...FORM, memo: `  ${decomposed} ` }, 'https://a/', NOW);
+    expect(c.invoice.memo).toBe('Caf\u00e9 order');
+    const parsed = await parseFragment(c.fragment);
+    expect(parsed.verification.signatureValid).toBe(true);
+    expect(parsed.invoice.memo).toBe('Caf\u00e9 order');
+  });
+
   it('validates every input', async () => {
     const bad = (patch: Partial<InvoiceForm>): Promise<unknown> => buildInvoiceLink({ ...FORM, ...patch }, 'https://a/', NOW);
     await expect(bad({ chainId: 999 })).rejects.toThrow(/Unknown chain/);
@@ -88,6 +105,14 @@ describe('buildInvoiceLink', () => {
   it('refuses without keys', async () => {
     clearSession();
     await expect(buildInvoiceLink(FORM, 'https://a/', NOW)).rejects.toThrow(/Load or generate/);
+  });
+
+  it('L1-07: borrows only a temporary signing key, wiped before the link is returned', async () => {
+    signingKeys.length = 0;
+    const c = await buildInvoiceLink(FORM, 'https://a/', NOW);
+    expect((await parseFragment(c.fragment)).verification.signatureValid).toBe(true);
+    expect(signingKeys).toHaveLength(1);
+    expect(signingKeys[0]?.every((b) => b === 0)).toBe(true);
   });
 
   it('treats an empty tax rate as zero and handles zero-decimal currencies', async () => {

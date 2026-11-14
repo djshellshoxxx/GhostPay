@@ -2,28 +2,24 @@
 // Minimal GhostPay webhook receiver. Secret comes from a file (hex, >= 32 bytes, mode 600), never from argv/env text.
 //   WEBHOOK_SECRET_FILE=./webhook.secret node examples/webhook-receiver/server.mjs
 // Listens on 127.0.0.1:8788 by default; put TLS + a reverse proxy in front. Replace `onEvent` with your order logic.
-import { readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { createReceiver } from './receiver.mjs';
+import { DurableWebhookStore } from './durable-store.mjs';
+import { loadWebhookSecret } from './secret.mjs';
 
-const file = process.env.WEBHOOK_SECRET_FILE;
-if (!file) {
-  console.error('set WEBHOOK_SECRET_FILE to a mode-600 file holding the hex secret (>= 64 hex chars)');
+let secret, store;
+try {
+  if (!process.env.WEBHOOK_SECRET_FILE || !process.env.WEBHOOK_STATE_DIR) throw new Error();
+  secret = loadWebhookSecret(process.env.WEBHOOK_SECRET_FILE);
+  store = new DurableWebhookStore(process.env.WEBHOOK_STATE_DIR);
+} catch {
+  console.error('receiver setup failed: check private WEBHOOK_SECRET_FILE and WEBHOOK_STATE_DIR');
   process.exit(2);
 }
-if ((statSync(file).mode & 0o077) !== 0) {
-  console.error('secret file must not be group/world accessible (chmod 600)');
-  process.exit(2);
-}
-const hex = readFileSync(file, 'utf8').trim();
-if (!/^(?:[0-9a-f]{2}){32,}$/.test(hex)) {
-  console.error('secret must be lowercase hex, at least 32 bytes');
-  process.exit(2);
-}
-const secret = Uint8Array.from(Buffer.from(hex, 'hex'));
 
 const handler = createReceiver({
   secret,
+  store,
   async onEvent(event) {
     // Amounts are decimal STRINGS in minor units: use BigInt, never Number.
     const amount = BigInt(event.data.amountMinor);
@@ -37,3 +33,5 @@ const server = createServer((req, res) => void handler(req, res));
 server.headersTimeout = 10_000;
 server.requestTimeout = 15_000;
 server.listen(port, host, () => console.log(`listening on http://${host}:${port}/webhooks/ghostpay`));
+
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => server.close(() => { store.close(); secret.fill(0); }));
