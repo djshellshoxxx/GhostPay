@@ -1,7 +1,11 @@
 # QR codes and moving data between devices
 
-GhostPay generates and reads every QR code on the device. Nothing scanned, and no camera frame, is sent anywhere.
-A scan never pays, signs, imports keys or changes settings on its own: there is always a review and a separate button.
+[Home](Home.md) · [User Guide](User-Guide.md) · [Developer Guide](Developer-Guide.md)
+
+> **Pages-only scope (November 14, 2026):** This page also describes retained full-profile QR formats. The active, unmerged static Pages candidate is EVM-testnet-only; non-EVM chain handling, CLI, server and relayer implementations are not being developed or qualified for Pages. A documented format or button below is not evidence that it shipped, was independently reviewed, or passed current Pages acceptance. See [Verification and Release Gates](Verification-and-Release-Gates.md).
+
+QR generation and camera decoding are designed to occur in the browser, with no GhostPay-operated QR-upload service in the static Pages architecture. Subsequent user-approved RPC or wallet activity can still disclose network metadata to the selected external providers; this page is not an independent network-privacy verification.
+A scan is not itself transaction or key-import authorization: the relevant flow requires review and a separate confirmation.
 
 > Source of truth: the repository folder `docs/qr/`. This page summarises it for the wiki.
 
@@ -29,7 +33,7 @@ Full guide: `docs/qr/USER_GUIDE.md`.
 - GPQ1 multipart: ≤ 32 KiB, ≤ 64 parts, SHA-256 session check after assembly. This is integrity, not authentication.
 - Settings exchange v2: optional sections, ≤ 2900 bytes, strict schema, injected URL validators plus a package
   minimum, pure atomic apply.
-- Chain URIs: EIP-681/ERC-3770, BIP-21/321/352, Solana Pay transfer, and a nonstandard GhostPay `tron:` form.
+- Chain URI reference: EIP-681/ERC-3770 pertains to EVM; BIP-21/321/352, Solana Pay and the nonstandard GhostPay `tron:` form are **preserved full-profile formats only**, not Pages beta capabilities or acceptance evidence.
 
 Reference: `docs/qr/DEVELOPER_REFERENCE.md`, `docs/qr/CHAIN_URI_MATRIX.md`. Device qualification:
 `docs/qr/PHYSICAL_DEVICE_ACCEPTANCE.md` (all pending).
