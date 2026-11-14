@@ -34,9 +34,11 @@ export function fiatDecimals(currency: string): number {
 export function formatFiat(minorUnits: bigint, currency: string): string {
   const d = fiatDecimals(currency);
   const base = 10n ** BigInt(d);
-  const whole = minorUnits / base;
-  const frac = (minorUnits % base).toString().padStart(d, '0');
-  return `${currency} ${whole.toString()}${d === 0 ? '' : `.${frac}`}`;
+  const negative = minorUnits < 0n;
+  const abs = negative ? -minorUnits : minorUnits;
+  const whole = abs / base;
+  const frac = (abs % base).toString().padStart(d, '0');
+  return `${currency} ${negative ? '-' : ''}${whole.toString()}${d === 0 ? '' : `.${frac}`}`;
 }
 
 /** Shortens a long hex string for display; the full value is always available elsewhere in the UI. */
