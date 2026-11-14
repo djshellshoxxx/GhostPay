@@ -1,4 +1,4 @@
-import { spawn, type ChildProcess } from 'node:child_process';
+import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -11,17 +11,19 @@ import { FileStateBackend, decodeState } from './stateStore.js';
 import { createLogger } from './log.js';
 import { buildRelayer, type Relayer } from './runtime.js';
 
-const ANVIL = process.env['ANVIL_BIN'] ?? '/home/user/tools/foundry/anvil';
+// Default resolves `anvil` from PATH (same as packages/policy-scheme); ANVIL_BIN overrides it.
+const ANVIL = process.env['ANVIL_BIN'] ?? 'anvil';
+const anvilOk = spawnSync(ANVIL, ['--version'], { stdio: 'ignore' }).status === 0;
 const OUT = resolve(import.meta.dirname, '../../../packages/contracts/out');
 const RELAYER_JSON = `${OUT}/GhostPaySweepRelayer.sol/GhostPaySweepRelayer.json`;
 const TOKEN_JSON = `${OUT}/PermitToken.sol/PermitToken.json`;
-const available = existsSync(ANVIL) && existsSync(RELAYER_JSON) && existsSync(TOKEN_JSON);
+const available = anvilOk && existsSync(RELAYER_JSON) && existsSync(TOKEN_JSON);
 // In CI (or with REQUIRE_ANVIL=1) a missing anvil/artifact is a hard failure, never a silent skip (audit G-09).
 const mustRun = process.env['CI'] === 'true' || process.env['REQUIRE_ANVIL'] === '1';
 
 describe.runIf(mustRun)('anvil e2e prerequisites (CI must not skip)', () => {
   it('anvil binary and forge artifacts exist', () => {
-    expect({ anvil: existsSync(ANVIL), relayer: existsSync(RELAYER_JSON), token: existsSync(TOKEN_JSON) }).toEqual({
+    expect({ anvil: anvilOk, relayer: existsSync(RELAYER_JSON), token: existsSync(TOKEN_JSON) }).toEqual({
       anvil: true,
       relayer: true,
       token: true,
