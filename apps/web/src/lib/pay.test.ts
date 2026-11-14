@@ -19,6 +19,7 @@ import { mockRpc } from '../test/mockRpc';
 import { buildInvoiceLink } from './invoiceCreate';
 import {
   BUFFER_QUOTE_TTL_SECONDS,
+  DEADLINE_SECONDS,
   MAX_BUFFER_WEI,
   assertApproveTx,
   assertPermitSigner,
@@ -32,6 +33,8 @@ import {
   permitReader,
   quoteBuffer,
   assertBufferStillSufficient,
+  assertInvoiceFresh,
+  assertNotExpiredAtSend,
   MAX_SIMULATED_SWEEP_GAS,
   SWEEP_GAS_ESTIMATE,
   readAllowance,
@@ -391,5 +394,33 @@ describe('permit (ERC-2612)', () => {
     const bad = permitReader(mockRpc(1, () => 42), '1');
     await expect(bad.name(USDC_84532)).rejects.toThrow(/unexpected result/);
     expect(await permitReader(mockRpc(1, () => '0x'), '7').version(USDC_84532)).toBe('7');
+  });
+});
+
+describe('expiry at final build and send (A3-2)', () => {
+  it('caps the router deadline at the invoice expiry', async () => {
+    const { parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const exp = parsed.invoice.expiresAt;
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    expect(buildFinal(ctx, { nowSeconds: exp - 60 }).preview.deadline).toBe(BigInt(exp));
+    expect(buildFinal(ctx, { nowSeconds: NOW }).preview.deadline).toBe(BigInt(NOW + DEADLINE_SECONDS));
+    expect(buildFinal(ctx, { nowSeconds: exp - 60, deadlineSeconds: exp + 500 }).preview.deadline).toBe(BigInt(exp));
+  });
+  it('refuses to build once the invoice has expired', async () => {
+    const { parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    expect(() => buildFinal(ctx, { nowSeconds: parsed.invoice.expiresAt })).toThrow(/invoice has expired/);
+  });
+  it('refuses an expired fiat quote and an expired buffer quote at send', async () => {
+    const { parsed: fiat } = await makeParsed({ amountMode: 'fiat_quote' });
+    expect(() => assertInvoiceFresh(fiat.invoice, fiat.invoice.quote.expiresAt - 1)).not.toThrow();
+    expect(() => assertInvoiceFresh(fiat.invoice, fiat.invoice.quote.expiresAt)).toThrow(/price quote has expired/);
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const q = { bufferWei: 1n, maxFeePerGas: 1n, gasLimit: 1n, safetyBps: 0n, quotedAt: NOW, expiresAt: NOW + 60, gasSource: 'default' } as const;
+    const b = buildFinal(ctx, { nowSeconds: NOW, buffer: q });
+    expect(() => assertNotExpiredAtSend(b, ctx, NOW + 59)).not.toThrow();
+    expect(() => assertNotExpiredAtSend(b, ctx, NOW + 60)).toThrow(/gas buffer quote expired/);
+    expect(() => assertNotExpiredAtSend(b, ctx, parsed.invoice.expiresAt)).toThrow(/invoice has expired/);
   });
 });
