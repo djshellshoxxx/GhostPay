@@ -1,12 +1,18 @@
+name: openai-agents (disabled no-op)
 
-- name: Run development agent
-  env:
-    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  run: |
-    cat .github/agent-prompts/repository-scope.md \
-        .github/agent-prompts/autonomous-development.md \
-        > /tmp/agent-instructions.md
+# Disabled placeholder. The former agent step (codex exec with OPENAI_API_KEY) was a bare step fragment
+# with no on:/jobs:, so GitHub rejected the file on every push. It is now a valid manual-only no-op.
+# No paid API, no secrets. Re-enabling the agent needs owner review.
 
-    codex exec \
-      --full-auto \
-      - < /tmp/agent-instructions.md
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  noop:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: No-op
+        run: echo "openai-agents workflow is disabled; no agent runs here."
