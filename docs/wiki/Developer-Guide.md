@@ -18,6 +18,10 @@ The React/Vite app runs cryptography, invoice validation, session/vault, QR exch
 
 Relevant source-to-test entry points: `apps/web/src/views/Settings.test.tsx`, `apps/web/src/App.test.tsx`, `apps/web/src/lib/session.test.ts`, `apps/web/src/lib/keyVault.idb.test.ts`, `apps/web/src/lib/reconciliationVault.idb.test.ts`, `apps/web/e2e/backup-panel.spec.ts`, and `apps/web/e2e/pages-devnet.spec.ts`. The source owner reports local targeted tests, but the exact-head application failure remains authoritative. See [Verification and Release Gates](Verification-and-Release-Gates.md) for requirement-to-test traceability; no SonarCloud A, ADR-0029 approval, dedicated origin, release-signed manifest, external wallet/testnet evidence, independent audit or publication authorization has been supplied.
 
+### Pending test-first browser response-bound qualification — #158
+
+[Isolated draft #158](https://github.com/djshellshoxxx/GhostPay/pull/158), based on fully qualified #145 at `c8d4c42bee724bacd244bc90b0259c961d27e84f`, adds a **test-only** regression at `ce1b57d8a4776041cb58151eee247c9b3efb596e` in `apps/web/src/lib/relayerClient.test.ts`. It asserts that the static browser client's external relayer HTTP response is rejected and cancelled at a bounded size rather than buffering the full streamed body. The **expected RED result and all new exact-head CI remain unverified**; the production `relayerClient.ts` implementation is unchanged. Do not call this fixed, tested GREEN or a confirmed exploit. The relayer is an optional third-party service dependency; this PR does not develop or deploy a service. Owner-controlled #157 and the completed standalone #156 are independent.
+
 ## Prerequisites and local setup
 
 Use Git, Node.js 22+, npm and a modern browser. Run from the checked-out candidate source at a recorded SHA:
