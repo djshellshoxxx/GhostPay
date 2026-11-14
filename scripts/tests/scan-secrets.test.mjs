@@ -63,3 +63,10 @@ test('allowlists only the public anvil dev key (A5-3)', () => {
   const bad = scan({ 'app.ts': `const privateKey = "0x${hex(64, '12')}";\n` });
   assert.equal(bad.status, 1);
 });
+
+test('allowlisted dev key does not mask another secret on the same line (A5-3)', () => {
+  const anvil0 = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+  const tok = 'gh' + 'p_' + rep(36, 'A');
+  const r = scan({ 'app.ts': `const privateKey = "${anvil0}"; const t = "${tok}";\n` });
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+});
