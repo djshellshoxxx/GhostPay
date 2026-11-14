@@ -1694,7 +1694,7 @@
     "ledger.ui.receiptsYouIssuedStoredEncryptedUntilYouDeleteThemOr": "あなたが発行した領収書で、削除するかこのサイトのデータを消去するまで暗号化して保存されます。領収書の署名は署名されたフィールドと鍵の管理を証明するものであり、販売者の身元を確立するものではなく、支払いの証拠として扱われることもありません。アーカイブした領収書は照合や検証に影響しません。",
     "ledger.receipts.empty": "保管済みの領収書はありません。",
     "ledger.ui.transaction2": "トランザクション ",
-    "ledger.ui.forInvoice": "、対象の請求書 ",
+    "ledger.ui.forInvoice": " 、対象の請求書 ",
     "ledger.ui.issued": "。発行日時",
     "ledger.ui.archived": "、アーカイブ日時 ",
     "ledger.ui.deleteThisArchivedReceiptFromThisDevice": "このアーカイブ済みの領収書をこのデバイスから削除しますか？",
