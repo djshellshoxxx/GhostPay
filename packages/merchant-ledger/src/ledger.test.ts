@@ -144,6 +144,17 @@ describe('reconcile', () => {
     const ok = reconcile([inv('a', '10')], [pay('p', '10', { invoiceId: 'a', observedAt: T0 + 999 })], { now });
     expect(ok.invoices[0]?.status).toBe('paid');
   });
+  it('never counts a payment as on time when its observation or the expiry time is not a number', () => {
+    const now = T0 + 2000;
+    for (const [i, p] of [
+      [inv('a', '10'), pay('p', '10', { invoiceId: 'a', observedAt: NaN })],
+      [inv('a', '10', { expiresAt: NaN }), pay('p', '10', { invoiceId: 'a' })],
+    ] as const) {
+      const r = reconcile([i], [p], { now });
+      expect(r.invoices[0]).toMatchObject({ paidMinor: '0', paymentIds: [], latePaymentIds: ['p'] });
+      expect(r.invoices[0]?.status).not.toBe('paid');
+    }
+  });
   it('rejects bad rows without throwing', () => {
     const r = reconcile(
       [inv('a', '100')],
