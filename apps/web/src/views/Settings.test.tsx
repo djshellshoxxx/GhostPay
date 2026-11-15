@@ -36,7 +36,9 @@ describe('Settings', () => {
     const text = document.getElementById(hint)?.textContent ?? '';
     expect(text).toMatch(/local tags lock/);
     expect(text).toMatch(/Seller keys are wiped from memory at the same time only when a copy survives the wipe/);
-    expect(text).toMatch(/Keys with no backup stay loaded/);
+    // GP-PAGES-02: a downloaded keystore counts only once it was verified; an unverified download keeps the keys loaded.
+    expect(text).toMatch(/keys whose downloaded keystore you verified under Seller keys/);
+    expect(text).toMatch(/Keys with no backup, or with only an unverified download, stay loaded/);
     expect(document.body.textContent).not.toMatch(/Keys stay in memory until you wipe them or close the tab/);
   });
 
