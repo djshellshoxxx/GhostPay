@@ -1,4 +1,6 @@
-# Developer Guide — static GitHub Pages client (draft)
+# Developer Guide
+
+**Current owner-integration reconciliation — November 15, 2026 UTC:** [#157](https://github.com/djshellshoxxx/GhostPay/pull/157) advanced from its historical `c3e707ade896c5acfebdb5967f4de7c0445740e2` to **`a89a2e948321314acf97db435e9776d9322a9461`**. New [application CI 43680106654](https://github.com/djshellshoxxx/GhostPay/actions/runs/43680106654) completed **24/24 success**; [Pages 43680106750](https://github.com/djshellshoxxx/GhostPay/actions/runs/43680106750), [beta 43680106728](https://github.com/djshellshoxxx/GhostPay/actions/runs/43680106728), [CLI 43680106843](https://github.com/djshellshoxxx/GhostPay/actions/runs/43680106843) and [hosting 43680106659](https://github.com/djshellshoxxx/GhostPay/actions/runs/43680106659) also passed. Per exact-source comparison, owner #157 now contains the browser bearer-QR warning (`qrKinds.ts`/test) and bounded relayer response reader (`relayerClient.ts`/test); the #159 off-filter telemetry correction (`scanSpam.ts`/test) is not present in that newer owner's delta. #161/#162 were independently tested on **older** #157, not requalified on this owner head. Subsequent paragraphs retain their historically pinned CI evidence, not today's owner head. All drafts remain unmerged; no deployment, external-wallet acceptance or release approval is implied. — static GitHub Pages client (draft)
 
 [Home](Home.md) · [User Guide](User-Guide.md) · [Verification and Release Gates](Verification-and-Release-Gates.md)
 
