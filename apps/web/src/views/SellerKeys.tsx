@@ -14,8 +14,9 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
 
 /**
- * Stands in for `children` (the meta-address, an invoice form, a whole view) while the loaded keys have no backup and the
- * seller has not typed the waiver (L1-01): every payment those invite is lost if the tab closes before a backup exists.
+ * Stands in for `children` (the meta-address, an invoice form, a whole view) until the loaded keys have a verified
+ * recoverable copy or the seller has explicitly typed the waiver (L1-01, GP-PAGES-02-R2). A keystore download alone
+ * is unverified and must not unlock invoicing: every payment it invites may be lost if the tab closes without a backup.
  * When only the signing key generated at a hex import is unsaved, payments stay sweepable from that hex: `paymentsOnly`
  * children, which sign nothing, are shown, and the gate in front of the rest says that only the signing key is at stake
  * (C-R10). The app-wide backup banner above it offers "Back up now". `heading` keeps the title of a view it stands in for.
@@ -28,7 +29,7 @@ export function BackupGate(props: { readonly children: ReactNode; readonly headi
   const [typed, setTyped] = useState('');
   const headingId = useId();
   useEffect(() => { setTyped(''); }, [app.session]);
-  if (backup === undefined || backup.backedUp || backup.waived || (backup.signerOnly && props.paymentsOnly === true)) return props.children;
+  if (backup === undefined || backup.verified || backup.waived || (backup.signerOnly && props.paymentsOnly === true)) return props.children;
   const phrase = t('backupGate.waiverPhrase');
   const gate = (
     <div className="panel">
