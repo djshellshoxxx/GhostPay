@@ -88,6 +88,25 @@ describe('requestQuote', () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('x'.repeat(20_000))))).rejects.toThrow(/too large/);
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('not json')))).rejects.toThrow(/invalid response/);
   });
+  it('bounds streamed response reads before the entire remote body is buffered', async () => {
+    let chunksProduced = 0;
+    let cancelled = false;
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        chunksProduced += 1;
+        controller.enqueue(new Uint8Array(1024).fill(120));
+        if (chunksProduced === 80) controller.close();
+      },
+      cancel() {
+        cancelled = true;
+      },
+    });
+    await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response(body))))
+      .rejects.toThrow(/too large/);
+    // The response must be rejected after roughly 16 KiB, not after reading the full 80 KiB stream.
+    expect(chunksProduced).toBeLessThan(32);
+    expect(cancelled).toBe(true);
+  });
   it('maps a response stream read failure to a generic transport error', async () => {
     const failedBody = {
       ok: true,
