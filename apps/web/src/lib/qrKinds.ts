@@ -225,12 +225,13 @@ export interface QrPayloadFlags {
 }
 
 /**
- * Chooses the frame kind for a payload. Secret always wins (never downgraded to caution);
- * otherwise testnet/unsigned/unverified data is shown as CAUTION.
+ * Chooses the frame kind for a payload. Secret and bearer-capability warnings always win:
+ * testnet/unsigned/unverified flags must not hide a spending or decryption-key warning.
+ * All other flagged payloads are shown as CAUTION.
  */
 export function kindForPayload(type: QrPayloadType, flags: QrPayloadFlags = {}): QrKind {
   const base = PAYLOAD_KIND[type];
-  if (base === 'secret') return base;
+  if (base === 'secret' || base === 'bearer') return base;
   if (flags.testnet === true || flags.unsigned === true || flags.unverified === true) return 'caution';
   return base;
 }
