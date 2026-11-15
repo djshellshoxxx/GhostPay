@@ -151,6 +151,10 @@ export async function estimateSimilarTransfers(o: { readonly client: RpcClient; 
       seen += logs.length;
       if (seen > PRIVACY_TRANSFER_MAX_LOGS) return { status: 'unknown', reason: 'limit' };
       for (const log of logs) {
+        // An RPC provider can ignore eth_getLogs filters. Never turn off-filter data into a privacy estimate.
+        if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };
+        const block = BigInt(log.blockNumber);
+        if (block < next || block > to) return { status: 'unknown', reason: 'error' };
         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;
         const value = BigInt(log.data) * 4n;
         if (value >= low && value <= high) count++;
