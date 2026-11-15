@@ -36,6 +36,10 @@ describe('taxonomy', () => {
     expect(kindForPayload('payment-request', { unsigned: true })).toBe('caution');
     expect(kindForPayload('receipt', { unverified: true })).toBe('caution');
     expect(kindForPayload('invoice-link-with-key')).toBe('bearer');
+    // A testnet or unverified marker must not hide that the QR itself carries a decryption key.
+    // CAUTION lacks the bearer-capability warning shown by the PRIVATE LINK frame.
+    expect(kindForPayload('invoice-link-with-key', { testnet: true })).toBe('bearer');
+    expect(kindForPayload('invoice-link-with-key', { unsigned: true, unverified: true })).toBe('bearer');
     expect(kindForPayload('rpc-list')).toBe('device');
     expect(kindForPayload('signed-manifest')).toBe('proof');
   });

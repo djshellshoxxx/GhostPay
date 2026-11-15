@@ -74,6 +74,44 @@ function errorClass(text: string): string | undefined {
 const MAX_RESPONSE = 16 * 1024;
 const TIMEOUT_MS = 15_000;
 
+/** Enforce the response budget while receiving bytes, before a remote body can be fully buffered. */
+async function readBoundedResponse(res: Response): Promise<string> {
+  if (!res.body) {
+    // Empty-body Responses and minimal test transports may not expose a stream.
+    const text = await res.text();
+    if (new TextEncoder().encode(text).byteLength > MAX_RESPONSE) {
+      throw new UserFacingError({ key: 'error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored' });
+    }
+    return text;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let text = '';
+  let bytesRead = 0;
+  let completed = false;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        completed = true;
+        return text + decoder.decode();
+      }
+      bytesRead += value.byteLength;
+      if (bytesRead > MAX_RESPONSE) {
+        throw new UserFacingError({ key: 'error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored' });
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+  } finally {
+    if (!completed) {
+      // Cancellation is best-effort; never let an unresponsive remote stream hold up rejection.
+      void reader.cancel().catch(() => undefined);
+    }
+    reader.releaseLock();
+  }
+}
+
 async function post(base: string, path: string, body: unknown, fetchFn: FetchFn): Promise<unknown> {
   const ctl = new AbortController();
   const timer = setTimeout(() => {
@@ -90,8 +128,7 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
       cache: 'no-store',
       signal: ctl.signal,
     });
-    const text = await res.text();
-    if (text.length > MAX_RESPONSE) throw new UserFacingError({ key: 'error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored' });
+    const text = await readBoundedResponse(res);
     if (!res.ok) {
       // Class only; never echo the body.
       const code = errorClass(text);
