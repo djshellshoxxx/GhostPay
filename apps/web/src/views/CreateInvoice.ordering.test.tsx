@@ -60,17 +60,17 @@ async function createTwice(): Promise<void> {
 describe('CreateInvoice asynchronous result ordering (static Pages client)', () => {
   it('must not replace a newer invoice link when an older build succeeds later', async () => {
     await createTwice();
-    await act(async () => { pending[1]!.resolve(result('2')); });
+    await act(async () => { pending[1]!.resolve(result('2')); await Promise.resolve(); });
     expect(screen.getByLabelText<HTMLTextAreaElement>('Link').value).toContain('#gpi=v1.2');
-    await act(async () => { pending[0]!.resolve(result('1')); });
+    await act(async () => { pending[0]!.resolve(result('1')); await Promise.resolve(); });
     expect(screen.getByLabelText<HTMLTextAreaElement>('Link').value).toContain('#gpi=v1.2');
   });
 
   it('must not discard a newer invoice link when an older build fails later', async () => {
     await createTwice();
-    await act(async () => { pending[1]!.resolve(result('2')); });
+    await act(async () => { pending[1]!.resolve(result('2')); await Promise.resolve(); });
     expect(screen.getByLabelText<HTMLTextAreaElement>('Link').value).toContain('#gpi=v1.2');
-    await act(async () => { pending[0]!.reject(new Error('obsolete build failed')); });
+    await act(async () => { pending[0]!.reject(new Error('obsolete build failed')); await Promise.resolve(); });
     expect(screen.getByLabelText<HTMLTextAreaElement>('Link').value).toContain('#gpi=v1.2');
   });
 });

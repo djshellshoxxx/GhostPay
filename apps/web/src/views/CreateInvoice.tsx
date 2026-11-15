@@ -77,6 +77,8 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   const [registerForMatching, setRegisterForMatching] = useState(false);
   const [registration, setRegistration] = useState<{ readonly kind: 'busy' | 'ok' } | { readonly kind: 'error'; readonly message: DisplayMessage } | undefined>(undefined);
   const registrationRun = useRef(0);
+  // Ignore callbacks from superseded invoice submissions, including older failures.
+  const submissionRun = useRef(0);
   const manifest = useManifest(chainId);
   // Each profile lifetime has its own identity, including full -> lean -> full.
   const creationScope = useMemo(() => ({ supportedOnly }), [supportedOnly]);
@@ -137,6 +139,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
 
   const onSubmit = (e: FormEvent): void => {
     e.preventDefault();
+    const run = ++submissionRun.current;
     setError(undefined);
     if (protectWithPassphrase && passphrase !== passphraseAgain) {
       setError(t('create.error.passphraseMismatch'));
@@ -173,7 +176,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       ...(bufferPolicy === undefined ? {} : { bufferPolicy }),
     };
     const scope = creationScope;
-    const current = (): boolean => mounted.current && currentCreationScope.current === scope;
+    const current = (): boolean => mounted.current && currentCreationScope.current === scope && submissionRun.current === run;
     buildInvoiceLink(form, services.baseUrl(), Math.floor(services.nowMs() / 1000)).then(
       (c) => {
         if (!current()) return;
