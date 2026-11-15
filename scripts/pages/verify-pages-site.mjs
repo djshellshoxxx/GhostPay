@@ -69,11 +69,79 @@ function extOf(rel) {
   return dot <= 0 ? '' : base.slice(dot).toLowerCase();
 }
 
+/**
+ * Deterministic HTML scanner (no regex stripping). Follows the HTML tokenizer where it matters for this gate:
+ * a comment is `<!--` ... `-->` or `--!>` (`<!-->` and `<!--->` are empty comments); a script element ends at
+ * `</script` followed by whitespace, `/` or `>` (case-insensitive). Comments are removed in ONE left-to-right pass,
+ * so removed text can never re-form a `<!--`. Anything unterminated stays "live" (checked) and is reported: fail closed.
+ */
+export function scanHtml(html) {
+  const problems = [];
+  const scripts = [];
+  let live = '';
+  let i = 0;
+  while (i < html.length) {
+    const lt = html.indexOf('<', i);
+    if (lt === -1) { live += html.slice(i); break; }
+    live += html.slice(i, lt);
+    if (html.startsWith('<!--', lt)) {
+      const j = lt + 4;
+      let end = -1;
+      if (html[j] === '>') end = j + 1;
+      else if (html.startsWith('->', j)) end = j + 2;
+      else {
+        const a = html.indexOf('-->', j);
+        const b = html.indexOf('--!>', j);
+        if (a !== -1 && (b === -1 || a < b)) end = a + 3;
+        else if (b !== -1) end = b + 4;
+      }
+      if (end === -1) { problems.push('unterminated HTML comment'); live += html.slice(lt); break; }
+      i = end;
+      continue;
+    }
+    if (/^<script[\s/>]/i.test(html.slice(lt, lt + 8))) {
+      let k = lt + 7;
+      let quote = '';
+      let prev = '';
+      for (; k < html.length; k++) {
+        const ch = html[k];
+        if (quote !== '') { if (ch === quote) quote = ''; continue; }
+        if ((ch === '"' || ch === "'") && prev === '=') { quote = ch; continue; }
+        if (ch === '>') break;
+        if (!/\s/.test(ch)) prev = ch;
+      }
+      if (k >= html.length) { problems.push('unterminated <script> tag'); live += html.slice(lt); break; }
+      const attrs = html.slice(lt + 7, k);
+      const bodyStart = k + 1;
+      const endRe = /<\/script(?=[\s/>])/gi;
+      endRe.lastIndex = bodyStart;
+      const em = endRe.exec(html);
+      if (em === null) {
+        problems.push('unterminated <script> element');
+        scripts.push({ attrs, body: html.slice(bodyStart) });
+        live += html.slice(lt);
+        break;
+      }
+      const gt = html.indexOf('>', em.index);
+      const stop = gt === -1 ? html.length : gt + 1;
+      scripts.push({ attrs, body: html.slice(bodyStart, em.index) });
+      live += html.slice(lt, stop);
+      i = stop;
+      continue;
+    }
+    live += '<';
+    i = lt + 1;
+  }
+  return { live, scripts, problems };
+}
+
 /** Every src/href in an HTML document must be a relative same-site path (no scheme, no leading slash, no `//`). */
 export function checkHtml(rel, html) {
   const problems = [];
   // Comments are inert HTML: do not accept a commented CSP or reject commented-out tags.
-  const liveHtml = html.replace(/<!--[\s\S]*?-->/g, '');
+  const scan = scanHtml(html);
+  const liveHtml = scan.live;
+  for (const msg of scan.problems) problems.push(`${rel}: ${msg}`);
   const csp = /<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]*)"/i.exec(liveHtml);
   if (csp === null) problems.push(`${rel}: missing meta Content-Security-Policy`);
   else {
@@ -84,9 +152,9 @@ export function checkHtml(rel, html) {
     // The app entry runs same-origin modules only; static help pages run no script at all.
     if (!/(?:^|;)\s*script-src '(?:self|none)'\s*(?:;|$)/.test(policy)) problems.push(`${rel}: CSP script-src must be exactly 'self' or 'none'`);
   }
-  for (const m of liveHtml.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
-    if (!/\bsrc\s*=/.test(m[1] ?? '')) problems.push(`${rel}: inline <script> without src`);
-    else if ((m[2] ?? '').trim() !== '') problems.push(`${rel}: <script src> with an inline body`);
+  for (const sc of scan.scripts) {
+    if (!/\bsrc\s*=/.test(sc.attrs)) problems.push(`${rel}: inline <script> without src`);
+    else if (sc.body.trim() !== '') problems.push(`${rel}: <script src> with an inline body`);
   }
   if (/\son[a-z]+\s*=/i.test(liveHtml)) problems.push(`${rel}: inline event handler attribute`);
   if (/<base\b/i.test(liveHtml)) problems.push(`${rel}: <base> element (breaks relative references)`);

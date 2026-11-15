@@ -32,7 +32,7 @@ function run(cmd, args, opts = {}) {
 }
 const git = (...args) => run('git', args).stdout.trim();
 function verifyTag(args) {
-  const r = run('bash', [VERIFY_TAG, ...args], { check: false });
+  const r = run(VERIFY_TAG, args, { check: false });
   return { status: r.status, out: `${r.stdout}${r.stderr}` };
 }
 const expectReject = (res, pattern) => {

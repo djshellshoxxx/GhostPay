@@ -152,3 +152,35 @@ test('manifests: testnets only; mainnet chain ids fail closed', () => {
     assert.ok(checkManifestDir([`${String(id)}.json`]).problems.length === 1, String(id));
   }
 });
+
+test('HTML: comment and script scanning is spec-shaped and fails closed (no single-pass regex bypass)', () => {
+  const evil = '<script>alert(1)</script>';
+  const flagged = (html, needle) => assert.ok(checkHtml('x.html', html).some((p) => p.includes(needle)), `${needle} :: ${html.slice(0, 60)}`);
+  // `<!-->` and `<!--->` are empty comments for a browser; a lazy `<!--...-->` regex would hide the script after them.
+  flagged(`${INDEX}<!--> ${evil} -->`, 'inline <script>');
+  flagged(`${INDEX}<!---> ${evil} -->`, 'inline <script>');
+  // `--!>` also closes a comment in browsers.
+  flagged(`${INDEX}<!-- x --!> ${evil}`, 'inline <script>');
+  // Re-formed comment opener after one strip pass must not make the verifier see a "comment" that browsers do not.
+  flagged(`${INDEX}<!<!--  -->--> ${evil}`, 'inline <script>');
+  flagged(`${INDEX}<<!---->!-- x --> ${evil} <!-- y -->`, 'inline <script>');
+  // Unterminated comment: fail closed.
+  flagged(`${INDEX}<!-- never closed ${evil}`, 'unterminated');
+  // Script end tags per HTML spec: `</script` + whitespace, `/` or `>`; case-insensitive.
+  for (const end of ['</script >', '</SCRIPT\n>', '</script foo="bar">', '</script\t\n bar>', '</script/>', '</ScRiPt>']) {
+    flagged(INDEX.replace('</body>', `<script>alert(1)${end}</body>`), 'inline <script>');
+    // The element must end at the end tag: a remote ref after it is still scanned.
+    flagged(INDEX.replace('</body>', `<script src="./a.js">${end}<img src="https://evil.example/x.png"></body>`), 'non-relative reference');
+    flagged(INDEX.replace('</body>', `<script src="./a.js">alert(1)${end}</body>`), 'inline body');
+  }
+  // Unterminated script at EOF: fail closed.
+  flagged(`${INDEX}<script src="./a.js">alert(1)`, 'unterminated');
+  flagged(`${INDEX}<script src="./a.js"`, 'unterminated');
+  // `>` inside a quoted attribute does not end the open tag.
+  flagged(INDEX.replace('</body>', '<script data-x="a>b">alert(1)</script></body>'), 'inline <script>');
+  // Comment text inside a script body is not a comment start for the verifier.
+  flagged(INDEX.replace('</body>', '<script src="./a.js"><!-- </script><img src="https://evil.example/x.png"> -->'), 'non-relative reference');
+  // Still-accepted shapes.
+  assert.deepEqual(checkHtml('x.html', `${INDEX}<!-- a --><!---->< !-- not a comment --><!-- <script>x</script> -->`.replace('< !-- not a comment -->', '')), []);
+  assert.deepEqual(checkHtml('x.html', INDEX.replace('</script>', '</SCRIPT >')), []);
+});
