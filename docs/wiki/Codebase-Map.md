@@ -1,6 +1,27 @@
 # Codebase Map
 
-[Home](Home.md) · [User Guide](User-Guide.md) · [Developer Guide](Developer-Guide.md)
+[Home](Home.md) · [User Guide](User-Guide.md) · [Developer Guide](Developer-Guide.md) · [Verification and Release Gates](Verification-and-Release-Gates.md)
+
+## Current static Pages testnet client (November 15, 2026)
+
+The **active development scope** is the lean EVM-testnet browser build in unmerged [draft #172](https://github.com/djshellshoxxx/GhostPay/pull/172), exact source `dffe072511c34b8a73bd64ac6147d5a79256480e`. This stacked head passed [application CI 24/24](https://github.com/djshellshoxxx/GhostPay/actions/runs/43754104627) and [local-Anvil Pages acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43754104555); it **has not** been integrated with divergent owner [draft #157](https://github.com/djshellshoxxx/GhostPay/pull/157), independently security-audited, deployed or released. The table maps **repository source at that exact Pages head**, not merged `main` or supported production functionality.
+
+| Pages concern | Implementation and regression pointers |
+| --- | --- |
+| Static lean entry and route boundaries | [AppLean.tsx](../../apps/web/src/AppLean.tsx), [AppShell.tsx](../../apps/web/src/AppShell.tsx); lean `CORE_ORDER` contains home, seller, create, pay, scan, sweep, registry, settings and about; excluded full-profile routes remain inactive |
+| Seller keys, backup and local custody | [SellerKeys.tsx](../../apps/web/src/views/SellerKeys.tsx), [session.ts](../../apps/web/src/lib/session.ts), [keyVault.ts](../../apps/web/src/lib/keyVault.ts); [seller-key tests](../../apps/web/src/views/SellerKeys.test.tsx) and [backup gate regression](../../apps/web/src/views/CreateInvoice.test.tsx) |
+| Browser invoice creation and async ordering | [CreateInvoice.tsx](../../apps/web/src/views/CreateInvoice.tsx), [invoiceCreate.ts](../../apps/web/src/lib/invoiceCreate.ts), [ordering regression](../../apps/web/src/views/CreateInvoice.ordering.test.tsx) |
+| Payer invoice validation and wallet send | [Pay.tsx](../../apps/web/src/views/Pay.tsx), [payExec.ts](../../apps/web/src/lib/payExec.ts), [receipts.ts](../../apps/web/src/lib/receipts.ts); receipt validation remains invoice-bound |
+| Scan and receive, private-path disclosure, reconciliation | [Scan.tsx](../../apps/web/src/views/Scan.tsx), [scanClient.ts](../../apps/web/src/lib/scanClient.ts), [scanPrivacy.ts](../../apps/web/src/lib/scanPrivacy.ts), [reconciliationVault.ts](../../apps/web/src/lib/reconciliationVault.ts); [privacy tests](../../apps/web/src/views/Scan.privacy.test.tsx), [auto-rescan tests](../../apps/web/src/views/Scan.autoRescan.test.tsx) |
+| Seller-controlled sweep and recovery | [Sweep.tsx](../../apps/web/src/views/Sweep.tsx), [sweep.ts](../../apps/web/src/lib/sweep.ts), [recovery browser tests](../../apps/web/e2e/recovery.spec.ts) |
+| Trust manifests and client settings | [manifest.ts](../../apps/web/src/lib/manifest.ts), [settings.ts](../../apps/web/src/lib/settings.ts), [RegistryView.tsx](../../apps/web/src/features/registry/RegistryView.tsx); no ordinary payment without accepted deployment trust |
+| Pages browser acceptance and deployment controls | [pages-devnet.spec.ts](../../apps/web/e2e/pages-devnet.spec.ts), [pages.yml](../../.github/workflows/pages.yml), [release verifier](../../.github/actions/release-verify/verify.sh); published-host and post-deployment jobs are **not** proven by local CI |
+
+Only approved static Pages-client dependencies such as external wallet/RPC APIs may be used; this is **not** permission to develop or deploy GhostPay servers, relayers, merchant CLI, native clients, non-EVM releases or full-profile functionality. The existing code for those versions is preserved but development-paused. Consult [Verification and Release Gates](Verification-and-Release-Gates.md) before treating tests as release evidence.
+
+## Historical full-project map (draft #98, November 9, 2026)
+
+The following table is retained for navigating preserved code; **it does not describe current Pages-only development priority or a released build**.
 
 This repository contains working TypeScript, Solidity, tests and operator CLI. The paths here are pinned to **draft #98** at `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7` (not merged or released).
 
