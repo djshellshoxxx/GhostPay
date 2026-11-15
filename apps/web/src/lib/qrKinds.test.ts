@@ -36,6 +36,9 @@ describe('taxonomy', () => {
     expect(kindForPayload('payment-request', { unsigned: true })).toBe('caution');
     expect(kindForPayload('receipt', { unverified: true })).toBe('caution');
     expect(kindForPayload('invoice-link-with-key')).toBe('bearer');
+    // Network and verification flags must not conceal a bearer decryption-key capability.
+    expect(kindForPayload('invoice-link-with-key', { testnet: true })).toBe('bearer');
+    expect(kindForPayload('invoice-link-with-key', { unsigned: true, unverified: true })).toBe('bearer');
     expect(kindForPayload('rpc-list')).toBe('device');
     expect(kindForPayload('signed-manifest')).toBe('proof');
   });
