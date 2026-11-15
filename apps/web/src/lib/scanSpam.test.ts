@@ -233,6 +233,28 @@ describe('same-token transfer estimate (spec 05 D3)', () => {
     expect(await estimateSimilarTransfers({ client: clientWith([]), chain, token: TOKEN, amount: 0n, head: 50_000n })).toEqual({ status: 'unknown', reason: 'error' });
   });
 
+  it('fails closed when the RPC returns another token or an out-of-window transfer', async () => {
+    const head = 50_000n;
+    const foreign = {
+      ...transfer(49_990, 1_000_000n, 1),
+      address: '0x9999999999999999999999999999999999999999',
+    };
+    const wrongToken = await estimateSimilarTransfers({
+      client: clientWith([foreign]), chain, token: TOKEN, amount: 1_000_000n, head,
+    });
+    expect(wrongToken).toEqual({ status: 'unknown', reason: 'error' });
+
+    // An RPC implementation may ignore filters; the client must not trust even a well-shaped log outside the window.
+    const unfiltered = mockRpc(84532, (method) => {
+      if (method !== 'eth_getLogs') throw new Error('unexpected RPC request');
+      return [transfer(10, 1_000_000n, 2)];
+    });
+    const wrongWindow = await estimateSimilarTransfers({
+      client: unfiltered, chain, token: TOKEN, amount: 1_000_000n, head,
+    });
+    expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });
+  });
+
   it('is carried by the privacy set unchanged and described as a labelled estimate without changing the level', () => {
     const head = 10_000_000n;
     const base = anonymitySet({ chain, routerBlocks: [head - 1n], head, scannedFrom: 0n });
