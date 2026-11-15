@@ -28,7 +28,7 @@ Thresholds (95 / 90 / 95 / 95) are unchanged in every package.
 - `forge test`: 23 suites, 377 passed, 0 failed, 0 skipped (~46 s).
 - `forge fmt --check`: pass.
 - `forge snapshot --check`: pass (377 tests).
-- `forge coverage --ir-minimum`: **fails** on one test, reproduced locally and in CI: `test/audit/Sweep.audit.t.sol:SweepAuditTest.test_crossRelayerAndCrossChainReplayRejected` reverts `InvalidSignature()` under coverage instrumentation, while the same test passes under plain `forge test`. Cause not investigated; no test or contract was changed. 376 of 377 pass under coverage.
+- `forge coverage --ir-minimum`: 434 of 434 pass (local forge 1.7.1, 2026-11-14; not re-run on the CI-pinned v1.8.5). Earlier failure of `test/audit/Sweep.audit.t.sol:SweepAuditTest.test_crossRelayerAndCrossChainReplayRejected` (`InvalidSignature()` under coverage only) was a test-harness bug: the test saved `block.chainid` in a local, and via-IR (which `--ir-minimum` forces) treats `CHAINID` as movable and re-reads it at each use, so `vm.chainId(originalChain)` restored nothing and the final positive-path sweep ran on the wrong chain. Fix is test-only (`vm.getChainId()` plus explicit domain-separator, chain-id and positive-path assertions); no contract changed. The `.gas-snapshot` entry for this test predates the test change and must be regenerated with the pinned forge.
 
 ## Failures and flakiness
 
