@@ -87,6 +87,36 @@ function scanHosts(text, label, problems) {
 }
 
 /** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
+/**
+ * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
+ * literal (e.g. "https://x") cannot swallow same-line code. Conservative: an unterminated literal
+ * is kept verbatim to the end of its line (template literals to end of file), never dropped.
+ */
+export function stripComments(src) {
+  let out = '';
+  let i = 0;
+  const n = src.length;
+  while (i < n) {
+    const c = src[i];
+    const d = src[i + 1];
+    if (c === '/' && d === '/') {
+      while (i < n && src[i] !== '\n') i++;
+    } else if (c === '/' && d === '*') {
+      const end = src.indexOf('*/', i + 2);
+      i = end === -1 ? n : end + 2;
+    } else if (c === '"' || c === "'" || c === '`') {
+      let j = i + 1;
+      while (j < n && src[j] !== c && (c === '`' || src[j] !== '\n')) j += src[j] === '\\' ? 2 : 1;
+      out += src.slice(i, Math.min(j + 1, n));
+      i = j + 1;
+    } else {
+      out += c;
+      i++;
+    }
+  }
+  return out;
+}
+
 export function scanBundle(distDir, srcDir, viteConfigPath) {
   const problems = [];
   if (!existsSync(distDir)) return [`dist directory not found: ${distDir}`];
@@ -165,7 +195,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     for (const f of walk(srcDir)) {
       const r = relative(srcDir, f).split(sep).join('/');
       if (!/\.(ts|tsx)$/.test(r) || /\.test\.|\/test\//.test(r)) continue;
-      const text = readFileSync(f, 'utf8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+      const text = stripComments(readFileSync(f, 'utf8'));
       if (/dangerouslySetInnerHTML/.test(text)) problems.push(`src/${r}: dangerouslySetInnerHTML`);
       if (/\.innerHTML\s*=(?!=)|\.outerHTML\s*=(?!=)/.test(text)) problems.push(`src/${r}: innerHTML/outerHTML assignment`);
       if (/(?<![.\w$])eval\s*\(|new\s+Function\s*\(/.test(text)) problems.push(`src/${r}: eval/new Function`);

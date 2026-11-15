@@ -91,6 +91,13 @@ describe('scan-bundle', () => {
     expect(scan(b)).toEqual([]);
   });
 
+  it('does not let a URL string literal hide same-line src sinks from the comment stripper', () => {
+    const b = build({ 'src/Hide.ts': 'const u = "https://x.example/a"; el.innerHTML = y;\nconst v = `http://x`; eval("1");\n' });
+    const out = scan(b).join('\n');
+    expect(out).toMatch(/src\/Hide\.ts: innerHTML/);
+    expect(out).toMatch(/src\/Hide\.ts: eval/);
+  });
+
   it('allows the documented React DOM fingerprints but not extra innerHTML assignments', () => {
     const react = 'o.innerHTML=`<script><\\/script>`;\n?.__html!==n&&(e.innerHTML=n);case`innerHTML`:break;case`dangerouslySetInnerHTML`:if(r!=null){}n.dangerouslySetInnerHTML!=null';
     expect(scan(build({ 'dist/assets/a.js': react }))).toEqual([]);
