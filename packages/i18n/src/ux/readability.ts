@@ -22,7 +22,14 @@ export function countSyllables(word: string): number {
  */
 export function estimateReadingLevel(text: string): ReadingLevel {
   const words = text.match(/[A-Za-z][A-Za-z'-]*/g) ?? [];
-  const sentences = Math.max(1, (text.match(/[.!?]+(?:\s|$)/g) ?? []).length);
+  // Linear scan: a terminator run counts when followed by whitespace or end. (A single regex
+  // `[.!?]+(?:\s|$)` backtracks quadratically on long runs with no trailing space.)
+  let terminators = 0;
+  for (const m of text.matchAll(/[.!?]+/g)) {
+    const next = text[m.index + m[0].length];
+    if (next === undefined || /\s/.test(next)) terminators++;
+  }
+  const sentences = Math.max(1, terminators);
   if (words.length === 0) return { words: 0, sentences, grade: 0, band: 'plain' };
   const syl = words.reduce((a, w) => a + countSyllables(w), 0);
   const raw = 0.39 * (words.length / sentences) + 11.8 * (syl / words.length) - 15.59;

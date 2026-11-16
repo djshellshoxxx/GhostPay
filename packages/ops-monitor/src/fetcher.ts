@@ -53,7 +53,12 @@ export async function fetchBytes(rel: ReleaseConfig, base: string, path: string)
   // An injected fetch is operator-controlled; the built-in network client must
   // apply this cap before allocating the complete untrusted response.
   const f: FetchLike = rel.fetch ?? ((target) => defaultFetch(target, max));
-  const url = `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+  // Manual trims: `/\/+$/` is quadratic on a long run of slashes that is not at the end.
+  let baseEnd = base.length;
+  while (baseEnd > 0 && base[baseEnd - 1] === '/') baseEnd--;
+  let pathStart = 0;
+  while (pathStart < path.length && path[pathStart] === '/') pathStart++;
+  const url = `${base.slice(0, baseEnd)}/${path.slice(pathStart)}`;
   let buf: ArrayBuffer;
   try {
     const res = await f(url);
