@@ -298,12 +298,13 @@ export async function saveEncryptedVault(passphrase: string, options: KeystoreOp
 }
 
 /**
- * Unlocks the saved vault into memory. Loaded keys without any backup would be lost for good, so they are replaced only
- * when the caller passes `replaceUnsavedKeys` after the user confirmed (L1-01).
+ * Unlocks the saved vault into memory. Loaded keys without a verified recoverable copy could be lost for good, so they
+ * are replaced only when the caller passes `replaceUnsavedKeys` after the user confirmed (L1-01). A download alone is
+ * not proof that a usable backup exists (GP-PAGES-02).
  */
 export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal, options: { readonly replaceUnsavedKeys?: boolean } = {}): Promise<SessionPublic> {
   if (signal?.aborted === true) throw new UserFacingError({ key: 'error.keyVault.theKeystoreImportWasClosed' });
-  if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
+  if (getSessionBackup()?.verified === false && options.replaceUnsavedKeys !== true) {
     throw new UserFacingError({ key: 'error.keyVault.theSellerKeysLoadedNowHaveNoBackupAndUnlocking' });
   }
   const unchanged = captureSessionVersionGuard();
@@ -314,7 +315,7 @@ export async function unlockEncryptedVault(passphrase: string, store: KeyVaultSt
   const tied = sessionVaultRecord();
   if (tied !== undefined && ciphertext !== tied) forgetSessionVaultCopy(tied);
   if (ciphertext === undefined) throw new UserFacingError({ key: 'error.keyVault.noEncryptedSellerVaultIsSavedInThisBrowser' });
-  if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
+  if (getSessionBackup()?.verified === false && options.replaceUnsavedKeys !== true) {
     throw new UserFacingError({ key: 'error.keyVault.theSellerKeysLoadedNowHaveNoBackupAndUnlocking' });
   }
   return importKeystore(ciphertext, passphrase, signal, 'vault');

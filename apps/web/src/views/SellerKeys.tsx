@@ -227,7 +227,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         if (!currentOperation(controller)) return;
         try { unchanged(); } catch (error) { setBusy(false); fail(error); return; }
         downloadText('ghostpay-keystore.json', text, 'application/json');
-        // A downloaded keystore is a copy outside this tab: the idle lock may wipe these keys from now on (L1-01).
+        // A download remains unverified until the file is reopened; by itself it cannot permit an idle-lock wipe.
         markKeystoreDownloaded(unchanged);
         setBackupQr(text);
         setPass('');

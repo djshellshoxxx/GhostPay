@@ -121,6 +121,35 @@ describe('keystore', () => {
 });
 
 describe('L1-06: guessable passphrases', () => {
+  it('rejects compatibility spellings of guessable passwords using the derived passphrase', async () => {
+    for (const guessable of ['GhostPayWallet2024!', 'Password123456789', 'qwertyuiop123456789']) {
+      const fullwidth = Array.from(guessable, (char) => String.fromCharCode(char.charCodeAt(0) + 0xfee0)).join('');
+      expect(fullwidth.normalize('NFKC')).toBe(guessable);
+      expect(passphraseStrength(fullwidth)).toEqual(passphraseStrength(guessable));
+      expect(passphraseProblemMessage(fullwidth)).toEqual({ key: 'error.keystore.passphraseWeak' });
+      await expect(encryptKeystore(secrets(), META, fullwidth, FAST)).rejects.toThrow(/too easy to guess/);
+    }
+  });
+
+  it('applies the minimum length after normalization collapses combining characters', async () => {
+    const decomposed = 'a\u0301'.repeat(7);
+    expect(Array.from(decomposed)).toHaveLength(14);
+    expect(passphraseStrength(decomposed)).toEqual({ score: 0, label: 'too short', bits: 0 });
+    expect(passphraseProblemMessage(decomposed)).toEqual({ key: 'error.keystore.passphraseShort', values: { minimum: '14' } });
+    await expect(encryptKeystore(secrets(), META, decomposed, FAST)).rejects.toThrow(/at least/);
+  });
+
+  it('keeps accepted Unicode backups interoperable with their normalized passphrase', async () => {
+    const canonical = 'violet comet maple lantern';
+    const fullwidth = Array.from(canonical, (char) => char === ' ' ? '\u3000' : String.fromCharCode(char.charCodeAt(0) + 0xfee0)).join('');
+    expect(passphraseStrength(fullwidth)).toEqual(passphraseStrength(canonical));
+    expect(passphraseProblemMessage(fullwidth)).toBeUndefined();
+    const text = await encryptKeystore(secrets(), META, fullwidth, FAST);
+    expect(await decryptKeystore(text, canonical)).toEqual(secrets());
+    const canonicalText = await encryptKeystore(secrets(), META, canonical, FAST);
+    expect(await decryptKeystore(canonicalText, fullwidth)).toEqual(secrets());
+  });
+
   it('rejects repeated halves, padded seasons and years, keyboard walks and the app name', () => {
     for (const guessable of ['ghostpayghostpay', 'Summer2026!!!!!', 'qazwsxedcrfvtgb', 'ghostpay-vault-1', 'Bitcoin2026Bitcoin', 'P@ssw0rd2026!!!', '1qaz2wsx3edc4rfv', 'abcdefghijklmnop']) {
       expect({ guessable, strength: passphraseStrength(guessable) }).toMatchObject({ strength: { score: 1, label: 'weak' } });

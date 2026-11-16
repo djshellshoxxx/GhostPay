@@ -365,4 +365,40 @@ describe('L1-01: only keys with a copy elsewhere may be wiped', () => {
     expect(getSessionPublic()?.metaAddress).toBe(saved.metaAddress);
     expect(getSessionBackup()).toMatchObject({ backedUp: true, vaultStepUp: true });
   });
+
+  it('does not treat an unverified keystore download as permission to replace loaded keys', async () => {
+    const store = new MemoryKeyVaultStore();
+    const saved = generateSession();
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const loaded = generateSession();
+    const downloaded = await exportKeystore(PASS, { N: 1 << 14 });
+    markKeystoreDownloaded(captureSessionGuard());
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: false });
+
+    await expect(unlockEncryptedVault(PASS, store)).rejects.toThrow(/no backup/);
+    expect(getSessionPublic()).toBe(loaded);
+    await verifyDownloadedBackup(downloaded, PASS);
+    await unlockEncryptedVault(PASS, store);
+    expect(getSessionPublic()?.metaAddress).toBe(saved.metaAddress);
+  });
+
+  it('rechecks an unverified keystore download after another tab replaces the only saved vault', async () => {
+    const replacement = generateSession();
+    const replacementCiphertext = await exportKeystore(PASS, { N: 1 << 14 });
+    const store = new MemoryKeyVaultStore();
+    const loaded = generateSession();
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    markKeystoreDownloaded(captureSessionGuard());
+    // The UI sees a recoverable vault. Another tab replaces it before unlock performs its own storage read.
+    expect(await loadedKeysRecoverable(store)).toBe(true);
+    await store.delete((await store.get())!);
+    await store.putIfEmpty(replacementCiphertext);
+
+    await expect(unlockEncryptedVault(PASS, store)).rejects.toThrow(/no backup/);
+    expect(getSessionPublic()).toBe(loaded);
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: false, vaultStepUp: true });
+    // Explicitly confirmed destructive replacement remains available.
+    await unlockEncryptedVault(PASS, store, undefined, { replaceUnsavedKeys: true });
+    expect(getSessionPublic()?.metaAddress).toBe(replacement.metaAddress);
+  });
 });

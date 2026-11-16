@@ -1,5 +1,13 @@
 # Active AI work registry
 
+## Custody recovery — 2026-11-16
+
+Worker: current session. Branch: `codex/ghostpay-custody-caveman-20261116`, base `47f92f6f`.
+Owned paths: `keystore-portable.ts`, web `keyVault.ts`, `keyVault.test.ts`, `keystore.test.ts`, and the SellerKeys comment.
+Recover the two isolated custody fixes from `dded4c02` and `f12f9418`, reproduce their regressions against the published
+candidate, then qualify normalized password policy and verified-copy checks before integration. No other local branch
+payload is imported. Recovery source and final checks must be recorded in the continuation handoff.
+
 ## Caveman continuation — 2026-11-16
 
 - Worker: current Codex session, sequential implementation and review.

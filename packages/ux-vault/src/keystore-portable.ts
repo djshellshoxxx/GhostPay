@@ -184,6 +184,9 @@ function cheapCharacters(chars: readonly string[]): (number | undefined)[] {
  * repeats) only earn the bits `cheapCharacters` gives them. It rejects the obvious and is shown as an estimate.
  */
 function passphraseStrength(pass: string): PassphraseStrength {
+  // Rate the same characters that derive() uses; compatibility spellings must not
+  // disguise common words or inflate the effective length of a backup password.
+  pass = pass.normalize('NFKC');
   const chars = Array.from(pass);
   if (chars.length < MIN_PASSPHRASE) return { score: 0, label: 'too short', bits: 0 };
   let pool = 0;
@@ -205,6 +208,7 @@ function passphraseStrength(pass: string): PassphraseStrength {
 
 /** Public diagnostics only: never retain the candidate passphrase in the descriptor. */
 function passphraseProblemMessage(pass: string): MessageDescriptor | undefined {
+  pass = pass.normalize('NFKC');
   if (Array.from(pass).length < MIN_PASSPHRASE) return { key: 'error.keystore.passphraseShort', values: { minimum: String(MIN_PASSPHRASE) } };
   if (passphraseStrength(pass).score < 2) return { key: 'error.keystore.passphraseWeak' };
   return undefined;
