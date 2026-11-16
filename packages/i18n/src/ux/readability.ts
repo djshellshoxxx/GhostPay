@@ -22,7 +22,8 @@ export function countSyllables(word: string): number {
  */
 export function estimateReadingLevel(text: string): ReadingLevel {
   const words = text.match(/[A-Za-z][A-Za-z'-]*/g) ?? [];
-  const sentences = Math.max(1, (text.match(/[.!?]+(?:\s|$)/g) ?? []).length);
+  // Only the last mark before a boundary matters; matching a whole run can backtrack quadratically.
+  const sentences = Math.max(1, (text.match(/[.!?](?:\s|$)/g) ?? []).length);
   if (words.length === 0) return { words: 0, sentences, grade: 0, band: 'plain' };
   const syl = words.reduce((a, w) => a + countSyllables(w), 0);
   const raw = 0.39 * (words.length / sentences) + 11.8 * (syl / words.length) - 15.59;

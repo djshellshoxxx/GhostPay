@@ -1,7 +1,7 @@
 import { expect, test, type APIRequestContext, type Browser, type BrowserContext, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import {
   FRAGMENT_PREFIX, canonicalize, decodeBase64Url, encodeBase64Url, invoiceDigest as calculateInvoiceDigest, parseFragment,
@@ -183,6 +183,8 @@ test('Pages RPC proxy preserves upstream HTTP failure status', async ({ browser,
 test.describe.serial('GitHub Pages artifact on a real devnet', () => {
   let net: PagesNetwork;
   let seller: BrowserContext;
+  let sellerProfile = '';
+  let launchSeller: (presetRpc: boolean) => Promise<BrowserContext>;
   let sp: Page;
   const contexts: BrowserContext[] = [];
   // State carried between steps (all of it public or test-only material).
@@ -198,15 +200,26 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
   let destAfterSweep = 0n;
   let sweepHash = '';
 
-  test.beforeAll(async ({ browser, baseURL }) => {
+  test.beforeAll(async ({ browser, baseURL, launchOptions }) => {
+    if (baseURL === undefined || !baseURL.endsWith(PAGES_BASE)) throw new Error('baseURL must be the /GhostPay/ site');
     net = new PagesNetwork(dn, siteOrigin(baseURL));
-    seller = await newContext(browser, baseURL, net);
-    contexts.push(seller);
+    sellerProfile = mkdtempSync(join(dirname(process.env['GHOSTPAY_DEVNET_STATE'] ?? ''), 'pages-seller-profile-'));
+    launchSeller = async (presetRpc) => {
+      // A dedicated persistent Chromium process. Closing this context closes that process; relaunch reads disk.
+      const context = await browser.browserType().launchPersistentContext(sellerProfile, {
+        ...launchOptions, headless: true, baseURL, serviceWorkers: 'block', acceptDownloads: true,
+      });
+      contexts.push(context);
+      await net.install(context, { presetRpc });
+      return context;
+    };
+    seller = await launchSeller(true);
   });
 
   test.afterAll(async () => {
     await anvil.automine(true);
     for (const c of contexts) await c.close();
+    if (sellerProfile !== '') rmSync(sellerProfile, { recursive: true, force: true });
     if (txHashes.size > 0) console.log(`pages devnet: ${String(txHashes.size)} real anvil transactions asserted on chain: ${[...txHashes].join(', ')}`);
   });
 
@@ -283,15 +296,14 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await expect(keysView(sp).locator('code', { hasText: /^st:eth:0x/ })).toHaveCount(0);
 
-    // Encrypted keystore backup (download). It lifts the gate without the waiver.
+    // An encrypted keystore download is not verified recovery; the sharing/invoice gate must remain.
     await keysView(sp).getByLabel('Passphrase (at least 14 characters)', { exact: true }).fill(KEYSTORE_PASS);
     await keysView(sp).getByLabel('Repeat passphrase', { exact: true }).fill(KEYSTORE_PASS);
     keystoreText = await download(sp, testInfo, () => keysView(sp).getByRole('button', { name: 'Download encrypted keystore' }).click(), 'ghostpay-keystore.json');
     await expect(keysView(sp).getByText(/^Encrypted keystore downloaded\./)).toBeVisible({ timeout: 30_000 });
     await expect(keysView(sp).getByLabel('Passphrase (at least 14 characters)', { exact: true })).toHaveValue('');
-    await expect(sp.getByText('Back up these seller keys first')).toHaveCount(0);
-    identity = await identityOf(sp);
-    checkKeystore(keystoreText, identity, KEYSTORE_PASS);
+    await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
+    await expect(keysView(sp).locator('code', { hasText: /^st:eth:0x/ })).toHaveCount(0);
     // GP-PAGES-02: the download is recorded as unverified until "Verify backup" opens the real downloaded file. A damaged
     // copy and the wrong passphrase are refused and change nothing; the exact file makes the backup verified.
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
@@ -302,17 +314,21 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
     await expect(keysView(sp).getByRole('alert')).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
+    await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await verifyFile.setInputFiles(testInfo.outputPath('ghostpay-keystore.json'));
     await verifyPass.fill('wrong passphrase for the file');
     await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
     await expect(keysView(sp).getByRole('alert')).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
+    await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await verifyFile.setInputFiles(testInfo.outputPath('ghostpay-keystore.json'));
     await verifyPass.fill(KEYSTORE_PASS);
     await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
     await expect(keysView(sp).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toHaveCount(0);
-    expect(await identityOf(sp)).toEqual(identity);
+    await expect(sp.getByText('Back up these seller keys first')).toHaveCount(0);
+    identity = await identityOf(sp);
+    checkKeystore(keystoreText, identity, KEYSTORE_PASS);
 
     // The passphrase-protected browser vault (persistent IndexedDB of this profile).
     expect(await readSellerVault(sp)).toBeNull();
@@ -533,12 +549,16 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     net.expectClean();
   });
 
-  test('e. close every seller page, reopen in the same profile: vault unlock (wrong passphrase refused first) restores keys, invoice registry, ledger and scan checkpoint', async () => {
+  test('e. restart the seller browser process: vault unlock (wrong passphrase refused first) restores keys, invoice registry, ledger and scan checkpoint from disk', async () => {
     const testInfo = test.info();
-    for (const p of seller.pages()) await p.close();
-    expect(seller.pages()).toHaveLength(0);
+    const beforeSettings = await storedSettings(sp);
+    const oldPages = seller.pages();
+    await seller.close();
+    expect(oldPages.every((page) => page.isClosed())).toBe(true);
+    seller = await launchSeller(false); // No storageState or init-script restoration: use the actual retained profile.
     sp = await seller.newPage();
     await openSite(sp);
+    expect(await storedSettings(sp)).toEqual(beforeSettings);
     await nav(sp).getByRole('button', { name: 'Seller keys' }).click();
     await expect(keysView(sp).getByRole('heading', { name: 'Encrypted seller vault saved in this browser' })).toBeVisible({ timeout: 30_000 });
     await expectNoKeys(sp);
@@ -665,13 +685,18 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(record).toHaveCount(1);
     await expect(record).toContainText('Imported historical observation — untrusted until independently rescanned.');
     await expect(record).toContainText(digest);
-    await expect(l.getByText('Linked to a verified observation.')).toBeVisible();
+    // Imported history preserves invoice annotations, but cannot establish fresh verification.
+    await expect(l.getByText('No linked observation.')).toBeVisible();
+    await expect(l.getByText('Linked to a verified observation.')).toHaveCount(0);
     // Adding the freshly rescanned, verified observation upgrades that same record instead of counting the payment twice.
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
     await expect(record).toContainText('Router-verified when scanned; historical observation, not current payment proof.', { timeout: 30_000 });
     await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible();
     await expect(record).toHaveCount(1);
     await expect(record).toContainText(digest);
+    // Only a freshly saved live-router observation makes the invoice registry link verified.
+    await expect(l.getByText('Linked to a verified observation.')).toBeVisible();
+    await expect(l.getByText('No linked observation.')).toHaveCount(0);
 
     // Already swept: the restored keys see the dust balance and refuse; nothing new on chain.
     await scanMatches(rp).getByRole('button', { name: 'Sweep this payment' }).click();
@@ -714,6 +739,74 @@ async function checkServedSums(request: APIRequestContext, baseURL: string, sums
 // Negative cases: each in its own profiles, each asserting the user-visible refusal AND that nothing was sent.
 // ---------------------------------------------------------------------------------------------------------------------
 test.describe('GitHub Pages artifact: refusals', () => {
+  test('a same-nonce wallet cancellation never becomes a payment confirmation or permits a duplicate retry', async ({ browser, baseURL }) => {
+    const net = new PagesNetwork(dn, siteOrigin(baseURL));
+    const c = await newContext(browser, baseURL, net);
+    try {
+      const s = await quickSeller(c);
+      const invoice = await createPagesInvoice(s, baseURL ?? '', { description: 'Pages replaced payment' });
+      const payer = await openPayer(c, ACCOUNTS.rejectPayer);
+      const p = payer.page;
+      const nonce = await anvil.nonce(ACCOUNTS.rejectPayer);
+      const feeBefore = await anvil.balance(dn.feeRecipient);
+      await openFresh(p, invoice);
+      await reviewToFinalCheck(p, dn.router, payer.wallet.name);
+      expect(payer.wallet.sends).toHaveLength(0);
+      await anvil.automine(false);
+      await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect.poll(() => payer.wallet.hashes.length).toBe(1);
+      const original = payer.wallet.hashes[0]!;
+      await expect(p.getByRole('status').filter({ hasText: 'Waiting for inclusion…' })).toBeVisible();
+      const pending = await anvil.tx(original);
+      expect(pending?.blockNumber).toBeNull();
+      expect(BigInt(pending?.nonce ?? '-1')).toBe(BigInt(nonce));
+      const payment = decodePaymentCalldata({ to: dn.router, data: pending?.input as Hex, value: PRICE }, 84532);
+      expect(await anvil.balance(payment.stealth)).toBe(0n);
+
+      // The wallet replaces its original router payment with a zero-value self-transfer at the same nonce.
+      // Use an actual higher-fee mempool replacement, never a fabricated receipt or a mocked RPC outcome.
+      const fees = await anvil.call<{ gasPrice?: Hex; maxFeePerGas?: Hex }>('eth_getTransactionByHash', [original]);
+      const replacementFee = (BigInt(fees.maxFeePerGas ?? fees.gasPrice ?? '0x0') + 20_000_000_000n) * 2n;
+      const replacement = await anvil.call<Hex>('eth_sendTransaction', [{
+        from: ACCOUNTS.rejectPayer, to: ACCOUNTS.rejectPayer, value: '0x0', data: '0x',
+        nonce: toHex(nonce), gas: '0x5208', gasPrice: toHex(replacementFee),
+      }]);
+      expect(replacement).not.toBe(original);
+      await anvil.mine(1);
+      await anvil.automine(true);
+      expect((await anvil.receipt(replacement))?.status).toBe('0x1');
+      expect((await anvil.receipt(replacement))?.logs).toEqual([]);
+      expect((await anvil.tx(replacement))?.nonce).toBe(pending?.nonce);
+      expect(await anvil.receipt(original)).toBeNull();
+      expect(await anvil.nonce(ACCOUNTS.rejectPayer)).toBe(nonce + 1);
+      expect(await anvil.balance(payment.stealth)).toBe(0n);
+      expect(await anvil.balance(dn.feeRecipient)).toBe(feeBefore);
+
+      // The checkout tracks the original hash; without its receipt it must retain an honest pending result.
+      // This does not claim the app discovers the cancellation's hash or has automatic replacement classification.
+      await expect(p.getByText('Status: not yet confirmed (included is not the same as final).', { exact: true })).toBeVisible({ timeout: 60_000 });
+      await expect(p.getByText(/^Status: included in block/)).toHaveCount(0);
+      expect(await walletJournal(p)).toMatchObject([{ status: 'submitted', hash: original, kind: 'payment' }]);
+      await scan(s);
+      await expect(scanMatches(s)).toHaveCount(0);
+      await expect(receiptPanel(s)).toHaveCount(0);
+
+      await p.reload();
+      await openFresh(p, invoice);
+      await reviewToFinalCheck(p, dn.router, payer.wallet.name);
+      await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
+      expect(payer.wallet.sends).toHaveLength(1);
+      expect(await anvil.nonce(ACCOUNTS.rejectPayer)).toBe(nonce + 1);
+      expect(await anvil.balance(payment.stealth)).toBe(0n);
+      expect(await anvil.receipt(original)).toBeNull();
+      net.expectClean();
+    } finally {
+      await anvil.automine(true);
+      await c.close();
+    }
+  });
+
   // Regression for the Home release check that resolved ./assets/index-*.js against the origin root instead of the
   // document URL, so under /GhostPay/ it fetched another site's path (fixed in apps/web/src/lib/release.ts).
   test('the Home release check stays inside /GhostPay/ and shows the served entry script hash', async ({ browser, baseURL }) => {

@@ -673,7 +673,7 @@ function InvoiceRegistry(props: {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const linked = new Set(
     props.records
-      .filter((r) => r.evidenceStatus === 'verified-at-scan' && r.invoiceDigest !== undefined)
+      .filter((r) => r.evidenceStatus === 'verified-at-scan' && r.provenance === 'live-scan' && r.invoiceDigest !== undefined)
       .map((r) => r.invoiceDigest),
   );
   return (

@@ -36,6 +36,11 @@ export class IdbTagStore implements TagStore {
           open.result.close();
           if (this.dbPromise === pending) this.dbPromise = undefined;
         };
+        // An unexpected browser-side close invalidates the resolved handle, so the next tag
+        // operation reopens storage. A stale connection must not invalidate a newer open.
+        open.result.onclose = (): void => {
+          if (this.dbPromise === pending) this.dbPromise = undefined;
+        };
         resolve(open.result);
       };
       open.onerror = (): void => { reject(new Error('IndexedDB unavailable')); };

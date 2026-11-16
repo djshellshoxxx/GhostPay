@@ -90,7 +90,7 @@ export interface RelayerConfig {
   readonly shutdownGraceSeconds: number;
   /**
    * Absolute path of the restart-safe state journal (`state.file`); `undefined` for `state.ephemeral`, where a restart
-   * forgets the spent daily budget and unsettled transactions (development only; refused when NODE_ENV=production).
+   * forgets the spent daily budget and unsettled transactions (allowed only when NODE_ENV=development or NODE_ENV=test).
    */
   readonly stateFile?: string;
   readonly chains: readonly ChainRuntimeConfig[];
@@ -472,7 +472,8 @@ function parseState(raw: unknown, ctx: ConfigContext): string | undefined {
   if ((file === undefined) === (ephemeral === undefined)) return bad('state', 'set exactly one of file or ephemeral');
   if (ephemeral !== undefined) {
     if (ephemeral !== true) return bad('state.ephemeral', 'must be true');
-    if (ctx.env['NODE_ENV'] === 'production') return bad('state.ephemeral', 'not allowed when NODE_ENV=production');
+    const mode = ctx.env['NODE_ENV'];
+    if (mode !== 'development' && mode !== 'test') return bad('state.ephemeral', 'requires NODE_ENV=development or NODE_ENV=test');
     return undefined;
   }
   if (typeof file !== 'string' || !isAbsolute(file) || file.length > 1024 || file.includes('\0') || file.endsWith('/'))

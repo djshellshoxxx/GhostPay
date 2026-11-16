@@ -140,6 +140,28 @@ describe('encrypted invoice registration and local matching', () => {
     await expect(vault.confirmProposal(rec(1), a.invoiceDigest)).rejects.toThrow(/no longer has a single exact/);
   });
 
+  it('keeps imported annotations as history while permitting a freshly verified invoice match', async () => {
+    const source = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await source.registerInvoice(invoice);
+    await source.save(rec(1, { invoiceDigest: invoice.invoiceDigest }));
+    const vault = await unlocked();
+    await vault.activateImport(await vault.previewImport(await source.exportEncrypted()));
+    expect((await vault.read())[0]).toMatchObject({
+      invoiceDigest: invoice.invoiceDigest, provenance: 'imported-history',
+    });
+
+    const current = rec(2);
+    expect((await vault.proposals([current])).get(current.id)).toEqual({ kind: 'exact', invoice });
+    await vault.confirmProposal(current, invoice.invoiceDigest, { current: [current] });
+    const records = await vault.read();
+    expect(records.find((r) => r.id === rec(1).id)?.provenance).toBe('imported-history');
+    expect(records.find((r) => r.id === current.id)).toMatchObject({
+      invoiceDigest: invoice.invoiceDigest, provenance: 'live-scan',
+    });
+    expect((await vault.proposals([rec(3)])).get(rec(3).id)).toEqual({ kind: 'none' });
+  });
+
   it('includes unsaved current scan competitors when confirming and refuses foreign scope context', async () => {
     const vault = await unlocked();
     const invoice = registrationFromInvoice(testInvoice(), 1);

@@ -85,4 +85,25 @@ describe('IndexedDB connection recovery', () => {
     requests[0]!.onsuccess?.();
     expect(close).toHaveBeenCalledOnce();
   });
+
+  it('reopens the tag vault when the browser unexpectedly closes an established database', async () => {
+    const { requests, open } = installFactory();
+    const store = new IdbTagStore();
+    const first = store.getSnapshot();
+    const closedDb = emptyDatabase();
+    requests[0]!.result = closedDb;
+    requests[0]!.onsuccess?.();
+    await expect(first).resolves.toEqual({ records: [], revision: 0 });
+
+    // Browsers dispatch close when storage is unexpectedly terminated (not a deliberate db.close()).
+    // A cached resolved connection must not be returned to subsequent requests after that event.
+    closedDb.onclose?.(new Event('close'));
+
+    const retry = store.getSnapshot();
+    void retry.catch(() => undefined);
+    expect(open).toHaveBeenCalledTimes(2);
+    requests[1]!.result = emptyDatabase();
+    requests[1]!.onsuccess?.();
+    await expect(retry).resolves.toEqual({ records: [], revision: 0 });
+  });
 });

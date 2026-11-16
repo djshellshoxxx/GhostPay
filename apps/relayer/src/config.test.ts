@@ -29,7 +29,7 @@ const chain = (over: Json = {}): Json => ({
   ...over,
 });
 const custom = [{ address: NOPERMIT, usdStable: true, symbol: 'USDX', decimals: 6, permit: false }];
-const good = (over: Json = {}): Json => ({ allowedOrigins: [ORIGIN], state: { ephemeral: true }, chains: [chain()], ...over });
+const good = (over: Json = {}): Json => ({ allowedOrigins: [ORIGIN], state: { file: '/var/lib/ghostpay-relayer/state.json' }, chains: [chain()], ...over });
 const ctx = (over: Partial<ConfigContext> = {}): ConfigContext => ({ env: {}, hotKeyAddress: HOT_ADDRESS, readManifest: () => undefined, ...over });
 const parse = (raw: unknown, c: Partial<ConfigContext> = {}) => parseConfig(raw, ctx(c));
 
@@ -223,16 +223,21 @@ describe('parseConfig', () => {
     expect(() => parse({ ...good(), listen: { 'not a key': 1 } })).toThrow(/^config \$\.listen: unknown key \(name not shown\)$/);
   });
 
-  it('requires a state journal setting: an absolute file, or explicit ephemeral outside production', () => {
+  it('requires a state journal setting: an absolute file, or explicit ephemeral in development/test', () => {
     expect(parse(good({ state: { file: '/var/lib/ghostpay-relayer/state.json' } })).stateFile).toBe('/var/lib/ghostpay-relayer/state.json');
-    expect(parse(good()).stateFile).toBeUndefined();
+    for (const mode of ['development', 'test']) {
+      expect(parse(good({ state: { ephemeral: true } }), { env: { NODE_ENV: mode } }).stateFile).toBeUndefined();
+    }
     const noState: Record<string, unknown> = { ...(good() as Record<string, unknown>) };
     delete noState['state'];
     expect(() => parse(noState)).toThrow(/config state: required/);
     expect(() => parse(good({ state: {} }))).toThrow(/exactly one/);
     expect(() => parse(good({ state: { file: '/x.json', ephemeral: true } }))).toThrow(/exactly one/);
     expect(() => parse(good({ state: { ephemeral: false } }))).toThrow(/state.ephemeral: must be true/);
-    expect(() => parse(good(), { env: { NODE_ENV: 'production' } })).toThrow(/not allowed when NODE_ENV=production/);
+    for (const mode of [undefined, '', 'production', 'staging', 'Development', 'test ']) {
+      expect(() => parse(good({ state: { ephemeral: true } }), { env: { NODE_ENV: mode } })).toThrow(/requires NODE_ENV=development or NODE_ENV=test/);
+      expect(parse(good(), { env: { NODE_ENV: mode } }).stateFile).toBe('/var/lib/ghostpay-relayer/state.json');
+    }
     for (const file of ['relative.json', '/dir/', '/a\0b', 5, `/${'a'.repeat(1100)}`]) {
       expect(() => parse(good({ state: { file } }))).toThrow(/state.file: must be an absolute file path/);
     }

@@ -61,9 +61,38 @@ describe('shared presentation helpers', () => {
     expect(blob).toHaveBeenCalledOnce();
     expect(clicked).toEqual({ href: 'blob:local', download: 'receipt.json', rel: 'noopener', connected: true });
     expect(click).toHaveBeenCalledOnce();
-    vi.advanceTimersByTime(1000);
-    expect(revoke).toHaveBeenCalledWith('blob:local');
+    expect(document.querySelector('a[download="receipt.json"]')).toBeNull();
+    expect(revoke).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(999);
+    expect(revoke).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:local');
     vi.useRealTimers();
+  });
+
+  it('cleans up the temporary download anchor and Blob URL when browser click throws', () => {
+    const blob = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:blocked');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const blocked = new Error('download blocked');
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw blocked; });
+
+    expect(() => downloadText('blocked-receipt.json', '{"test":true}', 'application/json')).toThrow(blocked);
+    expect(blob).toHaveBeenCalledOnce();
+    expect(document.querySelector('a[download="blocked-receipt.json"]')).toBeNull();
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:blocked');
+  });
+
+  it('revokes the Blob URL when attaching the download anchor fails', () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:detached');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const blocked = new Error('document unavailable');
+    vi.spyOn(document.body, 'appendChild').mockImplementation(() => { throw blocked; });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click');
+
+    expect(() => downloadText('detached.json', '{}', 'application/json')).toThrow(blocked);
+    expect(click).not.toHaveBeenCalled();
+    expect(document.querySelector('a[download="detached.json"]')).toBeNull();
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:detached');
   });
 
   it('renders sanitized text notices only when markers or mixed scripts need explanation', () => {

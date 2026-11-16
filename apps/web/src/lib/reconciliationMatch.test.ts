@@ -1,6 +1,7 @@
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { grossForNet, routerNet } from '@ghostpay/chain-adapters';
 import { invoiceDigest } from '@ghostpay/invoice-schema';
+import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import type { ReconciliationRecord } from './reconciliationLedger';
 import {
@@ -143,6 +144,38 @@ describe('local invoice matching', () => {
     // After a reorg invalidates the linked observation, the invoice is open again.
     const invalidated = rec(2, { invoiceDigest: invoice.invoiceDigest, evidenceStatus: 'invalidated-after-reorg' });
     expect(proposeInvoiceMatch(rec(1), [invoice], [invalidated]).kind).toBe('exact');
+  });
+
+  it('does not reserve an invoice for an imported historical annotation', () => {
+    const linked = rec(2, { invoiceDigest: invoice.invoiceDigest });
+    expect(proposeInvoiceMatch(rec(1), [invoice], [{ ...linked, provenance: 'imported-history' }]))
+      .toEqual({ kind: 'exact', invoice });
+    expect(proposeInvoiceMatch(rec(1), [invoice], [{ ...linked, provenance: 'live-scan' }]))
+      .toEqual({ kind: 'none' });
+  });
+
+  it('historical annotations cannot change a live proposal across bounded random contexts', () => {
+    fc.assert(fc.property(
+      fc.array(fc.boolean(), { minLength: 1, maxLength: 30 }),
+      fc.boolean(),
+      fc.boolean(),
+      (invalidated, hasLiveClaim, hasCompetitor) => {
+        const history = invalidated.map((reorg, index) => ({
+          ...rec(index + 10, {
+            invoiceDigest: invoice.invoiceDigest,
+            evidenceStatus: reorg ? 'invalidated-after-reorg' : 'verified-at-scan',
+          }),
+          provenance: 'imported-history' as const,
+        }));
+        const live = [
+          ...(hasLiveClaim ? [rec(2, { invoiceDigest: invoice.invoiceDigest })] : []),
+          ...(hasCompetitor ? [rec(3)] : []),
+        ];
+        const expected = proposeInvoiceMatch(rec(1), [invoice], live);
+        expect(proposeInvoiceMatch(rec(1), [invoice], [...history, ...live])).toEqual(expected);
+        expect(proposeInvoiceMatch(rec(1), [invoice], [...live, ...history].reverse())).toEqual(expected);
+      },
+    ), { numRuns: 150, seed: 20261116 });
   });
 
   it('downgrades every observation first recorded at or after expiry, while preserving earlier history', () => {

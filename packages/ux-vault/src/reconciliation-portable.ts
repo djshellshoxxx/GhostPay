@@ -293,14 +293,19 @@ function registrationFromInvoice(invoice: Invoice, registeredAt = Date.now()): R
 }
 
 
-/** Only current router-verified live observations without an annotation take part in automatic matching. */
-function eligible(record: ContextRecord): boolean {
+/** Historical annotations cannot establish or reserve a current invoice-to-payment association. */
+function verifiedLiveObservation(record: ContextRecord): boolean {
   return (
     record.evidenceStatus === 'verified-at-scan' &&
     record.evidenceSource === 'verified-router-scan' &&
-    record.invoiceDigest === undefined &&
     (record.provenance === undefined || record.provenance === 'live-scan')
   );
+}
+
+
+/** Only current router-verified live observations without an annotation take part in automatic matching. */
+function eligible(record: ContextRecord): boolean {
+  return verifiedLiveObservation(record) && record.invoiceDigest === undefined;
 }
 
 
@@ -329,7 +334,7 @@ function proposeInvoiceMatch(
   for (const item of [...context, record]) byId.set(item.id, item);
   const all = [...byId.values()];
   const claimed = new Set(
-    all.filter((r) => r.evidenceStatus === 'verified-at-scan' && r.invoiceDigest !== undefined).map((r) => r.invoiceDigest),
+    all.filter((r) => verifiedLiveObservation(r) && r.invoiceDigest !== undefined).map((r) => r.invoiceDigest),
   );
   const open = invoices.filter((invoice) => !claimed.has(invoice.invoiceDigest));
   const candidates = open.filter((invoice) => candidate(invoice, record));

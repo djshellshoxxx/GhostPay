@@ -1,6 +1,6 @@
 import { ZERO_ADDRESS, deriveScheme2OwnerKey, type Address, type Hex, type PolicyRecord } from '@ghostpay/policy-scheme';
 import type { ScanCursor } from '@ghostpay/chain-adapters';
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { UserFacingError, userMessage } from '../../lib/errors';
 import { captureSessionGuard, withSessionSecrets, withSessionSecretsAsync } from '../../lib/session';
@@ -13,6 +13,7 @@ import { clearPolicyAction, policyActionAttempts, policyActionKey, sendPolicyAct
 import { fetchScheme2Announcements, matchScheme2, mergeMatches, type Scheme2Match } from './scan2';
 import { deployCall, randomNonce, signCancel, signWithdraw, wipe } from './withdraw';
 import type { PolicyCtx } from './PolicyView';
+import { formatPolicyTimestamp } from './policyTime';
 
 type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
 
@@ -38,7 +39,12 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
   // Test renders without an I18nProvider fall back to the source English catalog.
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
-  const [snapshot, setSnapshot] = useState<WithdrawalSnapshot | undefined>(undefined);
+  const [snapshot, setSnapshotState] = useState<WithdrawalSnapshot | undefined>(undefined);
+  const latestSnapshot = useRef<WithdrawalSnapshot | undefined>(undefined);
+  const setSnapshot = (next: WithdrawalSnapshot | undefined): void => {
+    latestSnapshot.current = next;
+    setSnapshotState(next);
+  };
   const view = snapshot?.view;
   const summary = snapshot?.summary;
   const plan = snapshot === undefined ? undefined : { token: snapshot.token, balance: snapshot.balance, plan: snapshot.plan };
@@ -106,7 +112,7 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
       assertCurrent();
       setMsg({ kind: 'ok', text: t('policy.account.submitted', { label, hash }) });
     } finally {
-      try { assertCurrent(); refreshAttempts(tok, snapshot); } catch { /* Never mask a returned broadcast hash with stale UI cleanup. */ }
+      try { assertCurrent(); refreshAttempts(tok, latestSnapshot.current); } catch { /* Never mask a returned broadcast hash with stale UI cleanup. */ }
     }
   };
 
@@ -203,7 +209,7 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
             <dt>{t('policy.account.balance')}</dt><dd>{plan.balance.toString()}</dd>
             <dt>{t('policy.account.limitPerWindow')}</dt><dd>{plan.plan.limit === null ? t('policy.account.none') : plan.plan.limit.toString()}</dd>
             <dt>{t('policy.account.canRequest')}</dt><dd>{plan.plan.max.toString()}</dd>
-            <dt>{t('policy.account.unlocksAfter')}</dt><dd>{new Date(Number(plan.plan.executeAfter) * 1000).toISOString()}</dd>
+            <dt>{t('policy.account.unlocksAfter')}</dt><dd>{formatPolicyTimestamp(plan.plan.executeAfter)}</dd>
             <dt>{t('policy.account.paidTo')}</dt><dd><Mono>{record.policy.destination}</Mono></dd>
           </dl>
           {plan.plan.problems.map((p) => <Notice key={p} kind="warn">{p}</Notice>)}
@@ -217,7 +223,7 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
       )}
       {summary?.pending.map((pending) => (
         <p key={pending.id}>
-          {t('policy.account.executeAfter', { date: new Date(Number(pending.executeAfter) * 1000).toISOString() })} <Mono>{pending.id.slice(0, 10)}…</Mono>.{' '}
+          {t('policy.account.executeAfter', { date: formatPolicyTimestamp(pending.executeAfter) })} <Mono>{pending.id.slice(0, 10)}…</Mono>.{' '}
           <button type="button" disabled={busy} onClick={() => { execute(pending.id, pending.token); }}>{t('policy.account.executeWithdrawal')}</button>
         </p>
       ))}

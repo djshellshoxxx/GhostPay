@@ -85,14 +85,21 @@ export function Mono(props: { readonly children: ReactNode }): ReactNode {
 
 /** Triggers a local file download of text content (Blob URL, no network). */
 export function downloadText(filename: string, text: string, type: string): void {
-  const url = URL.createObjectURL(new Blob([text], { type }));
   const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.rel = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  try {
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+  } catch (error) {
+    URL.revokeObjectURL(url);
+    throw error;
+  } finally {
+    a.remove();
+  }
+  // Allow the browser to consume a successfully initiated download before revocation.
   setTimeout(() => {
     URL.revokeObjectURL(url);
   }, 1000);

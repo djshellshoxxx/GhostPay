@@ -113,8 +113,9 @@ Non-stable tokens are unsupported in v1.
 ### Restart safety (state journal)
 
 `state` is required: `{ "file": "/var/lib/ghostpay-relayer/state.json" }` (absolute path; its directory must be writable
-by the service user and is the only path the relayer writes) or `{ "ephemeral": true }` (development only; refused when
-`NODE_ENV=production`, and a restart then forgets the spent budget and unsettled transactions).
+by the service user and is the only path the relayer writes) or `{ "ephemeral": true }` (requires `NODE_ENV=development` or `NODE_ENV=test`; missing, production,
+or other mode values are refused). An ephemeral restart forgets the spent budget and unsettled transactions.
+Use the persistent file journal for every deployment, including staging and testnet services.
 
 The journal (`src/stateStore.ts`) holds, per chain, the UTC day and wei reserved against `dailyBudgetWei`, and one record
 per transaction that may still spend gas: hot-key nonce, local transaction hash, reserved wei, gas price and status

@@ -72,6 +72,7 @@ function envFor(extra: Record<string, string> = {}, cfgExtra: Record<string, unk
   const cfg = join(dir, 'relayer.config.json');
   writeFileSync(cfg, configJson(cfgExtra));
   return {
+    NODE_ENV: 'test',
     RELAYER_CONFIG: cfg,
     DEPLOYMENTS_DIR: join(dir, 'deployments'),
     RELAYER_KEY_FILE: secretFile('hot.key', HOT_KEY),
