@@ -166,6 +166,37 @@ describe('encrypted reconciliation UI', () => {
     await waitFor(() => expect(screen.queryByText(TX)).toBeNull());
     expect(data.size).toBe(1);
   });
+  it('does not present an imported historical invoice association as fresh verified settlement evidence', async () => {
+    const digest = `0x${'f'.repeat(64)}`;
+    const now = Math.floor(Date.now() / 1000);
+    await vault.registerInvoice({
+      version: 1,
+      invoiceDigest: digest,
+      nonce: 'f'.repeat(32),
+      chainId: 84532,
+      asset: 'native',
+      expectedNetMinorUnits: '2500000',
+      createdAt: now - 60,
+      expiresAt: now + 3600,
+      registeredAt: Date.now(),
+    });
+    await vault.save(recordFromVerifiedMatch(match(), keyId, digest));
+    const encrypted = await vault.exportEncrypted();
+    await vault.clearRecords();
+    await vault.clearInvoices();
+
+    const user = userEvent.setup();
+    render(panel({ matches: [] }));
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    fireEvent.change(await screen.findByLabelText('Encrypted reconciliation backup'), {
+      target: { value: encrypted },
+    });
+    await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
+    await user.click(await screen.findByRole('button', { name: 'Activate previewed historical records' }));
+    expect(await screen.findByText(/Imported historical observation/)).toBeTruthy();
+    expect(await screen.findByText(/No linked observation/)).toBeTruthy();
+    expect(screen.queryByText(/Linked to a verified observation/)).toBeNull();
+  });
   it('activates only a previewed encrypted backup as imported untrusted history', async () => {
     await vault.save(recordFromVerifiedMatch(match(), keyId));
     const backup = await vault.exportEncrypted();
