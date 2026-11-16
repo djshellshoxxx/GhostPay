@@ -1,5 +1,15 @@
 # Active AI work registry
 
+## Merchant identity localization and security classification — 2026-11-16
+
+Worker: current Codex session using Caveman workflow. Branch: `codex/ghostpay-caveman-followup-20261116`, base
+`4ee9dd770826e705cb8c2437a53cf6714a003635`.
+Owned paths: `apps/web/locales/{es,ja,ar}.json`, `apps/web/src/i18n/securityKeys.ts`,
+`apps/web/src/i18n/securityKeys.test.ts`, this registry.
+Acceptance: match all source catalog keys in locale drafts; classify merchant identity verification disclosures as
+security-critical so unreviewed translations cannot replace English; pass catalog and security-key regressions.
+Status: locale/security source fix implemented. GitHub logs confirmed 12 locale-key validation errors and the exhaustive security-key census failure on the 4ee9dd77 candidate. Reviewed #178 recovery: current source already revokes its Blob URL and removes the anchor on click or append failure; current tests cover both paths, so #178 source change is superseded. Local dependency installation is unavailable (npm ci exits 137); catalog shape and diff checks remain available. Exact-head hosted CI is still required.
+
 ## Registry builder acceptance — 2026-11-16
 
 Worker: current session. Branch: `codex/ghostpay-registry-lifecycle-20261116`, base `7a208005`.
