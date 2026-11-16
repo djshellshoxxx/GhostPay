@@ -24,3 +24,14 @@ Experimental, unaudited. No deploy, no mainnet, no real funds. Branch `work/c-wa
 - Playwright: NOT RUN (no browser run attempted offline).
 - Full web suite and package suites not run; only neighbouring tests (PrintableBill, CreateInvoice, SellerPairing, QrFrame*, QrView.i18n, src/i18n: 14 files, 121 passed).
 - Review was read-heavy and sampled; Scan.tsx, Settings apply flow, Pay confirmation flow and idbStore persistence were not read line by line.
+
+## Round 2 (Scan, Settings apply, Pay confirmation, idbStore)
+
+No new defects found by reading; no RED test written, no code change.
+
+- views/Scan.tsx: scope guards (key/chain/signer change aborts and clears matches), checkpoint resume, second-RPC failure blocks instead of downgrading, planScan blocked path throws a user-facing error, reorg/quarantine handled, backlog/limit/discrepancy errors surfaced. Read lines 100-330 only; the render section after that was not read.
+- views/Settings.tsx exchange apply: preview, per-section selection, `canApply` gating with `selectSomething` hint, confirm dialog listing RPC host changes, weakened preferences, relayer, signer pin/unpin. Wired. Scan-privacy save validates ranges and reports errors.
+- views/Pay.tsx: continue/send disabled only for blockers or missing context; receipt import needs explicit consent; receipt download asks `window.confirm`. Read by grep and spot reads, not line by line.
+- lib/idbStore.ts: CAS on revision, blocked-open rejection with retry, version-change close, record caps, wipe tombstone. No defect.
+- Playwright: NOT RUN (`playwright` binary present but no browsers in ~/.cache/ms-playwright; offline).
+- Full apps/web vitest suite: started, had not finished when this report was written (log /tmp/claude-0/full-vitest.log held only the RUN header). Result NOT KNOWN; treat as not run to completion.
