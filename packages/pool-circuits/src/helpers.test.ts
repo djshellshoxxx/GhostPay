@@ -192,6 +192,25 @@ describe('buildRagequitInputs', () => {
   });
 });
 
+describe('zero values fail early (contract rejects value == 0)', () => {
+  it('withdraw and ragequit refuse zero amounts', () => {
+    const b: Parameters<typeof buildWithdrawInputs>[0] = {
+      chainId: 31337,
+      note,
+      withdrawnValue: 0n,
+      newNullifier: 33n,
+      newSecret: 44n,
+      context: 5n,
+      statePath: treeWith([commitment(note.value, note.label, precommitment(note.nullifier, note.secret))]).path(0),
+    };
+    expect(code(() => buildWithdrawInputs(b))).toBe('OUT_OF_RANGE');
+    expect(code(() => buildWithdrawInputs({ ...b, withdrawnValue: 1n, note: { ...note, value: 0n } }))).toBe(
+      'OUT_OF_RANGE',
+    );
+    expect(code(() => buildRagequitInputs(31337, { ...note, value: 0n }))).toBe('OUT_OF_RANGE');
+  });
+});
+
 describe('toVerifierCalldata', () => {
   const proof: SnarkjsProof = {
     pi_a: ['1', '2', '1'],
