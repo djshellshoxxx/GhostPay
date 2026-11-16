@@ -1,0 +1,69 @@
+import {
+  createReconciliationApi,
+  type ReconciliationScope,
+  type RegisteredInvoice,
+  type VaultRecord,
+} from './reconciliation-portable.js';
+
+export type InvoicePaymentSummary =
+  | { readonly kind: 'unavailable' }
+  | {
+      readonly kind: 'unlinked' | 'below' | 'equal' | 'above';
+      readonly observedMinorUnits: string;
+      readonly expectedMinorUnits: string;
+      readonly observationCount: number;
+    };
+
+const { validateRegisteredInvoice, validateReconciliationRecord, MAX_RECONCILIATION_RECORDS } = createReconciliationApi();
+
+/**
+ * Compare explicitly seller-linked observations with the invoice's expected router net amount.
+ * This never infers a link, reads a receipt, changes matching, or proves invoice attribution/settlement.
+ * Live records entered through recordFromVerifiedMatch were final at scan time; pending/claimed,
+ * imported and reorg-invalidated observations cannot contribute. No new finality check happens here.
+ */
+export function summarizeInvoicePayments(
+  invoice: RegisteredInvoice,
+  records: readonly VaultRecord[],
+  scope: ReconciliationScope,
+): InvoicePaymentSummary {
+  try {
+    const registered = validateRegisteredInvoice(invoice);
+    if (
+      !/^[0-9a-f]{64}$/.test(scope.sellerKeyId) || !Number.isSafeInteger(scope.chainId) || scope.chainId <= 0 ||
+      registered.chainId !== scope.chainId || records.length > MAX_RECONCILIATION_RECORDS
+    ) return { kind: 'unavailable' };
+    const seen = new Map<string, string>();
+    let observed = 0n;
+    for (const value of records) {
+      if (
+        value.invoiceDigest !== registered.invoiceDigest || value.sellerKeyId !== scope.sellerKeyId ||
+        value.chainId !== scope.chainId || value.asset !== registered.asset ||
+        value.provenance !== 'live-scan' || value.evidenceStatus !== 'verified-at-scan'
+      ) continue;
+      const { provenance, ...plain } = value;
+      void provenance;
+      const record = validateReconciliationRecord(plain);
+      // The same transaction log cannot be two payments, even if two copies claim different block hashes.
+      const event = `${record.transactionHash}:${String(record.logIndex)}`;
+      const facts = `${record.id}:${record.blockNumber}:${record.amountMinorUnits}`;
+      const previous = seen.get(event);
+      if (previous !== undefined) {
+        if (previous !== facts) return { kind: 'unavailable' };
+        continue;
+      }
+      seen.set(event, facts);
+      observed += BigInt(record.amountMinorUnits);
+    }
+    const expected = BigInt(registered.expectedNetMinorUnits);
+    return {
+      kind: seen.size === 0 ? 'unlinked' : observed < expected ? 'below' : observed > expected ? 'above' : 'equal',
+      observedMinorUnits: observed.toString(),
+      expectedMinorUnits: registered.expectedNetMinorUnits,
+      observationCount: seen.size,
+    };
+  } catch {
+    // Corrupt or conflicting local input must never produce a reassuring amount comparison.
+    return { kind: 'unavailable' };
+  }
+}
