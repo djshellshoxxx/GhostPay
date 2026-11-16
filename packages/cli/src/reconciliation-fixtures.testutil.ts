@@ -15,6 +15,16 @@ const core = createReconciliationApi();
 const keyCodec = createKeystoreApi();
 export async function reconciliationWorld() {
   const world = paymentWorld();
+  // Canonical time belongs to the fetched header, never the untrusted observation.
+  const send = world.io.rpcTransport.send.bind(world.io.rpcTransport);
+  world.io.rpcTransport.send = async (...args) => {
+    const response = await send(...args);
+    const request = JSON.parse(args[1]) as { method: string };
+    if (request.method !== 'eth_getBlockByNumber') return response;
+    const parsed = JSON.parse(response) as { result: Record<string, unknown> };
+    parsed.result['timestamp'] = `0x${NOW.toString(16)}`;
+    return JSON.stringify(parsed);
+  };
   const payment = deriveStealthPayment(META, counterRandom());
   const ephemeral = `0x${Buffer.from(payment.ephemeralPublicKey).toString('hex')}` as const;
   const metadata = `0x${Buffer.from(buildNativeMetadata(payment.viewTag[0]!, 100n)).toString('hex')}` as const;

@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { DEFAULT_FORK_HEADERS, SilentPaymentError, zeroize, type HeaderChain } from '@ghostpay/btc-silent-payments';
+import { DEFAULT_FORK_HEADERS, SilentPaymentError, zeroize, createScanState, type ScanState, type HeaderChain } from '@ghostpay/btc-silent-payments';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { QrFrame } from '../../components/QrFrame';
 import { clearCopiedBackup, SecretBackup } from '../../components/SecretBackup';
 import { subscribeAppLock } from '../../lib/appLock';
+import { IdbReconciliationVaultStore, type ReconciliationVaultStore } from '../../lib/reconciliationVault';
+import { BtcScanVault } from './scanStore';
 import { UserFacingError, displayMessage, type MessageDescriptor } from '../../lib/errors';
 import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS, type TransactionOutcome } from '../../lib/transactionOutcome';
 import { useServices } from '../../lib/services';
@@ -24,7 +26,8 @@ import {
   type HeaderStoreFor,
 } from './headers';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
-import { MAX_SCAN_BLOCKS, scanForPayments, wipeFound, type FoundPayment, type ScanResult } from './scan';
+import { scanForPaymentsInWorker, type BtcScanWorkerFactory } from './scanWorkerClient';
+import { MAX_SCAN_BLOCKS, wipeFound, type FoundPayment, type ScanResult } from './scan';
 import { captureBtcErrorMessage, checkDestination, formatBtc, reviewSweep, signSweep, type SignedSweep, type SweepReview } from './sweep';
 import { SCAN_CHECK_KEYS, SCAN_LIMIT_KEYS, SCAN_MODE_KEYS } from './verification';
 import { paymentUri, randomSeedHex, walletFromSeedHex, wipeWallet, type BtcWallet } from './wallet';
@@ -41,7 +44,8 @@ function defaultHeaderStore(): { readonly storeFor: HeaderStoreFor; readonly per
 
 /**
  * Bitcoin silent payments (BIP-352), test networks only. Keys live in this component's state and
- * vanish when you leave the view; nothing secret is stored. Lock, a new wallet and unmount wipe the
+ * vanish when you leave the view; keys and spend tweaks are never persisted. Opt-in encrypted scan metadata
+ * resumes only after importing the same wallet and revalidates prior outputs before spending. Lock, a new wallet and unmount wipe the
  * scan and spend secrets; a new scan, lock and unmount wipe the spend tweaks of the scan results.
  * A created wallet's seed is kept as bytes for its backup, shown only on request, and wiped with the keys.
  *
@@ -50,7 +54,7 @@ function defaultHeaderStore(): { readonly storeFor: HeaderStoreFor; readonly per
  * on load and discarded on any failure. `headerStore` replaces that storage (tests).
  */
 export function BtcView(
-  props: { readonly headerStore?: HeaderStoreFor; readonly headerSyncLimits?: { readonly maxRounds?: number; readonly headersPerRound?: number; readonly maxHeaders?: number } } = {},
+  props: { readonly scanWorkerFactory?: BtcScanWorkerFactory; readonly scanStore?: ReconciliationVaultStore; readonly headerStore?: HeaderStoreFor; readonly headerSyncLimits?: { readonly maxRounds?: number; readonly headersPerRound?: number; readonly maxHeaders?: number } } = {},
 ): ReactNode {
   const services = useServices();
   // Test renders without an I18nProvider fall back to the source English catalog.
@@ -64,6 +68,10 @@ export function BtcView(
   const [hasBackup, setHasBackup] = useState(false);
   const [amount, setAmount] = useState('');
   const [fromHeight, setFromHeight] = useState('');
+  const [saveScan, setSaveScan] = useState(false);
+  const [savedScan, setSavedScan] = useState<ScanState | undefined>();
+  const [forgetScan, setForgetScan] = useState(false);
+  const [scanStorage] = useState(() => props.scanStore ?? (typeof globalThis.indexedDB === 'undefined' ? undefined : new IdbReconciliationVaultStore()));
   const [scanning, setScanning] = useState(false);
   const [scanNote, setScanNote] = useState<MessageDescriptor | undefined>(undefined);
   const [scan, setScan] = useState<ScanResult | undefined>(undefined);
@@ -179,6 +187,9 @@ export function BtcView(
       setWallet(w);
       setAppLocked(false);
       setSeedInput('');
+      setSaveScan(false);
+      setSavedScan(undefined);
+      setForgetScan(false);
     });
   };
 
@@ -356,29 +367,68 @@ export function BtcView(
     })();
   };
 
-  const runScan = (): void => {
+  /** Loading and deleting metadata are explicit local actions and never contact an Esplora server. */
+  const loadSavedScan = (remove = false): void => {
+    if (wallet === undefined || scanStorage === undefined || scanningRef.current) return;
+    resetFlow(); setError(undefined);
+    const { live, signal } = begin(); setBusy(true);
+    const guard = (): void => { if (!live() || signal.aborted || walletRef.current !== wallet) throw new Error('stale Bitcoin scan session'); };
+    void (async () => {
+      let vault: BtcScanVault | undefined;
+      try {
+        vault = await BtcScanVault.open(wallet, scanStorage, guard);
+        if (remove) { await vault.forget(); guard(); setSavedScan(undefined); setForgetScan(false); }
+        else {
+          const saved = await vault.load(); guard(); setSavedScan(saved);
+          if (saved !== undefined) setFromHeight(String(saved.birthHeight));
+        }
+      } catch { if (live()) setError({ key: 'btc.persistence.error' }); }
+      finally { vault?.lock(); if (live()) setBusy(false); }
+    })();
+  };
+
+  const runScan = (recoveryOffset = 0): void => {
     setError(undefined);
     if (wallet === undefined) return;
     resetFlow();
     const { signal, live } = begin();
     setBusy(true);
     void (async () => {
+      let vault: BtcScanVault | undefined;
+      let storageFailed = false;
       try {
+        const guard = (): void => { if (!live() || signal.aborted || walletRef.current !== wallet) throw new Error('stale Bitcoin scan session'); };
+        let resumeState: ScanState | undefined;
+        let from = Number(fromHeight);
+        if (saveScan && scanStorage !== undefined) {
+          try {
+            vault = await BtcScanVault.open(wallet, scanStorage, guard);
+            resumeState = await vault.load(); guard();
+            if (resumeState !== undefined) { from = resumeState.birthHeight; setFromHeight(String(from)); setSavedScan(resumeState); }
+          } catch (e) { storageFailed = true; throw e; }
+        }
         const c = client();
         await c.checkNetwork(net, signal);
-        const from = Number(fromHeight);
-        if (fromHeight.trim() === '' || !Number.isInteger(from) || from < 0) throw new UserFacingError({ key: 'btc.scan.firstHeightRequired' });
+        if ((resumeState === undefined && fromHeight.trim() === '') || !Number.isInteger(from) || from < 0) throw new UserFacingError({ key: 'btc.scan.firstHeightRequired' });
         const headers = await checkHeaders(c, signal, live);
         if (headers === undefined) return;
         if (from > headers.tipHeight) throw new UserFacingError({ key: 'btc.headers.behind', values: { height: String(headers.tipHeight) } });
-        const res = await scanForPayments({
+        const res = await scanForPaymentsInWorker({
           client: c,
           wallet,
           fromHeight: from,
           headers,
           signal,
+          ...(vault === undefined ? {} : {
+            resumeState: resumeState ?? createScanState(net.id, from),
+            recoveryOffset,
+            onState: async (state: ScanState): Promise<void> => {
+              try { guard(); await vault?.save(state); guard(); setSavedScan(state); }
+              catch (e) { storageFailed = true; throw e; }
+            },
+          }),
           onBlock: (h) => { if (live()) setScanNote({ key: 'btc.scan.foundBlock', values: { height: String(h) } }); },
-        });
+        }, props.scanWorkerFactory, services.fetchFn);
         if (!live()) {
           wipeFound(res.found);
           return;
@@ -389,7 +439,7 @@ export function BtcView(
         // Nothing is selected: spending outputs together links them publicly (PRIVACY-E2E-03), so each is an explicit choice.
       } catch (e) {
         if (live()) {
-          setError(captureBtcErrorMessage(e));
+          setError(storageFailed ? { key: 'btc.persistence.error' } : captureBtcErrorMessage(e));
           // The server's blocks disagree with the checked headers: say how to recover if that is expected.
           if (e instanceof SilentPaymentError && e.code === 'REORG_DETECTED') {
             const hint: MessageDescriptor = { key: 'btc.headers.conflictHint' };
@@ -397,6 +447,7 @@ export function BtcView(
           }
         }
       } finally {
+        vault?.lock();
         if (live()) setBusy(false);
       }
     })();
@@ -470,6 +521,7 @@ export function BtcView(
     walletRef.current = undefined;
     forgetSeed();
     setWallet(undefined);
+    setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
     resetFlow();
   };
 
@@ -594,12 +646,29 @@ export function BtcView(
       {wallet !== undefined && (
         <div className="panel">
           <h3>{t('btc.section.scan')}</h3>
+          <label>
+            <input type="checkbox" checked={saveScan} disabled={scanning || scanStorage === undefined} onChange={(e) => {
+              const enabled = e.target.checked;
+              setSaveScan(enabled); setSavedScan(undefined); setForgetScan(false);
+              if (enabled) loadSavedScan(); else { invalidate(); resetFlow(); }
+            }} />{' '}{t('btc.persistence.enable')}
+          </label>
+          <p className="hint">{t('btc.persistence.help')}</p>
+          {scanStorage === undefined && <p className="hint">{t('btc.persistence.unavailable')}</p>}
+          {saveScan && <>
+            {savedScan !== undefined && <p role="status">{t('btc.persistence.saved', { birth: String(savedScan.birthHeight), height: String(savedScan.lastHeight), count: String(savedScan.matches.length) })}</p>}
+            <button type="button" className="btn" disabled={scanning} onClick={() => { loadSavedScan(); }}>{t('btc.persistence.reload')}</button>{' '}
+            {forgetScan ? <div role="group" aria-label={t('btc.persistence.forget')}>
+              <p>{t('btc.persistence.forgetConfirm')}</p>
+              <button type="button" className="btn btn-danger" disabled={scanning} onClick={() => { loadSavedScan(true); }}>{t('btc.persistence.forgetYes')}</button>
+            </div> : <button type="button" className="btn" disabled={scanning} onClick={() => { setForgetScan(true); }}>{t('btc.persistence.forget')}</button>}
+          </>}
           <Field label={t('btc.scan.heightLabel')} hint={t('btc.scan.heightHint', { max: String(MAX_SCAN_BLOCKS) })}>
             {(id, d) => (
-              <input id={id} aria-describedby={d} inputMode="numeric" value={fromHeight} onChange={(e) => { setFromHeight(e.target.value); }} />
+              <input id={id} aria-describedby={d} inputMode="numeric" disabled={scanning || (saveScan && savedScan !== undefined)} value={fromHeight} onChange={(e) => { setFromHeight(e.target.value); }} />
             )}
           </Field>
-          <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={runScan}>
+          <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={() => { runScan(); }}>
             {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
           {' '}
@@ -647,6 +716,11 @@ export function BtcView(
             </div>
           </details>
           {scanNote !== undefined && <p role="status">{displayMessage(scanNote, t)}</p>}
+          {scan?.recoveredHistory !== undefined && scan.recoveredHistory.total > MAX_SCAN_BLOCKS && <>
+            <p role="status">{t('btc.persistence.page', { first: String(scan.recoveredHistory.offset + 1), last: String(scan.recoveredHistory.end), total: String(scan.recoveredHistory.total) })}</p>
+            <button type="button" className="btn" disabled={scanning || scan.recoveredHistory.offset === 0} onClick={() => { runScan(Math.max(0, (scan.recoveredHistory?.offset ?? 0) - MAX_SCAN_BLOCKS)); }}>{t('btc.persistence.previous')}</button>{' '}
+            <button type="button" className="btn" disabled={scanning || scan.recoveredHistory.end >= scan.recoveredHistory.total} onClick={() => { runScan(scan.recoveredHistory?.end ?? 0); }}>{t('btc.persistence.next')}</button>
+          </>}
           {scan !== undefined && (
             <>
               <p>

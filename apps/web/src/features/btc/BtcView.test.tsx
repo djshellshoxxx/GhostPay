@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { notifyAppLock } from '../../lib/appLock';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
+import { inlineBtcScanWorker } from './scanWorker.testutil';
 import { mockChain, SEED_A, walletA } from './fixtures.testutil';
 
 const BCRT = bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(3))]);
@@ -14,7 +15,7 @@ async function setup(over: Partial<{ failPath: string; payments: number }> = {})
   const chain = mockChain('regtest', walletA(), { payments: over.payments ?? 1 });
   if (over.failPath !== undefined) chain.failPath = over.failPath;
   const user = userEvent.setup();
-  renderWith(<BtcView />, makeServices({ fetchFn: chain.fetchFn }));
+  renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} />, makeServices({ fetchFn: chain.fetchFn }));
   await user.selectOptions(screen.getByLabelText('Network'), 'regtest');
   await user.type(screen.getByLabelText(/Esplora server URL/), 'https://esplora.test/api');
   return { chain, user };
@@ -229,7 +230,7 @@ describe('BtcView', () => {
   it('refuses a server on a different network', async () => {
     const chain = mockChain('signet', walletA('signet'));
     const user = userEvent.setup();
-    renderWith(<BtcView />, makeServices({ fetchFn: chain.fetchFn }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} />, makeServices({ fetchFn: chain.fetchFn }));
     await user.selectOptions(screen.getByLabelText('Network'), 'regtest');
     await user.type(screen.getByLabelText(/Esplora server URL/), 'https://esplora.test/api');
     await importSeed(user);

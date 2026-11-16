@@ -1,6 +1,10 @@
 import {
   HeaderAnchoredTweakSource,
   scanBlocks,
+  resumeScan,
+  reconcileScanState,
+  type ReceivedOutput,
+  type ScanState,
   SilentPaymentError,
   zeroize,
   type HeaderChain,
@@ -22,10 +26,12 @@ export interface FoundPayment extends SpendableOutput {
 
 /** Blocks per scan request: each block means downloading all of its transactions. */
 export const MAX_SCAN_BLOCKS = 500;
+/** Bound ephemeral matches and worker result size even for adversarial blocks. */
+export const MAX_SCAN_MATCHES = 10_000;
 
 export interface ScanParams {
   readonly client: EsploraClient;
-  readonly wallet: BtcWallet;
+  readonly wallet: { readonly net: BtcWallet['net']; readonly keys: Pick<BtcWallet['keys'], 'scanSecret' | 'spendPublicKey'> };
   readonly fromHeight: number;
   /** Inclusive; defaults to the server tip. */
   readonly toHeight?: number;
@@ -37,6 +43,14 @@ export interface ScanParams {
    * header chain known to this device. The view always passes it; without it blocks are only checked one by one.
    */
   readonly headers?: HeaderChain;
+  /** Encrypted historical metadata. Only freshly revalidated outputs become spendable. Requires checked headers. */
+  readonly resumeState?: ScanState;
+  /** Paginate prior matched blocks without pausing the new-block cursor or trusting unvalidated history. */
+  readonly recoveryOffset?: number;
+  /** Bounded recovery page size; defaults to MAX_SCAN_BLOCKS. */
+  readonly recoveryLimit?: number;
+  /** Called after each fully scanned block; awaiting the encrypted commit bounds crash/cancel loss to one block. */
+  readonly onState?: (state: ScanState) => void | Promise<void>;
 }
 
 export interface ScanResult {
@@ -49,6 +63,8 @@ export interface ScanResult {
   readonly blocks: readonly { readonly height: number; readonly hash: string }[];
   /** The scanned blocks were checked against a validated header chain. */
   readonly headerAnchored: boolean;
+  /** The prior matched block page revalidated in this result. Other historical matches remain unspendable. */
+  readonly recoveredHistory?: { readonly offset: number; readonly end: number; readonly total: number };
 }
 
 /** Best-effort wipe of the spend tweaks held by scan results (used on lock, a new scan and unmount). */
@@ -64,15 +80,28 @@ export function wipeFound(found: readonly FoundPayment[]): void {
  */
 export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const { client, wallet, fromHeight, signal } = p;
+  const checkAbort = (): void => { if (signal?.aborted === true) throw new SilentPaymentError('ABORTED'); };
   if (!Number.isInteger(fromHeight) || fromHeight < 0) throw new SilentPaymentError('INVALID_INPUT');
   const plain = new EsploraTweakSource(client, wallet.net);
   const source: TweakSource = p.headers === undefined ? plain : new HeaderAnchoredTweakSource(plain, p.headers);
   const headerAnchored = p.headers !== undefined;
   const serverTip = await client.tipHeight(signal);
   const tip = p.headers === undefined ? serverTip : Math.min(serverTip, p.headers.tipHeight);
-  const toHeight = Math.min(p.toHeight ?? tip, tip);
+  const restored = p.resumeState;
+  const recoveryOffset = p.recoveryOffset ?? 0;
+  const recoveryLimit = p.recoveryLimit ?? MAX_SCAN_BLOCKS;
+  if (!Number.isSafeInteger(recoveryOffset) || recoveryOffset < 0 || !Number.isSafeInteger(recoveryLimit) || recoveryLimit < 1 || recoveryLimit > MAX_SCAN_BLOCKS)
+    throw new SilentPaymentError('INVALID_INPUT');
+  if (restored !== undefined && (p.headers === undefined || restored.network !== wallet.net.id || restored.birthHeight !== fromHeight))
+    throw new SilentPaymentError('INVALID_INPUT');
+  const reconciled = restored === undefined ? undefined : await reconcileScanState(restored, (h) => p.headers?.hashAt(h));
+  checkAbort();
+  if (reconciled?.rolledBack === true) await p.onState?.(reconciled.state);
+  const resumeHeight = reconciled?.resumeHeight ?? fromHeight;
+  // Persistent scans advance in bounded pages; the next run resumes from the last committed block.
+  const toHeight = Math.min(p.toHeight ?? tip, tip, restored === undefined ? tip : resumeHeight + MAX_SCAN_BLOCKS - 1);
   if (toHeight < fromHeight) return { fromHeight, toHeight, found: [], spentCount: 0, blocks: [], headerAnchored };
-  if (toHeight - fromHeight + 1 > MAX_SCAN_BLOCKS) throw new SilentPaymentError('INVALID_INPUT');
+  if (toHeight - resumeHeight + 1 > MAX_SCAN_BLOCKS) throw new SilentPaymentError('INVALID_INPUT');
 
   const blocks: { height: number; hash: string }[] = [];
   const candidates: FoundPayment[] = [];
@@ -80,41 +109,66 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const tweaks = new Set<Uint8Array>();
   const found: FoundPayment[] = [];
   let returned = false;
+  let recoveredHistory: ScanResult['recoveredHistory'];
   try {
-    const gen = scanBlocks({
-      source,
-      keys: { scanSecret: wallet.keys.scanSecret, spendPublicKey: wallet.keys.spendPublicKey },
-      fromHeight,
-      toHeight,
-      ...(signal === undefined ? {} : { signal }),
-      onBlock: ({ height, blockHash }) => { blocks.push({ height, hash: blockHash }); },
-    });
-    for await (const r of gen) {
+    const keys = { scanSecret: wallet.keys.scanSecret, spendPublicKey: wallet.keys.spendPublicKey };
+    const accept = (r: ReceivedOutput): void => {
+      if (tweaks.size >= MAX_SCAN_MATCHES) { zeroize(r.spendTweak); throw new SilentPaymentError('UNSUPPORTED'); }
       tweaks.add(r.spendTweak);
       p.onBlock?.(r.height);
-      if (r.txid === undefined || r.vout === undefined || r.amountSats === undefined) continue;
+      if (r.txid === undefined || r.vout === undefined || r.amountSats === undefined) return;
       const id = `${r.txid}:${String(r.vout)}`;
-      if (seen.has(id)) continue;
+      if (seen.has(id)) return;
       seen.add(id);
       candidates.push({
-        txid: r.txid,
-        vout: r.vout,
-        amountSats: r.amountSats,
-        xOnlyPublicKey: r.xOnlyPublicKey,
-        spendTweak: r.spendTweak,
-        height: r.height,
-        blockHash: r.blockHash,
-        label: r.label,
-        duplicateKey: r.duplicateKey,
+        txid: r.txid, vout: r.vout, amountSats: r.amountSats, xOnlyPublicKey: r.xOnlyPublicKey,
+        spendTweak: r.spendTweak, height: r.height, blockHash: r.blockHash, label: r.label, duplicateKey: r.duplicateKey,
       });
+    };
+    const common = { source, keys, toHeight, ...(signal === undefined ? {} : { signal }) };
+    if (reconciled === undefined) {
+      for await (const r of scanBlocks({ ...common, fromHeight,
+        onBlock: ({ height, blockHash }) => { blocks.push({ height, hash: blockHash }); },
+      })) accept(r);
+    } else {
+      // Restored metadata contains no spend tweak. Re-read only prior matched blocks against current headers,
+      // re-derive each output locally and check current outspend status before returning anything spendable.
+      const recoveryHeights = [...new Set(reconciled.state.matches.filter((m) => m.status === 'confirmed' && m.spent === undefined && m.height <= toHeight).map((m) => m.height))].sort((a, b) => a - b);
+      const offset = recoveryOffset >= recoveryHeights.length ? 0 : recoveryOffset;
+      const end = Math.min(offset + recoveryLimit, recoveryHeights.length);
+      recoveredHistory = { offset, end, total: recoveryHeights.length };
+      for (const height of recoveryHeights.slice(offset, end)) {
+        checkAbort();
+        for await (const r of scanBlocks({ ...common, fromHeight: height, toHeight: height,
+          onBlock: ({ blockHash }) => { blocks.push({ height, hash: blockHash }); },
+        })) accept(r);
+      }
+      for await (const r of resumeScan({ ...common, state: reconciled.state, hashAt: (h) => p.headers?.hashAt(h),
+        onState: async (state) => {
+          checkAbort();
+          if (state.lastHash !== null) blocks.push({ height: state.lastHeight, hash: state.lastHash });
+          await p.onState?.(state);
+        },
+      })) accept(r);
+    }
+    checkAbort();
+    const keyCounts = new Map<string, number>();
+    for (const c of candidates) {
+      const key = Array.from(c.xOnlyPublicKey).join(',');
+      keyCounts.set(key, (keyCounts.get(key) ?? 0) + 1);
     }
     let spentCount = 0;
     for (const c of candidates) {
-      if (await client.isUnspent(c.txid, c.vout, signal)) found.push(c);
+      if (await client.isUnspent(c.txid, c.vout, signal)) {
+        const duplicateKey = c.duplicateKey || (keyCounts.get(Array.from(c.xOnlyPublicKey).join(',')) ?? 0) > 1;
+        found.push(duplicateKey === c.duplicateKey ? c : { ...c, duplicateKey });
+      }
       else spentCount++;
     }
+    checkAbort();
     returned = true;
-    return { fromHeight, toHeight, found, spentCount, blocks, headerAnchored };
+    blocks.sort((a, b) => a.height - b.height);
+    return { fromHeight, toHeight, found, spentCount, blocks, headerAnchored, ...(recoveredHistory === undefined ? {} : { recoveredHistory }) };
   } finally {
     // Outputs paying the same key share one tweak buffer: keep every buffer a returned output still uses.
     const kept = new Set<Uint8Array>(returned ? found.map((f) => f.spendTweak) : []);

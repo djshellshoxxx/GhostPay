@@ -5,6 +5,8 @@ import { fetchMerchantProfile, readProfileFromSearch, startEmbedHost } from '../
 import { forgetMerchantKey, MERCHANT_PIN_PREFIX, merchantProfileUrl, readMerchantKey, rememberMerchantKey, type MerchantKey } from '../lib/merchantIdentity';
 import { useServices } from '../lib/services';
 import { Field, Mono, Notice } from './Common';
+import { MerchantTemplateIssuer } from './MerchantTemplateIssuer';
+import { merchantTemplateAmount } from '../lib/merchantTemplate';
 import { MerchantProfileNotice } from './MerchantProfileNotice';
 
 /** Full-profile presentation only. Never changes invoice fields, signer trust or payment authorization. */
@@ -17,6 +19,11 @@ export function MerchantProfilePanel(props: { readonly search: string }): ReactN
   });
   const [profile, setProfile] = useState<MerchantProfile | undefined>(() => readProfileFromSearch(props.search, Math.floor(services.nowMs() / 1000)));
   const [origin, setOrigin] = useState<string | undefined>();
+  const [requestedAmount] = useState(() => {
+    const raw = new URLSearchParams(props.search).get('gpa');
+    // Retain a rejected-request marker rather than silently treating oversized input as no request.
+    return raw === null ? undefined : raw.length <= 67 ? raw : '!';
+  });
   const [templateId, setTemplateId] = useState(() => new URLSearchParams(props.search).get('gpt') ?? '');
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -165,11 +172,18 @@ export function MerchantProfilePanel(props: { readonly search: string }): ReactN
               {profile.templates.map((template) => <option key={template.id} value={template.id}>{template.id}</option>)}
             </select>}
           </Field>
+          {requestedAmount !== undefined && <Notice kind="warn">
+            <p>{t('merchantProfile.issue.request')}</p>
+            {merchantTemplateAmount(profile, selected?.id ?? '', requestedAmount) === undefined
+              ? <p>{t('merchantProfile.issue.requestRejected')}</p>
+              : <p>{t('merchantProfile.issue.amountOverride')}: <Mono>{requestedAmount}</Mono></p>}
+          </Notice>}
           {selected !== undefined && <dl className="details">
             <dt>{t('merchantProfile.templates.amount')}</dt><dd><Mono>{selected.amountMinor}</Mono></dd>
             <dt>{t('merchantProfile.templates.currency')}</dt><dd><Mono>{selected.currency}</Mono></dd>
             <dt>{t('merchantProfile.templates.expires')}</dt><dd><Mono>{String(selected.expires)}</Mono></dd>
           </dl>}
+          {selected !== undefined && <MerchantTemplateIssuer key={`${profile.sig}:${selected.id}:${requestedAmount ?? ''}`} profile={profile} templateId={selected.id} {...(requestedAmount === undefined ? {} : { requestedAmount })} />}
         </section>}
       </>}
     </details>

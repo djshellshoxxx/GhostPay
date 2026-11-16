@@ -1,5 +1,7 @@
 # GhostPay feature completion matrix — 2026-11-16
 
+> **Historical snapshot.** Current implementation, source-pinned checks, integration decisions and remaining gates are maintained in [GHOSTPAY_MASTER_COMPLETION_LEDGER.md](GHOSTPAY_MASTER_COMPLETION_LEDGER.md). The older statuses below do not override that ledger.
+
 ## Review basis
 
 Source review uses candidate `4ee9dd770826e705cb8c2437a53cf6714a003635` plus follow-up source commit

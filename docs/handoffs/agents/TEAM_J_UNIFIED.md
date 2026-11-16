@@ -65,7 +65,7 @@ missing-feature verdict; modified/cherry-picked equivalents can retain different
 | UX-guide plain-object fix | `cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a`: current `profiles.ts` validates the prototype and own keys, matching the retained safety behavior. |
 | Audit-report file mode | `fd710eb367eff8bbc250024f5a4317875930736b`: current writer preserves safe mode bits, rejects non-regular files and uses `fchmod` on the staged descriptor. Older chmod implementation is weaker and superseded. |
 | `codex/recovery-spec02-unqualified-20261116` | `8d6fd6df5effc5fad93fd7afafe65f258182923c`: archived initial helper/test/tool-input material explicitly marked unqualified. Current #182 implements the corrected helper; do not apply the archived unconfirmed patch. |
-| Old source-recovery/checkpoint/SBOM branches | Exact heads in snapshot. They retain historic source-preservation evidence, and `PAGES_INTEGRATION_2026-11-16.md` explicitly excludes mechanical recovery. Full per-commit behavioral equivalence was **not** re-proven in this review; keep these as unresolved historical qualification if the completion criterion requires exhaustive reconciliation. |
+| Old source-recovery/checkpoint/SBOM branches | Exact heads in snapshot. The follow-up table below dispositions the meaningful post-checkpoint commits against current source, including obsolete vendor-only SBOM behavior. No missing product implementation was found. The synthetic checkpoint is source-preservation evidence, not a newly qualified release. |
 | Paid-agent automation and dependency groups | Exact heads in snapshot. Keep deferred; no paid workflow enablement or broad dependency upgrade was authorized by this scoped audit. These are not required feature recovery. |
 | Audit/wiki/CI rotation branches | Snapshot pins latest heads; recent commits are historical source/CI documentation. Preserve as provenance, not as authoritative current status; the unified ledger should replace stale headline CI statements. |
 | Future-only privacy proposals | `896c671f19fdb81c4aae56cd3170c09fe1aba7b7`: current tree already contains `docs/future/privacy-first/`; no product implementation is implied by these proposals. |
@@ -98,7 +98,7 @@ The original environment lacked native tools. This review installed prerequisite
   `9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25`.
 - Python 3.12 virtual environment installed Mythril 0.24.8, solc-select 1.2.0, setuptools<81 and
   crytic-compile 0.4.2. The first build failed because Python expected absent clang; `CC=gcc` succeeded.
-- Unmodified `myth version` then failed on retired `solc-bin.ethereum.org` HTTP 503. A local transport-only
+- Unmodified `myth version` then failed on legacy `solc-bin.ethereum.org` HTTP 503 in this environment. A local transport-only
   launcher sets py-solc-x's download host to official `binaries.soliditylang.org`, with the verified local solc
   registered under `SOLCX_BINARY_PATH`; it reports Mythril v0.24.8. Analyzer code and invocation flags are unchanged.
 
@@ -137,3 +137,88 @@ the meaningful post-checkpoint changes were inspected as follows.
 No recovery patch was applied because this comparison found retained/evolved behavior or obsolete architecture-specific
 work, not a demonstrated missing implementation. The original 163-file synthetic checkpoint is not independently
 requalified by this source comparison; current integration suites, rather than old passing evidence, remain required.
+
+## Final implementation review checkpoints
+
+| Source | Independent review and execution |
+|---|---|
+| Registry ENS `e2874e5cdce37739c6c154cc099ce7758fd34f6c` | Pins the earlier selected-RPC-only source review. No later product difference on the registry branch was present at recheck. No additional test count is claimed here. |
+| Oracle decimals `39f79175e249ecd35f6bff1abbb8750d9ade814b` | No blocker found. The only production `readPrice` caller passes configured feed decimals; invalid expected decimals fail before RPC, and a mismatched reply cannot be silently rescaled. Independent `quote.test.ts` run: 22/22 passed, one worker. |
+| Team C metrics `364efaf3902351886eb2baa739e8e0dc70101617` | No blocker found in exact integer accounting, fractional micro-USD carry, late receipt single settlement, restart fee-unknown handling, bounded histograms, source-free labels or transport preservation. Independent metrics/runtime suites: 14/14 passed, one worker. Reviewed subsequent native-scrape and restart assertions; their broader author run is not counted as independent execution. |
+| BTC persistence `9b91180384245288996206a268e23e84a2e5e722` | Found a deletion ABA defect in the initial constant tombstone: a stale tab holding an old tombstone could save after another save/forget cycle. Author reproduced it, then made each deletion use a fresh 32-byte nonce and strict tombstone schema. Independently re-reviewed the fix and bounded recovery pagination, which also removes the original >500 matched-block resume dead end. Store/resume/UI suites: 14/14 passed, one worker. Keys/tweaks are not serialized; wallet/network AAD, guarded CAS and fresh header/source revalidation precede spendability. |
+| BlindBit gRPC `2fc1d217df42374ad9381df7b4c1b17b3c9b5b6b` | No blocker found in the scoped optional transport. Exactly one data frame and a terminal successful trailer are required; response/entry bounds precede protobuf allocation, integers/hash order are checked, and same-server block hash agreement is not called independent authentication. The initial new synthetic fixture failed; after its correction the independent suite passed 32/32. MIT schema notices are included in the package files. |
+
+BTC persistence and gRPC implement the locally actionable gaps identified above. They do not qualify a live
+oracle/proxy, bitcoind regtest deployment, wallet interoperability, hosted scan-key service, or browser-process
+restart on a browser that could not launch in this environment. Existing Esplora UI disclosure explicitly includes
+matched outpoint status queries; the new block-level gRPC client does not receive wallet keys or outpoints and does
+not expose `getSpends` from incomplete transaction data. The source-pinned transport handoff remains
+[`BLINDBIT_GRPC_HANDOFF.md`](BLINDBIT_GRPC_HANDOFF.md).
+
+## Additional real analyzer evidence
+
+Installed Slither 0.11.6 and solc-select 1.2.0 in a second isolated temporary virtual environment to avoid
+changing Mythril's dependency graph. With Foundry 1.8.5, verified solc 0.8.28, `RAYON_NUM_THREADS=2` and
+`FOUNDRY_COMPILATION_JOBS=1`, the exact nightly gate at `365a1c38` completed with exit 0:
+
+```sh
+slither . --filter-paths 'lib|test|script' --fail-medium --exclude-informational --exclude-low
+```
+
+Reported: 34 contracts, 64 detectors, zero results. This uses the configured exclusions and is not a claim that
+every informational/low-severity detector ran. Log: `/tmp/ghostpay-analyzers/slither-gate.log`.
+
+The first full-configuration Echidna attempt reached Router 203,858/300,000 and ended at the outer 600-second
+budget (exit 124). No final property inventory was emitted; Sweep and Policy were not reached. A second attempt
+keeps the unchanged 300,000-test, sequence-length-20, seed-20261021, four-worker configuration and uses a
+2,700-second overall budget. Final outcomes below supersede these interim progress notes.
+
+### Native reporter defect and bounded parser correction
+
+The second native campaign completed Router at 300,021 calls and Sweep at 300,063 calls. Every declared real
+property was reported `passing`; reached canaries were `failed!`. The original wrapper rejected these real results
+because its fixtures assumed `passed!`. The pinned upstream
+[`v2.2.7` reporter](https://github.com/crytic/echidna/blob/v2.2.7/lib/Echidna/UI/Report.hs) confirms that final
+`Open` properties without a reproducer render as `passing`, and the final call count sums worker `ncalls`.
+
+Correction `5d1e6499ec9781963d7eb2230a4d968ef2a21b7a` accepts that exact status only with one completed
+`Total calls` footer meeting the configured positive test limit. It also requires that footer for the other passing
+status. Complete declared inventory, no duplicate/unknown properties, failing reachability canaries, and the
+expected native exit code remain mandatory. Five regressions failed before the correction; all 41 combined
+wrapper fixtures passed afterward (22 Echidna, 19 Mythril). Independent `final_review` source review and its own
+22-case run found no blocker. The running native campaign still uses the originally parsed shell loop; validating
+its captured unchanged native reports through the corrected gate is explicitly a report replay, not a fresh campaign.
+
+### Mythril finding disposition
+
+The first unchanged five-contract wrapper attempt ended at the outer 1,200-second budget, exit 124.
+`GhostPayRouter` and `GhostPayPolicyRouter` were killed with exit 137. `GhostPaySweepRelayer` produced one Low
+SWC-116 finding at `src/GhostPaySweepRelayer.sol:83`, on `if (block.timestamp > s.deadline) revert Expired()`.
+That condition enforces the owner's signed expiry; it does not use the timestamp as randomness. Its dependence on
+chain time is the intended deadline behavior, including the chain's timestamp semantics. Removing the condition
+would remove an authorization boundary. The finding is documented without deleting the guard or globally
+suppressing SWC-116; the wrapper remains non-green. This is an AI-assisted source disposition, not acceptance by
+an external auditor. `PolicyAccount` was interrupted before a report, and the factory was not reached in that first
+attempt. A bounded direct continuation uses the same compiler, optimizer, Cancun target, transaction count and
+900-second analyzer setting for those two contracts. `PolicyAccount` returned two additional Low SWC-116 findings
+at lines 161 and 262, respectively the signed withdrawal and destination-proposal expiry checks. The same intended
+deadline disposition applies. `PolicyAccountFactory` was killed137 without a report. No finding suppression was added.
+
+### Final native outcomes and preserved evidence
+
+The extended Echidna Policy process was killed137 at last reported257,048/300,000 calls. All five reachability
+canaries had been observed, but there was no final property inventory. Editing the original wrapper while it was
+running also caused a shell tail parse error after that process (overall wrapper exit2); the complete original log
+preserves both failures. Its completed Router/Sweep native reports are retained independently of wrapper failure.
+
+One final Policy retry ran alone with a fresh corpus and unchanged analyzer settings, a900-second wall budget and
+a1024MiB sampled process-tree RSS guard. It received SIGKILL after16.28seconds, at last reported1,526calls, before
+either guard limit fired. Sampled tree peak was802,368KiB; child maximum RSS was812,540KiB. This establishes native
+termination, not its exact system cause. Attempts to use GHC heap flags were rejected by the official binary before
+fuzzing; no alternate analyzer version or weaker harness was substituted. No further local retries were made.
+
+The corrected report-gate replay accepts the two completed native reports and rejects Policy's137 exit, missing
+final inventory and incomplete call total (replay exit1). **Neither the full Echidna suite nor Mythril is qualified.**
+Configured Slither passed. [Compact native reports and digest manifest](team-j-analyzer-evidence/README.md) preserve
+the exact source/tool pins, full compressed streams, selected final reports, findings, resource/exit metadata and
+the report replay distinction. All18artifact digests were independently recomputed after saving.

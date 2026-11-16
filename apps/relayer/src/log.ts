@@ -1,3 +1,4 @@
+import { ConfigError } from './secrets.js';
 import type { Hex } from 'viem';
 
 /**
@@ -16,6 +17,14 @@ export interface LogFields {
 
 /** Log severity. */
 export type LogLevel = 'info' | 'warn' | 'error';
+const LEVEL_RANK: Readonly<Record<LogLevel, number>> = { info: 0, warn: 1, error: 2 };
+
+/** Parses operator log filtering without echoing potentially sensitive invalid environment values. */
+export function parseLogLevel(value: string | undefined): LogLevel {
+  if (value === undefined) return 'info';
+  if (value === 'info' || value === 'warn' || value === 'error') return value;
+  throw new ConfigError('LOG_LEVEL must be info, warn, or error');
+}
 
 /** Structured logger. */
 export interface Logger {
@@ -59,9 +68,10 @@ export function sanitizeFields(fields: LogFields): Record<string, string | numbe
  * @param now Clock in ms (injected for tests).
  * @returns Logger.
  */
-export function createLogger(sink: (line: string) => void, now: () => number = Date.now): Logger {
+export function createLogger(sink: (line: string) => void, now: () => number = Date.now, minimumLevel: LogLevel = 'info'): Logger {
   return {
     log(level, event, fields = {}) {
+      if (LEVEL_RANK[level] < LEVEL_RANK[minimumLevel]) return;
       const name = EVENT.test(event) ? event : 'invalid_event';
       sink(JSON.stringify({ ts: new Date(now()).toISOString(), level, event: name, ...sanitizeFields(fields) }));
     },

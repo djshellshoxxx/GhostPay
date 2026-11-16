@@ -12,7 +12,8 @@ Sources: research 1.1/1.2 item 4, DOC-3, DOC-4; gap-analysis item 4; CONTRACTS_S
 an already-authorized signature and validates address, scheme-1 meta-address and bounded opaque signature bytes.
 It does not sign, send, resolve ENS, or establish deployment provenance. On-behalf registration remains outside UI v1.
 The 2026-11-11 status above is historical. `resolveRegistryRegistrant` and the registry view now resolve ENS names
-through the selected, validated Ethereum or Sepolia RPC using the installed viem Universal Resolver. Resolution
+through the selected, validated Ethereum or Sepolia RPC using the canonical ENS Universal Resolver and pure pinned
+viem name/ABI utilities. The browser does not import viem PublicClient, default chain endpoints or CCIP transports. Resolution
 starts only on a lookup click, disables CCIP Read and gateway requests, validates the returned address, and displays
 the normalized name plus registrant. Other chains do not silently fall back to Ethereum. Offchain names require an
 explicit wallet address. This is RPC-supplied naming data, not independently verified merchant identity. Per-chain

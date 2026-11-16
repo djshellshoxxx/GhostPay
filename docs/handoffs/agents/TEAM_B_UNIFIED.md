@@ -73,3 +73,68 @@ model was selected. Profile pins are not independently verified business identit
 invoice trust, embedding authorization, deployment or release publication was introduced. ENS/registry workflows
 belong to another lane. The current iframe flag and server `frame-ancestors` allowlist remain mandatory for inline
 profile iframe mode. No production funds or external credentials were used.
+
+## Follow-on: merchant-side template issuance
+
+This supersedes the earlier statement that all merchant-side template issuance and amount overrides remain absent.
+
+- Base: `e84e72d951c2c3fd1f4073dbee19805714d87f74`.
+- Implementation: `5d36ac5db78ebdb1698c79dfa28a1294dbcc6b8a`.
+- Owned files: `merchantTemplate.ts`/tests, `MerchantTemplateIssuer.tsx`/tests, profile panel, SDK v2/tests,
+  `invoiceCreate.ts`/tests, merchant Playwright journey and current user/specification documentation.
+- Shared validation overlays, excluded from this commit: coordinator catalog/security layer matching
+  `f5142b19a6868f155b682eed50f606603cb68b97`; `ReconciliationLedger.tsx` matching
+  `27852ba898968a08f7d7c448fac8b19058189281`. The latter aligns this older worktree with the coordinator's freshly built
+  canonical-time package types. Final integration must validate the coordinator's actual combined source.
+
+### Completed behavior
+
+The matching loaded merchant signing key can now explicitly create a new invoice from a verified signed template.
+The helper uses the existing `buildInvoiceLink` secret-borrowing/signing path. It clones and verifies the profile,
+validates the selected enabled/profile-allowed chain and asset, captures the session and request, and requires a
+verified recoverable backup or the existing explicit waiver. Custody, session, request freshness and profile expiry
+are checked across asynchronous work and before returning the link. No signer key, new credential, service or
+merchant-DOM secret channel was introduced.
+
+Template fiat minor units and the merchant's independently entered fixed token amount are separate. USD `50000`
+remains USD 500.00; chosen 1.25 USDC becomes `1250000` token base units. The merchant chooses the fee policy. Exact
+second expiry supports the profile's 60-second minimum, rather than rounding 1800 seconds to the old whole-hour form.
+The existing invoice wire schema caps fiat/line-item minor units at 30 digits; signed profiles can display larger
+values, but issuance refuses them without truncation or schema widening. An attempted 39-digit successful-issuance
+regression exposed that actual protocol bound and was corrected to test both the exact 30-digit boundary and rejection
+of 31/39 digits. No existing assertion or protocol bound was weakened.
+
+SDK `data-amount` forwards only a bounded decimal draft in the selected template currency. The checkout requires
+signed `allowAmount`, validates currency precision/positivity, and makes the matching merchant explicitly issue a fresh
+signed invoice to adopt it. The existing payer invoice remains unchanged. Editing issuance fields invalidates the prior
+output and in-flight actions. Oversized query requests retain a rejected marker rather than becoming an absent request.
+
+### Executed evidence
+
+- SDK amount regressions before implementation: 5 failed / 31 passed.
+- Final ordinary Vitest command on `merchantTemplate.test.ts`, `invoiceCreate.test.ts`,
+  `MerchantTemplateIssuer.test.tsx`, `MerchantProfilePanel.test.tsx`, `embedV2.test.ts`,
+  `privacyInvariants.test.ts` and `App.test.tsx`, `--maxWorkers=1`: **115 passed, 7 files, zero skips**.
+- Full web typecheck and focused source/test/Playwright ESLint: **exit 0**.
+- `git diff --check`: passed.
+- Added a browser journey for importing known test merchant keys, issuing an independent template invoice, checking its
+  signature and separate fiat/token amounts, and invalidating the old link after edits. **Not run locally:** the
+  coordinator confirmed Chromium's process-singleton socket fails with EPERM. Hosted full-profile execution remains
+  required. Lean remains excluded by the existing full-only embed test filter.
+- The final-review agent independently reviewed the signer/backup/session/unit boundaries and found no blocker before
+  source pinning. It independently ran 20 earlier focused tests before the protocol-boundary test addition; use its
+  source-pinned follow-up for the final independent result.
+
+### Exact remaining scope decision
+
+Unattended checkout from attributes/profile alone is still not implemented: the SDK requires an independent signed
+`data-invoice`. Profile v1 contains no stealth meta-address, exact token-address/payment-pricing authority or fee policy,
+and its signing domain differs from the invoice domain. Choosing a merchant signing service changes credential
+custody/transport. Alternatively, introducing a payer-verifiable signed payment-intent/profile schema changes payment
+authority and needs destination, fee, quote, nonce/order and expiry decisions. Concrete alternatives are documented in
+`docs/specs/14-embed-merchant-profile.md`; existing local issuance is usable without either expansion. SDK release hash
+publication and real merchant/browser/wallet acceptance remain release gates.
+
+Next integration: cherry-pick `5d36ac5d` after the already integrated profile milestone and coordinator catalogs, then
+run combined-head coverage/build/lean isolation and hosted browser checks. Do not copy the uncommitted overlays or
+`node_modules` symlink from the worker tree.

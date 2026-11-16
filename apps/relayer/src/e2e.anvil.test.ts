@@ -66,6 +66,8 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
   let proc: ChildProcess | undefined;
   let relayer: Relayer | undefined;
   let base = '';
+  let metricsBase = '';
+  const metricsToken = 'native-metrics-test-token-00000000';
   let url = '';
   const stateDir = mkdtempSync(join(tmpdir(), 'relayer-e2e-'));
   const stateFile = join(stateDir, 'state.json');
@@ -127,7 +129,7 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
           },
         ],
       },
-      { env: {}, hotKeyAddress: privateKeyToAccount(HOT_KEY).address, readManifest: () => undefined },
+      { env: { METRICS_ENABLED: '1', METRICS_PORT: '0', METRICS_TOKEN: metricsToken }, hotKeyAddress: privateKeyToAccount(HOT_KEY).address, readManifest: () => undefined },
     );
     relayer = await buildRelayer({
       config,
@@ -136,11 +138,15 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
       logger: createLogger(() => undefined),
     });
     const addr = await relayer.server.listen();
+    const metricsAddress = await relayer.metricsServer?.listen();
+    expect(metricsAddress).toBeDefined();
+    metricsBase = `http://127.0.0.1:${String(metricsAddress?.port)}`;
     base = `http://127.0.0.1:${String(addr.port)}`;
   }, 60_000);
 
   afterAll(async () => {
     await relayer?.server.close();
+    await relayer?.metricsServer?.close();
     relayer?.dispose();
     rmSync(stateDir, { recursive: true, force: true });
     proc?.kill('SIGKILL');
@@ -197,6 +203,22 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
     const again = await post('/v1/sweep', body);
     expect(again.status).toBe(409);
     expect(again.json).toEqual({ error: { code: 'nonce_used' } });
+
+    await laneIdle();
+    expect((await fetch(`${base}/metrics`)).status).toBe(404);
+    expect((await fetch(`${metricsBase}/metrics`)).status).toBe(401);
+    const headers = { authorization: `Bearer ${metricsToken}` };
+    const scraped = await fetch(`${metricsBase}/metrics`, { headers });
+    expect(scraped.status).toBe(200);
+    const text = await scraped.text();
+    expect(text).toContain(`relayer_gas_spent_wei_total{chain_id="31337"} ${(receipt.gasUsed * receipt.effectiveGasPrice).toString()}`);
+    expect(text).toContain(`relayer_fee_earned_usd_micro_total{chain_id="31337"} ${fee.toString()}`);
+    expect(text).toContain('relayer_rpc_latency_seconds_count{chain_id="31337"}');
+    expect(text).not.toContain(owner.address);
+    expect(text).not.toContain(r.json['txHash']);
+    const snapshot = await fetch(`${metricsBase}/v1/stats`, { headers });
+    const stats = await snapshot.json() as { integerCounters: Record<string, string> };
+    expect(stats.integerCounters['relayer_fee_earned_usd_micro_total']).toBe(fee.toString());
   }, 60_000);
   const rpc = async (method: string, params: unknown[] = []): Promise<unknown> => {
     const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }) });

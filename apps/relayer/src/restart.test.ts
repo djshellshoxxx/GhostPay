@@ -134,10 +134,14 @@ describe('state journal: crash recovery', () => {
 
     fb.pendingNonce = 8;
     fb.lookup = { status: 'success', gasUsed: 100_000n };
-    expect((await call(b, 'POST', '/v1/sweep', (await prepare(b, { nonce: 3n })).body)).status).toBe(200);
+    const fresh = await prepare(b, { nonce: 3n });
+    expect((await call(b, 'POST', '/v1/sweep', fresh.body)).status).toBe(200);
     await settle();
     expect(fb.sent.map((x) => x.opts.nonce)).toEqual([8]);
     expect(stored(disk)).toEqual({ budget: { day: DAY, spentWei: 2n * used }, sends: [] });
+    expect(b.relayer.metrics.stats().integerCounters['relayer_gas_spent_wei_total']).toBe((2n * used).toString());
+    expect(b.relayer.metrics.stats().integerCounters['relayer_fee_earned_usd_micro_total']).toBe(fresh.quote.fee);
+    expect(b.relayer.metrics.stats().counters['relayer_fee_unknown_total']).toBe(1);
   });
 
   it('crash after signing, never broadcast: released only after the grace, then the nonce is reused', async () => {

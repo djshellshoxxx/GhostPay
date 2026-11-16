@@ -1,0 +1,78 @@
+import json
+import os
+from pathlib import Path
+import resource
+import signal
+import subprocess
+import sys
+import time
+
+root = Path('/tmp/ghostpay-analyzers')
+env = os.environ.copy()
+env.update({
+    'PATH': str(root / 'bin') + ':' + str(root / 'venv/bin') + ':' + env['PATH'],
+    'RAYON_NUM_THREADS': '2', 'FOUNDRY_COMPILATION_JOBS': '1',
+    'FOUNDRY_SOLC': str(root / 'bin/solc'),
+})
+
+def tree_rss(pid):
+    processes = {}
+    for entry in Path('/proc').iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            fields = dict(line.split(':', 1) for line in (entry / 'status').read_text().splitlines() if ':' in line)
+            processes[int(entry.name)] = (int(fields['PPid'].strip()), int(fields.get('VmRSS', '0 kB').split()[0]))
+        except (OSError, KeyError, ValueError):
+            continue
+    children = {pid}
+    while True:
+        expanded = children | {p for p, (parent, _) in processes.items() if parent in children}
+        if expanded == children:
+            break
+        children = expanded
+    return sum(rss for p, (_, rss) in processes.items() if p in children)
+
+started = time.monotonic()
+reason = None
+peak = 0
+with (root / 'echidna-policy-isolated.log').open('w') as output:
+    proc = subprocess.Popen([
+        str(root / 'bin/echidna'), 'test/echidna/EchidnaPolicy.sol', '--contract', 'EchidnaPolicy',
+        '--config', str(root / 'policy-echidna.yaml'),
+        '--corpus-dir', str(root / 'echidna-policy-isolated-corpus'), '--format', 'text',
+    ], cwd='/workspace/scratch/a9f2ae0b1bda/ghostpay-audit/packages/contracts',
+       env=env, stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
+    while proc.poll() is None:
+        rss = tree_rss(proc.pid)
+        peak = max(peak, rss)
+        if rss > 1024 * 1024:
+            reason = 'sampled process-tree RSS exceeded 1024 MiB'
+        elif time.monotonic() - started > 900:
+            reason = 'process wall time exceeded 900 seconds'
+        if reason:
+            try:
+                os.killpg(proc.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            try:
+                proc.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
+            break
+        time.sleep(1)
+    native = proc.wait()
+status = native if native >= 0 else 128 - native
+if reason:
+    status = 137 if 'RSS' in reason else 124
+usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+(root / 'echidna-policy-isolated.exit').write_text(str(status) + '\n')
+(root / 'echidna-policy-resources.json').write_text(json.dumps({
+    'exitCode': status, 'nativeReturnCode': native, 'budgetTermination': reason,
+    'elapsedSeconds': time.monotonic() - started, 'sampledMaxTreeRssKiB': peak,
+    'childMaxRssKiB': usage.ru_maxrss, 'childUserSeconds': usage.ru_utime,
+    'childSystemSeconds': usage.ru_stime, 'memoryBudgetMiB': 1024,
+    'rssSamplingSeconds': 1, 'processTimeoutSeconds': 900,
+}, indent=2) + '\n')
+sys.exit(status)

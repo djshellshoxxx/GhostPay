@@ -7,7 +7,7 @@ BIP-352 **Silent Payments** for GhostPay's Bitcoin tier (docs/MULTICHAIN_SPEC.md
 Scope: seller side (keys, `sp1...` / `tsp1...` addresses, labels, `bitcoin:?sp=` URIs), sender-side output
 derivation, receiver-side scanning and spend-key derivation, a block scanner over an injected tweak source, and an
 adapter, and spending: signed PSBT / raw-transaction sweeps of detected outputs (`buildSpendTransaction`, via
-`@scure/btc-signer`). **Not included:** hardware-wallet signing (out of scope), gRPC, running a node, coin selection. See `DEVIATIONS.md` for every deviation and
+`@scure/btc-signer`). **Not included:** hardware-wallet signing (out of scope), running a node, coin selection. An optional binary unary gRPC-Web adapter is available beside the HTTP source; it is not enabled in the UI. See `DEVIATIONS.md` for every deviation and
 unverified item.
 
 ## Verification status
@@ -54,7 +54,7 @@ for await (const hit of scanBlocks({ source, keys: { scanSecret: keys.scanSecret
 | `sender.ts` | input key sum (taproot parity), `input_hash`, grouping by `B_scan`, `k` counters, `K_max` |
 | `inputs.ts`, `tx.ts` | eligible input rules (P2TR, P2WPKH, P2SH-P2WPKH, P2PKH), NUMS skip, outpoints, witness parsing |
 | `receiver.ts` | tweak data, scanning with labels, spend key with even-y normalization |
-| `scan/` | `TweakSource` interface, `InMemoryTweakSource`, `BlindBitClient` (HTTP, see caveats), `scanBlocks` |
+| `scan/` | `TweakSource` interface, `InMemoryTweakSource`, `BlindBitClient` (HTTP, see caveats), `BlindBitGrpcClient` (explicit HTTPS gRPC-Web proxy), `scanBlocks` |
 | `spend.ts` | key-path sweep of silent-payment outputs: BIP-352 spend tweak (labels, parity), fee/vsize, change, signed PSBT, schnorr self-verification |
 | `adapter.ts`, `adapter-types.ts` | Bitcoin `ChainAdapter`; copied interface with a drift test |
 | `units.ts`, `uri.ts` | sats <-> BTC decimal strings, `bitcoin:?sp=` builder and strict parser |
@@ -126,3 +126,9 @@ npm run lint
 npm test          # vitest with coverage thresholds 95 / 90 / 95 / 95
 npm run build
 ```
+
+## Optional BlindBit gRPC-Web source
+
+`BlindBitGrpcClient` accepts an explicit HTTPS proxy URL, exact expected network and injected `fetch` transport. It uses unary `GetInfo`, `GetBlockHashByHeight` and `GetFullBlock`; it does not upload wallet material, use short keys as payment evidence, or expose incomplete block inputs as `getSpends`. Responses must carry one bounded data frame and a terminal successful gRPC trailer. Generated protobuf decoding retains uint64 amounts as bigint and rejects malformed/ambiguous identities before returning them.
+
+The same oracle's network/hash assertions are consistency checks, not independent chain verification. Keep local header verification, optional cross-checks and independent output verification. The raw upstream gRPC listener requires an operator-provided HTTPS/CORS gRPC-Web proxy. No endpoint, production activation, real oracle or wallet qualification is bundled. See [schema provenance](proto/blindbit/README.md) and the package deviations.

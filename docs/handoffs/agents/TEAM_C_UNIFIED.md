@@ -4,49 +4,58 @@
 - Worker: Caveman Team C; isolated worktree `ghostpay-observability`.
 - Branch: `codex/unified-observability`.
 - Base: PR #185, `c738f96e2f1a0dfef9003ae29ad636b03cf74b09`.
-- Implementation source: `dad2617ed662351069c8a2df616c2ad1dad33c39`.
-- Integration dependency: retain PR #185 and the previously integrated merchant-disclosure ancestry. Root owns unified candidate integration and final combined-source gates.
+- Latest implementation source: `364efaf3902351886eb2baa739e8e0dc70101617`.
+- Earlier reviewed lifecycle milestone: `dad2617ed662351069c8a2df616c2ad1dad33c39`.
+- Integration dependency: retain PR #185 and merchant-disclosure ancestry. Root owns unified integration and final combined-source gates. This handoff does not claim hosted CI or release qualification.
 
-## Implementation
+## Completed implementation
 
-PR #185's separate opt-in metrics listener, authenticated `/metrics` and `/v1/stats`, signed alerts, configuration, and runbook are retained.
+PR #185's separate opt-in metrics listener, authenticated `/metrics` and `/v1/stats`, signed alerts, configuration, and runbook remain intact.
 
-Five new regressions reproduced baseline failures: no absolute timeout before a socket arrives; uncontrolled response-body draining; unlimited concurrent alert delivery; no stable retry identity; transaction hashes in JSON logs. The corrected webhook has a 3-second absolute deadline per attempt, closes response bodies immediately, and allows four active deliveries plus 32 queued events. The dedupe map has at most 512 entries. A transient network failure, HTTP 429, or HTTP 5xx gets one retry after 250 ms using the same body, signature, and idempotency key. Permanent HTTP errors and redirects do not retry. Runtime disposal aborts active deliveries and clears pending events and retry timers. Delivery remains best-effort; dedupe and queued alerts do not persist across restarts.
+Webhook delivery now has an absolute three-second deadline covering DNS, connection establishment and headers, and closes unused response bodies immediately. At most four attempts run concurrently, 32 events wait, and 512 event/chain dedupe entries exist. A transient network failure, HTTP 429, or HTTP 5xx gets one retry after 250 ms using identical body, signature and idempotency key. Permanent HTTP errors and redirects do not retry. Runtime disposal cancels active deliveries and clears queued events and timers. Delivery is best-effort and in memory; failed events retain the 15-minute dedupe interval.
 
-The new rejection detector counts only failed quote/sweep requests. More than 100 rejects in a trailing five-minute window emits `reject_spike`; each configured chain has a bounded bucket, and malformed or unconfigured chain identifiers share one anonymous bucket. Each bucket retains at most 101 timestamps and emits at most once per 15 minutes. Aggregate rejection counters use fixed error classes. The alert exposes the threshold crossing, not request identifiers.
+The bounded rejection detector emits `reject_spike` above 100 failed quote/sweep requests within five minutes. Configured chains have separate buckets; malformed and unconfigured chain identifiers share one anonymous bucket. Each bucket retains at most 101 timestamps and emits at most once per 15 minutes. Aggregate rejection reasons are counted without retaining request data.
 
-JSON logging drops transaction hashes. Protected state-journal recovery is unchanged. README, privacy documentation, operator runbook, and spec status reflect the behavior.
+New telemetry includes supported quote attempts, confirmed gas spent, mined-revert gas loss, successful nominal stablecoin fees, missing recovered fee data, confirmed receipt outcomes, sweep latency and actual viem HTTP fetch latency. Large counters use bigint and emit decimal strings through JSON `integerCounters` and per-chain `integerSamples`; fees carry sub-micro-USD fractions across token decimal scales. Timeouts and unknown submissions do not count as confirmed spending or fees. Restart recovery deliberately lacks token/fee data and reports `relayer_fee_unknown_total` rather than inventing revenue. Fixed latency buckets have at most 64 series; ordinary and exact integer counters each have a 512-series cap.
 
-## Modified paths
+`LOG_LEVEL=info|warn|error` filters JSON logs; unknown values fail startup without being echoed. Logs drop transaction hashes. Protected transaction-journal behavior is unchanged. Native acceptance now scrapes the private listener after a real Anvil permit sweep, checks exact gas/fee telemetry, validates authentication, and confirms addresses and hashes are absent.
 
-`apps/relayer/src/{alerts.ts,alerts.lifecycle.test.ts,rejectSpike.ts,rejectSpike.test.ts,api.test.ts,log.ts,runtime.ts,server.ts,units.test.ts}`; relayer README/privacy docs; operator monitoring runbook; spec-07 status; active-work claim.
+## Owned paths
 
-## Executed verification
+`apps/relayer/**`; `docs/operators/relayer-monitoring.md`; spec-07 implementation status; active-work claim; this handoff. Source changes are isolated from contract, chain-adapter, web and vault implementations.
+
+## Executed evidence
 
 Counts overlap; do not sum them as unique tests.
 
-| Command / source | Result |
+| Check | Result |
 | --- | --- |
-| Baseline `vitest run src/units.test.ts src/api.test.ts src/config.test.ts --maxWorkers=1 --no-file-parallelism` on PR #185 | 295 passed. |
-| New `alerts.lifecycle.test.ts` against PR #185 source | 5 failed, 1 passed; reproduced the five defects above. |
-| Corrected lifecycle plus units | 47 passed. |
-| `rejectSpike.test.ts` before implementation | Missing module; feature absent, no tests executed. |
-| `vitest run src/alerts.lifecycle.test.ts src/rejectSpike.test.ts src/units.test.ts src/api.test.ts src/config.test.ts src/runtime.test.ts --maxWorkers=1 --no-file-parallelism` on implementation source | 311 passed. This preceded only one added HTTP acceptance test and documentation updates. |
-| Final-source API tests selected by `-t 'counts rejected\|authenticated metrics'` | 2 passed, 144 tests filtered out by selection. |
-| Focused ESLint for every modified relayer source/test with `NODE_OPTIONS=--max-old-space-size=2048` | Passed. |
+| Baseline PR #185 units/API/config | 295 passed. |
+| New lifecycle regressions against PR #185 | 5 failed, 1 passed: absolute timeout, response disposal, concurrency bound, retry identity and transaction-hash redaction. |
+| Corrected first milestone relevant suites | 311 passed; separate HTTP acceptance selection 2 passed/144 filtered. |
+| New instrumentation API regressions before implementation | 3 failed/146 filtered: confirmed totals, timeout/late evidence and fractional fee carry. |
+| Instrumentation affected metrics/runtime/API/units/restart suites | 219 passed. |
+| Native relayer acceptance, `ANVIL_BIN=/tmp/ghostpay-analyzers/bin/anvil REQUIRE_ANVIL=1 vitest run src/e2e.anvil.test.ts --maxWorkers=1 --no-file-parallelism` | 5 passed, zero skips, including the real authenticated HTTP scrape. |
+| Final `ANVIL_BIN=/tmp/ghostpay-analyzers/bin/anvil REQUIRE_ANVIL=1 NODE_OPTIONS=--max-old-space-size=2048 vitest run --coverage --maxWorkers=1 --no-file-parallelism` | **443 passed, zero skips; 15 files passed.** Coverage: statements **97.23%**, branches **92.96%**, functions **97.95%**, lines **98.89%**. All original thresholds pass. |
+| Final `tsc -p tsconfig.json --noEmit`, `tsc -p tsconfig.build.json`, full `eslint --config ../../eslint.config.js src` (2 GiB heap) | Passed. |
 | `git diff --check` | Passed. |
 
-The first typecheck passed before the rejection detector was added. A concurrent later typecheck/lint command exited 137 and is not a pass. The exact-source retry `NODE_OPTIONS=--max-old-space-size=2048 tsc -p tsconfig.json --noEmit` passed on `dad2617ed662351069c8a2df616c2ad1dad33c39`. No full coverage run, Anvil run, external HTTPS receiver test, Prometheus deployment, or hosted combined-head CI is claimed by this worker.
+The source files tested above match implementation commit `364efaf3902351886eb2baa739e8e0dc70101617`; later edits to this handoff are documentation only. Native artifacts came from the coordinator's verified solc 0.8.28 / Foundry 1.8.5 build. The contract source tree ID is identical in both worktrees: `9b715848b64f4d70de349631a6facefc9f8a12b0`. Artifact/dependency symlinks are untracked and not part of the commit. Full coverage log: `/tmp/ghostpay-observability-coverage.log` in the current execution environment.
 
-## Remaining work and constraints
+An earlier concurrent typecheck/lint attempt exited 137; later standalone typecheck, build and full lint passed. The failed attempt is not counted as evidence.
 
-- `rpc_disagree` and `price_stale` cannot truthfully fire from the current runtime: it has one RPC provider per chain and operator-configured fixed native prices without feed timestamps. Wire approved provider agreement and verified feed evidence before implementing those detectors.
-- Reconcile the rest of spec 07's original metric inventory against shipped `relayer_*` metrics. Quote, gas-spent, fee-earned, loss, RPC/sweep-latency, and price-age instrumentation are not all implemented. Preserve bigint accounting; floating-point metric samples do not prove settlement or accounting correctness.
-- Configurable log-level filtering remains absent.
-- Final integration needs full package coverage, build/typecheck/lint, native Anvil acceptance and hosted CI on the exact combined source. Run real Prometheus scrape and signed receiver acceptance separately.
-- Independent reviewer `/root/security_inventory` reviewed `dad2617ed662351069c8a2df616c2ad1dad33c39`: no blocking finding within scope; independently reran lifecycle and rejection-detector tests, 8/8 passed.
-- Metrics authentication remains optional as specified; non-loopback HTTP exposure must be controlled by operator network boundaries/TLS. The runbook now states this consequence explicitly.
+## Independent review
+
+`/root/security_inventory` found no blocking issue in either implementation slice. It independently ran lifecycle/rejection-detector tests (8/8), then metrics/runtime tests (14/14). Review covered absolute deadlines and disposal, queue/dedupe caps, retry identity, bounded rejection state, log redaction, integer fee scaling, late/restart receipt semantics and transport preservation. This is an independent agent source review, not an external security audit.
+
+## Remaining dependencies and acceptance
+
+- `rpc_disagree` lacks an actual comparison input: `buildChainClients` constructs one client per chain from `rpcUrl`. It must not infer agreement from that single provider.
+- `price_stale` and price-age metrics lack feed evidence: `FixedStablePriceSource` uses `nativeUsdMicro` from configuration, with no feed timestamp or source quorum. Approved provider/feed integration must supply those facts before a detector can be truthful.
+- Real production HTTPS receiver/HMAC/replay acceptance and a deployed Prometheus scrape remain external checks. The completed local HTTP scrape and native chain test are explicitly narrower.
+- Telemetry is not financial accounting: counters reset on restart, recovered fees can be unknown, USD values assume configured stablecoin parity, and the receipt model omits additional chain-specific fees. Prometheus float64 storage can round exact integer text; JSON per-chain decimal samples retain integers. The runbook states these limits.
+- Metrics authentication remains optional as specified. The runbook explicitly documents non-loopback exposure and HTTP/TLS boundaries.
 
 ## Next action
 
-The coordinator can integrate this reviewed milestone. Team C continues the remaining instrumentation/log-level slice on the same isolated branch. Keep unsupported provider/feed detectors and external release acceptance separately pending.
+Integrate the reviewed branch into the unified candidate, then rerun affected combined-source gates. Resume the two missing detector paths only when verified provider/feed inputs exist. No production deployment, public-chain transaction, protected merge or release occurred.

@@ -25,7 +25,7 @@ export interface QuoteRequest {
  * already be on chain. Field validation errors are `invalid_<field>` (400).
  */
 const PRE_BROADCAST_CODES: ReadonlySet<string> = new Set([
-  'unexpected_query', 'unauthorized', 'origin_not_allowed', 'not_found', 'method_not_allowed', 'body_too_large',
+  'unexpected_query', 'origin_not_allowed', 'not_found', 'method_not_allowed', 'body_too_large',
   'unsupported_media_type', 'rate_limited_ip', 'rate_limited_global', 'rate_limited_owner', 'owner_failure_limit',
   'loss_budget_exhausted', 'chain_not_supported', 'token_not_supported', 'permit_not_supported', 'permit_value_too_low',
   'fee_to_mismatch', 'quote_expired', 'fee_below_quote', 'fee_above_cap', 'deadline_too_soon', 'deadline_too_far',

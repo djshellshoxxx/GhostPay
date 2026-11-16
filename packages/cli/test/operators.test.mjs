@@ -72,6 +72,7 @@ async function cli(args, { input, code = 0, env = {} } = {}) {
 
 before(async () => {
   dir = await mkdtemp(join(tmpdir(), 'GhostPay operator compiled '));
+  const now = Math.floor(Date.now() / 1000);
   const payment = deriveStealthPayment(meta, globalThis.crypto);
   const recipient = payment.stealthAddress.toLowerCase();
   const ephemeral = `0x${Buffer.from(payment.ephemeralPublicKey).toString('hex')}`;
@@ -102,7 +103,7 @@ before(async () => {
       else if (data === encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'ANNOUNCER' })) result = pad(CANONICAL_ANNOUNCER);
       else if (data === buildLookupCall(payer).data) result = encodeAbiParameters([{ type: 'bytes' }], [`0x${G}${G2}`]);
       else if (params[0].to.toLowerCase() === ERC6538_REGISTRY.toLowerCase()) result = ERC6538_ENTRY_TYPEHASH;
-    } else if (method === 'eth_getBlockByNumber') result = { number: params[0], hash: canonical, parentHash: `0x${'11'.repeat(32)}` };
+    } else if (method === 'eth_getBlockByNumber') result = { number: params[0], hash: canonical, parentHash: `0x${'11'.repeat(32)}`, timestamp: `0x${now.toString(16)}` };
     else if (method === 'eth_getTransactionReceipt') result = rpcReceipt;
     else if (method === 'eth_getTransactionByHash') result = rpcTransaction;
     else if (method === 'eth_getLogs') result = BigInt(params[0].fromBlock) <= 100n && BigInt(params[0].toBlock) >= 100n ? [log] : [];
@@ -111,7 +112,6 @@ before(async () => {
   });
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   endpoint = `http://127.0.0.1:${server.address().port}/private-fixture-endpoint`;
-  const now = Math.floor(Date.now() / 1000);
   await put('spec.json', { chainId: 11155111, metaAddress: meta, fiat: { currency: 'USD', minorUnits: '100' }, token: 'native',
     amountPolicy: { mode: 'fixed_token', tokenAmount: '100' }, quote: { source: 'offline:fixture', timestamp: now, expiresAt: now + 600, maxSlippageBps: 50 },
     expiresAt: now + 3600, lineItems: [{ description: 'Portable operator fixture', quantity: '1', unitMinorUnits: '100' }],
@@ -247,6 +247,7 @@ test('compiled reconciliation requires reviewed live context and approval while 
   assert.equal(confirmed.association, 'seller-confirmed'); assert.equal(confirmed.currentChainVerified, true);
   const history = await cli(['history', 'list', '--in', 'confirmed-history.json', ...viewSource]);
   assert.equal(history.currentChainVerified, false); assert.equal(history.total, 1);
+  assert.equal(history.records[0].blockTimestamp, String(signed.invoice.quote.timestamp));
   assert.equal((await cli(['history', 'inspect', '--in', 'confirmed-history.json', ...viewSource, '--record', recordId])).currentChainVerified, false);
   await cli(['reconcile', 'archive-receipt', '--in', 'confirmed-history.json', '--receipt', 'receipt.json', ...credentials, '--out', 'archived-history.json']);
   assert.equal((await cli(['reconcile', 'export-receipts', '--in', 'archived-history.json', ...viewSource, '--out', 'receipts.json'])).receiptCount, 1);

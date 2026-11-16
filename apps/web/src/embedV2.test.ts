@@ -115,7 +115,17 @@ describe('ghostpay-embed-v2.js popup mode (default)', () => {
     expect(h.opened[0]!.features).toBe('popup,noopener,noreferrer');
   });
 
+  it('forwards a bounded decimal amount as an unsigned request', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-profile="abc" data-template="order" data-amount="500.25"`);
+    h.btn.click();
+    expect(h.opened[0]!.url).toBe(`${APP}/?gpm=abc&gpt=order&gpa=500.25#gpi=v1.abc_DEF-123`);
+  });
+
   it.each([
+    ['amount without profile', `data-invoice="${GOOD}" data-amount="2"`],
+    ['amount without template', `data-invoice="${GOOD}" data-profile="abc" data-amount="2"`],
+    ['exponent amount', `data-invoice="${GOOD}" data-profile="abc" data-template="order" data-amount="1e2"`],
+    ['zero amount', `data-invoice="${GOOD}" data-profile="abc" data-template="order" data-amount="0.00"`],
     ['profile URL credentials', `data-invoice="${GOOD}" data-profile-url="https://u:p@merchant.test/p"`],
     ['profile URL fragment', `data-invoice="${GOOD}" data-profile-url="https://merchant.test/p#key"`],
     ['profile URL protocol', `data-invoice="${GOOD}" data-profile-url="http://merchant.test/p"`],

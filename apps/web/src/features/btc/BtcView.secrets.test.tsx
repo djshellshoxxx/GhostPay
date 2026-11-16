@@ -51,6 +51,11 @@ const scanHook = vi.hoisted(() => ({
   wrap: undefined as ((p: ScanParams, real: (p: ScanParams) => Promise<ScanResult>) => Promise<ScanResult>) | undefined,
 }));
 
+// This suite isolates UI ownership races; scanWorker.test.ts exercises the real worker transport.
+vi.mock('./scanWorkerClient', () => ({
+  scanForPaymentsInWorker: (p: ScanParams) => import('./scan').then((m) => m.scanForPayments(p)),
+}));
+
 vi.mock('./scan', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./scan')>();
   return {

@@ -55,7 +55,7 @@ BlindBit-Oracle (v2 docs; v1 endpoints are declared incompatible):
 - **Verified, deliberately not implemented:** `GET /spent-outputs/:h`, `GET /compute-index/:h`, `GET /full-block/:h`
   (all marked **deprecated**; the README says new clients should use the gRPC `OracleService`: `GetInfo`,
   `StreamComputeIndex`, `StreamBlockScanDataShort`, `GetFullBlock`, protobufs in `blindbit-lib`). `/tweaks` and `/utxos`
-  are deprecated too; expect all block-data HTTP routes to disappear. **gRPC is not implemented.**
+  are deprecated too; expect all block-data HTTP routes to disappear. **Update 2026-11-16:** optional binary unary gRPC-Web support now exists in `scan/blindbitGrpc.ts`; live proxy/oracle qualification and streaming optimizations remain pending.
 - The v1 `/filter` endpoints are not documented for v2: not implemented, nothing guessed.
 - **Not specified by the docs (unverified):** whether `/utxos` omits already-spent outputs, dust filtering semantics per
   storage flag (the docs only say `tweaks_full_basic` = "no dust"), and txid byte order in `/utxos`. The only byte-order
@@ -148,7 +148,7 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   inputs, Taproot script-path spends, regtest (`bcrt`) addresses (`@scure/btc-signer` ships mainnet and testnet `tb`
   parameters only; `testnet` here means `tb`/`tsp`), fee estimation from a node/mempool (the caller supplies the
   feerate; capped at 10 000 sat/vB), output shuffling (destinations then change, in order), anti-fee-sniping locktime.
-- gRPC BlindBit client; `/filter` support; own-node (`bitcoind`) `TweakSource`; Web Worker scanning.
+- Streaming gRPC BlindBit optimizations and live proxy qualification; `/filter` support; own-node (`bitcoind`) `TweakSource`; Web Worker scanning.
 - **Header chain (2026-10-25, spec 12).** `HeaderChain` mirrors Core `GetNextWorkRequired` /
   `ContextualCheckBlockHeader` for mainnet, testnet4 (BIP-94), signet and regtest: linkage, PoW vs own nBits and
   powLimit, exact required nBits (retarget + 4x clamp, testnet min-difficulty walk-back, BIP-94 first-block bits and
@@ -227,3 +227,7 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   in the tree and are not interchangeable at runtime boundaries, which this package keeps separate). Lockfile updated.
 - The Bitshala `silent-pay` differential reference (MULTICHAIN_SPEC 3.4) was **not** used (not installed); the
   differential coverage here is the official vectors plus `@scure/bip32` for BIP-32 paths.
+
+### gRPC-Web implementation boundary — 2026-11-16
+
+The new optional `BlindBitGrpcClient` reuses pinned MIT upstream schemas and `@bufbuild/protobuf` 2.17.0. It supports full-data unary calls through an explicitly provided HTTPS gRPC-Web proxy. It does not deploy a proxy, enable a UI mode, claim header/SPV authenticity from same-oracle agreement, or implement `getSpends` from the eligible-transaction subset. Binary frame/protobuf/status/identity validation, resource limits and abort/deadline behavior have local tests. Real proxy/CORS/oracle/regtest, restart/reorg and external wallet acceptance remain separate gates. License notices and reproducible generation instructions are retained under `proto/blindbit/`.

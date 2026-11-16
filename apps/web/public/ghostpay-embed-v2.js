@@ -79,6 +79,12 @@
       if (!TEMPLATE_RE.test(template)) return null;
       u.searchParams.set('gpt', template);
     }
+    var amount = el.getAttribute('data-amount');
+    if (amount !== null) {
+      if (!u.searchParams.has('gpm') && !u.searchParams.has('gpmu')) return null;
+      if (!u.searchParams.has('gpt') || amount.length > 67 || !/^(0|[1-9][0-9]{0,29})(?:\.[0-9]{1,36})?$/.test(amount) || !/[1-9]/.test(amount)) return null;
+      u.searchParams.set('gpa', amount);
+    }
     return u.href;
   }
 

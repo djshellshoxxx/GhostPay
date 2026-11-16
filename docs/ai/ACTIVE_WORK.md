@@ -1,3 +1,23 @@
+## Team H dedicated BTC scan worker — 2026-11-16
+
+Worker: btc_worker, Caveman. Branch: `codex/unified-btc-worker`; base `a94989ce`.
+Owned paths: BTC scan worker/client/protocol, scan.ts, BtcView and focused tests, browser acceptance, worker handoff.
+Acceptance: responsive cancel through worker termination; bounded messages; ephemeral scan key copies; checkpoint acknowledgments preserve encrypted CAS commits; restored matches require fresh validation; no spend secret sent to worker or secrets sent over network/storage. No mainnet enablement or release claim.
+
+## Team A hosted-CI reconciliation repair — 2026-11-16
+
+Worker: ci_reconciliation agent, Caveman. Branch: `codex/unified-ci-reconciliation`.
+Base: `8298fc24296194f05b686b44bec542d10276c8d3`.
+Owned paths: CLI reconciliation source/test/helper files and `apps/web/src/components/ReconciliationLedger.invoices.test.tsx`; related reconciliation sources only after coordination.
+Acceptance: reproduce hosted CLI and web matching failures, preserve canonical block-time semantics, repair their cause, pass focused and broader affected tests, typecheck/lint, independent review and source-pinned handoff. No dependency, BTC or other web-test ownership.
+Status: completed at product source `e79821d3`, compiled fixture `612d3c35`. Full CLI 570/570, compiled acceptance 21/21, native devnet acceptance 124/124, browser ledger 36/36 and independent time regressions 9/9 passed. Coverage, typechecks, scoped lint and build passed. See `docs/handoffs/agents/TEAM_A_CI_RECONCILIATION.md`.
+
+## Team H encrypted BTC scan continuity — 2026-11-16
+
+Worker: btc_persistence agent, Caveman. Branch: `codex/unified-btc`; base `f783f14e`.
+Owned paths: `apps/web/src/features/btc/scan*`, `BtcView*`, wallet documentation and scoped tests; package scan-state interfaces only if required.
+Acceptance: opt-in encrypted wallet/network-scoped IndexedDB state; per-block crash/cancel resume; canonical reorg rollback; no persistent secret/tweak bytes; restored outputs require fresh source/header validation before sweeping; stale-session and cross-tab writes fail closed. Reuse existing HKDF/AES-GCM and transactional CAS patterns. No mainnet enablement or external-node qualification claim.
+
 # Unified completion coordinator — 2026-11-16
 
 Owner: root coordinator. Branch: `codex/ghostpay-unified-completion`; base `0c4c3c8d951a9d6e71affcdaa26478911c8037f1`.
@@ -63,6 +83,15 @@ Status: matrix implemented at `aa1d5153`; quote-decimal agreement implemented at
 Follow-on ownership: `packages/chain-adapters/src/quote.ts` and tests; `apps/web/src/lib/pay.ts` and tests.
 Acceptance: configured feed decimals must agree with the RPC result before any quote/payment request is produced;
 generic standalone `readPrice` callers may omit the expected-decimals parameter.
+## Team B/I template issuance follow-on — 2026-11-16
+
+Worker: merchant agent; branch `codex/unified-merchant`; base `e84e72d9`.
+Owned paths: merchant template issuer component/helper/tests, merchant profile panel, SDK v2/tests,
+`invoiceCreate.ts` exact-second expiry support and tests, related specification/user docs. Catalogs remain coordinator-owned.
+Acceptance: only a matching loaded signer with verified backup or prior explicit waiver may create a new signed
+invoice from a verified template; exact minor amount, chain/token allowlists, requested expiry and stale-state guards
+must hold. Optional amount requests require signed `allowAmount`; they never edit an existing payer invoice.
+
 ## Team B/I unified merchant embedding — 2026-11-16
 
 Worker: merchant agent; branch `codex/unified-merchant`; base `365a1c38`.
@@ -71,8 +100,17 @@ Owned paths: `App.tsx`, merchant-profile components and tests, `embedHost.ts` an
 Acceptance: explicit HTTPS loading with bounded/cancellable fetch; verified signed profile presentation;
 user-confirmed source-origin/full-key pins, mismatch warnings without silent replacement; signed template display
 without changing or authorizing an invoice. Remains excluded from the lean Pages profile.
+Worker: Caveman Team C, branch `codex/unified-observability`, base `c738f96e2f1a0dfef9003ae29ad636b03cf74b09`. Owned paths: `apps/relayer/**`, `docs/operators/relayer-monitoring.md`, and this worker handoff. Acceptance: qualify the private metrics/stats listener and signed webhook, repair reproduced resource/authentication/lifecycle defects, and complete spec-07 alert detectors with bounded data and no user-data leakage. Public deployment and external scrape acceptance are excluded. Other teams own web, chain-adapters, and vault source. Completed through `364efaf3902351886eb2baa739e8e0dc70101617`: bounded webhook lifecycle, rejection detector, exact gas/loss/fee and quote counters, latency histograms, log severity and native authenticated scrape. Full relayer gate 443/443 with zero skips; coverage, typecheck, build and full lint pass. Independent agent review found no blocker. Provider-disagreement and stale-feed detectors remain dependent on absent provider/feed inputs. See `docs/handoffs/agents/TEAM_C_UNIFIED.md`.
 
 # Active AI work registry
+
+## Registry bundle egress correction — 2026-11-16
+
+Worker: Team B registry. Branch: `codex/fix-registry-bundle-egress`. Base: `53d2163be5f7eaa8592750649d54df06b133b80c`.
+Owned paths: `packages/chain-adapters/src/registryEns.ts`, its tests, this claim and the correction handoff.
+Acceptance: preserve selected-RPC-only ENS behavior while eliminating the viem PublicClient/default-chain dependency
+graph; reproduce the unchanged full and lean bundle guards before correction, then pass both real builds and scans.
+No host allowlist, source guard, security policy, RPC default or test threshold may be weakened.
 
 ## Relayer observability spec 07 completion — 2026-11-16
 
@@ -176,3 +214,45 @@ Team B/I milestone: implementation `4655bab8` is committed. Final focused integr
 web typecheck/focused lint pass, using coordinator catalog overlay `cb6a3de3`. Independent reviewers found and
 rechecked pin concurrency, stale consent and remote iframe corrections. Browser acceptance is added but unrun.
 See `docs/handoffs/agents/TEAM_B_UNIFIED.md`; coordinator owns final combined-head qualification.
+
+## BlindBit gRPC-Web adapter — 2026-11-16
+
+Worker: fresh Team H transport, Caveman workflow. Branch: `codex/unified-blindbit-grpc`; base `492cc20d`.
+Owned paths: new btc-silent-payments scan gRPC-Web adapter/generated schema/tests, index export, package dependency/lock additions, transport provenance and handoff. Existing scan state/BTC UI remain owned by Team H persistence.
+Acceptance: explicit HTTPS endpoint, no wallet key request fields, bounded/cancellable unary frames, strict protobuf/domain validation, network/hash agreement, exact satoshi amounts, pinned MIT provenance. Live proxy/oracle qualification remains external.
+
+Follow-up: coordinator authorized the isolated `packages/contracts/scripts/run-echidna.sh` and
+`scripts/tests/echidna-runner.test.mjs` correction after the checksum-pinned native 2.2.7 campaign completed
+300,021 Router calls and emitted final `passing` property statuses rejected by the prior parser. Require the
+completed configured call budget while retaining abnormal-exit, complete-inventory and failing-canary checks.
+Independent review requested from `final_review`; no contract or analyzer setting changes.
+Team B/I follow-on: `5d36ac5d` implements merchant-key-authorized template issuance and signed-permission amount
+requests. Final focused integration: 115 tests passed; full web typecheck/focused lint passed. Independent final review
+is source-pinning this commit. Profile-only automatic checkout remains a documented destination/fee/pricing/signature
+schema or signing-transport decision; it is not a missing local merchant signing path anymore.
+## Coordinator hosted-CI regression repair — 2026-11-16
+
+Worker: root, Caveman. Branch: `codex/ghostpay-unified-completion`; base `8298fc24296194f05b686b44bec542d10276c8d3`.
+Owned paths: `apps/web/src/lib/relayerClient.ts`, its tests, and `tagArchive.test.ts`.
+Acceptance: reconcile browser pre-broadcast classifications with the current public relayer API; preserve unknown-response refusal safety; guarantee the archive-corruption fixture changes ciphertext; run focused regressions and independent review. CLI and ledger fixtures are owned by ci_reconciliation separately.
+
+## Dependency remediation — 2026-11-16
+
+Owner: dependency agent, Caveman workflow. Branch: `codex/unified-dependencies`; base `ab5039a3da0a1653df85b8ecbda6973947827547`.
+Owned paths: workspace package manifests, package-lock and dependency evidence/handoff.
+Acceptance: fix confirmed compatible security updates, preserve runtime/protocol pins unless necessary, audit exact resulting lock and verify affected tooling. Do not force major migrations to conceal remaining findings.
+Status: implementation `379fe300` preserves all production lock records; complete audit is 17 low findings, production audit zero. npm 10 clean install, five dependency integration checks, affected lint, Hardhat compile/typecheck and 39 router/chain-guard tests pass. Full FHE fuzz and npm 11 clean install exited 137 locally and remain unqualified. See `docs/handoffs/agents/TEAM_J_DEPENDENCIES_UNIFIED.md`.
+## Team D optional quote protections — 2026-11-16
+
+Worker: price_gates, Caveman. Branch: `codex/unified-price-gates`; base `b0b7afa9de68510b821cc702a0f82847a205495b`.
+Owned paths: `packages/chain-adapters/src/quote.ts`, quote tests, spec-03 status and this handoff. No dependency, relayer signed-quote ABI or web caller edits.
+Acceptance: configured sequencer outage/grace, fresh reference-feed deviation and USD peg checks fail closed with exact bigint boundaries; standalone conversion rejects malformed price precision; no invented feed addresses or activation claims. Required production pins, external feed tests and relayer protocol integration remain separately recorded.
+## Fresh final integration review — 2026-11-16
+
+Owner: final_review, Caveman workflow. Branch: `codex/unified-final-review`; initial review base `f5142b19a6868f155b682eed50f606603cb68b97`, documentation worktree base `53d2163b`.
+Owned paths: `docs/handoffs/agents/UNIFIED_FINAL_REVIEW.md` and this claim only. Product sources remain read-only.
+Acceptance: inspect cross-module authority, runtime export/build-profile, network and concurrency boundaries of the integrated candidate and newly completed workers; pin findings to source, verify corrections independently where practical, and distinguish source review from release or external audit qualification.
+
+Milestone: reviewed the pinned sources in `docs/handoffs/agents/UNIFIED_FINAL_REVIEW.md`; no additional blocking source defect found. Independent focused merchant tests 21/21 and Echidna parser fixtures 22/22 passed. Coordinator owns final combined-source qualification. Follow-up dependency remediation is outside this milestone until its source is ready.
+
+Follow-up: reviewed the dedicated BTC worker, dependency remediation, CLI canonical-time propagation, relayer refusal classification and optional price guards at the exact revisions in the handoff. Worker network/artifact and late-response cleanup findings were corrected before clearance. Independent additional selections passed: worker/bridge 16/16, dependency tooling 5/5, CLI timing 9/9 and quote guards 19/19. All clearance is source-scoped; final combined-head gates and external acceptance remain coordinator responsibilities.

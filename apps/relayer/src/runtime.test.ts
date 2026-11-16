@@ -1,9 +1,11 @@
+import { join } from 'node:path';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildChainClients, buildRelayer } from './runtime.js';
 import { FakeChain, testConfig } from './harness.testutil.js';
 import { createLogger } from './log.js';
+import { Metrics } from './metrics.js';
 
 const servers: Server[] = [];
 afterEach(async () => {
@@ -34,6 +36,17 @@ describe('buildChainClients', () => {
     const clients = await buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5));
     expect([...clients.keys()]).toEqual([11155111]);
     expect(clients.get(11155111)?.relayerAddress).toMatch(/^0x[0-9a-fA-F]{40}$/);
+  });
+
+  it('measures configured RPC HTTP fetches without recording endpoint identifiers', async () => {
+    const url = await fakeRpc(11155111);
+    const cfg = testConfig({ allowInsecureLocalhostRpc: true });
+    const chains = [{ ...(cfg.chains[0] as object), rpcUrl: url }] as never;
+    const metrics = new Metrics();
+    const clients = await buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5), metrics);
+    expect(await clients.get(11155111)?.getGasPrice()).toBe(0n);
+    expect(metrics.render()).toContain('relayer_rpc_latency_seconds_count{chain_id="11155111"} 1');
+    expect(metrics.render()).not.toContain(url);
   });
 
   it('builds the development chain descriptor for chain 31337', async () => {
@@ -82,7 +95,6 @@ describe('state journal wiring', () => {
   it('opens an in-memory journal for state.ephemeral and a locked file journal for state.file', async () => {
     const { mkdtempSync, rmSync, existsSync, writeFileSync } = await import('node:fs');
     const { tmpdir } = await import('node:os');
-    const { join } = await import('node:path');
     const { openJournal } = await import('./runtime.js');
     const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
     try {
@@ -114,7 +126,6 @@ describe('state journal wiring', () => {
     const { vi } = await import('vitest');
     const { mkdirSync, mkdtempSync, rmSync } = await import('node:fs');
     const { tmpdir } = await import('node:os');
-    const { join } = await import('node:path');
     const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
     vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
     let clock = 1_000_000;
@@ -156,7 +167,6 @@ describe('state journal wiring', () => {
     const { vi } = await import('vitest');
     const { mkdtempSync, rmSync, writeFileSync } = await import('node:fs');
     const { tmpdir } = await import('node:os');
-    const { join } = await import('node:path');
     const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
     vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
     const lines: string[] = [];

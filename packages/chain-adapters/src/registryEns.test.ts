@@ -13,7 +13,7 @@ const resolveAbi = [{ type: 'function', name: 'resolveWithGateways', stateMutabi
 const answer = (who: Address): Hex => encodeAbiParameters([{ type: 'bytes' }, { type: 'address' }], [encodeAbiParameters([{ type: 'address' }], [who]), RESOLVER]);
 const makeClient = (chainId = 1, result: unknown = answer(WHO), code: unknown = '0x6001') => ({
   chainId,
-  request: vi.fn((method: string, _params: readonly unknown[]) => Promise.resolve(method === 'eth_getCode' ? code : result)),
+  request: vi.fn((...args: [method: string, params: readonly unknown[]]) => Promise.resolve(args[0] === 'eth_getCode' ? code : result)),
 });
 
 afterEach(() => { vi.unstubAllGlobals(); });
@@ -54,6 +54,17 @@ describe('explicit ENS registry lookup', () => {
     expect(rpc.request).not.toHaveBeenCalled();
   });
 
+  it('encodes the normalized DNS name and the published ENSIP-1 namehash vector', async () => {
+    const rpc = makeClient();
+    await resolveRegistryRegistrant(rpc, 'FOO.eth');
+    const call = rpc.request.mock.calls[1]![1][0] as { data: Hex };
+    const resolved = decodeFunctionData({ abi: resolveAbi, data: call.data });
+    expect(resolved.args[0]).toBe('0x03666f6f0365746800');
+    // addr(bytes32) selector followed by the official foo.eth vector, independently of viem's namehash helper.
+    expect(resolved.args[1]).toBe('0x3b3b57dede9b09fd7c5f901e23a3f19fecc54828e9c848539801e86591bd9801b019f84f');
+    expect(resolved.args[2]).toEqual([]);
+  });
+
   it.each(['0x', '0xzz', '0x1', 1, `0x${'ff'.repeat(24577)}`])('refuses absent or malformed resolver code', async (code) => {
     const rpc = makeClient(1, answer(WHO), code);
     await expect(resolveRegistryRegistrant(rpc, 'alice.eth')).rejects.toThrow(/DEPLOYMENT_UNVERIFIED/);
@@ -68,7 +79,7 @@ describe('explicit ENS registry lookup', () => {
   it('never follows OffchainLookup gateway URLs or leaks provider errors', async () => {
     const fetch = vi.fn(); vi.stubGlobal('fetch', fetch);
     const offchain = encodeErrorResult({ abi: [{ type: 'error', name: 'OffchainLookup', inputs: [{ type: 'address' }, { type: 'string[]' }, { type: 'bytes' }, { type: 'bytes4' }, { type: 'bytes' }] }], errorName: 'OffchainLookup', args: [mainnet.contracts.ensUniversalResolver.address, ['https://private.example/{data}'], '0x1234', '0x12345678', '0x'] });
-    const request = vi.fn((method: string) => method === 'eth_getCode' ? Promise.resolve('0x6001') : Promise.reject({ code: 3, message: 'private endpoint and queried name', data: offchain }));
+    const request = vi.fn((method: string) => method === 'eth_getCode' ? Promise.resolve('0x6001') : Promise.reject(Object.assign(new Error('private endpoint and queried name'), { code: 3, data: offchain })));
     const rpc: Pick<RpcClient, 'chainId' | 'request'> = { chainId: 1, request };
     await expect(resolveRegistryRegistrant(rpc, 'alice.eth')).rejects.toThrow('RPC_FAILURE: ENS lookup failed or requires an offchain gateway');
     expect(request).toHaveBeenCalledTimes(2);

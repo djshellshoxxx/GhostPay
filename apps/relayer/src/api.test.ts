@@ -1919,6 +1919,55 @@ describe('S3-05/06 breaker integration', () => {
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 301n })).body)).status).toBe(200);
   });
 
+  it('observes confirmed gas, successful fees, reverted loss, quotes and sweep latency', async () => {
+    const s = await start();
+    const prepared = await prepare(s, { nonce: 901n });
+    expect((await call(s, 'POST', '/v1/sweep', prepared.body)).status).toBe(200);
+    await settle();
+    const first = s.relayer.metrics.stats();
+    expect(first.integerCounters['relayer_gas_spent_wei_total']).toBe('100000000000000');
+    expect(first.integerCounters['relayer_fee_earned_usd_micro_total']).toBe(prepared.quote.fee);
+    expect(first.counters['relayer_quotes_total']).toBe(1);
+    expect(first.histograms.find((sample) => sample.name === 'relayer_sweep_latency_seconds')?.count).toBe(1);
+    s.fake.receipt = { status: 'reverted', gasUsed: 90_000n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 902n })).body)).status).toBe(200);
+    await settle();
+    const second = s.relayer.metrics.stats();
+    expect(second.integerCounters['relayer_gas_spent_wei_total']).toBe('190000000000000');
+    expect(second.integerCounters['relayer_loss_wei_total']).toBe('90000000000000');
+    expect(second.integerCounters['relayer_fee_earned_usd_micro_total']).toBe(prepared.quote.fee);
+  });
+
+  it('does not count receipt timeouts as spent gas or fees and counts late evidence once', async () => {
+    const s = await start();
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    const first = await prepare(s, { nonce: 903n });
+    expect((await call(s, 'POST', '/v1/sweep', first.body)).status).toBe(200);
+    await settle();
+    expect(s.relayer.metrics.stats().integerCounters['relayer_gas_spent_wei_total']).toBeUndefined();
+    s.fake.lookup = { status: 'success', gasUsed: 100_000n };
+    for (const nonce of [904n, 905n]) {
+      expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce })).body)).status).toBe(200);
+      await settle();
+    }
+    expect(s.relayer.metrics.stats().integerCounters['relayer_gas_spent_wei_total']).toBe('200000000000000');
+    expect(s.relayer.metrics.stats().integerCounters['relayer_fee_earned_usd_micro_total']).toBe((2n * BigInt(first.quote.fee)).toString());
+  });
+
+  it('carries sub-micro USD fee remainders across confirmed high-decimal token sweeps', async () => {
+    const config = testConfig();
+    const chain = config.chains[0];
+    if (chain === undefined) throw new Error('missing test chain');
+    const s = await start({ config: { chains: [{ ...chain, tokens: chain.tokens.map((token) => ({ ...token, decimals: 18 })) }] } });
+    const fee = 1_000_000_500_000_000_000n;
+    for (const nonce of [906n, 907n]) {
+      const prepared = await prepare(s, { nonce, amount: 100n * 10n ** 18n, fee });
+      expect((await call(s, 'POST', '/v1/sweep', prepared.body)).status).toBe(200);
+      await settle();
+    }
+    expect(s.relayer.metrics.stats().integerCounters['relayer_fee_earned_usd_micro_total']).toBe('2000001');
+  });
+
   it('counts rejected payment requests and emits a bounded anonymous reject spike', async () => {
     const alerts: { kind: string; chainId?: number; value?: number; threshold?: number }[] = [];
     const s = await start({ alerts: { send: (event) => alerts.push(event) } });

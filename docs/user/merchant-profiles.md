@@ -27,14 +27,30 @@ The profile and displayed key are checked again inside the lock. These preferenc
 ## Templates and embedding
 
 Signed templates show the exact currency, amount in currency minor units, and validity duration. Large amounts stay
-as decimal strings. Template selection never creates or edits an invoice, substitutes a signer, or authorizes payment.
-The independently signed invoice is the payment request. Merchant-side invoice issuance remains necessary; the payer
-does not have the merchant's signing key. Free-form amount overrides are not implemented.
+as decimal strings. Template selection does not change an existing invoice or authorize payment. The independently signed invoice is
+the payment request; the payer does not have the merchant's signing key.
+
+When the merchant has already loaded the matching seller keys, **Create a merchant invoice from this template**
+provides an explicit local issuance action. It requires a verified recoverable backup or the existing backup waiver.
+Choose a network/payment asset allowed by both the signed profile and the application's enabled allowlist, enter the
+fixed token amount, and choose who pays fees. The template fiat amount and fixed token amount remain separate: a USD
+`amountMinor` of `50000` means USD 500.00; a chosen 1.25 USDC means 1,250,000 token base units. No automatic exchange
+rate or fiat conversion is inferred. The existing invoice format supports at most 30 minor-unit digits; larger signed
+templates are shown but cannot be issued as current-format invoices and are never truncated. The UI displays the exact template duration and preserves it in the new invoice.
+
+A profile signed with `allowAmount: true` permits a decimal amount request in the template currency. The SDK's
+`data-amount="500.25"` becomes a request for USD 500.25 when the selected template currency is USD. Invalid precision,
+nonpositive amounts, exponent/padded formats and requests without signed permission are refused. A matching merchant
+must explicitly sign a new invoice to adopt the request. It cannot mutate or authorize an existing payer invoice.
+Editing any issuance field clears the prior output. Key/profile changes, expired profiles, stale actions and lost
+backup evidence abort the result. Only the independent new signed link is presented; private keys remain inside the
+checkout's existing session signing path and are never sent to the merchant page.
 
 The version 2 embed SDK accepts `data-profile-url="HTTPS_PROFILE_URL"` instead of `data-profile="BASE64URL_PROFILE"`.
-`data-template="template_id"` selects a template from that signed profile. The SDK only forwards those values; loading
+`data-template="template_id"` selects a template from that signed profile. Optional `data-amount` requires that template
+and profile; the checkout checks the signed permission and currency precision. The SDK only forwards those values; loading
 still requires the payer's action. Both profile forms together are rejected. The checkout URL parameters are `gpmu`
-for a remote URL, `gpm` for an inline profile, and `gpt` for a template. Do not place secrets in the public profile URL.
+for a remote URL, `gpm` for an inline profile, `gpt` for a template and `gpa` for an unsigned decimal amount request. Do not place secrets in the public profile URL.
 
 Popup remains the default. Remote-profile URLs always open a popup immediately in the user's click gesture, even
 when iframe mode was requested. Explicit loading cannot fit safely into the inline-profile handshake timeout. The iframe deployment flag and server

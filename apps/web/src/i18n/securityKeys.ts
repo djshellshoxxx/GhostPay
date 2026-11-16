@@ -4,7 +4,32 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  merchantTemplateIssuance: [
+    'merchantProfile.issue.title',
+    'merchantProfile.issue.authority',
+    'merchantProfile.issue.fixed',
+    'merchantProfile.issue.chain',
+    'merchantProfile.issue.token',
+    'merchantProfile.issue.tokenAmount',
+    'merchantProfile.issue.feePolicy',
+    'merchantProfile.issue.action',
+    'merchantProfile.issue.link',
+    'merchantProfile.issue.copy',
+    'merchantProfile.issue.backup',
+    'merchantProfile.issue.invalid',
+    'merchantProfile.issue.signer',
+    'merchantProfile.issue.changed',
+    'merchantProfile.issue.amountOverride',
+    'merchantProfile.issue.request',
+    'merchantProfile.issue.requestRejected',
+    'merchantProfile.issue.none',
+    'merchantProfile.issue.expiry',
+  ],
   bitcoinScanPersistence: [
+    'btc.persistence.page',
+    'btc.persistence.previous',
+    'btc.persistence.next',
+
     'btc.persistence.enable',
     'btc.persistence.help',
     'btc.persistence.unavailable',

@@ -33,6 +33,8 @@ export interface InvoiceForm {
   /** Decimal token amount (token units) when `amountMode` is `fixed_token`. */
   readonly tokenAmount: string;
   readonly expiryHours: number;
+  /** Exact seconds for signed merchant templates; when present, replaces the whole-hour form field. */
+  readonly expirySeconds?: number;
   readonly quoteTtlMinutes: number;
   readonly maxSlippageBps: number;
   readonly memo: string;
@@ -126,7 +128,9 @@ export async function buildInvoiceLink(
     amountPolicy = { mode: 'fiat_quote' };
   }
   if (form.token !== 'native') tokenDecimals(form.chainId, form.token);
-  if (!Number.isInteger(form.expiryHours) || form.expiryHours < 1 || form.expiryHours > 24 * 90) throw new UserFacingError({ key: 'error.invoiceCreate.expiryMustBeBetween1HourAnd90Days' });
+  const expirySeconds = form.expirySeconds ?? form.expiryHours * 3600;
+  if (form.expirySeconds !== undefined && (!Number.isInteger(form.expirySeconds) || form.expirySeconds < 60 || form.expirySeconds > 90 * 86400)) throw new UserFacingError({ key: 'merchantProfile.issue.invalid' });
+  if (form.expirySeconds === undefined && (!Number.isInteger(form.expiryHours) || form.expiryHours < 1 || form.expiryHours > 24 * 90)) throw new UserFacingError({ key: 'error.invoiceCreate.expiryMustBeBetween1HourAnd90Days' });
   if (!Number.isInteger(form.quoteTtlMinutes) || form.quoteTtlMinutes < 1 || form.quoteTtlMinutes > 1440) throw new UserFacingError({ key: 'error.invoiceCreate.quoteValidityMustBeBetween1And1440Minutes' });
   if (!Number.isInteger(form.maxSlippageBps) || form.maxSlippageBps < 0 || form.maxSlippageBps > 10_000) throw new UserFacingError({ key: 'error.invoiceCreate.slippageMustBeBetween0And10000BasisPoints' });
   // The schema accepts only NFC text. Normalize here, as for line descriptions, so pasted decomposed text is not refused.
@@ -144,7 +148,7 @@ export async function buildInvoiceLink(
         expiresAt: nowSeconds + form.quoteTtlMinutes * 60,
         maxSlippageBps: form.maxSlippageBps,
       },
-      expiresAt: nowSeconds + form.expiryHours * 3600,
+      expiresAt: nowSeconds + expirySeconds,
       lineItems: items,
       tax: { rateBps, minorUnits: totals.tax.toString() },
       feePolicy: form.feePolicy,

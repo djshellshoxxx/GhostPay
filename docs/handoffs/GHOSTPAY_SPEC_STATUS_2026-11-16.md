@@ -1,5 +1,7 @@
 # GhostPay specification and acceptance status — 2026-11-16
 
+> **Historical snapshot.** Current implementation, source-pinned checks, integration decisions and remaining gates are maintained in [GHOSTPAY_MASTER_COMPLETION_LEDGER.md](GHOSTPAY_MASTER_COMPLETION_LEDGER.md). The older statuses below do not override that ledger.
+
 This inventory is a source review, not a complete security audit or a passing test report. Reviewed base:
 `30733000` on `codex/ghostpay-integrate-pages-20261116`, containing the broad completion candidate
 `d26418c2539619fb75783a82886a96971142d226`, Pages fixes through

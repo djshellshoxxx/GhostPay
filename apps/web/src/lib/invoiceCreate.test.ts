@@ -49,6 +49,16 @@ describe('buildInvoiceLink', () => {
     expect(parsed.encrypted).toBe(false);
   });
 
+  it('preserves exact template expiry seconds and rejects malformed second values', async () => {
+    for (const seconds of [60, 1800, 604800]) {
+      const result = await buildInvoiceLink({ ...FORM, expirySeconds: seconds }, 'https://app.test/', NOW);
+      expect(result.invoice.expiresAt).toBe(NOW + seconds);
+    }
+    for (const seconds of [0, 59, 60.5, Number.NaN, Number.POSITIVE_INFINITY, 90 * 86400 + 1]) {
+      await expect(buildInvoiceLink({ ...FORM, expirySeconds: seconds }, 'https://app.test/', NOW)).rejects.toThrow();
+    }
+  });
+
   it('can encrypt the private part', async () => {
     const c = await buildInvoiceLink({ ...FORM, encrypt: true }, 'https://app.test/', NOW);
     expect(c.encrypted).toBe(true);

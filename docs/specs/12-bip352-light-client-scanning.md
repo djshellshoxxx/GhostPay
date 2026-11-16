@@ -1,5 +1,7 @@
 # 12 BIP-352 light-client scanning
 
+> **2026-11-16 continuation:** The full-profile Bitcoin view now wires opt-in encrypted, wallet/network-scoped scan persistence through the existing IndexedDB CAS adapter. Per-block checkpoints, canonical rollback, cancellation, history pagination and fresh output revalidation are implemented. Saved metadata alone never authorizes a sweep; secrets and spend tweaks remain transient. Source and test evidence: [Team H handoff](../handoffs/agents/TEAM_H_UNIFIED.md). Real-node/physical-device acceptance, BlindBit gRPC and Web Worker scanning remain separate requirements.
+
 Priority P2-P3 | Effort M-L (8-12 d) | Owner: btc-silent-payments | Deps: 11, 10 (shared disclosure model)
 Sources: research s3 (Appendix A open research; ~30 MB/month for 3-day scans, July 2024 taproot usage); MULTICHAIN s3/s4; DEVIATIONS (gRPC, own-node, persistence missing).
 

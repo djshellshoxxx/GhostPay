@@ -57,6 +57,7 @@ describe('requestQuote', () => {
     ['nonce_used 409', 409, { error: { code: 'nonce_used' } }, false],
     ['send_failed 503', 503, { error: { code: 'send_failed' } }, false],
     ['unknown class 422', 422, { error: { code: 'brand_new_code' } }, false],
+    ['unknown authorization layer 401', 401, { error: { code: 'unauthorized' } }, false],
     ['invalid_* outside 400', 404, { error: { code: 'invalid_thing' } }, false],
     ['CDN/WAF 403 without envelope', 403, '<html>blocked</html>', false],
     ['envelope without code', 422, { error: {} }, false],

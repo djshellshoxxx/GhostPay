@@ -177,6 +177,8 @@ interface ChainRuntime {
   unknownSend: UnknownSend | undefined;
   /** Native balance of the hot key at the last in-lane read (metrics only). */
   lastBalance: bigint | undefined;
+  /** Fractional micro-USD fees accumulated in 10^-36 USD units; never emitted as a token label. */
+  feeRemainder: bigint;
 }
 
 /** Loss reservation of a transaction restored from the journal: its sources are unknown (salted, not persisted). */
@@ -327,6 +329,7 @@ export class RelayerService {
         pending: [],
         unknownSend: undefined,
         lastBalance: undefined,
+        feeRemainder: 0n,
         // The breaker's thresholds, applied to the mined reverts the breaker ignores (S3-06, L5-02).
         reverts: new RevertRate(
           { size: b.windowSize, minReverts: b.minSamples, ratio: b.failureRatio, windowMs: lb.windowSeconds * 1000 },
@@ -487,6 +490,7 @@ export class RelayerService {
    */
   public async quote(req: QuoteRequest): Promise<QuoteResponse> {
     const { rt, token } = this.resolve(req.chainId, req.token);
+    this.d.metrics?.inc('relayer_quotes_total', { chain_id: req.chainId });
     if (req.destination === req.owner || rt.cfg.feeTo === req.owner || rt.cfg.feeTo === req.destination) {
       throw new RelayerError(422, 'invalid_order');
     }
@@ -712,6 +716,7 @@ export class RelayerService {
     keys: readonly LossSource[],
   ): Promise<JobOutcome<SweepResponse>> {
     const { cfg, breaker } = rt;
+    const started = this.mono();
     const permit = breaker.tryAcquire({ validated: true });
     if (permit === null) throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
     // Every exit settles the permit; anything not named below is neutral (user-attributable), so a
@@ -723,6 +728,7 @@ export class RelayerService {
       permit.settle(outcome);
       this.noteBreaker(rt);
       this.d.metrics?.inc('relayer_sweeps_total', { chain_id: cfg.chainId, outcome });
+      this.d.metrics?.observe('relayer_sweep_latency_seconds', Math.max(0, this.mono() - started) / 1000, { chain_id: cfg.chainId });
     };
     try {
       const out = await this.runSettled(rt, call, ctx, keys, (o) => {
@@ -1103,7 +1109,21 @@ export class RelayerService {
     const spent = r.gasUsed * sent.gasPrice;
     budget.release(sent.reserved > spent ? sent.reserved - spent : 0n, sent.reservedDay);
     this.journalWrite(rt, () => this.journal.removeSend(cfg.chainId, sent.recordId, budget.snapshot()));
+    this.d.metrics?.addInteger('relayer_gas_spent_wei_total', spent, { chain_id: cfg.chainId });
+    this.d.metrics?.inc('relayer_sweep_receipts_total', { chain_id: cfg.chainId, outcome: r.status });
     if (r.status === 'success') {
+      const call = sent.call;
+      const token = cfg.tokens.find((candidate) => candidate.address === call?.sweep.token);
+      if (call !== undefined && token !== undefined) {
+        // Stablecoins are configured at nominal USD parity. Preserve sub-micro fractions across tokens/sweeps.
+        const scaled = rt.feeRemainder + call.sweep.fee * 10n ** BigInt(36 - token.decimals);
+        const microScale = 10n ** 30n;
+        this.d.metrics?.addInteger('relayer_fee_earned_usd_micro_total', scaled / microScale, { chain_id: cfg.chainId });
+        rt.feeRemainder = scaled % microScale;
+      } else {
+        // Restart recovery deliberately has no token or fee data: never manufacture a fee total.
+        this.d.metrics?.inc('relayer_fee_unknown_total', { chain_id: cfg.chainId });
+      }
       sent.loss.release();
       rt.reverts.record(false);
       return;
@@ -1111,6 +1131,7 @@ export class RelayerService {
     // The simulation passed moments earlier, so a mined revert means state changed in between
     // (front-run, S3-06): the relayer paid gas and earned no fee. Charge the sources, do not
     // count it against the breaker; a sustained rate degrades health instead (L5-02).
+    this.d.metrics?.addInteger('relayer_loss_wei_total', spent, { chain_id: cfg.chainId });
     sent.loss.settle(spent);
     this.strike(sent.call); // owner-drains-first / front-run: counts against the owner (spec 04)
     this.d.metrics?.inc('relayer_mined_reverts_total', { chain_id: cfg.chainId });

@@ -98,7 +98,13 @@ export async function currentObservations(ctx: Ctx, a: Parsed, operator: Operato
       const claim = result.observation.claim;
       const match = checkAnnouncement(claim.announcement, viewing, seller.publicKeys.spendingPublicKey, { ignoreViewTag: true });
       if (!match.matches) throw failError('SELLER_RECIPIENT_MISMATCH', 'a current observation does not belong to the authenticated seller keys.');
-      const recordValue = reconciliationApi.recordFromVerifiedMatch({ chainId: result.observation.chain.chainId, ...claim, tagMatches: match.tagMatches !== false, receipt: 'verified' }, seller.sellerKeyId, undefined, ctx.io.nowSeconds() * 1000);
+      // Raw observations cannot supply timing authority. Bind timing to a fresh canonical header;
+      // final publication rechecks this exact time against every configured provider below.
+      const block = await chainBoundary(() => context.client.getBlock(claim.announcement.blockNumber));
+      if (block === null || block.number !== claim.announcement.blockNumber || block.hash.toLowerCase() !== claim.announcement.blockHash.toLowerCase())
+        throw failError('STALE_CANONICAL_CONTEXT', 'the provider changed canonical history while reading payment time.');
+      const announcement = { ...claim.announcement, ...(block.timestamp === undefined ? {} : { blockTimestamp: block.timestamp.toString() }) };
+      const recordValue = reconciliationApi.recordFromVerifiedMatch({ chainId: result.observation.chain.chainId, ...claim, announcement, tagMatches: match.tagMatches !== false, receipt: 'verified' }, seller.sellerKeyId, undefined, ctx.io.nowSeconds() * 1000);
       // Duplicates are the same log (record id) or the same payment evidence (evidence id). Two router payments that
       // share a one-time address and ephemeral key are distinct payments (F1, 2026-11-11): a front-runner can copy
       // (S, E) from a pending payment, so rejecting the pair would let a 1-wei copy block the genuine payment.
@@ -114,25 +120,27 @@ export async function currentObservations(ctx: Ctx, a: Parsed, operator: Operato
 /** Revalidate known blocks and finality immediately before local confirmation/output. */
 export async function freshCanonicalContext(current: {
   readonly context: Pick<VerifiedContext, 'client' | 'secondary'>;
-  readonly records: readonly Pick<ReconciliationRecord, 'blockNumber' | 'blockHash'>[];
+  readonly records: readonly Pick<ReconciliationRecord, 'blockNumber' | 'blockHash' | 'blockTimestamp'>[];
   readonly finalityDepth: number;
 }): Promise<void> {
   await chainBoundary(async () => {
-    const seen = new Map<string, string>();
+    const seen = new Map<string, { hash: string; timestamp: string | undefined }>();
     for (const item of current.records) {
       const previous = seen.get(item.blockNumber);
-      if (previous !== undefined && previous !== item.blockHash)
-        throw failError('STALE_CANONICAL_CONTEXT', 'the review contains conflicting block hashes at one height; regenerate it from a consistent canonical context.');
-      seen.set(item.blockNumber, item.blockHash);
+      if (previous !== undefined && (previous.hash !== item.blockHash || previous.timestamp !== item.blockTimestamp))
+        throw failError('STALE_CANONICAL_CONTEXT', 'the review contains conflicting block headers at one height; regenerate it from a consistent canonical context.');
+      seen.set(item.blockNumber, { hash: item.blockHash, timestamp: item.blockTimestamp });
     }
     const clients = [current.context.client, ...(current.context.secondary === undefined ? [] : [current.context.secondary])];
     for (const client of clients) {
       const head = await client.blockNumber();
       if (head > MAX_PLAUSIBLE_HEAD) throw failError('STALE_CANONICAL_CONTEXT', 'the provider reported an implausible chain head.');
-      for (const [number, hash] of seen) {
+      for (const [number, expected] of seen) {
         const block = await client.getBlock(BigInt(number));
         const depth = current.finalityDepth;
-        if (block?.hash.toLowerCase() !== hash || head < BigInt(number) || head - BigInt(number) + 1n < BigInt(depth))
+        if (block === null || block.number !== BigInt(number) || block.hash.toLowerCase() !== expected.hash ||
+            (expected.timestamp !== undefined && block.timestamp?.toString() !== expected.timestamp) ||
+            head < BigInt(number) || head - BigInt(number) + 1n < BigInt(depth))
           throw failError('STALE_CANONICAL_CONTEXT', 'the provider changed canonical history or no longer has sufficient finality.');
       }
     }

@@ -28,6 +28,7 @@ function match(n = 1, amount = 2500000n): ScanMatch {
       transactionHash: tx,
       blockNumber: 120n,
       blockHash: BLOCK,
+      blockTimestamp: nowSeconds.toString(),
       logIndex: n,
       schemeId: 1n,
       caller: `0x${'1'.repeat(40)}`,
@@ -129,6 +130,16 @@ describe('local invoice matching UI', () => {
     expect(screen.queryByRole('button', { name: 'Confirm proposed invoice match' })).toBeNull();
   });
 
+  it('keeps an observation without canonical block time ambiguous despite a recent local scan', async () => {
+    await vault.registerInvoice(invoice(1));
+    const payment = match();
+    const { blockTimestamp, ...announcement } = payment.announcement;
+    expect(blockTimestamp).toBe(nowSeconds.toString());
+    await open({ matches: [{ ...payment, announcement }] });
+    expect(await screen.findByText(/This record has no verified block time/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Confirm proposed invoice match' })).toBeNull();
+  });
+
   it('shows ambiguous candidates without a confirm action', async () => {
     await vault.registerInvoice(invoice(1));
     await vault.registerInvoice(invoice(2));
@@ -147,7 +158,7 @@ describe('local invoice matching UI', () => {
   it('shows an expired invoice observation as ambiguous without a confirmation action', async () => {
     await vault.registerInvoice({ ...invoice(1), expiresAt: nowSeconds - 1 });
     await open();
-    expect(await screen.findByText(/at or after the invoice expired/)).toBeTruthy();
+    expect(await screen.findByText(/verified block timestamp is at or after invoice expiry/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Confirm proposed invoice match' })).toBeNull();
   });
 

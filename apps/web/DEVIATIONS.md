@@ -39,8 +39,12 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
    profiles are checked inside the lock. Pins do not authorize any invoice, payment, merchant business identity or iframe.
    Profile expiry is checked after loading and before pinning; presentation and the embed channel stop after expiry.
    Remote-profile SDK links always open a popup in the user gesture, including when iframe mode was requested.
-   Full template-to-invoice construction and free-form amount overrides remain absent: the payer cannot sign an invoice
-   on the merchant's behalf. Lean Pages excludes the merchant panel and SDKs. See `docs/user/merchant-profiles.md`.
+   Matching loaded merchant keys can now explicitly issue a new invoice from a selected template through the existing
+   signing path. Verified recoverable backup or prior waiver, exact profile/asset/signature/expiry checks and stale-session
+   guards apply. Fiat minor units never become token units; the merchant chooses a separate fixed token amount and fee
+   policy. Signed `allowAmount` permits decimal fiat requests for this new invoice only. Existing payer invoices stay
+   unchanged. The SDK still requires `data-invoice`: unattended profile-only checkout lacks a signed destination and
+   fee/pricing authority model (see spec 14). Lean Pages excludes the merchant panel and SDKs. See `docs/user/merchant-profiles.md`.
 
 7. WalletConnect-style adapters (optional in the playbook) are not built. Wallet paths: EIP-6963 discovery and a labelled
    `window.ethereum` EIP-1193 fallback.

@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
+import { inlineBtcScanWorker } from './scanWorker.testutil';
 import { coinbase, fakeIdb, forkChain, mineHeader, mockChain, SEED_A, walletA, type MockChain } from './fixtures.testutil';
 import { bech32 } from '@scure/base';
 import { EsploraClient } from './esplora';
@@ -19,7 +20,7 @@ function sharedStore(): { readonly storeFor: HeaderStoreFor; readonly regtest: M
 
 async function open(chain: MockChain, storeFor: HeaderStoreFor, limits?: { maxRounds?: number; headersPerRound?: number; maxHeaders?: number }) {
   const user = userEvent.setup();
-  renderWith(<BtcView headerStore={storeFor} {...(limits === undefined ? {} : { headerSyncLimits: limits })} />, makeServices({ fetchFn: chain.fetchFn }));
+  renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={storeFor} {...(limits === undefined ? {} : { headerSyncLimits: limits })} />, makeServices({ fetchFn: chain.fetchFn }));
   await importWallet(user, true);
   return user;
 }
@@ -106,7 +107,7 @@ async function openHeld() {
     return chain.fetchFn(url, init);
   };
   const user = userEvent.setup();
-  renderWith(<BtcView headerStore={sharedStore().storeFor} />, makeServices({ fetchFn }));
+  renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={sharedStore().storeFor} />, makeServices({ fetchFn }));
   await importWallet(user, true);
   await scanToMatch(user);
   await reviewAndApprove(user);
@@ -219,7 +220,7 @@ describe('BtcView header chain: re-review fixes', () => {
     const chain = mockChain('regtest', walletA());
     const g = holdSecond(chain);
     const user = userEvent.setup();
-    renderWith(<BtcView headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn: g.fetchFn }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn: g.fetchFn }));
     await importWallet(user, true);
     await scanToMatch(user);
     await reviewAndApprove(user);
@@ -241,7 +242,7 @@ describe('BtcView header chain: re-review fixes', () => {
     const chain = mockChain('regtest', walletA());
     const g = holdSecond(chain);
     const user = userEvent.setup();
-    renderWith(<BtcView headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn: g.fetchFn }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn: g.fetchFn }));
     await importWallet(user, true);
     await scanToMatch(user);
     await reviewAndApprove(user);
@@ -305,7 +306,7 @@ describe('BtcView header chain: re-review fixes', () => {
       return chain.fetchFn(url, init);
     };
     const user = userEvent.setup();
-    renderWith(<BtcView headerStore={sharedStore().storeFor} />, makeServices({ fetchFn }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={sharedStore().storeFor} />, makeServices({ fetchFn }));
     await importWallet(user);
     hold = true;
     await user.click(screen.getByRole('button', { name: 'Update headers' }));
@@ -333,7 +334,7 @@ describe('BtcView header chain: re-review fixes', () => {
     const chain = mockChain('regtest', walletA());
     const g = holdSecond(chain);
     const user = userEvent.setup();
-    renderWith(<BtcView headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn: g.fetchFn }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn: g.fetchFn }));
     await importWallet(user, true);
     await scanToMatch(user);
     // A heavier fork replacing the paying block is adopted in round 1 of a check that is still running at Forget.
@@ -398,7 +399,7 @@ describe('BtcView header chain: delta review fixes', () => {
     const chain = mockChain('regtest', walletA());
     const store = sharedStore();
     const user = userEvent.setup();
-    renderWith(<BtcView headerStore={store.storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 2 }} />, makeServices({ fetchFn: chain.fetchFn }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={store.storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 2 }} />, makeServices({ fetchFn: chain.fetchFn }));
     await importWallet(user, true);
     await updateTo(user, 2);
     await updateTo(user, 4);
@@ -445,7 +446,7 @@ describe('BtcView header chain: delta review fixes', () => {
     const store = sharedStore();
     const g = holdSecond(chain);
     const user = userEvent.setup();
-    renderWith(<BtcView headerStore={store.storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn: g.fetchFn }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={store.storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn: g.fetchFn }));
     await importWallet(user);
     await updateTo(user, 4);
     // A heavier fork is being synced (one header per round, so the sync has unsaved progress) when the user forgets.
@@ -486,7 +487,7 @@ describe('BtcView header chain: review fixes', () => {
       return chain.fetchFn(url, init);
     };
     const user = userEvent.setup();
-    renderWith(<BtcView headerStore={sharedStore().storeFor} />, makeServices({ fetchFn }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} headerStore={sharedStore().storeFor} />, makeServices({ fetchFn }));
     await importWallet(user, true);
     await scanToMatch(user);
     // Round 1 adopts a heavier fork that replaces the paying block; round 2 fails.
@@ -661,7 +662,7 @@ describe('BtcView header chain', () => {
     try {
       const run = async (): Promise<void> => {
         const user = userEvent.setup();
-        renderWith(<BtcView />, makeServices({ fetchFn: chain.fetchFn }));
+        renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} />, makeServices({ fetchFn: chain.fetchFn }));
         await importWallet(user);
         expect(screen.getByText(/saved in this browser per network/)).toBeTruthy();
         await updateTo(user, 4);
@@ -692,7 +693,7 @@ describe('BtcView header chain', () => {
     cleanup();
     // Without a store at all (jsdom has no IndexedDB) headers live in memory, and the view says they are not kept.
     const u3 = userEvent.setup();
-    renderWith(<BtcView />, makeServices({ fetchFn: slow }));
+    renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} />, makeServices({ fetchFn: slow }));
     await importWallet(u3);
     expect(screen.getByRole('heading', { name: 'Block headers' })).toBeTruthy();
     expect(screen.queryByText(/saved in this browser per network/)).toBeNull();
