@@ -66,6 +66,17 @@ describe('shared presentation helpers', () => {
     vi.useRealTimers();
   });
 
+  it('cleans up the temporary download anchor and Blob URL when browser click throws', () => {
+    const blob = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:blocked');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw new Error('download blocked'); });
+
+    expect(() => downloadText('blocked-receipt.json', '{"test":true}', 'application/json')).toThrow('download blocked');
+    expect(blob).toHaveBeenCalledOnce();
+    expect(document.querySelector('a[download="blocked-receipt.json"]')).toBeNull();
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:blocked');
+  });
+
   it('renders sanitized text notices only when markers or mixed scripts need explanation', () => {
     const { rerender, container } = render(<SafeText value="normal text" />);
     expect(container.textContent).toBe('normal text');
