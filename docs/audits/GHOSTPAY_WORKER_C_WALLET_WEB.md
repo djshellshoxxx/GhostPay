@@ -34,4 +34,4 @@ No new defects found by reading; no RED test written, no code change.
 - views/Pay.tsx: continue/send disabled only for blockers or missing context; receipt import needs explicit consent; receipt download asks `window.confirm`. Read by grep and spot reads, not line by line.
 - lib/idbStore.ts: CAS on revision, blocked-open rejection with retry, version-change close, record caps, wipe tombstone. No defect.
 - Playwright: NOT RUN (`playwright` binary present but no browsers in ~/.cache/ms-playwright; offline).
-- Full apps/web vitest suite: started, had not finished when this report was written (log /tmp/claude-0/full-vitest.log held only the RUN header). Result NOT KNOWN; treat as not run to completion.
+- Full apps/web vitest suite: PASSED. 178 files passed, 2 skipped; 2569 tests passed, 8 skipped; 0 failed.
