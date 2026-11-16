@@ -283,15 +283,14 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await expect(keysView(sp).locator('code', { hasText: /^st:eth:0x/ })).toHaveCount(0);
 
-    // Encrypted keystore backup (download). It lifts the gate without the waiver.
+    // An encrypted keystore download is not verified recovery; the sharing/invoice gate must remain.
     await keysView(sp).getByLabel('Passphrase (at least 14 characters)', { exact: true }).fill(KEYSTORE_PASS);
     await keysView(sp).getByLabel('Repeat passphrase', { exact: true }).fill(KEYSTORE_PASS);
     keystoreText = await download(sp, testInfo, () => keysView(sp).getByRole('button', { name: 'Download encrypted keystore' }).click(), 'ghostpay-keystore.json');
     await expect(keysView(sp).getByText(/^Encrypted keystore downloaded\./)).toBeVisible({ timeout: 30_000 });
     await expect(keysView(sp).getByLabel('Passphrase (at least 14 characters)', { exact: true })).toHaveValue('');
-    await expect(sp.getByText('Back up these seller keys first')).toHaveCount(0);
-    identity = await identityOf(sp);
-    checkKeystore(keystoreText, identity, KEYSTORE_PASS);
+    await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
+    await expect(keysView(sp).locator('code', { hasText: /^st:eth:0x/ })).toHaveCount(0);
     // GP-PAGES-02: the download is recorded as unverified until "Verify backup" opens the real downloaded file. A damaged
     // copy and the wrong passphrase are refused and change nothing; the exact file makes the backup verified.
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
@@ -302,17 +301,21 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
     await expect(keysView(sp).getByRole('alert')).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
+    await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await verifyFile.setInputFiles(testInfo.outputPath('ghostpay-keystore.json'));
     await verifyPass.fill('wrong passphrase for the file');
     await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
     await expect(keysView(sp).getByRole('alert')).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
+    await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await verifyFile.setInputFiles(testInfo.outputPath('ghostpay-keystore.json'));
     await verifyPass.fill(KEYSTORE_PASS);
     await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
     await expect(keysView(sp).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toHaveCount(0);
-    expect(await identityOf(sp)).toEqual(identity);
+    await expect(sp.getByText('Back up these seller keys first')).toHaveCount(0);
+    identity = await identityOf(sp);
+    checkKeystore(keystoreText, identity, KEYSTORE_PASS);
 
     // The passphrase-protected browser vault (persistent IndexedDB of this profile).
     expect(await readSellerVault(sp)).toBeNull();
