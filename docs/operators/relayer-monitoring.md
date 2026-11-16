@@ -21,8 +21,15 @@ Alert deliveries deduplicate by event and chain for 15 minutes. Each attempt has
 | `reject_spike` | More than 100 rejected quote/sweep requests in the trailing five minutes | Inspect aggregate rejection reasons and client compatibility. The alert records only threshold crossings, not identities. Invalid or unconfigured chains share one anonymous bucket. |
 | `quote_budget_exhausted` | Global quote request rate limit | Check quote traffic and client retry behavior. Adjust limits only after confirming capacity. |
 | `receipt_timeout` / `mined_revert` | Queue receipt timeout and chain receipts | Check RPC and chain inclusion state. Reconcile unsettled sends before restarting or resubmitting. |
+| `rpc_disagree` | Actual mismatch between configured providers at the same finalized height | Inspect both providers and the chain. Requests fail closed before reservation; do not treat a timeout as proof of a fork. |
+| `price_stale` | Configured native/USD feed timestamp exceeds its allowed lifetime | Check feed status and configured maximum age. Feed mode never falls back to fixed pricing. |
 
-The current relayer emits these event names. `rpc_disagree` and `price_stale` remain unavailable: the current runtime has one provider per chain and operator-configured fixed native prices without freshness timestamps. Integrating independently verified providers and feed evidence is a prerequisite; no detector claims those facts from existing inputs.
+The last two signals require explicit source configuration: a distinct `secondaryRpcUrl`/`secondaryRpcUrlEnv`, or
+`nativeUsdFeed: { "maxAgeSeconds": 300 }` instead of `nativeUsdPrice`. No new endpoint or feed is selected by default.
+The feed address comes from the existing chain-adapters native/USD registry, with runtime round/decimal checks;
+missing registry data refuses startup. Distinct URLs do not prove provider independence. The RPC check covers a
+common finalized header's number/hash/parent/timestamp, not every contract-state answer. An unavailable source or
+tip lag greater than chain finality depth returns `rpc_unavailable` without inventing a disagreement alert.
 
 Log output drops transaction hashes as well as addresses, signatures, IPs, and arbitrary request fields. Recovery continues to use the protected transaction journal; observability must not become a payment index.
 
@@ -38,4 +45,9 @@ Log output drops transaction hashes as well as addresses, signatures, IPs, and a
 
 `LOG_LEVEL` accepts `info`, `warn`, or `error`; default is `info`. Lower-severity events are omitted before writing JSON. Unsupported values stop startup with a fixed message.
 
-Price-age metrics and `price_stale` remain absent because the current configured price has no feed timestamp. RPC disagreement alerts remain absent because the current runtime has one provider per chain. An absent metric is not a zero-age or provider-agreement claim.
+`relayer_price_age_seconds{chain_id}` reports the age of the last observed configured feed timestamp, including its
+continued aging after the read. It has no sample for legacy fixed prices or a feed not yet read. It does not imply
+that the last price is still valid. `relayer_price_stale_total`, `relayer_rpc_disagreements_total` and
+`relayer_rpc_agreement_checks_total` count actual observed outcomes. All labels contain configured chain ids only.
+No complete price is cached after a request. RPC and price checks share concurrent in-flight reads per chain, then
+discard the result. An absent sample is not a zero-age or provider-agreement claim.

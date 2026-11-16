@@ -2,6 +2,8 @@ import { secretScalarFromBytes, serializeScanState, SilentPaymentError, zeroize 
 import { MAX_HEADERS } from './headers';
 import type { EsploraFetch } from './esplora';
 import { BtcScanSourceBridge } from './scanWorkerSource';
+import { BtcOracleBridge } from './oracleBridge';
+import { normalizeOracleConfig } from './oracleSource';
 import { MAX_SCAN_MATCHES, wipeFound, type ScanParams, type ScanResult } from './scan';
 import { isHeight, isWorkerErrorCode, MAX_WORKER_STATE_BYTES, readWorkerState, type BtcScanRequest, type BtcScanResponse, type BtcScanStart } from './scanWorkerMessages';
 
@@ -34,10 +36,12 @@ function validateResult(r: ScanResult): void {
 }
 
 /** Dedicated worker per request; all exits detach handlers and terminate it. Checkpoint commits stay in the vault owner. */
-export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWorkerFactory = createBtcScanWorker, fetchFn: EsploraFetch = (url, init) => globalThis.fetch(url, init)): Promise<ScanResult> {
+export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWorkerFactory = createBtcScanWorker, fetchFn: EsploraFetch): Promise<ScanResult> {
+  if (typeof fetchFn !== 'function') throw new SilentPaymentError('INVALID_INPUT');
   if (p.signal?.aborted === true) throw new SilentPaymentError('ABORTED');
   if (p.headers === undefined || p.headers.tipHeight - p.headers.checkpointHeight > MAX_HEADERS) throw new SilentPaymentError('INVALID_INPUT');
   const state = p.resumeState === undefined ? undefined : serializeScanState(p.resumeState);
+  const oracle = p.oracle === undefined ? undefined : normalizeOracleConfig(p.oracle, p.client.baseUrl);
   if (state !== undefined && state.length > MAX_WORKER_STATE_BYTES) throw new SilentPaymentError('UNSUPPORTED');
   const id = nextId = (nextId + 1) % 0xffff_ffff;
   const request: BtcScanStart = { type: 'start', id, network: p.wallet.net.id, baseUrl: p.client.baseUrl,
@@ -45,15 +49,18 @@ export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWor
     headers: p.headers.toJSON(), fromHeight: p.fromHeight, checkpoints: p.onState !== undefined,
     ...(p.toHeight === undefined ? {} : { toHeight: p.toHeight }), ...(state === undefined ? {} : { resumeState: state }),
     ...(p.recoveryOffset === undefined ? {} : { recoveryOffset: p.recoveryOffset }), ...(p.recoveryLimit === undefined ? {} : { recoveryLimit: p.recoveryLimit }),
+    ...(oracle === undefined ? {} : { oracle }),
   };
   let worker: BtcScanWorker;
   try { worker = factory(); } catch { zeroize(request.scanSecret); throw new SilentPaymentError('UNSUPPORTED'); }
   return new Promise<ScanResult>((resolve, reject) => {
     let closed = false; let sequence = 0; let committing = false;
     const source = new BtcScanSourceBridge(p.client.baseUrl, fetchFn, (message) => { if (!closed) worker.postMessage(message); }, (error) => { finish(error); });
+    const oracleBridge = oracle === undefined ? undefined : new BtcOracleBridge(oracle, p.client.baseUrl, p.wallet.net.id, fetchFn,
+      (message) => { if (!closed) worker.postMessage(message); }, (error) => { finish(error); });
     const finish = (error?: unknown, result?: ScanResult): void => {
       if (closed) { if (result !== undefined) wipeFound(result.found); return; }
-      closed = true; source.dispose(); p.signal?.removeEventListener('abort', abort);
+      closed = true; source.dispose(); oracleBridge?.dispose(); p.signal?.removeEventListener('abort', abort);
       worker.onmessage = null; worker.onerror = null; worker.onmessageerror = null; worker.terminate();
       if (result !== undefined) resolve(result); else reject(error instanceof Error ? error : new SilentPaymentError('INVALID_RESPONSE'));
     };
@@ -64,6 +71,10 @@ export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWor
       if (closed || m?.id !== id) { if (m?.type === 'done') wipeResponseResult(m.result); return; }
       try {
         if (m.type === 'source' || m.type === 'sourceCancel') { source.handle(m); return; }
+        if (m.type === 'oracle' || m.type === 'oracleCancel') {
+          if (oracleBridge === undefined) throw new SilentPaymentError('INVALID_RESPONSE');
+          oracleBridge.handle(m); return;
+        }
         if (m.type === 'block' && isHeight(m.height)) { p.onBlock?.(m.height); return; }
         if (m.type === 'error' && isWorkerErrorCode(m.code)) { finish(new SilentPaymentError(m.code)); return; }
         if (m.type === 'done' && !committing) {

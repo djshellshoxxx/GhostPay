@@ -45,6 +45,8 @@ export async function mockNetwork(
   state: {
     sent?: SentTx;
     logs?: unknown[];
+    /** Canonical header time in seconds, fixed for the staged payment rather than scan wall-clock time. */
+    blockTimestamp?: number;
     /** Optional canonical tx/receipt fixture, used only by the verified-ERC20 scan scenario. */
     evidence?: { txHash: string; transaction: unknown; receipt: unknown };
   },
@@ -80,7 +82,10 @@ export async function mockNetwork(
       case 'eth_getBlockByNumber': {
         const n = parseInt(String(body.params[0]), 16);
         const h = (x: number): string => `0x${x.toString(16).padStart(64, '0')}`;
-        return reply({ number: `0x${n.toString(16)}`, hash: h(n), parentHash: h(n - 1) });
+        return reply({
+          number: `0x${n.toString(16)}`, hash: h(n), parentHash: h(n - 1),
+          ...(state.blockTimestamp === undefined ? {} : { timestamp: `0x${state.blockTimestamp.toString(16)}` }),
+        });
       }
       case 'eth_getLogs': {
         const f = body.params[0] as {

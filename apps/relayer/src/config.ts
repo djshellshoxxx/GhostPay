@@ -5,11 +5,13 @@ import type { Address } from 'viem';
 import { getAddress } from 'viem';
 import {
   findChain,
+  findFeed,
   findToken,
   loadDeployment,
   requireEnabledChain,
   verifyObjectManifestSignature,
   type DeploymentManifest,
+  type FeedConfig,
   validateRpcUrl,
 } from '@ghostpay/chain-adapters';
 import { TrustedProxies } from '@ghostpay/relayer-guard';
@@ -27,10 +29,13 @@ export interface ChainRuntimeConfig {
   readonly chainId: number;
   readonly name: string;
   readonly rpcUrl: string;
+  readonly secondaryRpcUrl?: string;
   readonly sweepRelayer: Address;
   readonly feeTo: Address;
   readonly tokens: readonly AllowedToken[];
-  readonly nativeUsdMicro: bigint;
+  readonly nativeUsdMicro?: bigint;
+  /** Explicit registry-feed mode; absence retains the configured fixed-price mode. Never used as a fallback. */
+  readonly nativeUsdFeed?: { readonly feed: FeedConfig & { readonly decimals: number }; readonly maxAgeSeconds: number };
   readonly gasUnits: { readonly sweep: bigint; readonly sweepWithPermit: bigint };
   readonly maxGasLimit: bigint;
   readonly maxGasPriceWei: bigint;
@@ -227,8 +232,8 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   const c = objectAt(
     raw,
     path,
-    ['chainId', 'tokens', 'nativeUsdPrice', 'gasUnits', 'maxGasLimit', 'maxGasPriceWei', 'dailyBudgetWei', 'minBalanceWei'],
-    ['rpcUrl', 'rpcUrlEnv', 'sweepRelayer', 'feeTo'],
+    ['chainId', 'tokens', 'gasUnits', 'maxGasLimit', 'maxGasPriceWei', 'dailyBudgetWei', 'minBalanceWei'],
+    ['rpcUrl', 'rpcUrlEnv', 'secondaryRpcUrl', 'secondaryRpcUrlEnv', 'sweepRelayer', 'feeTo', 'nativeUsdPrice', 'nativeUsdFeed'],
   );
   const chainId = c['chainId'];
   if (typeof chainId !== 'number' || !Number.isSafeInteger(chainId) || chainId < 1) return bad(`${path}.chainId`, 'invalid');
@@ -288,12 +293,29 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
     return bad(`${path}.rpcUrl`, 'rejected (https/wss only; credentials in URL not allowed)');
   }
 
-  const price = c['nativeUsdPrice'];
-  let nativeUsdMicro: bigint;
-  try {
-    nativeUsdMicro = parseUsdMicro(typeof price === 'string' ? price : '');
-  } catch {
-    return bad(`${path}.nativeUsdPrice`, 'must be a positive decimal string with <= 6 fractional digits');
+  let secondaryRpcUrl: string | undefined;
+  if (c['secondaryRpcUrl'] !== undefined || c['secondaryRpcUrlEnv'] !== undefined) {
+    if (c['secondaryRpcUrl'] !== undefined && c['secondaryRpcUrlEnv'] !== undefined) return bad(`${path}.secondaryRpcUrl`, 'set exactly one endpoint source');
+    const secondaryEnv = c['secondaryRpcUrlEnv'];
+    if (secondaryEnv !== undefined && (typeof secondaryEnv !== 'string' || !/^[A-Z_][A-Z0-9_]{0,63}$/.test(secondaryEnv))) return bad(`${path}.secondaryRpcUrlEnv`, 'must be an env var name');
+    const rawSecondary = typeof secondaryEnv === 'string' ? ctx.env[secondaryEnv] : c['secondaryRpcUrl'];
+    try {
+      if (typeof rawSecondary !== 'string') throw new Error('missing');
+      secondaryRpcUrl = validateRpcUrl(rawSecondary, { allowInsecureLocalhost: top.insecureRpc });
+      if (secondaryRpcUrl === rpcUrl) throw new Error('same endpoint');
+    } catch { return bad(`${path}.secondaryRpcUrl`, 'must be a distinct valid endpoint'); }
+  }
+  if ((c['nativeUsdPrice'] === undefined) === (c['nativeUsdFeed'] === undefined)) return bad(path, 'set exactly one of nativeUsdPrice and nativeUsdFeed');
+  let nativeUsdMicro: bigint | undefined;
+  let nativeUsdFeed: ChainRuntimeConfig['nativeUsdFeed'];
+  if (c['nativeUsdFeed'] !== undefined) {
+    const selection = objectAt(c['nativeUsdFeed'], `${path}.nativeUsdFeed`, ['maxAgeSeconds']);
+    const feed = known === undefined ? undefined : findFeed(chainId, known.nativeSymbol, 'USD');
+    if (feed?.decimals === undefined) return bad(`${path}.nativeUsdFeed`, 'no sourced native/USD feed in the configured registry');
+    nativeUsdFeed = { feed: { ...feed, decimals: feed.decimals }, maxAgeSeconds: numberOr(selection, 'maxAgeSeconds', `${path}.nativeUsdFeed`, 0, 1, 604_800) };
+  } else {
+    try { nativeUsdMicro = parseUsdMicro(typeof c['nativeUsdPrice'] === 'string' ? c['nativeUsdPrice'] : ''); }
+    catch { return bad(`${path}.nativeUsdPrice`, 'must be a positive decimal string with <= 6 fractional digits'); }
   }
   const gu = sub(c, 'gasUnits', path, ['sweep', 'sweepWithPermit']);
   const gasUnits = { sweep: bigOf(gu, 'sweep', `${path}.gasUnits`, 21_000n), sweepWithPermit: bigOf(gu, 'sweepWithPermit', `${path}.gasUnits`, 21_000n) };
@@ -302,10 +324,12 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
     chainId,
     name,
     rpcUrl,
+    ...(secondaryRpcUrl === undefined ? {} : { secondaryRpcUrl }),
     sweepRelayer: getAddress(sweepRelayer),
     feeTo,
     tokens: parseTokens(chainId, c['tokens'], path),
-    nativeUsdMicro,
+    ...(nativeUsdMicro === undefined ? {} : { nativeUsdMicro }),
+    ...(nativeUsdFeed === undefined ? {} : { nativeUsdFeed }),
     gasUnits,
     maxGasLimit: bigOf(c, 'maxGasLimit', path, 21_000n),
     maxGasPriceWei: bigOf(c, 'maxGasPriceWei', path, 1n),

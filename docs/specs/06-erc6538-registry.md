@@ -10,7 +10,17 @@ Sources: research 1.1/1.2 item 4, DOC-3, DOC-4; gap-analysis item 4; CONTRACTS_S
 **2026-11-16 continuation:** The public chain-adapters package now exports `buildRegistryNonceCall`,
 `buildIncrementNonceTx` and `buildRegisterKeysOnBehalfTx` from `registryDelegation.ts`. The delegated builder accepts
 an already-authorized signature and validates address, scheme-1 meta-address and bounded opaque signature bytes.
-It does not sign, send, resolve ENS, or establish deployment provenance. On-behalf registration remains outside UI v1.
+`buildRegistryDelegationRequest` now builds the canonical EIP-712 domain, scheme-1 message and digest from an explicit
+chain ID and nonce. `signRegistryDelegation` freezes the validated request, obtains a bounded EOA/ERC-1271 signature
+through an injected signing callback, and returns calldata only after an injected verifier explicitly succeeds.
+The verifier must check the selected chain ID and current nonce against the request and authenticate the registrant,
+then simulate against the verified registry. Simulation alone cannot validate the request's chain ID and nonce fields,
+because those fields are implicit in the registry rather than supplied in calldata. The caller must repeat deployment,
+chain and nonce checks and simulation before an independently confirmed broadcast. This is point-in-time verification,
+not a nonce reservation. No helper sends transactions, obtains private keys or establishes deployment provenance.
+The native CC0 reference-registry tests exercise EOA and ERC-1271 acceptance, wrong domain/keys/account, opaque empty
+and variable-length signatures, replay, wrong magic/reverts, nonce invalidation and fresh authorization. The contract
+wallet is a test-only fixture, not a proposed production authority model. On-behalf registration remains outside UI v1.
 The 2026-11-11 status above is historical. `resolveRegistryRegistrant` and the registry view now resolve ENS names
 through the selected, validated Ethereum or Sepolia RPC using the canonical ENS Universal Resolver and pure pinned
 viem name/ABI utilities. The browser does not import viem PublicClient, default chain endpoints or CCIP transports. Resolution

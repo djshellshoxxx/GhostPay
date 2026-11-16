@@ -102,8 +102,8 @@ signatures stop startup. The web build and ops monitor use the same manifest dig
 
 Per chain: `rpcUrl`|`rpcUrlEnv`, `sweepRelayer` (optional; taken from the manifest when present, must match it if both),
 `feeTo` (required unless `allowFeeToHotKey: true`), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
-chain-adapters allowlist or must be given), `nativeUsdPrice`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`,
-`dailyBudgetWei`, `minBalanceWei`. Operator numbers (`gasUnits`, `nativeUsdPrice`, caps, budget) have no defaults on
+chain-adapters allowlist or must be given), exactly one of `nativeUsdPrice` or `nativeUsdFeed`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`,
+`dailyBudgetWei`, `minBalanceWei`. Operator numbers (`gasUnits`, fixed `nativeUsdPrice`, caps, budget) have no defaults on
 purpose and must be set from your own measurements. The example file's values are placeholders, not measurements.
 
 Fee: `sponsorFee(amount, gasUnits * eth_gasPrice converted at nativeUsdPrice with the stablecoin fixed at 1.0)` from
@@ -112,6 +112,31 @@ chain-adapters = `clamp(max(gas x 1.10, 50 bps), cap 300 bps)`. If the cap canno
 estimated gas cost against `gas.coverPercent` (default 100%), and refuses if `eth_gasPrice` moves more than
 `gas.maxMovePercent` (default 25%) between simulations. Quote gas prices are cached for `gas.quoteCacheSeconds` (default 3).
 Non-stable tokens are unsupported in v1.
+
+Optional source checks:
+
+- `secondaryRpcUrl` or `secondaryRpcUrlEnv` selects one additional endpoint. The normalized URL must differ from
+  the primary URL; this does not prove different infrastructure or independent operators. Both endpoints must report
+  the configured chain. Quote admission, queued sweep execution and the final pre-reservation check compare the
+  same finalized block number, hash, parent hash and timestamp. A mismatch returns `503 rpc_disagree`; missing
+  headers, unavailable sources or tip lag greater than the configured chain finality depth return `503 rpc_unavailable`.
+  This is canonical-header agreement, not agreement about every contract read or a guarantee that no reorganization follows.
+- `nativeUsdFeed: { "maxAgeSeconds": 300 }` explicitly selects the existing native-symbol/USD entry from the
+  chain-adapters registry. Remove `nativeUsdPrice` when selecting this mode. Missing registry entries fail startup;
+  no address is inferred and no feed is activated by default. `maxAgeSeconds` must be an integer in `1..604800`.
+  Each conversion validates current round data and configured decimals, rejects future timestamps, and rounds token
+  cost up with bigint arithmetic. Invalid or unavailable reads return `503 price_unavailable`; observed stale rounds
+  return `503 price_stale`. There is no fallback to fixed pricing. Concurrent reads share only the in-flight request,
+  not a completed cached price. The existing signed quote expiry is capped at the feed-validity deadline, and gas-cost
+  coverage rereads the feed during sweep execution. Its final validity deadline is checked again after nonce
+  acquisition and signing, before broadcast; expiry releases the reservation without an owner strike or breaker failure.
+
+Feed mode currently has registry data only for supported testnets. Live feed/fork acceptance, mainnet feed pins,
+sequencer/reference source configuration and the proposed signed `priceRoundId` extension remain separate gates.
+The existing quote wire format and stablecoin-at-USD-parity assumption are unchanged. Legacy fixed pricing remains
+explicitly configurable; neither it nor this new option establishes mainnet release qualification.
+The browser conservatively treats these HTTP 503 responses as uncertain; the server's refusal checks do not establish
+the origin or outcome of an arbitrary intermediary response and do not grant automatic retry authority.
 
 ### Restart safety (state journal)
 

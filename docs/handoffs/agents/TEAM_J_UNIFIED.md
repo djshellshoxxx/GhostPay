@@ -222,3 +222,26 @@ final inventory and incomplete call total (replay exit1). **Neither the full Ech
 Configured Slither passed. [Compact native reports and digest manifest](team-j-analyzer-evidence/README.md) preserve
 the exact source/tool pins, full compressed streams, selected final reports, findings, resource/exit metadata and
 the report replay distinction. All18artifact digests were independently recomputed after saving.
+
+## Hosted analyzer continuation prepared
+
+The coordinator authorized a second environment for the remaining native gates. The new
+`.github/workflows/contract-analysis.yml` runs on contract/runner/workflow-related pull requests and is reusable
+through `workflow_call`; nightly delegates its existing Echidna/Mythril jobs to it. No scheduled 100,000-run Forge
+fuzzing, dependency audit, release or deployment job is added to PR runs. Each matrix member has its own hosted
+runner, read-only contents permission, exact requested commit checkout and disabled credential persistence.
+
+All action/tool pins are retained. Both existing analyzer runners execute without shortened budgets or finding
+exclusions. The analysis shell records and rethrows its exit code; a failed/canceled/incomplete run does not become
+a success through artifact collection. Analysis has a100-minute step bound inside the120-minute job, leaving time
+for always-run bounded report collection. Artifacts retain at most the last8MiB plus full-stream SHA256/length,
+requested and actual checkout commits, step outcome and the runner exit code when available. Missing output or
+an absent exit file remains explicitly unavailable. Artifact upload cannot guarantee a report after runner loss.
+
+`mythril-compat.py` changes only the legacy py-solc-x compiler host before importing Mythril; its actual local
+version invocation returned0.24.8. Fixtures verify unchanged CLI arguments and nonzero returned exit codes.
+Independent `final_review` inspected the workflow/helpers and passed all five new tests, including the actual
+analysis shell's0/137 exit propagation, a9MiB report capped to8MiB with full hash, and missing/canceled evidence.
+The final combined workflow/runner fixture run passed47/47 tests with zero skips.
+Checksum-verified actionlint1.7.7 and YAML parsing accepted both changed workflows. No hosted run or remote
+publication was performed by this worker; only an actual completed run on the eventual candidate can qualify it.

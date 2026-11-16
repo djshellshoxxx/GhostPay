@@ -7,7 +7,7 @@ import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import type { AlertSink } from './alerts.js';
 import { createLogger, type Logger } from './log.js';
 import type { PolicyGate } from './policy.js';
-import { buildRelayer, type Relayer } from './runtime.js';
+import { buildRelayer, type Relayer, type RuntimeDeps } from './runtime.js';
 import type { QuoteResponse } from './service.js';
 import type { StateJournal } from './stateStore.js';
 
@@ -212,6 +212,7 @@ export interface HarnessOptions {
   readonly fake?: FakeChain;
   readonly alerts?: AlertSink;
   readonly journal?: StateJournal;
+  readonly sourceClients?: RuntimeDeps['sourceClients'];
 }
 
 export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
@@ -229,6 +230,7 @@ export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
     ...(o.policy === undefined ? {} : { policy: o.policy }),
     ...(o.alerts === undefined ? {} : { alerts: o.alerts }),
     ...(o.journal === undefined ? {} : { journal: o.journal }),
+    ...(o.sourceClients === undefined ? {} : { sourceClients: o.sourceClients }),
   });
   const addr = await relayer.server.listen();
   const metricsAddr = relayer.metricsServer === undefined ? undefined : await relayer.metricsServer.listen();

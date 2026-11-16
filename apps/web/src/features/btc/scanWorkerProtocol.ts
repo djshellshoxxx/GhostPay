@@ -6,6 +6,7 @@ import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import { genesisCheckpoint, MAX_HEADERS } from './headers';
 import { btcNetwork } from './network';
 import { MAX_SCAN_MATCHES, scanForPayments, wipeFound, type ScanResult } from './scan';
+import { normalizeOracleConfig, type BtcOracleBlock } from './oracleSource';
 
 import { isHeight, isScanSourcePath, isWorkerErrorCode, MAX_SOURCE_BYTES, MAX_SOURCE_PENDING, MAX_WORKER_STATE_BYTES, readWorkerState, type BtcScanRequest, type BtcScanResponse, type BtcScanStart } from './scanWorkerMessages';
 
@@ -18,16 +19,27 @@ export class BtcScanProtocol {
   private pending: { id: number; sequence: number; resolve: () => void; reject: (e: Error) => void } | undefined;
   private requestId = 0;
   private readonly sources = new Map<number, { resolve: (response: Response) => void; reject: (error: Error) => void; cleanup: () => void }>();
+  private readonly oracles = new Map<number, { resolve: (block: BtcOracleBlock) => void; reject: (error: Error) => void; cleanup: () => void }>();
   public constructor(private readonly send: (message: BtcScanResponse) => void) {}
   public dispose(): void {
     this.stopped = true; this.abort.abort();
     if (this.secret instanceof Uint8Array) zeroize(this.secret);
     for (const request of this.sources.values()) { request.cleanup(); request.reject(new SilentPaymentError('ABORTED')); }
     this.sources.clear();
+    for (const request of this.oracles.values()) { request.cleanup(); request.reject(new SilentPaymentError('ABORTED')); }
+    this.oracles.clear();
     this.pending?.reject(new SilentPaymentError('ABORTED')); this.pending = undefined;
   }
   public handle(message: BtcScanRequest): void {
     if (this.stopped) { if (message?.type === 'start' && message.scanSecret instanceof Uint8Array) zeroize(message.scanSecret); return; }
+    if (message?.type === 'oracleResult' || message?.type === 'oracleError') {
+      const request = this.oracles.get(message.requestId);
+      if (request === undefined || message.id !== this.sessionId) return;
+      this.oracles.delete(message.requestId); request.cleanup();
+      if (message.type === 'oracleError') request.reject(new SilentPaymentError(isWorkerErrorCode(message.code) ? message.code : 'INVALID_RESPONSE'));
+      else request.resolve(message.block);
+      return;
+    }
     if (message?.type === 'sourceResult' || message?.type === 'sourceError') {
       const request = this.sources.get(message.requestId);
       if (request === undefined || message.id !== this.sessionId) return;
@@ -49,6 +61,21 @@ export class BtcScanProtocol {
     void this.run(message);
   }
   private sessionId = 0;
+  private oracle(height: number, source: 0 | 1, signal?: AbortSignal): Promise<BtcOracleBlock> {
+    if (!isHeight(height) || this.oracles.size >= 2) return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
+    if (this.stopped || signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
+    const requestId = ++this.requestId;
+    return new Promise<BtcOracleBlock>((resolve, reject) => {
+      const abort = (): void => {
+        signal?.removeEventListener('abort', abort); this.oracles.delete(requestId);
+        if (!this.stopped) this.send({ type: 'oracleCancel', id: this.sessionId, requestId });
+        reject(new SilentPaymentError('ABORTED'));
+      };
+      this.oracles.set(requestId, { resolve, reject, cleanup: () => { signal?.removeEventListener('abort', abort); } });
+      signal?.addEventListener('abort', abort, { once: true });
+      this.send({ type: 'oracle', id: this.sessionId, requestId, height, source });
+    });
+  }
   private source(path: string, signal: AbortSignal | null | undefined): Promise<Response> {
     if (!isScanSourcePath(path) || this.sources.size >= MAX_SOURCE_PENDING) return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
     if (this.stopped || signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
@@ -78,6 +105,7 @@ export class BtcScanProtocol {
       const headers = HeaderChain.fromJSON(m.headers, { checkpoint: genesisCheckpoint(net) });
       // Reuse the source parser with its configured base, but emit only allowed path suffixes to the main thread.
       const baseUrl = normalizeEsploraUrl(m.baseUrl);
+      const oracle = m.oracle === undefined ? undefined : normalizeOracleConfig(m.oracle, baseUrl);
       const client = new EsploraClient({ baseUrl, fetchFn: (url, init) => {
         if (!url.startsWith(`${baseUrl}/`) || (init.method !== undefined && init.method !== 'GET') || init.body !== undefined)
           return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
@@ -89,6 +117,8 @@ export class BtcScanProtocol {
       const spendPublicKey = parseCompressedPoint(m.spendPublicKey);
       let sequence = 0;
       result = await scanForPayments({ client, wallet: { net, keys: { scanSecret, spendPublicKey } }, headers,
+        ...(oracle === undefined ? {} : { oracle, readOracle: (height: number, signal?: AbortSignal) => this.oracle(height, 0, signal),
+          ...(oracle.second === undefined ? {} : { readSecondOracle: (height: number, signal?: AbortSignal) => this.oracle(height, 1, signal) }) }),
         fromHeight: m.fromHeight, signal: this.abort.signal,
         ...(m.toHeight === undefined ? {} : { toHeight: m.toHeight }),
         ...(m.resumeState === undefined ? {} : { resumeState: readWorkerState(m.resumeState) }),

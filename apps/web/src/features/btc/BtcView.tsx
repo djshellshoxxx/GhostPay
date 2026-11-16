@@ -27,6 +27,7 @@ import {
 } from './headers';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
 import { scanForPaymentsInWorker, type BtcScanWorkerFactory } from './scanWorkerClient';
+import { normalizeOracleConfig, type BtcOracleConfig } from './oracleSource';
 import { MAX_SCAN_BLOCKS, wipeFound, type FoundPayment, type ScanResult } from './scan';
 import { captureBtcErrorMessage, checkDestination, formatBtc, reviewSweep, signSweep, type SignedSweep, type SweepReview } from './sweep';
 import { SCAN_CHECK_KEYS, SCAN_LIMIT_KEYS, SCAN_MODE_KEYS } from './verification';
@@ -62,6 +63,12 @@ export function BtcView(
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [netId, setNetId] = useState<BtcNetworkId>('testnet4');
   const [url, setUrl] = useState('');
+  const [oracleKind, setOracleKind] = useState<'none' | 'http' | 'grpc'>('none');
+  const [oracleUrl, setOracleUrl] = useState('');
+  const [lightScan, setLightScan] = useState(false);
+  const [secondOracle, setSecondOracle] = useState(false);
+  const [secondKind, setSecondKind] = useState<'http' | 'grpc'>('http');
+  const [secondUrl, setSecondUrl] = useState('');
   const [seedInput, setSeedInput] = useState('');
   const [wallet, setWallet] = useState<BtcWallet | undefined>(undefined);
   /** A created wallet offers its backup seed on request; an imported seed is the user's own copy already. */
@@ -159,6 +166,15 @@ export function BtcView(
     setScan(undefined);
     clearFlowState();
   };
+  const changeSource = (): void => {
+    invalidate(); resetFlow(); setError(undefined); setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
+  };
+  const oracleSelection = (): BtcOracleConfig | undefined => oracleKind === 'none' ? undefined : normalizeOracleConfig({
+    kind: oracleKind, url: oracleUrl, mode: lightScan ? 'light' : 'full',
+    ...(secondOracle ? { second: { kind: secondKind, url: secondUrl } } : {}),
+  }, url);
+  const persistencePolicy = (oracle: BtcOracleConfig | undefined): string | undefined => oracle === undefined ? undefined
+    : JSON.stringify({ esplora: normalizeEsploraUrl(url), oracle });
 
   const guard = (f: () => void): void => {
     setError(undefined);
@@ -376,7 +392,7 @@ export function BtcView(
     void (async () => {
       let vault: BtcScanVault | undefined;
       try {
-        vault = await BtcScanVault.open(wallet, scanStorage, guard);
+        vault = await BtcScanVault.open(wallet, scanStorage, guard, persistencePolicy(oracleSelection()));
         if (remove) { await vault.forget(); guard(); setSavedScan(undefined); setForgetScan(false); }
         else {
           const saved = await vault.load(); guard(); setSavedScan(saved);
@@ -398,11 +414,12 @@ export function BtcView(
       let storageFailed = false;
       try {
         const guard = (): void => { if (!live() || signal.aborted || walletRef.current !== wallet) throw new Error('stale Bitcoin scan session'); };
+        const oracle = oracleSelection();
         let resumeState: ScanState | undefined;
         let from = Number(fromHeight);
         if (saveScan && scanStorage !== undefined) {
           try {
-            vault = await BtcScanVault.open(wallet, scanStorage, guard);
+            vault = await BtcScanVault.open(wallet, scanStorage, guard, persistencePolicy(oracle));
             resumeState = await vault.load(); guard();
             if (resumeState !== undefined) { from = resumeState.birthHeight; setFromHeight(String(from)); setSavedScan(resumeState); }
           } catch (e) { storageFailed = true; throw e; }
@@ -419,6 +436,7 @@ export function BtcView(
           fromHeight: from,
           headers,
           signal,
+          ...(oracle === undefined ? {} : { oracle }),
           ...(vault === undefined ? {} : {
             resumeState: resumeState ?? createScanState(net.id, from),
             recoveryOffset,
@@ -574,9 +592,33 @@ export function BtcView(
           hint={t('btc.server.hint')}
         >
           {(id, d) => (
-            <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); clearReview(); }} />
+            <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); changeSource(); }} />
           )}
         </Field>
+        <Field label={t('btc.oracle.modeLabel')}>
+          {(id) => <select id={id} value={oracleKind} onChange={(e) => { setOracleKind(e.target.value as typeof oracleKind); changeSource(); }}>
+            <option value="none">{t('btc.oracle.none')}</option><option value="http">{t('btc.oracle.http')}</option><option value="grpc">{t('btc.oracle.grpc')}</option>
+          </select>}
+        </Field>
+        {oracleKind !== 'none' && <>
+          <Field label={t('btc.oracle.urlLabel')} hint={t('btc.oracle.urlHint')}>
+            {(id, d) => <input id={id} aria-describedby={d} type="url" autoComplete="off" spellCheck={false} value={oracleUrl} onChange={(e) => { setOracleUrl(e.target.value); changeSource(); }} />}
+          </Field>
+          <p className="hint">{t('btc.oracle.disclosure')}</p>
+          <label><input type="checkbox" checked={lightScan} onChange={(e) => { setLightScan(e.target.checked); changeSource(); }} />{' '}{t('btc.oracle.light')}</label>
+          <p role="note">{t(lightScan ? 'btc.oracle.lightHelp' : 'btc.oracle.fullHelp')}</p>
+          <label><input type="checkbox" checked={secondOracle} onChange={(e) => { setSecondOracle(e.target.checked); changeSource(); }} />{' '}{t('btc.oracle.secondEnable')}</label>
+          {secondOracle && <>
+            <Field label={t('btc.oracle.secondKind')}>
+              {(id) => <select id={id} value={secondKind} onChange={(e) => { setSecondKind(e.target.value as typeof secondKind); changeSource(); }}>
+                <option value="http">HTTP</option><option value="grpc">gRPC-Web</option>
+              </select>}
+            </Field>
+            <Field label={t('btc.oracle.secondUrl')}>
+              {(id) => <input id={id} type="url" autoComplete="off" spellCheck={false} value={secondUrl} onChange={(e) => { setSecondUrl(e.target.value); changeSource(); }} />}
+            </Field>
+          </>}
+        </>}
       </div>
 
       <div className="panel">
@@ -698,9 +740,10 @@ export function BtcView(
           <details>
             <summary>{t('btc.scan.details')}</summary>
             <p>{t('btc.scan.checked')}</p>
-            <ul>{SCAN_CHECK_KEYS.map((key) => <li key={key}>{t(key)}</li>)}</ul>
+            <ul>{(oracleKind !== 'none' && lightScan ? SCAN_CHECK_KEYS.filter((key) => key !== 'btc.verification.check.transactions' && key !== 'btc.verification.check.witness') : SCAN_CHECK_KEYS).map((key) => <li key={key}>{t(key)}</li>)}</ul>
+            {oracleKind !== 'none' && lightScan && <p>{t('btc.oracle.lightChecks')}</p>}
             <p>{t('btc.scan.limits')}</p>
-            <ul>{SCAN_LIMIT_KEYS.map((key) => <li key={key}>{t(key)}</li>)}</ul>
+            {oracleKind !== 'none' && lightScan ? <p>{t('btc.oracle.lightLimits')}</p> : <ul>{SCAN_LIMIT_KEYS.map((key) => <li key={key}>{t(key)}</li>)}</ul>}
             <div className="table-wrap">
               <table>
                 <caption>{t('btc.scan.sourceCaption')}</caption>
@@ -732,7 +775,7 @@ export function BtcView(
               {scan.found.length > 0 && (
                 <div className="table-wrap">
                   <p role="note">
-                    {t('btc.scan.singleProvider')}
+                    {t(oracleKind === 'none' ? 'btc.scan.singleProvider' : 'btc.oracle.resultsNote')}
                   </p>
                   {scan.found.some((f) => !sweepable(f)) && (
                     <Notice kind="warn">{checkedTip === undefined ? t('btc.headers.uncheckedNone') : t('btc.headers.uncheckedResults', { height: String(checkedTip) })}</Notice>

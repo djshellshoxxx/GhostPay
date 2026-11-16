@@ -24,6 +24,22 @@ describe('critical translation native-review boundary (IN-3)', () => {
 
   it('includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries', () => {
     const required: readonly MessageKey[] = [
+      'btc.oracle.modeLabel',
+      'btc.oracle.none',
+      'btc.oracle.http',
+      'btc.oracle.grpc',
+      'btc.oracle.urlLabel',
+      'btc.oracle.urlHint',
+      'btc.oracle.fullHelp',
+      'btc.oracle.light',
+      'btc.oracle.lightHelp',
+      'btc.oracle.disclosure',
+      'btc.oracle.secondEnable',
+      'btc.oracle.secondKind',
+      'btc.oracle.secondUrl',
+      'btc.oracle.lightChecks',
+      'btc.oracle.lightLimits',
+      'btc.oracle.resultsNote',
       'registry.consent', 'registry.what.registration', 'registry.what.clear',
       'btc.persistence.page',
       'btc.persistence.previous',

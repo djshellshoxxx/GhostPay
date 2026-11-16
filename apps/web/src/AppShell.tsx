@@ -31,6 +31,8 @@ export interface AppShellProps {
   readonly order: readonly ViewId[];
   readonly extraViews?: ExtraViews;
   readonly sellerArchive?: ReactNode;
+  /** Optional full-profile content stays inside the main landmark, after the skip link and navigation. */
+  readonly mainPrelude?: ReactNode;
   readonly profile?: 'full' | 'lean';
 }
 
@@ -262,6 +264,7 @@ export function AppShell(props: AppShellProps): ReactNode {
         </nav>
       </header>
       <main id="main" tabIndex={-1} ref={main}>
+        {props.mainPrelude}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
             {t('app.backup.unverified.body')}

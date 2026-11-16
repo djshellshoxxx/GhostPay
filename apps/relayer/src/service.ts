@@ -33,6 +33,7 @@ import { makeKeyring, signQuote, verifyQuote, type QuoteKeyring } from './quoteT
 import type { QuoteRequest, SweepRequest } from './validate.js';
 import { RevertRate } from './revertRate.js';
 import { MemoryStateBackend, StateError, StateJournal } from './stateStore.js';
+import type { SourceChecks } from './sourceChecks.js';
 
 /** Dependencies of {@link RelayerService}. */
 export interface ServiceDeps {
@@ -42,6 +43,7 @@ export interface ServiceDeps {
   readonly previousQuoteSecret?: Uint8Array;
   readonly gasPrices: GasPriceSource;
   readonly tokenPrices: TokenPriceSource;
+  readonly sourceChecks?: SourceChecks;
   readonly ownerLimiter: RateLimiter;
   readonly policy?: PolicyGate;
   readonly logger?: Logger;
@@ -494,9 +496,13 @@ export class RelayerService {
     if (req.destination === req.owner || rt.cfg.feeTo === req.owner || rt.cfg.feeTo === req.destination) {
       throw new RelayerError(422, 'invalid_order');
     }
+    await this.d.sourceChecks?.ensureAgreement(req.chainId);
     const gasPrice = await this.quoteGasPrice(rt);
     const units = token.permit ? rt.cfg.gasUnits.sweepWithPermit : rt.cfg.gasUnits.sweep;
-    const gasCost = await this.d.tokenPrices.nativeToTokenUnits(req.chainId, token, units * gasPrice);
+    const conversion = this.d.tokenPrices.quoteNativeToTokenUnits === undefined
+      ? { amount: await this.d.tokenPrices.nativeToTokenUnits(req.chainId, token, units * gasPrice) }
+      : await this.d.tokenPrices.quoteNativeToTokenUnits(req.chainId, token, units * gasPrice);
+    const gasCost = conversion.amount;
     // Spec 04 grief reserve: price a margin for gas lost when the owner drains or revokes first (rounded up).
     const griefBps = BigInt(this.d.config.gas.griefReserveBps ?? 0);
     const pricedGas = (gasCost * (FEE_SCHEDULE.BPS + griefBps) + FEE_SCHEDULE.BPS - 1n) / FEE_SCHEDULE.BPS;
@@ -504,7 +510,9 @@ export class RelayerService {
     // If even the 300 bps cap cannot reimburse the gas, the sweep is uneconomical: refuse to quote.
     if (fee * 100n < gasCost * BigInt(this.d.config.gas.coverPercent))
       throw new RelayerError(422, 'amount_too_small');
-    const expiresAt = Math.floor(this.now() / 1000) + this.d.config.quoteTtlSeconds;
+    const nowSeconds = Math.floor(this.now() / 1000);
+    const expiresAt = Math.min(nowSeconds + this.d.config.quoteTtlSeconds, conversion.validUntil ?? Number.MAX_SAFE_INTEGER);
+    if (!Number.isSafeInteger(expiresAt) || expiresAt <= nowSeconds) throw new RelayerError(503, 'price_stale');
     const quoteToken = signQuote(this.quoteKeys.primary, {
       chainId: req.chainId,
       token: req.token,
@@ -749,6 +757,7 @@ export class RelayerService {
     setOutcome: (o: Outcome) => void,
   ): Promise<JobOutcome<SweepResponse>> {
     const { cfg, client, breaker, budget, nonces } = rt;
+    await this.d.sourceChecks?.ensureAgreement(cfg.chainId);
     // Queue time can consume the sweep's margin. Keep the same neutral, pre-broadcast reason as at admission.
     const deadlineTooSoon = (): boolean =>
       requested.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
@@ -831,9 +840,23 @@ export class RelayerService {
     if (firstSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
     const token = cfg.tokens.find((t) => t.address === call.sweep.token);
     if (token === undefined) throw new RelayerError(422, 'token_not_supported');
+    let priceValidUntil: number | undefined;
+    const priceRefusal = (): RelayerError | undefined => {
+      if (priceValidUntil === undefined) return undefined;
+      if (!Number.isSafeInteger(priceValidUntil)) return new RelayerError(503, 'price_unavailable');
+      if (priceValidUntil > Math.floor(this.now() / 1000)) return undefined;
+      this.d.metrics?.inc('relayer_price_stale_total', { chain_id: cfg.chainId });
+      this.alerts.send({ kind: 'price_stale', chainId: cfg.chainId });
+      return new RelayerError(503, 'price_stale');
+    };
     const coversGas = async (estimate: bigint, price: bigint): Promise<boolean> => {
-      const cost = await this.d.tokenPrices.nativeToTokenUnits(cfg.chainId, token, estimate * price);
-      return call.sweep.fee * 100n >= cost * BigInt(this.d.config.gas.coverPercent);
+      const converted = this.d.tokenPrices.quoteNativeToTokenUnits === undefined
+        ? { amount: await this.d.tokenPrices.nativeToTokenUnits(cfg.chainId, token, estimate * price) }
+        : await this.d.tokenPrices.quoteNativeToTokenUnits(cfg.chainId, token, estimate * price);
+      priceValidUntil = converted.validUntil;
+      const refusal = priceRefusal();
+      if (refusal !== undefined) throw refusal;
+      return call.sweep.fee * 100n >= converted.amount * BigInt(this.d.config.gas.coverPercent);
     };
     if (!(await coversGas(firstSimulation.gasEstimate, gasPrice)))
       throw new RelayerError(422, 'fee_below_gas_cost');
@@ -854,6 +877,7 @@ export class RelayerService {
       throw e;
     }
     if (finalSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
+    await this.d.sourceChecks?.ensureAgreement(cfg.chainId);
     if (!(await coversGas(finalSimulation.gasEstimate, sendGasPrice)))
       throw new RelayerError(422, 'fee_below_gas_cost');
     // Next to the send and before anything is reserved: only the nonce read and the send itself follow.
@@ -890,6 +914,8 @@ export class RelayerService {
         preHandoffRefusal = new RelayerError(422, 'deadline_too_soon');
         throw preHandoffRefusal;
       }
+      preHandoffRefusal = priceRefusal();
+      if (preHandoffRefusal !== undefined) throw preHandoffRefusal;
       // Written before anything is signed: a crash from here on restarts with the reservation held and the nonce known.
       // An unwritable journal refuses the sweep (fail closed) instead of sending a transaction a restart would forget.
       try {
@@ -912,6 +938,9 @@ export class RelayerService {
         gasPrice: sendGasPrice,
         // Runs after signing, before the broadcast; throwing here aborts the send (SendRefused).
         onSigned: (hash) => {
+          // Signing is also asynchronous. A feed deadline must still hold at the last pre-broadcast hook.
+          preHandoffRefusal = priceRefusal();
+          if (preHandoffRefusal !== undefined) throw preHandoffRefusal;
           try {
             this.journal.updateSend(cfg.chainId, id, { status: 'signed', txHash: hash }, true);
           } catch (e) {

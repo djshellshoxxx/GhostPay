@@ -13,9 +13,9 @@ const read = (rel) => readFileSync(join(root, rel), 'utf8');
 const noJq = spawnSync('jq', ['--version']).status === 0 ? false : 'jq not installed';
 
 /** The `run: |` script of the step `- id: <id>` in a workflow, dedented. */
-function stepScript(workflow, id) {
+function stepScript(workflow, id, key = 'id') {
   const lines = workflow.split('\n');
-  const start = lines.findIndex((l) => l.trim() === `- id: ${id}`);
+  const start = lines.findIndex((l) => l.trim() === `- ${key}: ${id}`);
   assert.ok(start >= 0, `step ${id} not found`);
   const stepIndent = lines[start].indexOf('-');
   let i = start + 1;
@@ -150,4 +150,50 @@ test('hosting-kit qualification runs for app-only changes and ties the package t
   assert.match(qualify, /--label "ci-\$\{GITHUB_SHA::12\}"/, 'label carries the commit SHA');
   assert.match(qualify, /--git-dir \.\.\/\.\./, 'manifest records the git commit');
   assert.match(qualify, /ghostpay-host\.mjs verify "\$RUNNER_TEMP\/ghostpay-web\.zip"/, 'archive is verified');
+});
+
+
+test('native workspace shard receives the executable pinned compiler and fails before tests when it is missing', { skip: noJq }, () => {
+  const directory = mkdtempSync(join(tmpdir(), 'gp-native-workflow-'));
+  try {
+    const bin = join(directory, 'bin');
+    mkdirSync(bin);
+    mkdirSync(join(directory, 'packages/contracts'), { recursive: true });
+    writeFileSync(join(bin, 'anvil'), '#!/bin/sh\nexit 0\n', { mode: 0o755 });
+    writeFileSync(join(bin, 'forge'), `#!/usr/bin/env bash
+set -euo pipefail
+[ "$*" = build ]
+[ "\${STUB_COMPILER:-}" = missing ] && exit 0
+mkdir -p "$TEST_SOLC_ROOT/.svm/0.8.28"
+printf '#!/bin/sh\nexit 0\n' > "$TEST_SOLC_ROOT/.svm/0.8.28/solc-0.8.28"
+chmod +x "$TEST_SOLC_ROOT/.svm/0.8.28/solc-0.8.28"
+`, { mode: 0o755 });
+    writeFileSync(join(bin, 'npm'), `#!/usr/bin/env bash
+set -euo pipefail
+if [ "$1" = query ]; then
+  printf '[{"location":"packages/aaa"},{"location":"packages/chain-adapters"}]\n'
+  exit 0
+fi
+[ "$*" = 'test -w packages/chain-adapters --if-present' ]
+[ "\${REQUIRE_ANVIL:-}" = 1 ]
+[ -x "\${ANVIL_BIN:-}" ]
+[ -x "\${SOLC_BIN:-}" ]
+[ "$SOLC_BIN" = "$TEST_SOLC_ROOT/.svm/0.8.28/solc-0.8.28" ]
+printf 'native tests invoked\n' >> "$TEST_SOLC_ROOT/calls"
+`, { mode: 0o755 });
+    const script = join(directory, 'unit-tests.sh');
+    // Redirect the compiler cache path into the disposable fixture without changing the process home directory.
+    writeFileSync(script, stepScript(read('.github/workflows/ci.yml'), 'Unit tests', 'name').replaceAll('$HOME/.svm', '$TEST_SOLC_ROOT/.svm'));
+    const env = { ...process.env, PATH: `${bin}:${process.env.PATH}`, GROUP: 'rest-1', TEST_SOLC_ROOT: directory };
+    const result = spawnSync('bash', [script], { cwd: directory, env, encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(readFileSync(join(directory, 'calls'), 'utf8'), 'native tests invoked\n');
+    rmSync(join(directory, '.svm'), { recursive: true });
+    rmSync(join(directory, 'calls'));
+    const missing = spawnSync('bash', [script], { cwd: directory, env: { ...env, STUB_COMPILER: 'missing' }, encoding: 'utf8' });
+    assert.notEqual(missing.status, 0, 'an absent compiler must fail the shard');
+    assert.throws(() => readFileSync(join(directory, 'calls')), { code: 'ENOENT' }, 'tests must not run when the required compiler is unavailable');
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });

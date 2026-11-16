@@ -98,6 +98,22 @@ describe('SellerPairing', () => {
     }
   });
 
+  it('reports a rejected config without loaded keys and permits a fresh valid preview', async () => {
+    const good = otherDevice();
+    const user = await open();
+    const paste = within(pairing()).getByLabelText('Or paste QR text');
+    fireEvent.change(paste, { target: { value: good.replace('"v":1', '"v":2') } });
+    await user.click(within(pairing()).getByRole('button', { name: 'Use pasted text' }));
+    expect(await within(pairing()).findByText('That QR text was not accepted. Check it and try again.')).toBeTruthy();
+    expect(within(pairing()).getByText(/not a supported public seller config/)).toBeTruthy();
+    expect(within(pairing()).queryByText('Received config (untrusted preview)')).toBeNull();
+    expect(getSessionPublic()).toBeUndefined();
+    fireEvent.change(paste, { target: { value: good } });
+    await user.click(within(pairing()).getByRole('button', { name: 'Use pasted text' }));
+    expect(await within(pairing()).findByText('Received config (untrusted preview)')).toBeTruthy();
+    expect(getSessionPublic()).toBeUndefined();
+  });
+
   it('refuses an oversize config file', async () => {
     generateWaivedSession();
     await open();

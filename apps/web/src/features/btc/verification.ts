@@ -38,7 +38,7 @@ export const SCAN_MODES: readonly ScanMode[] = [
     mode: 'B. Someone else\'s block server',
     keyLeaves: 'No',
     serverLearns: 'Your IP address, the block range, and that you scan',
-    available: 'Yes: enter its URL',
+    available: 'Yes: choose Esplora, with optional BlindBit cross-check or light scanning',
   },
   {
     mode: 'C. Hosted scanning service',

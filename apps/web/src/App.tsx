@@ -23,9 +23,6 @@ export function App(): ReactNode {
     ...(policyOn ? { policy: <PolicyView /> } : {}),
   };
   return (
-    <>
-      <MerchantProfilePanel search={merchantSearch} />
-      <AppShell profile="full" order={order} extraViews={extraViews} sellerArchive={<BackupPanel />} />
-    </>
+    <AppShell profile="full" order={order} extraViews={extraViews} sellerArchive={<BackupPanel />} mainPrelude={<MerchantProfilePanel search={merchantSearch} />} />
   );
 }

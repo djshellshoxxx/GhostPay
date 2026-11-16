@@ -17,7 +17,9 @@ export type AlertKind =
   | 'receipt_timeout'
   | 'quote_budget_exhausted'
   | 'state_write_failed'
-  | 'reject_spike';
+  | 'reject_spike'
+  | 'rpc_disagree'
+  | 'price_stale';
 
 /** An operator alert. */
 export interface AlertEvent {

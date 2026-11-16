@@ -60,6 +60,25 @@ const SIGNED = (chainId: number, sweep: string = SWEEP_CONTRACT, signer: Uint8Ar
 };
 
 describe('parseConfig', () => {
+  it('selects registry feed pricing explicitly without a fixed-price fallback', () => {
+    const c = parse(good({ chains: [chain({ nativeUsdPrice: undefined, nativeUsdFeed: { maxAgeSeconds: 300 } })] }));
+    expect(c.chains[0]?.nativeUsdMicro).toBeUndefined();
+    expect(c.chains[0]?.nativeUsdFeed).toMatchObject({ maxAgeSeconds: 300, feed: { base: 'ETH', quote: 'USD', decimals: 8 } });
+    expect(() => parse(good({ chains: [chain({ nativeUsdFeed: { maxAgeSeconds: 300 } })] }))).toThrow(/exactly one/);
+    expect(() => parse(good({ chains: [chain({ nativeUsdPrice: undefined })] }))).toThrow(/exactly one/);
+    for (const maxAgeSeconds of [0, 604801, 1.5, '300']) {
+      expect(() => parse(good({ chains: [chain({ nativeUsdPrice: undefined, nativeUsdFeed: { maxAgeSeconds } })] }))).toThrow(/maxAgeSeconds/);
+    }
+  });
+  it('validates configured secondary endpoint without claiming provider independence', () => {
+    const c = parse(good({ chains: [chain({ secondaryRpcUrlEnv: 'OTHER_RPC' })] }), { env: { OTHER_RPC: 'https://other.example' } });
+    expect(c.chains[0]?.secondaryRpcUrl).toBe('https://other.example/');
+    for (const value of ['https://rpc.example/key', 'http://private.example', 'https://user:secret@other.example']) {
+      expect(() => parse(good({ chains: [chain({ secondaryRpcUrl: value })] }))).toThrow(/secondaryRpc/);
+    }
+    expect(() => parse(good({ chains: [chain({ secondaryRpcUrlEnv: 'MISSING' })] }))).toThrow(/secondaryRpc/);
+    expect(() => parse(good({ chains: [chain({ secondaryRpcUrl: 'https://other.example', secondaryRpcUrlEnv: 'OTHER_RPC' })] }))).toThrow(/secondaryRpc/);
+  });
   it('accepts a minimal config and applies documented defaults', () => {
     const c = parse(good());
     expect(c.host).toBe('127.0.0.1');

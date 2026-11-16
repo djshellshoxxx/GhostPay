@@ -2097,7 +2097,7 @@
     "btc.verification.mode.other.mode": "ب. خادم كتل يملكه شخص آخر",
     "btc.verification.mode.other.keyLeaves": "لا",
     "btc.verification.mode.other.serverLearns": "عنوان IP الخاص بك، ونطاق الكتل، وأنك تقوم بالمسح",
-    "btc.verification.mode.other.available": "نعم: أدخل عنوان URL الخاص به",
+    "btc.verification.mode.other.available": "Yes: choose Esplora, with optional BlindBit cross-check or light scanning",
     "btc.verification.mode.hosted.mode": "ج. خدمة مسح مستضافة",
     "btc.verification.mode.hosted.keyLeaves": "نعم (مفتاح المسح)",
     "btc.verification.mode.hosted.serverLearns": "كل دفعة تستلمها",
@@ -2241,6 +2241,22 @@
     "merchantProfile.issue.expiry": "Invoice validity duration in seconds",
     "btc.persistence.page": "Saved payment blocks {first}–{last} of {total} were rechecked. Other saved payments remain historical until checked.",
     "btc.persistence.previous": "Check previous saved payment blocks",
-    "btc.persistence.next": "Check next saved payment blocks"
+    "btc.persistence.next": "Check next saved payment blocks",
+    "btc.oracle.modeLabel": "Additional scan source",
+    "btc.oracle.none": "Esplora only (full-block checks)",
+    "btc.oracle.http": "BlindBit HTTP + Esplora",
+    "btc.oracle.grpc": "BlindBit gRPC-Web + Esplora",
+    "btc.oracle.urlLabel": "BlindBit oracle URL",
+    "btc.oracle.urlHint": "Choose a separate server with the full, unfiltered index for this exact network. HTTP routes are legacy; gRPC-Web requires a compatible HTTPS proxy.",
+    "btc.oracle.fullHelp": "Full-block mode downloads and verifies Esplora blocks, then compares every block's complete tweaks and outputs with the oracle. A disagreement stops the scan. This does not reduce block-download bandwidth.",
+    "btc.oracle.light": "Use light oracle scans with transaction inclusion proofs",
+    "btc.oracle.lightHelp": "The oracle supplies scan data. Every matched output requires a raw-transaction and Merkle inclusion proof against the checked header chain before it can be swept. The oracle can still omit payments; the proof server learns which transaction IDs match your wallet.",
+    "btc.oracle.disclosure": "Selected servers learn your IP and requested block ranges. They never receive scan or spend keys. Different URLs do not prove that operators are independent. Requests begin only when you start a check or scan.",
+    "btc.oracle.secondEnable": "Compare every scanned block with a second oracle",
+    "btc.oracle.secondKind": "Second oracle protocol",
+    "btc.oracle.secondUrl": "Second oracle URL",
+    "btc.oracle.lightChecks": "Light mode recomputes each matched transaction ID and verifies its exact taproot output, amount and Merkle inclusion against the checked header hash. It does not verify witness data, previous outputs, scripts or full-block consensus.",
+    "btc.oracle.lightLimits": "Inclusion proofs do not prove that the oracle supplied every payment or that the server showed the best chain. A second oracle can expose disagreement but colluding servers can still omit data. Spent status remains the Esplora server's report.",
+    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations."
   }
 }

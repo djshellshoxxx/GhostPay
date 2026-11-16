@@ -1,6 +1,6 @@
 import { createScanState, type ScanState } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it, vi } from 'vitest';
-import { EsploraClient } from './esplora';
+import { EsploraClient, type EsploraFetch } from './esplora';
 import { mockChain, walletA } from './fixtures.testutil';
 import { EsploraHeaderSource, loadHeaderChain, MemoryHeaderStore, syncHeaders } from './headers';
 import { scanForPayments, wipeFound } from './scan';
@@ -19,6 +19,12 @@ async function fixture() {
 }
 
 describe('BTC dedicated worker message integration', () => {
+  it('requires an injected transport before creating a worker', async () => {
+    const f = await fixture(); const factory = vi.fn(() => { throw new Error('must not start'); });
+    await expect(scanForPaymentsInWorker(f, factory, undefined as unknown as EsploraFetch)).rejects.toMatchObject({ code: 'INVALID_INPUT' });
+    expect(factory).not.toHaveBeenCalled();
+  });
+
   it('matches direct scanning through cloned messages without sending spend secrets and wipes worker copies', async () => {
     const f = await fixture(); const direct = await scanForPayments(f);
     const result = await scanForPaymentsInWorker(f, f.factory, f.chain.fetchFn);
@@ -70,9 +76,9 @@ describe('BTC dedicated worker message integration', () => {
 
   it('rejects worker startup and message errors without leaving an active session', async () => {
     const f = await fixture();
-    await expect(scanForPaymentsInWorker(f, () => { throw new Error('CSP'); })).rejects.toMatchObject({ code: 'UNSUPPORTED' });
+    await expect(scanForPaymentsInWorker(f, () => { throw new Error('CSP'); }, f.chain.fetchFn)).rejects.toMatchObject({ code: 'UNSUPPORTED' });
     let worker!: BtcScanWorker; const terminate = vi.fn();
-    const done = scanForPaymentsInWorker(f, () => (worker = { onmessage: null, onerror: null, onmessageerror: null, postMessage: () => {}, terminate }));
+    const done = scanForPaymentsInWorker(f, () => (worker = { onmessage: null, onerror: null, onmessageerror: null, postMessage: () => {}, terminate }), f.chain.fetchFn);
     worker.onmessageerror?.(); await expect(done).rejects.toMatchObject({ code: 'INVALID_RESPONSE' }); expect(terminate).toHaveBeenCalledOnce();
   });
 });
@@ -85,7 +91,7 @@ describe('BTC worker stale and untrusted boundary', () => {
     const running = scanForPaymentsInWorker({ ...f, signal: ac.signal }, () => (fake = {
       onmessage: null, onerror: null, onmessageerror: null, terminate,
       postMessage: (m) => { posted = structuredClone(m); },
-    }));
+    }), f.chain.fetchFn);
     const handler = fake.onmessage!;
     handler({ data: { type: 'error', id: posted.id + 1, code: 'INVALID_INPUT' } });
     expect(terminate).not.toHaveBeenCalled();
@@ -101,7 +107,7 @@ describe('BTC worker stale and untrusted boundary', () => {
     const f = await fixture(); let fake!: BtcScanWorker; let id = 0; const tweak = new Uint8Array(32).fill(4);
     const running = scanForPaymentsInWorker(f, () => (fake = {
       onmessage: null, onerror: null, onmessageerror: null, terminate: () => {}, postMessage: (m) => { id = m.id; },
-    }));
+    }), f.chain.fetchFn);
     fake.onmessage?.({ data: { type: 'done', id, result: { found: [null, { spendTweak: tweak }] } } as unknown as BtcScanResponse });
     await expect(running).rejects.toMatchObject({ code: 'INVALID_RESPONSE' }); expect(tweak.every((b) => b === 0)).toBe(true);
   });

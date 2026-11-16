@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
-import { buildChainClients, buildRelayer } from './runtime.js';
+import { buildChainClients, buildRelayer, buildSourceClients } from './runtime.js';
 import { FakeChain, testConfig } from './harness.testutil.js';
 import { createLogger } from './log.js';
 import { Metrics } from './metrics.js';
@@ -29,6 +29,15 @@ function fakeRpc(chainId: number): Promise<string> {
 }
 
 describe('buildChainClients', () => {
+  it('builds only requested source clients and checks both configured chain identities', async () => {
+    expect(await buildSourceClients(testConfig())).toEqual(new Map());
+    const primary = await fakeRpc(11155111); const secondary = await fakeRpc(11155111);
+    const config = testConfig({ allowInsecureLocalhostRpc: true }); const chain = config.chains[0]!;
+    const sources = await buildSourceClients({ ...config, chains: [{ ...chain, rpcUrl: primary, secondaryRpcUrl: secondary }] });
+    expect(sources.get(11155111)?.primary.chainId).toBe(11155111); expect(sources.get(11155111)?.secondary?.chainId).toBe(11155111);
+    const wrong = await fakeRpc(1);
+    await expect(buildSourceClients({ ...config, chains: [{ ...chain, rpcUrl: primary, secondaryRpcUrl: wrong }] })).rejects.toMatchObject({ code: 'CHAIN_MISMATCH' });
+  });
   it('verifies the endpoint chain id and builds a client per chain', async () => {
     const url = await fakeRpc(11155111);
     const cfg = testConfig({ allowInsecureLocalhostRpc: true });

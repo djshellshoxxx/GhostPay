@@ -286,6 +286,8 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(actualInvoice.verification.signatureValid).toBe(true);
     const registeredInvoiceDigest = `0x${bytesToHex(calculateInvoiceDigest(actualInvoice.invoice))}`;
     await auditAccessibility(page, 'flow-signed-invoice-created-and-registered');
+    // Fix the canonical payment header time inside this signed invoice's window. The scan wall clock is not evidence.
+    state.blockTimestamp = actualInvoice.invoice.quote.timestamp;
     // Full canonical evidence, derived on the Node side from public data only (same shape as Scan.test.tsx).
     const { mine, parsed, txHash } = stageVerifiedErc20Payment(state, meta);
 

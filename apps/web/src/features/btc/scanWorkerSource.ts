@@ -40,7 +40,7 @@ export class BtcScanSourceBridge {
         return response;
       });
       const response = await Promise.race([fetching, aborted]);
-      const body = await Promise.race([readBody(response, signal), aborted]);
+      const body = await Promise.race([readScanSourceBody(response, signal), aborted]);
       if (!this.closed && !signal.aborted) this.send({ type: 'sourceResult', id: m.id, requestId: m.requestId, status: response.status, body });
     } catch (e) {
       if (!this.closed && !signal.aborted) this.send({ type: 'sourceError', id: m.id, requestId: m.requestId,
@@ -52,7 +52,7 @@ export class BtcScanSourceBridge {
     }
   }
 }
-async function readBody(response: Response, signal: AbortSignal): Promise<Uint8Array<ArrayBuffer>> {
+export async function readScanSourceBody(response: Response, signal: AbortSignal): Promise<Uint8Array<ArrayBuffer>> {
   if (Number(response.headers.get('content-length')) > MAX_SOURCE_BYTES) {
     void response.body?.cancel().catch(() => undefined); throw new SilentPaymentError('INVALID_RESPONSE');
   }

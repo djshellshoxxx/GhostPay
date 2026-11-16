@@ -4,6 +4,24 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  bitcoinOracleSources: [
+    'btc.oracle.modeLabel',
+    'btc.oracle.none',
+    'btc.oracle.http',
+    'btc.oracle.grpc',
+    'btc.oracle.urlLabel',
+    'btc.oracle.urlHint',
+    'btc.oracle.fullHelp',
+    'btc.oracle.light',
+    'btc.oracle.lightHelp',
+    'btc.oracle.disclosure',
+    'btc.oracle.secondEnable',
+    'btc.oracle.secondKind',
+    'btc.oracle.secondUrl',
+    'btc.oracle.lightChecks',
+    'btc.oracle.lightLimits',
+    'btc.oracle.resultsNote',
+  ],
   merchantTemplateIssuance: [
     'merchantProfile.issue.title',
     'merchantProfile.issue.authority',

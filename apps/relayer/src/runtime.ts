@@ -2,7 +2,7 @@ import { timedRpcFetch } from './rpcMetrics.js';
 import { createPublicClient, createWalletClient, defineChain, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { monotonicNow, LossBudget } from '@ghostpay/relayer-guard';
-import { createClient, findChain, verifyManifestOnChain, type ChainConfig } from '@ghostpay/chain-adapters';
+import { createAggregatorReader, createClient, findChain, verifyManifestOnChain, type ChainConfig, type RpcClient } from '@ghostpay/chain-adapters';
 import { createViemChainClient, type ChainClient } from './chain.js';
 import { createWebhookAlerts, nullAlerts, type AlertSink } from './alerts.js';
 import { Metrics } from './metrics.js';
@@ -10,7 +10,9 @@ import { MetricsHttpServer } from './metricsServer.js';
 import { DEV_CHAIN_ID, type RelayerConfig } from './config.js';
 import { KeyHasher, RateLimiter } from './limiter.js';
 import type { Logger } from './log.js';
-import { FixedStablePriceSource, RpcGasPriceSource } from './pricing.js';
+import { RpcGasPriceSource } from './pricing.js';
+import { ConfiguredPriceSource, type NativeFeedSource } from './feedPricing.js';
+import { CanonicalSourceChecks, type SourcePair } from './sourceChecks.js';
 import { RelayerHttpServer } from './server.js';
 import { RelayerService, lossCleanReserve } from './service.js';
 import type { PolicyGate } from './policy.js';
@@ -32,6 +34,8 @@ export interface RuntimeDeps {
   readonly policy?: PolicyGate;
   /** Replaces the real chain clients (tests). */
   readonly clients?: ReadonlyMap<number, ChainClient>;
+  /** Replaces configured read-only source clients in tests. Required source entries still fail closed if absent. */
+  readonly sourceClients?: ReadonlyMap<number, { readonly primary: RpcClient; readonly secondary?: RpcClient }>;
   readonly now?: () => number;
   /** Monotonic ms clock for breaker, limiters and loss budget (default: `now` when given, else `performance.now`). */
   readonly monotonic?: () => number;
@@ -111,6 +115,20 @@ export async function buildChainClients(config: RelayerConfig, hotKey: Uint8Arra
   return out;
 }
 
+/** Builds only explicitly requested read-only sources, with bounded requests and periodic chain-id checks. */
+export async function buildSourceClients(config: RelayerConfig): Promise<Map<number, { primary: RpcClient; secondary?: RpcClient }>> {
+  const sources = new Map<number, { primary: RpcClient; secondary?: RpcClient }>();
+  for (const chain of config.chains) {
+    if (chain.secondaryRpcUrl === undefined && chain.nativeUsdFeed === undefined) continue;
+    const descriptor = findChain(chain.chainId) ?? { chainId: chain.chainId, name: chain.name, nativeSymbol: 'ETH', nativeDecimals: 18, testnet: true, enabled: true, finalityDepth: 1, getLogsMaxRange: 1000, blockTimeMs: 1000 };
+    const options = { allowInsecureLocalhost: config.allowInsecureLocalhostRpc, timeoutMs: 10_000, maxResponseBytes: 64 * 1024, retries: 0 };
+    const primary = await createClient(descriptor, chain.rpcUrl, options);
+    const secondary = chain.secondaryRpcUrl === undefined ? undefined : await createClient(descriptor, chain.secondaryRpcUrl, options);
+    sources.set(chain.chainId, { primary, ...(secondary === undefined ? {} : { secondary }) });
+  }
+  return sources;
+}
+
 /**
  * Wires limiter, price sources, service and HTTP server.
  *
@@ -133,6 +151,22 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     (d.config.alertWebhookUrl === undefined || d.config.alertWebhookSecret === undefined || d.config.alertWebhookAllowedHosts === undefined
       ? nullAlerts
       : createWebhookAlerts({ url: d.config.alertWebhookUrl, secret: d.config.alertWebhookSecret, allowedHosts: d.config.alertWebhookAllowedHosts, logger: d.logger, now: mono }));
+  const sourceClients = d.sourceClients ?? await buildSourceClients(d.config);
+  const pairs = new Map<number, SourcePair>();
+  const feeds = new Map<number, NativeFeedSource>();
+  const fixed = new Map<number, bigint>();
+  for (const chain of d.config.chains) {
+    const clientsForChain = sourceClients.get(chain.chainId);
+    if (chain.secondaryRpcUrl !== undefined) {
+      if (clientsForChain?.secondary === undefined) throw new ConfigError('configured secondary RPC is unavailable');
+      pairs.set(chain.chainId, { primary: clientsForChain.primary, secondary: clientsForChain.secondary, finalityDepth: findChain(chain.chainId)?.finalityDepth ?? 1 });
+    }
+    if (chain.nativeUsdFeed !== undefined) {
+      if (clientsForChain === undefined || clientsForChain.primary.chainId !== chain.chainId) throw new ConfigError('configured native/USD reader is unavailable');
+      feeds.set(chain.chainId, { ...chain.nativeUsdFeed, reader: createAggregatorReader(clientsForChain.primary) });
+    } else if (chain.nativeUsdMicro !== undefined) fixed.set(chain.chainId, chain.nativeUsdMicro);
+    else throw new ConfigError('native/USD price source is missing');
+  }
   const lb = d.config.lossBudget;
   const lossBudget = new LossBudget(
     { windowMs: lb.windowSeconds * 1000, perKeyLimit: lb.perKeyWei, globalLimit: lb.globalWei, maxKeys: lb.maxKeys, cleanReserve: lossCleanReserve(lb.globalWei) },
@@ -149,7 +183,8 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     quoteSecret: d.quoteSecret,
     ...(d.previousQuoteSecret === undefined ? {} : { previousQuoteSecret: d.previousQuoteSecret }),
     gasPrices: new RpcGasPriceSource(clients),
-    tokenPrices: new FixedStablePriceSource(new Map(d.config.chains.map((c) => [c.chainId, c.nativeUsdMicro]))),
+    tokenPrices: new ConfiguredPriceSource(fixed, feeds, alerts, metrics, now),
+    sourceChecks: new CanonicalSourceChecks(pairs, alerts, metrics),
     ownerLimiter,
     ...(d.policy === undefined ? {} : { policy: d.policy }),
     logger: d.logger,

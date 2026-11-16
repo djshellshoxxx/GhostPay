@@ -12,6 +12,7 @@ import { I18nProvider, useI18n } from '../i18n/context';
 import * as languages from '../i18n/languages';
 import { makeServices, renderWith } from '../test/render';
 import { BtcView } from './btc/BtcView';
+import { inlineBtcScanWorker } from './btc/scanWorker.testutil';
 import { mockChain as btcChain, SEED_A as BTC_SEED, walletA as btcWallet } from './btc/fixtures.testutil';
 import { SolanaView } from './solana/SolanaView';
 import { mockChain as solChain, SEED_A as SOL_SEED, DEST as SOL_DEST, walletA as solWallet } from './solana/fixtures.testutil';
@@ -27,7 +28,7 @@ type User = ReturnType<typeof userEvent.setup>;
 type Chain = { readonly fetchFn: (url: string, init: RequestInit) => Promise<Response>; readonly calls: string[]; readonly broadcasts: string[] };
 type Fixture = { readonly name: string; readonly prefix: string; readonly make: () => Chain; readonly view: ReactNode; readonly net: string; readonly endpointLabel: RegExp; readonly endpoint: string; readonly seed: string; readonly importLabel: RegExp; readonly importAction: string; readonly first: RegExp; readonly found: RegExp; readonly destination: string };
 const FIXTURES: readonly Fixture[] = [
-  { name: 'Bitcoin', prefix: 'btc', make: () => { const chain = btcChain('regtest', btcWallet()); return { ...chain, calls: chain.requests }; }, view: <BtcView />, net: 'regtest', endpointLabel: /Esplora server URL/, endpoint: 'https://esplora.test/api', seed: BTC_SEED, importLabel: /Or import a seed/, importAction: 'Import seed', first: /First block height/, found: /1 unspent payment/, destination: BCRT },
+  { name: 'Bitcoin', prefix: 'btc', make: () => { const chain = btcChain('regtest', btcWallet()); return { ...chain, calls: chain.requests }; }, view: <BtcView scanWorkerFactory={inlineBtcScanWorker} />, net: 'regtest', endpointLabel: /Esplora server URL/, endpoint: 'https://esplora.test/api', seed: BTC_SEED, importLabel: /Or import a seed/, importAction: 'Import seed', first: /First block height/, found: /1 unspent payment/, destination: BCRT },
   { name: 'Solana', prefix: 'sol', make: () => solChain('localnet', solWallet()), view: <SolanaView />, net: 'localnet', endpointLabel: /RPC server URL/, endpoint: 'http://127.0.0.1:8899', seed: SOL_SEED, importLabel: /Or import a seed/, importAction: 'Import seed', first: /First slot/, found: /1 funded payment/, destination: SOL_DEST },
   { name: 'TRON', prefix: 'tron', make: () => mockTron(tronWallet()), view: <TronView />, net: 'local', endpointLabel: /Node URL/, endpoint: 'http://127.0.0.1:9090', seed: BACKUP_A, importLabel: /Or import keys/, importAction: 'Import keys', first: /First block/, found: /1 funded payment/, destination: TRON_DEST },
 ];

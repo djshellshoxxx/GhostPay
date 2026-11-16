@@ -183,8 +183,10 @@ jobs:
               if [[ "$needs_contract_artifacts" == true ]]; then
                 (cd packages/contracts && forge build)
                 anvil_bin="$(command -v anvil)"
+                solc_bin="$HOME/.svm/0.8.28/solc-0.8.28"
                 test -x "$anvil_bin"
-                ANVIL_BIN="$anvil_bin" REQUIRE_ANVIL=1 npm test "${anvil_args[@]}" --if-present
+                test -x "$solc_bin"
+                ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test "${anvil_args[@]}" --if-present
               fi
               if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi
               if [ "$shard" = 0 ]; then

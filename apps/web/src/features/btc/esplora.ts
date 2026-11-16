@@ -267,6 +267,7 @@ export interface EsploraClientOptions {
   /** Deadline per request in ms, body download included (default 30 s). The caller's signal can end it sooner. */
   readonly timeoutMs?: number;
 }
+export interface EsploraMerkleProof { readonly block_height: number; readonly pos: number; readonly merkle: readonly string[] }
 
 /**
  * Minimal client for the Esplora REST API (the Blockstream/mempool.space style used by many servers).
@@ -333,6 +334,28 @@ export class EsploraClient {
     if (!Number.isInteger(height) || height < 0 || height > 0xffffffff) throw new SilentPaymentError('INVALID_INPUT');
     const t = (await this.text(`/block-height/${String(height)}`, {}, signal)).trim().toLowerCase();
     return HEX64.test(t) ? t : bad();
+  }
+
+  /** Raw matched transaction only; this request reveals the selected transaction id to the proof server. */
+  public async rawTransaction(txid: string, signal?: AbortSignal): Promise<string> {
+    if (!HEX64.test(txid)) throw new SilentPaymentError('INVALID_INPUT');
+    const raw = (await this.request(`/tx/${txid}/hex`, {}, signal, 8_000_000)).text.trim();
+    return hexStr(raw, 20);
+  }
+
+  /** Inclusion branch, still untrusted until checked against the locally validated header chain. */
+  public async merkleProof(txid: string, signal?: AbortSignal): Promise<EsploraMerkleProof> {
+    if (!HEX64.test(txid)) throw new SilentPaymentError('INVALID_INPUT');
+    const value = parseJson((await this.request(`/tx/${txid}/merkle-proof`, {}, signal, 4096)).text);
+    if (!isRecord(value) || !Array.isArray(value['merkle']) || value['merkle'].length > 32) return bad();
+    const height = uint(value['block_height']); const pos = uint(value['pos']);
+    if (height > 0xffff_ffff || pos > 0xffff_ffff) return bad();
+    const branch: string[] = [];
+    for (const item of value['merkle'] as unknown[]) {
+      if (typeof item !== 'string' || !HEX64.test(item)) return bad();
+      branch.push(item);
+    }
+    return { block_height: height, pos, merkle: branch };
   }
 
   /**

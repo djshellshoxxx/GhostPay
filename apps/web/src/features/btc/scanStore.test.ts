@@ -31,6 +31,23 @@ describe('encrypted BTC scan continuity', () => {
     expect(await second.load()).toEqual(sample());
   });
 
+  it('binds encrypted continuity to the exact source policy without exposing its URLs', async () => {
+    const store = new Store(); const wallet = walletA();
+    const policy = 'https://private-source.test|http|light';
+    const first = await BtcScanVault.open(wallet, store, () => undefined, policy);
+    await first.load(); await first.save(sample()); first.lock();
+    expect(JSON.stringify([...store.values])).not.toContain('private-source');
+    const same = await BtcScanVault.open(wallet, store, () => undefined, policy);
+    expect(await same.load()).toEqual(sample());
+    const defaultMode = await BtcScanVault.open(wallet, store, () => undefined);
+    expect(await defaultMode.load()).toBeUndefined();
+    const other = await BtcScanVault.open(wallet, store, () => undefined, policy + '|second');
+    expect(await other.load()).toBeUndefined(); await other.save(sample());
+    const entries = [...store.values]; store.values.set(entries[1]![0], entries[0]![1]);
+    await expect(other.load()).rejects.toThrow(); same.lock(); defaultMode.lock(); other.lock();
+    await expect(BtcScanVault.open(wallet, store, () => undefined, 'x'.repeat(8193))).rejects.toThrow();
+  });
+
   it('uses independently verifiable domain-separated HKDF/AES-GCM with fresh ciphertext', async () => {
     const store = new Store(); const wallet = walletA();
     const vault = await BtcScanVault.open(wallet, store, () => undefined);

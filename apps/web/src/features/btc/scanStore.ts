@@ -23,11 +23,12 @@ export class BtcScanVault {
   private constructor(private readonly store: ReconciliationVaultStore, private readonly scope: string,
     private readonly network: BtcWallet['net']['id'], private readonly externalGuard: () => void) {}
 
-  public static async open(wallet: BtcWallet, store: ReconciliationVaultStore, guard: () => void): Promise<BtcScanVault> {
+  public static async open(wallet: BtcWallet, store: ReconciliationVaultStore, guard: () => void, sourcePolicy?: string): Promise<BtcScanVault> {
     guard();
+    if (sourcePolicy !== undefined && (typeof sourcePolicy !== 'string' || sourcePolicy.length > 8192)) return invalid();
     const raw = new Uint8Array(wallet.keys.scanSecret);
     if (raw.length !== 32 || raw.every((b) => b === 0)) return invalid();
-    const scope = bytesToHex(sha256(text.encode(`${DOMAIN}:${wallet.net.id}:${wallet.address}`)));
+    const scope = bytesToHex(sha256(text.encode(`${DOMAIN}:${wallet.net.id}:${wallet.address}${sourcePolicy === undefined ? '' : `:source:${sourcePolicy}`}`)));
     const vault = new BtcScanVault(store, scope, wallet.net.id, guard);
     try {
       const base = await crypto.subtle.importKey('raw', raw, 'HKDF', false, ['deriveKey']);

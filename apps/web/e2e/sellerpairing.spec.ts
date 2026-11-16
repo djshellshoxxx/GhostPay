@@ -18,8 +18,14 @@ test('public seller config exports on one device and previews on another without
   await b.goto('/');
   await b.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys' }).click();
   const pairing = b.locator('section[aria-labelledby="pairing-h"]');
-  await pairing.getByLabel('Or paste QR text').fill(text.replace('"v":1', '"v":2'));
+  const invalidVersion = text.replace('"v":1', '"v":2');
+  expect(invalidVersion).not.toBe(text);
+  expect((JSON.parse(invalidVersion) as { v: number }).v).toBe(2);
+  await pairing.getByLabel('Or paste QR text').fill(invalidVersion);
+  await expect(pairing.getByLabel('Or paste QR text')).toHaveValue(invalidVersion);
   await pairing.getByRole('button', { name: 'Use pasted text' }).click();
+  await expect(pairing.getByRole('alert')).toContainText('not a supported public seller config');
+  await expect(pairing.getByText('Received config (untrusted preview)')).toHaveCount(0);
   await expect(pairing.getByText('That QR text was not accepted. Check it and try again.')).toBeVisible();
   await pairing.getByLabel('Or paste QR text').fill(text);
   await pairing.getByRole('button', { name: 'Use pasted text' }).click();

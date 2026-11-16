@@ -14,6 +14,8 @@ import {
 import type { EsploraClient } from './esplora';
 import { EsploraTweakSource } from './esplora';
 import type { BtcWallet } from './wallet';
+import { verifyMatchedOutput } from './inclusion';
+import { CrossCheckedTweakSource, OracleTweakSource, type BtcOracleConfig, type ReadOracleBlock } from './oracleSource';
 
 /** A detected, still-unspent silent payment output. */
 export interface FoundPayment extends SpendableOutput {
@@ -51,6 +53,11 @@ export interface ScanParams {
   readonly recoveryLimit?: number;
   /** Called after each fully scanned block; awaiting the encrypted commit bounds crash/cancel loss to one block. */
   readonly onState?: (state: ScanState) => void | Promise<void>;
+  /** Explicit independent oracle policy; worker client owns its transport and never sends keys. */
+  readonly oracle?: BtcOracleConfig;
+  /** Worker-only typed bridge. Every full-block result must agree before it is offered or checkpointed. */
+  readonly readOracle?: ReadOracleBlock;
+  readonly readSecondOracle?: ReadOracleBlock;
 }
 
 export interface ScanResult {
@@ -82,7 +89,14 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const { client, wallet, fromHeight, signal } = p;
   const checkAbort = (): void => { if (signal?.aborted === true) throw new SilentPaymentError('ABORTED'); };
   if (!Number.isInteger(fromHeight) || fromHeight < 0) throw new SilentPaymentError('INVALID_INPUT');
-  const plain = new EsploraTweakSource(client, wallet.net);
+  const esplora = new EsploraTweakSource(client, wallet.net);
+  const lightHeaders = p.oracle?.mode === 'light' ? p.headers : undefined;
+  if (p.oracle?.mode === 'light' && lightHeaders === undefined) throw new SilentPaymentError('INVALID_INPUT');
+  if (p.oracle !== undefined && p.readOracle === undefined) throw new SilentPaymentError('INVALID_INPUT');
+  const chosen: TweakSource = p.oracle?.mode === 'light' && p.readOracle !== undefined
+    ? new OracleTweakSource(p.readOracle, () => client.tipHeight(signal))
+    : p.readOracle === undefined ? esplora : new CrossCheckedTweakSource(esplora, p.readOracle);
+  const plain = p.readSecondOracle === undefined ? chosen : new CrossCheckedTweakSource(chosen, p.readSecondOracle);
   const source: TweakSource = p.headers === undefined ? plain : new HeaderAnchoredTweakSource(plain, p.headers);
   const headerAnchored = p.headers !== undefined;
   const serverTip = await client.tipHeight(signal);
@@ -112,9 +126,12 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   let recoveredHistory: ScanResult['recoveredHistory'];
   try {
     const keys = { scanSecret: wallet.keys.scanSecret, spendPublicKey: wallet.keys.spendPublicKey };
-    const accept = (r: ReceivedOutput): void => {
-      if (tweaks.size >= MAX_SCAN_MATCHES) { zeroize(r.spendTweak); throw new SilentPaymentError('UNSUPPORTED'); }
+    const trackTweak = (r: ReceivedOutput): void => {
+      if (!tweaks.has(r.spendTweak) && tweaks.size >= MAX_SCAN_MATCHES) { zeroize(r.spendTweak); throw new SilentPaymentError('UNSUPPORTED'); }
       tweaks.add(r.spendTweak);
+    };
+    const accept = (r: ReceivedOutput): void => {
+      trackTweak(r);
       p.onBlock?.(r.height);
       if (r.txid === undefined || r.vout === undefined || r.amountSats === undefined) return;
       const id = `${r.txid}:${String(r.vout)}`;
@@ -125,7 +142,12 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
         spendTweak: r.spendTweak, height: r.height, blockHash: r.blockHash, label: r.label, duplicateKey: r.duplicateKey,
       });
     };
-    const common = { source, keys, toHeight, ...(signal === undefined ? {} : { signal }) };
+    const common = { source, keys, toHeight, ...(signal === undefined ? {} : { signal }),
+      ...(lightHeaders === undefined ? {} : { verifyOutput: (output: ReceivedOutput, proofSignal?: AbortSignal) => {
+        trackTweak(output);
+        return verifyMatchedOutput(client, lightHeaders, output, proofSignal);
+      } }),
+    };
     if (reconciled === undefined) {
       for await (const r of scanBlocks({ ...common, fromHeight,
         onBlock: ({ height, blockHash }) => { blocks.push({ height, hash: blockHash }); },

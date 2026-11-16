@@ -40,6 +40,17 @@ describe('App shell', () => {
     }
   });
 
+  it('keeps the skip link first and merchant controls inside the main landmark', async () => {
+    const user = userEvent.setup();
+    renderApp();
+    await user.tab();
+    expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Skip to content' }));
+    await user.keyboard('{Enter}');
+    const main = screen.getByRole('main');
+    expect(document.activeElement).toBe(main);
+    expect(within(main).getByText('Merchant profile')).toBeTruthy();
+  });
+
   it('moves focus to the main region on navigation and has a skip link', async () => {
     const user = userEvent.setup();
     renderApp();
