@@ -30,9 +30,9 @@ export class BtcOracleBridge {
     let abort!: () => void;
     const aborted = new Promise<never>((_, reject) => { abort = () => { reject(new SilentPaymentError('TRANSPORT_FAILURE')); }; stop.signal.addEventListener('abort', abort, { once: true }); });
     const bounded: EsploraFetch = async (url, init) => {
-      const fetch = this.fetchFn(url, { ...init, credentials: 'omit', redirect: 'error', cache: 'no-store', referrerPolicy: 'no-referrer', signal: stop.signal });
-      void fetch.then((response) => { if (stop.signal.aborted || this.closed) void response.body?.cancel().catch(() => undefined); }, () => undefined);
-      const response = await Promise.race([fetch, aborted]);
+      const pendingResponse = this.fetchFn(url, { ...init, credentials: 'omit', redirect: 'error', cache: 'no-store', referrerPolicy: 'no-referrer', signal: stop.signal });
+      void pendingResponse.then((response) => { if (stop.signal.aborted || this.closed) void response.body?.cancel().catch(() => undefined); }, () => undefined);
+      const response = await Promise.race([pendingResponse, aborted]);
       const body = await Promise.race([readScanSourceBody(response, stop.signal), aborted]);
       if (stop.signal.aborted || this.closed) throw new SilentPaymentError('ABORTED');
       return new Response([204, 205, 304].includes(response.status) ? null : body, { status: response.status, headers: response.headers });
