@@ -141,6 +141,8 @@ const WEI = 10n ** 18n;
 export class SponsorService {
   private readonly chains = new Map<number, ChainSponsorConfig>();
   private readonly quotes = new Map<string, StoredQuote>();
+  /** Per-chain tail: simulate + send run one at a time so the hot key's nonce is never raced. */
+  private readonly sendLanes = new Map<number, Promise<unknown>>();
   private readonly now: () => number;
   private readonly rand: (n: number) => Uint8Array;
 
@@ -514,15 +516,29 @@ export class SponsorService {
     this.quotes.delete(quoteId); // single use, also when the transaction later fails
     let cls: RelayResultClass = 'rpc_error';
     try {
-      const sim = await cfg.chain.simulate(call);
-      if (!sim.ok) {
+      const sent = await this.inLane(cfg.chain.chainId, async () => {
+        const sim = await cfg.chain.simulate(call);
+        if (!sim.ok) return null;
+        cls = 'send_failed';
+        const gasLimit = (sim.gas * 12n) / 10n;
+        const gasPrice = await cfg.chain.gasPrice();
+        const hash = await cfg.chain.send(call, gasLimit);
+        return { hash, worst: gasLimit * gasPrice };
+      });
+      if (sent === null) {
         cls = 'simulation_reverted';
         throw new PayerSponsorError('SIMULATION_FAILED', 'simulation reverted');
       }
-      cls = 'send_failed';
-      const txHash = await cfg.chain.send(call, (sim.gas * 12n) / 10n);
+      const txHash = sent.hash;
       cls = 'receipt_timeout';
-      const receipt = await cfg.chain.waitForReceipt(txHash);
+      let receipt: Awaited<ReturnType<typeof cfg.chain.waitForReceipt>>;
+      try {
+        receipt = await cfg.chain.waitForReceipt(txHash);
+      } catch {
+        // Broadcast, outcome unknown: it may still be mined. Charge the worst case and hand the hash back.
+        this.o.loss.charge(ctx.bucket, sent.worst);
+        throw new PayerSponsorError('OUTCOME_UNKNOWN', 'transaction broadcast; outcome not confirmed', txHash);
+      }
       if (!receipt.success || !paidFee(receipt.logs, fee)) {
         // A mined revert after a successful simulation means the payer's state changed (front-run or
         // grief): charge the loss budget and do not poison the breaker (S3-06). A transaction that
@@ -541,6 +557,13 @@ export class SponsorService {
     } finally {
       permit.settle(classifyRelayOutcome(cls));
     }
+  }
+
+  private inLane<T>(chainId: number, fn: () => Promise<T>): Promise<T> {
+    const prev = this.sendLanes.get(chainId) ?? Promise.resolve();
+    const next = prev.then(fn, fn);
+    this.sendLanes.set(chainId, next.catch(() => undefined));
+    return next;
   }
 
   /** Wraps an operation: logs the allowlisted entry and maps unexpected errors. */

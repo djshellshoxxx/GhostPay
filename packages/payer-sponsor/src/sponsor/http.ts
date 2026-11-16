@@ -55,6 +55,7 @@ const STATUS: Readonly<Record<PayerSponsorErrorCode, number>> = {
   FEE_TOO_LOW: 422,
   BAD_REQUEST: 400,
   UNAVAILABLE: 503,
+  OUTCOME_UNKNOWN: 504,
 };
 
 const json = (status: number, v: unknown): HttpResponseLike => ({ status, body: JSON.stringify(v, bigintReplacer) });
@@ -98,7 +99,7 @@ export function createHttpHandler(o: HttpHandlerOptions): (req: HttpRequestLike)
           return json(404, { error: 'NOT_FOUND' });
       }
     } catch (e) {
-      if (e instanceof PayerSponsorError) return json(STATUS[e.code], { error: e.code });
+      if (e instanceof PayerSponsorError) return json(STATUS[e.code], e.txHash === undefined ? { error: e.code } : { error: e.code, txHash: e.txHash });
       return json(500, { error: 'INTERNAL' });
     }
   };
