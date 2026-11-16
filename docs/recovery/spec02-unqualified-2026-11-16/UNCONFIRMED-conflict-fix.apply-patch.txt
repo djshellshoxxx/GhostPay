@@ -1,0 +1,128 @@
+*** Begin Patch
+*** Update File: /workspace/scratch/340e310ace86/ghostpay-invoice-totals/packages/ux-vault/src/reconciliation-amounts.ts
+@@
+ export function summarizeInvoicePayments(
+@@
+ ): InvoicePaymentSummary {
++  return createInvoicePaymentSummarizer(records, scope)(invoice);
++}
++
++/** Validate/index a scope once, so rendering many registrations does not repeatedly scan the whole vault. */
++export function createInvoicePaymentSummarizer(
++  records: readonly VaultRecord[],
++  scope: ReconciliationScope,
++): (invoice: RegisteredInvoice) => InvoicePaymentSummary {
++  const unavailable = (): InvoicePaymentSummary => ({ kind: 'unavailable' });
++  const totals = new Map<string, { amount: bigint; count: number }>();
++  let chainId: number;
+   try {
+-    const registered = validateRegisteredInvoice(invoice);
+     if (
+       !/^[0-9a-f]{64}$/.test(scope.sellerKeyId) || !Number.isSafeInteger(scope.chainId) || scope.chainId <= 0 ||
+-      registered.chainId !== scope.chainId || records.length > MAX_RECONCILIATION_RECORDS
+-    ) return { kind: 'unavailable' };
++      records.length > MAX_RECONCILIATION_RECORDS
++    ) return unavailable;
++    chainId = scope.chainId;
+     const seen = new Map<string, string>();
+-    let observed = 0n;
+     for (const value of records) {
+       if (
+-        value.invoiceDigest !== registered.invoiceDigest || value.sellerKeyId !== scope.sellerKeyId ||
+-        value.chainId !== scope.chainId || value.asset !== registered.asset ||
++        value.sellerKeyId !== scope.sellerKeyId || value.chainId !== chainId ||
+         value.provenance !== 'live-scan' || value.evidenceStatus !== 'verified-at-scan'
+@@
+-      const facts = `${record.id}:${record.blockNumber}:${record.amountMinorUnits}`;
++      // Check the whole scope before filtering invoice/asset: conflicting copies cannot reserve different invoices.
++      const facts = `${record.id}:${record.blockNumber}:${record.asset}:${record.amountMinorUnits}:${record.invoiceDigest ?? ''}`;
+@@
+-        if (previous !== facts) return { kind: 'unavailable' };
++        if (previous !== facts) return unavailable;
+@@
+       seen.set(event, facts);
+-      observed += BigInt(record.amountMinorUnits);
++      if (record.invoiceDigest !== undefined) {
++        const key = `${record.invoiceDigest}:${record.asset}`;
++        const total = totals.get(key) ?? { amount: 0n, count: 0 };
++        totals.set(key, { amount: total.amount + BigInt(record.amountMinorUnits), count: total.count + 1 });
++      }
+     }
+-    const expected = BigInt(registered.expectedNetMinorUnits);
+-    return {
+-      kind: seen.size === 0 ? 'unlinked' : observed < expected ? 'below' : observed > expected ? 'above' : 'equal',
+-      observedMinorUnits: observed.toString(),
+-      expectedMinorUnits: registered.expectedNetMinorUnits,
+-      observationCount: seen.size,
+-    };
+   } catch {
+     // Corrupt or conflicting local input must never produce a reassuring amount comparison.
+-    return { kind: 'unavailable' };
++    return unavailable;
+   }
++  return (invoice): InvoicePaymentSummary => {
++    try {
++      const registered = validateRegisteredInvoice(invoice);
++      if (registered.chainId !== chainId) return unavailable();
++      const { amount, count } = totals.get(`${registered.invoiceDigest}:${registered.asset}`) ?? { amount: 0n, count: 0 };
++      const expected = BigInt(registered.expectedNetMinorUnits);
++      return {
++        kind: count === 0 ? 'unlinked' : amount < expected ? 'below' : amount > expected ? 'above' : 'equal',
++        observedMinorUnits: amount.toString(), expectedMinorUnits: registered.expectedNetMinorUnits, observationCount: count,
++      };
++    } catch {
++      return unavailable();
++    }
++  };
+ }
+*** Update File: /workspace/scratch/340e310ace86/ghostpay-invoice-totals/packages/ux-vault/src/reconciliation-amounts.test.ts
+@@
+-import { summarizeInvoicePayments } from './reconciliation-amounts.js';
++import { createInvoicePaymentSummarizer, summarizeInvoicePayments } from './reconciliation-amounts.js';
+@@
+   it.each([
+@@
+     { stealthAddress: `0x${'f'.repeat(40)}` },
++    { asset: `0x${'f'.repeat(40)}` }, { invoiceDigest: `0x${'f'.repeat(64)}` },
+@@
+   });
++
++  it('refuses conflicting asset or invoice claims across different otherwise valid record identities', () => {
++    const other = { ...invoice, invoiceDigest: `0x${'f'.repeat(64)}` };
++    for (const changes of [{ asset: `0x${'f'.repeat(40)}` }, { invoiceDigest: other.invoiceDigest }]) {
++      const records = [record(1), record(1, '100', { ...changes, stealthAddress: `0x${'1'.repeat(40)}` })];
++      expect(summarizeInvoicePayments(invoice, records, scope)).toEqual({ kind: 'unavailable' });
++      expect(summarizeInvoicePayments(other, records, scope)).toEqual({ kind: 'unavailable' });
++    }
++    const unlinked = record(1);
++    delete (unlinked as { invoiceDigest?: string }).invoiceDigest;
++    expect(summarizeInvoicePayments(invoice, [record(1), unlinked], scope)).toEqual({ kind: 'unavailable' });
++  });
++
++  it('reuses an immutable scope snapshot across invoices and excludes conflicting history', () => {
++    const other = { ...invoice, invoiceDigest: `0x${'f'.repeat(64)}` };
++    const records = [record(1), record(2, '99', { invoiceDigest: other.invoiceDigest }),
++      record(1, '7', { provenance: 'imported-history' }), record(1, '8', { evidenceStatus: 'invalidated-after-reorg' })];
++    const summarize = createInvoicePaymentSummarizer(records, scope);
++    records.splice(0);
++    expect(summarize(invoice)).toMatchObject({ kind: 'equal', observedMinorUnits: '100', observationCount: 1 });
++    expect(summarize(other)).toMatchObject({ kind: 'below', observedMinorUnits: '99', observationCount: 1 });
++  });
+*** Update File: /workspace/scratch/340e310ace86/ghostpay-invoice-totals/apps/web/src/components/ReconciliationLedger.tsx
+@@
+-import { summarizeInvoicePayments } from '@ghostpay/ux-vault/portable';
++import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
+@@
+ function InvoiceRegistry(props: {
+@@
+ }): ReactNode {
+   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
++  const summarize = useMemo(() => props.sellerKeyId === undefined ? undefined : createInvoicePaymentSummarizer(
++    props.records, { sellerKeyId: props.sellerKeyId, chainId: props.chainId },
++  ), [props.records, props.sellerKeyId, props.chainId]);
+@@
+-                <InvoicePaymentSummary summary={props.sellerKeyId === undefined
+-                  ? { kind: 'unavailable' }
+-                  : summarizeInvoicePayments(invoice, props.records, { sellerKeyId: props.sellerKeyId, chainId: props.chainId })} />
++                <InvoicePaymentSummary summary={summarize?.(invoice) ?? { kind: 'unavailable' }} />
+*** End Patch
