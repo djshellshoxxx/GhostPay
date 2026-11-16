@@ -97,8 +97,10 @@ This is not all-spec completion. Keep `GHOSTPAY_SPEC_STATUS_2026-11-16.md` as th
 spec 02 now has explicit local amount reporting, and spec 06 now has the three transaction/call builders. Neither change
 satisfies all remaining items in those specifications.
 
-- Further implementation/qualification: canonical block-time reconciliation, ENS lookup, signed merchant-profile UI
-  integration, original metrics-listener/stats/webhook requirements, and supported external adapter acceptance.
+- Further implementation/qualification: canonical block-time reconciliation, ENS lookup, merchant-profile URL loading,
+  trusted identity pinning and template presentation, original metrics-listener/stats/webhook requirements, and supported
+  external adapter acceptance. The latest continuation candidate shows a verified profile name and signer fingerprint
+  with an explicit key-control-only warning; this is partial UI integration, not merchant identity verification.
 - Verified deployment data: per-chain announcer/registry runtime provenance, enabled feed/deployment matrix and signed
   manifests. No addresses, code hashes or oracle data were invented to clear these requirements.
 - Product/authority decisions: guardian recovery, policy-hash privacy/AA ABI changes, and the separately scoped escrow
