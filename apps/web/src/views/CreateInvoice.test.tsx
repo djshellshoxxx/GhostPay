@@ -4,7 +4,7 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeManifestJson } from '../test/fakeManifest';
-import { clearSession, generateSession, importSession } from '../lib/session';
+import { captureSessionGuard, clearSession, generateSession, importSession, markKeystoreDownloaded } from '../lib/session';
 import { generateWaivedSession } from '../test/keys';
 import { makeServices, renderApp } from '../test/render';
 
@@ -87,6 +87,21 @@ describe('Create invoice', () => {
     expect(screen.getByRole('button', { name: 'Create invoice link' })).toBeTruthy();
     // The waiver only unlocks invoicing: the keys still have no backup and the banner stays.
     expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+  });
+
+  it('GP-PAGES-02-R2: an unverified keystore download must not unlock invoice creation without an explicit waiver', async () => {
+    generateSession();
+    markKeystoreDownloaded(captureSessionGuard());
+    const user = await open();
+    // A browser-triggered download is not evidence that a recoverable file exists.
+    expect(screen.getByText('This backup is not verified yet')).toBeTruthy();
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Create invoice link' })).toBeNull();
+    await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
+    await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
+    expect(screen.getByRole('button', { name: 'Create invoice link' })).toBeTruthy();
+    // The waiver grants explicit risk acceptance, not backup verification.
+    expect(screen.getByText('This backup is not verified yet')).toBeTruthy();
   });
 
   it('L1-01: opens the form directly for keys that have a copy elsewhere', async () => {
