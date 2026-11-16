@@ -70,8 +70,9 @@ Review their package `DEVIATIONS.md`/README and acceptance suites before widenin
    Local source integration is not a deployment.
 3. Supply approved testnet contract deployments, fee-recipient/deployer decisions, release-signing trust root and
    signed manifests. Keep private keys out of repository and logs. Local Anvil public keys are not release keys.
-4. Obtain the actual CodeQL/Sonar issue inventories and fresh results at the combined SHA; old green branches,
-   unreachable dashboards and skipped release jobs are not evidence of clearance.
+4. Both high-severity baseline CodeQL annotations were retrieved and their polynomial regex patterns corrected
+   in this candidate. Obtain fresh combined-head CodeQL results and the remaining Sonar issue inventory; old green
+   branches, unreachable dashboards and skipped release jobs are not evidence of clearance.
 5. Run real external wallet/mobile/Safari, screen-reader and native-language acceptance. Emulation and drafted
    translations are useful engineering evidence, not a substitute for those checks.
 6. Obtain independent security review of the final release contracts/crypto/client and close its findings.

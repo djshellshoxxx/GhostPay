@@ -66,11 +66,16 @@ describe('protected invoice envelopes and caller expectations', () => {
     await expect(invoke(invoiceCommands, 'invoice verify', ['--in', 'signed', '--expected-chain', '1'], io)).rejects.toMatchObject({ code: 'INVOICE_EXPECTATION_MISMATCH' });
   });
 
-  it('identifies supported versus disabled chains without treating an inspect result as a payable approval', async () => {
+  it.each([
+    { chainId: 84532, supportedForPayment: true },
+    { chainId: 8453, supportedForPayment: false },
+    { chainId: 1, supportedForPayment: false },
+    { chainId: 987654, supportedForPayment: false },
+  ])('classifies chain $chainId without treating inspection as payment approval', async ({ chainId, supportedForPayment }) => {
     const io = makeIo();
-    const signed = signInvoice(createInvoice({ ...SPEC, signer: SIGNER, chainId: 84532, token: 'native', amountPolicy: { mode: 'fixed_token', tokenAmount: '1000' } }, io.random), KEY_BYTES);
+    const signed = signInvoice(createInvoice({ ...SPEC, signer: SIGNER, chainId, token: 'native', amountPolicy: { mode: 'fixed_token', tokenAmount: '1000' } }, io.random), KEY_BYTES);
     io.files.set('link', await encodeFragment(signed));
     expect(await invoke(invoiceCommands, 'invoice inspect', ['--in', 'link'], io)).toBe(0);
-    expect(result(io)).toMatchObject({ supportedForPayment: true, paymentVerified: false });
+    expect(result(io)).toMatchObject({ supportedForPayment, paymentVerified: false });
   });
 });
