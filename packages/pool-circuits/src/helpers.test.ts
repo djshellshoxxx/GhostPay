@@ -260,7 +260,7 @@ describe('properties', () => {
             newSecret: 44n,
             context: 1n,
           };
-          if (w > v) expect(code(() => buildWithdrawInputs(args))).toBe('OUT_OF_RANGE');
+          if (w > v || w === 0n) expect(code(() => buildWithdrawInputs(args))).toBe('OUT_OF_RANGE');
           else expect(buildWithdrawInputs(args).existingValue).toBe(v.toString());
         },
       ),
