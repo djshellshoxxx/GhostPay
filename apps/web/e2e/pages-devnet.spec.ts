@@ -668,13 +668,18 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(record).toHaveCount(1);
     await expect(record).toContainText('Imported historical observation — untrusted until independently rescanned.');
     await expect(record).toContainText(digest);
-    await expect(l.getByText('Linked to a verified observation.')).toBeVisible();
+    // Imported history preserves invoice annotations, but cannot establish fresh verification.
+    await expect(l.getByText('No linked observation.')).toBeVisible();
+    await expect(l.getByText('Linked to a verified observation.')).toHaveCount(0);
     // Adding the freshly rescanned, verified observation upgrades that same record instead of counting the payment twice.
     await l.getByRole('button', { name: 'Add verified payment to ledger' }).click();
     await expect(record).toContainText('Router-verified when scanned; historical observation, not current payment proof.', { timeout: 30_000 });
     await expect(l.getByText('1 stored record in the current seller and chain scope.')).toBeVisible();
     await expect(record).toHaveCount(1);
     await expect(record).toContainText(digest);
+    // Only a freshly saved live-router observation makes the invoice registry link verified.
+    await expect(l.getByText('Linked to a verified observation.')).toBeVisible();
+    await expect(l.getByText('No linked observation.')).toHaveCount(0);
 
     // Already swept: the restored keys see the dust balance and refuse; nothing new on chain.
     await scanMatches(rp).getByRole('button', { name: 'Sweep this payment' }).click();
