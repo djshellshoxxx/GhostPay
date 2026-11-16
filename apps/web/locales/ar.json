@@ -2175,6 +2175,10 @@
     "ledger.amounts.total": "إجمالي المشاهدات المرتبطة: {observed} من {expected} وحدة أساسية.",
     "ledger.amounts.count": "عدد المشاهدات المرتبطة المميزة: {count}.",
     "ledger.amounts.multiple": "هناك مشاهدات مرتبطة متعددة؛ راجع احتمال تكرار المدفوعات.",
-    "ledger.amounts.evidence": "تُحتسب فقط المشاهدات المباشرة التي تم التحقق من نهائيتها عند المسح. تُستبعد المشاهدات المعلقة والمستوردة والملغاة بسبب إعادة تنظيم السلسلة. روابط الفواتير هي تعليقاتك ولا تثبت الإسناد أو التسوية الحالية."
+    "ledger.amounts.evidence": "تُحتسب فقط المشاهدات المباشرة التي تم التحقق من نهائيتها عند المسح. تُستبعد المشاهدات المعلقة والمستوردة والملغاة بسبب إعادة تنظيم السلسلة. روابط الفواتير هي تعليقاتك ولا تثبت الإسناد أو التسوية الحالية.",
+    "merchantProfile.identityUnverified.title": "Merchant identity is not verified",
+    "merchantProfile.identityUnverified.body": "This profile has a valid signature, which proves control of the signing key only. GhostPay has no trusted identity pin for this signer. Check the merchant through a separate trusted channel before relying on the displayed name.",
+    "merchantProfile.name": "Signed profile name",
+    "merchantProfile.signerFingerprint": "Signing key fingerprint"
   }
 }

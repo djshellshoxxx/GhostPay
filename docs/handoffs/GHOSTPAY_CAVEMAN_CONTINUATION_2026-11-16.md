@@ -112,3 +112,15 @@ satisfies all remaining items in those specifications.
 No production deployment, public-chain transaction, release signing, protected-main merge or real-funds operation occurred.
 Continue from the latest #182 head and recheck remote ownership/checks before editing. Do not return to stale main or
 reapply the recovered patches from #180/#181, #164, or the local custody worktrees.
+
+## Follow-up continuation — 2026-11-16
+
+- Working branch: `codex/ghostpay-caveman-followup-20261116`, based on candidate `4ee9dd770826e705cb8c2437a53cf6714a003635`.
+- Local commit `8092e2f7f213f67033d99bb0fd0e408620d24ea2` adds missing merchant-profile entries to Spanish, Japanese and Arabic draft catalogs and classifies all four identity disclosure keys as security-critical.
+- Exact-head source checks on #182 exposed 12 missing locale keys and the security-key census failure. Regression fix is not yet hosted-qualified.
+- Static checks: four catalogs contain 2,175 source keys each; security/neutral classification covers all keys exactly once; `git diff --check` passes.
+- Local install attempts `npm ci --ignore-scripts --no-fund --no-audit --prefer-offline` and workspace-scoped `npm ci` both ended with exit 137. No local Vitest run is claimed.
+- Branch recovery reviewed #180, #181 and #164 ancestry. #178's download cleanup is superseded by current broader try/finally cleanup and existing click/append failure tests; no #178 source commit was applied.
+- Added `GHOSTPAY_BRANCH_RECOVERY.md`, `GHOSTPAY_FEATURE_COMPLETION_MATRIX.md` and `GHOSTPAY_MASTER_PROGRESS.md`.
+- Independent read-only audits confirm canonical block timestamps, ENS/merchant URL/template requirements, spec-07 observability interfaces, deployment evidence, trust decisions and external security/device review remain open. See the matrix and progress ledger.
+- Next: publish commit, verify current branch ownership, inspect new exact-head CI, then continue with canonical timestamp persistence/migration or another specification gap after defining its compatible acceptance contract.

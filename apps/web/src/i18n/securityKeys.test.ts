@@ -35,6 +35,8 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'sellerKeys.pairing.compare.none', 'sellerKeys.pairing.refused', 'sellerKeys.pairing.exportFailed', 'registry.exportHint',
       'scan.tag.label', 'scan.tags.unlocked', 'scan.tags.locked', 'scan.tags.deleted', 'scan.tags.deleteAll',
       'camera.consent', 'camera.error.denied', 'walletAttempts.confirmClear', 'disclosure.fee.signed', 'proof.disclaimer', 'bill.bearerWarning',
+      'merchantProfile.identityUnverified.title', 'merchantProfile.identityUnverified.body',
+      'merchantProfile.name', 'merchantProfile.signerFingerprint',
       'secret.keys.warning', 'tagArchive.rotate.warning', 'tagArchive.wipe.final', 'tagArchive.import.replace', 'sol.warning.body', 'sol.destination.hint',
       'tron.warning.body', 'tron.appLocked', 'tron.sameAddress',
       'settings.exchange.privacyWarning', 'settings.exchange.signersTrustHint', 'settings.exchange.signerAdd', 'settings.exchange.signersRemove',

@@ -4,6 +4,12 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  merchantIdentityNotice: [
+    'merchantProfile.identityUnverified.title',
+    'merchantProfile.identityUnverified.body',
+    'merchantProfile.name',
+    'merchantProfile.signerFingerprint',
+  ],
   invoiceLinkedAmounts: [
     'ledger.amounts.heading',
     'ledger.amounts.unavailable',

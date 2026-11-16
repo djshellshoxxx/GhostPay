@@ -2175,6 +2175,10 @@
     "ledger.amounts.total": "Total de observaciones vinculadas: {observed} de {expected} unidades base.",
     "ledger.amounts.count": "Observaciones vinculadas distintas: {count}.",
     "ledger.amounts.multiple": "Hay varias observaciones vinculadas; revisa si existen pagos duplicados.",
-    "ledger.amounts.evidence": "Solo se cuentan las observaciones en vivo verificadas como definitivas al escanearlas. Se excluyen las pendientes, importadas e invalidadas por una reorganización. Los vínculos con facturas son tus anotaciones y no prueban la atribución ni la liquidación actual."
+    "ledger.amounts.evidence": "Solo se cuentan las observaciones en vivo verificadas como definitivas al escanearlas. Se excluyen las pendientes, importadas e invalidadas por una reorganización. Los vínculos con facturas son tus anotaciones y no prueban la atribución ni la liquidación actual.",
+    "merchantProfile.identityUnverified.title": "Merchant identity is not verified",
+    "merchantProfile.identityUnverified.body": "This profile has a valid signature, which proves control of the signing key only. GhostPay has no trusted identity pin for this signer. Check the merchant through a separate trusted channel before relying on the displayed name.",
+    "merchantProfile.name": "Signed profile name",
+    "merchantProfile.signerFingerprint": "Signing key fingerprint"
   }
 }

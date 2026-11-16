@@ -2175,6 +2175,10 @@
     "ledger.amounts.total": "関連付けた観測の合計: {expected} 基本単位に対して {observed}。",
     "ledger.amounts.count": "重複しない関連付け済み観測: {count}。",
     "ledger.amounts.multiple": "複数の観測が関連付けられています。重複した支払いがないか確認してください。",
-    "ledger.amounts.evidence": "スキャン時に確定済みと検証されたライブ観測のみを集計します。保留中、インポート済み、再編成で無効になった観測は除外します。請求書との関連付けはあなたの注釈であり、帰属や現在の決済確定を証明するものではありません。"
+    "ledger.amounts.evidence": "スキャン時に確定済みと検証されたライブ観測のみを集計します。保留中、インポート済み、再編成で無効になった観測は除外します。請求書との関連付けはあなたの注釈であり、帰属や現在の決済確定を証明するものではありません。",
+    "merchantProfile.identityUnverified.title": "Merchant identity is not verified",
+    "merchantProfile.identityUnverified.body": "This profile has a valid signature, which proves control of the signing key only. GhostPay has no trusted identity pin for this signer. Check the merchant through a separate trusted channel before relying on the displayed name.",
+    "merchantProfile.name": "Signed profile name",
+    "merchantProfile.signerFingerprint": "Signing key fingerprint"
   }
 }
