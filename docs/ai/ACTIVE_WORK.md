@@ -1,5 +1,17 @@
 # Active AI work registry
 
+## Ops-monitor W3 streamed artifact cap — 2026-11-16
+
+Worker: current Codex child agent. Branch: `codex/ghostpay-ops-response-cap-20261116`, base
+`2de9b0c5764cb1fb80a648e18d269b4d91210dcc`.
+Owned paths: `packages/ops-monitor/src/fetcher.ts`, focused fetcher tests, this registry, task handoff.
+Acceptance: enforce release-artifact byte cap while streaming; refuse oversized declared lengths without consuming the
+body; cancel rejected streams without waiting on a remote cancel promise; preserve exact-limit bytes, malformed/missing
+length handling and UTF-8 bytes split across chunks.
+Status: implemented. Full package suite passes 113/113 with 98.01% statements, 93.59% branches, 97.72% functions and
+99.78% lines; package typecheck/build and focused ESLint pass. Full package lint terminated with exit 137; external
+HTTP receiver acceptance was not run.
+
 ## Merchant identity localization and security classification — 2026-11-16
 
 Worker: current Codex session using Caveman workflow. Branch: `codex/ghostpay-caveman-followup-20261116`, base
