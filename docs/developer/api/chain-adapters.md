@@ -130,7 +130,7 @@ interface RpcClient {
   readonly chainId: number;
   request(method: string, params: readonly unknown[]): Promise<unknown>;
   blockNumber(): Promise<bigint>;
-  getBlock(number: bigint): Promise<BlockRef | null>;          // { number, hash, parentHash }
+  getBlock(number: bigint): Promise<BlockRef | null>;          // { number, hash, parentHash, timestamp? }
   getLogs(filter: LogFilter): Promise<readonly RpcLog[]>;     // { address, topics, fromBlock, toBlock }
 }
 interface ClientOptions extends UrlOptions {
@@ -195,6 +195,10 @@ you which stored announcements to drop. A range error (`-32602`/`-32005`) halves
 `secondary` set, every `eth_getLogs` window (compared on a normalised projection) and the closing block hash must agree
 between both providers, otherwise `RPC_FAILURE: providers disagree`. The generator-style `scan` cannot retract earlier
 yields: after a reorg drop stored matches with `blockNumber >= rolledBackTo`.
+
+When a canonical header includes a timestamp, `fetchAnnouncements` copies its Unix seconds into `blockTimestamp` on
+the announcement after confirming that header hash matches the log. Keep this timestamp bound to its block number and
+hash. Consumers must not use scan wall time when header time is absent.
 
 ## Router builders (`router.ts`)
 

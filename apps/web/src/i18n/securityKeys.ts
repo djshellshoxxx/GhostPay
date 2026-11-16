@@ -606,6 +606,7 @@ export const SECURITY_KEY_GROUPS = {
     'ledger.ambiguity.invoices',
     'ledger.ambiguity.payments',
     'ledger.ambiguity.late',
+    'ledger.ambiguity.blockTimeMissing',
     'ledger.ui.noRegisteredInvoiceMatchesThisPayment',
     'ledger.ui.ambiguousInvoiceMatchNotConfirmed',
     'ledger.ui.ambiguousMatchesAreNeverConfirmedAutomaticallyCandidates',

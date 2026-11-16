@@ -46,20 +46,21 @@ deleting old data.
      'verified-router-scan'`, no `invoiceDigest` annotation, and `provenance` absent or `'live-scan'` (`eligible`).
      Imported history and reorg-invalidated observations never take part.
    - A registered invoice is a *candidate* for an observation when chain id and asset match, the invoice's
-     `expectedNetMinorUnits` equals the observation's `amountMinorUnits`, and `recordedAt >= createdAt * 1000 -
-     MATCH_CLOCK_SKEW_MS` (5 minutes) (`candidate`).
+     `expectedNetMinorUnits` equals the observation's `amountMinorUnits`, and the canonical block timestamp is at
+     least `createdAt - 300` seconds (`candidate`). The timestamp comes from the same canonical header whose number
+     and hash were checked against the announcement.
    - Invoices already linked to a current verified observation are removed from the open set before matching
      (`proposeInvoiceMatch`, `claimed`).
    - More than one candidate invoice: `ambiguous`, reason `multiple-invoices`.
    - For the single candidate invoice, another eligible observation that is also a candidate: `ambiguous`, reason
      `multiple-payments` (`competing`).
-   - `recordedAt >= expiresAt * 1000`: `ambiguous`, reason `late-observation`. Observation time is not block time,
-     so a payment first seen at or after expiry cannot be inferred to have arrived on time.
-   - Otherwise `exact`. The window for `exact` is `[createdAt - 5 min, expiresAt)`. An observation recorded before
-     expiry can still be proposed when read later; late scans require manual review even if payment may have been on time.
-   - `recordedAt` is first-seen time. `withSaved` keeps the earlier of the stored and new times when the stored record
-     is live evidence (`verified-at-scan`, provenance absent or `'live-scan'`), so a re-save or a `confirmProposal`
-     never moves it forward. Reviving an imported or reorg-invalidated record takes the fresh time.
+   - A canonical block timestamp at or after `expiresAt`: `ambiguous`, reason `late-observation`.
+   - Otherwise `exact`. The exact window is `[createdAt - 5 min, expiresAt)`, measured by canonical block timestamp.
+     Late scans can still match when their verified payment block is before expiry.
+   - A record without `blockTimestamp` remains review-only, with reason `missing-block-time`, when chain, asset and
+     amount otherwise match. `recordedAt` remains audit and reorg-cutoff metadata; it never establishes invoice timing.
+     `blockTimestamp` is optional in version 1 records, so old encrypted vaults and backups remain readable. Import
+     never fills a missing block timestamp from local time.
 5. **Amount is the router net amount.** `registrationFromInvoice` computes it as `routerNet(grossForNet(wanted))` for
    `feePolicy === 'payer_pays'` and `routerNet(wanted)` otherwise, both from `@ghostpay/chain-adapters`. Observations
    carry `metadata.netAmount` through `recordFromVerifiedMatch` (`apps/web/src/lib/reconciliationLedger.ts`).
@@ -97,7 +98,8 @@ Encryption (`ReconciliationVault.aes`, `aad`, `encrypt`, `decrypt`):
 - Plaintext document is JSON of `Document`, which contains:
   - `records`: `VaultRecord` items. Fields are those of `ReconciliationRecord` in `reconciliationLedger.ts`: `id`,
     `sellerKeyId`, `chainId`, `transactionHash`, `blockNumber`, `blockHash`, `logIndex`, `stealthAddress`, `asset`,
-    `amountMinorUnits`, `viewTagMatched`, optional `invoiceDigest`, `recordedAt`, `evidenceStatus`, `evidenceSource`,
+    `amountMinorUnits`, `viewTagMatched`, optional `invoiceDigest`, optional canonical `blockTimestamp` (Unix seconds),
+    `recordedAt`, `evidenceStatus`, `evidenceSource`,
     plus `provenance` (`'live-scan' | 'imported-history'`).
   - `invoices`: `RegisteredInvoice` items (digest, nonce, chain, asset, expected net, `createdAt`, `expiresAt`,
     `registeredAt`; see `reconciliationMatch.ts:RegisteredInvoice`).
@@ -278,13 +280,11 @@ These tests exercise the described behaviour. They are listed, not re-run for th
    listing the identifiers in the browser-profile row of the threat model. Neither exists yet.
 5. **Manual annotations are unchecked.** A typed digest that is not a registered invoice is stored and counted as a link
    (`MatchLedgerAction`, `save`). Decide whether to require registration.
-6. **Expiry grace resolved (2026-11-09).** The seven-day exact-match grace was removed. Observations first recorded at
-   or after expiry are ambiguous; only observations recorded before expiry can yield an exact local proposal.
+6. **Expiry timing resolved (2026-11-16).** Matching uses timestamp from the verified canonical block header. A scan
+   after expiry can still match a pre-expiry block. A post-expiry block or a legacy record without block time stays
+   ambiguous for manual review.
 7. **Plaintext exports rely on a confirmation only.** Consider a warning that the file must not be stored in shared
    locations.
-8. **Observation time of unsaved and imported payments (2026-11-11).** Re-saves keep the first live saved time (above).
-   A payment that is not saved yet is timed by the current scan that shows it (the ledger rebuilds unsaved records with
-   the current time, so each rescan re-times it), and a revived imported or invalidated record takes the fresh time.
-   Either can therefore be a `candidate` for an invoice created after the payment, or `late-observation` for an
-   invoice that has since expired, whatever its block time. Fixing this needs block timestamps in the record, a
-   document schema change that is not made here.
+8. **Legacy block-time migration (2026-11-16).** No data migration is needed. Version 1 record field `blockTimestamp`
+   is optional. Old records remain readable and can be reviewed manually, but wall-clock timestamps never make them
+   exact. New scans populate it only from a canonical header validated against the announcement's block number/hash.

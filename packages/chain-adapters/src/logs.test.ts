@@ -47,7 +47,7 @@ async function client(chain: Chain, overrides: Partial<Record<string, (p: unknow
     if (m === 'eth_getBlockByNumber') {
       const n = Number(BigInt(p[0] as string));
       if (n > chain.head) return null;
-      return { number: p[0], hash: bh(n, chain.fork), parentHash: bh(Math.max(0, n - 1), chain.fork) };
+      return { number: p[0], hash: bh(n, chain.fork), parentHash: bh(Math.max(0, n - 1), chain.fork), timestamp: `0x${(n + 100).toString(16)}` };
     }
     if (m === 'eth_getLogs') {
       const f = p[0] as { fromBlock: string; toBlock: string };
@@ -118,6 +118,7 @@ describe('fetchAnnouncements', () => {
     const r = await fetchWith(await client(chain), { nextBlock: 0n });
     expect(chain.requests).toEqual([{ from: 0n, to: 9n }, { from: 10n, to: 19n }, { from: 20n, to: 25n }]);
     expect(r.announcements.map((a) => a.blockNumber)).toEqual([3n, 12n, 25n]);
+    expect(r.announcements.map((a) => a.blockTimestamp)).toEqual(['103', '112', '125']);
     expect(r.cursor).toEqual({ nextBlock: 26n, last: { number: 25n, hash: bh(25) } });
     expect(r.truncated).toBe(false);
     expect(r.reorg).toBeUndefined();
@@ -127,6 +128,24 @@ describe('fetchAnnouncements', () => {
   it('reports the provider head even when toBlock ends the fetch below it', async () => {
     const r = await fetchWith(await client(mkChain({ head: 25 })), { nextBlock: 0n }, { toBlock: 12n });
     expect(r).toMatchObject({ head: 25n, truncated: false, cursor: { nextBlock: 13n } });
+  });
+  it('binds block time to canonical block number and hash before returning evidence', async () => {
+    const chain = mkChain({ head: 9, logs: [mkLog({}, 3)] });
+    const c = await client(chain, {
+      eth_getBlockByNumber: (p) => {
+        const n = Number(BigInt(p[0] as string));
+        return { number: p[0], hash: bh(n), parentHash: bh(n - 1), timestamp: '0x65' };
+      },
+    });
+    const result = await fetchWith(c, { nextBlock: 0n });
+    expect(result.announcements[0]).toMatchObject({ blockNumber: 3n, blockHash: bh(3), blockTimestamp: '101' });
+    const wrongHash = await client(chain, {
+      eth_getBlockByNumber: (p) => {
+        const n = Number(BigInt(p[0] as string));
+        return { number: p[0], hash: bh(n === 3 ? 4 : n), parentHash: bh(n - 1), timestamp: '0x65' };
+      },
+    });
+    await expect(fetchWith(wrongHash, { nextBlock: 0n })).rejects.toThrow(/log block hash differs from canonical block/);
   });
   it('honours a smaller maxRange but never a larger one', async () => {
     const c1 = mkChain({ head: 9 });

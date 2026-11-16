@@ -152,12 +152,13 @@ describe('createClient', () => {
         ...opts,
       });
     it('getBlock validates hashes and number', async () => {
-      const ok = await mk({ number: '0x5', hash: hash('a'), parentHash: hash('b') });
-      expect(await ok.getBlock(5n)).toEqual({ number: 5n, hash: hash('a'), parentHash: hash('b') });
+      const ok = await mk({ number: '0x5', hash: hash('a'), parentHash: hash('b'), timestamp: '0x65' });
+      expect(await ok.getBlock(5n)).toEqual({ number: 5n, hash: hash('a'), parentHash: hash('b'), timestamp: 101n });
       expect(await (await mk(null)).getBlock(5n)).toBeNull();
       await expect((await mk({ number: '0x6', hash: hash('a'), parentHash: hash('b') })).getBlock(5n)).rejects.toThrow(/mismatch/);
       await expect((await mk({ number: '0x5', hash: '0x12', parentHash: hash('b') })).getBlock(5n)).rejects.toThrow(/block hash/);
       await expect((await mk({ number: '0x5', hash: hash('a'), parentHash: 7 })).getBlock(5n)).rejects.toThrow(/block hash/);
+      await expect((await mk({ number: '0x5', hash: hash('a'), parentHash: hash('b'), timestamp: '0x01' })).getBlock(5n)).rejects.toThrow(/malformed quantity/);
       await expect((await mk('str')).getBlock(5n)).rejects.toThrow(/malformed block/);
       await expect((await mk([])).getBlock(5n)).rejects.toThrow(/malformed block/);
     });

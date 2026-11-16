@@ -19,6 +19,8 @@ export interface BlockRef {
   readonly number: bigint;
   readonly hash: Hex;
   readonly parentHash: Hex;
+  /** Unix seconds when supplied by the RPC block header. */
+  readonly timestamp?: bigint;
 }
 
 /** Filter for {@link RpcClient.getLogs}. */
@@ -302,7 +304,8 @@ function clientFromRequest(chainId: number, request: RpcClient['request']): RpcC
       }
       const n = parseQuantity(o['number']);
       if (n !== number) return fail('RPC_FAILURE', 'block number mismatch');
-      return { number: n, hash: hash as Hex, parentHash: parentHash as Hex };
+      const timestamp = o['timestamp'] === undefined ? undefined : parseQuantity(o['timestamp']);
+      return { number: n, hash: hash as Hex, parentHash: parentHash as Hex, ...(timestamp === undefined ? {} : { timestamp }) };
     },
     async getLogs(f) {
       const r = await request('eth_getLogs', [

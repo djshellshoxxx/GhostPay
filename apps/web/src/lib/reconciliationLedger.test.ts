@@ -40,6 +40,7 @@ function match(overrides: Partial<ScanMatch> = {}): ScanMatch {
       transactionHash: TX,
       blockNumber: 123n,
       blockHash: BLOCK_HASH,
+      blockTimestamp: '1800000000',
       logIndex: 4,
       id: `${BLOCK_HASH}:4`,
       schemeId: 1n,
@@ -67,6 +68,7 @@ describe('local verified-scan reconciliation ledger', () => {
       transactionHash: TX,
       blockNumber: '123',
       blockHash: BLOCK_HASH,
+      blockTimestamp: '1800000000',
       logIndex: 4,
       stealthAddress: ADDRESS,
       asset: TOKEN,
@@ -97,6 +99,10 @@ describe('local verified-scan reconciliation ledger', () => {
     expect(() => recordFromVerifiedMatch(match(), KEY, undefined, Number.MAX_SAFE_INTEGER)).toThrow(
       /timestamp/,
     );
+  });
+
+  it('rejects malformed verified block timestamps', () => {
+    expect(() => recordFromVerifiedMatch(match({ announcement: { ...match().announcement, blockTimestamp: '0x1' } }), KEY)).toThrow(/timestamp/);
   });
 
   it('refuses a record whose recipient differs from the verified announcement', () => {

@@ -2,7 +2,7 @@ import { parseCompressedPoint, type PublicAnnouncement } from '@ghostpay/core-cr
 import { decodeAbiParameters, encodeAbiParameters, getAddress, hexToBytes, keccak256, toBytes } from 'viem/utils';
 import type { ChainConfig } from './config/chains.js';
 import { fail, ChainAdapterError } from './errors.js';
-import { parseQuantity, type RpcClient, type RpcLog } from './rpc.js';
+import { parseQuantity, type BlockRef, type RpcClient, type RpcLog } from './rpc.js';
 import type { Address, Hex } from './types.js';
 
 /** `keccak256("Announcement(uint256,address,address,bytes,bytes)")`: ERC-5564 topic 0. */
@@ -16,6 +16,8 @@ export interface ScannedAnnouncement extends PublicAnnouncement {
   readonly caller: Address;
   readonly blockNumber: bigint;
   readonly blockHash: Hex;
+  /** Canonical block-header timestamp in Unix seconds, bound to the announcement block number and hash. */
+  readonly blockTimestamp?: string;
   readonly logIndex: number;
   /** Validated transaction hash when supplied by the provider; never proof of payment by itself. */
   readonly transactionHash?: Hex;
@@ -310,7 +312,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   if (end === head && headRef === null) return fail('RPC_FAILURE', 'chain head block unavailable');
   const out: ScannedAnnouncement[] = [];
   const seen = new Set<string>();
-  const canonical = new Map<bigint, string>();
+  const canonical = new Map<bigint, BlockRef>();
   const windows: { from: bigint; to: bigint; hash: Hex }[] = [];
   let canonicalBlockReads = 0;
   let skipped = 0;
@@ -448,17 +450,16 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     }
     skipped += pageSkipped;
     for (const a of page) {
-      let hash = canonical.get(a.blockNumber);
-      if (hash === undefined) {
-        const block = await o.client.getBlock(a.blockNumber);
-        if (block === null) return fail('RPC_FAILURE', 'log block unavailable');
-        hash = block.hash.toLowerCase();
-        canonical.set(a.blockNumber, hash);
+      let block = canonical.get(a.blockNumber);
+      if (block === undefined) {
+        block = await o.client.getBlock(a.blockNumber) ?? undefined;
+        if (block === undefined) return fail('RPC_FAILURE', 'log block unavailable');
+        canonical.set(a.blockNumber, block);
         canonicalBlockReads++;
       }
-      if (hash !== a.blockHash.toLowerCase()) return fail('RPC_FAILURE', 'log block hash differs from canonical block');
+      if (block.hash.toLowerCase() !== a.blockHash.toLowerCase()) return fail('RPC_FAILURE', 'log block hash differs from canonical block');
       seen.add(a.id);
-      out.push(a);
+      out.push({ ...a, ...(block.timestamp === undefined ? {} : { blockTimestamp: block.timestamp.toString() }) });
     }
     if (routerLane) routerOnly.push(next);
     doneThrough = to;

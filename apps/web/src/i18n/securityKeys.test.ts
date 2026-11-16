@@ -33,6 +33,7 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'settings.outside.body', 'errorBoundary.reloadHint', 'ledger.import.invalidated',
       'sellerKeys.pairing.title', 'sellerKeys.pairing.caption', 'sellerKeys.pairing.importLabel', 'sellerKeys.pairing.previewHeading',
       'sellerKeys.pairing.compare.none', 'sellerKeys.pairing.refused', 'sellerKeys.pairing.exportFailed', 'registry.exportHint',
+      'ledger.ambiguity.late', 'ledger.ambiguity.blockTimeMissing',
       'scan.tag.label', 'scan.tags.unlocked', 'scan.tags.locked', 'scan.tags.deleted', 'scan.tags.deleteAll',
       'camera.consent', 'camera.error.denied', 'walletAttempts.confirmClear', 'disclosure.fee.signed', 'proof.disclaimer', 'bill.bearerWarning',
       'merchantProfile.identityUnverified.title', 'merchantProfile.identityUnverified.body',

@@ -34,6 +34,7 @@ function rec(n: number, overrides: Partial<ReconciliationRecord> = {}): Reconcil
     transactionHash: tx,
     blockHash: `0x${'c'.repeat(64)}`,
     blockNumber: String(100 + n),
+    blockTimestamp: String(NOW + 60),
     stealthAddress: `0x${'d'.repeat(40)}`,
     logIndex: 0,
     asset: 'native',
@@ -186,7 +187,7 @@ describe('encrypted invoice registration and local matching', () => {
     const wrong = [
       rec(1, { asset: `0x${'e'.repeat(40)}` }),
       rec(1, { amountMinorUnits: '1' }),
-      rec(1, { recordedAt: invoice.expiresAt * 1000 }),
+      rec(1, { blockTimestamp: String(invoice.expiresAt) }),
     ];
     for (const record of wrong)
       await expect(vault.confirmProposal(record, invoice.invoiceDigest)).rejects.toThrow(/no longer has a single exact/);
@@ -222,7 +223,7 @@ describe('encrypted invoice registration and local matching', () => {
     await vault.confirmProposal(rec(1), invoice.invoiceDigest);
     await vault.invalidateFrom(101n, [], () => Promise.resolve(`0x${'9'.repeat(64)}`));
     const state = await vault.readState();
-    expect(state.records[0]?.evidenceStatus).toBe('invalidated-after-reorg');
+    expect(state.records[0]).toMatchObject({ evidenceStatus: 'invalidated-after-reorg', blockTimestamp: String(NOW + 60) });
     expect(state.invoices).toEqual([invoice]);
     await expect(vault.confirmProposal(rec(1), invoice.invoiceDigest)).rejects.toThrow(/invalidated/);
     const fresh = rec(5, { blockNumber: '99' });
@@ -238,16 +239,17 @@ describe('encrypted invoice registration and local matching', () => {
     // An earlier time for the same live observation is not discarded either.
     await vault.save(rec(1, { recordedAt: first.recordedAt - 1000 }));
     expect((await vault.read()).find((r) => r.id === first.id)?.recordedAt).toBe(first.recordedAt - 1000);
+    await expect(vault.save(rec(1, { blockTimestamp: String(NOW + 61) }))).rejects.toThrow(/timestamp/);
   });
 
-  it('confirms after expiry an observation that was first saved before expiry (F2)', async () => {
+  it('confirms late-scanned evidence from a pre-expiry block', async () => {
     const vault = await unlocked();
     const invoice = registrationFromInvoice(testInvoice(), 1);
     await vault.registerInvoice(invoice);
     const first = rec(1);
     await vault.save(first);
-    // The page rebuilds current scan records with the time it renders them, here after the invoice expired.
-    const later = rec(1, { recordedAt: (invoice.expiresAt + 60) * 1000 });
+    // The page rebuilds current scan records after expiry, but canonical block time remains before expiry.
+    const later = rec(1, { recordedAt: (invoice.expiresAt + 60) * 1000, blockTimestamp: String(invoice.expiresAt - 1) });
     expect((await vault.proposals([later])).get(first.id)).toEqual({ kind: 'exact', invoice });
     await vault.confirmProposal(later, invoice.invoiceDigest, { current: [later] });
     expect((await vault.read()).find((r) => r.id === first.id)).toMatchObject({
@@ -255,6 +257,22 @@ describe('encrypted invoice registration and local matching', () => {
       recordedAt: first.recordedAt,
       provenance: 'live-scan',
     });
+  });
+
+  it('keeps missing block time on imported legacy records and carries canonical time through backup import', async () => {
+    const source = await unlocked();
+    const legacy = rec(1, { blockTimestamp: undefined });
+    const modern = rec(2, { blockTimestamp: String(NOW + 80) });
+    await source.save(legacy);
+    await source.save(modern);
+    const target = await unlocked();
+    await target.activateImport(await target.previewImport(await source.exportEncrypted()));
+    const imported = await target.read();
+    expect(imported.find((item) => item.id === legacy.id)).not.toHaveProperty('blockTimestamp');
+    expect(imported.find((item) => item.id === modern.id)?.blockTimestamp).toBe(String(NOW + 80));
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await target.registerInvoice(invoice);
+    expect((await target.proposals([legacy])).get(legacy.id)).toMatchObject({ kind: 'ambiguous', reason: 'missing-block-time' });
   });
 
   it('gives a fresh time to a revived imported or reorg-invalidated observation (F2)', async () => {
@@ -330,8 +348,9 @@ describe('encrypted invoice registration and local matching', () => {
     const store = new Store();
     const vault = await unlocked(store);
     const template = await vault.exportEncrypted();
-    const { id, ...rest } = rec(1);
+    const { id, blockTimestamp, ...rest } = rec(1);
     void id;
+    void blockTimestamp;
     const v1 = { version: 1, records: [{ ...rest, id: rec(1).id, provenance: 'live-scan' }], invalidatedFrom: null, tombstones: [], saturated: false };
     store.data.set(`${scope.sellerKeyId}:${scope.chainId}`, encryptBody(template, v1));
     expect((await vault.readState())).toMatchObject({ invoices: [], receipts: [], records: [{ id: rec(1).id }] });
@@ -345,6 +364,7 @@ describe('encrypted invoice registration and local matching', () => {
     const invoice = registrationFromInvoice(testInvoice(), 1);
     const receipt = receiptFor(rec(1), invoice.invoiceDigest);
     const bad = [
+      doc({ records: [rec(1, { blockTimestamp: '0x01' })] }),
       doc({ invoices: [invoice, invoice] }),
       doc({ invoices: [invoice, { ...synthetic(3), nonce: invoice.nonce }] }),
       doc({ invoices: [{ ...invoice, chainId: 1 }] }),

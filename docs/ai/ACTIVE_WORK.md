@@ -1,5 +1,17 @@
 # Active AI work registry
 
+## Canonical block-time reconciliation — 2026-11-16
+
+Worker: canonical-time implementation agent. Branch: `codex/ghostpay-canonical-time-20261116`, base
+`2de9b0c5764cb1fb80a648e18d269b4d91210dcc`.
+Owned paths: chain-adapter block references and announcement scanner; portable reconciliation record/matcher;
+reconciliation tests and related security-key/locale entries if new message key is needed; this registry and handoff.
+Acceptance: only timestamp from a canonical block header matching announcement block number/hash can establish
+invoice timing; new verified late-scanned pre-expiry payments can match; post-expiry payments remain ambiguous;
+legacy/imported records without block timestamp never become exact through wall-clock fallback; optional field keeps
+old vault data readable; reorg and backup/import behavior remain sound.
+Status: implementation and regression coverage complete. `git diff --check` and locale JSON/key parity pass; `npm ci --ignore-scripts --no-audit --no-fund` exited 137, so focused tests, typechecks and build cannot run here (Vitest and TypeScript unavailable).
+
 ## Merchant identity localization and security classification — 2026-11-16
 
 Worker: current Codex session using Caveman workflow. Branch: `codex/ghostpay-caveman-followup-20261116`, base

@@ -49,11 +49,12 @@ function assetLabel(record: ReconciliationRecord, t: Translator['t']): string {
     ? t('ledger.asset.baseUnits', { amount: record.amountMinorUnits, asset: record.asset })
     : `${formatUnits(BigInt(record.amountMinorUnits), token.decimals)} ${token.symbol}`;
 }
-const AMBIGUITY: Record<'multiple-invoices' | 'multiple-payments' | 'late-observation', MessageKey> = {
+const AMBIGUITY: Record<'multiple-invoices' | 'multiple-payments' | 'late-observation' | 'missing-block-time', MessageKey> = {
   'multiple-invoices': 'ledger.ambiguity.invoices',
   'multiple-payments': 'ledger.ambiguity.payments',
   'late-observation':
     'ledger.ambiguity.late',
+  'missing-block-time': 'ledger.ambiguity.blockTimeMissing',
 };
 /** Local proposal only: nothing about invoices is published, and a proposal is never payment evidence. */
 function ProposalView(props: {
@@ -792,4 +793,4 @@ function ReceiptArchive(props: {
   );
 }
 
-// i18n-use: ledger.ambiguity.invoices ledger.ambiguity.payments ledger.ambiguity.late
+// i18n-use: ledger.ambiguity.invoices ledger.ambiguity.payments ledger.ambiguity.late ledger.ambiguity.blockTimeMissing

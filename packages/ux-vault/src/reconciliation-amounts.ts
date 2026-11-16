@@ -56,7 +56,7 @@ export function createInvoicePaymentSummarizer(
       // The same transaction log cannot be two payments, even if two copies claim different block hashes.
       const event = `${record.transactionHash}:${String(record.logIndex)}`;
       // Check the whole scope before filtering invoice/asset: conflicting copies cannot reserve different invoices.
-      const facts = `${record.id}:${record.blockNumber}:${record.asset}:${record.amountMinorUnits}:${record.invoiceDigest ?? ''}`;
+      const facts = `${record.id}:${record.blockNumber}:${record.blockTimestamp ?? ''}:${record.asset}:${record.amountMinorUnits}:${record.invoiceDigest ?? ''}`;
       const previous = seen.get(event);
       if (previous !== undefined) {
         if (previous !== facts) return unavailable;

@@ -23,6 +23,7 @@ function rec(n: number, overrides: Partial<ReconciliationRecord> = {}): Reconcil
     transactionHash: tx,
     blockHash: `0x${'c'.repeat(64)}`,
     blockNumber: '100',
+    blockTimestamp: String(NOW + 60),
     stealthAddress: `0x${'d'.repeat(40)}`,
     logIndex: 0,
     asset: 'native',
@@ -112,13 +113,13 @@ describe('local invoice matching', () => {
     expect(proposeInvoiceMatch(rec(1), [invoice], [rec(1)])).toEqual({ kind: 'exact', invoice });
   });
 
-  it('returns none for mismatched chain, asset, amount, early observation or no invoices', () => {
+  it('returns none for mismatched chain, asset, amount, early block time or no invoices', () => {
     expect(proposeInvoiceMatch(rec(1), [], []).kind).toBe('none');
     expect(proposeInvoiceMatch(rec(1, { chainId: 1 }), [invoice], []).kind).toBe('none');
     expect(proposeInvoiceMatch(rec(1, { asset: USDC }), [invoice], []).kind).toBe('none');
     expect(proposeInvoiceMatch(rec(1, { amountMinorUnits: '1000000' }), [invoice], []).kind).toBe('none');
-    expect(proposeInvoiceMatch(rec(1, { recordedAt: NOW * 1000 - MATCH_CLOCK_SKEW_MS - 1 }), [invoice], []).kind).toBe('none');
-    expect(proposeInvoiceMatch(rec(1, { recordedAt: NOW * 1000 - MATCH_CLOCK_SKEW_MS }), [invoice], []).kind).toBe('exact');
+    expect(proposeInvoiceMatch(rec(1, { blockTimestamp: String(NOW - 301) }), [invoice], []).kind).toBe('none');
+    expect(proposeInvoiceMatch(rec(1, { blockTimestamp: String(NOW - 300) }), [invoice], []).kind).toBe('exact');
   });
 
   it('never proposes for invalidated, annotated or imported observations', () => {
@@ -178,13 +179,28 @@ describe('local invoice matching', () => {
     ), { numRuns: 150, seed: 20261116 });
   });
 
-  it('downgrades every observation first recorded at or after expiry, while preserving earlier history', () => {
+  it('matches late-scanned payments from pre-expiry blocks and reviews post-expiry blocks', () => {
+    const lateScan = rec(1, { recordedAt: (NOW + 3600 + 86400) * 1000, blockTimestamp: String(NOW + 3599) });
+    expect(proposeInvoiceMatch(lateScan, [invoice], []).kind).toBe('exact');
+    const earlyClockPostExpiryBlock = rec(1, { recordedAt: (NOW + 60) * 1000, blockTimestamp: String(NOW + 3600) });
+    expect(proposeInvoiceMatch(earlyClockPostExpiryBlock, [invoice], [])).toMatchObject({
+      kind: 'ambiguous', reason: 'late-observation',
+    });
     for (const offset of [0, 1, 7 * 24 * 3600_000]) {
-      const late = rec(1, { recordedAt: (NOW + 3600) * 1000 + offset });
-      expect(proposeInvoiceMatch(late, [invoice], [])).toMatchObject({ kind: 'ambiguous', reason: 'late-observation' });
+      const late = rec(1, { recordedAt: (NOW + 3600) * 1000 + offset, blockTimestamp: String(NOW + 3600 + Math.floor(offset / 1000)) });
+      expect(proposeInvoiceMatch(late, [invoice], [])).toMatchObject({
+        kind: 'ambiguous', reason: 'late-observation',
+      });
     }
-    const edge = rec(1, { recordedAt: (NOW + 3600) * 1000 - 1 });
+    const edge = rec(1, { recordedAt: (NOW + 3600) * 1000 + 1, blockTimestamp: String(NOW + 3599) });
     expect(proposeInvoiceMatch(edge, [invoice], []).kind).toBe('exact');
+  });
+
+  it('keeps legacy records without canonical block time in manual review despite plausible wall time', () => {
+    const legacy = rec(1, { recordedAt: (NOW + 60) * 1000 + 86400, blockTimestamp: undefined });
+    expect(proposeInvoiceMatch(legacy, [invoice], [])).toMatchObject({
+      kind: 'ambiguous', reason: 'missing-block-time',
+    });
   });
 
   it('deduplicates the context by observation identity', () => {
