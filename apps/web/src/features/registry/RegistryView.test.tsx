@@ -66,7 +66,7 @@ describe('Registry view', () => {
     expect(screen.getByText(/Load or generate keys/)).toBeTruthy();
   });
 
-  it('C-R1: keys without a backup cannot reach publishing; once backed up they can', async () => {
+  it('C-R1: an unverified download still blocks publishing until the seller explicitly waives the backup gate', async () => {
     const pub = generateSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
@@ -77,6 +77,12 @@ describe('Registry view', () => {
     // The lookup and the QR review stay available: they publish nothing.
     expect(screen.getByRole('button', { name: 'Look up' })).toBeTruthy();
     act(() => { markKeystoreDownloaded(captureSessionGuard()); });
+    // Download is not verification: publishing and the public meta-address remain gated.
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.queryByText(pub.metaAddress)).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
+    await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
     expect(screen.queryByText('Back up these seller keys first')).toBeNull();
     expect(screen.getByText(pub.metaAddress)).toBeTruthy();
     await user.click(screen.getByRole('checkbox'));
