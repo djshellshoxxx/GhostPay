@@ -17,6 +17,7 @@ while IFS= read -r file; do
   count=$((count + 1))
   lineno=0
   in_block=0
+  prev=''
   while IFS= read -r line || [ -n "$line" ]; do
     lineno=$((lineno + 1))
     code="$line"
@@ -40,6 +41,13 @@ while IFS= read -r file; do
     fi
     if [[ "$code" =~ tx[[:space:]]*\.[[:space:]]*origin ]]; then
       echo "ERROR ${file#"$root"/}:$lineno: tx.origin must not be used: $line"; status=1
+    elif [[ -n "$prev" && "$prev $code" =~ tx[[:space:]]*\.[[:space:]]*origin ]]; then
+      # `tx` and `.origin` split across lines (comment/blank lines between are skipped): same fail-closed rule.
+      echo "ERROR ${file#"$root"/}:$lineno: tx.origin split across lines must not be used: $line"; status=1
+    fi
+    # Remember only a trailing `tx` / `tx.` fragment of the last non-blank code line.
+    if [[ "$code" =~ [^[:space:]] ]]; then
+      if [[ "$code" =~ (^|[^[:alnum:]_])tx[[:space:]]*\.?[[:space:]]*$ ]]; then prev="$code"; else prev=''; fi
     fi
   done < "$file"
 done < <(find "$root"/packages/*/src "$root"/packages/*/contracts -type f -name '*.sol' \
