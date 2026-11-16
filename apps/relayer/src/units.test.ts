@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import {
   createWebhookAlerts,
@@ -465,6 +466,7 @@ describe('webhook alerts', () => {
     expect(() => validateWebhookUrl('http://hooks.example/path')).toThrow(/https/);
     expect(() => validateWebhookUrl('https://127.0.0.1/hook')).toThrow(/private/);
     expect(() => validateWebhookUrl('https://hooks.internal/hook')).toThrow(/public DNS/);
+    expect(() => validateWebhookUrl('https://hooks.example/hook', ['other.example'])).toThrow(/allowlisted/);
 
     const lookup = publicOnlyLookup((_host, _options, cb) =>
       cb(null, [
@@ -477,16 +479,18 @@ describe('webhook alerts', () => {
 
   it('posts a request-data-free payload, de-duplicates, and survives delivery failure', async () => {
     let t = 0;
-    const sent: { url: string; body: string }[] = [];
+    const sent: { url: string; body: string; headers: Record<string, string> }[] = [];
     const logs: string[] = [];
     let fail: 'none' | 'throw' | 'status' = 'none';
-    const fetchImpl = ((url: string, init: { body: string }) => {
-      sent.push({ url, body: init.body });
+    const fetchImpl = ((url: string, init: { body: string; headers: Record<string, string> }) => {
+      sent.push({ url, body: init.body, headers: init.headers });
       if (fail === 'throw') return Promise.reject(new Error('net'));
       return Promise.resolve({ ok: fail === 'none' });
     }) as unknown as typeof fetch;
     const sink = createWebhookAlerts({
       url: 'https://hooks.example/x',
+      allowedHosts: ['hooks.example'],
+      secret: 's'.repeat(40),
       now: () => t,
       fetchImpl,
       logger: createLogger((l) => logs.push(l)),
@@ -497,14 +501,21 @@ describe('webhook alerts', () => {
     sink.send({ kind: 'low_balance' });
     expect(sent).toHaveLength(2);
     expect(JSON.parse(sent[0]?.body ?? '{}')).toEqual({
-      kind: 'breaker_open',
+      event: 'breaker_open',
       chainId: 5,
-      text: 'ghostpay-relayer alert: breaker_open chain 5',
+      value: null,
+      threshold: null,
+      ts: expect.any(Number),
     });
     expect(JSON.parse(sent[1]?.body ?? '{}')).toEqual({
-      kind: 'low_balance',
-      text: 'ghostpay-relayer alert: low_balance',
+      event: 'low_balance',
+      chainId: null,
+      value: null,
+      threshold: null,
+      ts: expect.any(Number),
     });
+    const signature = sent[0] === undefined ? '' : createHmac('sha256', 's'.repeat(40)).update(sent[0].body).digest('hex');
+    expect(sent[0]?.headers['X-GP-Signature']).toBe(`sha256=${signature}`);
     t = 1000;
     fail = 'throw';
     sink.send({ kind: 'breaker_open', chainId: 5 });
@@ -514,6 +525,24 @@ describe('webhook alerts', () => {
     await new Promise((r) => setTimeout(r, 10));
     expect(logs.join('\n')).toContain('"errorClass":"network"');
     expect(logs.join('\n')).toContain('"errorClass":"http_status"');
+    expect(logs.join('\n')).not.toContain('s'.repeat(40));
     nullAlerts.send({ kind: 'mined_revert' });
+  });
+
+  it('deduplicates each event and chain for 15 minutes by default', () => {
+    let t = 0;
+    const sent: string[] = [];
+    const sink = createWebhookAlerts({
+      url: 'https://hooks.example/x', allowedHosts: ['hooks.example'], secret: 's'.repeat(40), now: () => t,
+      fetchImpl: ((url: string) => { sent.push(url); return Promise.resolve({ ok: true }); }) as unknown as typeof fetch,
+    });
+    sink.send({ kind: 'breaker_open', chainId: 1 });
+    sink.send({ kind: 'breaker_open', chainId: 1 });
+    sink.send({ kind: 'breaker_open', chainId: 2 });
+    t = 899_999;
+    sink.send({ kind: 'breaker_open', chainId: 1 });
+    t = 900_000;
+    sink.send({ kind: 'breaker_open', chainId: 1 });
+    expect(sent).toHaveLength(3);
   });
 });

@@ -1627,8 +1627,7 @@ describe('rate limiting', () => {
       expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.1.1.1' })).status).toBe(200);
       expect(errCode(await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '2.2.2.2' }))).toBe('rate_limited_global');
       expect(alerts).toEqual([{ kind: 'quote_budget_exhausted' }]);
-      const m = await call(s, 'GET', '/metrics', undefined, { authorization: `Bearer ${token}` });
-      expect(m.json as string).toContain('relayer_quote_budget_denied_total 1');
+      expect(s.relayer.metrics.render()).toContain('relayer_quote_budget_denied_total 1');
     });
 
     it('concurrent quotes share one gas price lookup when the cache is cold', async () => {
@@ -1920,27 +1919,44 @@ describe('S3-05/06 breaker integration', () => {
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 301n })).body)).status).toBe(200);
   });
 
-  it('serves authenticated Prometheus metrics and sends alerts without request data', async () => {
+  it('serves authenticated metrics only on separate listener and sends alerts without request data', async () => {
     const alerts: { kind: string; chainId?: number }[] = [];
     const token = 't'.repeat(40);
-    const s = await start({ config: { metricsToken: token }, alerts: { send: (e) => alerts.push(e) } });
+    const s = await start({ config: { metricsEnabled: true, metricsToken: token }, alerts: { send: (e) => alerts.push(e) } });
     await trip(s);
     expect(alerts.map((a) => a.kind)).toContain('breaker_open');
-    expect((await call(s, 'GET', '/metrics')).status).toBe(401);
-    expect((await call(s, 'GET', '/metrics', undefined, { authorization: 'Bearer wrong' })).status).toBe(401);
-    const ok = await call(s, 'GET', '/metrics', undefined, { authorization: `Bearer ${token}` });
-    expect(ok.status).toBe(200);
-    const text = ok.json as string;
+    expect((await call(s, 'GET', '/metrics')).status).toBe(404);
+    const metricsUrl = s.metricsUrl;
+    expect(metricsUrl).toBeDefined();
+    expect((await fetch(`${metricsUrl}/metrics`)).status).toBe(401);
+    expect((await fetch(`${metricsUrl}/metrics`, { headers: { authorization: 'Bearer wrong' } })).status).toBe(401);
+    const response = await fetch(`${metricsUrl}/metrics`, { headers: { authorization: `Bearer ${token}` } });
+    expect(response.status).toBe(200);
+    const text = await response.text();
     expect(text).toContain('relayer_breaker_state{chain_id="11155111"} 2');
     expect(text).toContain('relayer_http_requests_total{route="/v1/sweep",status="503"}');
     expect(text).not.toContain(OWNER);
     expect(text).not.toContain(DEST);
+    const statsRes = await fetch(`${metricsUrl}/v1/stats`, { headers: { authorization: `Bearer ${token}` } });
+    const stats = await statsRes.json() as { schemaVersion: number; counters: Record<string, number> };
+    expect(stats.schemaVersion).toBe(1);
+    expect(stats.counters['relayer_http_requests_total']).toBeGreaterThan(0);
+    expect(JSON.stringify(stats)).not.toContain(OWNER);
+    expect(JSON.stringify(stats)).not.toContain(DEST);
   });
 
-  it('keeps /metrics disabled without a configured token', async () => {
-    const s = await start();
-    const r = await call(s, 'GET', '/metrics', undefined, { authorization: 'Bearer x' });
-    expect(r.status).toBe(404);
+  it('keeps metrics disabled by default and permits optional bearer auth when enabled', async () => {
+    const disabled = await start();
+    expect(disabled.metricsUrl).toBeUndefined();
+    expect((await call(disabled, 'GET', '/metrics')).status).toBe(404);
+    await disabled.stop();
+    const s = await start({ config: { metricsEnabled: true } });
+    expect(s.metricsUrl).toBeDefined();
+    expect((await fetch(`${s.metricsUrl}/metrics`)).status).toBe(200);
+    await s.relayer.metricsServer?.close();
+    let connectionClosed = false;
+    try { await fetch(`${s.metricsUrl}/metrics`); } catch { connectionClosed = true; }
+    expect(connectionClosed).toBe(true);
   });
 
   it('serves repeated quotes from a short gas-price cache (S3-07)', async () => {

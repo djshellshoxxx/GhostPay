@@ -170,6 +170,9 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     lossBudget: { windowSeconds: 3600, perKeyWei: 10n ** 16n, globalWei: 10n ** 17n, maxKeys: 100 },
     queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
     shutdownGraceSeconds: 2,
+    metricsEnabled: false,
+    metricsBind: '127.0.0.1',
+    metricsPort: 0,
     chains: [
       {
         chainId: CHAIN_ID,
@@ -197,6 +200,7 @@ export interface Harness {
   readonly relayer: Relayer;
   readonly fake: FakeChain;
   readonly url: string;
+  readonly metricsUrl?: string;
   readonly logs: string[];
   readonly clock: { ms: number };
   stop(): Promise<void>;
@@ -227,14 +231,17 @@ export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
     ...(o.journal === undefined ? {} : { journal: o.journal }),
   });
   const addr = await relayer.server.listen();
+  const metricsAddr = relayer.metricsServer === undefined ? undefined : await relayer.metricsServer.listen();
   return {
     relayer,
     fake,
     url: `http://127.0.0.1:${String(addr.port)}`,
+    ...(metricsAddr === undefined ? {} : { metricsUrl: `http://127.0.0.1:${String(metricsAddr.port)}` }),
     logs,
     clock,
     stop: async () => {
       await relayer.server.close();
+      await relayer.metricsServer?.close();
       relayer.dispose();
     },
   };

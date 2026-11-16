@@ -1,5 +1,16 @@
 # Active AI work registry
 
+## Relayer observability spec 07 completion — 2026-11-16
+
+Worker: current Codex worker. Branch: `codex/ghostpay-observability-20261116`, base
+`2de9b0c5764cb1fb80a648e18d269b4d91210dcc`.
+Owned paths: `apps/relayer/src/config.ts`, `server.ts`, `runtime.ts`, `alerts.ts`, `metrics.ts`, `metricsServer.ts`,
+their focused tests, `apps/relayer/README.md`, `docs/operators/relayer-monitoring.md`, this registry.
+Acceptance: add opt-in loopback metrics listener, authenticated `/metrics` and `/v1/stats`, signed HMAC-SHA256
+alerts with 15-minute per-event/chain dedupe, and safe shutdown. Preserve request-path behavior. Add endpoint,
+signature, privacy, SSRF and shutdown tests.
+Handoff: local implementation committed on this branch. `git diff --check` passes. `npm ci --ignore-scripts --no-audit --no-fund` exits 137. Targeted Vitest cannot load `vitest/config`; typecheck lacks `tsc`; lint lacks `eslint`. No test suite, typecheck, lint, real Prometheus scrape, or receiver acceptance completed. Keep spec 07 partial until real scrape and receiver acceptance pass. Exact source pin is in task handoff.
+
 ## Merchant identity localization and security classification — 2026-11-16
 
 Worker: current Codex session using Caveman workflow. Branch: `codex/ghostpay-caveman-followup-20261116`, base

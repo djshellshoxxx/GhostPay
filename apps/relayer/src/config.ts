@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { isIP } from 'node:net';
 import { isAbsolute, join } from 'node:path';
 import type { Address } from 'viem';
 import { getAddress } from 'viem';
@@ -82,10 +83,19 @@ export interface RelayerConfig {
     readonly globalWei: bigint;
     readonly maxKeys: number;
   };
-  /** Bearer token that enables `GET /metrics` (absent: route disabled). */
+  /** Enables the separate metrics listener. */
+  readonly metricsEnabled: boolean;
+  /** Metrics listener bind address. */
+  readonly metricsBind: string;
+  readonly metricsPort: number;
+  /** Optional bearer token for metrics routes. */
   readonly metricsToken?: string;
-  /** https URL receiving alert JSON (absent: alerts are log-only). */
+  /** HTTPS alert URL. */
   readonly alertWebhookUrl?: string;
+  /** Exact host allowlist for the alert URL. */
+  readonly alertWebhookAllowedHosts?: readonly string[];
+  /** HMAC secret for signed alert payloads. */
+  readonly alertWebhookSecret?: string;
   readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
   /**
@@ -346,25 +356,45 @@ function envNameOf(o: JsonObject, key: string): string | undefined {
 }
 
 /** Resolves the metrics bearer token and the alert webhook URL from the environment (names only in the file). */
-function optionalSecrets(o: JsonObject, ctx: ConfigContext): { metricsToken?: string; alertWebhookUrl?: string } {
-  const out: { metricsToken?: string; alertWebhookUrl?: string } = {};
+function optionalSecrets(o: JsonObject, ctx: ConfigContext): { metricsEnabled: boolean; metricsBind: string; metricsPort: number; metricsToken?: string; alertWebhookUrl?: string; alertWebhookAllowedHosts?: readonly string[]; alertWebhookSecret?: string } {
+  const out: { metricsEnabled: boolean; metricsBind: string; metricsPort: number; metricsToken?: string; alertWebhookUrl?: string; alertWebhookAllowedHosts?: readonly string[]; alertWebhookSecret?: string } = {
+    metricsEnabled: ctx.env['METRICS_ENABLED'] === '1',
+    metricsBind: ctx.env['METRICS_BIND'] ?? '127.0.0.1',
+    metricsPort: Number(ctx.env['METRICS_PORT'] ?? '9464'),
+  };
+  if (ctx.env['METRICS_ENABLED'] !== undefined && !['0', '1'].includes(ctx.env['METRICS_ENABLED'] ?? '')) return bad('METRICS_ENABLED', 'must be 0 or 1');
+  if (ctx.env['METRICS_BIND'] !== undefined && isIP(out.metricsBind) === 0) return bad('METRICS_BIND', 'must be an IP address');
+  if (ctx.env['METRICS_PORT'] !== undefined && !/^\d{1,5}$/.test(ctx.env['METRICS_PORT'])) return bad('METRICS_PORT', 'must be an integer from 0 to 65535');
+  if (!Number.isInteger(out.metricsPort) || out.metricsPort < 0 || out.metricsPort > 65535) return bad('METRICS_PORT', 'must be an integer from 0 to 65535');
+  if (ctx.env['METRICS_TOKEN'] !== undefined) {
+    const token = ctx.env['METRICS_TOKEN'];
+    if (!/^[A-Za-z0-9._~+/=-]{32,256}$/.test(token)) return bad('METRICS_TOKEN', 'must hold a token of 32..256 URL-safe characters');
+    out.metricsToken = token;
+  }
   const tokenVar = envNameOf(o, 'metricsTokenEnv');
   if (tokenVar !== undefined) {
-    const t = ctx.env[tokenVar];
+    const t = out.metricsToken ?? ctx.env[tokenVar];
     if (typeof t !== 'string' || !/^[A-Za-z0-9._~+/=-]{32,256}$/.test(t)) return bad('metricsTokenEnv', 'variable must hold a token of 32..256 URL-safe characters');
     out.metricsToken = t;
   }
   const hookVar = envNameOf(o, 'alertWebhookUrlEnv');
-  if (hookVar !== undefined) {
-    const raw = ctx.env[hookVar];
+  const rawUrl = ctx.env['ALERT_WEBHOOK_URL'] ?? (hookVar === undefined ? undefined : ctx.env[hookVar]);
+  if (rawUrl !== undefined || hookVar !== undefined) {
     let u: URL | undefined;
     try {
-      u = raw === undefined ? undefined : new URL(raw);
+      u = rawUrl === undefined ? undefined : new URL(rawUrl);
     } catch {
       u = undefined;
     }
     if (u === undefined || u.protocol !== 'https:' || u.username !== '' || u.password !== '') return bad('alertWebhookUrlEnv', 'variable must hold an https URL without credentials');
     out.alertWebhookUrl = u.toString();
+    const hosts = (ctx.env['ALERT_WEBHOOK_ALLOWED_HOSTS'] ?? '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+    const validHost = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))+$/;
+    if (hosts.length === 0 || hosts.some((h) => !validHost.test(h)) || !hosts.includes(u.hostname.toLowerCase().replace(/\.$/, ''))) return bad('ALERT_WEBHOOK_ALLOWED_HOSTS', 'must allow the alert URL host');
+    out.alertWebhookAllowedHosts = hosts;
+    const secret = ctx.env['ALERT_WEBHOOK_SECRET'];
+    if (typeof secret !== 'string' || secret.length < 32 || secret.length > 256) return bad('ALERT_WEBHOOK_SECRET', 'must contain 32..256 characters');
+    out.alertWebhookSecret = secret;
   }
   return out;
 }

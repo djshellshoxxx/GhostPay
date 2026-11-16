@@ -22,22 +22,24 @@ async function main(): Promise<void> {
     logger.log('info', 'shutdown_started', {});
     // Drain first (queued and in-flight sweeps still write the journal), then release the state lock: releasing it
     // earlier would let a starting replacement take the state over while this process still writes it.
-    relayer.server.close().then(
-      () => {
+    void (async () => {
+      try {
+        await relayer.server.close();
+        await relayer.metricsServer?.close();
         relayer.dispose();
         process.exit(exitCode);
-      },
-      () => {
+      } catch {
         relayer.dispose();
         process.exit(1);
-      },
-    );
+      }
+    })();
   };
   const relayer = await buildRelayer({
     config, hotKey, quoteSecret, ...(previousQuoteSecret === undefined ? {} : { previousQuoteSecret }), logger,
     onLockLost: () => stop(1),
   });
   await relayer.server.listen();
+  await relayer.metricsServer?.listen();
   logger.log('info', 'listening', {});
   process.on('SIGTERM', () => stop());
   process.on('SIGINT', () => stop());

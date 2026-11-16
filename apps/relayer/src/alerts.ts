@@ -1,4 +1,5 @@
 import { lookup as dnsLookup, type LookupAddress, type LookupOptions } from 'node:dns';
+import { createHmac } from 'node:crypto';
 import { request as httpsRequest, type RequestOptions } from 'node:https';
 import { BlockList, isIP } from 'node:net';
 import { nullLogger, type Logger } from './log.js';
@@ -49,7 +50,7 @@ export function isPublicIp(raw: string): boolean {
 }
 
 /** Static SSRF checks for an alert endpoint. DNS results are checked again at connection time. */
-export function validateWebhookUrl(raw: string): URL {
+export function validateWebhookUrl(raw: string, allowedHosts?: readonly string[]): URL {
   const bad = (why: string): never => { throw new ConfigError(`alerts.webhookUrl: ${why}`); };
   if (raw.length > 2048) return bad('too long');
   let url: URL;
@@ -57,6 +58,7 @@ export function validateWebhookUrl(raw: string): URL {
   if (url.protocol !== 'https:') return bad('must be https');
   if (url.username !== '' || url.password !== '') return bad('credentials are not allowed');
   const host = url.hostname.toLowerCase().replace(/\.$/, '');
+  if (allowedHosts !== undefined && !allowedHosts.map((item) => item.toLowerCase().replace(/\.$/, '')).includes(host)) return bad('host is not allowlisted');
   const literal = host.startsWith('[') ? host.slice(1, -1) : host;
   if (isIP(literal) !== 0 || /^[0-9.]+$/.test(literal) || /^0x/i.test(literal)) {
     if (isIP(literal) === 0 || !isPublicIp(literal)) return bad('host must not be private, loopback, or malformed');
@@ -87,11 +89,11 @@ export function publicOnlyLookup(resolver: LookupFn = dnsLookup as unknown as Lo
   };
 }
 
-function postPublicHttps(url: URL, body: string, timeoutMs: number): Promise<boolean> {
+function postPublicHttps(url: URL, body: string, signature: string, timeoutMs: number): Promise<boolean> {
   return new Promise((resolve, reject) => {
     const req = httpsRequest(url, {
       method: 'POST', lookup: publicOnlyLookup(), agent: false, timeout: timeoutMs,
-      headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(body), 'user-agent': 'ghostpay-relayer-alert' },
+      headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(body), 'user-agent': 'ghostpay-relayer-alert', 'X-GP-Signature': signature },
     } as RequestOptions, (res) => {
       res.resume();
       resolve((res.statusCode ?? 0) >= 200 && (res.statusCode ?? 0) < 300);
@@ -106,29 +108,32 @@ function postPublicHttps(url: URL, body: string, timeoutMs: number): Promise<boo
 export interface WebhookAlertOptions {
   /** https URL (validated by the config loader). */
   readonly url: string;
+  readonly secret: string;
+  readonly allowedHosts: readonly string[];
   readonly logger?: Logger;
   /** Monotonic ms clock. */
   readonly now: () => number;
-  /** Minimum gap between deliveries of the same kind and chain (default 60 s). */
+  /** Minimum gap between deliveries of the same event and chain (default 15 min). */
   readonly minIntervalMs?: number;
   /** Replaces `fetch` (tests). */
   readonly fetchImpl?: typeof fetch;
-  /** Delivery timeout (default 5 s). */
+  /** Delivery timeout (default 3 s). */
   readonly timeoutMs?: number;
 }
 
 /**
- * Posts alerts as `{"kind","chainId","text"}` JSON to a webhook (Slack/Discord/PagerDuty-compatible
- * `text` field). Fire-and-forget, de-duplicated per kind and chain, failure logged by class only.
+ * Posts signed, request-data-free alert JSON. Fire-and-forget, de-duplicated per event and chain.
  *
  * @param o Options.
  * @returns The sink.
  */
 export function createWebhookAlerts(o: WebhookAlertOptions): AlertSink {
   const logger = o.logger ?? nullLogger;
-  const gap = o.minIntervalMs ?? 60_000;
+  if (o.secret.length < 32 || o.secret.length > 256) throw new ConfigError('alerts.webhookSecret: invalid length');
+  if (o.allowedHosts.length === 0) throw new ConfigError('alerts.allowedHosts: required');
+  const gap = o.minIntervalMs ?? 900_000;
   const doFetch = o.fetchImpl ?? fetch;
-  const url = validateWebhookUrl(o.url);
+  const url = validateWebhookUrl(o.url, o.allowedHosts);
   const last = new Map<string, number>();
   return {
     send(e) {
@@ -137,16 +142,16 @@ export function createWebhookAlerts(o: WebhookAlertOptions): AlertSink {
       const prev = last.get(key);
       if (prev !== undefined && t - prev < gap) return;
       last.set(key, t);
-      const text = `ghostpay-relayer alert: ${e.kind}${e.chainId === undefined ? '' : ` chain ${String(e.chainId)}`}`;
-      const body = JSON.stringify({ kind: e.kind, ...(e.chainId === undefined ? {} : { chainId: e.chainId }), text });
+      const body = JSON.stringify({ event: e.kind, chainId: e.chainId ?? null, value: null, threshold: null, ts: Math.floor(Date.now() / 1000) });
+      const signature = `sha256=${createHmac('sha256', o.secret).update(body).digest('hex')}`;
       const delivery = o.fetchImpl === undefined
-        ? postPublicHttps(url, body, o.timeoutMs ?? 5000).then((ok) => ({ ok }))
+        ? postPublicHttps(url, body, signature, o.timeoutMs ?? 3000).then((ok) => ({ ok }))
         : doFetch(o.url, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'content-type': 'application/json', 'X-GP-Signature': signature },
         body,
         redirect: 'error',
-        signal: AbortSignal.timeout(o.timeoutMs ?? 5000),
+        signal: AbortSignal.timeout(o.timeoutMs ?? 3000),
       });
       void delivery.then(
         (r) => {

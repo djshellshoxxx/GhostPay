@@ -1,4 +1,4 @@
-import { randomUUID, timingSafeEqual } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import {
@@ -37,10 +37,9 @@ export interface HttpDeps {
   readonly newRequestId?: () => string;
 }
 
-type Route = '/healthz' | '/metrics' | '/v1/info' | '/v1/quote' | '/v1/sweep';
+type Route = '/healthz' | '/v1/info' | '/v1/quote' | '/v1/sweep';
 const ROUTES: Readonly<Record<Route, 'GET' | 'POST'>> = {
   '/healthz': 'GET',
-  '/metrics': 'GET',
   '/v1/info': 'GET',
   '/v1/quote': 'POST',
   '/v1/sweep': 'POST',
@@ -282,23 +281,6 @@ export class RelayerHttpServer {
       case '/healthz': {
         const h = this.d.service.health();
         this.send(c, h.status === 'ok' ? 200 : 503, h);
-        return;
-      }
-      case '/metrics': {
-        const token = this.d.config.metricsToken;
-        const auth = req.headers.authorization;
-        if (token === undefined || this.d.metrics === undefined) throw new RelayerError(404, 'not_found');
-        const expected = Buffer.from(`Bearer ${token}`);
-        const given = Buffer.from(auth ?? '');
-        if (given.length !== expected.length || !timingSafeEqual(given, expected))
-          throw new RelayerError(401, 'unauthorized');
-        const text = this.d.metrics.render();
-        c.status = 200;
-        res.writeHead(200, {
-          'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
-          'Content-Length': Buffer.byteLength(text),
-        });
-        res.end(text);
         return;
       }
       case '/v1/info':

@@ -6,6 +6,7 @@ export interface GaugeSample {
 
 const NAME = /^[a-z][a-z0-9_]{0,63}$/;
 const LABEL_VALUE = /^[A-Za-z0-9_./:-]{0,64}$/;
+const LABEL_NAMES = new Set(['chain_id', 'reason', 'route', 'status', 'outcome', 'class', 'state', 'to']);
 const MAX_SERIES = 512;
 
 /**
@@ -39,6 +40,7 @@ export class Metrics {
    * @param read Returns the current samples.
    */
   public gauge(name: string, help: string, read: () => readonly GaugeSample[]): void {
+    if (!NAME.test(name) || help.includes('\n')) return;
     this.gauges.push({ name, help, read });
   }
 
@@ -62,12 +64,26 @@ export class Metrics {
     }
     return `${out.join('\n')}\n`;
   }
+
+  /** Returns bounded aggregate counters and fixed-label gauges for the private JSON endpoint. */
+  public stats(): { schemaVersion: 1; counters: Readonly<Record<string, number>>; gauges: readonly { name: string; labels: Readonly<Record<string, string>>; value: number }[] } {
+    const counters = Object.create(null) as Record<string, number>;
+    for (const c of this.counters.values()) counters[c.name] = (counters[c.name] ?? 0) + c.value;
+    const gauges = this.gauges.flatMap((g) => g.read().map((sample) => ({
+      name: g.name,
+      labels: Object.fromEntries(Object.entries(sample.labels)
+        .filter(([key]) => key === 'chain_id' || key === 'reason' || key === 'state')
+        .map(([key, value]) => [key, LABEL_VALUE.test(value) ? value : 'invalid'])),
+      value: Number.isFinite(sample.value) ? sample.value : 0,
+    })));
+    return { schemaVersion: 1, counters, gauges };
+  }
 }
 
 function renderLabels(labels: Readonly<Record<string, string | number>>): string {
   return Object.keys(labels)
     .sort()
-    .filter((k) => NAME.test(k))
+    .filter((k) => LABEL_NAMES.has(k))
     .map((k) => {
       const v = String(labels[k]);
       return `${k}="${LABEL_VALUE.test(v) ? v : 'invalid'}"`;

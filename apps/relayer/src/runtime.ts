@@ -5,6 +5,7 @@ import { createClient, findChain, verifyManifestOnChain, type ChainConfig } from
 import { createViemChainClient, type ChainClient } from './chain.js';
 import { createWebhookAlerts, nullAlerts, type AlertSink } from './alerts.js';
 import { Metrics } from './metrics.js';
+import { MetricsHttpServer } from './metricsServer.js';
 import { DEV_CHAIN_ID, type RelayerConfig } from './config.js';
 import { KeyHasher, RateLimiter } from './limiter.js';
 import type { Logger } from './log.js';
@@ -48,6 +49,7 @@ export interface RuntimeDeps {
 export interface Relayer {
   readonly service: RelayerService;
   readonly server: RelayerHttpServer;
+  readonly metricsServer?: MetricsHttpServer;
   readonly metrics: Metrics;
   /** Stops process-lifetime maintenance timers and releases the state lock. */
   dispose(): void;
@@ -127,7 +129,9 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
   const metrics = new Metrics();
   const alerts =
     d.alerts ??
-    (d.config.alertWebhookUrl === undefined ? nullAlerts : createWebhookAlerts({ url: d.config.alertWebhookUrl, logger: d.logger, now: mono }));
+    (d.config.alertWebhookUrl === undefined || d.config.alertWebhookSecret === undefined || d.config.alertWebhookAllowedHosts === undefined
+      ? nullAlerts
+      : createWebhookAlerts({ url: d.config.alertWebhookUrl, secret: d.config.alertWebhookSecret, allowedHosts: d.config.alertWebhookAllowedHosts, logger: d.logger, now: mono }));
   const lb = d.config.lossBudget;
   const lossBudget = new LossBudget(
     { windowMs: lb.windowSeconds * 1000, perKeyLimit: lb.perKeyWei, globalLimit: lb.globalWei, maxKeys: lb.maxKeys, cleanReserve: lossCleanReserve(lb.globalWei) },
@@ -158,6 +162,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     journal: opened.journal,
   });
   const server = new RelayerHttpServer({ config: d.config, service, ipLimiter, quoteGroupLimiter, alerts, logger: d.logger, metrics, monotonic: mono });
+  const metricsServer = d.config.metricsEnabled ? new MetricsHttpServer(d.config, metrics) : undefined;
   const rotationTimer = setInterval(() => hasher.refresh(), Math.min(d.config.rateLimit.saltRotationHours * 3_600_000, 60_000));
   rotationTimer.unref();
   const lock = opened.lock;
@@ -189,6 +194,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
   return {
     service,
     server,
+    ...(metricsServer === undefined ? {} : { metricsServer }),
     metrics,
     dispose: () => {
       clearInterval(rotationTimer);
