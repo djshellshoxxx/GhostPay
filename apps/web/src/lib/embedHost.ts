@@ -62,10 +62,34 @@ export async function fetchMerchantProfile(
     const u = new URL(url);
     if (u.protocol !== 'https:' || u.username !== '' || u.password !== '') return undefined;
     const res = await fetchFn(u.href, { credentials: 'omit', referrerPolicy: 'no-referrer', redirect: 'error', mode: 'cors' });
-    if (!res.ok) return undefined;
     const len = Number(res.headers.get('content-length') ?? '0');
-    if (Number.isFinite(len) && len > MAX_PROFILE_BYTES) return undefined;
-    const text = await res.text();
+    if (!res.ok || len > MAX_PROFILE_BYTES) {
+      void res.body?.cancel().catch(() => undefined);
+      return undefined;
+    }
+    if (res.body === null) return undefined;
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder('utf-8', { fatal: true });
+    let text = '';
+    let bytes = 0;
+    let completed = false;
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) {
+          completed = true;
+          text += decoder.decode();
+          break;
+        }
+        bytes += value.byteLength;
+        if (bytes > MAX_PROFILE_BYTES) return undefined;
+        text += decoder.decode(value, { stream: true });
+      }
+    } finally {
+      // The header is advisory. Cancel on overflow or decoding failure without waiting on the remote stream.
+      if (!completed) void reader.cancel().catch(() => undefined);
+      reader.releaseLock();
+    }
     const r = verifyMerchantProfile(text, nowSec);
     return r.ok ? r.profile : undefined;
   } catch {

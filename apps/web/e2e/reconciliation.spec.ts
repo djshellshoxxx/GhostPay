@@ -27,7 +27,7 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   const invoice = ledger.locator('li.card').filter({ has: page.getByRole('button', { name: 'Remove registration', exact: true }) });
   await expect(invoice).toHaveCount(1);
   const digest = await invoice.locator('code').innerText();
-  const meaning = await invoice.locator('p.hint').innerText();
+  const meaning = await invoice.locator(':scope > p.hint').innerText();
   expect(digest).toMatch(/^0x[0-9a-f]{64}$/);
   expect(meaning).toContain('No linked observation.');
 
@@ -68,7 +68,7 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   // Consent and payment status deliberately retain reviewed English in machine-drafted locales.
   await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
   await expect(invoice.locator('code')).toHaveText(digest);
-  await expect(invoice.locator('p.hint')).toHaveText(meaning);
+  await expect(invoice.locator(':scope > p.hint')).toHaveText(meaning);
   await expect(ledger.getByLabel('Buscar registros locales', { exact: true })).toBeVisible();
 
   await navigate(page, 'settings');
@@ -77,7 +77,7 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   await navigate(page, 'scan');
   await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
   await expect(invoice.locator('code')).toHaveText(digest);
-  await expect(invoice.locator('p.hint')).toHaveText(meaning);
+  await expect(invoice.locator(':scope > p.hint')).toHaveText(meaning);
   await backupInput.fill(backup);
   await expect(backupInput).toHaveAttribute('dir', 'ltr');
   await ledger.getByRole('button', { name: 'Preview encrypted backup', exact: true }).click();

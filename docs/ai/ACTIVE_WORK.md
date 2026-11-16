@@ -1,5 +1,27 @@
 # Active AI work registry
 
+## Registry builder acceptance — 2026-11-16
+
+Worker: current session. Branch: `codex/ghostpay-registry-lifecycle-20261116`, base `7a208005`.
+Owned paths: web `features/registry/registry.anvil.test.ts`, this record, continuation evidence.
+Acceptance: the recovered builders execute against the local reference registry; a valid delegated registration works,
+replay fails, nonce invalidation rejects a previously signed update and fresh authorization succeeds. No public-chain
+transaction, wallet signing UI or production contract modification.
+Completed: five native Anvil/reference-registry tests passed with zero skips, web typecheck and focused lint passed.
+Local reference compiler is solc 0.8.38; hosted pinned-compiler checks remain required.
+
+## Merchant profile stream cap — 2026-11-16
+
+Worker: current session. Branch: `codex/ghostpay-profile-cap-20261116`, base `beb99464`.
+Owned paths: web `embedHost.ts`, `embedHost.test.ts`, `e2e/reconciliation.spec.ts`, and this record.
+Profile tests: 47 plus 77 integration/privacy cases passed; web typecheck/full lint passed.
+Also scope the reconciliation browser assertion to the invoice identity paragraph after the amount summary added a
+second nested hint. Preserve the digest, language-change, backup import and lock assertions. Baseline #182 browser
+CI reproduced the strict-selector failure; final browser execution remains required.
+Acceptance: enforce the existing 8192-byte profile limit during streaming, cancel rejected responses without waiting
+on remote cancellation, preserve signed-profile verification and fetch privacy options, and test exact boundaries,
+lying/missing length headers and split UTF-8. No UI/network enablement or new endpoint is introduced.
+
 ## Custody recovery — 2026-11-16
 
 Worker: current session. Branch: `codex/ghostpay-custody-caveman-20261116`, base `47f92f6f`.
@@ -15,7 +37,7 @@ payload is imported. Recovery source and final checks must be recorded in the co
 - Published base: `b4be8866f6ff883fbbedc49be88b5b251a7d270e` (#179). Recovery inputs: #180 and #181.
 - Owned paths: `packages/ux-vault/src/reconciliation-amounts*`, `portable.ts`; web invoice summary and reconciliation ledger components/tests; associated locale/security keys; registry builder verification; relevant completion documentation.
 - Acceptance: exact bigint invoice totals from explicit live final-at-scan links; scope-wide conflict rejection and deduplication; no inferred linking or settlement claim; UI wiring and translation safeguards; package builds, regression/property tests, typecheck and lint. Validate recovered analyzer and registry helpers before publishing.
-- Status: implementing. Existing source branches remain unchanged. This record supersedes no other worker claim.
+- Status: implemented; final hosted checks pending. Existing source branches remain unchanged. This record supersedes no other worker claim.
 
 The same branch also owns integration review of #164's `payer-sponsor`, `pool-relayer`, QR warning and source-gate
 changes. Acceptance includes preserving both sets of linear-parser regressions and rejecting invalid queue limits.

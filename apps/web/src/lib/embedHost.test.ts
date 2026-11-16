@@ -1,4 +1,4 @@
-import { signMerchantProfile, merchantIdFor, signerPublicKeyHex, encodeBase64Url, type MerchantProfile } from '@ghostpay/invoice-schema';
+import { MAX_PROFILE_BYTES, signMerchantProfile, merchantIdFor, signerPublicKeyHex, encodeBase64Url, type MerchantProfile } from '@ghostpay/invoice-schema';
 import { describe, expect, it, vi } from 'vitest';
 import { fetchMerchantProfile, notifyEmbedDone, readProfileFromSearch, signerFingerprint, startEmbedHost } from './embedHost';
 
@@ -9,12 +9,12 @@ const MERCHANT = 'https://shop.example';
 const N = 'c'.repeat(32);
 const TX = `0x${'d'.repeat(64)}`;
 
-function profile(over: Partial<{ origins: string[]; exp: number }> = {}): MerchantProfile {
+function profile(over: Partial<{ origins: string[]; exp: number; name: string }> = {}): MerchantProfile {
   return signMerchantProfile(
     {
       v: 1,
       merchantId: merchantIdFor(signer),
-      name: 'Shop',
+      name: over.name ?? 'Shop',
       signer,
       chains: [8453],
       tokens: ['USDC'],
@@ -128,5 +128,81 @@ describe('profile loading', () => {
 
   it('formats the signer fingerprint as four groups of four', () => {
     expect(signerFingerprint(signer)).toMatch(/^[a-z2-7]{4}(-[a-z2-7]{4}){3}$/);
+  });
+});
+
+describe('profile response byte budget', () => {
+  function response(chunks: Uint8Array[], headers: HeadersInit = {}, status = 200): {
+    res: Response; cancel: ReturnType<typeof vi.fn<() => Promise<void>>>; pull: ReturnType<typeof vi.fn>;
+  } {
+    let index = 0;
+    const cancel = vi.fn(() => Promise.resolve());
+    const pull = vi.fn((ctl: ReadableStreamDefaultController<Uint8Array>) => {
+      const chunk = chunks[index++];
+      if (chunk === undefined) ctl.close();
+      else ctl.enqueue(chunk);
+    });
+    return { res: new Response(new ReadableStream({ pull, cancel }, { highWaterMark: 0 }), { headers, status }), cancel, pull };
+  }
+
+  it.each([undefined, '1', 'invalid'])('cancels an oversized stream despite Content-Length=%s', async (length) => {
+    const { res, cancel, pull } = response(
+      [new Uint8Array(MAX_PROFILE_BYTES), new Uint8Array(1), new Uint8Array(100)],
+      length === undefined ? {} : { 'content-length': length },
+    );
+    const text = vi.spyOn(res, 'text');
+    expect(await fetchMerchantProfile('https://shop.example/p.json', NOW, () => Promise.resolve(res))).toBeUndefined();
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(pull).toHaveBeenCalledTimes(2);
+    expect(text).not.toHaveBeenCalled();
+    expect(res.body?.locked).toBe(false);
+  });
+
+  it.each([200, 404])('cancels an unread rejected response with status %s', async (status) => {
+    const { res, cancel, pull } = response([new Uint8Array(4)], { 'content-length': String(MAX_PROFILE_BYTES + 1) }, status);
+    expect(await fetchMerchantProfile('https://shop.example/p.json', NOW, () => Promise.resolve(res))).toBeUndefined();
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(pull).not.toHaveBeenCalled();
+  });
+
+  it('accepts a valid signed profile exactly at the byte limit, including split UTF-8', async () => {
+    const p = profile({ name: 'Café' });
+    const json = JSON.stringify(p);
+    const encoded = new TextEncoder().encode(json);
+    const padded = new TextEncoder().encode(json + ' '.repeat(MAX_PROFILE_BYTES - encoded.length));
+    const split = padded.indexOf(0xc3) + 1;
+    expect(split).toBeGreaterThan(0);
+    const { res, cancel } = response([padded.slice(0, split), padded.slice(split)], { 'content-length': String(MAX_PROFILE_BYTES) });
+    expect(await fetchMerchantProfile('https://shop.example/p.json', NOW, () => Promise.resolve(res))).toEqual(p);
+    expect(cancel).not.toHaveBeenCalled();
+    expect(res.body?.locked).toBe(false);
+  });
+
+  it('counts bytes instead of UTF-16 characters', async () => {
+    const bytes = new TextEncoder().encode('é'.repeat(MAX_PROFILE_BYTES / 2 + 1));
+    const { res, cancel } = response([bytes, new Uint8Array(1)]);
+    expect(await fetchMerchantProfile('https://shop.example/p.json', NOW, () => Promise.resolve(res))).toBeUndefined();
+    expect(cancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not wait for remote cancellation before rejecting', async () => {
+    const { res, cancel } = response([new Uint8Array(MAX_PROFILE_BYTES + 1)]);
+    cancel.mockImplementation(() => new Promise<void>(() => undefined));
+    expect(await fetchMerchantProfile('https://shop.example/p.json', NOW, () => Promise.resolve(res))).toBeUndefined();
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(res.body?.locked).toBe(false);
+  });
+
+  it('rejects malformed UTF-8 and releases the reader after a stream error', async () => {
+    const invalid = response([new Uint8Array([0xff]), new Uint8Array(1)]);
+    expect(await fetchMerchantProfile('https://shop.example/p.json', NOW, () => Promise.resolve(invalid.res))).toBeUndefined();
+    expect(invalid.cancel).toHaveBeenCalledTimes(1);
+    const res = new Response(new ReadableStream({ pull: () => { throw new Error('broken stream'); } }));
+    expect(await fetchMerchantProfile('https://shop.example/p.json', NOW, () => Promise.resolve(res))).toBeUndefined();
+    expect(res.body?.locked).toBe(false);
+  });
+
+  it('rejects a response without a body', async () => {
+    expect(await fetchMerchantProfile('https://shop.example/p.json', NOW, () => Promise.resolve(new Response(null)))).toBeUndefined();
   });
 });

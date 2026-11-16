@@ -41,6 +41,22 @@ sequentially. No new independent worker review or external audit is claimed.
    an unverified download cannot authorize replacing keys, including when another tab replaces the saved vault. Explicit
    destructive confirmation remains available. Five tests reproduced the old behavior before the fixes.
 
+7. **Merchant profile downloads:** enforce the existing 8192-byte limit while reading the body; do not trust missing,
+   malformed or understated Content-Length. Cancel overflow/error responses without waiting for cancellation, decode
+   split UTF-8 correctly and release the reader. Nine regression failures reproduced the earlier behavior; 124 focused
+   profile/protocol/embed/privacy tests now pass. No new network caller or UI enablement is introduced.
+8. **Browser acceptance selector:** the first #182 full-browser run had 69 passes, one intentional skip and one failure:
+   the invoice summary added a nested `p.hint`, making an old identity selector ambiguous. Scope all three assertions to
+   the invoice card's direct identity paragraph; preserve the digest, language, backup-import and lock assertions. The
+   local full-profile build and bundle scan pass, but Chromium cannot start because this environment denies its process
+   singleton socket. This is not a browser pass; the correction requires hosted browser qualification.
+
+9. **Registry transaction lifecycle:** five reference-registry tests pass with native Anvil 1.8.5 and the local solc
+   0.8.38 compiler (`REQUIRE_ANVIL=1`, zero skips). The additional lifecycle test executes all three new builders,
+   registers through a different submitting account, rejects a replay without changing state, invalidates a signed
+   update, and accepts a freshly signed update. This is EOA authorization evidence; no ERC-1271 wallet integration,
+   production runtime pin, external wallet UX or public deployment is claimed. Web typecheck and test-file lint pass.
+
 ## Executed evidence
 
 Counts overlap. Do not add them into a unique-test total. Commands ran with one or two workers and bounded Node heaps;
@@ -49,7 +65,7 @@ cryptographic parameters, coverage thresholds and assertions were not weakened.
 | Check | Result |
 | --- | --- |
 | `npm ci --ignore-scripts --no-fund --no-audit --prefer-offline`; `npm run build:libs` | Passed. |
-| Vault package, full coverage | 277 passed; statements 96.28%, branches 93.14%, functions 99.68%, lines 98.65%. This run precedes the later password-policy recovery. |
+| Vault package, final full coverage | 280 passed on the combined custody source; statements 96.34%, branches 93.23%, functions 99.68%, lines 98.65%. |
 | Invoice helper | 19 passed, including 300 seeded bigint/duplicate property cases; two original conflict tests failed before correction. |
 | Invoice UI, ledger integration and security keys | 33 passed. Manual 40 + 60 links produce a 100-unit comparison without automatic linking. |
 | Registry suites and public package exports | 40 passed, including 200 generated cases; built exports, typecheck and corrected lint passed. |
@@ -60,12 +76,20 @@ cryptographic parameters, coverage thresholds and assertions were not weakened.
 | Solidity gate and analyzer regressions | 42 passed; source scan covers 39 Solidity files. Shell syntax checks pass. |
 | Custody/session/IndexedDB/SellerKeys suites | 112 passed in five files on the combined custody worktree; baseline had five failures and 39 passes in the two directly affected files. |
 | Catalog checks/extraction | Four catalogs, zero errors; 154 untranslated/review warnings retained. No missing source keys. |
-| Library/web and changed package typecheck/lint | Passed before custody recovery; final combined reruns recorded below. Initial web typecheck ran before library builds finished and failed on missing declarations; rerun after the build passed. |
+| Library/web and changed package typecheck/lint | Final custody vault/web/pool typechecks pass. Profile worktree web typecheck and focused lint pass. Full web lint retry passed after an earlier exit 137 under concurrent load. Initial missing-declaration web typecheck passed after library builds. |
 
 An initial local full web coverage run on the pre-custody source was stopped without a completed result when the missing
-custody fixes were discovered. It is not a pass. Final combined web coverage and no-coverage suites are running on
-`a8331a2d`; results must be appended before claiming a full local web pass. Hosted CI on the original #182 head had no
-failures at inspection; those results do not qualify a later source head.
+custody fixes were discovered. It is not a pass. The combined custody-source web run (`a8331a2d`, unchanged source at `beb99464`) completed: 2,597 tests passed,
+eight prerequisite skips, 182 files passed/two skipped; coverage statements 93.78%, branches 89.93%, functions 95.58%,
+lines 97.05%. The three no-coverage stress/fuzz suites also passed, including 150 archive mutations and the million-entry
+replay-spam corpus (not a million distinct expensive ECDH inputs). The eight skips are four local policy-contract tests,
+three reference-registry tests, and one live bitcoind-regtest test. The later dedicated reference-registry run above
+executes all registry tests plus the new delegation lifecycle with zero skips; four policy and one bitcoind case remain
+unqualified by this local web run. This run predates only the isolated profile stream cap
+and browser-selector correction; those changes have 124 targeted test passes, full web typecheck/lint, and a successful
+full-profile build/bundle scan. Their hosted browser execution remains pending. The original #182 hosted run subsequently exposed the selector failure described above; other pending jobs were
+cancelled by the next source update. Those results do not qualify a later source head. Consult the PR description and
+checks for results reported after this snapshot; the checked source tree must match the claimed candidate.
 
 ## Still incomplete
 

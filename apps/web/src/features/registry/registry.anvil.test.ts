@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { encodeFunctionData } from 'viem/utils';
-import { assertRegistryDeployed, erc6538RegistryAbi, buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress } from '@ghostpay/chain-adapters';
+import { assertRegistryDeployed, erc6538RegistryAbi, buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, buildRegistryNonceCall, buildIncrementNonceTx, buildRegisterKeysOnBehalfTx, metaAddressToRegistryBytes, type Hex } from '@ghostpay/chain-adapters';
 import { encodeMetaAddress, generateKeySet } from '@ghostpay/core-crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -110,6 +110,53 @@ describe('ERC-6538 helpers vs reference registry (anvil)', () => {
       const data = encodeFunctionData({ abi: erc6538RegistryAbi, functionName: 'registerKeys', args: [1n, `0x${'02'.repeat(66)}`] });
       await receiptOf((await rpc('eth_sendTransaction', [{ from, to: ERC6538_REGISTRY_ADDRESS, data }])) as string);
       await expect(lookupMetaAddress(client, from)).rejects.toThrow(/INVALID_INPUT/);
+    });
+
+    it('executes delegated registration, rejects replay and invalidates outstanding authorizations', async () => {
+      const sender = ((await rpc('eth_accounts', [])) as string[])[1]!;
+      const nonce = async (): Promise<bigint> => {
+        const { to, data } = buildRegistryNonceCall(from);
+        return BigInt(await rpc('eth_call', [{ to, data }, 'latest']) as string);
+      };
+      const sign = async (meta: string, n: bigint): Promise<Hex> => await rpc('eth_signTypedData_v4', [from, JSON.stringify({
+        domain: { name: 'ERC6538Registry', version: '1.0', chainId: 31337, verifyingContract: ERC6538_REGISTRY_ADDRESS },
+        primaryType: 'Erc6538RegistryEntry',
+        types: {
+          EIP712Domain: [
+            { name: 'name', type: 'string' }, { name: 'version', type: 'string' },
+            { name: 'chainId', type: 'uint256' }, { name: 'verifyingContract', type: 'address' },
+          ],
+          Erc6538RegistryEntry: [
+            { name: 'schemeId', type: 'uint256' }, { name: 'stealthMetaAddress', type: 'bytes' },
+            { name: 'nonce', type: 'uint256' },
+          ],
+        },
+        message: { schemeId: '1', stealthMetaAddress: metaAddressToRegistryBytes(meta), nonce: n.toString() },
+      })]) as Hex;
+      const first = encodeMetaAddress(generateKeySet());
+      const before = await nonce();
+      const delegated = buildRegisterKeysOnBehalfTx(from, first, await sign(first, before));
+      const tx = { from: sender, to: delegated.to, data: delegated.data };
+      expect((await receiptOf(await rpc('eth_sendTransaction', [tx]) as string)).status).toBe('0x1');
+      expect(await lookupMetaAddress(client, from)).toBe(first);
+      expect(await lookupMetaAddress(client, sender)).toBeUndefined();
+      expect(await nonce()).toBe(before + 1n);
+      // A reverted estimate must not consume another nonce or alter the registered keys.
+      await expect(rpc('eth_estimateGas', [tx])).rejects.toThrow();
+      expect(await nonce()).toBe(before + 1n);
+
+      const second = encodeMetaAddress(generateKeySet());
+      const stale = buildRegisterKeysOnBehalfTx(from, second, await sign(second, await nonce()));
+      const invalidate = buildIncrementNonceTx();
+      expect((await receiptOf(await rpc('eth_sendTransaction', [{ from, to: invalidate.to, data: invalidate.data }]) as string)).status).toBe('0x1');
+      expect(await nonce()).toBe(before + 2n);
+      await expect(rpc('eth_estimateGas', [{ from: sender, to: stale.to, data: stale.data }])).rejects.toThrow();
+      expect(await lookupMetaAddress(client, from)).toBe(first);
+      expect(await nonce()).toBe(before + 2n);
+      const fresh = buildRegisterKeysOnBehalfTx(from, second, await sign(second, await nonce()));
+      expect((await receiptOf(await rpc('eth_sendTransaction', [{ from: sender, to: fresh.to, data: fresh.data }]) as string)).status).toBe('0x1');
+      expect(await lookupMetaAddress(client, from)).toBe(second);
+      expect(await nonce()).toBe(before + 3n);
     });
   });
 });
