@@ -257,10 +257,11 @@ describe('Seller keys', () => {
     await user.click(within(parts).getByRole('button', { name: 'Reveal secret QR code' }));
     expect(within(parts).getAllByText(/Part 1 of \d+/).length).toBeGreaterThan(0);
     expect(window.localStorage.length).toBe(0);
-    // L1-01: the downloaded keystore is a backup, so the banner and the sharing gate are gone.
+    // GP-PAGES-02-R2: a downloaded file is still unverified, so sharing stays behind the backup gate.
     expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: false });
     expect(screen.queryByText('These seller keys have no backup')).toBeNull();
-    expect(screen.getByText(getSessionPublic()!.metaAddress)).toBeTruthy();
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.queryByText(getSessionPublic()!.metaAddress)).toBeNull();
     // GP-PAGES-02: a download alone is not proof that the file reached the disk: the banner says so, the checklist and
     // the wipe do not treat the keys as recoverable.
     expect(screen.getByText('This backup is not verified yet')).toBeTruthy();
@@ -276,6 +277,8 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Verify backup' }));
     await waitFor(() => { expect(screen.getAllByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/).length).toBeGreaterThan(0); }, { timeout: 30_000 });
     expect(getSessionBackup()).toMatchObject({ backedUp: true, verified: true });
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+    expect(screen.getByText(pub!.metaAddress)).toBeTruthy();
     expect(getSessionPublic()).toBe(pub);
     expect(screen.queryByText('This backup is not verified yet')).toBeNull();
     expect(screen.getByLabelText('Keystore passphrase')).toHaveProperty('value', '');
