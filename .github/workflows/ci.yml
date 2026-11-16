@@ -83,7 +83,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-node-libs
       # anvil for the workspaces that have anvil integration tests (they otherwise skip). Pinned as in setup-forge.
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: v1.8.5
       - name: Install pinned Solidity compiler for the web registry integration test
@@ -343,7 +343,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: v1.8.5
       # ERC-4337's GPL-header EntryPoint source is fetched into a gitignored test-only directory;
