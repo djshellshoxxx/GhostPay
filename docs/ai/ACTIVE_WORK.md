@@ -26,3 +26,5 @@ Workers should update their task-branch copy and communicate ownership through t
 All scoped worker patches above are integrated locally and source-reviewed in PR #179. The coordinator owns
 final combined-head CI and the completion task ledger. Earlier in-progress statuses describe original worker
 claims; they do not imply that those source branches were modified or that release gates passed.
+
+| Codex registry builder worker | `codex/ghostpay-registry-recovery-20261116` | `b4be8866f6ff883fbbedc49be88b5b251a7d270e` | `packages/chain-adapters/src/registryDelegation.ts`; companion tests; `src/index.ts` export; scoped spec audit note | Match canonical ERC-6538 calldata; validate registrants/keys/signature bytes; retain opaque ERC-1271 signatures; no sends, signing, pins or UI enablement | Recovered from recorded source after environment loss. 40 focused tests/3 files and 200 seeded cases passed locally. Typecheck/lint killed137; build/export and recovered-tree verification pending. |
