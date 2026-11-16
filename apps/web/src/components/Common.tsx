@@ -91,8 +91,15 @@ export function downloadText(filename: string, text: string, type: string): void
   a.download = filename;
   a.rel = 'noopener';
   document.body.appendChild(a);
-  a.click();
-  a.remove();
+  try {
+    a.click();
+  } catch (error) {
+    // A blocked download must not leave a detached-page anchor or live Blob URL.
+    URL.revokeObjectURL(url);
+    throw error;
+  } finally {
+    a.remove();
+  }
   setTimeout(() => {
     URL.revokeObjectURL(url);
   }, 1000);
