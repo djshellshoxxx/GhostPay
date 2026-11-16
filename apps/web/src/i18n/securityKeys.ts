@@ -4,6 +4,18 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  invoiceLinkedAmounts: [
+    'ledger.amounts.heading',
+    'ledger.amounts.unavailable',
+    'ledger.amounts.unlinked',
+    'ledger.amounts.below',
+    'ledger.amounts.equal',
+    'ledger.amounts.above',
+    'ledger.amounts.total',
+    'ledger.amounts.count',
+    'ledger.amounts.multiple',
+    'ledger.amounts.evidence',
+  ],
   scanPrivacyDisclosure: [
     'scanPrivacy.blocked.requirePrivatePath',
     'scanPrivacy.blocked.proxyEndpoint',

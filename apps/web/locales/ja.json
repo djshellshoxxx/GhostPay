@@ -2165,6 +2165,16 @@
     "sellerKeys.unlockReplacesUnverified.title": "現在読み込まれている鍵のバックアップは未検証です",
     "sellerKeys.unlockReplacesUnverified.body": "キーストアをダウンロードしましたが、ファイルが無傷でディスクに届いたことの証明はありません。保存済みの保管庫を解除すると読み込まれている鍵が置き換えられ、ファイルが壊れていれば、そのメタアドレスに送られたすべての支払いを回収できなくなります。ファイルが安全だと確信できない限り、まずバックアップを検証してください。",
     "error.reconciliationVault.encryptedReconciliationStorageIsFull": "このブラウザープロファイルの暗号化照合ストレージが満杯です。何も書き込まれていません。空き容量を確保して（たとえば古いレコードをアーカイブして削除して）、もう一度お試しください。",
-    "error.keyVault.encryptedBrowserStorageIsFull": "このプロファイルの暗号化ブラウザーストレージが満杯です。保管庫は保存されませんでした。空き容量を確保してもう一度お試しいただくか、ダウンロードしたキーストアをバックアップとして保管してください。"
+    "error.keyVault.encryptedBrowserStorageIsFull": "このプロファイルの暗号化ブラウザーストレージが満杯です。保管庫は保存されませんでした。空き容量を確保してもう一度お試しいただくか、ダウンロードしたキーストアをバックアップとして保管してください。",
+    "ledger.amounts.heading": "請求書に関連付けた金額",
+    "ledger.amounts.unavailable": "ローカルの証拠に不整合があるため、関連付けた金額を比較できません。",
+    "ledger.amounts.unlinked": "比較対象となる関連付け済みの観測はありません。",
+    "ledger.amounts.below": "関連付けた合計は想定受取額を下回っています。",
+    "ledger.amounts.equal": "関連付けた合計は想定受取額と一致しています。",
+    "ledger.amounts.above": "関連付けた合計は想定受取額を上回っています。",
+    "ledger.amounts.total": "関連付けた観測の合計: {expected} 基本単位に対して {observed}。",
+    "ledger.amounts.count": "重複しない関連付け済み観測: {count}。",
+    "ledger.amounts.multiple": "複数の観測が関連付けられています。重複した支払いがないか確認してください。",
+    "ledger.amounts.evidence": "スキャン時に確定済みと検証されたライブ観測のみを集計します。保留中、インポート済み、再編成で無効になった観測は除外します。請求書との関連付けはあなたの注釈であり、帰属や現在の決済確定を証明するものではありません。"
   }
 }

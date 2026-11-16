@@ -30,6 +30,21 @@ Only eligible router-verified scan observations participate. Imported history, r
 receipt files and QR contents never become payment evidence through this workflow. A scan that changes while saving or
 confirming invalidates the pending action; refresh and review the result before retrying.
 
+## Compare linked invoice amounts
+
+Each registered invoice shows the total of observations you explicitly linked, compared with its expected router net
+amount. Totals use exact base units and are labelled below, equal to, or above the expected amount. A partial amount
+does not generate an automatic match: enter the invoice digest only after checking the association yourself.
+
+The comparison counts distinct transaction logs once and includes only live observations verified as final when
+scanned, for the same seller, chain and asset. Imported history, pending/claimed observations and known reorg
+invalidations are excluded. Contradictory copies of a transaction log make the comparison unavailable. Multiple
+observations prompt a review for possible duplicate payments, including when several partial amounts add up exactly.
+
+No linked observations means there is nothing eligible to compare; it is not an unpaid verdict. These local annotations
+do not prove invoice attribution or current settlement. Rescan and inspect the transaction evidence before relying on
+an older observation. The comparison does not send requests, link payments automatically, or change the vault format.
+
 ## Archive a seller receipt
 
 Issue a receipt from an eligible scan result, review the fields, then explicitly choose its archive action. The archive

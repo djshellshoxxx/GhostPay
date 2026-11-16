@@ -326,6 +326,7 @@ export function QrFrame(props: QrFrameProps): ReactNode {
             <QrIcon icon={info.icon} /> {info.label}
           </p>
           <p id={largeDescId} className="qr-explain">{info.explanation}</p>
+          {rules.warning !== null && <p className="qr-warning">{t('qrFrame.warning', { warning: rules.warning })}</p>}
           {image}
           {parts !== null && (
             <p className="qr-part-status">

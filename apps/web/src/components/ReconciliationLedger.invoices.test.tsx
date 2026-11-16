@@ -96,6 +96,27 @@ afterEach(() => {
 });
 
 describe('local invoice matching UI', () => {
+  it('compares partial amounts only after the seller explicitly links each observation', async () => {
+    await vault.registerInvoice(invoice(1, '100'));
+    const user = await open({ matches: [match(1, 40n), match(2, 60n)] });
+    expect(await screen.findByText('No eligible linked observations to compare.')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Confirm proposed invoice match' })).toBeNull();
+    const fields = screen.getAllByRole('textbox', { name: 'Invoice digest (optional, manual link)' });
+    fireEvent.change(fields[0]!, { target: { value: invoice(1).invoiceDigest } });
+    await user.click(screen.getAllByRole('button', { name: 'Add verified payment to ledger' })[0]!);
+    expect(await screen.findByText('Linked total is below the expected net amount.')).toBeTruthy();
+    expect(screen.getByText('Linked observation total: 40 of 100 base units.')).toBeTruthy();
+    expect((await vault.read()).map((record) => record.invoiceDigest)).toEqual([invoice(1).invoiceDigest]);
+    fireEvent.change(fields[1]!, { target: { value: invoice(1).invoiceDigest } });
+    await user.click(screen.getAllByRole('button', { name: 'Add verified payment to ledger' })[1]!);
+    expect(await screen.findByText('Linked total equals the expected net amount.')).toBeTruthy();
+    expect(screen.getByText('Distinct linked observations: 2.')).toBeTruthy();
+    expect(screen.getByText('Multiple linked observations; review possible duplicate payments.')).toBeTruthy();
+    expect(screen.getByText(/do not prove attribution or current settlement/)).toBeTruthy();
+    expect((await vault.read()).map((record) => record.invoiceDigest)).toEqual([invoice(1).invoiceDigest, invoice(1).invoiceDigest]);
+    expect(screen.queryByRole('button', { name: 'Confirm proposed invoice match' })).toBeNull();
+  });
+
   it('proposes an exact match for a current scan result and confirms it into the vault', async () => {
     await vault.registerInvoice(invoice(1));
     const onAnnounce = vi.fn();

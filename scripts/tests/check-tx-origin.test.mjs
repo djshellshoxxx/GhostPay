@@ -93,3 +93,25 @@ test('clean tree and tree with no Solidity pass', () => {
   assert.equal(run({ 'packages/a/src/A.sol': 'contract A {}\n' }).status, 0);
   assert.equal(run({ 'README.md': 'x\n' }).status, 0);
 });
+
+test('tx and .origin split across lines (even with a comment between) fails', () => {
+  for (const body of ['tx\n.origin', 'tx.\norigin', 'tx\n// c\n  .origin', 'tx\n\n . origin']) {
+    const r = run({ 'packages/a/src/A.sol': `contract A { function f() external view returns (address) { return ${body}; } }\n` });
+    assert.equal(r.status, 1, body);
+  }
+  const ok = run({ 'packages/a/src/A.sol': 'contract A { uint256 tx;\n uint256 y = tx;\n uint256 origin; }\n' });
+  assert.equal(ok.status, 0, out(ok));
+});
+
+test('all three tokens split across lines or inline comments still fail', () => {
+  for (const expression of ['tx\n.\norigin', 'tx/* note */.origin', 'tx/* note\n more */./* note */origin',
+    'tx\n.\n// note\norigin']) {
+    const r = run({ 'packages/a/src/A.sol': `contract A { function f() external view returns (address) { return ${expression}; } }\n` });
+    assert.equal(r.status, 1, expression);
+  }
+});
+
+test('comment markers inside strings cannot hide later executable tokens', () => {
+  const r = run({ 'packages/a/src/A.sol': 'contract A { string s = "/*"; function f() external view returns (address) { return tx/* ok */.origin; } }\n' });
+  assert.equal(r.status, 1, out(r));
+});

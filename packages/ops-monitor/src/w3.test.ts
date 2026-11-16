@@ -122,3 +122,22 @@ describe('W3', () => {
     expect((await run(undefined))[0]).toMatchObject({ severity: 'warn', subject: 'monitor' });
   });
 });
+
+describe('fetchBytes URL joining', () => {
+  it('trims trailing slashes from base and leading slashes from path in linear time', async () => {
+    const { fetchBytes } = await import('./fetcher.js');
+    const seen: string[] = [];
+    const rel = {
+      fetch: (u: string) => {
+        seen.push(u);
+        return Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)) });
+      },
+    } as never;
+    await fetchBytes(rel, 'https://h.example/base///', '//p/q');
+    expect(seen[0]).toBe('https://h.example/base/p/q');
+    const hostile = `https://h.example/${'/'.repeat(60_000)}x`;
+    const t0 = performance.now();
+    await fetchBytes(rel, hostile, 'p');
+    expect(performance.now() - t0).toBeLessThan(300);
+  });
+});

@@ -2165,6 +2165,16 @@
     "sellerKeys.unlockReplacesUnverified.title": "Las claves cargadas ahora tienen una copia de seguridad sin verificar",
     "sellerKeys.unlockReplacesUnverified.body": "Se descargó un keystore, pero nada prueba que el archivo haya llegado intacto al disco. Desbloquear la bóveda guardada reemplaza las claves cargadas; si el archivo está dañado, ningún pago enviado a su metadirección podrá recuperarse. Verifica primero la copia de seguridad salvo que estés seguro de que el archivo está a salvo.",
     "error.reconciliationVault.encryptedReconciliationStorageIsFull": "El almacenamiento cifrado de conciliación está lleno en este perfil del navegador. No se escribió nada. Libera espacio (por ejemplo, archiva y elimina registros antiguos) e inténtalo de nuevo.",
-    "error.keyVault.encryptedBrowserStorageIsFull": "El almacenamiento cifrado del navegador está lleno en este perfil. La bóveda no se guardó. Libera espacio e inténtalo de nuevo, o conserva el keystore descargado como copia de seguridad."
+    "error.keyVault.encryptedBrowserStorageIsFull": "El almacenamiento cifrado del navegador está lleno en este perfil. La bóveda no se guardó. Libera espacio e inténtalo de nuevo, o conserva el keystore descargado como copia de seguridad.",
+    "ledger.amounts.heading": "Importes vinculados a la factura",
+    "ledger.amounts.unavailable": "No se pueden comparar los importes vinculados porque la evidencia local es incoherente.",
+    "ledger.amounts.unlinked": "No hay observaciones vinculadas aptas para comparar.",
+    "ledger.amounts.below": "El total vinculado es inferior al importe neto esperado.",
+    "ledger.amounts.equal": "El total vinculado coincide con el importe neto esperado.",
+    "ledger.amounts.above": "El total vinculado supera el importe neto esperado.",
+    "ledger.amounts.total": "Total de observaciones vinculadas: {observed} de {expected} unidades base.",
+    "ledger.amounts.count": "Observaciones vinculadas distintas: {count}.",
+    "ledger.amounts.multiple": "Hay varias observaciones vinculadas; revisa si existen pagos duplicados.",
+    "ledger.amounts.evidence": "Solo se cuentan las observaciones en vivo verificadas como definitivas al escanearlas. Se excluyen las pendientes, importadas e invalidadas por una reorganización. Los vínculos con facturas son tus anotaciones y no prueban la atribución ni la liquidación actual."
   }
 }

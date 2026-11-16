@@ -6,6 +6,12 @@ Priority P1 | Effort S (ABI, 1 d) + M (UI, 3 d) | Owner: chain-adapters + web | 
 Sources: research 1.1/1.2 item 4, DOC-3, DOC-4; gap-analysis item 4; CONTRACTS_SPEC preamble; ERC-6538 (Final, canonical `0x6538E6bf4B0eBd30A8Ea093027Ac2422ce5d6538`).
 
 ## 1. Scope
+
+**2026-11-16 continuation:** The public chain-adapters package now exports `buildRegistryNonceCall`,
+`buildIncrementNonceTx` and `buildRegisterKeysOnBehalfTx` from `registryDelegation.ts`. The delegated builder accepts
+an already-authorized signature and validates address, scheme-1 meta-address and bounded opaque signature bytes.
+It does not sign, send, resolve ENS, or establish deployment provenance. On-behalf registration remains outside UI v1.
+The 2026-11-11 status above is historical; the per-chain verification and ENS requirements remain open.
 Let a seller publish, read and remove a stealth meta-address in the registry, and let payers look up a registrant by address or ENS name.
 
 ## 2. Interfaces

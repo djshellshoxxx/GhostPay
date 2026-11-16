@@ -1,6 +1,8 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
+import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
+import { InvoicePaymentSummary } from './InvoicePaymentSummary';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import {
   clearReconciliationRecords,
@@ -477,6 +479,8 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
           <InvoiceRegistry
             invoices={invoices}
             records={records}
+            sellerKeyId={props.sellerKeyId}
+            chainId={props.chainId}
             busy={busy}
             onRemove={(digest) => run(async (current) => current.removeInvoice(digest))}
             onClear={() => run(async (current) => current.clearInvoices())}
@@ -666,11 +670,16 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
 function InvoiceRegistry(props: {
   readonly invoices: readonly RegisteredInvoice[];
   readonly records: readonly VaultRecord[];
+  readonly sellerKeyId: string | undefined;
+  readonly chainId: number;
   readonly busy: boolean;
   readonly onRemove: (digest: string) => void;
   readonly onClear: () => void;
 }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  const summarize = useMemo(() => props.sellerKeyId === undefined ? undefined : createInvoicePaymentSummarizer(
+    props.records, { sellerKeyId: props.sellerKeyId, chainId: props.chainId },
+  ), [props.records, props.sellerKeyId, props.chainId]);
   const linked = new Set(
     props.records
       .filter((r) => r.evidenceStatus === 'verified-at-scan' && r.provenance === 'live-scan' && r.invoiceDigest !== undefined)
@@ -694,6 +703,7 @@ function InvoiceRegistry(props: {
                   {new Date(invoice.expiresAt * 1000).toISOString()}.{' '}
                   {linked.has(invoice.invoiceDigest) ? t('ledger.ui.linkedToAVerifiedObservation') : t('ledger.ui.noLinkedObservation')}
                 </p>
+                <InvoicePaymentSummary summary={summarize?.(invoice) ?? { kind: 'unavailable' }} />
                 <button
                   type="button"
                   className="btn"
