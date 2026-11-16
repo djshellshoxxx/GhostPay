@@ -210,7 +210,7 @@ export function fiatToTokenAmount(p: {
 }): bigint {
   if (p.fiatCurrency !== p.priceQuoteCurrency) return fail('QUOTE_FAILED', 'currency mismatch');
   if (p.fiatMinorUnits <= 0n) return fail('QUOTE_FAILED', 'fiat amount must be positive');
-  for (const d of [p.fiatDecimals, p.tokenDecimals]) {
+  for (const d of [p.fiatDecimals, p.tokenDecimals, p.price.decimals]) {
     if (!Number.isInteger(d) || d < 0 || d > 36) return fail('QUOTE_FAILED', 'decimals');
   }
   if (p.price.answer <= 0n) return fail('QUOTE_FAILED', 'price');
