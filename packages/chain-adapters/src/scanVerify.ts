@@ -10,7 +10,7 @@ import {
   validateAnnouncementLog,
   type ScannedAnnouncement,
 } from './logs.js';
-import type { RpcClient, RpcLog } from './rpc.js';
+import type { BlockRef, RpcClient, RpcLog } from './rpc.js';
 import type { Address, Hex } from './types.js';
 
 /**
@@ -143,10 +143,19 @@ export async function compareProviders(o: {
     const lane = (a: ScannedAnnouncement): boolean => !routerOnly.has(a.blockNumber) || a.caller.toLowerCase() === router?.toLowerCase();
     // Ids are keyed by block hash, so a fork on either side shows up as missing on both.
     const mine = new Map(o.primaryAnnouncements.filter(lane).map((a) => [a.id, a] as const));
+    const headers = new Map<bigint, BlockRef | null>();
     for (const [id, a] of mine) {
       const t = theirs.get(id);
       if (t === undefined) out.push({ kind: 'missing_in_secondary', ref: id });
       else if (key(t) !== key(a)) out.push({ kind: 'content_differs', ref: id });
+      else if (a.blockTimestamp !== undefined) {
+        // A provider can return the correct hash with a forged timestamp. Bind timing evidence to the
+        // independent provider's header too; missing time is disagreement, not a successful comparison.
+        if (!headers.has(a.blockNumber)) headers.set(a.blockNumber, await o.secondary.getBlock(a.blockNumber));
+        const block = headers.get(a.blockNumber);
+        if (block == null || block.number !== a.blockNumber || block.hash.toLowerCase() !== a.blockHash.toLowerCase() ||
+          block.timestamp?.toString() !== a.blockTimestamp) out.push({ kind: 'content_differs', ref: id });
+      }
     }
     for (const id of theirs.keys()) if (!mine.has(id)) out.push({ kind: 'missing_in_primary', ref: id });
     if (!narrowedHere && skipped !== o.primarySkipped) out.push({ kind: 'skipped_count_differs', ref: `${String(o.primarySkipped)}/${String(skipped)}` });

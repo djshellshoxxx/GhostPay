@@ -1,4 +1,5 @@
-import { randomUUID, timingSafeEqual } from 'node:crypto';
+import { RejectSpikeDetector } from './rejectSpike.js';
+import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import {
@@ -37,10 +38,9 @@ export interface HttpDeps {
   readonly newRequestId?: () => string;
 }
 
-type Route = '/healthz' | '/metrics' | '/v1/info' | '/v1/quote' | '/v1/sweep';
+type Route = '/healthz' | '/v1/info' | '/v1/quote' | '/v1/sweep';
 const ROUTES: Readonly<Record<Route, 'GET' | 'POST'>> = {
   '/healthz': 'GET',
-  '/metrics': 'GET',
   '/v1/info': 'GET',
   '/v1/quote': 'POST',
   '/v1/sweep': 'POST',
@@ -64,6 +64,7 @@ interface Ctx {
   readonly res: ServerResponse;
   readonly requestId: string;
   route: string;
+  chainId?: number;
   status: number;
   errorClass: string | undefined;
 }
@@ -122,11 +123,13 @@ export class RelayerHttpServer {
   private readonly proxies: TrustedProxies;
   private readonly quoteBudget: TokenBucketLimiter;
   private draining = false;
+  private readonly rejects: RejectSpikeDetector;
 
   public constructor(private readonly d: HttpDeps) {
     this.origins = new Set(d.config.allowedOrigins);
     this.logger = d.logger ?? nullLogger;
     this.proxies = new TrustedProxies(d.config.trustedProxies);
+    this.rejects = new RejectSpikeDetector(d.config.chains.map((chain) => chain.chainId), d.alerts ?? nullAlerts, d.monotonic ?? monotonicNow);
     const rl = d.config.rateLimit;
     this.quoteBudget = new TokenBucketLimiter(
       { ratePerSecond: rl.quoteGlobalPerMinute / 60, burst: rl.quoteGlobalBurst, maxKeys: 1 },
@@ -239,6 +242,10 @@ export class RelayerHttpServer {
         this.send(c, 500, { error: { code: 'internal_error' } });
       }
     }
+    if (c.status >= 400 && (c.route === '/v1/quote' || c.route === '/v1/sweep')) {
+      this.rejects.record(c.chainId);
+      this.d.metrics?.inc('relayer_reject_total', { reason: c.errorClass ?? 'internal_error' });
+    }
     this.d.metrics?.inc('relayer_http_requests_total', { route: c.route, status: c.status });
     this.logger.log(c.status >= 500 ? 'error' : 'info', 'request', {
       requestId: c.requestId,
@@ -284,23 +291,6 @@ export class RelayerHttpServer {
         this.send(c, h.status === 'ok' ? 200 : 503, h);
         return;
       }
-      case '/metrics': {
-        const token = this.d.config.metricsToken;
-        const auth = req.headers.authorization;
-        if (token === undefined || this.d.metrics === undefined) throw new RelayerError(404, 'not_found');
-        const expected = Buffer.from(`Bearer ${token}`);
-        const given = Buffer.from(auth ?? '');
-        if (given.length !== expected.length || !timingSafeEqual(given, expected))
-          throw new RelayerError(401, 'unauthorized');
-        const text = this.d.metrics.render();
-        c.status = 200;
-        res.writeHead(200, {
-          'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
-          'Content-Length': Buffer.byteLength(text),
-        });
-        res.end(text);
-        return;
-      }
       case '/v1/info':
         this.send(c, 200, this.d.service.info());
         return;
@@ -319,13 +309,16 @@ export class RelayerHttpServer {
         const body = parseJson(await readBody(req, MAX_BODY_BYTES));
         if (path === '/v1/quote') {
           const quote = parseQuoteRequest(body);
+          c.chainId = quote.chainId;
           this.takeQuoteBudget(); // only a well-formed request spends the process-wide budget
           this.send(c, 200, await this.d.service.quote(quote));
         } else {
+          const sweep = parseSweepRequest(body);
+          c.chainId = sweep.chainId;
           this.send(
             c,
             200,
-            await this.d.service.sweep(parseSweepRequest(body), {
+            await this.d.service.sweep(sweep, {
               requestId: c.requestId,
               clientKey,
               clientGroupKey,

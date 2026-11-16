@@ -191,6 +191,7 @@ export async function createPayContext(review: Review, client: RpcClient | undef
     }
     const price = await readPrice(createAggregatorReader(client), feed.address, {
       now: BigInt(deps.nowSeconds),
+      ...(feed.decimals === undefined ? {} : { expectedDecimals: feed.decimals }),
       maxAgeSeconds: BigInt(Math.min(Math.max(inv.quote.expiresAt - inv.quote.timestamp, 60), 86_400)),
     });
     quoted = fiatToTokenAmount({

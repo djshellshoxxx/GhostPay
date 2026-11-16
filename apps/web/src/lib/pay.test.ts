@@ -231,6 +231,21 @@ describe('createPayContext and amounts', () => {
     expect(c.quotedTokenAmount).toBe(100_000_000n); // 100.00 USD at 1.00 USD per USDC, 6 decimals
     expect(c.request.grossAmount).toBe(100_000_000n);
   });
+  it('requires a live feed to agree with configured registry decimals', async () => {
+    const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
+    const review = reviewInvoice(parsed, NOW, LOADED(84532));
+    let actualDecimals = 18;
+    const rpc = mockRpc(84532, (method, params) => {
+      expect(method).toBe('eth_call');
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x313ce567')) return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'decimals', result: actualDecimals });
+      return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'latestRoundData', result: [1n, 10n ** BigInt(actualDecimals), BigInt(NOW), BigInt(NOW), 1n] });
+    });
+    // The actual Base Sepolia USDC/USD entry pins 8 decimals. No injected feed overrides this check.
+    await expect(createPayContext(review, rpc, { nowSeconds: NOW })).rejects.toThrow(/configured decimals/);
+    actualDecimals = 8;
+    await expect(createPayContext(review, rpc, { nowSeconds: NOW })).resolves.toMatchObject({ quotedTokenAmount: 100_000_000n });
+  });
   it('offline client refuses every network call', async () => {
     const c = offlineClient(1);
     await expect(c.request('x', [])).rejects.toThrow(/No RPC/);

@@ -15,6 +15,8 @@ export interface ReconciliationRecord {
   readonly transactionHash: string;
   readonly blockNumber: string;
   readonly blockHash: string;
+  /** Unix seconds from the canonical header for blockNumber and blockHash; absent on legacy records. */
+  readonly blockTimestamp?: string;
   readonly logIndex: number;
   readonly stealthAddress: string;
   readonly asset: string;
@@ -57,7 +59,7 @@ export type MatchProposal =
   | {
       readonly kind: 'ambiguous';
       readonly candidates: readonly RegisteredInvoice[];
-      readonly reason: 'multiple-invoices' | 'multiple-payments' | 'late-observation';
+      readonly reason: 'multiple-invoices' | 'multiple-payments' | 'late-observation' | 'missing-block-time';
     }
   | { readonly kind: 'none' };
 
@@ -185,7 +187,7 @@ function validateReconciliationRecord(value: unknown): ReconciliationRecord {
   if (!isObject(value)) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryIsNotAnObject' });
   const allowed = new Set([
     'version', 'id', 'sellerKeyId', 'chainId', 'transactionHash', 'blockNumber', 'blockHash', 'logIndex',
-    'stealthAddress', 'asset', 'amountMinorUnits', 'viewTagMatched', 'invoiceDigest', 'recordedAt', 'evidenceStatus', 'evidenceSource',
+    'stealthAddress', 'asset', 'amountMinorUnits', 'viewTagMatched', 'invoiceDigest', 'blockTimestamp', 'recordedAt', 'evidenceStatus', 'evidenceSource',
   ]);
   if (Object.keys(value).some((key) => !allowed.has(key))) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasUnsupportedFields' });
   const hex32 = /^0x[0-9a-f]{64}$/;
@@ -196,6 +198,7 @@ function validateReconciliationRecord(value: unknown): ReconciliationRecord {
   if (typeof value.transactionHash !== 'string' || !hex32.test(value.transactionHash) || value.transactionHash !== value.transactionHash.toLowerCase()) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidTransactionHash' });
   if (typeof value.blockNumber !== 'string' || !/^(0|[1-9][0-9]{0,15})$/.test(value.blockNumber)) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidBlockNumber' });
   if (typeof value.blockHash !== 'string' || !hex32.test(value.blockHash) || value.blockHash !== value.blockHash.toLowerCase()) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidBlockHash' });
+  if (value.blockTimestamp !== undefined && (typeof value.blockTimestamp !== 'string' || !/^(0|[1-9][0-9]{0,15})$/.test(value.blockTimestamp))) return fail({ key: 'error.reconciliationLedger.theLedgerTimestampIsInvalid' });
   if (!Number.isSafeInteger(value.logIndex) || (value.logIndex as number) < 0) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidLogIndex' });
   if (typeof value.stealthAddress !== 'string' || !hex20.test(value.stealthAddress) || value.stealthAddress !== value.stealthAddress.toLowerCase()) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidRecipient' });
   if (value.asset !== 'native' && (typeof value.asset !== 'string' || !hex20.test(value.asset) || value.asset !== value.asset.toLowerCase())) return fail({ key: 'error.reconciliationLedger.aLocalLedgerEntryHasAnInvalidAsset' });
@@ -314,7 +317,8 @@ function candidate(invoice: RegisteredInvoice, record: ContextRecord): boolean {
     invoice.chainId === record.chainId &&
     invoice.asset === record.asset &&
     invoice.expectedNetMinorUnits === record.amountMinorUnits &&
-    record.recordedAt >= invoice.createdAt * 1000 - MATCH_CLOCK_SKEW_MS
+    (record.blockTimestamp === undefined ||
+      BigInt(record.blockTimestamp) * 1000n >= BigInt(invoice.createdAt * 1000 - MATCH_CLOCK_SKEW_MS))
   );
 }
 
@@ -343,8 +347,10 @@ function proposeInvoiceMatch(
   const invoice = candidates[0]!;
   const competing = all.filter((r) => r.id !== record.id && eligible(r) && candidate(invoice, r));
   if (competing.length > 0) return { kind: 'ambiguous', candidates, reason: 'multiple-payments' };
-  // Observation time is not block time. A late scan cannot establish that payment preceded invoice expiry.
-  if (record.recordedAt >= invoice.expiresAt * 1000)
+  // Wall-clock scan time cannot establish invoice timing. Missing legacy block time stays ambiguous.
+  if (record.blockTimestamp === undefined)
+    return { kind: 'ambiguous', candidates, reason: 'missing-block-time' };
+  if (BigInt(record.blockTimestamp) >= BigInt(invoice.expiresAt))
     return { kind: 'ambiguous', candidates, reason: 'late-observation' };
   return { kind: 'exact', invoice };
 }
@@ -551,15 +557,21 @@ function withSaved(document: Document, record: ReconciliationRecord): Document {
     prior.invoiceDigest !== record.invoiceDigest
   )
     fail({ key: 'error.reconciliationVault.thisRecordAlreadyHasADifferentInvoiceAnnotation' });
-  // Matching windows use first-seen time: re-saving live evidence never moves it forward. Imported or invalidated
-  // priors are not live evidence, so their revival takes the fresh time (reorg cutoffs compare against it).
+  // Keep first-seen time for audit and reorg cutoffs. Imported or invalidated priors take fresh time when revived.
   const keepTime =
     prior !== undefined &&
     prior.evidenceStatus === 'verified-at-scan' &&
     (prior.provenance === undefined || prior.provenance === 'live-scan');
+  if (
+    keepTime && prior.blockTimestamp !== undefined && record.blockTimestamp !== undefined &&
+    prior.blockTimestamp !== record.blockTimestamp
+  )
+    fail({ key: 'error.reconciliationLedger.theLedgerTimestampIsInvalid' });
+  const blockTimestamp = record.blockTimestamp ?? (keepTime ? prior?.blockTimestamp : undefined);
   const next: VaultRecord = {
     ...record,
     ...(keepTime ? { recordedAt: Math.min(prior.recordedAt, record.recordedAt) } : {}),
+    ...(blockTimestamp === undefined ? {} : { blockTimestamp }),
     ...(prior?.invoiceDigest === undefined ? {} : { invoiceDigest: prior.invoiceDigest }),
     provenance: 'live-scan',
   };
@@ -1103,6 +1115,9 @@ function recordFromVerifiedMatch(
     return fail({ key: 'error.reconciliationLedger.theVerifiedScanRecipientDoesNotMatchItsAnnouncement' });
   const blockHash = match.announcement.blockHash.toLowerCase();
   const blockNumber = match.announcement.blockNumber.toString();
+  const blockTimestamp = match.announcement.blockTimestamp;
+  if (blockTimestamp !== undefined && !/^(0|[1-9][0-9]{0,15})$/.test(blockTimestamp))
+    return fail({ key: 'error.reconciliationLedger.theLedgerTimestampIsInvalid' });
   const logIndex = match.announcement.logIndex;
   const asset = match.metadata.kind === 'native' ? 'native' : match.metadata.token.toLowerCase();
   const amountMinorUnits = match.metadata.netAmount.toString();
@@ -1114,6 +1129,7 @@ function recordFromVerifiedMatch(
     transactionHash,
     blockNumber,
     blockHash,
+    ...(blockTimestamp === undefined ? {} : { blockTimestamp }),
     logIndex,
     stealthAddress,
     asset,

@@ -9,6 +9,7 @@ export interface LogFields {
   readonly route?: string;
   readonly status?: number;
   readonly chainId?: number;
+  /** Accepted for caller compatibility but never emitted; use the protected state journal for lookup. */
   readonly txHash?: Hex;
   readonly errorClass?: string;
 }
@@ -32,7 +33,6 @@ const EVENT = /^[a-z][a-z0-9_]{0,47}$/;
 const REQUEST_ID = /^[0-9a-f-]{8,36}$/;
 const ROUTE = new Set(['/healthz', '/metrics', '/v1/info', '/v1/quote', '/v1/sweep', 'other']);
 const ERROR_CLASS = /^[a-z][a-z0-9_]{0,63}$/;
-const TX_HASH = /^0x[0-9a-f]{64}$/;
 
 /**
  * Builds the sanitized field record: every value is re-validated against a strict shape.
@@ -48,7 +48,6 @@ export function sanitizeFields(fields: LogFields): Record<string, string | numbe
     out['status'] = fields.status;
   }
   if (fields.chainId !== undefined && Number.isSafeInteger(fields.chainId) && fields.chainId > 0) out['chainId'] = fields.chainId;
-  if (fields.txHash !== undefined && TX_HASH.test(fields.txHash)) out['txHash'] = fields.txHash;
   if (fields.errorClass !== undefined && ERROR_CLASS.test(fields.errorClass)) out['errorClass'] = fields.errorClass;
   return out;
 }

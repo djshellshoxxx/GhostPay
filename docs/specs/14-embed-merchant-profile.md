@@ -16,3 +16,13 @@ As Roadmap 2B: XSS via attributes (strict parsing, fuzz), spoofed messages, clic
 Fuzz attributes and message schema; malicious parent page; origin mismatch; replayed nonce; popup blocked; profile with bad signature/over-size/expired; Playwright with hostile host page.
 ## 4. Acceptance
 - [ ] Roadmap F2 checklist ticked. - [ ] SDK hash published in release. - [ ] No secrets reachable by merchant DOM. - [ ] Default stays popup.
+
+
+## Implementation continuation — 2026-11-16
+
+The full-profile checkout now provides explicit remote HTTPS loading, signed-field/template presentation and
+user-confirmed origin/key pins with change warnings. See `docs/user/merchant-profiles.md` for request boundaries,
+local-storage limits and SDK attributes. Inline profiles retain the key-control-only disclosure. Templates never
+modify or authorize a separately signed invoice. Merchant-side template issuance, free-form amount overrides,
+release SDK hash publication and external merchant/browser acceptance remain open. This does not authorize a
+profile or local pin as an iframe, business-identity, invoice or payment credential.

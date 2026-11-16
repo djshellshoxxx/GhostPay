@@ -1,6 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { startEmbedHost, readProfileFromSearch } from './lib/embedHost';
-import type { MerchantProfile } from '@ghostpay/invoice-schema';
+import { useState, type ReactNode } from 'react';
 import type { ViewId } from './state';
 import { BtcView } from './features/btc/BtcView';
 import { SolanaView } from './features/solana/SolanaView';
@@ -9,21 +7,12 @@ import { isPolicyFeatureEnabled } from './features/policy/flag';
 import { PolicyView } from './features/policy/PolicyView';
 import { BackupPanel } from './components/BackupPanel';
 import { AppShell } from './AppShell';
-import { MerchantProfileNotice } from './components/MerchantProfileNotice';
+import { MerchantProfilePanel } from './components/MerchantProfilePanel';
 
 const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'btc', 'solana', 'tron', 'registry', 'settings', 'about'];
 
 export function App(): ReactNode {
-  const [merchantProfile] = useState<MerchantProfile | undefined>(() =>
-    readProfileFromSearch(window.location.search, Math.floor(Date.now() / 1000)),
-  );
-  // Embed completion channel: inert unless framed, built with VITE_EMBED_IFRAME=1 (header-capable host) and given a valid signed profile.
-  useEffect(() => {
-    const session = startEmbedHost(window, merchantProfile, import.meta.env.VITE_EMBED_IFRAME === '1');
-    return () => {
-      session?.close();
-    };
-  }, [merchantProfile]);
+  const [merchantSearch] = useState(() => window.location.search);
 
   const policyOn = isPolicyFeatureEnabled();
   const order: readonly ViewId[] = policyOn ? [...ORDER.slice(0, -2), 'policy', ...ORDER.slice(-2)] : ORDER;
@@ -35,7 +24,7 @@ export function App(): ReactNode {
   };
   return (
     <>
-      {merchantProfile !== undefined && <MerchantProfileNotice profile={merchantProfile} />}
+      <MerchantProfilePanel search={merchantSearch} />
       <AppShell profile="full" order={order} extraViews={extraViews} sellerArchive={<BackupPanel />} />
     </>
   );

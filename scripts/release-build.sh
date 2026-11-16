@@ -61,6 +61,10 @@ fi
 # Workspace packages resolve each other through their built dist; never trust a pre-existing dist.
 rm -rf packages/*/dist apps/web/dist
 npm run build:libs
+node scripts/check-chain-matrix.mjs
+if [ "${GP_REQUIRE_RELEASE:-0}" = "1" ]; then
+  node scripts/check-chain-matrix.mjs --release
+fi
 npm run build --workspace @ghostpay/web   # includes tsc and the postbuild bundle scan
 
 [ -f apps/web/dist/index.html ] || gp_die "apps/web/dist/index.html missing after build"
@@ -89,6 +93,10 @@ node "$here/gen-release-manifest.mjs" --out-dir "$OUT_DIR" --tarball "$tarball" 
   --sbom sbom.cdx.json --tree-clean "$tree_clean" --tag-commit "$tag_commit" > "$OUT_DIR/release-manifest.json"
 channel="$(node -p 'require(process.argv[1]).channel' "$OUT_DIR/release-manifest.json")"
 echo "== release-build: channel=$channel"
+# Tagged local builds must satisfy the same matrix gate even without GP_REQUIRE_RELEASE.
+if [ "$channel" = "release" ] && [ "${GP_REQUIRE_RELEASE:-0}" != "1" ]; then
+  node scripts/check-chain-matrix.mjs --release
+fi
 if [ "${GP_REQUIRE_RELEASE:-0}" = "1" ] && [ "$channel" != "release" ]; then
   node -e 'for (const r of require(process.argv[1]).channelReasons ?? []) console.error(`  - ${r}`)' "$OUT_DIR/release-manifest.json"
   gp_die "GP_REQUIRE_RELEASE=1 but this is a development build (reasons above)"

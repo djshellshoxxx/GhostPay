@@ -1,4 +1,89 @@
+# Unified completion coordinator — 2026-11-16
+
+Owner: root coordinator. Branch: `codex/ghostpay-unified-completion`; base `0c4c3c8d951a9d6e71affcdaa26478911c8037f1`.
+Owned paths: integration conflicts, locale/security catalogs, master completion ledger, final evidence and handoffs.
+Acceptance: preserve source ancestry and verified behavior; classify new identity/privacy disclosures; run combined-head checks and record remaining gates. Worker branches own their separate modules; no protected-main merge, deployment, signing or release.
+
+## Historical and worker claims
+
+## Ops-monitor W3 streamed artifact cap — 2026-11-16
+
+Worker: current Codex child agent. Branch: `codex/ghostpay-ops-response-cap-20261116`, base
+`2de9b0c5764cb1fb80a648e18d269b4d91210dcc`.
+Owned paths: `packages/ops-monitor/src/fetcher.ts`, focused fetcher tests, this registry, task handoff.
+Acceptance: enforce release-artifact byte cap while streaming; refuse oversized declared lengths without consuming the
+body; cancel rejected streams without waiting on a remote cancel promise; preserve exact-limit bytes, malformed/missing
+length handling and UTF-8 bytes split across chunks.
+Status: implemented. Full package suite passes 113/113 with 98.01% statements, 93.59% branches, 97.72% functions and
+99.78% lines; package typecheck/build and focused ESLint pass. Full package lint terminated with exit 137; external
+HTTP receiver acceptance was not run.
+## Team A unified reconciliation review — 2026-11-16
+
+Worker: reconciliation agent, Caveman workflow. Branch: `codex/unified-reconciliation`.
+Base: `27852ba898968a08f7d7c448fac8b19058189281` (PR #186).
+Owned paths: chain-adapters logs/rpc/scanVerify and tests; vault reconciliation modules/tests; web scanner and reconciliation libraries/tests.
+Acceptance: canonical header timestamps survive scanning and encrypted persistence; provider disagreement, reorg, imported history, duplicate conflicts and finality remain fail-closed; exact bigint arithmetic is preserved. Run targeted tests, correct reproduced defects, and provide a source-pinned handoff. No public-chain writes or release qualification claim.
+
+## Historical and worker claims
+
+## Canonical block-time reconciliation — 2026-11-16
+
+Worker: canonical-time implementation agent. Branch: `codex/ghostpay-canonical-time-20261116`, base
+`2de9b0c5764cb1fb80a648e18d269b4d91210dcc`.
+Owned paths: chain-adapter block references and announcement scanner; portable reconciliation record/matcher;
+reconciliation tests and related security-key/locale entries if new message key is needed; this registry and handoff.
+Acceptance: only timestamp from a canonical block header matching announcement block number/hash can establish
+invoice timing; new verified late-scanned pre-expiry payments can match; post-expiry payments remain ambiguous;
+legacy/imported records without block timestamp never become exact through wall-clock fallback; optional field keeps
+old vault data readable; reorg and backup/import behavior remain sound.
+Status: implementation and regression coverage complete. `git diff --check` and locale JSON/key parity pass; `npm ci --ignore-scripts --no-audit --no-fund` exited 137, so focused tests, typechecks and build cannot run here (Vitest and TypeScript unavailable).
+
+## Unified registry ENS lookup — 2026-11-16
+
+Worker: Team B registry. Branch: `codex/unified-registry`. Base: `365a1c38`.
+Owned paths: chain-adapters registry and ENS helpers/tests/index exports; web registry view/tests;
+`docs/handoffs/agents/TEAM_B_REGISTRY_UNIFIED.md`.
+Acceptance: explicit ENS lookup uses only the selected, already-validated Ethereum or Sepolia RPC;
+normalizes names, validates returned addresses and meta-addresses, never follows offchain gateways,
+and rejects stale UI results. No cross-chain fallback or delegated signing/sending UI is added.
+Locale additions are coordinated with the integration owner.
+## Unified Team D — verified matrix — 2026-11-16
+
+Worker: matrix; branch `codex/unified-matrix`; base `365a1c38`.
+Owned paths: `packages/chain-adapters/config/matrix.json`, `scripts/check-chain-matrix.mjs`,
+`scripts/lib/chain-matrix.mjs`, companion tests, release gate wiring and operator matrix documentation.
+Acceptance: all configured chains/tokens/feeds have provenance-aware cells; malformed or mismatched data fails;
+release verification refuses every enabled chain with an unverified required cell. Existing development configuration
+remains available. No deployment addresses, code hashes, source attestations or runtime verification are invented.
+Status: implementation in progress; external deployment/RPC acceptance remains pending.
+## Unified observability review and completion — 2026-11-16
+
+Worker: Caveman Team C, branch `codex/unified-observability`, base `c738f96e2f1a0dfef9003ae29ad636b03cf74b09`. Owned paths: `apps/relayer/**`, `docs/operators/relayer-monitoring.md`, and this worker handoff. Acceptance: qualify the private metrics/stats listener and signed webhook, repair reproduced resource/authentication/lifecycle defects, and complete spec-07 alert detectors with bounded data and no user-data leakage. Public deployment and external scrape acceptance are excluded. Other teams own web, chain-adapters, and vault source.
+Status: matrix implemented at `aa1d5153`; quote-decimal agreement implemented at `39f79175`. Targeted checks passed; final combined web typecheck/CI and external deployment/RPC acceptance remain pending.
+Follow-on ownership: `packages/chain-adapters/src/quote.ts` and tests; `apps/web/src/lib/pay.ts` and tests.
+Acceptance: configured feed decimals must agree with the RPC result before any quote/payment request is produced;
+generic standalone `readPrice` callers may omit the expected-decimals parameter.
+## Team B/I unified merchant embedding — 2026-11-16
+
+Worker: merchant agent; branch `codex/unified-merchant`; base `365a1c38`.
+Owned paths: `App.tsx`, merchant-profile components and tests, `embedHost.ts` and tests,
+`merchantIdentity.ts` and tests, embedding documentation. Catalog changes belong to the coordinator.
+Acceptance: explicit HTTPS loading with bounded/cancellable fetch; verified signed profile presentation;
+user-confirmed source-origin/full-key pins, mismatch warnings without silent replacement; signed template display
+without changing or authorizing an invoice. Remains excluded from the lean Pages profile.
+
 # Active AI work registry
+
+## Relayer observability spec 07 completion — 2026-11-16
+
+Worker: current Codex worker. Branch: `codex/ghostpay-observability-20261116`, base
+`2de9b0c5764cb1fb80a648e18d269b4d91210dcc`.
+Owned paths: `apps/relayer/src/config.ts`, `server.ts`, `runtime.ts`, `alerts.ts`, `metrics.ts`, `metricsServer.ts`,
+their focused tests, `apps/relayer/README.md`, `docs/operators/relayer-monitoring.md`, this registry.
+Acceptance: add opt-in loopback metrics listener, authenticated `/metrics` and `/v1/stats`, signed HMAC-SHA256
+alerts with 15-minute per-event/chain dedupe, and safe shutdown. Preserve request-path behavior. Add endpoint,
+signature, privacy, SSRF and shutdown tests.
+Handoff: local implementation committed on this branch. `git diff --check` passes. `npm ci --ignore-scripts --no-audit --no-fund` exits 137. Targeted Vitest cannot load `vitest/config`; typecheck lacks `tsc`; lint lacks `eslint`. No test suite, typecheck, lint, real Prometheus scrape, or receiver acceptance completed. Keep spec 07 partial until real scrape and receiver acceptance pass. Exact source pin is in task handoff.
 
 ## Merchant identity localization and security classification — 2026-11-16
 
@@ -81,3 +166,13 @@ final combined-head CI and the completion task ledger. Earlier in-progress statu
 claims; they do not imply that those source branches were modified or that release gates passed.
 
 | Codex registry builder worker | `codex/ghostpay-registry-recovery-20261116` | `b4be8866f6ff883fbbedc49be88b5b251a7d270e` | `packages/chain-adapters/src/registryDelegation.ts`; companion tests; `src/index.ts` export; scoped spec audit note | Match canonical ERC-6538 calldata; validate registrants/keys/signature bytes; retain opaque ERC-1271 signatures; no sends, signing, pins or UI enablement | Recovered from recorded source after environment loss. 40 focused tests/3 files and 200 seeded cases passed locally. Typecheck/lint killed137; build/export and recovered-tree verification pending. |
+
+## Unified independent security and authority review — 2026-11-16
+
+Worker: Team J (`security_inventory`). Branch: `codex/unified-audit`. Base: `365a1c38770ba02826d7e039dbeef44e5a966323`.
+Owned paths: this claim and `docs/handoffs/agents/TEAM_J_UNIFIED.md`; product edits require coordinator notification first.
+Acceptance: independently inspect PR #184, execute supported security gates, inventory authority-model and external-adapter blockers, and reconcile relevant historical branch provenance without claiming an external audit.
+Team B/I milestone: implementation `4655bab8` is committed. Final focused integration has 116 passing tests and
+web typecheck/focused lint pass, using coordinator catalog overlay `cb6a3de3`. Independent reviewers found and
+rechecked pin concurrency, stale consent and remote iframe corrections. Browser acceptance is added but unrun.
+See `docs/handoffs/agents/TEAM_B_UNIFIED.md`; coordinator owns final combined-head qualification.

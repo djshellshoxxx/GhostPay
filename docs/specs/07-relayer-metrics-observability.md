@@ -1,6 +1,6 @@
 # 07 Relayer metrics and observability
 
-> **Implementation status (2026-11-11, commit 364b1f18):** the shipped relayer differs from section 1. `/metrics` is served on the main listener (`apps/relayer/src/server.ts`), returns 404 unless a metrics token is configured, and requires that bearer token; there is no `/v1/stats` route and no `METRICS_ENABLED`/`METRICS_BIND` setting. Metric names are `relayer_*` (`apps/relayer/src/metrics.ts`). Alert kinds are the eight in `apps/relayer/src/alerts.ts` (not `reject_spike`/`rpc_disagree`/`price_stale`), with a default 60 s per-kind-and-chain gap and no `X-GP-Signature`/`ALERT_WEBHOOK_SECRET` in `apps/relayer/src`. `docs/operators/relayer-monitoring.md` does not exist.
+> **Implementation status (2026-11-16):** current branch adds an opt-in private metrics listener, `/v1/stats`, bearer authentication, signed webhook delivery, 15-minute event/chain dedupe, and a monitoring runbook. The registry retains shipped `relayer_*` names. A bounded `reject_spike` detector now emits above 100 rejected quote/sweep requests in five minutes. Webhook delivery is bounded, has an absolute deadline, and retries transient failures once with stable idempotency. Detector coverage remains partial: `rpc_disagree` and `price_stale` lack their required multi-provider/feed inputs. Scrape and receiver acceptance remain outstanding.
 
 Priority P1 | Effort S (2 d) | Owner: apps/relayer | Deps: none
 Sources: gap-analysis item 10 (R-08, G-26); breaker/budget/lane modules; privacy ADR stance (no tracking).

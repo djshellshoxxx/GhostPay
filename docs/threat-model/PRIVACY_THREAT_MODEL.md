@@ -228,3 +228,21 @@ Owners: **core** = core product (apps/web, packages/chain-adapters); **relayer**
 - The relayer's `PRIVACY.md` retention claims are the operator's self-attestation, backed by the log-field tests; they say nothing about a proxy, CDN or RPC provider in front of or behind it.
 - `fetch` indirection means other files accept an injected `fetchFn`; the invariant test checks the three direct call sites and that no other transport primitive is used, not every injected caller.
 - No claim in this document should be read as "private" or "anonymous". The system hides one-time addresses from casual readers of an invoice; anyone with the right vantage point can link far more.
+
+
+### Merchant profile continuation — 2026-11-16
+
+The full application adds a user-triggered HTTPS profile request through the existing injected `Services.fetchFn`.
+Loading is never automatic from a query parameter, inline profile or embed SDK attribute. The visible disclosure
+names IP/URL exposure; requests omit credentials/referrers, reject redirects, disable caching, and are bounded to
+8192 streamed bytes and ten seconds. Editing/cancelling/unmounting invalidates pending results. Remote profiles must
+carry a valid unexpired signature and include their source origin. No merchant URL or fixed provider is compiled in.
+
+The user may independently confirm a full public key and store it for the fetched HTTPS origin. Origin/key pairs are
+public `localStorage` preferences and can be read/modified by other code on that checkout origin; they are not an
+independent identity service, atomic cross-device trust store, encrypted backup, or protection against origin compromise.
+Changed keys are displayed without automatic replacement. Cooperating tabs use a nonwaiting Web Lock for origin-key
+mutations, refuse absent/busy locking, and recheck active profile and stored key inside that lock. This cannot constrain
+other code that already controls the origin. Remote-profile embed links open a popup during the click gesture, never
+a timed iframe fallback. These pins do not feed invoice trust, payment authorization
+or the iframe allowlist. Signed templates are inert displayed fields. The lean build excludes this surface.

@@ -1,5 +1,6 @@
 import { MAX_PROFILE_BYTES, merchantIdFor, verifyMerchantProfile, type MerchantProfile } from '@ghostpay/invoice-schema';
 import { decodeBase64Url } from '@ghostpay/invoice-schema';
+import { merchantProfileUrl } from './merchantIdentity';
 import { parseEmbedMessage, type EmbedDone, type EmbedMessage } from './embedProtocol';
 
 /**
@@ -57,25 +58,51 @@ export async function fetchMerchantProfile(
   url: string,
   nowSec: number,
   fetchFn: (input: string, init: RequestInit) => Promise<Response>,
+  signal?: AbortSignal,
 ): Promise<MerchantProfile | undefined> {
+  const normalized = merchantProfileUrl(url);
+  if (normalized === undefined || signal?.aborted === true) return undefined;
+  const controller = new AbortController();
+  const abort = (): void => { controller.abort(); };
+  signal?.addEventListener('abort', abort, { once: true });
+  const timer = setTimeout(abort, 10_000);
+  let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  let rejectAbort: (() => void) | undefined;
+  const aborted = new Promise<never>((_resolve, reject) => {
+    rejectAbort = () => { reject(new Error('profile request aborted')); };
+  });
+  const onAbort = (): void => {
+    void reader?.cancel().catch(() => undefined);
+    rejectAbort?.();
+  };
+  controller.signal.addEventListener('abort', onAbort, { once: true });
   try {
-    const u = new URL(url);
-    if (u.protocol !== 'https:' || u.username !== '' || u.password !== '') return undefined;
-    const res = await fetchFn(u.href, { credentials: 'omit', referrerPolicy: 'no-referrer', redirect: 'error', mode: 'cors' });
+    const response = fetchFn(normalized, {
+      credentials: 'omit', referrerPolicy: 'no-referrer', redirect: 'error', mode: 'cors', cache: 'no-store', signal: controller.signal,
+    }).then((res) => {
+      // A test transport or custom fetch may settle after cancellation. Release its body too.
+      if (controller.signal.aborted) void res.body?.cancel().catch(() => undefined);
+      return res;
+    });
+    const res = await Promise.race([response, aborted]);
+    if (controller.signal.aborted) {
+      void res.body?.cancel().catch(() => undefined);
+      return undefined;
+    }
     const len = Number(res.headers.get('content-length') ?? '0');
     if (!res.ok || len > MAX_PROFILE_BYTES) {
       void res.body?.cancel().catch(() => undefined);
       return undefined;
     }
     if (res.body === null) return undefined;
-    const reader = res.body.getReader();
+    reader = res.body.getReader();
     const decoder = new TextDecoder('utf-8', { fatal: true });
     let text = '';
     let bytes = 0;
     let completed = false;
     try {
       for (;;) {
-        const { done, value } = await reader.read();
+        const { done, value } = await Promise.race([reader.read(), aborted]);
         if (done) {
           completed = true;
           text += decoder.decode();
@@ -86,14 +113,19 @@ export async function fetchMerchantProfile(
         text += decoder.decode(value, { stream: true });
       }
     } finally {
-      // The header is advisory. Cancel on overflow or decoding failure without waiting on the remote stream.
       if (!completed) void reader.cancel().catch(() => undefined);
       reader.releaseLock();
     }
-    const r = verifyMerchantProfile(text, nowSec);
-    return r.ok ? r.profile : undefined;
+    if (controller.signal.aborted) return undefined;
+    const result = verifyMerchantProfile(text, nowSec);
+    // A remote source cannot implicitly claim a different origin for local pinning.
+    return result.ok && result.profile.origins.includes(new URL(normalized).origin) ? result.profile : undefined;
   } catch {
     return undefined;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', abort);
+    controller.signal.removeEventListener('abort', onAbort);
   }
 }
 

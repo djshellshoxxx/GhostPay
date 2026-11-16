@@ -5,6 +5,9 @@
  *           data-mode="iframe" data-profile="BASE64URL_SIGNED_PROFILE" data-template="t1">Pay with GhostPay</button>
  *   <script defer src="APP_ORIGIN/ghostpay-embed-v2.js" integrity="sha384-..." crossorigin="anonymous"></script>
  *
+ *   Use data-profile-url="HTTPS_PROFILE_URL" instead of data-profile for explicit payer-triggered loading.
+ *   Merely opening checkout does not fetch the profile. Templates are signed descriptions, not new invoices.
+ *
  *   integrity: no SRI value is published yet. Compute it yourself from the exact file you reviewed and embed (ideally
  *   the copy in a verified release tarball):  openssl dgst -sha384 -binary ghostpay-embed-v2.js | openssl base64 -A
  *   This URL is a moving alias: when the deployment changes the file, the browser rejects the new bytes and the button
@@ -62,6 +65,15 @@
       if (profile.length === 0 || profile.length > MAX_PROFILE || !PROFILE_RE.test(profile)) return null;
       u.searchParams.set('gpm', profile);
     }
+    var profileUrl = el.getAttribute('data-profile-url');
+    if (profileUrl !== null) {
+      if (profile !== null || profileUrl.length === 0 || profileUrl.length > 2048 || /\s/.test(profileUrl)) return null;
+      var remote;
+      try { remote = new URL(profileUrl); } catch (e) { return null; }
+      if (remote.protocol !== 'https:' || remote.username !== '' || remote.password !== '' || remote.hash !== '' || remote.origin.length > 200) return null;
+      u.searchParams.set('gpmu', remote.href);
+    }
+    if (u.searchParams.has('gpm') && u.searchParams.has('gpmu')) return null;
     var template = el.getAttribute('data-template');
     if (template !== null) {
       if (!TEMPLATE_RE.test(template)) return null;
@@ -254,7 +266,8 @@
       el.setAttribute('title', 'Invalid GhostPay checkout parameters');
       return;
     }
-    var framed = mode === 'iframe' && !!window.crypto && typeof window.crypto.getRandomValues === 'function';
+    // Remote profiles need an explicit user load. Keep popup creation in this click gesture, not the iframe timer.
+    var framed = mode === 'iframe' && !new URL(url).searchParams.has('gpmu') && !!window.crypto && typeof window.crypto.getRandomValues === 'function';
     el.addEventListener('click', function (event) {
       event.preventDefault();
       if (framed) openFrame(el, url);

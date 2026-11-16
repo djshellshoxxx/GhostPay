@@ -48,6 +48,22 @@ describe('readPrice', () => {
     for (const d of [-1, 31, 1.5, Number.NaN]) await rejects(round(), /decimals/, d);
     await expect(readPrice(reader(round(), 0), FEED, opts)).resolves.toMatchObject({ decimals: 0 });
   });
+  it('requires agreement with configured feed decimals when supplied', async () => {
+    await expect(readPrice(reader(round(), 8), FEED, { ...opts, expectedDecimals: 8 })).resolves.toMatchObject({ decimals: 8 });
+    await expect(readPrice(reader(round(), 18), FEED, { ...opts, expectedDecimals: 8 })).rejects.toThrow(/configured decimals/);
+    await expect(readPrice(reader(round(), 8), FEED, { ...opts, expectedDecimals: 18 })).rejects.toThrow(/configured decimals/);
+  });
+  it('rejects malformed configured decimals before any feed request', async () => {
+    let calls = 0;
+    const r: AggregatorReader = {
+      decimals: () => { calls++; return Promise.resolve(8); },
+      latestRoundData: () => { calls++; return Promise.resolve(round()); },
+    };
+    for (const expectedDecimals of [-1, 31, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+      await expect(readPrice(r, FEED, { ...opts, expectedDecimals })).rejects.toThrow(/configured decimals/);
+    }
+    expect(calls).toBe(0);
+  });
   it('feed address and options', async () => {
     await expect(readPrice(reader(round()), '0x0000000000000000000000000000000000000000', opts)).rejects.toThrow(/feed address/);
     await expect(readPrice(reader(round()), 'nope', opts)).rejects.toThrow(/feed address/);

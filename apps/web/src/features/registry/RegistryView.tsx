@@ -1,4 +1,4 @@
-import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
+import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, resolveRegistryRegistrant, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { displayMessage, captureUserMessage, UserFacingError, type DisplayMessage } from '../../lib/errors';
@@ -67,8 +67,14 @@ export function RegistryView(): ReactNode {
   const [busy, setBusy] = useState(false);
   const [pub, setPub] = useState<Msg | undefined>(undefined);
   const [who, setWho] = useState('');
-  const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall } | undefined>(undefined);
+  const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall; readonly name?: string } | undefined>(undefined);
   const [look, setLook] = useState<Msg | undefined>(undefined);
+  const lookupVersion = useRef(0);
+  useEffect(() => {
+    lookupVersion.current += 1;
+    setFound(undefined);
+    setLook(undefined);
+  }, [who, chainId, app.settings]);
   const [scannedMeta, setScannedMeta] = useState<string | undefined>();
   const [scanError, setScanError] = useState<DisplayMessage | undefined>();
   const [scanEpoch, setScanEpoch] = useState(0);
@@ -215,24 +221,31 @@ export function RegistryView(): ReactNode {
   };
 
   const onLookup = (): void => {
+    if (busyRef.current || who.trim() === '') return;
     const expected = latest.current;
-    const isCurrent = (): boolean => mounted.current && latest.current.chainId === expected.chainId && latest.current.who === expected.who && latest.current.settings === expected.settings;
+    const version = lookupVersion.current;
+    const isCurrent = (): boolean => mounted.current && lookupVersion.current === version && latest.current.chainId === expected.chainId && latest.current.who === expected.who && latest.current.settings === expected.settings;
+    busyRef.current = true;
     setFound(undefined);
     setLook(undefined);
     setBusy(true);
     void (async () => {
       try {
-        const call = buildLookupCall(who.trim());
         const rpc = await rpcFor();
+        if (!isCurrent()) return;
+        const identity = await resolveRegistryRegistrant(rpc, who.trim());
+        if (!isCurrent()) return;
+        const call = buildLookupCall(identity.registrant);
         await verifyRegistry(rpc);
         if (!isCurrent()) return;
-        const meta = await lookupMetaAddress(rpc, who.trim());
+        const meta = await lookupMetaAddress(rpc, identity.registrant);
         if (!isCurrent()) return;
-        setFound({ meta, call });
+        setFound({ meta, call, ...(identity.name === undefined ? {} : { name: identity.name }) });
       } catch (e) {
         if (isCurrent()) setLook(rpcMissing(e) ? noRpc : { kind: 'error', text: captureUserMessage(e) });
       } finally {
-        setBusy(false);
+        busyRef.current = false;
+        if (mounted.current) setBusy(false);
       }
     })();
   };
@@ -315,6 +328,7 @@ export function RegistryView(): ReactNode {
       </section>
 
       <h3>{t('registry.lookupHeadingH3')}</h3>
+      <p className="hint">{t('registry.ensHint')}</p>
       <Field label={t('registry.lookupLabel')}>
         {(id) => <input id={id} type="text" autoComplete="off" spellCheck={false} value={who} onChange={(e) => { setWho(e.target.value); }} />}
       </Field>
@@ -323,6 +337,7 @@ export function RegistryView(): ReactNode {
       {found !== undefined && chain !== undefined && (
         <>
           <h4>{t('registry.readOnlyHeading')}</h4>
+          {found.name !== undefined && <Notice kind="warn">{t('registry.ensResolved', { name: found.name })}</Notice>}
           <CallPreview call={found.call} chainName={chain.name} />
           {found.meta === undefined ? (
             <Notice kind="info">{t('registry.notRegistered', { chain: chain.name })}</Notice>

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ChainAdapterError } from './errors.js';
 import * as api from './index.js';
 import { validateAnnouncementLog, ANNOUNCEMENT_TOPIC, type ScannedAnnouncement } from './logs.js';
@@ -51,6 +51,40 @@ describe('compareProviders', () => {
     const logs = [mkLog(100, 0), mkLog(250, 1)];
     expect((await run(secondary(logs), logs)).discrepancies).toEqual([]);
   });
+  it('compares canonical timestamps against one secondary header per announcement block', async () => {
+    const logs = [mkLog(100, 0), mkLog(100, 1)];
+    const inner = secondary(logs);
+    const getBlock = vi.fn(async (number: bigint) => ({ ...(await inner.getBlock(number))!, timestamp: 1_800_000_000n }));
+    const result = await compareProviders({
+      chain: SEPOLIA, secondary: { ...inner, getBlock }, announcer: FAKE.announcer,
+      fromBlock: 0n, toBlock: 300n, primarySkipped: 0,
+      primaryAnnouncements: logs.map((log) => ({ ...parse(log), blockTimestamp: '1800000000' })),
+    });
+    expect(result.discrepancies).toEqual([]);
+    expect(getBlock).toHaveBeenCalledTimes(1);
+    expect(getBlock).toHaveBeenCalledWith(100n);
+  });
+  it.each(['changed timestamp', 'missing timestamp', 'missing header', 'wrong number', 'wrong hash'])(
+    'withholds agreement when the secondary supplies %s for a timestamped announcement', async (fault) => {
+      const log = mkLog(100, 0);
+      const inner = secondary([log]);
+      const getBlock: RpcClient['getBlock'] = async (number) => {
+        if (fault === 'missing header') return null;
+        const block = (await inner.getBlock(number))!;
+        return { ...block,
+          ...(fault === 'missing timestamp' ? {} : { timestamp: fault === 'changed timestamp' ? 1_800_000_001n : 1_800_000_000n }),
+          ...(fault === 'wrong number' ? { number: number + 1n } : {}),
+          ...(fault === 'wrong hash' ? { hash: `0x${'f'.repeat(64)}` as const } : {}),
+        };
+      };
+      const result = await compareProviders({
+        chain: SEPOLIA, secondary: { ...inner, getBlock }, announcer: FAKE.announcer,
+        fromBlock: 0n, toBlock: 300n, primarySkipped: 0,
+        primaryAnnouncements: [{ ...parse(log), blockTimestamp: '1800000000' }],
+      });
+      expect(result.discrepancies).toEqual([{ kind: 'content_differs', ref: `${log.blockHash}:0` }]);
+    },
+  );
   it('detects a log the primary hid (censoring RPC)', async () => {
     const r = await run(secondary([mkLog(100, 0), mkLog(250, 1)]), [mkLog(100, 0)]);
     expect(r.discrepancies).toEqual([{ kind: 'missing_in_primary', ref: mkLog(250, 1).blockHash + ':1' }]);

@@ -36,10 +36,10 @@ structure that outlives the request. Hashes from different salt periods cannot b
 ## What is logged (and what is not)
 
 Every log line is JSON with only these fields: `ts`, `level`, `event`, `requestId`, `route`, `status`,
-`chainId`, `txHash`, `errorClass`. The logger has no free-text or arbitrary-object parameter, and each value is
+`chainId`, `errorClass`. The logger has no free-text or arbitrary-object parameter, and each value is
 re-validated against a strict format, so request bodies, destination and owner addresses, signatures, quote
 tokens, amounts and IP addresses cannot appear in logs. `requestId` is a random UUID unrelated to the user.
-`txHash` appears only after a transaction is broadcast and is already public on-chain.
+Transaction hashes are also excluded from logs. Recovery uses only the protected state journal described above.
 A test in `src/api.test.ts` scans the log output for these values.
 
 ## What is NOT retained

@@ -101,7 +101,25 @@ describe('ghostpay-embed-v2.js popup mode (default)', () => {
     expect(h.opened[0]!.url).toBe(`${APP}/?gpm=abc_-123&gpt=t1#gpi=v1.abc_DEF-123`);
   });
 
+  it('forwards an HTTPS profile URL without requesting it', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-profile-url="https://merchant.test/profile.json" data-template="t1"`);
+    h.btn.click();
+    expect(h.opened[0]!.url).toBe(`${APP}/?gpmu=https%3A%2F%2Fmerchant.test%2Fprofile.json&gpt=t1#gpi=v1.abc_DEF-123`);
+  });
+
+  it('opens remote profiles in a popup immediately even when iframe mode is requested', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-profile-url="https://merchant.test/profile.json" data-mode="iframe"`);
+    h.btn.click();
+    expect(h.frame()).toBeNull();
+    expect(h.opened).toHaveLength(1);
+    expect(h.opened[0]!.features).toBe('popup,noopener,noreferrer');
+  });
+
   it.each([
+    ['profile URL credentials', `data-invoice="${GOOD}" data-profile-url="https://u:p@merchant.test/p"`],
+    ['profile URL fragment', `data-invoice="${GOOD}" data-profile-url="https://merchant.test/p#key"`],
+    ['profile URL protocol', `data-invoice="${GOOD}" data-profile-url="http://merchant.test/p"`],
+    ['two profile sources', `data-invoice="${GOOD}" data-profile="abc" data-profile-url="https://merchant.test/p"`],
     ['another origin', 'data-invoice="https://evil.test/#gpi=v1.abc"'],
     ['javascript url', 'data-invoice="javascript:alert(1)"'],
     ['no invoice', ''],

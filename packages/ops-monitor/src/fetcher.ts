@@ -16,8 +16,11 @@ export async function defaultFetch(url: string, maxBytes = DEFAULT_MAX): Promise
     status: r.status,
     async arrayBuffer(): Promise<ArrayBuffer> {
       const declared = r.headers.get('content-length');
-      if (declared !== null && /^[0-9]+$/.test(declared) && Number(declared) > maxBytes)
+      if (declared !== null && /^[0-9]+$/.test(declared) && Number(declared) > maxBytes) {
+        // Refuse before reading, but also stop a body the caller will never consume.
+        try { void r.body?.cancel().catch(() => undefined); } catch { /* Preserve the size failure. */ }
         throw new MonitorError('FETCH_FAILED', 'too large');
+      }
       if (r.body === null) return new ArrayBuffer(0);
       const reader = r.body.getReader();
       const chunks: Uint8Array[] = [];
@@ -31,7 +34,8 @@ export async function defaultFetch(url: string, maxBytes = DEFAULT_MAX): Promise
           chunks.push(value);
         }
       } catch (error) {
-        try { await reader.cancel(); } catch { /* Preserve the original read error. */ }
+        // Do not wait for a hostile or stalled stream's cancellation hook.
+        try { void reader.cancel().catch(() => undefined); } catch { /* Preserve the original read error. */ }
         throw error;
       } finally {
         reader.releaseLock();

@@ -132,6 +132,8 @@ export interface PriceOptions {
   readonly now: bigint;
   /** Maximum accepted age of `updatedAt` in seconds, `1..604800`. */
   readonly maxAgeSeconds: bigint;
+  /** Expected decimals from a sourced feed registry. When supplied, on-chain metadata must agree exactly. */
+  readonly expectedDecimals?: number;
   /** Tolerated clock skew for an `updatedAt` slightly in the future, default 60 s. */
   readonly maxFutureSkewSeconds?: bigint;
 }
@@ -149,7 +151,7 @@ export interface Price {
  *
  * @remarks Rejects: `answer <= 0`, `roundId == 0`, `updatedAt == 0`, `answeredInRound < roundId`
  * (stale round carried over), `updatedAt` older than `maxAgeSeconds` or more than the skew in the
- * future, decimals outside 0..30, and values outside the int256/uint256 ranges. The legacy
+ * future, decimals outside 0..30 or different from configured expected decimals, and values outside the int256/uint256 ranges. The legacy
  * `answeredInRound` rule is applied alongside the staleness check (modern aggregators return equal
  * values, so it never rejects a healthy feed).
  *
@@ -162,6 +164,9 @@ export interface Price {
 export async function readPrice(reader: AggregatorReader, feed: string, opts: PriceOptions): Promise<Price> {
   if (!isAddress(feed, { strict: true }) || feed.toLowerCase() === ZERO_ADDRESS) return fail('QUOTE_FAILED', 'feed address');
   if (opts.maxAgeSeconds < 1n || opts.maxAgeSeconds > 604_800n) return fail('QUOTE_FAILED', 'maxAge out of range');
+  if (opts.expectedDecimals !== undefined && (!Number.isInteger(opts.expectedDecimals) || opts.expectedDecimals < 0 || opts.expectedDecimals > 30)) {
+    return fail('QUOTE_FAILED', 'configured decimals are invalid');
+  }
   const skew = opts.maxFutureSkewSeconds ?? 60n;
   const addr = getAddress(feed);
   let decimals: number;
@@ -172,6 +177,7 @@ export async function readPrice(reader: AggregatorReader, feed: string, opts: Pr
     return fail('QUOTE_FAILED', 'feed read failed');
   }
   if (!Number.isInteger(decimals) || decimals < 0 || decimals > 30) return fail('QUOTE_FAILED', 'decimals');
+  if (opts.expectedDecimals !== undefined && decimals !== opts.expectedDecimals) return fail('QUOTE_FAILED', 'feed differs from configured decimals');
   for (const v of [r.roundId, r.answer, r.startedAt, r.updatedAt, r.answeredInRound]) {
     if (typeof v !== 'bigint') return fail('QUOTE_FAILED', 'malformed round data');
   }

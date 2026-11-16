@@ -103,6 +103,8 @@ jobs:
       - name: Dependency tree is valid (production)
         run: npm ls --all --omit=dev > /dev/null
       - run: npm run build
+      - name: Chain matrix provenance and configured-cell parity
+        run: node scripts/check-chain-matrix.mjs
       - name: Build profile and emitted-output guard regressions
         run: node --test apps/web/scripts/localBuildProfile.test.mjs
       - name: Merchant amount parsing and POS parity regressions

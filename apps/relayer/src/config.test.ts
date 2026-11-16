@@ -73,6 +73,8 @@ describe('parseConfig', () => {
     expect(c.rateLimit).toMatchObject({ quoteGlobalPerMinute: 600, quoteGlobalBurst: 100, quoteGroupPerMinute: 60, quoteGroupBurst: 20 });
     expect(c.lossBudget).toEqual({ windowSeconds: 3600, perKeyWei: 5n * 10n ** 15n, globalWei: 5n * 10n ** 16n, maxKeys: 10_000 });
     expect(c.metricsToken).toBeUndefined();
+    expect(c.metricsEnabled).toBe(false);
+    expect(c.metricsBind).toBe('127.0.0.1');
     expect(c.alertWebhookUrl).toBeUndefined();
     const ch = c.chains[0];
     expect(c.gas).toEqual({ coverPercent: 100, maxMovePercent: 25, quoteCacheSeconds: 3, griefReserveBps: 0 });
@@ -105,7 +107,7 @@ describe('parseConfig', () => {
           }),
         ],
       }),
-      { env: { MY_RPC: 'https://rpc2.example', M_TOK: 'm'.repeat(40), A_HOOK: 'https://hooks.example/x' } },
+      { env: { MY_RPC: 'https://rpc2.example', M_TOK: 'm'.repeat(40), A_HOOK: 'https://hooks.example/x', ALERT_WEBHOOK_ALLOWED_HOSTS: 'hooks.example', ALERT_WEBHOOK_SECRET: 's'.repeat(40), METRICS_ENABLED: '1', METRICS_BIND: '127.0.0.1', METRICS_PORT: '9464' } },
     );
     expect(c.port).toBe(9000);
     expect(c.trustedProxies).toEqual(['10.0.0.0/8', '::1']);
@@ -113,11 +115,22 @@ describe('parseConfig', () => {
     expect(c.lossBudget).toEqual({ windowSeconds: 600, perKeyWei: 1000n, globalWei: 5000n, maxKeys: 32 });
     expect(c.metricsToken).toBe('m'.repeat(40));
     expect(c.alertWebhookUrl).toBe('https://hooks.example/x');
+    expect(c.alertWebhookAllowedHosts).toEqual(['hooks.example']);
+    expect(c.alertWebhookSecret).toBe('s'.repeat(40));
+    expect(c.metricsEnabled).toBe(true);
+    expect(c.metricsPort).toBe(9464);
     expect(c.rateLimit.saltRotationHours).toBe(6);
     expect(c.rateLimit).toMatchObject({ quoteGroupPerMinute: 12, quoteGroupBurst: 4 });
     expect(c.chains[0]?.rpcUrl).toBe('https://rpc2.example/');
     expect(c.chains[0]?.feeTo).toBe(FEE_TO);
     expect(c.chains[0]?.tokens[1]).toMatchObject({ symbol: 'USDX', decimals: 18, permit: false });
+  });
+
+  it('keeps metrics off by default and validates listener environment', () => {
+    expect(parse(good()).metricsEnabled).toBe(false);
+    expect(() => parse(good(), { env: { METRICS_ENABLED: 'true' } })).toThrow(/METRICS_ENABLED/);
+    expect(() => parse(good(), { env: { METRICS_BIND: '999.1.1.1' } })).toThrow(/METRICS_BIND/);
+    expect(() => parse(good(), { env: { METRICS_PORT: '65536' } })).toThrow(/METRICS_PORT/);
   });
 
   it('requires explicit opt-in before using the hot key as fee recipient', () => {

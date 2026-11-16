@@ -28,12 +28,20 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
    can sign a profile listing any origin. The `frame-ancestors` allowlist is the only gate today; the profile must be bound to the invoice
    signer before it can authorize anything (audit L3-F7). GitHub Pages cannot send `frame-ancestors`, so the flag is
    off there (a test enforces it), the checkout never answers, and the SDK falls back to the popup after 4 s. Still open: the SDK takes
-   an invoice link, not `data-amount/currency/token/chain/merchant-id` (profile `templates` are signed and parsed but not yet turned
-   into invoices, `data-template` is only forwarded); the profile is supplied inline (`?gpm=`) or via `fetchMerchantProfile`, with no
-   payer-facing fingerprint/"unverified identity" UI yet (`signerFingerprint` exists; Pay.tsx/locales are out of this worker's scope);
-   no SRI value is published (S3-10, below); the Playwright hostile-host-page test is not written (jsdom tests only). Every header
-   source (`public/_headers`, `deploy/nginx`, `infra`) sends `Access-Control-Allow-Origin: *` for both SDK files, so a merchant can use
-   `integrity=... crossorigin="anonymous"` with a hash computed from the exact file they embed (see the v2 header comment).
+   an invoice link, not `data-amount/currency/token/chain/merchant-id`. The full-profile merchant panel now shows the signed
+   name, full signer key, fingerprint and templates; `data-template` selects presentation only and never creates or changes
+   an invoice. `data-profile-url` prefills an HTTPS URL; the payer must explicitly choose Load profile after the network
+   disclosure. Requests have no cookies/referrer/cache/redirects, a 10-second limit and an 8192-byte stream limit.
+   A fetched profile must list its HTTPS source origin. The payer can remember a full key for that source origin only
+   after entering the independently verified full key; a changed key is shown without replacing the saved key. Inline
+   profiles remain unpinned because they have no authenticated source origin. Pins are public browser preferences,
+   refreshed on storage/focus events. Mutations use nonwaiting Web Locks and refuse unavailable/busy locks; stale
+   profiles are checked inside the lock. Pins do not authorize any invoice, payment, merchant business identity or iframe.
+   Profile expiry is checked after loading and before pinning; presentation and the embed channel stop after expiry.
+   Remote-profile SDK links always open a popup in the user gesture, including when iframe mode was requested.
+   Full template-to-invoice construction and free-form amount overrides remain absent: the payer cannot sign an invoice
+   on the merchant's behalf. Lean Pages excludes the merchant panel and SDKs. See `docs/user/merchant-profiles.md`.
+
 7. WalletConnect-style adapters (optional in the playbook) are not built. Wallet paths: EIP-6963 discovery and a labelled
    `window.ethereum` EIP-1193 fallback.
 8. No network-reachable "light indexer" (Feature 5); scanning uses the user's RPC through `chain-adapters`.
