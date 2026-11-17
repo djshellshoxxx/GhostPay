@@ -1,5 +1,12 @@
 # Verification and Release Gates
 
+## Rotation 168 — #196 URL privacy accepted; #197 navigation state test-only pending (November 17, 2026 UTC)
+
+- **Qualified source:** [Pages-only draft #196](https://github.com/djshellshoxxx/GhostPay/pull/196) `120dcd7fc15b2d5a646a93835287ef9bc7281fe1` passed [exact-head application CI #44095211920](https://github.com/djshellshoxxx/GhostPay/actions/runs/44095211920), **24/24 jobs**, including `ts-test (web)` and `e2e (lean)`; exact-head Pages [#44095211700](https://github.com/djshellshoxxx/GhostPay/actions/runs/44095211700), beta [#44095211614](https://github.com/djshellshoxxx/GhostPay/actions/runs/44095211614), hosting [#44095211725](https://github.com/djshellshoxxx/GhostPay/actions/runs/44095211725) succeeded. The three AppLean acceptance tests cover default incoming and later URL fragment clearing, plus explicit opt-out; no production change and no new confirmed exploit. The older rotation-167 entry records the historical pending checkpoint, not the current status.
+- **Next test-first correctness gate:** Isolated draft [#197](https://github.com/djshellshoxxx/GhostPay/pull/197) test-only `b7ce51636990aed10a09744dac495cd0db35c34c` adds one `AppLean.fragment.test.tsx` assertion: clearing the sensitive invoice fragment with `history.replaceState` must not discard the existing same-entry `history.state`. Source `apps/web/src/lib/fragment.ts` currently supplies a null state argument; this is source-inferred, but **RED was not yet observed in completed hosted CI**. Do not change implementation or report GREEN until the test result is inspected. No new active production change.
+- **Open release gates:** SonarCloud/CodeQL independent clearance, owner-approved signed testnet manifest, external wallet/browser/public-chain evidence, independent security audit, live Wiki publication, and explicit merge/deploy/release authorization are all outstanding. All non-Pages implementation remains paused.
+
+
 ## Rotation 167 — lean Pages invoice-fragment privacy acceptance pending (November 17, 2026 UTC)
 
 - **Qualified inherited baseline:** Unmerged static Pages-only [#195](https://github.com/djshellshoxxx/GhostPay/pull/195) `12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0` passed [application CI #44076874295](https://github.com/djshellshoxxx/GhostPay/actions/runs/44076874295) 24/24, [Pages](https://github.com/djshellshoxxx/GhostPay/actions/runs/44076874086), beta and hosting. This is not a merge, deployed testnet manifest or release.
