@@ -90,13 +90,13 @@ export function AppShell(props: AppShellProps): ReactNode {
   const first = useRef(true);
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
 
-  // Clear the fragment from the address bar right after it was read (default on).
+  // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
+  // Hash changes arriving later are handled by the listener below.
   useEffect(() => {
     if (readInvoiceFragment(window.location) !== undefined && settings.autoClearFragment) {
       clearFragment(window.location, window.history);
     }
-    // Only at load: later changes come through the hashchange handler below.
-  }, []);
+  }, [settings.autoClearFragment]);
 
   useEffect(() => {
     const onHash = (): void => {
