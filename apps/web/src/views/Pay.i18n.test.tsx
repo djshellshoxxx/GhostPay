@@ -73,7 +73,7 @@ describe('Pay localization', () => {
     );
     const user = userEvent.setup();
     await screen.findByRole('heading', { name: 'Pagar una factura' });
-    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: es.messages['pay.continue'] }));
     await user.click(await screen.findByRole('button', { name: /Connect Locale Wallet/ }));
     expect(await screen.findByText('Conectada: cuenta.')).toBeTruthy();
     expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(0);
