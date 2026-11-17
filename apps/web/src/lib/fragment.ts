@@ -7,6 +7,7 @@ export interface LocationLike {
   readonly search: string;
 }
 export interface HistoryLike {
+  readonly state?: unknown;
   replaceState(data: unknown, unused: string, url?: string | URL | null): void;
 }
 
@@ -20,7 +21,8 @@ export function clearFragment(loc: LocationLike, hist: HistoryLike): void {
   // A pathname beginning "//" is still local, but used as a relative URL it names another host.
   // Prefix a removable dot segment so replaceState keeps this origin and actually clears the secret.
   const pathname = loc.pathname.startsWith('//') ? `/.${loc.pathname}` : loc.pathname;
-  hist.replaceState(null, '', `${pathname}${loc.search}`);
+  // Preserve the same-entry router state; only strip the sensitive fragment from its URL.
+  hist.replaceState(hist.state ?? null, '', `${pathname}${loc.search}`);
 }
 
 /** Normalizes pasted text (full link or bare fragment) into a `#gpi=v1.` fragment. */
