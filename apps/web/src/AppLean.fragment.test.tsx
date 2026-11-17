@@ -111,4 +111,34 @@ describe('static Pages invoice-fragment privacy', () => {
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeTruthy();
     expect(window.location.hash).toBe('#gpi=v1.placeholder');
   });
+  it('retains focus for unrelated hashes but moves it to main after a late invoice opens Pay', () => {
+    window.history.replaceState(null, '', '/app/?view=home');
+    renderWith(<AppLean />);
+
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    const home = within(nav).getByRole('button', { name: 'Home' });
+    home.focus();
+    expect(document.activeElement).toBe(home);
+
+    // A normal document anchor does not change views or steal keyboard focus.
+    act(() => {
+      window.history.replaceState(null, '', '/app/?view=home#main');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(window.location.hash).toBe('#main');
+    expect(within(nav).getByRole('button', { name: 'Home' }).getAttribute('aria-current')).toBe('page');
+    expect(document.activeElement).toBe(home);
+
+    // An invoice deep link transitions to Pay and focuses the main content landmark.
+    act(() => {
+      window.history.replaceState(null, '', '/app/?view=pay#gpi=v1.placeholder');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(within(nav).getByRole('button', { name: 'Pay' }).getAttribute('aria-current')).toBe('page');
+    expect(document.activeElement).toBe(screen.getByRole('main'));
+    expect(window.location.hash).toBe('');
+    expect(window.location.pathname).toBe('/app/');
+    expect(window.location.search).toBe('?view=pay');
+  });
+
 });
