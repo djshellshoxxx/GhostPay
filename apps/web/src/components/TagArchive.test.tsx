@@ -53,6 +53,34 @@ async function preview(user: User, file: File, passphrase: string): Promise<void
   await user.click(screen.getByRole('button', { name: 'Decrypt and preview' }));
 }
 
+describe('TagArchive blocked download cleanup', () => {
+  it('releases the temporary anchor and Blob URL when the browser rejects a download click', async () => {
+    generateSession();
+    vi.spyOn(tagArchive, 'exportArchive').mockResolvedValue({
+      bytes: new Uint8Array([1, 2, 3]),
+      filename: 'ghostpay-tags-test.gpa',
+      recordCount: 0,
+      sha256: 'ab'.repeat(32),
+    });
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {
+      throw new Error('simulated blocked download');
+    });
+    const user = userEvent.setup();
+    renderApp(makeServices());
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+    await user.clear(screen.getByLabelText('Archive passphrase (at least 14 characters)'));
+    await user.type(screen.getByLabelText('Archive passphrase (at least 14 characters)'), PASS);
+    await user.type(screen.getByLabelText('Repeat archive passphrase'), PASS);
+    await user.click(screen.getByRole('button', { name: 'Download encrypted tag archive' }));
+    await waitFor(() => { expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledOnce(); });
+    expect(blobs).toHaveLength(1);
+    // The failed click must not strand a sensitive encrypted export in a live object URL or DOM.
+    expect(document.querySelector('a[href="blob:x"]')).toBeNull();
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:x');
+    expect(screen.queryByText(/Archive downloaded/)).toBeNull();
+  }, 120_000);
+});
+
 describe('TagArchive', () => {
   it('previews without writing, then applies', async () => {
     const { user, services, file } = await exported();
