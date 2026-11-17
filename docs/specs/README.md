@@ -23,5 +23,6 @@ Effort: S < 1 d, M days, L >= 1 wk, XL multi-week + audit. Order is priority ord
 | 15 | [eip7702-aa-policy-account-path](15-eip7702-aa-policy-account-path.md) | P3 | S (ADRs) / L+ | DOC-8, 15, 16, 17 |
 | 16 | [policy-account-recovery](16-policy-account-recovery.md) | P3 | L | DOC-18 |
 | 17 | [milestone-escrow](17-milestone-escrow.md) | P4 | XL | Feature 3 |
+| 18 | [stealth-keypair-export](18-stealth-keypair-export.md) | P1 | M | Approved requirement 3q: per-payment keypair, encrypted bulk and master-key export; browser-only independent recovery |
 
 Not covered (owner-gated, see gap-analysis s3): deployments, release keys, hosting, licence/legal, external audit. Plan: [../remote/plans/implementation-plan.md](../remote/plans/implementation-plan.md).
