@@ -71,6 +71,38 @@ describe('static Pages invoice-fragment privacy', () => {
     expect(window.history.state).toEqual(navigationState);
   });
 
+  it('preserves unrelated document anchors instead of treating them as invoice links', () => {
+    const navigationState = { section: 'documentation', origin: 'internal-link' };
+    window.history.replaceState(navigationState, '', '/app/?view=home#main');
+    renderWith(<AppLean />);
+
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    expect(within(nav).getByRole('button', { name: 'Home' }).getAttribute('aria-current')).toBe('page');
+    expect(window.location.hash).toBe('#main');
+    expect(window.location.pathname).toBe('/app/');
+    expect(window.location.search).toBe('?view=home');
+    expect(window.history.state).toEqual(navigationState);
+  });
+
+  it('retains a later invoice URL when the user explicitly disabled automatic clearing', () => {
+    const navigationState = { origin: 'incoming-link', step: 2 };
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false }));
+    window.history.replaceState(null, '', '/app/?view=home');
+    renderWith(<AppLean />);
+
+    act(() => {
+      window.history.replaceState(navigationState, '', '/app/?view=pay#gpi=v1.placeholder');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    expect(within(nav).getByRole('button', { name: 'Pay' }).getAttribute('aria-current')).toBe('page');
+    expect(window.location.hash).toBe('#gpi=v1.placeholder');
+    expect(window.location.pathname).toBe('/app/');
+    expect(window.location.search).toBe('?view=pay');
+    expect(window.history.state).toEqual(navigationState);
+  });
+
   it('respects the explicit user option to retain invoice fragments in the address bar', () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false }));
     window.history.replaceState(null, '', '/app/?view=pay#gpi=v1.placeholder');
