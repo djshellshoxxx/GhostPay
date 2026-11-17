@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import { App } from '../App';
+import { AppLean } from '../AppLean';
 import { I18nProvider, useI18n } from '../i18n/context';
 import * as languages from '../i18n/languages';
 import { makeServices, renderWith, setHash } from '../test/render';
@@ -49,6 +50,33 @@ describe('Pay localization', () => {
     // Critical privacy warning: no reviewed translation yet, so the English source text is shown.
     expect(screen.getByText(/Pasting is safer than clicking: a browser may keep a clicked invoice URL/)).toBeTruthy();
     expect(screen.getByText('The link is read in this page only. It is never sent to a server.')).toBeTruthy();
+  });
+
+  it('rejects inherited JavaScript tag names in the lean Pay status without breaking rendering', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    setHash(fragment);
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const wallet = new MockWallet();
+    const services = makeServices({
+      loadManifest: () => Promise.resolve({ status: 'loaded', manifest: backedManifest(84532) }),
+      createRpc: () => Promise.resolve(withManifestChain(mockRpc(84532, () => '0x'))),
+      discoverWallets: () => Promise.resolve([{ id: 'test', name: 'Locale Wallet', kind: 'injected', provider: wallet }]),
+    });
+    vi.spyOn(languages, 'isReviewed').mockImplementation((locale) => locale === 'es');
+    // Only the compiled catalog is varied; the injected wallet never signs or broadcasts.
+    const catalog = { ...es, messages: { ...es.messages, 'pay.connected': 'Conectada: {#__proto__}cuenta{/__proto__}.' } };
+    renderWith(
+      <I18nProvider initialPreference="es" loader={(locale) => Promise.resolve(locale === 'es' ? catalog : en)} onIssue={() => undefined}>
+        <AppLean />
+      </I18nProvider>,
+      services,
+    );
+    const user = userEvent.setup();
+    await screen.findByRole('heading', { name: 'Pagar una factura' });
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Locale Wallet/ }));
+    expect(await screen.findByText('Conectada: cuenta.')).toBeTruthy();
+    expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(0);
   });
 
   it('changes a pending wallet-status locale without repeating the wallet request or altering submitted bytes', async () => {
