@@ -40,6 +40,15 @@ describe('static Pages invoice-fragment privacy', () => {
     expect(window.location.hash).toBe('');
   });
 
+  it('preserves current-entry navigation state when stripping a sensitive invoice fragment', () => {
+    const navigationState = { section: 'pay', origin: 'invoice-link' };
+    window.history.replaceState(navigationState, '', '/app/?view=pay#gpi=v1.placeholder');
+    renderWith(<AppLean />);
+
+    expect(window.location.hash).toBe('');
+    expect(window.history.state).toEqual(navigationState);
+  });
+
   it('respects the explicit user option to retain invoice fragments in the address bar', () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false }));
     window.history.replaceState(null, '', '/app/?view=pay#gpi=v1.placeholder');
