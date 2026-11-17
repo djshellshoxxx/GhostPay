@@ -1,5 +1,10 @@
 # Verification and Release Gates
 
+## Rotation 166 — bundled manifest acceptance tests exact-head GREEN (November 17, 2026 UTC)
+
+- **Source and test evidence:** [Draft #195](https://github.com/djshellshoxxx/GhostPay/pull/195) exact `12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0` (stacked on qualified #194) adds exactly four acceptance assertions in `apps/web/src/lib/manifest.test.ts` for absence of pinned release keys, inherited source-object property rejection, unsigned bundled-manifest rejection and missing/offline RPC fail-closed behavior. No production changes or newly demonstrated vulnerability. [Application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/44076874295) **success 24/24** including `ts-test (web)` and `e2e (lean)`; [Pages](https://github.com/djshellshoxxx/GhostPay/actions/runs/44076874086), [beta](https://github.com/djshellshoxxx/GhostPay/actions/runs/44076874167), [hosting](https://github.com/djshellshoxxx/GhostPay/actions/runs/44076874097) success on the exact same head.
+- **Not release qualified:** Synthetic test manifests and mocked RPCs do not supply a cryptographically signed deployed testnet manifest, independent security review, SonarCloud/CodeQL clearance, live external wallet, testnet chain, independent browser/device or release evidence. Owner #187 contract-analysis failures, non-Pages pause, and owner-controlled merge/deployment/Wiki/release gates remain outstanding. Current #195 stays draft and unmerged; live Wiki unpublished.
+
 ## Rotation 165 — bundled Pages manifest security acceptance tests pending (2026-11-17 UTC)
 
 - **Qualified baseline:** [Unmerged lean #194](https://github.com/djshellshoxxx/GhostPay/pull/194) `c15833bc2aa6e0e0189f6cd18becf293e0e6e73e` retains [application 24/24 GREEN](https://github.com/djshellshoxxx/GhostPay/actions/runs/44058381062) and separate Pages/beta/hosting GREEN. It is **not** main, released, deployed, independently audited or approved for real funds.
