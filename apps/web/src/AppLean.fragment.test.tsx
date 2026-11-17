@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AppLean } from './AppLean';
 import { clearSession } from './lib/session';
@@ -46,6 +46,28 @@ describe('static Pages invoice-fragment privacy', () => {
     renderWith(<AppLean />);
 
     expect(window.location.hash).toBe('');
+    expect(window.history.state).toEqual(navigationState);
+  });
+
+  it('clears a retained invoice URL immediately when automatic fragment removal is enabled in Settings', () => {
+    const navigationState = { section: 'pay', source: 'retained-link' };
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false }));
+    window.history.replaceState(navigationState, '', '/app/?view=pay#gpi=v1.placeholder');
+    renderWith(<AppLean />);
+
+    // Retention was explicitly requested at startup, so the initial hash remains.
+    expect(window.location.hash).toBe('#gpi=v1.placeholder');
+    fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Settings' }));
+    const autoClear = screen.getByRole('checkbox', { name: 'Remove the invoice from the address bar after reading it' });
+    expect((autoClear as HTMLInputElement).checked).toBe(false);
+    fireEvent.click(autoClear);
+    fireEvent.click(screen.getByRole('button', { name: 'Save settings' }));
+
+    // Re-enabling the privacy preference must clear an already visible bearer link,
+    // not merely clear future incoming hashes. Preserve this history entry's state.
+    expect(window.location.hash).toBe('');
+    expect(window.location.pathname).toBe('/app/');
+    expect(window.location.search).toBe('?view=pay');
     expect(window.history.state).toEqual(navigationState);
   });
 
