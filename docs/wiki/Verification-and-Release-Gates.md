@@ -1,5 +1,12 @@
 # Verification and Release Gates
 
+## Rotation 162 — second Pay regression selector correction (2026-11-17 UTC)
+
+- **Source and test evidence:** Test-only [draft #194](https://github.com/djshellshoxxx/GhostPay/pull/194) at `a7d47ae449d2c1cd6612716f0ea1a4b33e43825a` completed [application CI #44040651053](https://github.com/djshellshoxxx/GhostPay/actions/runs/44040651053) **FAILURE**, with `ts-test (web)` failing only the newly added test at **`Unable to find role="button" and name /Connect Locale Wallet/`** (2,564 other web tests passed, one skipped). `typescript` aggregate failed as a consequence; 22 other jobs succeeded. Pages, beta and hosting workflows for that same head succeeded. The test was using an English wallet-connect button selector while its Spanish catalog provides `pay.connect = "Conectar {name}"`. **This is another fixture/selector failure, not verified inherited-prototype RED.**
+- **Test-first continuation:** On the isolated #194 branch, changed **only the new test** `apps/web/src/views/Pay.i18n.test.tsx` to match `es.messages['pay.connect'].replace('{name}', 'Locale Wallet')`. New test-only SHA **`d48b74c9ded00cc30d27d77eb9b7ee01c5e27164`** (blob `b8d80d61869c5c0ec015302a872a63269534d6ad`). The inherited `__proto__` fixture and no-broadcast expectation remain unchanged. **No production `Pay.tsx` fix or verified RED/GREEN yet; exact-head CI pending.**
+- **Unchanged release evidence:** Individually qualified unmerged Pages-only #192 `dd4a7eb4dd71435284d9d326310cb2695faa249a` remains [24/24 application CI passing](https://github.com/djshellshoxxx/GhostPay/actions/runs/44019063939) alongside Pages/beta/hosting. Independent CodeQL/Sonar, security review, signed manifests, wallet acceptance, main merge, Wiki publication, real-funds use and release are not authorized or qualified. Contract-analysis failure on broad, paused-scope #187 remains separate.
+
+
 ## Rotation 161 — Pay inherited-tag regression harness correction (2026-11-17 UTC)
 
 - **Baseline:** Individually qualified, unmerged static Pages-only [draft #192](https://github.com/djshellshoxxx/GhostPay/pull/192) remains at `dd4a7eb4dd71435284d9d326310cb2695faa249a`, with [application 24/24 PASS](https://github.com/djshellshoxxx/GhostPay/actions/runs/44019063939) plus Pages/beta/hosting PASS. It is not merged or release-approved.
