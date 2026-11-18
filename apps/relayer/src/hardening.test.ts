@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 import { readFileSync } from 'node:fs';
 import { connect, type Socket } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
-import { CHAIN_ID, FakeChain, NOW_MS, call, errCode, prepare, startHarness, testConfig, type Harness, type Reply } from './harness.testutil.js';
+import { CHAIN_ID, DEST, FakeChain, NOW_MS, OWNER, USDC, call, errCode, prepare, startHarness, testConfig, type Harness, type Reply } from './harness.testutil.js';
 import type { RelayerConfig } from './config.js';
 import type { PolicyDecision, PolicyGate } from './policy.js';
 import { createLogger, createStdoutSink } from './log.js';
@@ -354,5 +354,47 @@ describe('LF-074edb61e-7: non-canonical sweep signatures are refused before any 
       expect(codeOf(reply)).toBe('invalid_signature');
     }
     expect((await call(s, 'POST', '/v1/sweep', p.body)).status).toBe(200);
+  });
+});
+
+describe('LF-074edb61e-1: quote-path RPC failures feed the circuit breaker', () => {
+  const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
+
+  it('a full RPC outage seen only by /v1/quote opens the breaker and degrades /healthz', async () => {
+    const s = await start();
+    s.fake.rpcDown = true;
+    for (let i = 0; i < 3; i++) {
+      const r = await call(s, 'POST', '/v1/quote', q);
+      expect(`${String(r.status)}:${codeOf(r)}`).toBe('503:rpc_unavailable');
+    }
+    const health = await call(s, 'GET', '/healthz');
+    expect(health.status).toBe(503);
+    expect(health.json).toMatchObject({ status: 'degraded', chains: [{ chainId: CHAIN_ID, breaker: 'open' }] });
+    expect(s.relayer.metrics.render()).toMatch(/relayer_breaker_transitions_total\{chain_id="11155111",to="open"\} 1/);
+    // Sweeps are refused up front while it is open, like after an in-lane RPC failure (L5-10).
+    s.fake.rpcDown = false;
+    s.clock.ms += 3_000; // past the quote gas-price cache
+    const p = await prepare(s);
+    expect(codeOf(await call(s, 'POST', '/v1/sweep', p.body))).toBe('breaker_open');
+  });
+
+  it('a gas price above the cap on the quote path stays neutral', async () => {
+    const s = await start();
+    s.fake.gasPrice = 60_000_000_000n; // above maxGasPriceWei
+    for (let i = 0; i < 5; i++) expect(codeOf(await call(s, 'POST', '/v1/quote', q))).toBe('gas_price_too_high');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' });
+  });
+
+  it('quote failures never take the half-open probe: a sweep still probes and closes the breaker', async () => {
+    const s = await start();
+    s.fake.rpcDown = true;
+    for (let i = 0; i < 3; i++) await call(s, 'POST', '/v1/quote', q);
+    s.clock.ms += 61_000; // past breaker.cooldownSeconds
+    expect(codeOf(await call(s, 'POST', '/v1/quote', q))).toBe('rpc_unavailable');
+    s.fake.rpcDown = false;
+    const p = await prepare(s);
+    expect((await call(s, 'POST', '/v1/sweep', p.body)).status).toBe(200);
+    await settle(50);
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
   });
 });

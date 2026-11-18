@@ -93,3 +93,8 @@ Contract code wins over docs. Items for the lead to confirm or reject.
   restored: a pre-simulation would add one `eth_call` per sweep and change the documented check order. Residual: a
   flood of doomed sweeps from many client buckets still occupies lane slots for a few reads each and can make honest
   sweeps get `503 queue_full`.
+- Quote-path RPC failures (LF-074edb61e-1): a failed `/v1/quote` gas price read records one breaker failure through an
+  unvalidated permit, so an outage that only quotes see still opens the breaker and degrades `/healthz`. Successful
+  quote reads are not recorded (they would dilute send and receipt failures in the window), so isolated read
+  failures accumulate until sweep outcomes push them out of the `breaker.windowSize` window. The quote path has no
+  funding read today; source-check and price-feed refusals stay neutral on both paths, as in the lane.

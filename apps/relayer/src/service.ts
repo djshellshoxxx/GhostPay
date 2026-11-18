@@ -734,9 +734,23 @@ export class RelayerService {
       price = await this.d.gasPrices.getGasPrice(rt.cfg.chainId);
     } catch (e) {
       if (e instanceof RelayerError) throw e;
+      this.quoteRpcFailure(rt);
       throw new RelayerError(503, 'rpc_unavailable');
     }
     return this.capGasPrice(rt, price);
+  }
+
+  /**
+   * A failed quote-path gas price read is an operational failure like an in-lane one (L5-10): it counts against the
+   * breaker, so an RPC outage that only quotes see (every sweep needs a fresh quote) still opens it and degrades
+   * `/healthz` (LF-074edb61e-1). The permit is unvalidated: a quote never takes or settles a half-open probe, which
+   * stays for a sweep. Only failures are recorded; one read serves every quote within `gas.quoteCacheSeconds`.
+   */
+  private quoteRpcFailure(rt: ChainRuntime): void {
+    const permit = rt.breaker.tryAcquire({ validated: false });
+    if (permit === null) return;
+    permit.settle(classifyRelayOutcome('rpc_error'));
+    this.noteBreaker(rt);
   }
 
   /** The configured gas price cap; refusing above it is neutral for the breaker (a spike, not an outage). */
