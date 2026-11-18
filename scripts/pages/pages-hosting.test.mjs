@@ -50,3 +50,43 @@ test('the publishing workflow fails when the deployed page_url origin differs fr
   for (const s of smoke.steps) assert.notEqual(s['continue-on-error'], true);
   assert.notEqual(smoke['continue-on-error'], true);
 });
+
+// SEC-43: the served files' SHA256SUMS were only in the run summary and a 14-day artifact, unsigned. A publishing run
+// attests them with GitHub's first-party provenance action (Sigstore, keyless) before anything is deployed. Signing them
+// with the release key stays owner-gated (OD-07).
+test('a publishing run attests the SHA256SUMS of the Pages artifact before deploying', async () => {
+  const { load } = await import('js-yaml');
+  const text = read('.github/workflows/pages.yml');
+  const wf = load(text);
+  const attest = wf.jobs['attest'];
+  assert.ok(attest !== undefined, 'attest job');
+  // Only for a publishing run, and only after every gate the deploy waits for.
+  assert.equal(attest.if, "needs.site.outputs.publish == 'true'");
+  assert.deepEqual([attest.needs].flat().sort(), ['acceptance', 'release-gates', 'site']);
+  // Exactly the permissions the attestation needs; no checkout, no repository code runs with them.
+  assert.deepEqual(attest.permissions, { 'id-token': 'write', attestations: 'write' });
+  const uses = attest.steps.map((s) => s.uses).filter((u) => typeof u === 'string');
+  assert.ok(!uses.some((u) => u.startsWith('actions/checkout@')), 'no checkout in the attest job');
+  assert.ok(!attest.steps.some((s) => typeof s.run === 'string' && /\b(?:npm|npx|node)\b/.test(s.run)), 'no repository code');
+  // The artifact the site job retained (same directory as the uploaded Pages artifact).
+  const dl = attest.steps.findIndex((s) => s.uses?.startsWith('actions/download-artifact@'));
+  assert.ok(dl >= 0, 'downloads the retained site artifact');
+  assert.equal(attest.steps[dl].with.name, 'pages-site-${{ github.sha }}');
+  // SHA256SUMS lists every file of site/ exactly once and every hash checks, before it is attested.
+  const check = attest.steps.findIndex((s) => typeof s.run === 'string' && s.run.includes('sha256sum --check'));
+  assert.ok(check > dl, 'checks SHA256SUMS against the downloaded site');
+  assert.match(attest.steps[check].run, /set -euo pipefail/);
+  assert.match(attest.steps[check].run, /find \. -type f/);
+  const at = attest.steps.findIndex((s) => s.uses?.startsWith('actions/attest-build-provenance@'));
+  assert.ok(at > check, 'attests after the check');
+  assert.match(attest.steps[at].uses, /^actions\/attest-build-provenance@[0-9a-f]{40}$/);
+  assert.match(text, /uses: actions\/attest-build-provenance@[0-9a-f]{40} # v\d+\.\d+\.\d+/);
+  assert.match(attest.steps[at].with['subject-checksums'], /evidence\/SHA256SUMS$/);
+  for (const s of attest.steps) assert.notEqual(s['continue-on-error'], true);
+  // Nothing is deployed without the attestation.
+  assert.ok([wf.jobs.deploy.needs].flat().includes('attest'), 'deploy needs attest');
+  // The other jobs keep their permissions: only the attest job holds attestations: write.
+  for (const [name, job] of Object.entries(wf.jobs)) {
+    if (name !== 'attest') assert.equal(job.permissions?.attestations, undefined, name);
+  }
+});
