@@ -1,12 +1,52 @@
+name: OpenAI Autonomous Development
 
-- name: Run development agent
-  env:
-    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  run: |
-    cat .github/agent-prompts/repository-scope.md \
-        .github/agent-prompts/autonomous-development.md \
-        > /tmp/agent-instructions.md
+on:
+  workflow_dispatch:
 
-    codex exec \
-      --full-auto \
-      - < /tmp/agent-instructions.md
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: autonomous-development-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  develop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Install Codex CLI
+        run: npm install -g @openai/codex
+
+      - name: Run development agent
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$OPENAI_API_KEY"
+          cat .github/agent-prompts/autonomous-development.md .github/agent-prompts/repository-scope.md > /tmp/agent-instructions.md
+          codex exec --full-auto - < /tmp/agent-instructions.md
+
+      - name: Publish draft pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to publish"
+            exit 0
+          fi
+          BRANCH="codex/autonomous-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$BRANCH"
+          git commit -m "chore: propose autonomous development changes"
+          git push origin "$BRANCH"
+          gh pr create --draft --base "${GITHUB_REF_NAME}" --head "$BRANCH" --title "Autonomous development run ${GITHUB_RUN_ID}" --body "AI-generated changes for review. Verify tests, security, scope and CI before merging."
