@@ -26,3 +26,15 @@ unfinished qualification outcomes remain explicitly pending in `EXECUTION_STATUS
 The coordinator will append the actual completed results and review the final combined source before integration.
 
 Independent `ci_qualification` review of the report's native/testing sections found the command, source, tool and budget distinctions accurate, with no native or whole-candidate overclaim. The report retains its 14:37:21 UTC snapshot; later publication/check/campaign observations remain for the coordinator to append.
+
+## Publication/status extension
+
+The initial assembly checks above retain their original counts and source scope. The extension preserves all 62
+original artifact bytes and hashes, and appends 16 stable publication, light-check, annotation/source and interrupted
+build records (78 copied artifacts total). All 61 recreated commit mappings were independently checked against the
+fetched local/remote trees and ordered parents. Fresh GitHub reads at 14:58:28 UTC confirm draft/open/unmerged #238,
+head `9bad95e5cc0ee73f5adb8d2c587161074b21e080`, with main unchanged. The contract tree is identical at native-tested
+`ea8f8d65`, local `e8c77e7e` and published `9bad95e5`; this preserves scoped source applicability without relabeling
+executions. No runtime, browser, build or analyzer job was run for the extension.
+
+Extension verification: all 78 copied artifacts match their hashes/sizes; all 21 JSON files parse; all 90 packet files are tracked. The 29 changed files are confined to packet paths and README's top source summary, and the staged whitespace check passes. Original raw evidence is unchanged.

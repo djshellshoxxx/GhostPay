@@ -437,6 +437,137 @@
       "sha256": "08cf1b30b225ba58b68f77a3fd207b69d009fc4cdcad00802ab24c90febe498f",
       "bytes": 30867,
       "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "publication/publication-map.json",
+      "original_path": "analysis-publish/publication-map.json",
+      "sha256": "c047b2e53a548d53c6434b8acc8a7312b663d966abe50a327faa198c677fb2c6",
+      "bytes": 90007,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "publication/PUBLICATION.md",
+      "original_path": "analysis-publish/PUBLICATION.md",
+      "sha256": "4328416d91fc47dd93583d5ac1fc30f95a25e62d62d423b36c9d818d8aed9892",
+      "bytes": 3044,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "publication/PUBLICATION_PACKET_REVIEW_20261118.json",
+      "original_path": "analysis-branches/PUBLICATION_PACKET_REVIEW_20261118.json",
+      "sha256": "3f217ed208b5cd184f4e8224d43f639f51e4dd180f8ccc2fa88772a892588f74",
+      "bytes": 1715,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/hosted/pr238-initial-ci-snapshot.json",
+      "original_path": "analysis-ci/pr238-initial-ci-snapshot.json",
+      "sha256": "93d7dcf02fc9655e72adb5d39dec6b9dd502f33a0e8a9792ae289a768f5c740e",
+      "bytes": 124078,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/light-results.json",
+      "original_path": "qualification/light-results.json",
+      "sha256": "a31df701f9c65001c483c6fba6a71d2a2000c25e65bcd354162080f2c56c4f11",
+      "bytes": 1078,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/secrets.log",
+      "original_path": "qualification/secrets.log",
+      "sha256": "43dbd358e7adfda20304b91beabef03a8ac665d8128617974958ad008e7f6fed",
+      "bytes": 440,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/action-pins.log",
+      "original_path": "qualification/action-pins.log",
+      "sha256": "5bffa073e696d0adabd49c6480bda6dab731dba2dc93578ad1b0d7fbd0b74594",
+      "bytes": 485,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/i18n-check.log",
+      "original_path": "qualification/i18n-check.log",
+      "sha256": "ce859ceb0206a5451075e880ceef506123620ec40c9081f692f9f019da8be5eb",
+      "bytes": 43620,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/i18n-extract.log",
+      "original_path": "qualification/i18n-extract.log",
+      "sha256": "37f60734f319f7e72eaf0c5bb8c38486f2feb6dbe2ab1456a8968ec898f11c57",
+      "bytes": 5109,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/audit-full.log",
+      "original_path": "qualification/audit-full.log",
+      "sha256": "d789e4d1aca708e575efb76cadffc85c92d721034af78487540941a09a18863a",
+      "bytes": 17238,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/audit-production.log",
+      "original_path": "qualification/audit-production.log",
+      "sha256": "63ba5ac9cfcdabd700b9b863f10ca190306105dfc7a2ba0809bebdf11e200282",
+      "bytes": 691,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/security/codeql-222-annotations-live.json",
+      "original_path": "analysis-ci/codeql-222-annotations-live.json",
+      "sha256": "2b0495e8ce93d7c0c4c27a65361aa6b637c50f83920fc9aa19e5363984399011",
+      "bytes": 513,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/security/Settings.test.source.txt",
+      "original_git_path": "apps/web/src/views/Settings.test.tsx",
+      "source_commit": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "same_blob_at": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "git_blob": "f73eee0286e0b0e490674ab5578240dcf796579c",
+      "sha256": "0f24660b71096655b6edb3c2a571600eeab7ca67f96ba98a15dab730e8e6c35e",
+      "bytes": 22007,
+      "copy_mode": "exact git blob",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/build/source-before-builds.json",
+      "original_path": "analysis-build/source-before-builds.json",
+      "sha256": "007d1e8255c7ff4f57ca8c66089f7f47e521924426c3f155f0dd4f98d4744eb8",
+      "bytes": 511,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/build/clean-install.json",
+      "original_path": "analysis-build/clean-install.json",
+      "sha256": "b8a032d4839e1e7b0fe2c722deca0c5fb9ed8ed3bbadd043eeeda23b9315e113",
+      "bytes": 738,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/build/clean-install.log",
+      "original_path": "analysis-build/logs/clean-install.log",
+      "sha256": "2541e66aaaa54f679989cf618d35f03024ccc2b6c97cd81fe9bdf0c503b818d6",
+      "bytes": 565,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
     }
   ],
   "running_outputs_not_copied": [
@@ -445,6 +576,8 @@
   "notes": [
     "Copied logs are source-pinned historical execution records even if the coordinator has a later run.",
     "Generated reports/metadata are tracked by git; source copies retain their independent SHA-256.",
-    "Referenced workspace-local paths identify original execution locations; packet_path identifies the durable copy."
-  ]
+    "Referenced workspace-local paths identify original execution locations; packet_path identifies the durable copy.",
+    "Post-publication additions preserve the original 62 artifacts and their hashes. Initial CI counts, build interruption and prior analyzer states remain timestamped observations, not current success claims."
+  ],
+  "updated_utc": "2026-11-18 15:01:41 UTC"
 }

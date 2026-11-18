@@ -52,5 +52,6 @@ The delta contains 78 commits, 36 on the integration first-parent chain, 15 merg
 | `a8a8d7ec1cdeaf11df53aa6aa0ea48ee9ecb9583` | `7ca9995add76d6cbbaaa32e9e6caabddd7698f24` | docs(pages): reconcile current implementation and privacy evidence |
 | `8acfacf2b93af606fc02e5638bf7007231893a59` | `a4b25d8468efa6de28e7060e67308731327b0431` | docs(privacy): describe current network controls and Tor limits |
 | `1e513ea9b5c7edb2afcc97df1381a6dcd6335bcc` | `9d0a4cd182b4ea2c007c2c2a840a53a2259cc331` | docs(handoff): record independent documentation review |
+| `2d83582af7b4611a3cde062a8041bc3dbe423555` | `8ff0f714d1cdfd4adaf4941650597ef611c5a320` | docs(handoff): stage source-pinned Pages completion packet |
 
-Remote candidate publication and remote main integration are separate actions. See `REMOTE_SHA_MAPPING.json`; no mapping is asserted until the publisher supplies and verifies it.
+Remote candidate publication and remote main integration are separate actions. See `REMOTE_SHA_MAPPING.json`; the initial published mapping is independently verified. Main integration remains unperformed.

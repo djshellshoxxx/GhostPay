@@ -8,13 +8,16 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
-**Pages completion source update — 2026-11-18.** The combined local integration snapshot
-`e85db1ef942bda9cb54317a6c036a22484b46ff9` includes reviewed recovery, privacy, dependency and static-hosting
-changes. It is not a claim about the current remote `main`, a passing hosted merge result or a deployed release.
-The [current completion report](docs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md) records the exact
-integration head, commands actually run, independent reviews and remaining release gates. The
-[TM1–TM15 ledger](docs/threat-model/TM_IMPLEMENTATION_20261118.md) distinguishes current implementation from
-unqualified Tor/browser behavior and remaining privacy limitations.
+**Pages completion source update — 2026-11-18.** [Draft PR #238](https://github.com/djshellshoxxx/GhostPay/pull/238)
+is open at `9bad95e5cc0ee73f5adb8d2c587161074b21e080`, with exactly the source tree of local integration
+`e8c77e7e8699dd16b86b7a1ff90b834594d07105`. It includes the reviewed recovery, privacy, dependency, hosting and
+key-lifetime changes. Remote `main` remained `dfc75ef2087fa6463ae59e0818abec01796c578d` at the independent
+14:58:28 UTC check. Final candidate qualification is incomplete; no main merge, deployment or release is claimed.
+The [current completion report](docs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md) records source identities,
+actual local/hosted execution, independent reviews and remaining gates. The
+[TM1–TM15 ledger](docs/threat-model/TM_IMPLEMENTATION_20261118.md) distinguishes implementation from unqualified
+Tor/browser behavior and residual privacy limits. This documentation update is staged separately from that initial
+published runtime head and must be appended before its links are presented as published candidate content.
 
 ### Historical Pages qualification — November 14, 2026
 

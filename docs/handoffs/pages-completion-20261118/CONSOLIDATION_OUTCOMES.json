@@ -9,7 +9,7 @@
   "deployments": 0,
   "release_publications": 0,
   "branch_deletions": 0,
-  "remote_candidate_publication": "IN_PROGRESS_BY_SEPARATE_PUBLISHER; mapping and PR URL not supplied at packet snapshot",
+  "remote_candidate_publication": "INITIAL_DRAFT_PR_PUBLISHED_TREE_VERIFIED; required candidate checks remain incomplete",
   "outcomes": [
     {
       "pr": 227,
@@ -303,5 +303,13 @@
     "remote_main_merged": false
   },
   "remaining_review": "REMAINING_PR_DELTA_REVIEW_20261118.md",
-  "qualification": "PENDING_FINAL_COMBINED_RESULTS; local merge names do not imply remote or release approval"
+  "qualification": "PENDING_FINAL_COMBINED_RESULTS; local merge names do not imply remote or release approval",
+  "updated_utc": "2026-11-18 15:01:41 UTC",
+  "remote_candidate_head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "pull_request_url": "https://github.com/djshellshoxxx/GhostPay/pull/238",
+  "pull_request_draft": true,
+  "pull_request_state": "open",
+  "published_tree": "81341de7972041b5f7ce53da76027846356fab90",
+  "publication_map": "REMOTE_SHA_MAPPING.json",
+  "documentation_packet_commit": "2d83582af7b4611a3cde062a8041bc3dbe423555"
 }

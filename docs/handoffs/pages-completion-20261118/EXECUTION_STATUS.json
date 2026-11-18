@@ -1,6 +1,6 @@
 {
-  "status": "DRAFT_CLOSEOUT_WITH_RUNNING_QUALIFICATION",
-  "snapshot_utc": "2026-11-18 14:37:21 UTC",
+  "status": "DRAFT_PR_PUBLISHED_WITH_INCOMPLETE_QUALIFICATION",
+  "snapshot_utc": "2026-11-18 15:01:41 UTC",
   "local_runtime_source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
   "starting_remote_main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
   "remote_main_merges": 0,
@@ -8,10 +8,15 @@
   "deployments": 0,
   "release_publications": 0,
   "candidate_publication": {
-    "status": "IN_PROGRESS_BY_PUBLISHER",
+    "status": "INITIAL_DRAFT_PUBLISHED_TREE_VERIFIED",
     "local_to_remote_map": "REMOTE_SHA_MAPPING.json",
-    "remote_head": null,
-    "pull_request_url": null
+    "remote_head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+    "pull_request_url": "https://github.com/djshellshoxxx/GhostPay/pull/238",
+    "pull_request_draft": true,
+    "pull_request_state": "open",
+    "identical_tree": "81341de7972041b5f7ce53da76027846356fab90",
+    "independent_verification": "publication/PUBLICATION_PACKET_REVIEW_20261118.json",
+    "documentation_status": "Staged separately; packet/documentation updates are not in initial published runtime candidate."
   },
   "checks": [
     {
@@ -125,38 +130,45 @@
     },
     {
       "name": "Echidna repository campaigns",
-      "status": "RUNNING_WORKER_REPORTED",
+      "status": "INCOMPLETE_CAMPAIGN_EXISTING_OUTPUT_UNDER_OBSERVATION",
       "version": "2.2.7",
       "exit_code": null,
-      "result": "No final campaign outcome in this packet. Retain all three harnesses, canaries and 300000 calls per harness."
+      "result": "Worker reports Router completed 300000 calls, four safety properties passed and four required canaries falsified; Sweep corpus exists. No final overall exit or all-three-harness result has been supplied.",
+      "observation_basis": "Worker report; no completed full-campaign result copied.",
+      "diagnostics": "Existing captured logs report failed Slither preprocessing and unconfigured-RPC/EmptyBase diagnostics. These are under read-only inspection; standalone Slither passing separately does not clear Echidna diagnostics. No diagnostic-free or completed campaign pass is asserted."
     },
     {
       "name": "Mythril repository campaigns",
-      "status": "PENDING_EXECUTION",
+      "status": "NOT_EXECUTED_WORKER_INTERRUPTED",
       "version": "0.24.8",
       "exit_code": null,
-      "result": "Installed tool executes; full five-target campaign has no outcome here. Preserve 900-second target timeout, depth 3 and strict finding/error gate. Standalone disposition helper remains unwired."
+      "result": "Tool installation/probe succeeded; the full five-target campaign was never started. Worker reported an automatic possible-cybersecurity-risk interruption, after which its assignment was restricted to observing existing outputs. This is not a scanner failure result or a promise that a campaign is merely waiting to launch.",
+      "required_unchanged": "900-second target timeout, depth 3 and strict finding/error gate; standalone disposition helper remains unwired."
     },
     {
       "name": "Production dependency audit",
-      "command": "npm audit --omit=dev --audit-level=high --json",
-      "source": "ef464ee582086192c5c8a498ec9730cdf62c3f66",
+      "command": "npm audit --omit=dev --json",
+      "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
       "status": "PASS",
       "exit_code": 0,
       "findings": 0,
-      "artifact": "evidence/dependencies/dependency-audit-production.json"
+      "artifact": "evidence/qualification/audit-production.log",
+      "execution_metadata": "evidence/qualification/light-results.json",
+      "historical_artifact": "evidence/dependencies/dependency-audit-production.json"
     },
     {
       "name": "Full dependency audit",
       "command": "npm audit --json",
-      "source": "ef464ee582086192c5c8a498ec9730cdf62c3f66",
+      "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
       "status": "FAIL_UNRESOLVED_ADVISORY",
       "exit_code": 1,
       "affected_package_entries": 30,
       "high": 14,
       "low": 16,
       "result": "Unfixed upstream Picomatch advisory remains in the development dependency graph. No threshold or blanket suppression was changed.",
-      "artifact": "evidence/dependencies/dependency-audit-full.json"
+      "artifact": "evidence/qualification/audit-full.log",
+      "execution_metadata": "evidence/qualification/light-results.json",
+      "historical_artifact": "evidence/dependencies/dependency-audit-full.json"
     },
     {
       "name": "Local actual browser journeys",
@@ -192,17 +204,84 @@
         "npm run release:repro"
       ],
       "status": "PENDING_FINAL_CANDIDATE_EXECUTION",
-      "exit_code": null
+      "exit_code": null,
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "result": "Separate published-source build lane prepared. Its first clean install was killed by SIGKILL (-9) after 14.677 seconds; final build/release/repro outcomes remain pending. No completed artifact or browser acceptance is claimed.",
+      "preparation_artifact": "evidence/build/source-before-builds.json",
+      "interrupted_install_artifact": "evidence/build/clean-install.json"
     },
     {
       "name": "Final candidate hosted checks / CodeQL / SonarCloud",
       "status": "PENDING_EXACT_CANDIDATE_EVIDENCE",
-      "result": "No final combined check or alert clearance is asserted. Historical or independently passing scanner jobs do not clear unrelated gates."
+      "result": "Initial draft PR #238 exists at the published source-equivalent head. At retained 14:43:53 UTC snapshot: 18 checks, 17 queued and one skipped; no executed success/failure. Later worker observation at 14:49:58 UTC: 15 queued, two CLI jobs running, one skipped. These are snapshots, not final gates. Current CodeQL/Sonar clearance remains unqualified.",
+      "artifact": "evidence/hosted/pr238-initial-ci-snapshot.json"
     },
     {
       "name": "Public testnet / Tor / external wallet / physical device / native localization",
       "status": "UNQUALIFIED_EXTERNAL_ACCEPTANCE",
       "result": "No deployment, funded public-network execution, real Tor route, physical device, screen-reader or native-language approval is claimed."
+    },
+    {
+      "name": "Committed secret scan",
+      "command": "npm run ci:scan-secrets",
+      "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.21,
+      "result": "No committed env files or key material found within the shipped scanner checks.",
+      "artifact": "evidence/qualification/secrets.log",
+      "execution_metadata": "evidence/qualification/light-results.json"
+    },
+    {
+      "name": "GitHub action pin checks",
+      "command": "npm run ci:check-actions",
+      "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.2,
+      "references_checked": 113,
+      "result": "All inspected uses references pinned to full SHAs with version comments.",
+      "artifact": "evidence/qualification/action-pins.log",
+      "execution_metadata": "evidence/qualification/light-results.json"
+    },
+    {
+      "name": "Current locale catalog validation",
+      "command": "node scripts/i18n/check.mjs",
+      "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "status": "PASS_WITH_FALLBACK_WARNINGS",
+      "exit_code": 0,
+      "catalogs": 4,
+      "errors": 0,
+      "warnings": 500,
+      "artifact": "evidence/qualification/i18n-check.log",
+      "limit": "No native-language review; warnings are not completed translations.",
+      "execution_metadata": "evidence/qualification/light-results.json"
+    },
+    {
+      "name": "Current locale key extraction",
+      "command": "node scripts/i18n/extract.mjs",
+      "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "status": "PASS",
+      "exit_code": 0,
+      "used": 2267,
+      "missing_english": 0,
+      "unused": 139,
+      "artifact": "evidence/qualification/i18n-extract.log",
+      "execution_metadata": "evidence/qualification/light-results.json"
+    },
+    {
+      "name": "PR222 CodeQL synthetic-fixture annotation",
+      "source": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "check_id": 134777382565,
+      "status": "SOURCE_REVIEWED_SYNTHETIC_FIXTURE_CHECK_REMAINS_FAILED",
+      "annotation_count": 1,
+      "annotation_level": "failure",
+      "severity_as_reported_by_review": "high",
+      "source_blob": "f73eee0286e0b0e490674ab5578240dcf796579c",
+      "same_blob_at_published_candidate": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "review": "reviews/CODEQL_FIXTURE_DISPOSITION_20261118.md",
+      "artifact": "evidence/security/codeql-222-annotations-live.json",
+      "limit": "No scanner exclusion, suppression, dismissal or check clearance. Private alert/SARIF inventory and final candidate scans remain unqualified."
     }
   ],
   "finalization_required": [
@@ -210,9 +289,44 @@
     "Append analyzer campaign outcomes without weakening budgets or gates",
     "Resolve or clearly retain typed web lint resource failure",
     "Record final build and release reproducibility results",
-    "Record publisher SHA/tree mapping and actual candidate PR URL",
     "Refresh live main, required checks and relevant PR heads",
-    "Perform final independent combined-source review before any authorized merge"
+    "Perform final independent combined-source review before any authorized merge",
+    "Append final documentation to the published draft using the verified mapping; record final head/tree and rerun applicable gates"
   ],
-  "note": "Source-scoped passes and partial retries are not silently promoted to a single all-green command. The feature estimates retain their original conservative checklist points."
+  "note": "Source-scoped passes and partial retries are not silently promoted to a single all-green command. The feature estimates retain their original conservative checklist points.",
+  "initial_snapshot_utc": "2026-11-18 14:37:21 UTC",
+  "published_runtime_source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "published_tree": "81341de7972041b5f7ce53da76027846356fab90",
+  "latest_main_observation": {
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches/main",
+    "head_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "tree_sha": "21929503cbb7ee6186cfbfc4b278815387d35d66",
+    "protected": false,
+    "observed_utc": "2026-11-18 14:58:28 UTC"
+  },
+  "ci_snapshots": [
+    {
+      "observed_utc": "2026-11-18 14:43:53 UTC",
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "total": 18,
+      "queued": 17,
+      "running": 0,
+      "skipped": 1,
+      "success": 0,
+      "failure": 0,
+      "basis": "retained GitHub API snapshot",
+      "artifact": "evidence/hosted/pr238-initial-ci-snapshot.json"
+    },
+    {
+      "observed_utc": "2026-11-18 14:49:58 UTC",
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "total": 18,
+      "queued": 15,
+      "running": 2,
+      "skipped": 1,
+      "success": 0,
+      "failure": 0,
+      "basis": "CI worker report; two running jobs are CLI jobs"
+    }
+  ]
 }

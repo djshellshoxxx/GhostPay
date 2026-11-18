@@ -1,19 +1,25 @@
 # GhostPay Pages completion report — 2026-11-18
 
-**Status: implementation and local consolidation completed for the changes listed here; final qualification and candidate publication are still in progress. Remote main merges performed by this workstream: zero.**
+**Status: reviewed source candidate published as draft PR #238; final qualification remains incomplete. Remote main merges performed by this workstream: zero.**
 
 This draft closeout is pinned to local integration `e8c77e7e8699dd16b86b7a1ff90b834594d07105`, tree
 `81341de7972041b5f7ce53da76027846356fab90`, on `integration/ghostpay-pages-completion-20261118`.
 The verified starting remote main was `dfc75ef2087fa6463ae59e0818abec01796c578d`.
-The packet status snapshot is **2026-11-18 14:37:21 UTC**; later test/publication outcomes must be appended by the
-coordinator. The separate documentation branch preserves its exact staged history in the commit ledger.
+The initial packet snapshot was **2026-11-18 14:37:21 UTC**. This publication/status addendum is recorded at
+**15:01:41 UTC**, with each execution/CI observation retaining its own source and time. The published candidate
+[**draft PR #238**](https://github.com/djshellshoxxx/GhostPay/pull/238) is open at
+`9bad95e5cc0ee73f5adb8d2c587161074b21e080`, with exactly the same complete tree as the local runtime source above.
+A fresh read at **14:58:28 UTC** confirmed the PR remains unmerged and remote main remains `dfc75ef2`. The separate
+documentation branch, including this packet, still needs its publication append; its exact staged history is retained.
 
 The implementation preserves client-side key handling and signing, independent recovery, explicit secret export,
 user-selected RPC infrastructure, testnet restrictions and the static Pages scope. It adds no project-operated
 custody, mandatory account service, analytics or mainnet enablement. No deployment, release publication, branch
-deletion or PR closure was performed. Candidate-branch publication is being recreated through authenticated GitHub
-API capabilities because CLI push credentials are absent; the publisher's exact mapping and candidate PR have not
-yet been supplied to this packet. No guessed remote SHA is used.
+deletion or PR closure was performed. The authenticated GitHub Git Data API published the candidate because CLI
+push credentials were absent. All 61 recreated commits have verified trees and ordered parents, including 15 merge
+commits; their changed identities and original-author/committer provenance are recorded in the
+[publication record](publication/PUBLICATION.md) and [complete mapping](REMOTE_SHA_MAPPING.json). Source-tree
+equality does not rename a local test execution as hosted CI or prove a release artifact is reproducible.
 
 ## A. Consolidation
 
@@ -23,7 +29,9 @@ The complete paginated inventory inspected **242 live remote branches** and **23
 without merge and 53 historically merged** at that snapshot. Branch enumeration used pages of 100, 100 and 42;
 PR enumeration used 100, 100 and 35. Every live head was compared with the starting main and checked against local
 Git objects. The branch relationships were 163 ancestors/behind, 71 diverged, 6 ahead, one identical main and one
-unrelated history. Thirteen of the 77 non-ancestor related branches had no patch-unique commits.
+unrelated history. Thirteen of the 77 non-ancestor related branches had no patch-unique commits. The later
+integration branch and PR #238 are recorded separately; these initial discovery counts are not a fresh enumeration
+after publication.
 
 [The Markdown matrix](RECONCILIATION_MATRIX.md) and [complete JSON](RECONCILIATION_MATRIX.json) preserve exact heads,
 base branches, ahead/behind values, source commits, changed paths, dependencies, conflicting implementations,
@@ -62,7 +70,9 @@ parents, trees, authors, timestamps, messages and changed paths are retained in
 [CONSOLIDATION_OUTCOMES.md](CONSOLIDATION_OUTCOMES.md) and its [JSON companion](CONSOLIDATION_OUTCOMES.json) give each
 reviewed PR head, exact local integration/extraction commits and its limits. Local merge commit names do not mean
 that the PR was merged into remote main. **The workstream has merged zero PRs to remote main and closed zero PRs.**
-Candidate publication, final CI and authorized main integration remain distinct steps.
+Initial candidate publication is complete; final CI and authorized main integration remain separate, incomplete
+steps. The [independent publication check](publication/PUBLICATION_PACKET_REVIEW_20261118.json) confirms the exact
+source tree and PR state. GitHub's synthetic merge SHA and `mergeable=true` are not completed main merges or green gates.
 
 ### Work retained outside this consolidation
 
@@ -172,10 +182,25 @@ The standalone helper is not connected to a gate. Its report counts do not estab
 and an owner-approval reference is not authenticated authorization. Passing its fixtures does not disposition a
 real Mythril finding or authorize a future release exception.
 
-The full dependency audit remains unresolved: **30 affected-package entries, including 14 high and 16 low**, with
-an unpatched upstream Picomatch advisory in the development graph. The production-only audit reports zero findings.
-These scopes must not be conflated. No blanket suppression or threshold reduction was introduced. Under the user's
-release rule, unresolved high findings continue to block release qualification.
+The full dependency audit, rerun at local `e8c77e7e` with exit 1, remains unresolved: **30 affected-package entries,
+including 14 high and 16 low**, with an unpatched upstream Picomatch advisory in the development graph. The production-only audit reports zero findings.
+The production-only rerun at the same source exited 0. These scopes must not be conflated. No blanket suppression
+or threshold reduction was introduced. Under the user's release rule, unresolved high findings continue to block release qualification.
+
+### CodeQL fixture finding and remaining scanner limits
+
+PR #222 check `134777382565` reported one high-severity finding on `Settings.test.tsx` at source
+`2bc2098298d90928eb1acafad969f28316bb05fc`. The retained annotation identifies a literal `rpc.example` fixture
+serialized into jsdom localStorage to test the saved-provider-key warning. It is cleared between tests; the default
+service fixture rejects network requests, and the reported value does not originate from a live user or provider.
+Independent source review supports a **synthetic-fixture false-positive disposition for that one annotation**.
+The exact file blob `f73eee0286e0b0e490674ab5578240dcf796579c` is unchanged at published `9bad95e5`.
+
+The [source/annotation evidence and disposition](reviews/CODEQL_FIXTURE_DISPOSITION_20261118.md) preserve the reasoning.
+**The failed check remains failed**; no finding was dismissed, renamed away, suppressed or excluded. Private alert/SARIF
+inventory and final-candidate CodeQL/Sonar clearance remain unqualified. Separately, production Settings can retain
+provider-bearing URLs in plaintext unless session-only is explicitly chosen; that real storage boundary is not cleared
+by the fixture disposition. Current scanner gaps cannot be replaced with a successful test-helper run.
 
 ### Residual privacy and trust boundaries
 
@@ -200,7 +225,8 @@ of silently adding another observer.
 ## D. Testing and execution evidence
 
 [EXECUTION_STATUS.json](EXECUTION_STATUS.json) is the editable status register for final closeout. The
-[artifact manifest](ARTIFACT_MANIFEST.json) identifies 62 copied stable artifacts by source and SHA-256. Active npm
+[artifact manifest](ARTIFACT_MANIFEST.json) identifies 78 copied stable artifacts by source and SHA-256, preserving
+the original 62 unchanged and appending publication/light-check/source evidence. Active npm
 output was deliberately not copied as a completed result. Source-specific commands and environments are retained
 in the recovery, dependency, tooling and native records. Most early worker selections used Node 24.22.1/Vitest
 5.0.5; the dependency-aligned qualification uses Node 22.23.5/npm 11.21.2/Vitest 5.1.0 where its logs identify them.
@@ -213,9 +239,10 @@ Do not describe the earlier Node 24 runs as a pinned Node 22 execution.
 | Clean install and library build | Root logs retained at `e85db1ef`; install reports 721 packages. Earlier paired-dependency lane separately passed 77 library builds | Coordinator to finalize full command exit metadata |
 | Typecheck | Full `npm run typecheck` at `e85db1ef` exited 134 when web exhausted 768 MiB; other workspaces passed. Web-only retry at `ea8f8d65`, 1536 MiB, exited 0; subsequent vault change has scoped checks | All workspace types covered across the successful scopes; original failed aggregate remains recorded |
 | Typed lint | Full run/retry killed with 137 in web; narrower earlier probe demonstrated heap exhaustion | **Blocked**, no whole-candidate lint pass |
+| Secret scan and action pins | At local `e8c77e7e`, `npm run ci:scan-secrets` and `npm run ci:check-actions` both exited 0; all 113 inspected action references are pinned | **Passed within shipped scanner scopes**; no full supply-chain/audit claim |
 | `npm test` | Running at `e8c77e7e`; expands to workspace tests with their configured coverage | **Running; no completed aggregate exit or total** |
-| Final web build, release build and reproducibility | No final-candidate completion is asserted in this packet | **Pending** |
-| Final hosted checks, CodeQL and SonarCloud | Candidate publication/mapping and new checks are still pending | **Not qualified** |
+| Final web build, release build and reproducibility | Separate build lane is pinned to published `9bad95e5`; its first clean install ended in SIGKILL (-9), before build qualification | **Pending**; no completed final build, artifact or browser result |
+| Final hosted checks, CodeQL and SonarCloud | Draft #238 and exact tree mapping are verified. Initial 14:43:53 snapshot: 18 checks, 17 queued/1 skipped. Worker 14:49:58 observation: 15 queued/2 CLI jobs running/1 skipped; no executed success/failure in either snapshot | **Not qualified**; snapshots do not establish current final gates |
 | Local actual Playwright/browser journeys | Chromium fails a required socket operation, exit 134 | **Blocked by executor**; collection/jsdom is not a replacement |
 
 ### Native execution
@@ -231,10 +258,15 @@ source boundary and filters are in [NATIVE_QUALIFICATION_20261118.md](NATIVE_QUA
 - **Slither:** exit 0, **34 contracts / 64 detectors / 0 retained results**, with unchanged CI path/severity/source
   filters, including exclusion of informational/low findings and `--fail-medium`. This does not claim every possible
   detector/configuration produces zero findings.
-- **Echidna:** the worker reports an active campaign; no final outcome belongs to this packet. Preserve three
-  harnesses, canaries and 300,000 calls per harness.
-- **Mythril:** installed and executable; the full five-target campaign has no outcome here. Preserve its 900-second
-  per-target timeout, depth 3 and strict findings/error gate.
+- **Echidna:** existing output remains under observation. The worker reports Router reached 300,000 calls, with
+  four safety properties passing and all four required canaries falsified; a Sweep corpus exists. No final overall
+  exit or all-three-harness result has been supplied. Captured output also reports failed Slither preprocessing
+  and unconfigured-RPC/`EmptyBase` diagnostics; the separate standalone Slither pass does not clear those warnings.
+  No claim of a diagnostic-free campaign is made. The required three harnesses/canaries and budgets remain intact.
+- **Mythril:** installed and executable; **the full five-target campaign was never started**. The worker reported
+  an automatic possible-cybersecurity-risk interruption, after which its assignment was limited to observing
+  existing outputs. This is neither a scanner result nor a claim that a campaign is merely waiting to launch.
+  Required 900-second target timeouts, depth 3 and the strict findings/error gate remain unchanged.
 
 The successful contract/recovery executions are bound to `ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929`; the worker
 verified those input trees unchanged during execution. The contracts tree is
@@ -258,9 +290,11 @@ qualification. Scanner unavailability, crashes, timeouts and partial output must
 Recovery's first vault coverage attempt was incomplete after SIGKILL, and its later isolated retry passed 348/348
 with 96.99% statements, 94.24% branches, 99.50% functions and 98.88% lines. The initial 15-pass/1-skip Node recovery
 run and Foundry 1.5.1 supplemental result are retained historically; the later pinned 1.8.5 result above is the
-relevant native-toolchain evidence. Locale validation reported four catalogs, zero errors and 434 fallback/existing
-warnings; extraction found 2,229 used keys, zero missing English keys and 136 unused. Native-language review remains
-unperformed. None of these overlapping counts is a total of distinct project tests.
+relevant native-toolchain evidence. The historical recovery locale run reported 434 warnings and 2,229 used/136
+unused keys. The later full-source light checks at `e8c77e7e` report **four catalogs, zero errors, 500 warnings;
+2,267 used keys, zero missing English keys and 139 unused**, each command exiting 0. These counts describe different
+source scopes; they are not evidence of native translation approval. None of the overlapping test counts is a total
+of distinct project tests. Exact commands, exits and durations are in [light-results.json](evidence/qualification/light-results.json).
 
 ### Fresh upstream hosted evidence
 
@@ -281,13 +315,13 @@ smoke pass. No funded public-network, real Tor, external-wallet or physical-devi
 |---|---|---|
 | Code implementation complete | Broad in-scope implementation plus the six repairs above; several compound TM recommendations and compatibility obligations remain partial | Keep explicit scope/defer decisions and unfinished obligations visible |
 | Locally verified | Many focused lanes and native scopes passed; full npm run is active and typed web lint remains blocked | Final aggregate exit/coverage, successful lint or equivalent qualified hosted execution, final builds/reproducibility |
-| CI qualified | **No final combined candidate qualification** | Publisher SHA/tree map, actual candidate PR, fresh required checks on intended merge result |
+| CI qualified | **No final combined candidate qualification**; initial draft/source mapping verified | Final documentation append and fresh required checks on the intended candidate/merge result |
 | Security reviewed | Separate AI-assisted source reviews exist; no professional final release audit | Exact final source review, analyzer outcomes, current CodeQL/Sonar clearance and disposition of unresolved high findings |
 | Public-testnet qualified | **No** | Approved signed deployment data and authorized external wallet/provider recovery/payment acceptance |
 | Ready for owner release approval | **No** | All preceding mandatory gates and the approved origin/trust-root configuration |
 
 The task authorizes verified integration, not an unconditional merge. Missing required CI and unresolved security
-gates still prevent claiming a main merge is ready. The publisher may prepare a concrete candidate PR while tests
+gates still prevent claiming a main merge is ready. The concrete candidate is published as draft #238 while tests
 continue. This workstream does not deploy, publish a release, enable mainnet or delete branches.
 
 ## F. Outstanding decisions and finalization
@@ -305,8 +339,8 @@ new owner approvals.
 | Experimental non-EVM/policy/guardian/escrow expansion | These have separate compatibility, protocol, authority or custody prerequisites outside the active Pages target | Preserve disabled/experimental scope and valuable branches; no implicit production enablement |
 
 The final closeout still needs the completed npm per-workspace results, analyzer campaign outcomes, final build and
-reproducibility evidence, exact publisher mapping and candidate PR, refreshed main/check state, and the coordinator's
-final independent review. The coordinator will update this report and `EXECUTION_STATUS.json` with those concrete
+reproducibility evidence, the final documentation append to draft #238, refreshed main/check state, and the
+coordinator's final independent review. The initial published mapping is verified and preserved. The coordinator will update this report and `EXECUTION_STATUS.json` with those concrete
 results. Native translation, real accessibility/device/Tor and public-testnet acceptance remain external gates even
 if local/hosted automated checks subsequently pass.
 
@@ -314,7 +348,7 @@ if local/hosted automated checks subsequently pass.
 
 - [Full branch/PR matrix](RECONCILIATION_MATRIX.md) and [JSON](RECONCILIATION_MATRIX.json).
 - [Local consolidation outcomes](CONSOLIDATION_OUTCOMES.md), [exact commit ledger](LOCAL_COMMIT_LEDGER.md),
-  [changed-source hashes](SOURCE_FILES_SHA256.json) and [pending publisher mapping](REMOTE_SHA_MAPPING.json).
+  [changed-source hashes](SOURCE_FILES_SHA256.json) and [verified initial publisher mapping](REMOTE_SHA_MAPPING.json).
 - [Feature/TM evidence and explicit scoring](PAGES_FEATURE_THREAT_EVIDENCE_20261118.md),
   [remaining-source review](REMAINING_PR_DELTA_REVIEW_20261118.md) and [independent reviews](reviews/).
 - [Execution status](EXECUTION_STATUS.json), [native qualification](NATIVE_QUALIFICATION_20261118.md), stable

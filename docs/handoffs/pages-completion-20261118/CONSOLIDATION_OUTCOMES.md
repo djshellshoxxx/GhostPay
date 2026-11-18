@@ -2,9 +2,9 @@
 
 Source snapshot: `e8c77e7e8699dd16b86b7a1ff90b834594d07105`; starting remote main: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
 
-**Remote main merges: 0. PR closures: 0. Deployments: 0. Release publications: 0. Branch deletions: 0.** These are workstream actions, not counts of historical repository activity. Candidate-branch publication is in progress through a separate publisher; its mapping and final PR are not yet asserted here.
+**Remote main merges: 0. PR closures: 0. Deployments: 0. Release publications: 0. Branch deletions: 0.** These are workstream actions, not counts of historical repository activity. Initial candidate publication is complete as [draft PR #238](https://github.com/djshellshoxxx/GhostPay/pull/238), head `9bad95e5cc0ee73f5adb8d2c587161074b21e080`, with the exact local runtime tree. The complete mapping is in `REMOTE_SHA_MAPPING.json`; final documentation publication and qualification remain pending.
 
-Eleven reviewed PR source heads are present by ancestry in the local snapshot. Eight other PR sources contributed bounded extractions. #223 documentation is staged separately at `1e513ea9b5c7edb2afcc97df1381a6dcd6335bcc`. The initial inventory contained 53 historically merged PRs; those are not merges performed by this workstream.
+Eleven reviewed PR source heads are present by ancestry in the local snapshot. Eight other PR sources contributed bounded extractions. #223 documentation is staged separately at `1e513ea9b5c7edb2afcc97df1381a6dcd6335bcc`. The initial documentation packet is committed separately at `2d83582af7b4611a3cde062a8041bc3dbe423555`; it is not in that first published head. The initial inventory contained 53 historically merged PRs; those are not merges performed by this workstream.
 
 | Source PR | Exact reviewed head | Local handling / commit(s) | Main merged? | Outcome and limits |
 |---|---|---|---|---|

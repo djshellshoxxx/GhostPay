@@ -10,12 +10,13 @@ No product, dependency, test or workflow change belongs to this packet task.
 
 Runtime integration snapshot: `e8c77e7e8699dd16b86b7a1ff90b834594d07105`.
 Starting remote main: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
-Packet status: **draft closeout; qualification and publication reconciliation are still in progress**.
+Packet status: **initial candidate published as draft PR #238; qualification and final documentation append remain incomplete**.
+Published runtime: `9bad95e5cc0ee73f5adb8d2c587161074b21e080`; exact source tree equals local `e8c77e7e`.
 
 The [completion report](COMPLETION_REPORT.md) separates local integration, executed checks and remote state.
-The coordinator must append final test outcomes and the publisher's local-to-remote SHA map before treating this
-packet as a final closeout. A remotely recreated commit is not automatically the same commit identity as its
-local source, and publication to a candidate branch is not a merge to `main`.
+The publisher's local-to-remote SHA map and complete tree equality are now independently verified. The coordinator
+must append final test outcomes and publish the staged documentation before treating this packet as a final
+closeout. Recreated commits have different identities; publication to a candidate branch is not a merge to `main`.
 
 ## Inventory scope
 

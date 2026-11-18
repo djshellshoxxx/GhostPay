@@ -2377,5 +2377,7 @@
       "git_blob": "b7064dde0b9c4d3057bd30c66b15dfc9fa80e45d"
     }
   ],
-  "purpose": "Byte identity for changed tracked files at the local snapshot. Later publication must verify its own complete tree; these hashes are not release signatures."
+  "purpose": "Byte identity for changed tracked files at the local snapshot. Later publication must verify its own complete tree; these hashes are not release signatures.",
+  "equivalent_initial_published_commit": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "publication_proof": "REMOTE_SHA_MAPPING.json"
 }
