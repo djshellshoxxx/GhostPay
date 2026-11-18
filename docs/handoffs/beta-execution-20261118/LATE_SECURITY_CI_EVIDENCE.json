@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-11-18 13:23:15 UTC",
+  "repository": "djshellshoxxx/GhostPay",
+  "review_mode": "read-only source and hosted-check review; no new code or tests",
+  "pr225": {
+    "head_sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+    "workflow_run": {
+      "id": 44293784707,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44293784707",
+      "name": "Code scanning AI findings on PR #225",
+      "path": "dynamic/agents/github-advanced-security",
+      "event": "dynamic",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    "job": {
+      "id": 134765434776,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44293784707/job/134765434776",
+      "name": "github-advanced-security",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-18T13:12:45Z",
+      "completed_at": "2026-11-18T13:13:07Z",
+      "failed_step": [
+        {
+          "number": 19,
+          "name": "Processing Request (Linux)"
+        }
+      ]
+    },
+    "error": {
+      "observed_at_utc": "2026-11-18T13:13:04Z",
+      "message": "Error creating PR review request: SessionModelError: You have exceeded your monthly quota",
+      "status_code": 402,
+      "error_code": "quota",
+      "process_exit_code": 1
+    },
+    "classification": "external Copilot quota failure",
+    "conclusion": "The AI review request failed on service quota after setup succeeded. This log does not identify a repository source defect or a Mythril/checker failure. The AI review did not complete.",
+    "next_action": "Owner resolves or waits for the quota condition, then reruns the check on the reviewed source and obtains a successful result. Preserve the failed gate; no source patch, permission expansion, suppression or quota bypass is justified by this evidence.",
+    "limits": [
+      "No billing or quota setting was changed.",
+      "No rerun was dispatched.",
+      "Other pending or failed checks are not cleared by this diagnosis."
+    ]
+  },
+  "pr222": {
+    "head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "findings_check": {
+      "id": 134777382565,
+      "url": "https://github.com/djshellshoxxx/GhostPay/runs/134777382565",
+      "name": "CodeQL",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-18T11:43:22Z",
+      "completed_at": "2026-11-18T11:43:25Z",
+      "title": "1 new alert including 1 high severity security vulnerability",
+      "annotations_count": 1
+    },
+    "annotation": {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "start_line": 47,
+      "start_column": 47,
+      "end_line": 47,
+      "end_column": 95,
+      "annotation_level": "failure",
+      "title": "Clear text storage of sensitive information",
+      "message": "This stores sensitive data returned by [an access to SECRET](1) as clear text.",
+      "source_blob_sha": "f73eee0286e0b0e490674ab5578240dcf796579c",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/2bc2098298d90928eb1acafad969f28316bb05fc/apps/web/src/views/Settings.test.tsx"
+    },
+    "analysis_execution": {
+      "run_id": 44279435442,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44279435442",
+      "path": "dynamic/github-code-scanning/codeql",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 134715914702,
+          "name": "Analyze (actions)",
+          "head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-18T11:42:49Z",
+          "completed_at": "2026-11-18T11:43:33Z",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44279435442/job/134715914702"
+        },
+        {
+          "id": 134715915148,
+          "name": "Analyze (python)",
+          "head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-18T11:50:32Z",
+          "completed_at": "2026-11-18T11:51:15Z",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44279435442/job/134715915148"
+        },
+        {
+          "id": 134715915258,
+          "name": "Analyze (javascript-typescript)",
+          "head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-18T12:40:44Z",
+          "completed_at": "2026-11-18T12:43:07Z",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44279435442/job/134715915258"
+        }
+      ]
+    },
+    "source_evidence": {
+      "fixture_declaration_line": 29,
+      "fixture_value": "https://rpc.example/v2/AbCdEf0123456789AbCdEf0123456789",
+      "test_name": "flags an already persisted secret-looking URL and keeps it",
+      "flagged_operation": "The test deliberately writes the hardcoded fixture into jsdom localStorage under SETTINGS_KEY before rendering Settings.",
+      "isolation": "beforeEach clears localStorage. The default makeServices test helper rejects network and RPC operations; this test uses that default helper.",
+      "test_helper": {
+        "path": "apps/web/src/test/render.tsx",
+        "blob_sha": "dbd0a6a491b6284a39a7e185847713184a97be88"
+      },
+      "runtime_settings": {
+        "path": "apps/web/src/lib/settings.ts",
+        "blob_sha": "549e3e8d9ff1dbc9d5e44002c27a83cf5c87d2f3"
+      },
+      "runtime_view": {
+        "path": "apps/web/src/views/Settings.tsx",
+        "blob_sha": "501f42cb998965986458171c2929ddf0c4020936"
+      },
+      "runtime_boundary": "saveSettings persists sanitized primary and secondary RPC URLs in plaintext unless their exact chain/URL is marked session-only. Settings warns about token-looking URLs and offers a session-only checkbox, initially unchecked unless already selected. Plaintext RPC URL persistence also exists in the base source; this PR adds the warning/session-only option.",
+      "real_secret_flow_in_annotation": false
+    },
+    "classification": "CodeQL findings gate with a source-reviewed synthetic-fixture false positive",
+    "conclusion": "The reported flow contains a hardcoded public test fixture, not a real user, environment or provider credential. Successful analysis execution does not override the failed findings check. The separate production RPC URL retention policy remains real and is not proven safe by this fixture triage.",
+    "next_action": "Retain the test and failed CodeQL check. Provide this source-pinned evidence for owner-controlled false-positive disposition through the normal security review process. No rename solely to blind the scanner, exclusion, suppression or automated dismissal was performed.",
+    "limits": [
+      "This is source-based triage of the single available annotation, not a fresh CodeQL execution.",
+      "The successful language jobs concern analysis execution, not a clean findings result.",
+      "The check's early timestamp does not establish which language produced the annotation; the annotation identifies the TypeScript test.",
+      "No source, workflow, analysis configuration or alert state was modified.",
+      "No integration is qualified while required checks are failed or pending."
+    ]
+  },
+  "evidence_sources": {
+    "quota_run_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44293784707",
+    "quota_jobs_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44293784707/jobs?per_page=100",
+    "quota_log_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/134765434776/logs",
+    "codeql_check_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/check-runs/134777382565",
+    "codeql_annotations_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/check-runs/134777382565/annotations",
+    "codeql_jobs_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44279435442/jobs?per_page=100",
+    "retrieval": "Run/job metadata and logs were independently retrieved through the GitHub connector. The coordinator retrieved the public check/annotation JSON through standard unauthenticated GitHub REST GET; this reviewer read those exact responses and inspected the pinned git source."
+  }
+}

@@ -1,19 +1,19 @@
 # Dependabot PR review — 2026-11-18
 
-Read-only review of four PRs missing from the earlier connector inventory. Source comparison is pinned to main `dfc75ef2087fa6463ae59e0818abec01796c578d`. These PRs all existed before the initial execution brief, so the initial inventory was 32 PRs, not 28.
+Initial read-only review of four PRs missing from the earlier connector inventory, followed by the completed #236 repair described below. The original source comparison is pinned to main `dfc75ef2087fa6463ae59e0818abec01796c578d`. These PRs all existed before the initial execution brief, so the initial inventory was 32 PRs, not 28.
 
 ## Disposition
 
-| PR | Exact head | Changed files | Latest retrieved check results | Recommendation |
+| PR | Exact original head | Changed files | Original reviewed check snapshot | Recommendation / subsequent action |
 |---|---|---:|---|---|
-| #210 | `4d19655a2e5d93ad9378803cd4163245168aca24` | 68 | 23 failure, 11 success, 3 skipped, 1 neutral | Preserve; fix dependency integration and requalify. Do not merge. |
+| #210 | `4d19655a2e5d93ad9378803cd4163245168aca24` | 68 | 23 failure, 11 success, 3 skipped, 1 neutral | Preserve; the dependency integration repair is now locally validated in draft #236, targeting #210. Require successful hosted and combined-head checks before integration. |
 | #207 | `199ab7ef1e80e6368fdc17c09b94c87a62871861` | 5 | 1 failure, 27 success, 2 skipped, 1 neutral | Source update acceptable; preserve until the failed Mythril gate is resolved. Do not merge red. |
 | #87 | `bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa` | 69 | 24 failure, 10 success, 3 skipped, 1 neutral | Preserve; requires a coordinated major-version migration. Do not merge. |
 | #49 | `6bffb63d1638253e677511672ffd32c24ac8f2f6` | 1 | 21 success, 1 skipped, 1 neutral | Close as superseded after coordinator verifies the lock entry. |
 
-All retrieved checks are completed and tied to the exact heads above. The coordinator must refresh state before any action. CodeQL is neutral for all four because three main-branch configurations are absent from the PR analysis; neutral does not establish a clean code-scanning comparison.
+At the original retrieval, all checks in this table were completed and tied to these exact heads. This is historical evidence, not the final live check inventory; the coordinator must refresh state before any action. CodeQL was neutral for all four because three main-branch configurations were absent from the PR analysis; neutral does not establish a clean code-scanning comparison.
 
-## #210: mixed viem versions fail the shared library build
+## Original #210: mixed viem versions fail the shared library build
 
 This changes 67 workspace manifests and the root lockfile, with no runtime source, workflow, or gate changes. Nine package updates are proposed: viem 2.57.13→2.57.19; Vitest and coverage-v8 5.0.5→5.1.0; Prettier 3.9.10→3.10.1; Zama SDK 3.7.1→3.7.2; Playwright 1.64.1→1.65.1; user-event 14.6.8→14.6.10; plugin-react 6.1.2→6.3.0; Vite 8.3.5→8.3.8. These target versions are not already adopted on reviewed main. The two Vitest components are bumped together.
 
@@ -21,7 +21,67 @@ The root `@0xbow/privacy-pools-core-sdk` viem override remains 2.57.13. The lock
 
 Confirmed hosted evidence: [ts-typecheck job 134649934566](https://github.com/djshellshoxxx/GhostPay/actions/runs/44257870877/job/134649934566) installs successfully, then fails `npm run build:libs` in `packages/confidential-amounts/src/backends/zama-sdk.ts` at the `publicClient` and `walletClient` properties, lines 100–101, with TS2322. The diagnostic identifies the two viem module paths. Therefore the failing test jobs cannot be interpreted as tests of the upgraded application that ran to completion.
 
-Required follow-up: align the viem dependency/override graph and SDK type boundary deliberately, regenerate the lock normally, validate the production dependency tree, then build/typecheck and rerun the affected SDK, unit, and browser suites. Do not hide the mismatch with type casts or relax gates. No repair was attempted in this review.
+The initial review required deliberate dependency/override alignment, normal lock regeneration and fresh build/type/test qualification without casts or weakened gates. That bounded dependency repair was subsequently completed and independently reviewed in #236. The original failed checks remain valid historical evidence; they do not describe an unrepaired local viem boundary. Hosted and browser qualification remain separate requirements.
+
+## #236: completed viem alignment and coverage-provider repair
+
+[Draft PR #236](https://github.com/djshellshoxxx/GhostPay/pull/236) targets #210. It preserves the full #210 dependency candidate and adds two separately attributable repairs. The root manifest, root lockfile, task claim and dedicated handoff are the only four changed files relative to #210. Application code, workspace package manifests, contracts, workflows, tests and coverage settings are unchanged.
+
+### Source pins and repaired behavior
+
+| Evidence | Exact pin |
+|---|---|
+| Original #210 base | `4d19655a2e5d93ad9378803cd4163245168aca24` |
+| Existing viem override alignment | `0597852aeede368b0b8819be0c4cd68c9b1a6081` |
+| Separate coverage placement repair; final tested dependency source | `8b98e68effa2da42dd612c7db456b63dbdf990a2` |
+| Final local head including documentation | `16e03955b26450ac1c7cfed2e030cde99eb727e6` |
+| Published #236 head | `defdaa308a2d05ab407af7e42f8dc457cf52d103` |
+| Published/local full tree, independently matched by the coordinator | `dcdc3e7f3df8dcf4f0a5ee57d79a939264e78d02` |
+| Tested root manifest / lock blobs | `12156705352eb7ddfaaab7b3190e60feefbb9f92` / `875e90c613d4bdc1ca53c564944b1a734b3ffd31` |
+
+The first commit changes the existing 0xbow-specific viem override from 2.57.13 to 2.57.19. A clean original-head installation reproduced the two Zama TS2322 errors locally. After the repair, confidential-amounts, Zama and the 0xbow SDK all resolve the same root viem 2.57.19 file, and the complete library build passes. Zama 3.7.2 declares viem `>=2`; the 0xbow SDK itself declares 2.22.14, which the project already overrode to 2.57.13. This retains the existing override policy and aligns its patch version with the workspace clients; it does not claim that upstream 0xbow declares 2.57.19.
+
+The first repaired candidate then exposed a separate coverage startup failure: root Vitest 5.1.0 could not import `@vitest/coverage-v8`, whose 67 copies were all workspace-local in the original #210 lock. Both original affected-package test commands exited 1 before executing tests. The second commit adds an exact root development dependency on the already-used coverage-v8 5.1.0, placing it beside Vitest. The original coverage-enabled commands then execute and pass. The inherited placement diagnosis comes from exact lock inspection; the executed coverage RED is on `0597852a`. Two later original-head diagnostic reinstalls were killed with exit 137 and supplied no baseline coverage-test result; no termination cause is certified.
+
+### Normal lock regeneration and bounded deduplication
+
+Both repairs were generated normally with pinned npm 11.21.2: a targeted `npm update viem --package-lock-only`, followed by `npm install --save-dev --save-exact --package-lock-only @vitest/coverage-v8@5.1.0`, with scripts/audit/funding disabled for regeneration and bounded resource flags. The [source-pinned handoff](https://github.com/djshellshoxxx/GhostPay/blob/defdaa308a2d05ab407af7e42f8dc457cf52d103/docs/handoffs/GHOSTPAY_VIEM_ALIGNMENT_20261118.md) records the complete commands. Earlier generated attempts that left stale resolutions or changed unrelated overrides were discarded. No force/legacy-peer install, broad audit fix, dependency-record transplant or suppression is retained.
+
+| Delta | Added records | Removed records | Retained records changed |
+|---|---:|---:|---|
+| Viem repair vs original #210 | 0 | 132 | Root viem 2.57.13→2.57.19; root ox 0.14.59→0.14.65; web lock metadata `vite: ^8.3.8`→`8.3.8`, matching its already-exact workspace manifest. |
+| Coverage repair vs viem commit | 3 | 201 | Root lock metadata gains the exact development dependency. |
+
+The viem removal set contains 24 copies each of viem, ox, `@noble/curves` and `@noble/ciphers`, plus 36 `@noble/hashes` copies. Independent review found 127 retained equivalents with identical metadata; five pool-circuits entries differ only by the former `dev: true` placement flag. The coverage removal set contains 67 copies each of coverage-v8, istanbul-lib-coverage and istanbul-lib-report; every removed record has a retained equivalent with identical metadata. The three root additions already existed identically in workspace locations.
+
+Combined: **333 duplicate records removed, three equivalent root records added, four retained records changed**. No new unique package/version/tarball/integrity tuple is introduced; only old viem 2.57.13 and ox 0.14.59 tuples disappear. All **30 OS/CPU/libc-constrained records** remain unchanged, as do unrelated versions, integrity values and security overrides. The coordinator independently recomputed the combined delta; the privacy reviewer independently checked both constituent deltas and installed module resolution.
+
+### Previously executed validation and actual limits
+
+Validation used Node 24.22.1 and npm 11.9.0 for clean installation and execution. The later documentation commit leaves both tested manifest/lock blobs unchanged.
+
+| Source | Command / gate | Actual result |
+|---|---|---|
+| Original #210 | Bounded `npm ci --ignore-scripts --no-audit --no-fund --maxsockets=2 --prefer-offline` | Exit 0; 1,051 packages installed. Earlier killed/interrupted attempts are not success evidence. |
+| Original #210 | `npm run build --workspace @ghostpay/confidential-amounts` | Exit 2; both Zama/viem TS2322 errors reproduced. |
+| `0597852a` | `NODE_OPTIONS=--max-old-space-size=1536 npm run build:libs` | Exit 0; 77 workspace build invocations. The subsequent coverage-only commit changes no library source or runtime dependency record. |
+| Final `8b98e68e` | Clean bounded `npm ci` with the same flags | Exit 0; 721 packages installed. |
+| Final `8b98e68e` | `npm test --workspace @ghostpay/confidential-amounts -- --maxWorkers=1` | Exit 0; 88 passed, no skips. Coverage: 99.38% statements, 95.18% branches, 100% functions, 99.76% lines. |
+| Final `8b98e68e` | `npm test --workspace @ghostpay/external-pools-privacypools -- --maxWorkers=1` | Exit 0; 73 passed, four existing artifact-dependent skips. Coverage: 98.11% statements, 91.46% branches, 98.85% functions, 99.77% lines. |
+| Final `8b98e68e` | `npm run test:dependency-tooling` | Exit 0; 5/5 existing Mocha/solc integration checks passed. |
+| Final `8b98e68e` | `npm run typecheck --workspace @ghostpay/confidential-amounts --workspace @ghostpay/external-pools-privacypools` | Exit 0 for both packages. |
+| Final `8b98e68e` | Corresponding two-package `npm run lint` | Exit 0. |
+| Final `8b98e68e` | `NODE_OPTIONS=--max-old-space-size=1536 npm run build --workspace @ghostpay/web` | Exit 0; whole-web TypeScript, Vite production build and unchanged postbuild bundle scan passed; 19 files validated. |
+| Original #210 and final `8b98e68e` | `npm audit --omit=dev --audit-level=high --json` | Zero production findings; successful audits. |
+| Original #210 and final `8b98e68e` | `npm audit --audit-level=high --json` | Exit 1; unchanged 30 affected dependency entries: 14 high and 16 low. |
+
+The privacy reviewer independently reran the final Zama SDK/glue selection: **17/17 passed**, overlapping the author's 161 passing SDK/package tests. Coverage was disabled only for this additional narrow reviewer selection; the author's original full package commands retain their coverage thresholds and pass. The reviewer independently repeated production and full audits with the same zero/30 results, then checked the final documentation and unchanged source blobs. No blocking source/lock finding was identified.
+
+The four skipped Privacy Pools cases require external circuit/contract artifacts and Anvil for the full integration. They were not forced to pass. The suites exercise real offline SDK derivations and load Zama's real node/web/cleartext entry points, but no live relayer, public-chain, real-funds or browser execution is claimed. The web build retains nonfatal diagnostics for build-time `help.css` resolution, PIR `node:http` externalization, a large chunk and an ineffective dynamic import; the successful build is not a browser qualification result.
+
+**Material security caveat:** #236 does not remediate [GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf). The full audit remains red with 30 entries; its 14 high entries are propagated records, not 14 distinct advisories. Production-only zero findings must not be described as an all-dependency security pass. See [PICOMATCH_AUDIT.md](PICOMATCH_AUDIT.md) for the unreleased upstream-fix blocker.
+
+**Integration constraint:** #236 repairs #210's existing workspace viem 2.57.19 and Vitest/coverage 5.1.0 pins. Do not cherry-pick only these root changes onto unchanged main. Original #210's red checks remain historical evidence; local repair success does not replace required hosted checks on the repaired and combined head. This review asserts no new hosted-CI success, merge, deployment or complete beta qualification.
 
 ## #87: major toolchain migration is incomplete
 
@@ -51,7 +111,7 @@ This establishes semantic supersession of the full PR diff, not byte identity of
 
 The initial main and reviewed current main have the identical lockfile blob `8ce2a5bb315cd84f45d3351131de0914337224ae`. Static checks of both npm PRs found only dependency-section manifest edits, no same-version integrity changes, and no changed tarball URLs outside HTTPS registry.npmjs.org. These checks establish the inspected diff scope; they are not a complete upstream package audit.
 
-The coordinator's cached `npm-audit-main.json` was produced by `npm audit --omit=dev --audit-level=high --json` and reports zero advisories in the production scope. It does not certify the dev dependency graph. The retrieved npm-ci logs include dev dependencies and report 30 advisories for #210 (16 low, 14 high) and 18 high for #87. These are historical install summaries, not fresh full-audit results or proof that all listed issues are newly introduced by either PR. The CI production audit is located after the shared build, which these jobs fail to complete. No npm audit fix, dependency install, source edit, push, merge, or deployment was performed here.
+The coordinator's cached `npm-audit-main.json` was produced by `npm audit --omit=dev --audit-level=high --json` and reports zero advisories in the production scope. It does not certify the dev dependency graph. The originally retrieved npm-ci logs include dev dependencies and report 30 advisories for #210 (16 low, 14 high) and 18 high for #87. These are historical install summaries, not fresh full-audit results or proof that all listed issues are newly introduced by either PR. The CI production audit is located after the shared build, which those original jobs failed to complete. The initial read-only review performed no installations or source changes; the subsequent #236 repair, clean installs and fresh audits are recorded above. No broad npm audit fix, gate weakening, merge or deployment is claimed.
 
 ## Inventory timestamps
 

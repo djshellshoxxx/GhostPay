@@ -1,8 +1,8 @@
 {
-  "captured_at": "2026-11-18T12:31:48.098790+00:00",
-  "note": "Actual remote branch heads only; symbolic refs are excluded. Captured before the report branch update; report self-head reflects its prior published version.",
+  "captured_at": "2026-11-18T13:36:18.601575+00:00",
+  "note": "Actual remote branch heads only; symbolic refs are excluded. Captured after the twelve repair/completion publications and before this final report update; the report self-head reflects its prior published version. The census is a retention/evidence snapshot, not a deletion plan.",
   "main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
-  "remote_branches": 239,
+  "remote_branches": 243,
   "branches": [
     {
       "branch": "ai/agent-harness-20261113",
@@ -69,7 +69,14 @@
     },
     {
       "branch": "chatgpt/ghostpay-beta-consolidation-20261118",
-      "sha": "75419384f51ce8c9a02d14ca50fd90a4928a48e0",
+      "sha": "392dca9746155c379c2e289078805ae87932c99d",
+      "main_only_commits": 0,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-beta-log-artifact-20261118",
+      "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474",
       "main_only_commits": 0,
       "branch_only_commits": 1,
       "head_in_main": false
@@ -110,6 +117,13 @@
       "head_in_main": true
     },
     {
+      "branch": "chatgpt/ghostpay-invoice-validation-20261118",
+      "sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "main_only_commits": 0,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
       "branch": "chatgpt/ghostpay-merchant-csv-port-20261112",
       "sha": "bbc7dda4ce275613296609a5001bac36c888229e",
       "main_only_commits": 737,
@@ -135,6 +149,13 @@
       "sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
       "main_only_commits": 4,
       "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+      "sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "main_only_commits": 0,
+      "branch_only_commits": 1,
       "head_in_main": false
     },
     {
@@ -255,6 +276,13 @@
       "main_only_commits": 736,
       "branch_only_commits": 0,
       "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-viem-alignment-20261118",
+      "sha": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "main_only_commits": 4,
+      "branch_only_commits": 2,
+      "head_in_main": false
     },
     {
       "branch": "chatgpt/pages-browser-fixes-combined-20261114",
@@ -1686,5 +1714,5 @@
     }
   ],
   "heads_in_main": 164,
-  "heads_not_in_main": 75
+  "heads_not_in_main": 79
 }

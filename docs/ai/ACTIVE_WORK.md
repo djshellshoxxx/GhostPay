@@ -8,6 +8,8 @@ separate implementation, integration, beta qualification and release authorizati
 and unresolved security findings without weakening gates. Existing historical ledgers remain unchanged.
 Source repairs use separate worker branches and their own claims. No deployment, release, branch deletion or history rewrite.
 
+Execution checkpoint: #206 merged at canonical main `dfc75ef2087fa6463ae59e0818abec01796c578d`, automatically incorporating #204. Proven superseded #127/#42/#49 closed with branches retained. Twelve reviewed repair/completion PRs (#225–#231 and #233–#237) are published as unmerged drafts; #232 holds the exact-source A–G report and evidence. Required hosted/browser gates remain incomplete, with specific failures recorded rather than bypassed. The current source, acceptance gaps, 44-PR inventory and 243-branch census are in `docs/handoffs/beta-execution-20261118/EXECUTION_REPORT.md`. This is not beta qualification or an assertion of continuing work after the session.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker

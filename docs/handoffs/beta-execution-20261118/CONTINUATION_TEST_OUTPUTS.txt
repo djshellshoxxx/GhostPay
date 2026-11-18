@@ -1,0 +1,768 @@
+Formatting note: trailing console padding and blank EOF lines are trimmed; command/results content is preserved.
+
+# Retained continuation outputs
+
+Exact commands and phase distinctions are in the source-pinned handoffs linked from SOURCE_MAP.md. Repeated tests overlap; do not sum as unique coverage.
+
+
+## viem-baseline-build.log
+Original #210 4d19655a2e5d93ad9378803cd4163245168aca24: build exit2; two TS2322 errors
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/confidential-amounts@0.1.0 build
+> tsc -p tsconfig.build.json
+
+src/backends/zama-sdk.ts(100,9): error TS2322: Type '{ account: undefined; batch?: { multicall?: boolean | { batchSize?: number | undefined; deployless?: boolean | undefined; wait?: number | undefined; } | undefined; } | undefined; cacheTime: number; ... 77 more ...; scope: (options?: { ...; } | undefined) => Client<...>; }' is not assignable to type '{ account: undefined; batch?: { multicall?: boolean | { batchSize?: number | undefined; deployless?: boolean | undefined; wait?: number | undefined; } | undefined; } | undefined; cacheTime: number; ... 76 more ...; scope: (options?: { ...; } | undefined) => Client<...>; }'.
+  Types of property 'chain' are incompatible.
+    Type '{ blockExplorers?: { [key: string]: ChainBlockExplorer; default: ChainBlockExplorer; } | undefined; blockTime?: number | undefined; contracts?: { ...; } | undefined; ... 16 more ...; verifyHash?: ChainVerifyHashFn | undefined; }' is not assignable to type 'Chain'.
+      Type '{ blockExplorers?: { [key: string]: ChainBlockExplorer; default: ChainBlockExplorer; } | undefined; blockTime?: number | undefined; contracts?: { ...; } | undefined; ... 16 more ...; verifyHash?: ChainVerifyHashFn | undefined; }' is not assignable to type 'ChainConfig<ChainFormatters | undefined, Record<string, unknown> | undefined>'.
+        Types of property 'fees' are incompatible.
+          Type 'ChainFees<undefined> | undefined' is not assignable to type 'ChainFees<ChainFormatters | undefined> | undefined'.
+            Type 'ChainFees<undefined>' is not assignable to type 'ChainFees<ChainFormatters | undefined>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+              Types of property 'baseFeeMultiplier' are incompatible.
+                Type 'number | ((args: ChainFeesFnParameters<undefined>) => number | Promise<number>)' is not assignable to type 'number | ((args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>)'.
+                  Type '(args: ChainFeesFnParameters<undefined>) => number | Promise<number>' is not assignable to type 'number | ((args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>)'.
+                    Type '(args: ChainFeesFnParameters<undefined>) => number | Promise<number>' is not assignable to type '(args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>'.
+                      Types of parameters 'args' and 'args' are incompatible.
+                        Type 'ChainFeesFnParameters<ChainFormatters | undefined>' is not assignable to type 'ChainFeesFnParameters<undefined>'.
+                          Types of property 'client' are incompatible.
+                            Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types...' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/...'.
+                              Type 'Client<Transport, Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>>' is not assignable to type 'Client_Base<Transport, Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>, Account | undefined, undefined, Tokens | undefined>'.
+                                Types of property 'account' are incompatible.
+                                  Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/accounts/types").Account | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/accounts/types").Account | undefined'.
+                                    Type '{ client: Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>; ... 22 more ...; source?: undefined; }' is not assignable to type 'Account | undefined'.
+                                      Type '{ client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/v...' is not assignable to type '{ client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/...'.
+                                        Types of property 'client' are incompatible.
+                                          Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types...' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/...'.
+                                            Type 'Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>' is not assignable to type 'Client_Base<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined, undefined, Tokens | undefined>'.
+                                              Types of property 'account' are incompatible.
+                                                Type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { ...; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | import("/workspace/scratch/fb6d03ffb806/viem-alignmen...' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; } | import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts...'.
+                                                  Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; } | JsonRpcAccount | undefined'.
+                                                    Type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { ...; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; }'.
+                                                      Types of property 'nonceManager' are incompatible.
+                                                        Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined'.
+                                                          Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager'.
+                                                            Types of property 'consume' are incompatible.
+                                                              Type '(parameters: FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>' is not assignable to type '(parameters: FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>'.
+                                                                Types of parameters 'parameters' and 'parameters' are incompatible.
+                                                                  Type 'FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }' is not assignable to type 'FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client; }'.
+                                                                    Type 'FunctionParameters & { client: Client; }' is not assignable to type '{ client: Client; }'.
+                                                                      Types of property 'client' are incompatible.
+                                                                        Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client'.
+                                                                          Type 'Client' is not assignable to type 'Client_Base<Transport, Chain | undefined, Account | undefined, undefined, Tokens | undefined>'.
+                                                                            Types of property 'account' are incompatible.
+                                                                              Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/accounts/types").Account | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/accounts/types").Account | undefined'.
+                                                                                Type '{ client: Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>; ... 22 more ...; source?: undefined; }' is not assignable to type 'Account | undefined'.
+                                                                                  Type '{ client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/...' is not assignable to type '{ client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/v...'.
+                                                                                    Types of property 'client' are incompatible.
+                                                                                      Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/...' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types...'.
+                                                                                        Type 'Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>' is not assignable to type 'Client_Base<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined, undefined, Tokens | undefined>'.
+                                                                                          Types of property 'account' are incompatible.
+                                                                                            Type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; } | import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts...' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { ...; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | import("/workspace/scratch/fb6d03ffb806/viem-alignmen...'.
+                                                                                              Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; } | JsonRpcAccount | undefined'.
+                                                                                                Type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { ...; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; }'.
+                                                                                                  Types of property 'nonceManager' are incompatible.
+                                                                                                    Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined'.
+                                                                                                      Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager'.
+                                                                                                        Types of property 'consume' are incompatible.
+                                                                                                          Type '(parameters: FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>' is not assignable to type '(parameters: FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>'.
+                                                                                                            Types of parameters 'parameters' and 'parameters' are incompatible.
+                                                                                                              Type 'FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client; }' is not assignable to type 'FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }'.
+                                                                                                                Type 'FunctionParameters & { client: Client; }' is not assignable to type '{ client: Client; }'.
+                                                                                                                  Types of property 'client' are incompatible.
+                                                                                                                    Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client'.
+                                                                                                                      Type 'Client' is not assignable to type 'Client_Base<Transport, Chain | undefined, Account | undefined, undefined, Tokens | undefined>'.
+                                                                                                                        Types of property 'chain' are incompatible.
+                                                                                                                          Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").Chain | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").Chain | undefined'.
+                                                                                                                            Type 'Chain' is not assignable to type 'Chain | undefined'.
+                                                                                                                              Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").Chain' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").Chain'.
+                                                                                                                                Type 'Chain' is not assignable to type 'ChainConfig<ChainFormatters | undefined, Record<string, unknown> | undefined>'.
+                                                                                                                                  Types of property 'fees' are incompatible.
+                                                                                                                                    Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFees<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined> | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFees<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined> | undefined'.
+                                                                                                                                      Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFees<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFees<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+                                                                                                                                        Types of property 'baseFeeMultiplier' are incompatible.
+                                                                                                                                          Type 'number | ((args: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>)' is not assignable to type 'number | ((args: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) ...'.
+                                                                                                                                            Type '(args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>' is not assignable to type 'number | ((args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>)'.
+                                                                                                                                              Type '(args: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>' is not assignable to type '(args: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number ...'.
+                                                                                                                                                Types of parameters 'args' and 'args' are incompatible.
+                                                                                                                                                  Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined>'.
+                                                                                                                                                    Types of property 'client' are incompatible.
+                                                                                                                                                      Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/...' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types...'.
+                                                                                                                                                        Type 'Client<Transport, Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>>' is not assignable to type 'Client_Base<Transport, Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>, Account | undefined, undefined, Tokens | undefined>'.
+                                                                                                                                                          Types of property 'chain' are incompatible.
+                                                                                                                                                            Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").Chain<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined, Record<string, unknown> | undefined>' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").Chain<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined, Record<string, unknown> | undefined>'.
+                                                                                                                                                              Type 'Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>' is not assignable to type 'ChainConfig<ChainFormatters | undefined, Record<string, unknown> | undefined>'.
+                                                                                                                                                                Types of property 'fees' are incompatible.
+                                                                                                                                                                  Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFees<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined> | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFees<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined> | undefined'.
+                                                                                                                                                                    Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFees<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFees<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+                                                                                                                                                                      Types of property 'baseFeeMultiplier' are incompatible.
+                                                                                                                                                                        Type 'number | ((args: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) ...' is not assignable to type 'number | ((args: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>)'.
+                                                                                                                                                                          Type '(args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>' is not assignable to type 'number | ((args: ChainFeesFnParameters<ChainFormatters | undefined>) => number | Promise<number>)'.
+                                                                                                                                                                            Type '(args: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number ...' is not assignable to type '(args: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined>) => number | Promise<...>'.
+                                                                                                                                                                              Types of parameters 'args' and 'args' are incompatible.
+                                                                                                                                                                                Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").ChainFormatters | undefined>' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFeesFnParameters<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain").ChainFormatters | undefined>'.
+                                                                                                                                                                                  Types of property 'request' are incompatible.
+                                                                                                                                                                                    Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/actions/wallet/prepareTransactionRequest").PrepareTransactionRequestParameters<Omit<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/chain").Chain<import("/workspace/scratch/fb6d03ffb806/viem-alignmen...' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/actions/wallet/prepareTransactionRequest").PrepareTransactionRequestParameters<Omit<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/chain")...'.
+                                                                                                                                                                                      Type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }' is not assignable to type 'PrepareTransactionRequestParameters<Omit<Chain<ChainFormatters | undefined, Record<string, unknown> | undefined>, "formatters"> & { formatters: ChainFormatters | undefined; }, Account | undefined, undefined> | undefined'.
+                                                                                                                                                                                        Type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }' is not assignable to type '(Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; ... 10 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }) | (Omit<...> & ... 4 more ... & { ...; }...'.
+                                                                                                                                                                                          Type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }' is not assignable to type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "eip7702" | undefined; ... 10 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }'.
+                                                                                                                                                                                            Type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "legacy" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from"> & ... 4 more ... & { ...; }' is not assignable to type 'Omit<{ data?: `0x${string}` | undefined; from?: `0x${string}` | undefined; gas?: bigint | undefined; nonce?: number | undefined; to?: `0x${string}` | null | undefined; type?: "eip7702" | undefined; value?: bigint | undefined; ... 9 more ...; sidecars?: undefined; }, "from">'.
+                                                                                                                                                                                              Types of property 'type' are incompatible.
+                                                                                                                                                                                                Type '"legacy" | undefined' is not assignable to type '"eip7702" | undefined'.
+                                                                                                                                                                                                  Type '"legacy"' is not assignable to type '"eip7702"'.
+src/backends/zama-sdk.ts(101,9): error TS2322: Type '{ account: { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign: (parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>; signAuthorization: (parameters: AuthorizationRequest) => Promise<...>; ... 5 more ...; type: "local"; }; ... 44 more ...; scope: (options?: { ...; } | undefined) => Cl...' is not assignable to type '{ account: Account | undefined; batch?: { multicall?: boolean | { batchSize?: number | undefined; deployless?: boolean | undefined; wait?: number | undefined; } | undefined; } | undefined; ... 43 more ...; scope: (options?: { ...; } | undefined) => Client<...>; }'.
+  Types of property 'account' are incompatible.
+    Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign: (parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>; signAuthorization: (parameters: AuthorizationRequest) => Promise<...>; ... 5 more ...; type: "local"; }' is not assignable to type 'Account | undefined'.
+      Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign: (parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>; signAuthorization: (parameters: AuthorizationRequest) => Promise<...>; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 19 more ...; isDeployed?: undefined; }'.
+        Types of property 'nonceManager' are incompatible.
+          Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined'.
+            Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager'.
+              Types of property 'consume' are incompatible.
+                Type '(parameters: FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>' is not assignable to type '(parameters: FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>'.
+                  Types of parameters 'parameters' and 'parameters' are incompatible.
+                    Type 'FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client; }' is not assignable to type 'FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }'.
+                      Type 'FunctionParameters & { client: Client; }' is not assignable to type '{ client: Client; }'.
+                        Types of property 'client' are incompatible.
+                          Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client'.
+                            Type 'Client' is not assignable to type 'Client_Base<Transport, Chain | undefined, Account | undefined, undefined, Tokens | undefined>'.
+                              Types of property 'account' are incompatible.
+                                Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/accounts/types").Account | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/accounts/types").Account | undefined'.
+                                  Type '{ client: Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>; ... 22 more ...; source?: undefined; }' is not assignable to type 'Account | undefined'.
+                                    Type '{ client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/v...' is not assignable to type '{ client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/...'.
+                                      Types of property 'client' are incompatible.
+                                        Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types...' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/...'.
+                                          Type 'Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>' is not assignable to type 'Client_Base<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined, undefined, Tokens | undefined>'.
+                                            Types of property 'account' are incompatible.
+                                              Type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { ...; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | import("/workspace/scratch/fb6d03ffb806/viem-alignmen...' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; } | import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts...'.
+                                                Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; } | JsonRpcAccount | undefined'.
+                                                  Type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { ...; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; }'.
+                                                    Types of property 'nonceManager' are incompatible.
+                                                      Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined'.
+                                                        Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager'.
+                                                          Types of property 'consume' are incompatible.
+                                                            Type '(parameters: FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>' is not assignable to type '(parameters: FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }) => Promise<...>'.
+                                                              Types of parameters 'parameters' and 'parameters' are incompatible.
+                                                                Type 'FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client; }' is not assignable to type 'FunctionParameters & { client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client; }'.
+                                                                  Type 'FunctionParameters & { client: Client; }' is not assignable to type '{ client: Client; }'.
+                                                                    Types of property 'client' are incompatible.
+                                                                      Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client'.
+                                                                        Type 'Client' is not assignable to type 'Client_Base<Transport, Chain | undefined, Account | undefined, undefined, Tokens | undefined>'.
+                                                                          Types of property 'account' are incompatible.
+                                                                            Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/accounts/types").Account | undefined' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/accounts/types").Account | undefined'.
+                                                                              Type '{ client: Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>; ... 22 more ...; source?: undefined; }' is not assignable to type 'Account | undefined'.
+                                                                                Type '{ client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/...' is not assignable to type '{ client: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/v...'.
+                                                                                  Types of property 'client' are incompatible.
+                                                                                    Type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/...' is not assignable to type 'import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/createClient").Client<import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/clients/transports/createTransport").Transport, import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types...'.
+                                                                                      Type 'Client<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined>' is not assignable to type 'Client_Base<Transport, Chain | undefined, { address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; ... 6 more ...; type: "local"; } | JsonRpcAccount | undefined, undefined, Tokens | undefined>'.
+                                                                                        Types of property 'account' are incompatible.
+                                                                                          Type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; } | import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts...' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { ...; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; } | import("/workspace/scratch/fb6d03ffb806/viem-alignmen...'.
+                                                                                            Type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: NonceManager | undefined; sign?: ((parameters: { hash: `0x${string}`; }) => Promise<`0x${string}`>) | undefined; signAuthorization?: ((parameters: AuthorizationRequest) => Promise<...>) | undefined; ... 5 more ...; type: "local"; } | JsonRpcAccount | undefined'.
+                                                                                              Type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; ... 7 more ...; type: "local"; }' is not assignable to type '{ address: `0x${string}`; nonceManager?: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/utils/nonceManager").NonceManager | undefined; sign?: ((parameters: { ...; }) => Promise<...>) | undefined; ... 6 more ...; type: "local"; }'.
+                                                                                                Types of property 'signTypedData' are incompatible.
+                                                                                                  Type '<const typedData extends TypedData | Record<string, unknown>, primaryType extends keyof typedData | "EIP712Domain" = keyof typedData>(parameters: import("/workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts/node_modules/viem/_types/types/typedData").TypedDataDefinition<typedData, primaryType>...' is not assignable to type '<const typedData extends TypedData | Record<string, unknown>, primaryType extends keyof typedData | "EIP712Domain" = keyof typedData>(parameters: import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/viem/_types/types/typedData").TypedDataDefinition<typedData, primaryType>) => Promise<...>'.
+                                                                                                    Types of parameters 'parameters' and 'parameters' are incompatible.
+                                                                                                      Type 'TypedDataDefinition<typedData, primaryType, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undef...' is not assignable to type 'TypedDataDefinition<typedData, keyof typedData, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: u...'.
+                                                                                                        Type 'EIP712DomainDefinition<typedData, primaryType, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: un...' is not assignable to type 'TypedDataDefinition<typedData, keyof typedData, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: u...'.
+                                                                                                          Type 'EIP712DomainDefinition<typedData, primaryType, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: un...' is not assignable to type 'TypedDataDefinition<typedData, keyof typedData, typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: u...'.
+                                                                                                            Type 'MessageDefinition<typedData, primaryType, "message", typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]...' is not assignable to type 'MessageDefinition<typedData, keyof typedData, "message", typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${stri...'.
+                                                                                                              Type 'MessageDefinition<typedData, primaryType, "message", typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]...' is not assignable to type '{ message: { [_: string]: any; } extends (typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undefin...'.
+                                                                                                                Types of property 'message' are incompatible.
+                                                                                                                  Type '{ [_: string]: any; } extends (typedData extends { [x: string]: readonly import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/abitype/dist/types/abi").TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string...' is not assignable to type '{ [_: string]: any; } extends (typedData extends { [x: string]: readonly import("/workspace/scratch/fb6d03ffb806/viem-alignment/node_modules/abitype/dist/types/abi").TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string...'. Two different types with this name exist, but they are unrelated.
+                                                                                                                    Type 'Record<string, unknown> | (typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undefined; [x: `functi...' is not assignable to type '{ [_: string]: any; } extends (typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undefined; [x: `fu...'.
+                                                                                                                      Type 'Record<string, unknown>' is not assignable to type '{ [_: string]: any; } extends (typedData extends { [x: string]: readonly TypedDataParameter[]; [x: `address[${string}]`]: undefined; [x: `bool[${string}]`]: undefined; [x: `string[${string}]`]: undefined; [x: `bytes[${string}]`]: undefined; [x: `int[${string}]`]: undefined; [x: `uint[${string}]`]: undefined; [x: `fu...'.
+npm error Lifecycle script `build` failed with error:
+npm error code 2
+npm error path /workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts
+npm error workspace @ghostpay/confidential-amounts@0.1.0
+npm error location /workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts
+npm error command failed
+npm error command sh -c tsc -p tsconfig.build.json
+
+
+## viem-candidate-build-libs.log
+Viem source0597852aeede368b0b8819be0c4cd68c9b1a6081: library build exit0
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> ghostpay@0.1.0 build:libs
+> node scripts/build-workspaces.mjs --libraries
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/address-safety@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/chain-adapters@0.1.0 build
+> npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/amount-blur@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/btc-family@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/btc-payjoin@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/btc-silent-payments@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/chain-evm-extra@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/chain-solana@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/chain-tron@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/i18n@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/merchant-hooks@0.1.0 build
+> npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/merchant-billing@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/merchant-ledger@0.1.0 build
+> npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/merchant-multisig@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/qr-exchange@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/sandbox@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-vault@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/cli@0.1.0 build
+> tsc -p tsconfig.build.json && node stamp-build.mjs
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/confidential-amounts@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/donation@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/secret-box@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/external-pools@0.1.0 build
+> npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/secret-box@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/external-pools-privacypools@0.1.0 build
+> npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/external-pools@0.1.0 build
+> npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/secret-box@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/external-pools-railgun@0.1.0 build
+> npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/external-pools@0.1.0 build
+> npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/secret-box@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/hops@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/hygiene@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/metadata-hardening@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/net-harness@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/net-transport@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ops-monitor@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/relayer-guard@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/payer-sponsor@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/payment-uri@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pir-two-server@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/plugin-api@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/policy-scheme@0.1.0 build
+> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pool-circuits@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pool-prover@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pool-sdk@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pool-relayer@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/privacy-pipeline@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/privacy-profiles@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/scan-source@0.1.0 build
+> npm run build -w @ghostpay/pir-two-server --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pir-two-server@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/sdk@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/solana-stealth@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/tron-adapter@0.1.0 build
+> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/tx-review@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-connect@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-core@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-export@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-fees@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-fiat@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-flow@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-guide@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-i18n@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-intake@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-links@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-notify@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-presets@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-privacy@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-receipts@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-sandbox@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-schedule@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+
+## viem-final-confidential-amounts-tests.log
+Dependency source8b98e68effa2da42dd612c7db456b63dbdf990a2:88 passed
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/confidential-amounts@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.1.0 /workspace/scratch/fb6d03ffb806/viem-alignment/packages/confidential-amounts
+      Coverage enabled with v8
+
+
+ Test Files  7 passed (7)
+      Tests  88 passed (88)
+   Start at  05:05:36
+   Duration  2.59s (import 68%, tests 16%, transform 11%, worker 4%)
+
+    Isolate  7 workers spawned · ~90ms startup each (spawn + environment, per file)
+             at least ~540ms faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+---------------|---------|----------|---------|---------|-------------------
+File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+---------------|---------|----------|---------|---------|-------------------
+All files      |   99.38 |    95.18 |     100 |   99.76 |
+ src           |   99.49 |     96.8 |     100 |     100 |
+  decrypt.ts   |     100 |    91.89 |     100 |     100 | 49-50,124
+  metadata.ts  |   96.66 |     92.3 |     100 |     100 | 53
+ src/backends  |   99.31 |    93.79 |     100 |    99.6 |
+  cleartext.ts |     100 |       50 |     100 |     100 | 42-89
+  ledger.ts    |   98.83 |    94.87 |     100 |   99.29 | 270
+  zama-sdk.ts  |     100 |    94.44 |     100 |     100 | 75
+---------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 99.38% ( 488/491 )
+Branches     : 95.18% ( 257/270 )
+Functions    : 100% ( 95/95 )
+Lines        : 99.76% ( 422/423 )
+================================================================================
+
+
+## viem-final-privacy-pools-tests.log
+Same dependency source:73 passed,4 existing artifact-dependent skips
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/external-pools-privacypools@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.1.0 /workspace/scratch/fb6d03ffb806/viem-alignment/packages/external-pools-privacypools
+      Coverage enabled with v8
+
+
+ Test Files  7 passed | 1 skipped (8)
+      Tests  73 passed | 4 skipped (77)
+   Start at  05:05:36
+   Duration  7.87s (tests 64%, import 30%, transform 5%, worker 2%)
+
+    Isolate  8 workers spawned · ~94ms startup each (spawn + environment, per file)
+             at least ~655ms faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+---------------|---------|----------|---------|---------|-------------------
+File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+---------------|---------|----------|---------|---------|-------------------
+All files      |   98.11 |    91.46 |   98.85 |   99.77 |
+ adapter.ts    |   98.11 |    89.34 |   97.72 |   99.64 | 403
+ sdk-crypto.ts |   96.77 |       75 |     100 |     100 | 31,61
+ state.ts      |   94.87 |    88.23 |     100 |     100 | 34,45
+---------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.11% ( 572/583 )
+Branches     : 91.46% ( 375/410 )
+Functions    : 98.85% ( 86/87 )
+Lines        : 99.77% ( 449/450 )
+================================================================================
+
+
+## viem-final-dependency-tooling-tests.log
+Same dependency source:5 passed
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> ghostpay@0.1.0 test:dependency-tooling
+> node --test scripts/tests/dependency-tooling.test.mjs
+
+✔ Mocha serializes worker options without mutating functions or losing RegExp/Date (36.643532ms)
+✔ Mocha discovers nested globs, honors minimatch ignores, and runs parallel workers (515.86049ms)
+✔ Mocha watch discovery retains Glob pattern objects and dotfile matching (32.855498ms)
+✔ Mocha failure reporter still renders unified and inline diffs (312.976679ms)
+✔ solc tmp API writes and removes SMT files and rejects traversal prefixes (80.180905ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1117.51347
+
+
+## viem-final-web-build.log
+Same dependency source: web TypeScript/build/postbuild exit0;19 bundle files validated
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/web@0.1.0 build
+> tsc -p tsconfig.json --noEmit && vite build
+
+vite v8.3.8 building client environment for production...
+transforming...
+
+./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+[plugin rolldown:vite-resolve] Module "node:http" has been externalized for browser compatibility, imported by "/workspace/scratch/fb6d03ffb806/viem-alignment/packages/pir-two-server/dist/http.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 1066 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/build-info.json                          0.14 kB │ gzip:   0.14 kB
+dist/index.html                               3.36 kB │ gzip:   1.44 kB
+dist/privacy.html                             8.02 kB │ gzip:   3.28 kB
+dist/help.html                               16.85 kB │ gzip:   5.82 kB
+dist/assets/scanner.worker-DKkGvTTt.js       62.13 kB
+dist/assets/scan.worker-Dbcgogg3.js         100.38 kB
+dist/assets/style-sbKVpGL7.css               11.94 kB │ gzip:   3.45 kB
+dist/assets/rolldown-runtime-XKyaHtl9.js      0.72 kB │ gzip:   0.42 kB
+dist/assets/jsQR-DMfxOdIb.js                129.98 kB │ gzip:  47.51 kB
+dist/assets/es-CaSO-ImJ.js                  250.79 kB │ gzip:  69.44 kB
+dist/assets/ja-DVVbxpzN.js                  297.53 kB │ gzip:  73.75 kB
+dist/assets/ar-B1jVBsOV.js                  304.09 kB │ gzip:  74.37 kB
+dist/assets/index-DTZhL7t3.js             1,778.34 kB │ gzip: 540.22 kB
+
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 1200 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0m../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.
+
+✓ built in 756ms
+
+> @ghostpay/web@0.1.0 postbuild
+> node scripts/scan-bundle.mjs
+
+Bundle scan passed: 19 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.
+
+
+## checkpoint-main-independent.log
+Checkpoint source7c37de5154ac18e06725ecde6d194185b2e820f2: independent20+3 passed;87 scanner cases filtered out
+
+Exact product/test source: 7c37de5154ac18e06725ecde6d194185b2e820f2
+Command: ['../../node_modules/.bin/vitest', 'run', 'src/lib/scanCheckpointPrivacy.test.ts', 'src/lib/scanCursorSlot.test.ts', '--coverage.enabled=false', '--maxWorkers=1']
+Exit: 0
+
+ RUN  v5.0.5 /workspace/scratch/fb6d03ffb806/checkpoint-main/apps/web
+
+
+ Test Files  2 passed (2)
+      Tests  20 passed (20)
+   Start at  05:01:17
+   Duration  1.11s (import 75%, transform 13%, tests 11%, worker 1%)
+
+
+Command: ['../../node_modules/.bin/vitest', 'run', 'src/lib/scanClient.test.ts', '-t', 'cannot persist an old scan', '--coverage.enabled=false', '--maxWorkers=1']
+Exit: 0
+
+ RUN  v5.0.5 /workspace/scratch/fb6d03ffb806/checkpoint-main/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed | 87 skipped (90)
+   Start at  05:01:18
+   Duration  672ms (import 49%, tests 37%, transform 14%)
+
+
+Source hashes and HEAD unchanged after independent execution.
+
+
+## invoice-guard-independent.log
+Invoice source079222115f494d966f1f25be31ffca4d66346461: independent13 passed
+
+
+ RUN  v5.0.5 /workspace/scratch/fb6d03ffb806/invoice-validation/packages/invoice-schema
+
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  04:52:29
+   Duration  1.59s (tests 94%, import 4%, transform 2%)

@@ -57,3 +57,13 @@ manifests: none (payments disabled on every chain)
 == verify site
 Pages site verified: 16 files; DEMO: payments disabled on every chain (no deployment manifest)
 build-pages: OK -> /workspace/scratch/fb6d03ffb806/idle-main-pages-repro/site (evidence in /workspace/scratch/fb6d03ffb806/idle-main-pages-repro/evidence)
+
+## Later own-node full-web TypeScript verification
+Source: 2196fe17630703c5d0afcc2f26e3008698a92c24 (only review-document delta from published local 5c8baa19794a7ba65ca901f1f843120f6f65cad4).
+Cwd: /workspace/scratch/fb6d03ffb806/privacy-network/apps/web
+Command: NODE_OPTIONS=--max-old-space-size=1536 npm run typecheck
+Exit code: 0
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
