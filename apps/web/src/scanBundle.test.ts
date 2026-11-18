@@ -128,6 +128,19 @@ describe('scan-bundle', () => {
     expect(bad(GOOD_HTML.replace('<script type="module" src="./assets/a.js"></script>', '<script src="./a.js">alert(1)</script>'))).toMatch(/both src and inline/);
   });
 
+  it('still finds inline scripts whose end tag carries whitespace or attributes, or that are never closed', () => {
+    const bad = (html: string): string => scan(build({}, { html })).join('\n');
+    const module = '<script type="module" src="./assets/a.js"></script>';
+    // HTML parsers end a script element at `</script` followed by whitespace, `/` or `>`.
+    for (const end of ['</script >', '</SCRIPT\t>', '</script foo="bar">', '</script\n>']) {
+      expect(bad(GOOD_HTML.replace(module, `<script>alert(1)${end}`))).toMatch(/inline <script>/);
+    }
+    expect(bad(GOOD_HTML.replace(module, `<script src="./a.js">alert(1)</script >`))).toMatch(/both src and inline/);
+    // An unterminated element is not a parsable external script either.
+    expect(bad(GOOD_HTML.replace(module, '<script>alert(1)'))).toMatch(/<script>/);
+    expect(scan(build())).toEqual([]);
+  });
+
   it('requires a hardened _headers file', () => {
     expect(scan(build({}, { headers: null })).join()).toMatch(/_headers missing/);
     expect(scan(build({}, { headers: '/*\n  X: y\n' })).join()).toMatch(/_headers: missing default-src/);

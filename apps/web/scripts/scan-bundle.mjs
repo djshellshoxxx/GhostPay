@@ -154,10 +154,22 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
   if (!existsSync(indexPath)) problems.push('index.html missing');
   else {
     const html = readFileSync(indexPath, 'utf8');
-    for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
-      if (!/\bsrc\s*=/.test(m[1])) problems.push('index.html: inline <script>');
-      else if (m[2].trim() !== '') problems.push('index.html: script with both src and inline body');
-      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(m[1])) problems.push('index.html: remote script');
+    // Visit every script start tag. An HTML parser ends a script element at `</script` followed by whitespace, `/`
+    // or `>` (any case), so the end tag may carry whitespace or junk attributes; an element with no end tag runs to
+    // the end of the document. Neither form may escape the inline-code checks.
+    const scriptStart = /<script\b([^>]*)>/gi;
+    const scriptEnd = /<\/script(?=[\s/>])[^>]*>/gi;
+    for (let start = scriptStart.exec(html); start !== null; start = scriptStart.exec(html)) {
+      const attrs = start[1];
+      scriptEnd.lastIndex = scriptStart.lastIndex;
+      const end = scriptEnd.exec(html);
+      const body = html.slice(scriptStart.lastIndex, end === null ? html.length : end.index);
+      if (end === null) problems.push('index.html: unterminated <script>');
+      if (!/\bsrc\s*=/.test(attrs)) problems.push('index.html: inline <script>');
+      else if (body.trim() !== '') problems.push('index.html: script with both src and inline body');
+      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(attrs)) problems.push('index.html: remote script');
+      if (end === null) break;
+      scriptStart.lastIndex = scriptEnd.lastIndex;
     }
     if (/<style\b/i.test(html)) problems.push('index.html: inline <style>');
     if (/\sstyle\s*=/i.test(html)) problems.push('index.html: inline style attribute');
