@@ -248,3 +248,9 @@ Round 4 was cut off by the account's weekly usage limit before it produced a com
 - **Stopped** at the run's five-round limit. Nothing is pushed to #70. The work is preserved as the patch series `docs/handoffs/pr70-wip/0001-0005`.
 - **Owner decision needed**: apply that fix and run one focused review; take #98's simpler replay, whose findings H and M remain; or leave #70 at `d9fe8b4`.
 - **Pre-existing bug to carry wherever #70 lands**: the window-end reorg skip (`cursor = { nextBlock: res.reorg.rolledBackTo }` on the limit, deferred and disagree paths). It is present on the integration base and in #98.
+
+### Outcome on main (2026-11-18)
+
+- **Consolidation:** #98, #84 and #157, among others, were merged into `main` (now `5467c158`, via #203). Every head from this run is in `main` through them. The owner is closing the stacked PRs as superseded: #59, #60 and #61 so far.
+- **Window-end reorg skip:** fixed on `main` independently. `pageFrom = min(rolledBackTo, cursor.nextBlock)` (scanClient.ts:279) is used for every stop path. Those paths still `clear()` the checkpoint, which fails closed, so the round-5 forward-save regression does not apply to `main`.
+- **Still on `main`:** #98's replay design (scanClient.ts:610, `claimed && blockNumber > floor`), with findings (H) and (M) above. The capped re-check list from this run (`docs/handoffs/pr70-wip/0001-0005`, on `d9fe8b4`) addresses both. It would need a fresh port onto current `main` in a new PR, which is the owner's call.
