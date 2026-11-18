@@ -345,23 +345,35 @@ Acceptance: independently review new delegated registry signing, isolated escrow
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
 
 
-## Sweep balance query consent — 2026-11-18
+## Shared invoice signer-policy extraction — 2026-11-18
 
-Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-balance-consent-20261118`.
-Base: refreshed `main` at `dfc75ef2087fa6463ae59e0818abec01796c578d`.
-Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, necessary balance-query messages in
-`apps/web/locales/{en,es,ja,ar}.json` and their `apps/web/src/i18n/securityKeys.ts` classification, this claim,
-and `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`. The integration owner also approved explicit read-button
-clicks in the shared `Sweep.test.tsx` setup and existing `e2e/{sweep,core-journey,pages-devnet,devnet-journey}.spec.ts`
-sweep setup points; existing signing and payment assertions remain unchanged.
-Acceptance: opening Sweep never requests a balance; one explicit click makes one balance-read invocation;
-ordinary rerenders, errors and selection changes do not repeat it; changing the payment, asset, provider or session
-invalidates pending results and requires a new click. Preserve the required-private-path warning and the existing
-sweep controls. Disclose what the Settings RPC learns. Do not import #222's destination ledger or experimental features.
-Scope distinction: the existing RPC transport has its own bounded retries; this task does not claim to change that
-shared transport policy. Exact-head hosted CI and independent integration review remain required.
+Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-invoice-validation-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (main). Source reviewed:
+PR #218 `b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, #209
+`b5e2ea3e5030b56c79063eb1f91c8a634ee5d740`, and #211
+`a92658b1ef6b95ff0145b2e1933d0047d51289d5`.
 
-Milestone: runtime repair `d03d529f5b785dcd129b302d122b191d3d066214` passes 120 focused tests, whole-web typecheck
-at a 1536 MiB heap cap, scoped lint and locale validation. Independent privacy review reports no remaining source
-blocker and independently passes 72 consent/signing tests. Final E2E setup additions are reviewed and linted only;
-browser execution and exact-head hosted CI remain required. See `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`.
+Owned paths: `packages/invoice-schema/src/{envelope.ts,errors.ts,pinnedSigner.test.ts}`;
+`packages/invoice-schema/{README.md,DEVIATIONS.md}`; `packages/ux-core/src/{errors.ts,errors.test.ts}`;
+this claim; `docs/handoffs/agents/INVOICE_VALIDATION_20261118.md`.
+
+Acceptance: reproduce the missing opt-in `requirePinnedSigner` contract on main before implementation;
+restore only the shared parser guard and fixed typed error/catalog entries; verify real signatures,
+plaintext/encrypted/passphrase paths, invalid-signature precedence, default compatibility and
+unchanged format/schema/decryption failures. Run affected package tests/typecheck/lint/build and
+existing browser-consumer regressions with matching compiled packages. Document that no current
+browser caller opts into this policy and that default unpinned-seller review remains unchanged.
+No CLI, relayer, backend, experimental, dependency, cryptographic-format or browser trust-policy
+changes. Independent source review and exact-head hosted CI remain integration gates; no publication
+or browser-execution claim from this worker.
+
+Status: additive API implementation and local review complete at product/test source
+`079222115f494d966f1f25be31ffca4d66346461`; regression commit `e3a34d4081aa63d05f36c2e82961299fadaf3f76`
+reproduces 10 signer-policy failures and 1 catalog failure against main. Full invoice-schema 728/728 and
+ux-core 119/119 pass with original coverage thresholds; affected package typecheck/lint/build pass.
+Existing Pay/Receipt tests pass 153/153 at `964b60d6`, before the sole final catalog identity-wording
+correction. Privacy reviewer independently passes 13 signer + 15 catalog tests at final source;
+coordinator independently passes the same 13 signer cases. Both source reviews find no blocker.
+These independent counts overlap author coverage. No browser/default enforcement, cryptographic format,
+optional backend or experimental changes. Exact-head hosted CI and browser acceptance remain separate.
+Evidence and integration limits: `docs/handoffs/agents/INVOICE_VALIDATION_20261118.md`.
