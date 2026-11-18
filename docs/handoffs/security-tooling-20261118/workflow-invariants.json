@@ -1,0 +1,17 @@
+[
+  {
+    "path": ".github/actions/setup-forge/action.yml",
+    "action_pins_unchanged": true,
+    "runners_unchanged": true
+  },
+  {
+    "path": ".github/workflows/ghostpay-codex-cloud.yml",
+    "action_pins_unchanged": true,
+    "runners_unchanged": true
+  },
+  {
+    "path": ".github/workflows/ghostpay-parallel-review.yml",
+    "action_pins_unchanged": true,
+    "runners_unchanged": true
+  }
+]
