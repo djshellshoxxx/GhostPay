@@ -25,7 +25,8 @@ each was rechecked against `5467c158` before being claimed. None of them is a ro
 Coordinator-only: this section, `docs/handoffs/completion-20261118-lostfix/**`, the integration merges, and two
 one-line companions of L4 that its reviewers assigned to the integrator: `scripts/devnet/e2e.mjs` (the relayer fee
 address follows the restored manifest pin) and the refusal-class list in `apps/web/src/lib/relayerClient.ts`
-(`client_queue_full`, with a two-way contract test).
+(`client_queue_full`, with a two-way contract test). One companion of L6: the two new invoice error codes in the
+mirror list and catalog of `packages/ux-core/src/errors.ts`, and entry 15 of `packages/invoice-schema/DEVIATIONS.md`.
 
 **Rows found by the same triage but not taken, because the files belong to another active claim** (handed over in the
 ledger with evidence, not edited here): second-RPC agreement for manifest read-back in Pay/Sweep (LF-6f25385ce-3;
