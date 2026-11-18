@@ -1,0 +1,461 @@
+{
+ "target": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+ "date": "2026-11-18",
+ "method": "line-survival scan of 225 fix commits, then per-lead triage; every lost verdict has an executed failing test and was re-checked by a second agent told to refute it",
+ "items": [
+  {
+   "id": "T-50881e47-1",
+   "title": "N-01: GhostPayPolicyRouter takes per-payment bytes32 salt instead of PolicyRef{owner,policyHash} (contracts)",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Contracts not deployed on any network. Scheme 2 is off unless VITE_GHOSTPAY_EXPERIMENTAL_POLICY=1 (apps/web/src/features/policy/flag.ts) and is not in the lean static build. Once deployed, any chain observer could link every scheme-2 payment to the seller's meta-address through policyHash. Audit 24 rates it Medium for privacy.",
+   "proof": "Today the router takes PolicyRef again: GhostPayPolicyRouter.sol:96,112,139,164 and _checkPolicyAccount :236-242 (FACTORY.predictAddress); struct at IGhostPayPolicyRouter.sol:18. No reverting commit: full-history pickaxe finds only 50881e47 and 2058a57d. Dropped in consolidation: ecc29c1e (checkpoint whose parent lacks 50881e47) re-imported the pre-N-01 router, then octopus merge 84c2c185 took that tree. Tracked as open AUD24-01 (owner ABI decision).",
+   "fix_guidance": "Owner decision (AUD24-01, GITHUB_PAGES_RELEASE_2026-11-12.md:7 freezes the ABI). If approved, restore 50881e47's salt ABI and cached IMPLEMENTATION check, in lockstep with policy-scheme ABIs/builders, payer-hiding-contracts RouterCall.sol (PolicyRef word offset), the gas snapshot and DEVIATIONS R10.",
+   "owner_paths": "packages/contracts/src/GhostPayPolicyRouter.sol; packages/contracts/src/interfaces/IGhostPayPolicyRouter.sol; packages/payer-hiding-contracts/src/RouterCall.sol",
+   "repro_command": "export PATH=<scratch>/bin:$PATH && cd packages/contracts && forge test --match-path test/repro.T-50881e47.1.t.sol",
+   "repro_output": "2 failed: [FAIL: N-01: router rejects the salt-only payNative selector] test_repro_saltOnlyPayNativeIsAccepted; [FAIL: N-01: accepted router calldata contains the seller-constant policyHash] test_repro_acceptedCalldataNeverCarriesPolicyHash",
+   "repro_test": "packages/contracts/test/repro.T-50881e47.1.t.sol",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "Could not refute. 50881e47 is an ancestor of main, yet GhostPayPolicyRouter.sol:96,112,139,164 take PolicyRef and :236-242 call FACTORY.predictAddress. There is no IMPLEMENTATION cache and no other layer that hides policyHash (RouterCall.sol:13 assumes the PolicyRef head). Audit 26 (AUD24-01, :45 and :76) records it as Regressed. GITHUB_PAGES_RELEASE_2026-11-12.md:7 freezes the ABI. Repro is valid: the refCall form was accepted (196845 gas) and its calldata contains policyHash."
+   }
+  },
+  {
+   "id": "T-50881e47-2",
+   "title": "N-01 client side: policy-scheme builders/decoder pass accountSalt, predictAccountAddressFromSalt, ExpectedPolicyRef, regenerated ABIs",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Used only by the experimental, flag-gated web policy feature (apps/web/src/features/policy/*) and tests. No network has deployed contracts. It matches today's contract, so it is consistent rather than broken.",
+   "proof": "router.ts:72,87-103 builds policy={owner,policyHash} and passes it as an arg. decodePolicyPaymentCalldata :147-183 returns owner/policyHash. policy.ts has no predictAccountAddressFromSalt. abi/policyRouter.ts is back to the PolicyRef tuple. The FeeWaived/FeeTransferFailed factory ABI entries are absent from policy-scheme. The loss rides with item 1, which is the same consolidation drop.",
+   "fix_guidance": "Restore together with item 1 only, from the 50881e47 versions of router.ts, policy.ts, index.ts, the abi/*.ts files and router.test.ts. Update apps/web/src/features/policy/paymentEvidence.ts at the same time, because it decodes the router args.",
+   "owner_paths": "packages/policy-scheme/src/router.ts; packages/policy-scheme/src/policy.ts; packages/policy-scheme/src/abi/policyRouter.ts; packages/policy-scheme/src/abi/policyAccountFactory.ts; apps/web/src/features/policy/paymentEvidence.ts",
+   "repro_command": "cd packages/policy-scheme && npx vitest run src/repro.T-50881e47.2.test.ts --coverage=false",
+   "repro_output": "1 failed: AssertionError: payERC20 calldata contains policyHash: expected true to be false (repro.T-50881e47.2.test.ts:26)",
+   "repro_test": "packages/policy-scheme/src/repro.T-50881e47.2.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "Core loss confirmed: router.ts:87-103 passes {owner,policyHash}, :175-183 decodes it, abi/policyRouter.ts:139+ uses the PolicyRef tuple, and policy.ts has no predictAccountAddressFromSalt or ExpectedPolicyRef (accountSalt at :94 predates the fix). Correction: the proof says FeeWaived and FeeTransferFailed are missing, but they are present at abi/policyAccountFactory.ts:209,249. docs/developer/api/policy-scheme.md:36,149 still list the missing symbols."
+   }
+  },
+  {
+   "id": "T-50881e47-3",
+   "title": "M-03: PolicyAccountFactory waives flat fee (FeeWaived) when fee token refuses a transfer the caller can cover; FeeTransferFailed otherwise",
+   "status": "present",
+   "severity_if_lost": "none",
+   "exposure": "The N1/SEC-07 residual (a wrong-delta success or failing views still freeze deploy) is not a regression: 50881e47's own R11 said a lossy token still freezes. It is an open owner decision. The contracts are not deployed.",
+   "proof": "PolicyAccountFactory.sol:52 FeeWaived, :69 FeeTransferFailed, :114/:120 waive+emit, :128-163 _collectFee via trySafeTransferFrom. Rewritten in ecc29c1e and stricter: it also reverts when a failed call moved balances or allowance. Passing tests: PolicyAccountFactory.t.sol test_deploy_blacklistedRecipientWaivesFeeAndDeploys, ...InsufficientBalance/AllowanceDoesNotWaive, test_deploy_gasStarvationCannotTriggerFeeWaiver; Policy.audit.t.sol test_feeTokenBlacklistDoesNotFreezeCounterfactualAccounts.",
+   "owner_paths": "packages/contracts/src/PolicyAccountFactory.sol"
+  },
+  {
+   "id": "T-50881e47-4",
+   "title": "Docs: contracts DEVIATIONS R10-R13, README M-03 note, CONTRACTS_SPEC s4 deploy-time policy leak wording",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Documentation only. Readers lose the N-02 (requests never expire), N-03 (front-run deploy), N-04 (native alias double cap) and N-05 client guidance, plus the deploy-time policyHash leak caveat. The R10 text should come back only if item 1 is restored.",
+   "proof": "packages/contracts/DEVIATIONS.md stops at R9 (:206); there is no R10-R13 and no N-02..N-05 or M-01 decision text anywhere in the contracts docs. The README has no M-03 note. CONTRACTS_SPEC.md:65 still says policyHash 'does not reveal the destination'. The spec's fee-waiver text at :66 is superseded and present. docs/developer/* still describe the salt ABI (audit 24 F3). Full trace: <scratch>/triage/T-50881e47.md",
+   "fix_guidance": "Restore R11-R13 and the CONTRACTS_SPEC s4 leak caveat now, adapted to the current stricter waiver. Restore R10 with item 1, or else correct docs/developer to describe the PolicyRef ABI.",
+   "owner_paths": "packages/contracts/DEVIATIONS.md; packages/contracts/README.md; docs/CONTRACTS_SPEC.md; docs/developer/byte-layouts.md; docs/developer/contracts-reference.md; docs/developer/api/policy-scheme.md",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "DEVIATIONS.md (209 lines) has no R10-R13. README :99-103 says deploy reverts and freezes funds, which contradicts the waiver at PolicyAccountFactory.sol:120. CONTRACTS_SPEC.md:65 still says 'does not reveal the destination'. Partial refute: contracts-reference.md:147-152 keeps the M-03 waiver and deploy pre-image leak, :221 keeps N-02, but cites the missing R11/R13. N-03 client handling, N-04, N-05 and R12 are absent."
+   }
+  },
+  {
+   "id": "T-b85e0b59-1",
+   "title": "core-crypto M-1: checkAnnouncement requireRouterMetadata option + metadataMatches helper + unauthenticated-metadata warnings",
+   "status": "superseded",
+   "severity_if_lost": "low",
+   "exposure": "Lean static build scanner and CLI; covered by stronger transfer-evidence verification. Only the opt-in library helpers and TSDoc/README warnings are gone.",
+   "proof": "Option/helper absent today (stealth.ts:53 CheckAnnouncementOptions only has ignoreViewTag; no metadataMatches export). Dropped by merge 84c2c185, not a deliberate change. But every consumer that credits metadata now requires independent evidence: chain-adapters/src/payments.ts:82 dedupeClaims (replay collapse) and :155 verifyClaimedPayment (router caller, canonical block, receipt Transfer payer->stealth == net); used by web scanClient.ts:373/391, CLI scan.ts:95, receipts.ts:96.",
+   "fix_guidance": "Optional: restore metadataMatches/requireRouterMetadata and the @security note for third-party library users; not needed for in-repo consumers.",
+   "owner_paths": "packages/core-crypto/src/stealth.ts; packages/chain-adapters/src/payments.ts"
+  },
+  {
+   "id": "T-b85e0b59-2",
+   "title": "invoice-schema M-2: ParseOptions.requirePinnedSigner + UntrustedSignerError (UNTRUSTED_SIGNER) + self-signed-invoice warnings",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "invoice-schema is in the lean static build, but the option was opt-in, default unchanged, and never had a caller. Web Pay (lib/pay.ts trustView) and sdk verify.ts:109 still warn on unpinned signer; merchant-billing pins. Impact: a library consumer cannot fail closed via the documented option; phishing invoice with attacker metaAddress still parses as valid-signature.",
+   "proof": "envelope.ts:129 ParseOptions has no requirePinnedSigner; parseFragment (envelope.ts:464) never throws on unpinned signer; errors.ts lacks UNTRUSTED_SIGNER; README:66-67 and envelope.ts:62 lack the self-signed payee warning. git log -S finds only b85e0b59; blobs at HEAD equal ecc29c1e side of merge 84c2c185.",
+   "fix_guidance": "Re-apply b85e0b59 hunks for envelope.ts/errors.ts/README (option, error class, export, docs) and its envelope.test.ts round3b block.",
+   "owner_paths": "packages/invoice-schema/src/envelope.ts; packages/invoice-schema/src/errors.ts; packages/invoice-schema/README.md",
+   "repro_command": "cd packages/invoice-schema && npx vitest run src/repro.T-b85e0b59.2.test.ts --coverage=false",
+   "repro_output": "2 failed | 1 passed. 'exports UntrustedSignerError': expected 'undefined' to be 'function'. 'rejects an unpinned self-signed invoice': promise resolved {trust:'valid-signature', verification:{signatureValid:true, signerPinned:false}} instead of rejecting. Log: scratchpad/triage/repro.T-b85e0b59.2.log",
+   "repro_test": "packages/invoice-schema/src/repro.T-b85e0b59.2.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "envelope.ts:129-134 ParseOptions has only pinnedSigners and passphrase. errors.ts:6-22 has no UNTRUSTED_SIGNER. requirePinnedSigner and UntrustedSignerError appear nowhere in packages/ or apps/; the requirePinned in confidential-amounts is an unrelated manifest option. isTrustedSeller (envelope.ts:111) is older than the fix, so it does not replace the fail-closed option. README:66-68 has no self-signed metaAddress warning."
+   }
+  },
+  {
+   "id": "T-b85e0b59-3",
+   "title": "policy-scheme decodePolicyPaymentCalldata: canonical re-encoding, compressed-point R, parseMetadata + kind/token/net=gross-fee/minNet consistency, expected R/tag/token/net (TS-05)",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Experimental policy feature, web only behind off-by-default VITE_GHOSTPAY_EXPERIMENTAL_POLICY, no pinned deployment. Only untrusted-input caller, web paymentEvidence.ts:112 and :126-129, re-checks canonical encoding, R format and exact metadata itself; pay.ts/send.ts decode self-built calldata. Library TSDoc still overclaims.",
+   "proof": "router.ts:162-189 today only decodes and checks stealth == predictAccountAddress(owner, policyHash); no canonical, R, or metadata checks. Fix dropped by merge 84c2c185 (router.ts blob 3e1af8ed = ecc29c1e side; ABI since uses a policy struct). Repro: corrupt ff*57 metadata, foreign-token metadata, wrong net, 0x04.. R and trailing bytes all decode.",
+   "fix_guidance": "Port b85e0b59 router.ts checks onto today's struct-based ABI (args: token, stealth, {owner,policyHash}, gross, minNet, deadline, eph, metadata); expected-ref fields now map to owner/policyHash in calldata.",
+   "owner_paths": "packages/policy-scheme/src/router.ts",
+   "repro_command": "cd packages/policy-scheme && npx vitest run src/repro.T-b85e0b59.3.test.ts --coverage=false",
+   "repro_output": "5 failed | 1 passed: corrupt metadata, other-token metadata, net != gross-fee, off-curve R, trailing bytes each 'AssertionError: expected 'no error' to be 'INVALID_INPUT''. Log: scratchpad/triage/repro.T-b85e0b59.3-7.log",
+   "repro_test": "packages/policy-scheme/src/repro.T-b85e0b59.3.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "router.ts:162-189 only decodes and checks predictAccountAddress(owner, policyHash) against stealth. There is no canonical re-encode, no parseCompressedPoint on R, no parseMetadata, no kind/token/net/minNet checks and no expected-ref parameter. No other decoder exists in policy-scheme. Mitigations: web paymentEvidence.ts:112,126-129 re-checks itself, and the router contract (_validate R prefix, _checkMetadata at GhostPayPolicyRouter.sol:266-281) reverts on bad metadata or R. So library callers get no pre-prompt check, but the chain enforces."
+   }
+  },
+  {
+   "id": "T-b85e0b59-4",
+   "title": "policy-scheme signPolicyTypedData: assertPolicyShape (primaryType/types exactly POLICY_TYPES, policy domain name/version, valid chainId/verifyingContract)",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Experimental, off-by-default web policy feature; the only caller (web withdraw.ts:132/141/144) passes builder output, so no attacker-controlled typed data reaches it today. Impact if a caller forwards foreign typed data: owner key becomes a generic EIP-712 signing oracle.",
+   "proof": "eip712.ts:337-342 signPolicyTypedData goes straight to the viem digest compare; no shape check (eip712.ts blob 5a300009 == pre-fix). Repro: a self-consistent foreign 'Transfer' struct under domain 'Evil' is signed with the owner key.",
+   "fix_guidance": "Re-apply assertPolicyShape and its call at the top of signPolicyTypedData from b85e0b59.",
+   "owner_paths": "packages/policy-scheme/src/eip712.ts",
+   "repro_command": "cd packages/policy-scheme && npx vitest run src/repro.T-b85e0b59.4.test.ts --coverage=false",
+   "repro_output": "1 failed: 'refuses a self-consistent foreign struct under a foreign domain' AssertionError: expected 'no error' to be 'SIGNING_FAILED'. Log: scratchpad/triage/repro.T-b85e0b59.3-7.log",
+   "repro_test": "packages/policy-scheme/src/repro.T-b85e0b59.4.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "eip712.ts:337-343 signPolicyTypedData only compares the viem digest with td.digest, then signs. There is no primaryType, types or domain check; assertPolicyShape is absent. The TSDoc at :333-334 still claims nothing else can be signed. The test passes the correct expectedOwner, so the 'no error' result shows the missing shape check. Only caller is web withdraw.ts:132-144, which passes builder output."
+   }
+  },
+  {
+   "id": "T-b85e0b59-5",
+   "title": "policy-scheme buildWithdrawTypedData recomputes limitLeafHash(token, limit, window) and requires it to equal proof.leaf",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Experimental, off-by-default web policy feature. Impact: client signs a withdraw order that will revert (wrong amount-vs-limit check), wasted signature/gas; contract still enforces.",
+   "proof": "eip712.ts:229-231 only verifyLimitProof(root, lp.leaf) then amount <= lp.limit; caller-supplied limit/window/token not bound to the leaf. Repro: inflated limit, another token's leaf and root-as-leaf all build. On-chain PolicyAccount.sol:173-176 recomputes the leaf and reverts LimitLeafMismatch, so no fund loss.",
+   "fix_guidance": "Re-apply the computeLeafHash equality check from b85e0b59 before the amount <= limit check.",
+   "owner_paths": "packages/policy-scheme/src/eip712.ts",
+   "repro_command": "cd packages/policy-scheme && npx vitest run src/repro.T-b85e0b59.5.test.ts --coverage=false",
+   "repro_output": "3 failed | 1 passed: inflated limit, other token's leaf, root as leaf each 'AssertionError: expected 'no error' to be 'INVALID_PROOF''. Log: scratchpad/triage/repro.T-b85e0b59.3-7.log",
+   "repro_test": "packages/policy-scheme/src/repro.T-b85e0b59.5.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "eip712.ts:225-231 does verifyLimitProof(root, lp.leaf), then amount <= lp.limit; the leaf is never recomputed from (token, limit, window). So the caller's limit, window and token are not bound to the leaf. The contract recomputes the leaf (LimitLeafMismatch), so the order reverts on-chain and no funds are lost. Web passes limits from getLimitProof on a tree it rebuilt itself."
+   }
+  },
+  {
+   "id": "T-b85e0b59-6",
+   "title": "policy-scheme getLimitProof recomputes a stored leaf from its fields (untrusted restored tree)",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Experimental, off-by-default web policy feature (withdraw.ts:78, withdrawalState.ts:164). Web trees are rebuilt on parse, so only direct library callers with a hand-built/deserialized LimitsTree are affected; result is an order that reverts on-chain.",
+   "proof": "limits.ts:136-157 getLimitProof uses entry.leaf/entry.limit as stored; no recompute (limits.ts blob b25c1fa2 == pre-fix). Repro: tree with edited USDC limit 1e30 returns a proof. Mitigation: web records come only via record.ts:38-47 assemble (buildLimitsTree + root check), and the contract re-checks the leaf.",
+   "fix_guidance": "Re-apply the limitLeafHash recompute check in getLimitProof from b85e0b59.",
+   "owner_paths": "packages/policy-scheme/src/limits.ts",
+   "repro_command": "cd packages/policy-scheme && npx vitest run src/repro.T-b85e0b59.6.test.ts --coverage=false",
+   "repro_output": "1 failed: 'edited limit is refused' AssertionError: expected 'no error' to be 'INVALID_PROOF'. Log: scratchpad/triage/repro.T-b85e0b59.3-7.log",
+   "repro_test": "packages/policy-scheme/src/repro.T-b85e0b59.6.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "limits.ts:136-157 getLimitProof returns the stored entry.limit and entry.windowSeconds without recomputing limitLeafHash. verifyLimitProof only checks the stored leaf against the root. Mitigations: web trees come from record.ts assemble (buildLimitsTree plus a root check), and the contract re-checks the leaf."
+   }
+  },
+  {
+   "id": "T-b85e0b59-7",
+   "title": "policy-scheme checkScheme2Announcement validates policyHashes/deployment before copying the viewing secret (zeroize on error path)",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Experimental, off-by-default web scanner (scan2.ts:68); only triggered by malformed config args (policyHashes/deployment). Impact: an unzeroized viewing-key copy left to GC (JS zeroization is best-effort anyway).",
+   "proof": "derive.ts:177-179: secretScalarFromBytes(viewingSecret) copy is made before bytes32()/nonZeroAddr() validation, outside the try/finally that zeroizes it (derive.ts blob d70af630 == pre-fix). Repro: after INVALID_HEX and INVALID_ADDRESS, 2 live non-zero SecretBytes copies remain.",
+   "fix_guidance": "Move 'const viewing = secretScalarFromBytes(viewingSecret)' below the hashes/dep validation, as in b85e0b59.",
+   "owner_paths": "packages/policy-scheme/src/derive.ts",
+   "repro_command": "cd packages/policy-scheme && npx vitest run src/repro.T-b85e0b59.7.test.ts --coverage=false",
+   "repro_output": "1 failed: 'copies made inside checkScheme2Announcement are zeroized on INVALID_HEX / INVALID_ADDRESS' AssertionError: expected 2 to be +0. Log: scratchpad/triage/repro.T-b85e0b59.3-7.log",
+   "repro_test": "packages/policy-scheme/src/repro.T-b85e0b59.7.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "derive.ts:177 makes the copy (const viewing = secretScalarFromBytes(viewingSecret)) before bytes32() at :178 and nonZeroAddr() at :179. Those two can throw, and they sit outside the try/finally zeroize at :180-194. Reading the code confirms this independently of the test, which spies on Uint8Array.prototype.set and is somewhat fragile. JS zeroization is best-effort anyway."
+   }
+  },
+  {
+   "id": "T-b85e0b59-8",
+   "title": "Docs: fixes-round3b-libs.md report, policy-scheme README 'Trust notes' (unauthenticated scheme-2 meta-address, decode/sign caveats), core-crypto/invoice-schema README warnings",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Documentation only; affects integrators of the libraries and audit traceability (round-3b library items recorded as fixed but absent).",
+   "proof": "docs/remote/fixes-round3b-libs.md absent at HEAD; packages/policy-scheme/README.md has no 'Trust notes' section (grep 'Trust notes|unauthenticated' no hit); core-crypto README.md blob 41b658f8 == pre-fix (no 'Announcement metadata is not authenticated'); invoice-schema README.md:66-67 lacks the self-signed metaAddress warning. Dropped by merge 84c2c185.",
+   "fix_guidance": "Restore the README notes with the code fixes above; bring back the round-3b library report or note in docs/audits that it was dropped by 84c2c185.",
+   "owner_paths": "docs/remote/; packages/policy-scheme/README.md; packages/core-crypto/README.md; packages/invoice-schema/README.md",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "docs/remote/fixes-round3b-libs.md does not exist, and no doc references it. grep for 'Trust notes|unauthenticated' in policy-scheme/README.md: no hits. core-crypto/README.md was last changed in 1bc784bb and has no 'Announcement metadata is not authenticated' note. invoice-schema README:66-68 has no self-signed metaAddress warning. Other round-3b mentions are only about the contract snapshots in docs/audits/13 and the migration-source README. Documentation only."
+   }
+  },
+  {
+   "id": "T-dd756b08-1",
+   "title": "M-1/L-7: challenge store per-partition quota, fail-closed per partition, throttled expiry scan",
+   "status": "present",
+   "severity_if_lost": "low",
+   "exposure": "Library only: ChallengeService has no consumer outside packages/relayer-guard (grep), so unreachable in lean/full builds and apps/relayer today.",
+   "proof": "packages/relayer-guard/src/challenge.ts:61-146 (ExpiringTable: partition quota, purge from front + 1s-throttled full scan, evictFromLargestPartition), :150-215 stores, verifyInner partition validation/pass-through at ~:487-535. Stricter than the fix: missing partition shares one bounded 'u:' bucket. Pinned by challenge.test.ts 'replay quota isolates partitions...' and 'attempt limiter evicts only from the largest partition...'. Repro passes (4 tests). Module is not wired into the relayer.",
+   "owner_paths": "packages/relayer-guard/src/challenge.ts",
+   "repro_command": "cd packages/relayer-guard && npx vitest run src/repro.T-dd756b08.1.test.ts --coverage=false",
+   "repro_output": "4/4 pass (log: scratchpad/triage/repro.T-dd756b08.pass.log)",
+   "repro_test": "packages/relayer-guard/src/repro.T-dd756b08.1.test.ts"
+  },
+  {
+   "id": "T-dd756b08-2",
+   "title": "M-2: LossBudget atomic reserve/settle/release",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "exposure": "Optional relayer (apps/relayer) only; also pool-relayer/payer-sponsor construct LossBudget.",
+   "proof": "packages/relayer-guard/src/limiter.ts reserve/reserveAll (synchronous check+charge, resolve/admits/add), settle/release closures with idempotence and late-window handling; superseded in API shape only (LossReservation is now an interface with settle()/release(), reserveAll multi-source, cleanReserve). Wired: apps/relayer/src/service.ts:889 lossBudget.reserveAll. Pinned by limiter.test.ts 'reserves loss capacity atomically and settles or releases once' and L5-02 tests. Repro (50 parallel reserve(5n), perKey 10n -> exactly 2; global cap; settle/release; rollover) passes.",
+   "owner_paths": "packages/relayer-guard/src/limiter.ts; apps/relayer/src/service.ts",
+   "repro_command": "cd packages/relayer-guard && npx vitest run src/repro.T-dd756b08.2.test.ts --coverage=false",
+   "repro_output": "4/4 pass (log: scratchpad/triage/repro.T-dd756b08.pass.log)",
+   "repro_test": "packages/relayer-guard/src/repro.T-dd756b08.2.test.ts"
+  },
+  {
+   "id": "T-dd756b08-3",
+   "title": "M-3: TokenBucketLimiter per-group slot quota and per-group overflow buckets",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Optional relayer only (apps/relayer/src/limiter.ts:145 builds TokenBucketLimiter without maxOverflowGroups; maxKeys default 10000, maxPerGroup 1250). Attacker needs >=8 distinct abuse groups (/48 or /24) each holding ~1250 non-idle keys, i.e. ~10k requests inside a few seconds, to make all new honest clients share one overflow bucket (new-client DoS, no fund loss). Not in lean static build.",
+   "proof": "Partly kept: group slot quota exists (limiter.ts maxPerGroup default ceil(maxKeys/8), take() line ~118-135) and groupOf now defaults to groupOfBucketKey. LOST: per-group overflow by default. dd756b08 defaulted maxOverflowGroups=1024 with an overflowTable; today limiter.ts:140 `maxOverflowGroups ?? 0`, so all overflow lands in the single global overflowBucket (limiter.ts take(): `bucket ??= this.overflowBucket`). Dropped in checkpoint ecc29c1e (Oct 22), never restored. Failing assertions: after 64 one-key groups fill an 8-key table, newcomer 'fresh0:x' take().ok expected true got false (repro.3.test.ts:28); with maxKeys 2/maxPerGroup 1, group 'd' newcomer is charged to the global bucket drained by group 'c' (repro.3.test.ts:40). The group slot quota tests pass, so one group alone cannot fill the table.",
+   "fix_guidance": "Restore default maxOverflowGroups (1024, bounded overflow table with idle eviction) in TokenBucketLimiter, keep the global bucket as last resort, and add stats() overflow counter (see item 4).",
+   "owner_paths": "packages/relayer-guard/src/limiter.ts (TokenBucketLimiter); apps/relayer/src/limiter.ts",
+   "repro_command": "cd packages/relayer-guard && npx vitest run src/repro.T-dd756b08.3.test.ts --coverage=false",
+   "repro_output": "2 pass (group isolation, maxPerGroup cap), 2 FAIL: '(lost) attacker spread over many groups still leaves each newcomer its own overflow bucket': expected false to be true at :28; '(lost) per-group overflow is on by default': expected false to be true at :40. Log: scratchpad/triage/repro.T-dd756b08.3-4.log",
+   "repro_test": "packages/relayer-guard/src/repro.T-dd756b08.3.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "Could not refute. ecc29c1e rewrote limiter.ts from the pre-fix parent 35df181b instead of from dd756b08. It keeps the slot quota but sets maxOverflowGroups ?? 0 (limiter.ts:145), so all overflow goes to the one global bucket (:186). Opt-in exists (my scratch test passes with maxOverflowGroups:1024), but its slots are never evicted. No caller opts in: apps/relayer/src/limiter.ts:146-149 and pool-relayer service.ts:108. The repro fails because of the default, not because of a fixture. The dd756b08 spec section 9 and DEVIATIONS item 11 are gone."
+   }
+  },
+  {
+   "id": "T-dd756b08-4",
+   "title": "L-8: bounded idle-entry scan on eviction (EVICT_SCAN=8) and limiter stats()",
+   "status": "lost",
+   "severity_if_lost": "low",
+   "exposure": "Optional relayer only. Effect: a drained LRU entry pins eviction so newcomers spill to the shared overflow bucket while idle entries exist (minor availability degradation); no overflow metric/alert counter from the limiter (relayer reports RateLimiter overflow flag per call only).",
+   "proof": "Today BoundedTable.canInsert()/insert() (limiter.ts ~:57-70) only evict when the single oldest (LRU) entry is idle; EVICT_SCAN, evictable() and TokenBucketLimiter.stats()/LimiterStats are absent (grep: 0 hits; index.ts exports no LimiterStats). Same drop point as item 3 (ecc29c1e). Failing assertions: 'idle refilled entry behind a drained LRU entry is evicted' expected overflow:false got overflow:true (repro.4.test.ts:12); 'stats() exposes overflow counters' typeof stats expected 'function' got 'undefined' (:19).",
+   "fix_guidance": "Re-add bounded scan of the oldest N entries for an idle one in BoundedTable (both token-bucket and loss tables share it), and stats() {overflowHits, tableSize, overflowGroups} exported with LimiterStats.",
+   "owner_paths": "packages/relayer-guard/src/limiter.ts; packages/relayer-guard/src/index.ts",
+   "repro_command": "cd packages/relayer-guard && npx vitest run src/repro.T-dd756b08.4.test.ts --coverage=false",
+   "repro_output": "2 FAIL: overflow expected false got true (repro.4:12); typeof stats expected 'function' got 'undefined' (repro.4:19). Log: scratchpad/triage/repro.T-dd756b08.3-4.log",
+   "repro_test": "packages/relayer-guard/src/repro.T-dd756b08.4.test.ts",
+   "second_check": {
+    "upheld": true,
+    "final_status": "lost",
+    "severity_if_lost": "low",
+    "evidence": "Could not refute. BoundedTable.canInsert/insert (limiter.ts:44-61) check only the single LRU entry. EVICT_SCAN, evictable(), stats() and LimiterStats are missing (index.ts:18 exports no LimiterStats). The repro is sound: drained A is the LRU entry and B is refilled, so D overflows today, while dd756b08's 8-entry scan would evict B. The relayer has no overflow counter for the limiter, only relayer_loss_budget_overflow_total for LossBudget (apps/relayer/src/service.ts:895). This affects the optional relayer only."
+   }
+  },
+  {
+   "id": "T-dd756b08-5",
+   "title": "M-4: breaker validated probe acquire, maxNeutralProbes, nonzero half-open retryAfterMs",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "exposure": "Optional relayer (apps/relayer) and pool-relayer/payer-sponsor (breaker.run uses legacy tryAcquire, same bounded behaviour as the original fix).",
+   "proof": "packages/relayer-guard/src/breaker.ts:30-40 (maxNeutralProbes, AcquireOptions), :118-132 retryAfterMs floor (<=1000ms, >=1) while probe in flight, :143-171 tryAcquire (validated:false refused without consuming slot; neutral bound), apply()/transition() count and reset neutralProbes. Relayer uses it: apps/relayer/src/service.ts:728 tryAcquire({ validated: true }). Pinned by breaker.test.ts 'unvalidated callers never take the probe and repeated neutral outcomes require validated admission' and retryAfterMs tests. Repro passes (4 tests); limiter/breaker/challenge suites 108 pass.",
+   "owner_paths": "packages/relayer-guard/src/breaker.ts; apps/relayer/src/service.ts",
+   "repro_command": "cd packages/relayer-guard && npx vitest run src/repro.T-dd756b08.5.test.ts --coverage=false",
+   "repro_output": "4/4 pass (log: scratchpad/triage/repro.T-dd756b08.pass.log)",
+   "repro_test": "packages/relayer-guard/src/repro.T-dd756b08.5.test.ts"
+  },
+  {
+   "id": "T-web-keys-1",
+   "title": "8ef431320 custody records that spending and viewing keys are held by the user; backup summary gains signerOnly",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "exposure": "Full web build and lean static build; reachable by any user importing hex without a signing key.",
+   "proof": "apps/web/src/lib/session.ts:60 (paymentKeysExternal), :124 (signerOnly = !backedUp && paymentKeysExternal), :232-242 and :298 (the 'import-new-signer' origin when the hex has no signing key). Pinned by session.test.ts:215-226, which covers vault save, deletion elsewhere and keystore download. Added 'verified' since; this does not weaken signerOnly. The 81-test run passed."
+  },
+  {
+   "id": "T-web-keys-2",
+   "title": "8ef431320 idle lock also wipes such keys and the notice says the generated signing key is gone",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "exposure": "Full and lean builds; idle-lock timer.",
+   "proof": "apps/web/src/AppShell.tsx:156-165 (signerLost computed; clearSession() runs when recoverable || signerLost; setIdleWiped({minutes, signerLost})), :288 (notice appends app.idle.signerLost). Text at en.json:292. Pinned by App.test.tsx:150 and :117-118 (a keys-with-signer wipe does not mention the signing key). Passed."
+  },
+  {
+   "id": "T-web-keys-3",
+   "title": "8ef431320 banner says only the signing key is unsaved and payments stay sweepable",
+   "status": "present",
+   "severity_if_lost": "low",
+   "exposure": "Display only, in both builds.",
+   "proof": "apps/web/src/AppShell.tsx:276-282 picks app.backup.signerOnly.title/.body when backup.signerOnly; en.json:285-286 has the texts. Pinned by App.test.tsx:158 and :185 and SellerKeys.test.tsx:168. Passed."
+  },
+  {
+   "id": "T-web-keys-4",
+   "title": "8ef431320 BackupGate: Create invoice stays gated with signing-key copy; meta-address on Seller keys shown via paymentsOnly",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "exposure": "Create invoice is reachable in the full and lean builds.",
+   "proof": "apps/web/src/views/SellerKeys.tsx:24 and :32 (a signerOnly gate lets only paymentsOnly children through) and :36 (signerOnly body copy). AppShell.tsx:51 keeps Create invoice behind the full gate. SellerKeys.tsx:548 passes paymentsOnly to the meta-address. Pinned by App.test.tsx:173-185 (gate and waiver) and SellerKeys.test.tsx. Passed. The registry and policy forms are covered by T-web-keys-5."
+  },
+  {
+   "id": "T-web-keys-5",
+   "title": "8ef431320 registry publish path and policy create form keep the full gate (stay gated while only the signing key is unsaved)",
+   "status": "superseded",
+   "severity_if_lost": "low",
+   "exposure": "Full build only (the experimental policy view and the registry page).",
+   "proof": "Commit 2954d845 (30 Oct, an ancestor of main, so a deliberate change and not a merge drop) set `<BackupGate paymentsOnly>` in features/registry/RegistryView.tsx:273 and features/policy/PolicyCreate.tsx:102, with RegistryView.test and PolicyView.test updated. Both forms only publish or derive a payment meta-address and sign nothing with the signing key (no signing in PolicyCreate.tsx), and payments stay sweepable from the hex. A backup is still needed when no copy exists."
+  },
+  {
+   "id": "T-web-keys-6",
+   "title": "8ef431320 Seller keys wipe and unlock-replaces confirmations name what is actually lost; signing-key hint and idle-lock hint texts",
+   "status": "present",
+   "severity_if_lost": "low",
+   "exposure": "Seller keys view, in both builds.",
+   "proof": "apps/web/src/views/SellerKeys.tsx:476-477 (unlockReplacesSignerOnly) and :631-632 (wipeSignerOnly), taking precedence over the newer unverified variants. Texts: en.json:223-224, :271-272, :233 (signKey.hint), :28 (settings.lock.keysHint) and :202 (sellerKeys.memory.body). Pinned by SellerKeys.test.tsx:175-197. Passed."
+  },
+  {
+   "id": "T-web-keys-7",
+   "title": "99b28a462 camera status held as a message key so a language change re-renders an already shown status",
+   "status": "present",
+   "severity_if_lost": "low",
+   "exposure": "Display only; reachable in any build that shows QR import.",
+   "proof": "apps/web/src/components/CameraImporter.tsx:~106 (`useState<MessageKey|undefined>` with the comment 'Keep a key, not rendered copy'); the status is rendered through t() in statusText() (~line 246). cameraMessage() returns MessageKey. The tRef workaround is gone as in the original. CameraImporter.i18n.test.tsx passes."
+  },
+  {
+   "id": "T-web-keys-8",
+   "title": "99b28a462 stale QR import cancelled: typing aborts a pending import and clears status; begin and Stop invalidate the parent preview",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "exposure": "Importers that use CameraImporter in the full and lean builds; without this a late result could replace the newer input.",
+   "proof": "CameraImporter.tsx: the textarea onChange runs stop(); inputChanged.current?.(); setStatus(...) (~line 232); begin() calls pasteAbort.abort() and inputChanged.current?.() (~line 140); the Stop button calls stop(); resetTransfer(); inputChanged.current?.() (~line 226). Pinned by CameraImporter.behavior.test.tsx:98 ('editing pasted input aborts a pending import...') and :119 ('starting or stopping a camera invalidates the parent preview...'). Passed."
+  },
+  {
+   "id": "T-web-keys-9",
+   "title": "bf59c5911 archive export gaps kept as data and rendered in the current language (TagArchive message and BackupPanel)",
+   "status": "superseded",
+   "severity_if_lost": "low",
+   "exposure": "Display only, in the full build.",
+   "proof": "Same protection through a different type: ArchiveGap/archiveGapText became ArchiveNote (MessageDescriptor plus chainIds) with displayArchiveNote(note, translator) at TagArchive.tsx:23, :51 and :251-258. TagArchive.tsx:399 and BackupPanel.tsx:83 render it at render time with the current translator (trRef or i18n), and the message is stored as parts data. Pinned by TagArchive.test.tsx:252 ('formats with the translator it is given...'). Passed."
+  },
+  {
+   "id": "T-misc-1",
+   "title": "ea7c8765d CLI: reserve each concurrent RPC response's max bytes before transport; reject oversized replies from nonconforming transports",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "proof": "packages/cli/src/payment-context.ts:105-137 (rpcSession): reservedBytes reserved before transport.send, released in finally, bytes>allowance throws RESPONSE_TOO_LARGE. The 4/9 survival is due to follow-up b12a20e1 (on main), which changed the check to allow a sequential final partial read (reservedBytes>0 && maxBytes>available) and reserve min(maxBytes, available); reservation before transport is intact. Test packages/cli/src/rpc-concurrent-budget.test.ts passes (1/1), run in packages/cli."
+  },
+  {
+   "id": "T-misc-2",
+   "title": "19c7e2d49 web-scan: checkpoint saved up to the cursor for blocks already final, so budget-held scans resume past spam",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "proof": "apps/web/src/lib/scanClient.ts:596-603 persistable(): settled = head+1-depth, capped at cursor.nextBlock, next = max(next, settled). Called at :491 with pageHead. Test 'resuming from the saved checkpoint always gets past a flood ... (A5)' scanClient.test.ts:1256 passes (vitest -t A5: 15 passed)."
+  },
+  {
+   "id": "T-misc-3",
+   "title": "19c7e2d49 web-scan: checkpoint capped at the earliest pending match",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "proof": "scanClient.ts:603 loop over matches with receipt==='pending' lowers next to the match block. Test 'never saves a checkpoint past a pending payment ... (A5)' scanClient.test.ts:1293 passes."
+  },
+  {
+   "id": "T-misc-4",
+   "title": "19c7e2d49 web-scan: privacy-set windows end at the reachable head and are partial when the scan stopped short",
+   "status": "present",
+   "severity_if_lost": "low",
+   "proof": "scanClient.ts:274-275 pageHead/reachableHead, :518 windowHead, :528 anonymitySet(... scannedTo: scanHead); scanSpam.ts:187-195 partial includes scannedTo<head. Edited: reachableHead now tracks the latest page's head, not the high-water mark (comment at :512-515 says deliberate). Tests scanClient.test.ts:1311 and scanSpam.test.ts:105 pass."
+  },
+  {
+   "id": "T-misc-5",
+   "title": "19c7e2d49 web-scan: mid-run reorg drops rolled-back router announcements from privacy-set count (no double count); spec 05 status section",
+   "status": "present",
+   "severity_if_lost": "low",
+   "proof": "scanClient.ts:293-296 keptRouterBlocks filter on res.reorg.rolledBackTo. Test scanClient.test.ts:1326 passes. docs/specs/05-announcer-spam-anonymity-set.md:33 section 6 still present."
+  },
+  {
+   "id": "T-misc-6",
+   "title": "447a5bdae BTC: a scan preselects no outputs (audit G2-01)",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "proof": "apps/web/src/features/btc/BtcView.tsx:~455-457: after setScan(res) there is no setPicked from found, with the comment 'Nothing is selected ... PRIVACY-E2E-03'. The only setPicked calls are clearing/filtering (155, 248, 357, 802). BtcView.test.tsx and sweep.test.ts pass (28/28, run in apps/web). docs/audits/17 PRIVACY-E2E-03 row still says Reopened/G2-01."
+  },
+  {
+   "id": "T-misc-7",
+   "title": "447a5bdae BTC: public-linkage warning when more than one output is selected (view) and in reviewSweep",
+   "status": "present",
+   "severity_if_lost": "low",
+   "proof": "BtcView.tsx:818 Notice with btc.scan.linkWarning (locales/en.json:516); sweep.ts:90-91 pushes btc.sweep.linked warning for selected.length>1 (now a localized MessageDescriptor, en.json:2069). Tests BtcView.test.tsx:200-207 and sweep.test.ts:76-82 pass."
+  },
+  {
+   "id": "T-misc-8",
+   "title": "447a5bdae BTC: checkDestination validates destination with no selection; sp addresses decoded in full; reviewSweep uses it",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "proof": "sweep.ts:46-65 checkDestination (decodeSilentPaymentAddress for t?sp1, previewSweep for others; later extended with bech32 canonical-case handling); sweep.ts:79 reviewSweep calls it; BtcView.tsx:849 importer calls checkDestination(wallet,address). BtcView.test.tsx:166 passes."
+  },
+  {
+   "id": "T-misc-9",
+   "title": "d199f0f14 BTC: wipe scan and spend secrets (wipeWallet) on Lock, unmount and when a new wallet replaces it (audit G2-04)",
+   "status": "present",
+   "severity_if_lost": "low",
+   "proof": "wallet.ts:49-51 wipeWallet zeroizes scanSecret and spendSecret; BtcView.tsx:140 (unmount), :197 (replacing wallet), :538 (lock; also reached by subscribeAppLock :550). Test BtcView.secrets.test.tsx:122 'Lock wipes the scan and spend secrets and the spend tweaks' and :134 pass (9/9 in the two secrets test files)."
+  },
+  {
+   "id": "T-misc-10",
+   "title": "d199f0f14 BTC: wipe spend tweaks of shown scan results (wipeFound) on Lock, a new scan and unmount",
+   "status": "present",
+   "severity_if_lost": "low",
+   "proof": "scan.ts:77-80 wipeFound; BtcView.tsx:142 (unmount), :164 resetFlow (called by runScan at :~410 and lock :~545). Result path today is scanForPaymentsInWorker (scanWorkerClient.ts:85-87 also wipes the plain clone copies and wipes late/aborted results at :62,71). Tests BtcView.secrets.test.tsx:122,134 pass."
+  },
+  {
+   "id": "T-misc-11",
+   "title": "d199f0f14 BTC: scanForPayments wipes every tweak it does not return (spent, skipped, failed scan) and keeps buffers shared with returned outputs",
+   "status": "present",
+   "severity_if_lost": "low",
+   "proof": "scan.ts finally block (end of scanForPayments): kept = returned ? found tweaks : empty; zeroize others; tweaks tracked via trackTweak (also bounded by MAX_SCAN_MATCHES). Tests scan-secrets.hardening.test.ts:30,44,54 pass."
+  },
+  {
+   "id": "T-misc-12",
+   "title": "d199f0f14 BTC: stale-operation guard (op/begin/live) so a scan, sign or broadcast finishing after Lock/unmount is dropped, a late scan result is wiped first",
+   "status": "present",
+   "severity_if_lost": "low",
+   "proof": "BtcView.tsx:122-134 invalidate/begin; :450-453 if(!live()){wipeFound(res.found);return;}; :506,508,524-526 sign/broadcast guarded by live(). Tests BtcView.secrets.test.tsx:147 and :178 ('drops and wipes a scan result that arrives after Lock') pass."
+  },
+  {
+   "id": "T-misc-13",
+   "title": "5894f642e relayer: config parser names the unknown key; trustProxyHops error points at trustedProxies; non-key-shaped names not echoed (audit L5-07)",
+   "status": "present",
+   "severity_if_lost": "low",
+   "proof": "apps/relayer/src/config.ts:169-183 KEY_SHAPE and objectAt(), used for top level (:435), chains (:232), tokens (:209), sub-sections (:156) and later sections (:312, :523). apps/relayer/src/config.test.ts:164-202,246 pass (111/111). Survival drop is only because the one-use call sites were reformatted/extended."
+  },
+  {
+   "id": "T-misc-14",
+   "title": "9417d8314 CI: docs-only filter uses a here-string so grep -q cannot SIGPIPE the writer under pipefail on large PRs",
+   "status": "present",
+   "severity_if_lost": "high",
+   "proof": ".github/workflows/ci.yml:52 `if grep -qvE '^(docs/.*|.*\\.md)$' <<<\"$files\"; then` with the explanatory comment at :50-51, under set -euo pipefail (:37). No `| grep -q` pipeline remains in ci.yml. The 3/4 survival is from a truncation guard (audit L7-L4) added above it at :43-49, not a loss. Verified by reading; no test possible for workflow config."
+  },
+  {
+   "id": "T-misc-15",
+   "title": "9417d8314 verify-release.sh: archive-sanity greps use here-strings instead of echo | grep -q under pipefail",
+   "status": "present",
+   "severity_if_lost": "medium",
+   "proof": "scripts/verify-release.sh:164 (absolute/parent paths) and :167 (source maps) use grep -qE ... <<<\"$listing\"; :168 index.html check uses grep -qxE ... <<<\"$listing\"; no `echo ... | grep -q` remains (grep of the file shows only here-string forms). The index.html pattern was tightened to ghostpay-web/index.html; the audit doc docs/audits/05/contracts-pools.md from the same commit also exists."
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+// Untracked repro for dropped-fix lead T-b85e0b59-7 (b85e0b59 checkScheme2Announcement validates before copying the viewing secret).
+import { parseCompressedPoint, secretScalarFromBytes } from '@ghostpay/core-crypto';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { PolicySchemeError, ZERO_ADDRESS, checkScheme2Announcement } from './index.js';
+import { hexBytes, vectors, type VectorAccount } from './fixtures.testutil.js';
+
+const dep = { factory: vectors.deployment.factory, implementation: vectors.deployment.implementation };
+const A = vectors.accounts[0] as VectorAccount;
+const code = (f: () => unknown): string => { try { f(); } catch (e) { if (e instanceof PolicySchemeError) return e.code; throw e; } return 'no error'; };
+
+describe('repro T-b85e0b59-7: no live viewing-secret copy after argument-validation errors', () => {
+  afterEach(() => vi.restoreAllMocks());
+  it('copies made inside checkScheme2Announcement are zeroized on INVALID_HEX / INVALID_ADDRESS', () => {
+    const view = secretScalarFromBytes(hexBytes(A.viewingPrivateKey));
+    const spend = parseCompressedPoint(hexBytes(A.spendingPublicKey));
+    const ann = { stealthAddress: A.accountAddress, ephemeralPublicKey: A.ephemeralPublicKey, metadata: A.viewTag };
+    const copies: Uint8Array[] = [];
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const realSet = Uint8Array.prototype.set;
+    vi.spyOn(Uint8Array.prototype, 'set').mockImplementation(function (this: Uint8Array, ...a: Parameters<typeof realSet>) {
+      if (this.length === 32 && this.constructor.name === 'SecretBytes') copies.push(this);
+      return realSet.apply(this, a);
+    });
+    expect(code(() => checkScheme2Announcement(ann as never, view, spend, ['0xzz' as never], dep))).toBe('INVALID_HEX');
+    expect(code(() => checkScheme2Announcement(ann as never, view, spend, [A.policyHash], { ...dep, factory: ZERO_ADDRESS }))).toBe('INVALID_ADDRESS');
+    const mine = copies.filter((c) => c !== (view as unknown as Uint8Array));
+    expect(mine.length).toBeGreaterThan(0);
+    expect(mine.filter((c) => c.some((b) => b !== 0)).length).toBe(0);
+  });
+});

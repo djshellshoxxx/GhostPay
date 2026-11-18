@@ -1,3 +1,57 @@
+# Completion run 2026-11-18 (dropped-fix restoration, CLI and relayer) — ACTIVE
+
+Coordinator: Claude Code cloud session `exciting-brown` (`session_01KtKj8jTode8Vj3yVT7tvFM`; integration owner of this
+claim only). Integration branch `claude/exciting-brown-7v69cr`, restarted from `origin/main` = `5467c158` (merge of
+PR #203; the branch's earlier head `07968599` is an ancestor of `main`, so the update is a fast-forward). Draft PR to
+`main` opened with this claim. Lane branches are local-only worktrees; only this coordinator merges them after a
+review by an agent that did not write the change. Ledger: `docs/handoffs/completion-20261118-lostfix/`.
+
+**Source of the rows.** This session reviewed the candidate `364b1f18` on 2026-11-10/11 (16 lanes, 34 findings, each
+reproduced by an executed failing test) and compared 2 months of `fix` commits with the candidate line by line. That
+comparison showed that merge `84c2c185` (2026-10-22) dropped fixes that earlier audits record as present. The part
+that was fixed then is in `main` through #119/#203. The rows below are the part that is still missing at `5467c158`;
+each was rechecked against `5467c158` before being claimed. None of them is a row of PR #205, #209, #211, #212 or #213.
+
+| Lane | Rows | Owned paths (exclusive for this run) | Acceptance |
+|---|---|---|---|
+| L1 CLI input handling | R11-1 (High), R11-2 (Medium), R11-3, R11-4 (Low) | `packages/cli/src/**`, `packages/cli/README.md` | `--help`/`-h`/`--version` in an option-value position no longer ends a command with exit 0 and `ok:true`; `reconcile propose` marks a record verified only when it was among the freshly verified observations; malformed local observations are invalid input, not a network failure; error text does not echo link-like paths or raw catalog keys. Each test RED on `5467c158`, then GREEN; full CLI suite, typecheck, lint |
+| L2 sweep destination check | LF-6f25385ce-2 (Medium, privacy) | `apps/web/src/lib/sweep.ts`, `apps/web/src/views/Sweep.tsx` (+ tests), the sweep keys it adds to `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts` as a separate commit | Before a direct or relayed sweep the destination's transaction count, balance and code are read through the user-selected RPC only; a destination with history, or one already used in this tab, needs an explicit acknowledgement; a failed read blocks or asks, never passes silently; no new request under "require the private path" beyond what the sweep itself sends. RED-first; lean bundle rules unchanged |
+| L3 fiat quote age and Pay residuals | LF-365f017ac-1, LF-7aee9060b-1, LF-65392fcef-3, LF-65392fcef-4 (Low) | `packages/chain-adapters/src/quote.ts`, `apps/web/src/lib/pay.ts`, `apps/web/src/lib/format.ts`, the delay label line in `apps/web/src/views/Pay.tsx` (+ tests) | The accepted age of a price is bounded by the feed's recorded heartbeat plus a margin, not only by the seller-authored quote window; a feed without a recorded heartbeat is refused for fiat quotes; a malformed permit nonce answer is a user-facing error; the delay label shows fractional minutes. RED-first |
+| L4 relayer hardening | R07-2, R07-3, R07-4 (evaluate), LF-074edb61e-1/-4/-7/-8/-9, LF-2789f780b-2/-3, LF-29de09c05-1/-4, LF-6f25385ce-1 | `apps/relayer/**`, `docs/operators/relayer-runbook.md`, the relayer section of `docs/developer/api/apps.md` | Each row rechecked against `main`'s rewritten relayer first (state store, ops and metrics landed after the triage); rows `main` already covers are recorded with file:line; the rest restored RED-first: log-sink failure never fatal, per-peer connection cap, per-client lane cap reserved before any await, bounded pre-simulation, malformed request target 400, canonical-signature check before any RPC call. Full relayer suite incl. anvil e2e, typecheck, lint. No hosted relayer is introduced; the relayer stays optional and outside the lean bundle |
+| L6 invoice signer pin option | T-b85e0b59-2 (Low) | `packages/invoice-schema/src/{envelope,errors,index}.ts` (+ tests), `packages/invoice-schema/README.md` | Opt-in `requirePinnedSigner` rejects a validly signed invoice whose signer is not pinned (`UntrustedSignerError`); defaults and every existing caller unchanged; README says what a self-signed invoice does and does not prove. RED-first |
+| L7 relayer-guard limiter | T-dd756b08-3, T-dd756b08-4 (Low) | `packages/relayer-guard/**` | Overflow traffic is bucketed per abuse group by default (bounded table with idle eviction, global bucket last); eviction scans a bounded number of oldest entries; `stats()` counters without keys or addresses. Both callers (`apps/relayer`, `packages/pool-relayer`) pass with the new default. RED-first |
+| L5 review | all lanes | read-only | Independent review of each lane diff; affected suites, typecheck, lint, i18n parity and lean bundle scan at the integration head |
+
+Coordinator-only: this section, `docs/handoffs/completion-20261118-lostfix/**`, the integration merges, and two
+one-line companions of L4 that its reviewers assigned to the integrator: `scripts/devnet/e2e.mjs` (the relayer fee
+address follows the restored manifest pin) and the refusal-class list in `apps/web/src/lib/relayerClient.ts`
+(`client_queue_full`, with a two-way contract test). One companion of L6: the two new invoice error codes in the
+mirror list and catalog of `packages/ux-core/src/errors.ts`, and entry 15 of `packages/invoice-schema/DEVIATIONS.md`.
+
+**Rows found by the same triage but not taken, because the files belong to another active claim** (handed over in the
+ledger with evidence, not edited here): second-RPC agreement for manifest read-back in Pay/Sweep (LF-6f25385ce-3;
+`apps/web/src/AppShell.tsx`, `apps/web/src/lib/manifest.ts` are PR #209 B1); local-proxy scan path blocked by CSP
+(R12-1 = SEC-10, PR #209 B2); build-time `connect-src` narrowing and embed SRI (LF-6f25385ce-4/-5; hosting, PR #209 B1);
+passphrase bytes not wiped after scrypt in `packages/ux-vault/src/keystore-portable.ts` (LF-4ffb7a99b-4; next to spec 18,
+PR #213). Already fixed on `main` by other workers and therefore dropped here: R09-1 (GP-PAGES-02), R09-2, R09-3
+(GP-PAGES-04), the relayer response byte cap, the bundle-scan end-tag rule (R-01).
+
+**Added 2026-11-18 09:00Z after a line-survival scan of all 225 `fix` commits against `5467c158`** (17 leads triaged,
+each "lost" verdict backed by an executed failing test and an adversarial second check): rows L6 and L7 above, plus
+five `packages/policy-scheme` hardening items of commit `b85e0b59` that merge `84c2c185` also dropped (calldata decoder
+checks, typed-data shape check, limit-leaf recomputation in `buildWithdrawTypedData` and `getLimitProof`, viewing-secret
+copy before validation). Those files are PR #211 lane G1: handed over with the failing tests in the ledger, not edited
+here. The same scan re-confirmed that the salt-only policy router of `50881e47` (N-01) was dropped by consolidation,
+not reverted on purpose; that is the known open owner decision AUD24-01 and stays untouched.
+
+**Excluded (owned by other active sessions; read-only here):** every path claimed by PR #209 and PR #211;
+`docs/handoffs/post-consolidation-20261118/**` (PR #205); `CLAUDE.md`, `AGENTS.md`, `docs/ai/**` tooling, `.claude/**`,
+`scripts/agent/**`, `.github/workflows/**` (PR #206/#204, #209 B4, #212); spec 18 files (PR #213);
+`packages/contracts/**` (PR #212, #217); `package-lock.json`; every `chatgpt/*`, `codex/*`, `dependabot/*` branch and PR.
+
+Out of scope: merging to `main`, closing PRs, deleting branches/tags, deployment, signing, release publication, real
+funds, mainnet, contract source changes, new custody/authority surfaces, invented owner decisions.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker

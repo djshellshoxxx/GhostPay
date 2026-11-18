@@ -31,14 +31,27 @@ describe('TokenBucketLimiter', () => {
     expect(l.take('a').ok).toBe(false);
   });
 
-  it('key flooding cannot evict and refill a drained bucket', () => {
-    const { l } = limiter({ maxKeys: 2, overflowBurst: 1 });
+  it('key flooding cannot evict and refill a drained bucket (single shared overflow bucket)', () => {
+    const { l } = limiter({ maxKeys: 2, overflowBurst: 1, maxOverflowGroups: 0 });
     for (let i = 0; i < 3; i++) l.take('victim');
     expect(l.take('victim').ok).toBe(false);
     expect(l.take('k1').ok).toBe(true); // second slot
     const flood = Array.from({ length: 50 }, (_, i) => l.take(`spam${i}`));
     expect(flood[0]?.overflow).toBe(true);
     expect(flood.filter((r) => r.ok)).toHaveLength(1); // the overflow bucket holds 1 token
+    expect(l.take('victim').ok).toBe(false);
+    expect(l.size).toBe(2);
+  });
+
+  it('key flooding cannot evict and refill a drained bucket (default per-group overflow)', () => {
+    const { l } = limiter({ maxKeys: 2, overflowBurst: 1, maxOverflowGroups: 4 });
+    for (let i = 0; i < 3; i++) l.take('victim');
+    expect(l.take('k1').ok).toBe(true); // second slot
+    // Opaque keys are their own abuse group: each newcomer gets its own overflow bucket until the overflow
+    // table is full of live buckets, then all share the one global bucket.
+    const flood = Array.from({ length: 50 }, (_, i) => l.take(`spam${i}`));
+    expect(flood.every((r) => r.overflow)).toBe(true);
+    expect(flood.filter((r) => r.ok)).toHaveLength(4 + 1); // 4 group overflow buckets + the shared one
     expect(l.take('victim').ok).toBe(false);
     expect(l.size).toBe(2);
   });

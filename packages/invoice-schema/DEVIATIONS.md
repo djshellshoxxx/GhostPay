@@ -36,3 +36,11 @@
     policy is given, so v1 links, signatures and vectors are unchanged. The signature domain string stays
     `GhostPay.Invoice.v1\0` (it names the signing scheme, and `v` is inside the signed canonical invoice); the envelope stays
     `#gpi=v1.`. Older parsers reject v2 at `v` (fail closed). The policy is enforced by the payer app only, not on-chain.
+15. **Opt-in fail-closed signer pinning (`ParseOptions.requirePinnedSigner`, audit round 3b M-2).** Additive. With the
+    option set, parsing returns only `trust: 'trusted-seller'` results and otherwise throws one of two new error codes:
+    `INVALID_SIGNATURE` (`InvalidSignatureError`, the signature does not verify) or `UNTRUSTED_SIGNER`
+    (`UntrustedSignerError`, valid signature from a signer that is not in `pinnedSigners`; an empty or missing list
+    rejects everything). Without the option nothing changes: an unpinned invoice still parses as `valid-signature` and a
+    bad signature as `invalid-signature`, and no caller in this repository sets it. The option first shipped in commit
+    `b85e0b59` and was dropped by merge `84c2c185`; the restored version also throws for an invalid signature, where a
+    first restore attempt still returned the tampered invoice. `packages/ux-core` mirrors both codes.

@@ -66,6 +66,18 @@ give the single `WrongPassphraseError`.
 - **A valid signature is not a trusted seller.** It proves the embedded key signed these bytes. Only
   `signerPinned` (key matches a pin you obtained out of band) supports trust; `isTrustedSeller` encodes that in the type.
   Bare links offer an integrity self-check only. UI wording must not say "verified seller".
+- **A valid signature from an unpinned key is not evidence of who gets paid.** Anyone can generate a key, name their
+  own payee `metaAddress` in an invoice and sign it; the result verifies. Pin the seller's key out of band (merchant
+  profile, embed config, a channel you already trust), and on any path that pays `invoice.metaAddress` either pass
+  `{ pinnedSigners, requirePinnedSigner: true }` or gate on `isTrustedSeller`. With `requirePinnedSigner: true`,
+  `parseFragment`/`openFragment` resolve only with `trust: 'trusted-seller'`; otherwise they throw
+  `InvalidSignatureError` (code `INVALID_SIGNATURE`) when the signature does not verify (for example a payee edited
+  after signing), or `UntrustedSignerError` (code `UNTRUSTED_SIGNER`) when the signature is valid but the signer is not
+  in `pinnedSigners`. Both have fixed messages with no invoice content. An empty or missing list rejects every invoice.
+  Keys are compared as `pinnedSigners` always is: case-insensitive, no `0x` prefix stripped. The option is off by
+  default, so existing callers are unchanged (an invalid signature is then returned as `trust: 'invalid-signature'`,
+  a hard stop). Format, schema, missing-signature, decryption and passphrase failures keep their own error either
+  way. A pin is only as trustworthy as the channel it came from.
 - **JavaScript cannot guarantee zeroization** of keys or plaintext; the invoice-signing key is a plain `Uint8Array` you own.
 - Decoded strings are inert data: render as text, never as HTML. Never log the fragment or parsed private fields.
 - Expiry is client-side policy only (ADR-0003); `checkExpiry` takes an injected clock and expiry is exclusive.

@@ -224,7 +224,7 @@ describe('payment command trust boundary', () => {
   });
 
   it.each([
-    ['blockNumber', '0x00', 'RPC_FAILURE'], ['blockNumber', '0x2540be401', 'INVALID_INPUT'],
+    ['blockNumber', '0x00', 'INVALID_INPUT'], ['blockNumber', '0x2540be401', 'INVALID_INPUT'],
     ['transactionHash', 'invalid', 'INVALID_INPUT'], ['removed', true, 'INVALID_LOG'],
     ['blockHash', '0x12', 'INVALID_LOG'], ['address', PAYER, 'INVALID_LOG'],
     ['topics', [], 'INVALID_LOG'], ['data', '0x00', 'INVALID_LOG'],

@@ -12,6 +12,8 @@ import {
   SchemaError,
   SigningError,
   UnsupportedError,
+  InvalidSignatureError,
+  UntrustedSignerError,
   Utf8Error,
 } from './errors.js';
 import { canonicalize, parseStrictJson } from './json.js';
@@ -59,7 +61,11 @@ const B64_CT_RE = /^[A-Za-z0-9_-]{23,}$/;
 export type TrustLevel = 'invalid-signature' | 'valid-signature' | 'trusted-seller';
 
 export interface Verification {
-  /** The embedded signer key signed exactly these canonical bytes. Says nothing about who the signer is. */
+  /**
+   * The embedded signer key signed exactly these canonical bytes (integrity only). Says nothing about who
+   * the signer is: any party can produce a valid self-signed invoice naming its own payee `metaAddress`.
+   * Not seller authentication; use `signerPinned`, {@link isTrustedSeller} or `ParseOptions.requirePinnedSigner`.
+   */
   readonly signatureValid: boolean;
   /** `signatureValid` AND the signer key is in the caller's pinned set. Never true for an invalid signature. */
   readonly signerPinned: boolean;
@@ -127,8 +133,26 @@ export interface EncodeOptions {
 }
 
 export interface ParseOptions {
-  /** Lowercase 66-hex compressed signer keys the caller trusts. */
+  /**
+   * Compressed signer keys (66 hex chars, no `0x` prefix) the caller trusts, obtained out of band. Compared
+   * case-insensitively against the invoice `signer`; no prefix is stripped.
+   */
   readonly pinnedSigners?: readonly string[];
+  /**
+   * Opt-in fail-closed mode. When set, parsing returns only `trust: 'trusted-seller'` results, otherwise it
+   * throws: {@link InvalidSignatureError} (code `INVALID_SIGNATURE`) if the signature does not verify, and
+   * {@link UntrustedSignerError} (code `UNTRUSTED_SIGNER`) if the signature is valid but the signer is not in
+   * `pinnedSigners` (an empty or missing list pins nothing, so every invoice is rejected). Any party can
+   * self-sign an invoice naming its own payee `metaAddress`, so a valid signature from an unpinned key says
+   * nothing about who gets paid: on any path that pays `invoice.metaAddress`, use this or gate on
+   * {@link isTrustedSeller} yourself. Default (unset or `false`) is unchanged: an unpinned invoice parses as
+   * `valid-signature` and a bad signature as `invalid-signature`. Any other value (for example `null` from
+   * untyped code) counts as set.
+   *
+   * Failures raised earlier (format, schema, missing signature, decryption, passphrase) keep their own error.
+   * A pinned signer is still only as trustworthy as the channel the pin came from.
+   */
+  readonly requirePinnedSigner?: boolean;
   /** Passphrase for an `A256GCM-PW` link. Supplying one for any other link is refused. */
   readonly passphrase?: string;
 }
@@ -403,6 +427,12 @@ function finish(
     : signerPinned
       ? 'trusted-seller'
       : 'valid-signature';
+  // Fail closed: `!== undefined && !== false` so a non-boolean value from untyped callers still enforces.
+  // With the option set, only a `trusted-seller` result is ever returned.
+  if (options.requirePinnedSigner !== undefined && options.requirePinnedSigner !== false) {
+    if (!signatureValid) throw new InvalidSignatureError();
+    if (!signerPinned) throw new UntrustedSignerError();
+  }
   return {
     invoice,
     signature,
@@ -441,10 +471,14 @@ async function parseRoot(
  * encoded length, strict canonical base64url, 16384-byte decoded limit, fatal
  * UTF-8, strict JSON (no duplicate or prototype keys, integers only, depth <= 8),
  * canonical-form equality, schema validation, optional AES-GCM decryption, then
- * signature verification. An invalid signature does not throw: it yields
+ * signature verification. By default an invalid signature does not throw: it yields
  * `signatureValid: false` and `trust: 'invalid-signature'`, which callers must
  * treat as a hard stop. `signerPinned` is true only when the signature is valid
- * and the signer key is in `options.pinnedSigners`. Strings in the result are
+ * and the signer key is in `options.pinnedSigners`. A valid signature from an unpinned
+ * key only proves that key signed the bytes, not who gets paid: pin the seller's key
+ * out of band, and on any path that pays `invoice.metaAddress` set
+ * `options.requirePinnedSigner` (throws unless the result is `trusted-seller`) or gate on
+ * {@link isTrustedSeller}. Strings in the result are
  * inert data; never render them as HTML. This function does not fetch URLs or
  * check expiry (use {@link checkExpiry}).
  *
@@ -455,9 +489,11 @@ async function parseRoot(
  * a non-passphrase link throws {@link PassphraseUnexpectedError}.
  *
  * @param fragment Bounded `#gpi=v1.<base64url>` input (e.g. `location.hash`).
- * @param options Optional pinned signer keys and passphrase.
+ * @param options Optional pinned signer keys, `requirePinnedSigner` and passphrase.
  * @returns Validated invoice plus verification result.
- * @throws {InvoiceError} Subclass per failure class: format, size, base64url, UTF-8, JSON, schema, canonical, decryption.
+ * @throws {InvoiceError} Subclass per failure class: format, size, base64url, UTF-8, JSON, schema, canonical, decryption;
+ * only when `options.requirePinnedSigner` is set: {@link InvalidSignatureError} for a signature that does not verify,
+ * {@link UntrustedSignerError} for a valid signature whose signer is not pinned.
  * @security Do not log the fragment or returned private fields. It is a bearer secret readable by any script on the page.
  * @testVector invoice-v1-sample
  */
@@ -473,9 +509,11 @@ export async function parseFragment(fragment: string, options: ParseOptions = {}
  * when no passphrase is supplied, so a UI can prompt. No KDF work happens in that case.
  *
  * @param fragment Bounded `#gpi=v1.<base64url>` input.
- * @param options Pinned signers and optional passphrase.
+ * @param options Pinned signers, `requirePinnedSigner` and optional passphrase.
  * @returns Discriminated result.
- * @throws {InvoiceError} Same classes as {@link parseFragment}, plus {@link WrongPassphraseError}.
+ * @throws {InvoiceError} Same classes as {@link parseFragment}, plus {@link WrongPassphraseError}. With `requirePinnedSigner`,
+ * {@link InvalidSignatureError} / {@link UntrustedSignerError} are thrown only once an invoice is decrypted and parsed
+ * (never for `needsPassphrase`).
  * @security `header` is unauthenticated (anyone can edit it); show it only as "claimed" until decrypted.
  * @testVector invoice-v1-sample
  */
