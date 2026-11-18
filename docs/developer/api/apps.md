@@ -49,16 +49,18 @@ lower-cased), compared in constant time. Single use is enforced by the contract 
 Sweep checks, in order (`README`): chain and token allowlist (`chain_not_supported`, `token_not_supported`, 422) ->
 permit flag and value -> `feeTo` equals the relayer's -> quote authentic (`invalid_quote` 400), unexpired
 (`quote_expired` 410), `fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) -> deadline in
-`(now + min, now + max]`, max 1800 s -> contract static rules (`invalid_order`) -> signature recovers to `owner` ->
-per-owner rate limit -> `PolicyGate` -> breaker -> **admission control** (a stateless `eth_call` pre-simulation outside
-the lane, at most 8 concurrent, `503 busy` beyond that; a client IP may hold at most `ceil(0.75 * queue.maxPending)` lane
-slots, else `429 rate_limited_ip`) -> serial per-chain lane: gas-price cap, balance floor, **fee floor** (the signed fee
-must still cover `gasUnits * current gas price` in token units, else `422 fee_below_cost`), the deadline again after the
-queue wait (`deadline_too_soon` 422 unless more than `min` remains), `simulateContract`, gas limit, the deadline once
-more right after that simulation (same class), daily budget -> send. Other classes: `invalid_*` 400, `unsupported_media_type` 415,
-`body_too_large` 413, `invalid_url` 400, `rate_limited_ip`/`rate_limited_owner` 429, `origin_not_allowed` 403,
-`queue_full`/`busy`/`shutting_down`/`rpc_unavailable`/`send_failed`/`budget_exhausted` 503, `not_found` 404,
-`method_not_allowed` 405, `internal_error` 500.
+`(now + min, now + max]`, max 1800 s -> contract static rules (`invalid_order`) -> **client lane ticket** (taken
+synchronously before the first await and held until the sweep's lane job settles; a client network bucket, IPv4 address
+or IPv6 /64, may hold at most `queue.maxPerClient`, else `429 client_queue_full`) -> signature recovers to `owner` ->
+per-owner rate limit and failure counter -> `PolicyGate` -> breaker -> loss budget probe -> serial per-chain lane: receipt
+lookups for earlier timed-out sweeps, gas-price cap, balance floor, order state (nonce, token balance, allowance), permit
+ladder, `simulateContract`, gas limit, fee covers the estimated gas (`422 fee_below_gas_cost`), gas price re-read, the
+deadline again (`deadline_too_soon` 422 unless more than `min` remains), a second simulation, loss and daily budget
+reservations, state journal -> send. There is no simulation outside the lane: the cheap order-state reads run first in
+the lane (`apps/relayer/README.md` has the full list). Other classes: `invalid_*` 400, `unsupported_media_type` 415,
+`body_too_large` 413, `invalid_url` 400, `rate_limited_ip`/`rate_limited_owner`/`client_queue_full` 429,
+`origin_not_allowed` 403, `queue_full`/`shutting_down`/`rpc_unavailable`/`send_failed`/`budget_exhausted` 503,
+`not_found` 404, `method_not_allowed` 405, `internal_error` 500.
 
 Client side: `apps/web/src/lib/relayerClient.ts` (`requestQuote`, `submitSweep`; reads the error class from
 `{"error":{"code"}}` and caps the response at 16 KiB while streaming) and, for the signing, `packages/chain-adapters`
@@ -72,7 +74,7 @@ JSON file (`RELAYER_CONFIG`, default `./relayer.config.json`; example `relayer.c
 Strict validation: unknown keys, wildcard or non-https origins, plain-http or credentialed RPC URLs and non-stable tokens
 stop startup, with an error naming the unknown key. Top-level keys in the example: `listen`, `allowedOrigins`, `trustedProxies`, `quoteTtlSeconds`,
 `deadline { minSeconds, maxSeconds }`, `rateLimit`, `breaker`, `server { maxConnectionsPerIp }` (default 64 concurrent
-connections per peer, 1..1024, trusted proxies exempt), `queue`, `shutdownGraceSeconds`, `chains[]` with
+connections per peer, 1..1024, trusted proxies exempt), `queue { maxPending, maxPerClient, receiptTimeoutSeconds }`, `shutdownGraceSeconds`, `chains[]` with
 `chainId`, `rpcUrl` or `rpcUrlEnv`, `feeTo`, `tokens[] { address, usdStable: true }`, `nativeUsdPrice`, `gasUnits
 { sweep, sweepWithPermit }`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Operator numbers have no
 defaults on purpose; the example values are placeholders, not measurements.

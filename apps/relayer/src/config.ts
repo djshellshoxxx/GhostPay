@@ -108,7 +108,11 @@ export interface RelayerConfig {
    * server-wide {@link MAX_CONNECTIONS}; peers in `trustedProxies` are exempt (S3-18).
    */
   readonly server: { readonly maxConnectionsPerIp: number };
-  readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
+  /**
+   * `maxPending`: sweeps queued or in flight per chain. `maxPerClient`: of those (plus the ones still in admission), how
+   * many one client network bucket may hold at once (RL-02, `429 client_queue_full`).
+   */
+  readonly queue: { readonly maxPending: number; readonly maxPerClient: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
   /**
    * Absolute path of the restart-safe state journal (`state.file`); `undefined` for `state.ephemeral`, where a restart
@@ -127,6 +131,14 @@ export interface ConfigContext {
   readonly readManifest: (chainId: number) => string | undefined;
   /** Compressed secp256k1 release public keys; manifests fail closed without a matching key. */
   readonly releaseKeys?: readonly string[] | undefined;
+}
+
+/**
+ * Default `queue.maxPerClient`: a quarter of the queue, at least 2 (an honest client may retry while one sweep is in
+ * flight), never above the queue itself.
+ */
+export function defaultMaxPerClient(maxPending: number): number {
+  return Math.min(maxPending, Math.max(2, Math.ceil(maxPending / 4)));
 }
 
 function bad(path: string, why: string): never {
@@ -458,7 +470,8 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
   const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds', 'griefReserveBps']);
   const sv = sub(o, 'server', '$', ['maxConnectionsPerIp']);
-  const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
+  const q = sub(o, 'queue', '$', ['maxPending', 'maxPerClient', 'receiptTimeoutSeconds']);
+  const maxPending = numberOr(q, 'maxPending', 'queue', 16, 1, 1024);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
   const allowFeeToHotKey = boolOr(o, 'allowFeeToHotKey', '$', false);
@@ -514,7 +527,8 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     ...optionalSecrets(o, ctx),
     server: { maxConnectionsPerIp: numberOr(sv, 'maxConnectionsPerIp', 'server', 64, 1, MAX_CONNECTIONS) },
     queue: {
-      maxPending: numberOr(q, 'maxPending', 'queue', 16, 1, 1024),
+      maxPending,
+      maxPerClient: numberOr(q, 'maxPerClient', 'queue', defaultMaxPerClient(maxPending), 1, maxPending),
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),
     },
     shutdownGraceSeconds: numberOr(o, 'shutdownGraceSeconds', '$', 15, 1, 300),

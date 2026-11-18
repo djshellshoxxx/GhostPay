@@ -8,7 +8,7 @@ import { canonicalManifestJson, loadDeployment, manifestDigest, manifestSigningB
 import { keccak256, toBytes } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { TrustedProxies, bucketKey, parseIp, resolveClientIp, type ParsedIp } from '@ghostpay/relayer-guard';
-import { DEV_CHAIN_ID, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
+import { DEV_CHAIN_ID, defaultMaxPerClient, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
 import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
 import { DEST, FEE_TO, HOT_ADDRESS, NOPERMIT, ORIGIN, STRANGER, SWEEP_CONTRACT, USDC } from './harness.testutil.js';
 
@@ -86,7 +86,7 @@ describe('parseConfig', () => {
     expect(c.quoteTtlSeconds).toBe(60);
     expect(c.minDeadlineSeconds).toBe(30);
     expect(c.maxDeadlineSeconds).toBe(1800);
-    expect(c.queue).toEqual({ maxPending: 16, receiptTimeoutSeconds: 120 });
+    expect(c.queue).toEqual({ maxPending: 16, maxPerClient: 4, receiptTimeoutSeconds: 120 });
     expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 });
     expect(c.trustedProxies).toEqual([]);
     expect(c.rateLimit).toMatchObject({ quoteGlobalPerMinute: 600, quoteGlobalBurst: 100, quoteGroupPerMinute: 60, quoteGroupBurst: 20 });
@@ -150,6 +150,20 @@ describe('parseConfig', () => {
     expect(() => parse(good(), { env: { METRICS_ENABLED: 'true' } })).toThrow(/METRICS_ENABLED/);
     expect(() => parse(good(), { env: { METRICS_BIND: '999.1.1.1' } })).toThrow(/METRICS_BIND/);
     expect(() => parse(good(), { env: { METRICS_PORT: '65536' } })).toThrow(/METRICS_PORT/);
+  });
+
+  // Regression (LF-074edb61e-4 / LF-2789f780b-2, dropped by 84c2c185): per-client lane cap.
+  it('caps lane slots per client (queue.maxPerClient, default min(maxPending, max(2, ceil(maxPending/4))))', () => {
+    expect(parse(good()).queue.maxPerClient).toBe(4);
+    for (const [maxPending, expected] of [[1, 1], [2, 2], [4, 2], [8, 2], [9, 3], [16, 4], [1024, 256]] as const) {
+      expect(parse(good({ queue: { maxPending } })).queue.maxPerClient).toBe(expected);
+      expect(defaultMaxPerClient(maxPending)).toBe(expected);
+    }
+    expect(parse(good({ queue: { maxPending: 8, maxPerClient: 8 } })).queue.maxPerClient).toBe(8);
+    expect(parse(good({ queue: { maxPending: 8, maxPerClient: 1 } })).queue.maxPerClient).toBe(1);
+    for (const bad of [0, 9, 1.5, '2', -1]) {
+      expect(() => parse(good({ queue: { maxPending: 8, maxPerClient: bad } }))).toThrow(/queue\.maxPerClient/);
+    }
   });
 
   // Regression (LF-6f25385ce-1, dropped by 84c2c185): per-peer TCP connection cap.

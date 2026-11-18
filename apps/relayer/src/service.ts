@@ -24,7 +24,7 @@ import { DailyBudget } from './budget.js';
 import type { ChainClient, MinedReceipt, ReceiptSummary, SweepCall } from './chain.js';
 import type { ChainRuntimeConfig, RelayerConfig } from './config.js';
 import { RelayerError, SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
-import { ChainLane, NonceManager, type JobOutcome } from './lane.js';
+import { ChainLane, NonceManager, type JobOutcome, type LaneTicket } from './lane.js';
 import { KeyHasher, type RateLimiter } from './limiter.js';
 import type { Metrics } from './metrics.js';
 import { nullLogger, type Logger } from './log.js';
@@ -257,6 +257,7 @@ export function revertToError(r: SimulationRevert): RelayerError {
  * Core relay logic, independent of HTTP: quoting, sweep validation and submission.
  *
  * @remarks Order of checks in {@link RelayerService.sweep}: cheap structural/policy checks first, then
+ * the client's lane ticket (taken synchronously before the first await, `client_queue_full`), then
  * signature recovery, then the owner rate limit (keyed only by an authenticated owner so nobody can
  * exhaust another owner's quota), the compliance gate, and finally the per-chain serial lane where
  * the simulation runs immediately before the send.
@@ -311,7 +312,7 @@ export class RelayerService {
       this.chains.set(cfg.chainId, {
         cfg,
         client,
-        lane: new ChainLane(d.config.queue.maxPending),
+        lane: new ChainLane(d.config.queue.maxPending, d.config.queue.maxPerClient),
         nonces: new NonceManager(() => client.getPendingNonce()),
         budget: new DailyBudget(cfg.dailyBudgetWei, this.now, stored.budget, mono),
         breaker: new GuardedBreaker(
@@ -572,6 +573,26 @@ export class RelayerService {
       if (e instanceof ChainAdapterError) throw new RelayerError(422, 'invalid_order');
       throw e;
     }
+    // RL-02 / NC-04: the client's lane slot is taken here, synchronously and before the first await, and held until
+    // its job settles, so concurrent requests cannot all pass a check that is only counted later. Salted key only.
+    const ticket = rt.lane.reserve(ctx.clientKey === undefined ? undefined : this.hasher.hash(ctx.clientKey));
+    try {
+      return await this.admit(req, ctx, rt, typed, ticket);
+    } finally {
+      ticket.release(); // no-op once the job was submitted: the lane releases the slot when the job settles
+    }
+  }
+
+  /** Client and owner checks that await, then the lane; runs while the caller holds the client's lane ticket. */
+  private async admit(
+    req: SweepRequest,
+    ctx: RequestContext,
+    rt: ChainRuntime,
+    typed: ReturnType<typeof buildSweepTypedData>,
+    ticket: LaneTicket,
+  ): Promise<SweepResponse> {
+    const s = req.sweep;
+    const cfg = this.d.config;
     let recovered: Address;
     try {
       recovered = await recoverTypedDataAddress({
@@ -618,7 +639,7 @@ export class RelayerService {
       permit: req.permit,
     };
     try {
-      return await rt.lane.submit(() => this.runJob(rt, call, ctx, keys));
+      return await ticket.submit(() => this.runJob(rt, call, ctx, keys));
     } catch (e) {
       if (e instanceof RelayerError && OWNER_STRIKE_CODES.has(e.code)) this.strike(call);
       throw e;
@@ -630,6 +651,11 @@ export class RelayerService {
     if (call === undefined) return;
     this.failures.record(call.sweep.owner.toLowerCase(), call.sweep.destination.toLowerCase());
     this.d.metrics?.inc('relayer_owner_failures_total');
+  }
+
+  /** @returns Client keys holding a lane ticket on the chain (tests and diagnostics; no key is exposed). */
+  public heldClientSlots(chainId: number): number {
+    return this.chains.get(chainId)?.lane.heldClients ?? 0;
   }
 
   /** Stops admitting work and waits for every queued/in-flight transaction to settle. */

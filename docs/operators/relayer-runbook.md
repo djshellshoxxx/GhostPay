@@ -35,6 +35,8 @@ Per chain: `rpcUrl` or `rpcUrlEnv`, `sweepRelayer` (must match the manifest if b
 
 `server.maxConnectionsPerIp` (default 64, 1..1024) caps the concurrent TCP connections one peer (IPv4 address, IPv6 /64) may hold; a further connection is closed at once and counted as `relayer_connections_refused_total`. The server-wide cap stays 1024. Peers listed in `trustedProxies` are exempt, because a proxy carries many clients over its connections: with a proxy in front, set the equivalent per-client limit there (nginx `limit_conn`).
 
+`queue.maxPending` (default 16, 1..1024) bounds the sweeps queued or in flight per chain (`503 queue_full`). `queue.maxPerClient` (default `min(maxPending, max(2, ceil(maxPending / 4)))`, 4 for the default queue; 1..`maxPending`) bounds how many of them, together with the client's sweeps still in admission, one client network bucket (IPv4 address, IPv6 /64) may hold at once (`429 client_queue_full` with `Retry-After: 5`). Behind a proxy this needs a correct `trustedProxies`, otherwise every client shares the proxy's bucket.
+
 Fee policy is fixed by FEE_SCHEDULE: `clamp(max(gas x 1.10, 50 bps), cap 300 bps)`. If the cap cannot cover raw gas the quote is refused (`amount_too_small`). The token price is a constant 1.0 and `nativeUsdPrice` is **your number**: update it when the native coin price moves materially, or you will sponsor sweeps at a loss. There is no oracle (audit G-11, G-26).
 
 ### `trustedProxies` and the listener
@@ -136,7 +138,7 @@ Griefing note (S3-06): a sweep that reverts after a passing simulation (front-ru
 | Wrong `nativeUsdPrice` (selling gas too cheaply) | Correct the config and restart; review fees collected vs gas spent. |
 | RPC provider outage or lying | Breaker will open on errors. Switch `rpcUrlEnv` target to another provider and restart. A provider that lies consistently cannot be detected by the relayer. |
 | Fee-recipient (`feeTo`) problem | `feeTo` is a config value; correct it and restart. Contract-level `FEE_RECIPIENT` on the router is separate and immutable ([deployment runbook](deployment-runbook.md)). |
-| Abuse (request floods, reverted-sweep spam) | Tighten `rateLimit`; block at the proxy; lower `queue.maxPending`. Confirm `trustedProxies` is right first (S3-07). |
+| Abuse (request floods, reverted-sweep spam) | Tighten `rateLimit`; block at the proxy; lower `queue.maxPending` or `queue.maxPerClient`. Confirm `trustedProxies` is right first (S3-07). |
 | A user reports a sweep that did not happen | You cannot see requests after the fact (the journal keeps only in-flight nonce/hash records); use the `requestId` if they have it, and the on-chain history of the hot key. |
 | Court order or data request | You hold almost no stored data (see section 10); what you can provide is limited to logs and proxy logs you chose to keep. Involve counsel. |
 | Suspected bug in the contracts | There is no pause. Stop the relayer service for that chain, tell users to use the direct sweep path, and follow the contract migration in the deployment runbook. |

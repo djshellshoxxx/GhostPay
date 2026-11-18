@@ -40,6 +40,8 @@ chain and token allowlist (`chain_not_supported`, `token_not_supported` 422) -> 
 `permit_value_too_low`) -> `feeTo` equals the relayer's (`fee_to_mismatch`) -> quote token authentic (`invalid_quote` 400),
 unexpired (`quote_expired` 410), `sweep.fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) ->
 deadline in `(now+min, now+max]`, max 1800 s (`deadline_too_soon/far`) -> contract static rules (`invalid_order`) ->
+client lane ticket (`client_queue_full` 429 + `Retry-After: 5`: a client network bucket, IPv4 address or IPv6 /64, holds at
+most `queue.maxPerClient` sweeps between this point and the settlement of their lane jobs; taken before the first await) ->
 signature recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
 proven owner) -> per-owner failure counter (`owner_failure_limit` 429 + `Retry-After`: 3 costly user-attributable
 failures per hour, spec 04) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker (`breaker_open` 503) ->
@@ -63,12 +65,18 @@ journal the transaction hash (`state_unavailable` 503 on failure; nothing is bro
 send whose outcome is unknown blocks the chain's lane (`send_unsettled` 503 + `Retry-After`) until reconciliation shows
 whether its nonce was used. A mined revert also counts against the owner.
 
+Admission bounds: `queue.maxPending` (default 16, 1..1024) sweeps queued or in flight per chain; `queue.maxPerClient`
+(default `min(maxPending, max(2, ceil(maxPending / 4)))`, 1..`maxPending`) of them per client network bucket, counted from
+the ticket (before signature recovery) until the lane job settles; `server.maxConnectionsPerIp` (default 64, 1..1024)
+open connections per peer. There is no simulation outside the lane: the in-lane order-state reads come before both
+simulations, so an unfunded sweep costs three reads in the lane, not a simulation.
+
 Quote pricing: `gas.griefReserveBps` (default 0, max 5000) is added to the gas term before the F-SPONSOR formula, so the fee
 carries a margin for gas lost when an owner drains or revokes first; how to derive a value from measured gas and the
 observed mined-revert rate is in `docs/audits/26-relayer-completion.md` section 4a. `quoteTtlSeconds` is at most 60 (default 60).
 
 Other classes: `invalid_*` 400 (field-level validation), `unsupported_media_type` 415, `body_too_large` 413,
-`rate_limited_ip` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
+`rate_limited_ip` / `client_queue_full` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
 `internal_error` 500.
 
 **Client contract (pre-broadcast classes).** Every 4xx class above is returned before the relayer broadcasts: `send` is

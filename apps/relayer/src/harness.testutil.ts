@@ -169,7 +169,7 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 },
     lossBudget: { windowSeconds: 3600, perKeyWei: 10n ** 16n, globalWei: 10n ** 17n, maxKeys: 100 },
     server: { maxConnectionsPerIp: 64 },
-    queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
+    queue: { maxPending: 4, maxPerClient: 2, receiptTimeoutSeconds: 30 },
     shutdownGraceSeconds: 2,
     metricsEnabled: false,
     metricsBind: '127.0.0.1',

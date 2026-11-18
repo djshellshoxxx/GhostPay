@@ -78,3 +78,18 @@ Contract code wins over docs. Items for the lead to confirm or reject.
   on accept, before any request is read, and counted as `relayer_connections_refused_total` (no log line, no address).
   Trusted proxies are exempt, so behind a proxy the per-client connection limit belongs to the proxy. The counter is
   keyed by an HMAC under a random per-process key and holds an entry only while that peer has an open connection.
+- Per-client lane cap (LF-074edb61e-4, LF-2789f780b-2): `queue.maxPerClient` (default
+  `min(maxPending, max(2, ceil(maxPending / 4)))`, 1..`maxPending`) bounds the sweeps one client network bucket (IPv4
+  address, IPv6 /64, salted) holds, `429 client_queue_full`. The ticket is taken synchronously right after the cheap
+  synchronous checks and before the first await (signature recovery), and is held until the lane job settles (receipt
+  included), so concurrent requests cannot overshoot it. The map holds an entry only while a ticket is held. A salt
+  rotation gives a client a fresh key, so at a rotation one client can briefly hold twice the cap. Clients that spread
+  over many /64s or IPv4 addresses are bounded by `queue.maxPending`, the rate limits and the loss budget, not by this cap.
+- No out-of-lane pre-simulation (LF-29de09c05-1, LF-2789f780b-3): the historical design ran a bounded `eth_call`
+  before the lane (8 per chain, 2 per client, `503 busy`). Today's lane reads gas price, balance and the order state
+  (owner balance, allowance, nonce) before any simulation, so a sweep from an unfunded throw-away key is refused after
+  three cheap reads without simulating. The per-client fairness that the pre-simulation sub-limit gave is provided by
+  the per-client ticket above, which also covers the awaits before the lane (signature recovery, `PolicyGate`). Not
+  restored: a pre-simulation would add one `eth_call` per sweep and change the documented check order. Residual: a
+  flood of doomed sweeps from many client buckets still occupies lane slots for a few reads each and can make honest
+  sweeps get `503 queue_full`.

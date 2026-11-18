@@ -1244,7 +1244,7 @@ describe('receipt timeouts (L5-06)', () => {
     return release;
   };
   // breaker.probeTimeoutSeconds 60 (the harness value) and queue.receiptTimeoutSeconds 120: the defaults.
-  const defaults = { queue: { maxPending: 4, receiptTimeoutSeconds: 120 } };
+  const defaults = { queue: { maxPending: 4, maxPerClient: 2, receiptTimeoutSeconds: 120 } };
 
   it('D-R7: with the default timeouts, a probe mined 90 s after admission closes the breaker', async () => {
     const s = await start({ config: defaults });
@@ -1662,13 +1662,14 @@ describe('rate limiting', () => {
 
 describe('serialization, queue and shutdown', () => {
   it('serializes concurrent submissions: one in flight, sequential nonces', async () => {
-    const s = await start();
+    // Distinct clients (the harness peer is a trusted proxy here); one client alone may hold queue.maxPerClient = 2.
+    const s = await start({ config: { trustedProxies: ['127.0.0.1'] } });
     let release: () => void = () => undefined;
     s.fake.receiptGate = new Promise<void>((r) => {
       release = r;
     });
     const bodies = await Promise.all([1n, 2n, 3n].map(async (n) => (await prepare(s, { nonce: n })).body));
-    const replies = Promise.all(bodies.map((b) => call(s, 'POST', '/v1/sweep', b)));
+    const replies = Promise.all(bodies.map((b, i) => call(s, 'POST', '/v1/sweep', b, { 'x-forwarded-for': `198.51.100.${String(i + 1)}` })));
     await settle();
     await settle();
     expect(s.fake.sent).toHaveLength(1); // the others wait for the first receipt
@@ -1680,16 +1681,17 @@ describe('serialization, queue and shutdown', () => {
   });
 
   it('rejects with 503 when the bounded queue is full', async () => {
-    const s = await start({ config: { queue: { maxPending: 2, receiptTimeoutSeconds: 30 } } });
+    // Three distinct clients (the harness peer is a trusted proxy here): one client alone hits queue.maxPerClient first.
+    const s = await start({ config: { trustedProxies: ['127.0.0.1'], queue: { maxPending: 2, maxPerClient: 2, receiptTimeoutSeconds: 30 } } });
     let release: () => void = () => undefined;
     s.fake.receiptGate = new Promise<void>((r) => {
       release = r;
     });
     const bodies = await Promise.all([1n, 2n, 3n].map(async (n) => (await prepare(s, { nonce: n })).body));
-    const first = call(s, 'POST', '/v1/sweep', bodies[0]);
-    const second = call(s, 'POST', '/v1/sweep', bodies[1]);
+    const first = call(s, 'POST', '/v1/sweep', bodies[0], { 'x-forwarded-for': '198.51.100.1' });
+    const second = call(s, 'POST', '/v1/sweep', bodies[1], { 'x-forwarded-for': '198.51.100.2' });
     await settle();
-    const third = await call(s, 'POST', '/v1/sweep', bodies[2]);
+    const third = await call(s, 'POST', '/v1/sweep', bodies[2], { 'x-forwarded-for': '198.51.100.3' });
     expect(third.status).toBe(503);
     expect(errCode(third)).toBe('queue_full');
     release();
