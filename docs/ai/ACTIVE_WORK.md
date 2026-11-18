@@ -13,6 +13,20 @@ reconcile both PRs onto live main, reproduce and fix concrete defects, run compl
 codec/recovery/vault checks plus web typecheck and scoped lint, and record exact evidence.
 No remote mutation, deployment, release, mainnet enablement or browser-pass claim.
 
+# Recovery cancellation review — 2026-11-18
+
+Worker: ChatGPT recovery review agent using the Caveman workflow. Branch:
+`chatgpt/ghostpay-recovery-review-20261118`; base PR #213
+`ebf7c92c3be1c7aebd37fc58b5567e114fb932fc`. Root coordinates integration.
+Owned paths: `apps/web/src/components/StealthExportRecovery.tsx` and its test;
+`docs/user/recover-stealth-payment-keys.md`; the scheme-1 boundary in the format reference and recovery script help;
+the three existing payment-export warning strings in `apps/web/locales/{en,es,ja,ar}.json` (coordinator-approved);
+this claim and the recovery review handoff.
+Acceptance: reproduce a cancelled master-import request affecting a later export, bind replacement authorization
+to the selected export and current operation, preserve lock/session guards, and verify the focused recovery suites.
+Document the scheme-1 viewing-key plus payment-private-key spending-authority boundary. Other locale, session,
+Scan and CI paths remain coordinator-owned. No remote mutation, deployment, release or real funds.
+
 # Spec 18 key portability + consolidation follow-through — 2026-11-18 (ACTIVE)
 
 Worker: Claude Code cloud session `ghostpay-consolidation-9xhtxg` (this session promoted PR #203 to `main` as
