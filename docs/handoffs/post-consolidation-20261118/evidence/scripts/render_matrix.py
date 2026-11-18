@@ -38,7 +38,7 @@ for t in TIERS:
 L += ["## Per-feature detail", ""]
 for f in sorted(rows, key=lambda f: (TIERS.index(f.get("tier")) if f.get("tier") in TIERS else 9, f["id"])):
     L += [f"### {f['id']} — {esc(f.get('name',''))}", "",
-          f"- Tier/area: {f.get('tier')} / {esc(f.get('area',''))}. Status: **{f.get('status')}**" + (f" (reported {f['_status_reported']}, normalized by rubric)" if f.get('_status_reported') else "") + f". Implementation {f.get('implementation_pct')}% · Verification {f.get('verification_pct')}% (requirement weight {f.get('_total_weight')}).",
+          f"- Tier/area: {f.get('tier')} / {esc(f.get('area',''))}. Status: **{f.get('status')}**" + (f" (reported {f['_status_reported']}, normalized by rubric)" if f.get('_status_reported') else "") + (f" — security hold: {esc(f['status_hold'])}" if f.get('status_hold') else "") + (f" — DUPLICATE of {esc(f['duplicate_of'])}, excluded from counts" if f.get('duplicate_of') else "") + f". Implementation {f.get('implementation_pct')}% · Verification {f.get('verification_pct')}% (requirement weight {f.get('_total_weight')}).",
           f"- Spec: {lst(f.get('spec_refs'))}",
           f"- Implementation: {lst(f.get('implementation_files'), 8)}",
           f"- Tests: {lst(f.get('test_files'), 8)}",

@@ -1,0 +1,13 @@
+{
+ "requirement_corrections": [
+  {"id": "F-PROTO-03", "req_prefix": "Per-log block-hash cross-check", "implemented": "yes", "verified": "yes",
+   "evidence": "Team G-A verification: packages/chain-adapters/src/logs.ts:438-460 @7a620ff1 already cross-checks per-log block hash; logs.test.ts + scanHardening.test.ts 70/70 pass", "clear_missing": true}
+ ],
+ "security_holds": [
+  {"id": "F-KEY-01", "finding": "SEC-03", "reason": "vault-less in-memory session has no step-up before secret export/sweep"},
+  {"id": "F-KEY-02", "finding": "SEC-05", "reason": "vault/keystore passphrase floor accepts name+year passphrases"},
+  {"id": "F-WEB-07", "finding": "SEC-10", "reason": "local-proxy scan transport blocked by the app's own CSP while UI/docs offer it"},
+  {"id": "F-WEB-11", "finding": "SEC-03", "reason": "direct sweep signs without step-up in vault-less sessions"},
+  {"id": "F-WEB-12", "finding": "SEC-03", "reason": "relayer-assisted sweep signs without step-up in vault-less sessions"}
+ ]
+}

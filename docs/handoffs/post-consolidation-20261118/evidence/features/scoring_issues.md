@@ -1,6 +1,9 @@
 # Scoring consistency issues
 
-- F-PROTO-03: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-PROTO-03: requirement 'Per-log block-hash cross-check' corrected by override (Team G-A verification: packages/chain-adapters/src/logs.ts:438-460 @7a620ff1 alr)
+- F-PROTO-03: reported impl 95 != computed 100 (computed used)
+- F-PROTO-03: reported verif 95 != computed 100 (computed used)
+- F-PROTO-03: status PARTIAL normalized to rubric-implied VERIFIED_COMPLETE
 - F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'range mode: grid-aligned padded windows, budgets'
 - F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'pir2 two-server PIR, dummy-padded epochs, manifest match'
 - F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'light-client wrapper (block hashes confirmed by LC)'
@@ -21,8 +24,13 @@
 - F-DEP-05: reported verif 80 != computed 75 (computed used)
 - F-WEB-04: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
 - F-WEB-06: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-07: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-10 (local-proxy scan transport blocked by the app's own CSP while UI/docs offer it)
 - F-WEB-09: status VERIFIED_COMPLETE normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-11: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (direct sweep signs without step-up in vault-less sessions)
+- F-WEB-12: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (relayer-assisted sweep signs without step-up in vault-less sessions)
 - F-WEB-18: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-01: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (vault-less in-memory session has no step-up before secret export/sweep)
+- F-KEY-02: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-05 (vault/keystore passphrase floor accepts name+year passphrases)
 - F-KEY-03: status VERIFIED_COMPLETE normalized to rubric-implied IMPLEMENTED_UNVERIFIED
 - F-KEY-05: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
 - F-KEY-13: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED

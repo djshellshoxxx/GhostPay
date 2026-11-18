@@ -29,14 +29,14 @@ documents and checked for consistency but not re-run. **INFERRED** = reasoned fr
 | `evidence/prs/prs_search.jsonl`, `open_prs.json` | GitHub search API; MCP `list_pull_requests` | PR states, dates, head/base refs (first 100 open with heads) | all docs |
 | `feature_completion_matrix.json` | `score_features.py` merge of B1a/B1b/B2/B3 rows | 194 rows (192 distinct): requirements with weights, implemented/verified marks, evidence, recomputed percentages | FEATURE_COMPLETION_MATRIX, IMPLEMENTATION_SEQUENCE |
 | `evidence/features/stats.json` | `score_features.py` | Status/tier counts, requirement-weighted aggregates, effort sums | README, matrix summary |
-| `evidence/features/scoring_issues.md` | `score_features.py` | The 91 places where team headline numbers or statuses were replaced by rubric-computed values | matrix header |
+| `evidence/features/scoring_issues.md`, `evidence/scripts/overrides.json` | `score_features.py` with `GP_OVERRIDES=overrides.json` | The 99 places where team headline numbers or statuses were replaced by rubric-computed values, plus the coordinator's one verified requirement correction (F-PROTO-03) and five security holds | matrix header |
 | `evidence/teams/B1/*`, `B2/*`, `B3/*` | Feature teams | Original team tables and per-package coverage map (all 71 package/app dirs) | matrix |
 | `security_findings.json` | Team S merge of D + E + prior R-xx | 49 unified findings (0 Critical, 2 High, 8 Medium, 20 Low, 19 Info) with sources, evidence, affected features, gates | SECURITY_AND_PRIVACY_GAP_ANALYSIS |
 | `evidence/teams/D/*` | Team D | Crypto/contract review, 22 findings, independent scripts: `indep-vectors.cjs` (EIP-5564 scheme-1 vectors 6/6 with `elliptic` + `js-sha3`), `indep-keystore-recovery.mjs` (keystore v1 decrypted with `node:crypto` only), `passphrase-probe.mjs` | SEC-03..SEC-07, SEC-15 |
 | `evidence/teams/E/*` | Team E | Browser/privacy review, 23 findings, `egress_walk.mjs` (all-view egress walk), `csp_loopback_probe.mjs` (local-proxy CSP block), `jitless_bench.mjs` | SEC-01, SEC-08..SEC-10 |
 | `evidence/teams/F/*` | Team F | CI inventory, local results, `test_inventory.json` (per-package test counts), `commands.log` (every command + exit code) | SECURITY gates, acceptance criteria |
 | `evidence/teams/A/consolidation_tasks.json` | Team A | 34 reconstructed prior-campaign tasks with classification and commits | POST_CONSOLIDATION_AUDIT §4 |
-| `completion_strategy.json` | Team G | Six-way strategy comparison per unfinished feature, estimates, dependencies | IMPLEMENTATION_SEQUENCE, plan |
+| `completion_strategy.json`, `ws_registry.json` | Teams G-A / G-B (from the lost Team G registry) + coordinator security holds | Six-way strategy per unfinished feature; 27 workstreams / 106 items with exclusive owned paths (ownership validator: 0 overlaps), item DAG (acyclic), checkpoints CP-0..CP-9 | IMPLEMENTATION_SEQUENCE, PARALLEL_AGENT_EXECUTION_PLAN, execution prompt |
 
 ## 3. CI runs referenced (REPORTED from the GitHub Actions API; conclusions cross-checked by Teams A and F)
 
@@ -97,5 +97,5 @@ python3 -I docs/handoffs/post-consolidation-20261118/evidence/scripts/branch_cen
 ```
 
 ```bash
-python3 -I docs/handoffs/post-consolidation-20261118/evidence/scripts/score_features.py /tmp/merged.json /tmp/stats.json /tmp/issues.md docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_proto.json docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_web.json docs/handoffs/post-consolidation-20261118/evidence/teams/B2/features.json docs/handoffs/post-consolidation-20261118/evidence/teams/B3/features.json
+GP_OVERRIDES=docs/handoffs/post-consolidation-20261118/evidence/scripts/overrides.json python3 -I docs/handoffs/post-consolidation-20261118/evidence/scripts/score_features.py /tmp/merged.json /tmp/stats.json /tmp/issues.md docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_proto.json docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_web.json docs/handoffs/post-consolidation-20261118/evidence/teams/B2/features.json docs/handoffs/post-consolidation-20261118/evidence/teams/B3/features.json
 ```

@@ -2,8 +2,8 @@
  "total_features": 192,
  "total_rows": 194,
  "by_status": {
-  "VERIFIED_COMPLETE": 41,
-  "IMPLEMENTED_UNVERIFIED": 26,
+  "VERIFIED_COMPLETE": 37,
+  "IMPLEMENTED_UNVERIFIED": 30,
   "EXPERIMENTAL": 45,
   "PARTIAL": 27,
   "BLOCKED": 7,
@@ -18,15 +18,15 @@
  },
  "by_tier_status": {
   "beta-core": {
-   "VERIFIED_COMPLETE": 20,
-   "IMPLEMENTED_UNVERIFIED": 9,
+   "VERIFIED_COMPLETE": 18,
    "BLOCKED": 3,
    "PARTIAL": 5,
+   "IMPLEMENTED_UNVERIFIED": 11,
    "SPEC_ONLY": 6
   },
   "beta-supporting": {
-   "IMPLEMENTED_UNVERIFIED": 12,
-   "VERIFIED_COMPLETE": 16,
+   "IMPLEMENTED_UNVERIFIED": 14,
+   "VERIFIED_COMPLETE": 14,
    "PARTIAL": 11
   },
   "full-profile": {
@@ -50,8 +50,8 @@
   "beta-core": {
    "features": 43,
    "weight": 643.0,
-   "impl_pct": 85.2,
-   "verif_pct": 83.3
+   "impl_pct": 85.3,
+   "verif_pct": 83.4
   },
   "beta-supporting": {
    "features": 39,
@@ -81,36 +81,36 @@
  "aggregate_all_excluding_future": {
   "features": 149,
   "weight": 1714.0,
-  "impl_pct": 79.8,
-  "verif_pct": 74.9
+  "impl_pct": 79.9,
+  "verif_pct": 75.0
  },
  "aggregate_release_scope_beta": {
   "features": 82,
   "weight": 1108.0,
-  "impl_pct": 87.8,
-  "verif_pct": 83.9
+  "impl_pct": 87.9,
+  "verif_pct": 84.0
  },
  "aggregate_all": {
   "features": 192,
   "weight": 1863.0,
   "impl_pct": 73.9,
-  "verif_pct": 69.2
+  "verif_pct": 69.3
  },
  "effort_days_unfinished": [
-  308.5,
-  918.0
+  309.0,
+  919.0
  ],
  "effort_days_unfinished_excluding_future": [
-  201.5,
-  460.0
+  202.0,
+  461.0
  ],
  "effort_days_unfinished_beta_scope": [
-  42.5,
-  106.0
+  43.0,
+  107.0
  ],
  "duplicates_excluded": [
   "F-FUT-40",
   "F-PROTO-13"
  ],
- "issues": 91
+ "issues": 99
 }

@@ -8,7 +8,8 @@
 
 - **Inventory.** Four independent teams inventoried every package/app directory: B1a (protocol, crypto core, contracts, account abstraction, deployments), B1b (browser application, keys, backup, storage, wallet, RPC), B2 (merchant, CLI, relayer, operations, UX packages, integrations, i18n, accessibility, hosting, docs) and B3 (multichain, privacy extensions, transport, experimental PoCs, future roadmap). All 71 package/app directories are mapped (B2 `package_coverage.md`).
 - **Requirement-weighted scoring.** Each feature lists its requirements from specifications, ADRs, tests and code, weighted core = 3, important = 2, minor = 1. Each requirement is marked implemented yes / half / no (half = code exists but is not reachable from the intended surface) and verified yes / half / no (yes = an automated test exercising the behaviour passed, run locally by the team at `7a620ff1` or green in CI run 44231986652/44242366118; half = a test exists but was not shown passing). Verification is capped at implementation per requirement.
-- **Recomputed, not self-reported.** Implementation % and verification % are recomputed by `score_features.py` from the requirement lists (rounded to 5) and the status is normalized to the rubric: VERIFIED_COMPLETE = implementation 100, verification ≥ 90 and no open defect; IMPLEMENTED_UNVERIFIED = implementation ≥ 90; PARTIAL; SPEC_ONLY (< 10 % with a spec); NOT_STARTED; EXPERIMENTAL and BLOCKED are kept as reported. Where a team's headline number differed, the recomputed one is shown; the 91 adjustments are listed in `EVIDENCE_INDEX.md` (scoring issues).
+- **Recomputed, not self-reported.** Implementation % and verification % are recomputed by `score_features.py` from the requirement lists (rounded to 5) and the status is normalized to the rubric: VERIFIED_COMPLETE = implementation 100, verification ≥ 90 and no open defect; IMPLEMENTED_UNVERIFIED = implementation ≥ 90; PARTIAL; SPEC_ONLY (< 10 % with a spec); NOT_STARTED; EXPERIMENTAL and BLOCKED are kept as reported. Where a team's headline number differed, the recomputed one is shown; every adjustment is listed in `evidence/features/scoring_issues.md` (99 entries).
+- **Coordinator overrides** (`evidence/scripts/overrides.json`, applied by the scorer): one requirement correction verified in code (F-PROTO-03: per-log block-hash cross-check exists at `packages/chain-adapters/src/logs.ts:438-460`, tests 70/70), and a **security hold**: a row whose own code is the root cause of an open, confirmed Medium-or-higher finding cannot be VERIFIED_COMPLETE and is held at IMPLEMENTED_UNVERIFIED — F-KEY-01, F-WEB-11, F-WEB-12 (SEC-03), F-KEY-02 (SEC-05), F-WEB-07 (SEC-10). Findings that only concern the hosting context (SEC-01 shared origin) or another row (SEC-04 → spec 18 rows) do not hold a row.
 - **External acceptance is excluded** from verification % (real wallets, devices, Firefox/WebKit/Tor Browser, public-testnet deployments, independent audits). No feature has external acceptance today; it is tracked per row.
 - **Duplicates.** F-PROTO-13 and F-FUT-40 restate spec 18 (requirement 3q), which is scored once under F-KEY-07..F-KEY-12; both are excluded from aggregates and effort sums.
 - **Aggregates** are requirement-weight-weighted means over the rows in scope. They measure how much of the *specified* behaviour exists and is tested, not release readiness: nothing in GhostPay is release-ready (no deployment of record, empty release keys, Mythril gate red by design, unprotected `main`).
@@ -16,20 +17,20 @@
 
 ## Summary
 
-Distinct features: **192** (194 rows; duplicates excluded from all counts and aggregates: F-FUT-40, F-PROTO-13). Status counts: BLOCKED 7, EXPERIMENTAL 45, IMPLEMENTED_UNVERIFIED 26, PARTIAL 27, SPEC_ONLY 46, VERIFIED_COMPLETE 41.
+Distinct features: **192** (194 rows; duplicates excluded from all counts and aggregates: F-FUT-40, F-PROTO-13). Status counts: BLOCKED 7, EXPERIMENTAL 45, IMPLEMENTED_UNVERIFIED 30, PARTIAL 27, SPEC_ONLY 46, VERIFIED_COMPLETE 37.
 
 | Tier | Features | Requirement weight | Implementation % (weighted) | Verification % (weighted) | Status mix |
 |---|---:|---:|---:|---:|---|
-| beta-core | 43 | 643 | 85.2 | 83.3 | BLOCKED 3, IMPLEMENTED_UNVERIFIED 9, PARTIAL 5, SPEC_ONLY 6, VERIFIED_COMPLETE 20 |
-| beta-supporting | 39 | 465 | 91.4 | 84.9 | IMPLEMENTED_UNVERIFIED 12, PARTIAL 11, VERIFIED_COMPLETE 16 |
+| beta-core | 43 | 643 | 85.3 | 83.4 | BLOCKED 3, IMPLEMENTED_UNVERIFIED 11, PARTIAL 5, SPEC_ONLY 6, VERIFIED_COMPLETE 18 |
+| beta-supporting | 39 | 465 | 91.4 | 84.9 | IMPLEMENTED_UNVERIFIED 14, PARTIAL 11, VERIFIED_COMPLETE 14 |
 | full-profile | 22 | 260 | 79.1 | 73.0 | EXPERIMENTAL 4, IMPLEMENTED_UNVERIFIED 5, PARTIAL 9, VERIFIED_COMPLETE 4 |
 | experimental | 45 | 346 | 54.9 | 47.4 | BLOCKED 3, EXPERIMENTAL 41, VERIFIED_COMPLETE 1 |
 | future | 43 | 149 | 5.4 | 3.4 | BLOCKED 1, PARTIAL 2, SPEC_ONLY 40 |
-| **Beta scope (beta-core + beta-supporting)** | 82 | 1108 | **87.8** | **83.9** | |
-| **All tiers excluding future roadmap** | 149 | 1714 | **79.8** | **74.9** | |
-| **All tiers including future roadmap** | 192 | 1863 | **73.9** | **69.2** | |
+| **Beta scope (beta-core + beta-supporting)** | 82 | 1108 | **87.9** | **84.0** | |
+| **All tiers excluding future roadmap** | 149 | 1714 | **79.9** | **75.0** | |
+| **All tiers including future roadmap** | 192 | 1863 | **73.9** | **69.3** | |
 
-Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum of per-row ranges, before parallelism): **308–918 engineer-days**.
+Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum of per-row ranges, before parallelism): **309–919 engineer-days**.
 
 ## Tier: beta-core
 
@@ -45,8 +46,8 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-DEP-04 | Testnet deployment tooling + Sepolia-first deployment of record | 75 | 55 | BLOCKED | M (1–3d) | implement | B1 |
 | F-DOC-04 | In-app contextual help + static help/privacy pages | 65 | 65 | PARTIAL | S (0–1d) | none | B2 |
 | F-I18N-01 | Web i18n framework: catalogs, translator, plurals/ICU-lite, RTL, language picker, pseudo-locales | 90 | 90 | IMPLEMENTED_UNVERIFIED | M (1–3d) | repair | B2 |
-| F-KEY-01 | Seller key generation, hex import and in-memory session | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
-| F-KEY-02 | Encrypted browser key vault (IndexedDB), unlock, step-up, delete | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
+| F-KEY-01 | Seller key generation, hex import and in-memory session | 100 | 100 | IMPLEMENTED_UNVERIFIED | S (0–0d) | none | B1 |
+| F-KEY-02 | Encrypted browser key vault (IndexedDB), unlock, step-up, delete | 100 | 100 | IMPLEMENTED_UNVERIFIED | S (0–0d) | none | B1 |
 | F-KEY-03 | Keystore v1 backup/restore and verified-backup gate (GP-PAGES-02) | 100 | 100 | IMPLEMENTED_UNVERIFIED | S (0–0d) | none | B1 |
 | F-KEY-04 | Idle lock and app lock (sleep-aware, GP-PAGES-04) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
 | F-KEY-07 | Spec 18 K01: public/keypair/master schemas + verified derivation adapter | 0 | 0 | SPEC_ONLY | M (2–3d) | implement | B1 |
@@ -59,7 +60,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-MER-05 | Web merchant profile, templates, printable bill, reconciliation UI (cross-ref B1b) | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B2 |
 | F-PROTO-01 | EIP-5564 scheme-1 stealth derivation, view tags, announcement check, stealth key | 100 | 100 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
 | F-PROTO-02 | Stealth meta-address encoding (st:eth:0x) + key generation | 100 | 100 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
-| F-PROTO-03 | Announcement discovery primitives: verified RPC client + reorg-safe announcement fetch/validation | 95 | 95 | IMPLEMENTED_UNVERIFIED | S (0.5–1d) | repair | B1 |
+| F-PROTO-03 | Announcement discovery primitives: verified RPC client + reorg-safe announcement fetch/validation | 100 | 100 | VERIFIED_COMPLETE | S (0.5–1d) | repair | B1 |
 | F-PROTO-04 | Payment claim verification library (spec 02 library side) | 100 | 100 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
 | F-PROTO-06 | Invoice schema v1/v2 + canonical JSON + signing/verification | 100 | 100 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
 | F-PROTO-07 | Invoice link envelope #gpi=v1. (none / A256GCM / A256GCM-PW passphrase) | 100 | 90 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
@@ -72,7 +73,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-WEB-08 | RPC provider configuration (explicit, validated, chainId-checked, no fallback) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
 | F-WEB-09 | Payment history & reconciliation ledger (encrypted IndexedDB, invoice registry) | 100 | 95 | IMPLEMENTED_UNVERIFIED | S (0.5–1d) | repair | B1 |
 | F-WEB-10 | Receipts (invoice-bound signed receipt, QR, archive, payer verification) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
-| F-WEB-11 | Direct sweep (self-paid gas, in-page derived key) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
+| F-WEB-11 | Direct sweep (self-paid gas, in-page derived key) | 100 | 100 | IMPLEMENTED_UNVERIFIED | S (0–0d) | none | B1 |
 | F-WEB-16 | Invoice URL fragment privacy (autoclear, history state, anchors, focus) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
 | F-WEB-17 | Bundled signed manifests + on-chain readback in UI | 80 | 80 | PARTIAL | S (0.5–1.5d) | repair | B1 |
 | F-WEB-21 | Lean static Pages build profile (product surface) | 80 | 80 | BLOCKED | S (0.5–1d) | defer | B1 |
@@ -116,8 +117,8 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-PROTO-09 | Strict payment URI builders/parsers (EIP-681, ERC-3770, BIP-21/321+sp, Solana Pay, tron:, invoice link) | 100 | 100 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
 | F-PROTO-10 | QR exchange: GPQ1 multipart, assembler, camera/readers, generation, seller/settings payloads | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B1 |
 | F-WEB-05 | Gas buffer UI: v1 payer buffer (lean+full) and v2 seller policy (full) | 90 | 75 | IMPLEMENTED_UNVERIFIED | S (0.5–1.5d) | repair | B1 |
-| F-WEB-07 | Scan privacy modes (spec 10 UI: transport, private-required, windows, indexer, disclosures) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
-| F-WEB-12 | Relayer-assisted sweep and permit refusal messages | 100 | 95 | VERIFIED_COMPLETE | S (1–2d) | none | B1 |
+| F-WEB-07 | Scan privacy modes (spec 10 UI: transport, private-required, windows, indexer, disclosures) | 100 | 100 | IMPLEMENTED_UNVERIFIED | S (0–0d) | none | B1 |
+| F-WEB-12 | Relayer-assisted sweep and permit refusal messages | 100 | 95 | IMPLEMENTED_UNVERIFIED | S (1–2d) | none | B1 |
 | F-WEB-13 | Seller device pairing (public config QR export/preview) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
 | F-WEB-14 | ERC-6538 registry view (publish/clear/lookup/ENS/export) | 100 | 95 | VERIFIED_COMPLETE | S (0.5–1d) | none | B1 |
 | F-WEB-20 | Settings: preferences, device-settings exchange (opt-in sections), pinned signers | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
@@ -434,7 +435,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-KEY-01 — Seller key generation, hex import and in-memory session
 
-- Tier/area: beta-core / keys \| profile: lean+full. Status: **VERIFIED_COMPLETE**. Implementation 100% · Verification 100% (requirement weight 14.0).
+- Tier/area: beta-core / keys \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** — security hold: SEC-03: vault-less in-memory session has no step-up before secret export/sweep. Implementation 100% · Verification 100% (requirement weight 14.0).
 - Spec: docs/APP_AND_RELAYER_SPEC.md S1 view 2; docs/pages/RELEASE_MATRIX.md
 - Implementation: apps/web/src/views/SellerKeys.tsx; apps/web/src/lib/session.ts; packages/secret-box/src/secretBox.ts; packages/core-crypto
 - Tests: apps/web/src/lib/session.test.ts; apps/web/src/views/SellerKeys.test.tsx; apps/web/src/views/SellerKeys.completion.test.tsx; apps/web/e2e/app.spec.ts; apps/web/e2e/core-journey.spec.ts
@@ -452,7 +453,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-KEY-02 — Encrypted browser key vault (IndexedDB), unlock, step-up, delete
 
-- Tier/area: beta-core / keys \| profile: lean+full. Status: **VERIFIED_COMPLETE**. Implementation 100% · Verification 100% (requirement weight 18.0).
+- Tier/area: beta-core / keys \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** — security hold: SEC-05: vault/keystore passphrase floor accepts name+year passphrases. Implementation 100% · Verification 100% (requirement weight 18.0).
 - Spec: docs/pages/RELEASE_MATRIX.md 'Encrypted local key storage'; audit L1-01/L1-02, C-R12
 - Implementation: apps/web/src/lib/keyVault.ts; apps/web/src/views/SellerKeys.tsx; apps/web/src/lib/session.ts; packages/ux-vault/src/keystore-portable.ts
 - Tests: apps/web/src/lib/keyVault.test.ts; apps/web/src/lib/keyVault.idb.test.ts; apps/web/src/views/SellerKeys.storage.test.tsx; apps/web/e2e/passphrase-vault.spec.ts; apps/web/e2e/pages-devnet.spec.ts; apps/web/scripts/test-seller-vault-idb.mjs
@@ -686,12 +687,12 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-PROTO-03 — Announcement discovery primitives: verified RPC client + reorg-safe announcement fetch/validation
 
-- Tier/area: beta-core / chain-adapters. Status: **IMPLEMENTED_UNVERIFIED** (reported PARTIAL, normalized by rubric). Implementation 95% · Verification 95% (requirement weight 19.0).
+- Tier/area: beta-core / chain-adapters. Status: **VERIFIED_COMPLETE** (reported PARTIAL, normalized by rubric). Implementation 100% · Verification 100% (requirement weight 19.0).
 - Spec: spec 02 r1,r4,r5,r7; spec 05 2A fetch limits; chain-adapters DEVIATIONS 7,12,16,18; audit S3-14
 - Implementation: packages/chain-adapters/src/logs.ts; packages/chain-adapters/src/rpc.ts; packages/chain-adapters/src/scanVerify.ts
 - Tests: packages/chain-adapters/src/logs.test.ts; packages/chain-adapters/src/scanHardening.test.ts; packages/chain-adapters/src/rpc.test.ts; packages/chain-adapters/src/scanVerify.test.ts; apps/web/src/lib/scannerCore.fuzz.test.ts
 - Verified working: chain-adapters 551 pass/22 anvil-skips local; 573/573 CI with REQUIRE_ANVIL=1
-- Missing requirements: per-log block-hash cross-check (minor; matched-log check exists)
+- Missing requirements: 
 - Confirmed defects: 
 - Missing tests: 
 - Security/privacy: user-selected RPC only, no fallback hosts; provider error text dropped (rpc.ts keeps JSON-RPC code only); a lying RPC can hide logs: second provider optional; private/link-local RPC hosts not rejected (DEVIATIONS 16; own node allowed)
@@ -776,7 +777,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-PROTO-13 — Spec 18 stealth keypair export formats + crypto adapter (protocol side of 3q)
 
-- Tier/area: beta-core / core-crypto/ux-vault. Status: **PARTIAL** (reported SPEC_ONLY, normalized by rubric). Implementation 10% · Verification 10% (requirement weight 17.0).
+- Tier/area: beta-core / core-crypto/ux-vault. Status: **PARTIAL** (reported SPEC_ONLY, normalized by rubric) — DUPLICATE of F-KEY-07, F-KEY-08 (spec 18 formats/envelope counted under F-KEY-07..12), excluded from counts. Implementation 10% · Verification 10% (requirement weight 17.0).
 - Spec: docs/specs/18-stealth-keypair-export.md; NEXT_PHASE_QUEUE K01,K02,K05,K06; future/privacy-architecture/5k (xref)
 - Implementation: (none) reuse: packages/core-crypto/src/stealth.ts:212; packages/chain-adapters/src/sweep.ts:175 addressOfSecret; packages/ux-vault/src/keystore-portable.ts (legacy v1, B1b scope)
 - Tests: packages/core-crypto/src/vectors.test.ts (derivation vector only)
@@ -920,7 +921,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-WEB-11 — Direct sweep (self-paid gas, in-page derived key)
 
-- Tier/area: beta-core / web/sweep \| profile: lean+full. Status: **VERIFIED_COMPLETE**. Implementation 100% · Verification 100% (requirement weight 23.0).
+- Tier/area: beta-core / web/sweep \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** — security hold: SEC-03: direct sweep signs without step-up in vault-less sessions. Implementation 100% · Verification 100% (requirement weight 23.0).
 - Spec: docs/APP_AND_RELAYER_SPEC.md S1 view 6; docs/pages/RELEASE_MATRIX.md 'Direct sweep'
 - Implementation: apps/web/src/views/Sweep.tsx; apps/web/src/lib/sweep.ts; apps/web/src/lib/sweepAttemptJournal.ts; apps/web/src/lib/opStackFee.ts; apps/web/src/state.tsx
 - Tests: apps/web/src/views/Sweep.test.tsx; apps/web/src/lib/sweep.test.ts; apps/web/src/lib/sweepAttemptJournal.test.ts; apps/web/src/state.sweep.test.ts; apps/web/e2e/sweep.spec.ts; apps/web/e2e/core-journey.spec.ts; apps/web/e2e/pages-devnet.spec.ts
@@ -1622,7 +1623,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-WEB-07 — Scan privacy modes (spec 10 UI: transport, private-required, windows, indexer, disclosures)
 
-- Tier/area: beta-supporting / web/scan \| profile: lean+full. Status: **VERIFIED_COMPLETE**. Implementation 100% · Verification 100% (requirement weight 17.0).
+- Tier/area: beta-supporting / web/scan \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** — security hold: SEC-10: local-proxy scan transport blocked by the app's own CSP while UI/docs offer it. Implementation 100% · Verification 100% (requirement weight 17.0).
 - Spec: docs/specs/10-feature5-stage1-private-scanning.md
 - Implementation: apps/web/src/lib/scanPrivacy.ts; apps/web/src/views/Settings.tsx; apps/web/src/views/Scan.tsx; apps/web/src/views/Sweep.tsx; apps/web/src/lib/jitter.ts
 - Tests: apps/web/src/lib/scanPrivacy.test.ts; apps/web/src/lib/scanPrivacy.clients.test.ts; apps/web/src/lib/scanPrivacy.transport.test.ts; apps/web/src/views/Scan.privacy.test.tsx; apps/web/src/views/Settings.scanPrivacy.test.tsx; apps/web/src/views/Sweep.privacy.test.tsx; apps/web/src/privacyInvariants.test.ts
@@ -1640,7 +1641,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-WEB-12 — Relayer-assisted sweep and permit refusal messages
 
-- Tier/area: beta-supporting / web/sweep \| profile: lean+full (optional, user relayer URL). Status: **VERIFIED_COMPLETE**. Implementation 100% · Verification 95% (requirement weight 17.0).
+- Tier/area: beta-supporting / web/sweep \| profile: lean+full (optional, user relayer URL). Status: **IMPLEMENTED_UNVERIFIED** — security hold: SEC-03: relayer-assisted sweep signs without step-up in vault-less sessions. Implementation 100% · Verification 95% (requirement weight 17.0).
 - Spec: docs/specs/04-permit-griefing-fallback.md; docs/APP_AND_RELAYER_SPEC.md S1 view 6, S3
 - Implementation: apps/web/src/lib/sweep.ts; apps/web/src/lib/relayerClient.ts; apps/web/src/views/Sweep.tsx
 - Tests: apps/web/src/lib/sweep.test.ts; apps/web/src/lib/relayerClient.test.ts; apps/web/src/lib/relayerContract.test.ts; apps/web/src/views/Sweep.test.tsx
@@ -3674,7 +3675,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-FUT-40 — Spec 18 / req 3q stealth keypair export (reference only; owned by B1b)
 
-- Tier/area: future / future. Status: **SPEC_ONLY**. Implementation 0% · Verification 0% (requirement weight 3.0).
+- Tier/area: future / future. Status: **SPEC_ONLY** — DUPLICATE of F-KEY-07..F-KEY-12 (spec 18 / req 3q counted once, under F-KEY rows), excluded from counts. Implementation 0% · Verification 0% (requirement weight 3.0).
 - Spec: docs/specs/18-stealth-keypair-export.md
 - Implementation: 
 - Tests: 

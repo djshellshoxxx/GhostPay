@@ -3,6 +3,7 @@
  "audited_sha": "7a620ff19ecf4e43ec568896c34188f5b2dcd3fc",
  "generated": "2026-11-18",
  "rubric": "FEATURE_COMPLETION_MATRIX.md#how-the-numbers-are-produced-read-before-using-any-percentage",
+ "overrides": "evidence/scripts/overrides.json",
  "features": [
   {
    "id": "F-PROTO-01",
@@ -364,17 +365,15 @@
     {
      "req": "Per-log block-hash cross-check inside fetchAnnouncements (S3-14 suggestion)",
      "weight": 1,
-     "implemented": "no",
-     "verified": "no",
-     "evidence": "DEVIATIONS 16 \"Not done\" (matched announcements checked instead)"
+     "implemented": "yes",
+     "verified": "yes",
+     "evidence": "Team G-A verification: packages/chain-adapters/src/logs.ts:438-460 @7a620ff1 already cross-checks per-log block hash; logs.test.ts + scanHardening.test.ts 70/70 pass"
     }
    ],
    "verified_working": [
     "chain-adapters 551 pass/22 anvil-skips local; 573/573 CI with REQUIRE_ANVIL=1"
    ],
-   "missing_requirements": [
-    "per-log block-hash cross-check (minor; matched-log check exists)"
-   ],
+   "missing_requirements": [],
    "confirmed_defects": [],
    "missing_tests": [],
    "security_privacy_requirements": [
@@ -388,9 +387,9 @@
    ],
    "blockers": [],
    "external_acceptance": "No real public RPC provider limits measured (getLogsMaxRange=1000 engineering default).",
-   "implementation_pct": 95,
-   "verification_pct": 95,
-   "status": "IMPLEMENTED_UNVERIFIED",
+   "implementation_pct": 100,
+   "verification_pct": 100,
+   "status": "VERIFIED_COMPLETE",
    "effort": {
     "size": "S",
     "engineer_days": [
@@ -403,7 +402,8 @@
    "evidence": [
     "local vitest @7a620ff1 chain-adapters 26 files 551 pass/22 skip",
     "CI 44231986652 @d91ae16a rest-1 chain-adapters 26 files 573/573",
-    "pct raw impl=94.7 verif=94.7 (rubric-rounded)"
+    "pct raw impl=94.7 verif=94.7 (rubric-rounded)",
+    "coordinator override: Team G-A verification: packages/chain-adapters/src/logs.ts:438-460 @7a620ff1 already cross-checks per-log block hash; logs.test.ts + scanHardening.test.ts 70/70 pass"
    ],
    "unverified": [],
    "requirement_weight_total": 19.0,
@@ -4877,7 +4877,7 @@
    "external_acceptance": "Real Tor Browser / local SOCKS-forwarder route and onion RPC unqualified",
    "implementation_pct": 100,
    "verification_pct": 100,
-   "status": "VERIFIED_COMPLETE",
+   "status": "IMPLEMENTED_UNVERIFIED",
    "effort": {
     "size": "S",
     "engineer_days": [
@@ -4894,6 +4894,7 @@
    "unverified": [
     "private-required covers scan/sweep only; Pay/Create/Registry/Home manifest checks use Settings RPC directly (disclosed rows; Team D/E to confirm wording)"
    ],
+   "status_hold": "SEC-10: local-proxy scan transport blocked by the app's own CSP while UI/docs offer it",
    "requirement_weight_total": 17.0,
    "source_team_file": "B1/features_web.json"
   },
@@ -5380,7 +5381,7 @@
    "external_acceptance": "ERC-20 direct sweep and real OP-stack L1 fee on public testnet pending (B04/B06)",
    "implementation_pct": 100,
    "verification_pct": 100,
-   "status": "VERIFIED_COMPLETE",
+   "status": "IMPLEMENTED_UNVERIFIED",
    "effort": {
     "size": "S",
     "engineer_days": [
@@ -5399,6 +5400,7 @@
    "unverified": [
     "ERC-20 direct sweep on real chain"
    ],
+   "status_hold": "SEC-03: direct sweep signs without step-up in vault-less sessions",
    "requirement_weight_total": 23.0,
    "source_team_file": "B1/features_web.json"
   },
@@ -5496,7 +5498,7 @@
    "external_acceptance": "No relayer operated for Pages; real relayer + browser untested",
    "implementation_pct": 100,
    "verification_pct": 95,
-   "status": "VERIFIED_COMPLETE",
+   "status": "IMPLEMENTED_UNVERIFIED",
    "effort": {
     "size": "S",
     "engineer_days": [
@@ -5512,6 +5514,7 @@
     "local vitest @7a620ff1 (no coverage): 146 apps/web files, 2273 pass/0 fail/12 skip (anvil-only), exit 0, 412 s"
    ],
    "unverified": [],
+   "status_hold": "SEC-03: relayer-assisted sweep signs without step-up in vault-less sessions",
    "requirement_weight_total": 17.0,
    "source_team_file": "B1/features_web.json"
   },
@@ -7068,7 +7071,7 @@
    "external_acceptance": "Real device/browser key lifecycle pending",
    "implementation_pct": 100,
    "verification_pct": 100,
-   "status": "VERIFIED_COMPLETE",
+   "status": "IMPLEMENTED_UNVERIFIED",
    "effort": {
     "size": "S",
     "engineer_days": [
@@ -7084,6 +7087,7 @@
     "local vitest @7a620ff1 (no coverage): 146 apps/web files, 2273 pass/0 fail/12 skip (anvil-only), exit 0, 412 s"
    ],
    "unverified": [],
+   "status_hold": "SEC-03: vault-less in-memory session has no step-up before secret export/sweep",
    "requirement_weight_total": 14.0,
    "source_team_file": "B1/features_web.json"
   },
@@ -7188,7 +7192,7 @@
    "external_acceptance": "Mobile/Safari storage eviction behaviour unqualified",
    "implementation_pct": 100,
    "verification_pct": 100,
-   "status": "VERIFIED_COMPLETE",
+   "status": "IMPLEMENTED_UNVERIFIED",
    "effort": {
     "size": "S",
     "engineer_days": [
@@ -7205,6 +7209,7 @@
     "local GHOSTPAY_CHROMIUM=/opt/pw-browsers/chromium node scripts/test-seller-vault-idb.mjs: PASS (exit 0)"
    ],
    "unverified": [],
+   "status_hold": "SEC-05: vault/keystore passphrase floor accepts name+year passphrases",
    "requirement_weight_total": 18.0,
    "source_team_file": "B1/features_web.json"
   },

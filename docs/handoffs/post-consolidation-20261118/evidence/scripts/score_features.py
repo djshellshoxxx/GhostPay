@@ -12,6 +12,12 @@ def r5(x):
     return int(5 * round(x / 5.0))
 
 out_merged, out_stats, out_issues, *inputs = sys.argv[1:]
+import os
+OVR = json.load(open(os.environ["GP_OVERRIDES"])) if os.environ.get("GP_OVERRIDES") else {}
+REQFIX = {}
+for c in OVR.get("requirement_corrections", []):
+    REQFIX.setdefault(c["id"], []).append(c)
+HOLDS = {h["id"]: h for h in OVR.get("security_holds", [])}
 rows, issues, seen = [], [], {}
 for path in inputs:
     data = json.load(open(path))
@@ -28,6 +34,17 @@ for path in inputs:
             continue
         seen[fid] = path
         reqs = f.get("requirements") or []
+        for c in REQFIX.get(fid, []):
+            hit = [r for r in reqs if str(r.get("req", "")).startswith(c["req_prefix"])]
+            if len(hit) != 1:
+                issues.append(f"{fid}: override prefix '{c['req_prefix']}' matched {len(hit)} requirements")
+                continue
+            hit[0]["implemented"], hit[0]["verified"] = c["implemented"], c["verified"]
+            hit[0]["evidence"] = c["evidence"]
+            f.setdefault("evidence", []).append("coordinator override: " + c["evidence"])
+            if c.get("clear_missing"):
+                f["missing_requirements"] = [m for m in (f.get("missing_requirements") or []) if not str(m).lower().startswith(c["req_prefix"].lower()[:20])]
+            issues.append(f"{fid}: requirement '{c['req_prefix']}' corrected by override ({c['evidence'][:80]})")
         tw = sum(float(r.get("weight", 1)) for r in reqs)
         if tw <= 0:
             issues.append(f"{fid}: no weighted requirements")
@@ -62,6 +79,11 @@ for path in inputs:
                 issues.append(f"{fid}: status {st} normalized to rubric-implied {exp}")
                 f["_status_reported"] = st
                 f["status"] = exp
+        if fid in HOLDS and f.get("status") == "VERIFIED_COMPLETE":
+            h = HOLDS[fid]
+            f["status"] = "IMPLEMENTED_UNVERIFIED"
+            f["status_hold"] = f"{h['finding']}: {h['reason']}"
+            issues.append(f"{fid}: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open {h['finding']} ({h['reason']})")
         if f.get("tier") not in TIERS:
             issues.append(f"{fid}: unknown tier {f.get('tier')}")
         rows.append(f)
