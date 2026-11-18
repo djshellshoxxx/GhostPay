@@ -99,9 +99,11 @@ where defined. Do not infer fields that a command does not return.
 
 Stable `error.code` values identify the specific failure. `READ_FAILED` and
 `WRITE_FAILED` name at most the base name of a plain local path; a value that
-looks like a link, carries a `#` fragment or `?` query, contains control
-characters or is longer than 64 characters is not echoed. Human output escapes
-untrusted text such as catalog keys. An invalid request to
+looks like a link or a network path (`//host/...`), carries a `#` fragment,
+a `?` query or an `=` sign (a pasted link fragment such as `gpi=...`, but also
+a file name such as `date=2026.json`), contains control characters or is longer
+than 64 characters is not echoed. Human output escapes untrusted text such as
+catalog keys. An invalid request to
 an unsupported operation can still be a usage error. `diagnostics rpc` exits 1
 when reachable providers disagree; `payment verify` and `payment status` exit 1
 for validly processed evidence that does not establish a final payment.
