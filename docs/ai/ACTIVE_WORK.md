@@ -11,6 +11,11 @@ error payloads must not be copied into the new failure record. Preserve existing
 page-error, request-failure and foreign-request checks and manual deployment policy.
 Run low-memory Node regressions only while the coordinator builds libraries.
 No browser-pass claim, app/runtime change, remote mutation or deployment.
+Status: source `a77cadbb7deca0cb2bf8829ed1215962bb8b4d9f` passes all 9 new
+entrypoint regressions and the complete 95-test Pages Node suite with one worker;
+the CI reviewer independently cleared the source and reran all 9 regressions.
+The tests use synthetic browser events, so actual Chromium/hosted acceptance remains
+pending. See `docs/handoffs/agents/PAGES_SMOKE_RENDER_ERRORS_20261118.md`.
 
 # Pages beta consolidation continuation — 2026-11-18
 
