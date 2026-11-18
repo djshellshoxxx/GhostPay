@@ -636,9 +636,10 @@ describe('requirePinnedSigner (opt-in fail-closed for unpinned signers, T-b85e0b
     await expect(parseFragment(f, requirePin([]))).rejects.toBeInstanceOf(UntrustedSignerError);
     await expect(parseFragment(f, requirePin(['']))).rejects.toBeInstanceOf(UntrustedSignerError);
     await expect(parseFragment(f, requirePin([SIGNER.slice(2)]))).rejects.toBeInstanceOf(UntrustedSignerError);
-    await expect(parseFragment(f, { requirePinnedSigner: true, pinnedSigners: undefined })).rejects.toBeInstanceOf(
-      UntrustedSignerError,
-    );
+    const explicitUndefined = { requirePinnedSigner: true, pinnedSigners: undefined } as unknown as Parameters<
+      typeof parseFragment
+    >[1];
+    await expect(parseFragment(f, explicitUndefined)).rejects.toBeInstanceOf(UntrustedSignerError);
   });
   it('accepts a pinned signer as trusted-seller, comparing keys exactly like pinnedSigners does', async () => {
     const f = await encodeFragment(sampleSigned());
