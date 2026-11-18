@@ -14,6 +14,7 @@ import {
   SchemaError,
   SigningError,
   UnsupportedError,
+  UntrustedSignerError,
   Utf8Error,
   canonicalize,
   decodeBase64Url,
@@ -21,6 +22,7 @@ import {
   encodeFragment,
   isSignatureVerified,
   isTrustedSeller,
+  openFragment,
   parseFragment,
   signInvoice,
   type Invoice,
@@ -588,4 +590,127 @@ describe('flipping any character of a fragment never produces a valid altered in
       }
     }, 120_000);
   }
+});
+
+describe('requirePinnedSigner (opt-in fail-closed for unpinned signers, T-b85e0b59-2)', () => {
+  const requirePin = (pinnedSigners?: readonly string[]) =>
+    pinnedSigners === undefined
+      ? ({ requirePinnedSigner: true } as const)
+      : ({ requirePinnedSigner: true, pinnedSigners } as const);
+
+  it('exports UntrustedSignerError with a stable code and a fixed message', () => {
+    const e = new UntrustedSignerError();
+    expect(e).toBeInstanceOf(InvoiceError);
+    expect(e.code).toBe('UNTRUSTED_SIGNER');
+    expect(e.name).toBe('UntrustedSignerError');
+    expect(e.path).toBeUndefined();
+    expect(e.message).toBe('invoice signer is not pinned');
+  });
+  it('default is unchanged: a valid self-signed invoice from an unpinned key still parses as valid-signature', async () => {
+    const f = await encodeFragment(sampleSigned());
+    expect((await parseFragment(f)).trust).toBe('valid-signature');
+    expect((await parseFragment(f, { pinnedSigners: [OTHER_SIGNER] })).trust).toBe('valid-signature');
+    expect((await parseFragment(f, { requirePinnedSigner: false })).trust).toBe('valid-signature');
+    expect((await parseFragment(f, { requirePinnedSigner: false, pinnedSigners: [SIGNER] })).trust).toBe(
+      'trusted-seller',
+    );
+  });
+  it('rejects a valid signature from an unpinned signer', async () => {
+    const f = await encodeFragment(sampleSigned());
+    await expect(parseFragment(f, requirePin([OTHER_SIGNER]))).rejects.toBeInstanceOf(UntrustedSignerError);
+    await expect(parseFragment(f, requirePin([OTHER_SIGNER]))).rejects.toMatchObject({ code: 'UNTRUSTED_SIGNER' });
+    await expect(openFragment(f, requirePin([OTHER_SIGNER]))).rejects.toBeInstanceOf(UntrustedSignerError);
+  });
+  it('rejects a self-signed phisher invoice even when the real seller key is pinned', async () => {
+    const attacker = signInvoice(
+      sampleInvoice({ signer: OTHER_SIGNER, memo: 'phish' }),
+      new Uint8Array(32).fill(0).map((_, i) => (i === 31 ? 8 : 0)),
+    );
+    await expect(parseFragment(await encodeFragment(attacker), requirePin([SIGNER]))).rejects.toBeInstanceOf(
+      UntrustedSignerError,
+    );
+  });
+  it('rejects when pinnedSigners is missing, empty or only malformed entries (never accepts)', async () => {
+    const f = await encodeFragment(sampleSigned());
+    await expect(parseFragment(f, requirePin())).rejects.toBeInstanceOf(UntrustedSignerError);
+    await expect(parseFragment(f, requirePin([]))).rejects.toBeInstanceOf(UntrustedSignerError);
+    await expect(parseFragment(f, requirePin(['']))).rejects.toBeInstanceOf(UntrustedSignerError);
+    await expect(parseFragment(f, requirePin([SIGNER.slice(2)]))).rejects.toBeInstanceOf(UntrustedSignerError);
+    await expect(parseFragment(f, { requirePinnedSigner: true, pinnedSigners: undefined })).rejects.toBeInstanceOf(
+      UntrustedSignerError,
+    );
+  });
+  it('accepts a pinned signer as trusted-seller, comparing keys exactly like pinnedSigners does', async () => {
+    const f = await encodeFragment(sampleSigned());
+    const ok = await parseFragment(f, requirePin([SIGNER]));
+    expect(ok.trust).toBe('trusted-seller');
+    expect(isTrustedSeller(ok)).toBe(true);
+    // case-insensitive (same as the default path) ...
+    expect((await parseFragment(f, requirePin([OTHER_SIGNER, SIGNER.toUpperCase()]))).trust).toBe('trusted-seller');
+    // ... but no prefix stripping: a 0x-prefixed pin does not match, here as in the default path.
+    expect((await parseFragment(f, { pinnedSigners: [`0x${SIGNER}`] })).trust).toBe('valid-signature');
+    await expect(parseFragment(f, requirePin([`0x${SIGNER}`]))).rejects.toBeInstanceOf(UntrustedSignerError);
+  });
+  it('a non-boolean value from untyped JS fails closed instead of being ignored', async () => {
+    const f = await encodeFragment(sampleSigned());
+    for (const v of [null, 0, '', 'false', 1, {}]) {
+      const opts = { requirePinnedSigner: v } as unknown as Parameters<typeof parseFragment>[1];
+      await expect(parseFragment(f, opts)).rejects.toBeInstanceOf(UntrustedSignerError);
+    }
+  });
+  it('an invalid signature keeps today\'s behaviour: reported as invalid-signature, never masked as UNTRUSTED_SIGNER or pinned', async () => {
+    const env = decodeEnvelope(await encodeFragment(sampleSigned()));
+    env['sig'] = '1'.repeat(128);
+    for (const pins of [[SIGNER], [OTHER_SIGNER], undefined]) {
+      const p = await parseFragment(frag(env), requirePin(pins));
+      expect(p.trust).toBe('invalid-signature');
+      expect(p.verification).toEqual({ signatureValid: false, signerPinned: false });
+      expect(isTrustedSeller(p)).toBe(false);
+    }
+  });
+  it('an unsigned or malformed envelope keeps today\'s error (SchemaError), not UNTRUSTED_SIGNER', async () => {
+    const env = decodeEnvelope(await encodeFragment(sampleSigned()));
+    const { sig: _sig, ...unsigned } = env;
+    void _sig;
+    const opts = requirePin([SIGNER]);
+    expect(await code(parseFragment(frag(unsigned), opts))).toBe('SchemaError');
+    expect(await code(parseFragment(frag(unsigned)))).toBe('SchemaError');
+    expect(await code(parseFragment(frag({ ...env, sig: '' }), opts))).toBe('SchemaError');
+    expect(await code(parseFragment(frag({ ...env, sig: null }), opts))).toBe('SchemaError');
+  });
+  it('other parse failures keep their own error code with the option set', async () => {
+    const opts = requirePin([SIGNER]);
+    expect(await code(parseFragment('#nope', opts))).toBe('FragmentFormatError');
+    expect(await code(parseFragment(`${FRAGMENT_PREFIX}!!!`, opts))).toBe('Base64UrlError');
+    const f = await encodeFragment(sampleSigned(), { encrypt: true, rng: seededRng('enc') });
+    const env = decodeEnvelope(f);
+    const e = rec(env['enc']);
+    const hex = String(e['c']);
+    const flipped = hex.slice(0, 5) + (parseInt(hex[5] as string, 16) ^ 1).toString(16) + hex.slice(6);
+    const bad = { ...env, enc: { ...e, c: flipped } };
+    expect(await code(parseFragment(frag(bad), opts))).toBe('DecryptionError');
+  });
+  it('works for encrypted and passphrase-protected links, and the error leaks nothing', async () => {
+    const signed = sampleSigned({ memo: 'secret-memo-value' });
+    const enc1 = await encodeFragment(signed, { encrypt: true, rng: seededRng('e2') });
+    expect((await parseFragment(enc1, requirePin([SIGNER]))).trust).toBe('trusted-seller');
+    await expect(parseFragment(enc1, requirePin([OTHER_SIGNER]))).rejects.toBeInstanceOf(UntrustedSignerError);
+
+    const pass = 'correct horse battery staple';
+    const pw = await encodeFragment(signed, { passphrase: pass, scryptN: 1 << 15, rng: seededRng('pw') });
+    // no passphrase yet: openFragment still just prompts, no invoice content is available to judge
+    const prompt = await openFragment(pw, requirePin([OTHER_SIGNER]));
+    expect(prompt.status).toBe('needsPassphrase');
+    const ok = await openFragment(pw, { ...requirePin([SIGNER]), passphrase: pass });
+    expect(ok.status === 'ok' && ok.parsed.trust).toBe('trusted-seller');
+    let message = '';
+    try {
+      await parseFragment(pw, { ...requirePin([OTHER_SIGNER]), passphrase: pass });
+    } catch (e) {
+      expect(e).toBeInstanceOf(UntrustedSignerError);
+      message = String((e as Error).message) + JSON.stringify(e);
+    }
+    expect(message).not.toBe('');
+    for (const leak of ['secret-memo-value', SIGNER, OTHER_SIGNER, pass, 'st:eth']) expect(message).not.toContain(leak);
+  });
 });
