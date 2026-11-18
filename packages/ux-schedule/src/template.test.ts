@@ -37,7 +37,7 @@ describe('createTemplate', () => {
     ['name', '', 'bad_text'],
     ['name', 'x'.repeat(65), 'bad_text'],
     ['name', 'a\nb', 'bad_text'],
-    ['name', 'a‮b', 'bad_text'],
+    ['name', 'a\u202eb', 'bad_text'],
     ['name', 'a b', 'bad_text'],
     ['name', 3, 'bad_text'],
     ['chain', 'a b', 'bad_token'],

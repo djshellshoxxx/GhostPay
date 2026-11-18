@@ -1,3 +1,18 @@
+# SonarCloud triage and hardening — 2026-11-18 (active)
+
+Owner: Claude Code session `session_01KtKj8kihrZk94nwT1TfKJ2`. Branch `nodata/jolly-rubin-u4zd45` from `main` `5467c158`.
+Owned paths (exclusive for this lane, all unclaimed by open PRs #205/#209/#211-#222 at 09:40Z):
+`docs/audits/poc/static-server.mjs` (+ a new focused test), `infra/integration/Dockerfile.{runner,solana}`,
+`scripts/regtest/Dockerfile.bitcoind`, `packages/pool-circuits/scripts/install-circom.sh`, `packages/i18n/src/format.ts`,
+the raw-bidirectional-character test lines SonarCloud names outside paths owned by another PR,
+`scripts/integration/run-in-runner.sh` (npx no-install), new `docs/audits/sonarcloud-triage-2026-11-18.md`, new
+`docs/handoffs/decision-packets/D03-AUD24-01-policy-hash-calldata.md` (D03 packet, docs only), and this section.
+Acceptance: every one of the 107 open SonarCloud vulnerabilities (last `main` analysis 2026-11-04 at `14f9b267`) is
+re-checked on current `main` and dispositioned (fixed RED-first / false positive with reason / accepted / routed to
+the owning PR); behaviour-preserving fixes pass their package tests. Read-only: `scripts/devnet/e2e.mjs` (#218),
+`.github/workflows/{ci,nightly}.yml` (#213/#220), `packages/merchant-ledger/src/ledger.test.ts` (#220).
+Out of scope: contract sources, scheme-2 ABI (AUD24-01 stays owner-gated), merges to `main`, deployment, signing.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker

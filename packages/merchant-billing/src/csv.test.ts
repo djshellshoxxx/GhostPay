@@ -21,7 +21,7 @@ describe('parseCsv', () => {
     ['NUL', 'a\u0000b'],
     ['tab', 'a\tb'],
     ['C1 control', 'a\u0085b'],
-    ['bidi override', 'a‮b'],
+    ['bidi override', 'a\u202eb'],
     ['zero width space', 'a​b'],
     ['inner BOM', 'a,﻿b'],
   ])('rejects %s', (_n, s) => {
