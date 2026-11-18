@@ -164,7 +164,7 @@ export interface RouterEvidenceBatch {
   readonly blocksAfter: ReadonlyMap<bigint, string | null>;
   /** Lower-case transaction hash to its receipt and transaction. */
   readonly transactions: ReadonlyMap<string, { readonly receipt: unknown; readonly tx: unknown }>;
-  /** JSON-RPC requests the batch sent. */
+  /** Logical RPC calls started by the batch; transport retries or refusals can change the wire request count. */
   readonly requests: number;
 }
 
