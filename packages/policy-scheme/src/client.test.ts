@@ -4,12 +4,14 @@ import { describe, expect, it } from 'vitest';
 import {
   PolicySchemeError,
   UNLIMITED,
+  ZERO_ADDRESS,
   ZERO_HASH,
   buildLimitsTree,
   buildPolicyRecord,
   consumeWindow,
   findPolicyFromCandidates,
   parsePolicyRecord,
+  policyCoversToken,
   serializePolicyRecord,
   windowHeadroom,
   type Address,
@@ -154,6 +156,38 @@ describe('policy record (vectors)', () => {
     const tree = buildLimitsTree(a.limits);
     expect(serializePolicyRecord(buildPolicyRecord({ ...a, limits: [...a.limits].reverse() }))).toBe(cv.records.valid[0]?.canonical);
     expect(tree.root).toBe(a.policy.limitsRoot);
+  });
+});
+
+describe('policy token coverage (SEC-11)', () => {
+  const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as Address;
+  const DAI = '0x6B175474E89094C44Da98b954EedeAC495271d0F' as Address;
+  it('a policy without limits (limitsRoot zero) can withdraw any token and the native coin', () => {
+    const rec = buildPolicyRecord(acct('acct-002'));
+    expect(rec.policy.limitsRoot).toBe(ZERO_HASH);
+    expect(policyCoversToken(rec, 'native')).toBe(true);
+    expect(policyCoversToken(rec, ZERO_ADDRESS)).toBe(true);
+    expect(policyCoversToken(rec, DAI)).toBe(true);
+  });
+  it('a policy with limits covers exactly its leaves; any other asset can never be withdrawn', () => {
+    const twoLeaves = buildPolicyRecord(acct('acct-001')); // tree-2: native and USDC
+    expect(policyCoversToken(twoLeaves, 'native')).toBe(true);
+    expect(policyCoversToken(twoLeaves, ZERO_ADDRESS)).toBe(true);
+    expect(policyCoversToken(twoLeaves, USDC)).toBe(true);
+    expect(policyCoversToken(twoLeaves, USDC.toLowerCase() as Address)).toBe(true);
+    expect(policyCoversToken(twoLeaves, DAI)).toBe(false);
+    const nativeOnly = buildPolicyRecord(acct('acct-004')); // tree-1: native only (unlimited)
+    expect(policyCoversToken(nativeOnly, 'native')).toBe(true);
+    expect(policyCoversToken(nativeOnly, USDC)).toBe(false);
+  });
+  it('fails closed on a record whose tree is missing or does not match its limits root', () => {
+    const rec = buildPolicyRecord(acct('acct-001'));
+    expect(policyCoversToken({ ...rec, tree: null }, USDC)).toBe(false);
+    expect(policyCoversToken({ ...rec, policy: { ...rec.policy, limitsRoot: `0x${'11'.repeat(32)}` } }, USDC)).toBe(false);
+  });
+  it('refuses a malformed token', () => {
+    const rec = buildPolicyRecord(acct('acct-002'));
+    expect(codeOf(() => policyCoversToken(rec, '0xnope'))).toBe('INVALID_ADDRESS');
   });
 });
 

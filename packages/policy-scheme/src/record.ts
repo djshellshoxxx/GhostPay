@@ -2,7 +2,7 @@ import { fail } from './errors.js';
 import { buildLimitsTree, type LimitsTree, type TokenLimit } from './limits.js';
 import { decodeScheme2MetaAddress } from './meta.js';
 import { computePolicyHash, validatePolicy, type Policy } from './policy.js';
-import { MAX_UINT256, ZERO_HASH, addr, bytes32, type Address, type Hex } from './types.js';
+import { MAX_UINT256, ZERO_ADDRESS, ZERO_HASH, addr, bytes32, type Address, type Hex } from './types.js';
 
 /** `format` field of a policy record. */
 export const POLICY_RECORD_FORMAT = 'ghostpay-policy-record';
@@ -76,6 +76,34 @@ function assemble(metaAddress: string, policy: Policy, limits: readonly TokenLim
 export function buildPolicyRecord(input: PolicyRecordInput): PolicyRecord {
   if (!Array.isArray(input.limits)) return fail('INVALID_INPUT', 'limits');
   return assemble(input.metaAddress, input.policy, input.limits);
+}
+
+/**
+ * Whether the account of this policy can ever withdraw `token` (audit SEC-11).
+ *
+ * @remarks With a non-zero `limitsRoot`, `PolicyAccount.requestWithdraw` needs a limits leaf for the token, while
+ * `GhostPayPolicyRouter` (and any plain transfer) accepts every token and the native coin. An asset without a leaf
+ * therefore stays in the account forever. A zero root covers every asset. Tokens are compared by address, ignoring
+ * case; `'native'` and the zero address mean the native coin. Fails closed (`false`) when the record has no tree or
+ * its tree root is not the policy's `limitsRoot`.
+ *
+ * Only the recipient, or someone holding the recipient's record, can answer this: a scheme-2 meta-address carries
+ * the policy hash alone, so a payer who has only the meta-address cannot tell which assets are covered.
+ *
+ * @param record Record from {@link buildPolicyRecord} or {@link parsePolicyRecord}.
+ * @param token ERC-20 address, or `'native'` (equivalently the zero address).
+ * @returns True if a withdrawal of `token` can be proven against the policy's limits root.
+ * @throws {PolicySchemeError} `INVALID_ADDRESS` for a malformed token, `INVALID_HEX` for a malformed root.
+ * @security Local computation over public data. Check it before telling payers an asset is accepted, and before
+ * paying a meta-address whose record you hold.
+ */
+export function policyCoversToken(record: Pick<PolicyRecord, 'policy' | 'tree'>, token: Address | 'native'): boolean {
+  const t = (token === 'native' ? ZERO_ADDRESS : addr(token, 'token')).toLowerCase();
+  const root = bytes32(record.policy.limitsRoot, 'limitsRoot');
+  if (root === ZERO_HASH) return true;
+  const tree = record.tree;
+  if (tree === null || tree.root.toLowerCase() !== root) return false;
+  return tree.leaves.some((l) => l.token.toLowerCase() === t);
 }
 
 /**

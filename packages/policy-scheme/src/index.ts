@@ -110,6 +110,7 @@ export {
   parsePolicyRecord,
   serializePolicyRecord,
   findPolicyFromCandidates,
+  policyCoversToken,
   POLICY_RECORD_FORMAT,
   POLICY_RECORD_VERSION,
   MAX_POLICY_RECORD_LENGTH,
