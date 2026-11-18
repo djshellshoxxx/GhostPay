@@ -209,6 +209,17 @@ export function AppShell(props: AppShellProps): ReactNode {
     };
   }, [services, settings.lockTimeoutMin]);
 
+  // Leaving the page while seller keys exist only here (no verified backup) loses them and every payment to their
+  // meta-address: ask the browser to confirm (SEC-40). Reads the existing backup state only; nothing is stored.
+  const unsavedKeys = session !== undefined && backup?.verified !== true;
+  useEffect(() => {
+    if (!unsavedKeys) return;
+    // preventDefault is the standard; a truthy returnValue covers older engines.
+    const onBeforeUnload = (e: BeforeUnloadEvent): void => { e.preventDefault(); e.returnValue = true; };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => { window.removeEventListener('beforeunload', onBeforeUnload); };
+  }, [unsavedKeys]);
+
   useEffect(() => {
     if (first.current) {
       first.current = false;
