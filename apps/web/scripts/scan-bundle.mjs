@@ -87,6 +87,21 @@ function scanHosts(text, label, problems) {
 }
 
 /** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
+/** Heuristic: can a `/` here start a regex literal (vs division)? Looks at the last significant output token. */
+function regexAllowed(out) {
+  let k = out.length - 1;
+  while (k >= 0 && /\s/.test(out[k])) k--;
+  if (k < 0) return true;
+  const ch = out[k];
+  if (/[(,=:[!&|?{};+\-*%<>~^]/.test(ch)) return true;
+  if (/[A-Za-z_$]/.test(ch)) {
+    let w = k;
+    while (w >= 0 && /[\w$]/.test(out[w])) w--;
+    return /^(?:return|typeof|case|delete|void|throw|in|of|new|else|do|yield|await)$/.test(out.slice(w + 1, k + 1));
+  }
+  return false;
+}
+
 /**
  * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
  * literal (e.g. "https://x") cannot swallow same-line code. Conservative: an unterminated literal
@@ -104,6 +119,18 @@ export function stripComments(src) {
     } else if (c === '/' && d === '*') {
       const end = src.indexOf('*/', i + 2);
       i = end === -1 ? n : end + 2;
+    } else if (c === '/' && regexAllowed(out)) {
+      // Regex literal: copy it verbatim (a `//` or `/*` inside it is not a comment). Classes may hold an unescaped `/`.
+      let j = i + 1;
+      let inClass = false;
+      while (j < n && src[j] !== '\n' && (inClass || src[j] !== '/')) {
+        if (src[j] === '\\') j++;
+        else if (src[j] === '[') inClass = true;
+        else if (src[j] === ']') inClass = false;
+        j++;
+      }
+      out += src.slice(i, Math.min(j + 1, n));
+      i = j + 1;
     } else if (c === '"' || c === "'" || c === '`') {
       let j = i + 1;
       while (j < n && src[j] !== c && (c === '`' || src[j] !== '\n')) j += src[j] === '\\' ? 2 : 1;

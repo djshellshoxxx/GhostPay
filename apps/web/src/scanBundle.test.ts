@@ -98,6 +98,18 @@ describe('scan-bundle', () => {
     expect(out).toMatch(/src\/Hide\.ts: eval/);
   });
 
+  it('does not let a regex literal containing // or /* hide same-line src sinks', () => {
+    const b = build({ 'src/Rx.ts': 'const a = /\\//; el.innerHTML = x;\nconst b = /a\\/*b/; eval("1");\nconst r = /[/]/g; document.body.innerHTML = y;\n' });
+    const out = scan(b).join('\n');
+    expect(out).toMatch(/src\/Rx\.ts: innerHTML/);
+    expect(out).toMatch(/src\/Rx\.ts: eval/);
+  });
+
+  it('still strips real comments and keeps division from being read as a regex', () => {
+    const b = build({ 'src/Ok2.ts': 'const x = a / b; // el.innerHTML = z\nconst y = (c) / 2; /* eval("1") */\nexport const q = x + y;\n' });
+    expect(scan(b)).toEqual([]);
+  });
+
   it('allows the documented React DOM fingerprints but not extra innerHTML assignments', () => {
     const react = 'o.innerHTML=`<script><\\/script>`;\n?.__html!==n&&(e.innerHTML=n);case`innerHTML`:break;case`dangerouslySetInnerHTML`:if(r!=null){}n.dangerouslySetInnerHTML!=null';
     expect(scan(build({ 'dist/assets/a.js': react }))).toEqual([]);
