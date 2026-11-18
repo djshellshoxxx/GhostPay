@@ -22,7 +22,10 @@ each was rechecked against `5467c158` before being claimed. None of them is a ro
 | L7 relayer-guard limiter | T-dd756b08-3, T-dd756b08-4 (Low) | `packages/relayer-guard/**` | Overflow traffic is bucketed per abuse group by default (bounded table with idle eviction, global bucket last); eviction scans a bounded number of oldest entries; `stats()` counters without keys or addresses. Both callers (`apps/relayer`, `packages/pool-relayer`) pass with the new default. RED-first |
 | L5 review | all lanes | read-only | Independent review of each lane diff; affected suites, typecheck, lint, i18n parity and lean bundle scan at the integration head |
 
-Coordinator-only: this section, `docs/handoffs/completion-20261118-lostfix/**`, the integration merges.
+Coordinator-only: this section, `docs/handoffs/completion-20261118-lostfix/**`, the integration merges, and two
+one-line companions of L4 that its reviewers assigned to the integrator: `scripts/devnet/e2e.mjs` (the relayer fee
+address follows the restored manifest pin) and the refusal-class list in `apps/web/src/lib/relayerClient.ts`
+(`client_queue_full`, with a two-way contract test).
 
 **Rows found by the same triage but not taken, because the files belong to another active claim** (handed over in the
 ledger with evidence, not edited here): second-RPC agreement for manifest read-back in Pay/Sweep (LF-6f25385ce-3;
