@@ -1,3 +1,31 @@
+# Spec 18 independent completion review — 2026-11-18
+
+Coordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.
+Base: PR #238 at `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. A concurrent local Spec 18 implementation
+on `chatgpt/spec18-recovery-completion-20261118` is preserved read-only. This branch
+integrates a fixed, hashed snapshot for independent testing and fixes, without
+changing the original checkout or its branch.
+
+Ownership: coordinator owns snapshot integration, browser acceptance, locales, reports
+and publication; separate review lanes inspect crypto/offline recovery and UI/lifecycle
+with edits assigned explicitly after findings. Acceptance: all twenty specified threats
+are traced to source and executed tests; backup retention and verification stay distinct;
+imports require fresh bound consent; offline recovery reproduces spending authority;
+full feature gates execute or exact blockers are recorded. No release, deployment,
+main merge, forced update, secret persistence or unrelated feature work.
+
+Assigned lanes on this branch:
+
+- `crypto_recovery_review`: `packages/ux-vault/src/stealth-export-portable*.ts`,
+  `scripts/recovery/**`, the Spec 18 format reference and independent recovery guide.
+  Acceptance: authenticated bounded recovery, authority reproduction and failure cleanup.
+- `lifecycle_review`: `StealthExportRecovery`, `StealthExportVerification`, their tests,
+  `StealthExportSelection.test.tsx`, and `paymentKeyExport` source/tests. Acceptance:
+  bound fresh consent, verify-only disposal, selected-file and session cancellation.
+- Coordinator: remaining export panels/Common, locales/security keys, browser tests,
+  dependency preparation, combined qualification, evidence and integration.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:

@@ -463,6 +463,7 @@ export function inspectMasterFile(text) {
   if (f.derivation !== DERIVATION) fail('invalidFile');
   const spendingPublicKey = compressedPoint(f.spendingPublicKey, 'invalidFile');
   const viewingPublicKey = compressedPoint(f.viewingPublicKey, 'invalidFile');
+  if (spendingPublicKey === viewingPublicKey) fail('invalidFile');
   const metaAddress = metaAddressOf(spendingPublicKey, viewingPublicKey);
   if (f.metaAddress !== metaAddress) fail('invalidFile');
   const exportedAt = timestamp(f.exportedAt, 'invalidFile');
@@ -591,7 +592,8 @@ export function detectFormat(text) {
 
 const USAGE = `usage: node scripts/recovery/stealth-export-recover.mjs <file> [options]
   --inspect                  validate and print the public header only (no passphrase, no decryption)
-  --expected-chain <id>      refuse a payment-key file for any other chain
+  --expected-chain <id>      require this chain in a payment, public or raw-key file (also with --inspect)
+                             a master backup is chain-neutral and refuses this option
   --scan-announcement <json> master backup only: derive the one-time address for an announcement given as JSON
                              ({"ephemeralPublicKey","stealthAddress"[,"metadata"]}) or @<path>; repeatable
   --reveal-private-keys      also print one-time payment private keys (never the master keys) to stdout
@@ -617,7 +619,7 @@ function parseArgs(argv) {
       if (v === undefined) throw new UsageError('--scan-announcement needs a JSON value or @<path>');
       opts.announcements.push(v);
     } else if (a === '-h' || a === '--help') throw new UsageError('');
-    else if (a.startsWith('-')) throw new UsageError(`unknown option ${a.split('=')[0]}`);
+    else if (a.startsWith('-')) throw new UsageError('unknown option');
     else if (opts.file === undefined) opts.file = a;
     else throw new UsageError('only one file may be given');
   }
@@ -628,8 +630,9 @@ function parseArgs(argv) {
 /** Reads at most `max + 1` bytes so an oversized file is refused without loading it whole. */
 function readBounded(path, max) {
   const fd = openSync(path, 'r');
+  let buf;
   try {
-    const buf = Buffer.alloc(max + 1);
+    buf = Buffer.alloc(max + 1);
     let total = 0;
     while (total < buf.length) {
       const n = readSync(fd, buf, total, buf.length - total, null);
@@ -639,6 +642,7 @@ function readBounded(path, max) {
     if (total > max) fail('tooLarge');
     return buf.subarray(0, total).toString('latin1');
   } finally {
+    wipe(buf);
     closeSync(fd);
   }
 }
@@ -715,20 +719,25 @@ export async function main(argv, { stdin = process.stdin, stdout = process.stdou
     const kind = detectFormat(text);
     if (kind === 'unsupported') fail('unsupportedVersion');
     if (kind === undefined) fail('invalidFile');
+    if (kind === 'master' && opts.expectedChainId !== undefined) throw new UsageError('--expected-chain cannot verify a chain-neutral master backup');
     if (opts.announcements.length > 0 && kind !== 'master') throw new UsageError('--scan-announcement needs a master backup file');
     const out = { format: kind };
     if (kind === 'public') {
       out.record = parsePublicRecord(text);
+      if (opts.expectedChainId !== undefined && opts.expectedChainId !== out.record.chainId) fail('wrongChain');
       out.note = 'Public record only: it holds no secret and is not authenticated. ' + OWNERSHIP_NOTE;
     } else if (kind === 'rawPrivateKey') {
       const raw = parseRawPrivateKeyText(text);
       secrets.push(raw.privateKey);
+      if (opts.expectedChainId !== undefined && opts.expectedChainId !== raw.chainId) fail('wrongChain');
       out.chainId = raw.chainId;
       out.stealthAddress = raw.stealthAddress;
       if (opts.reveal) out.privateKey = hex(raw.privateKey);
       out.note = 'Plaintext private-key file: delete it once the key is imported.';
     } else if (kind === 'keypair') {
-      if (opts.inspect) out.header = inspectKeypairFile(text).header;
+      const header = inspectKeypairFile(text).header;
+      if (opts.expectedChainId !== undefined && opts.expectedChainId !== header.chainId) fail('wrongChain');
+      if (opts.inspect) out.header = header;
       else {
         const passphrase = await readPassphrase(stdin, stderr);
         const { header, payments } = await decryptKeypairFile(text, passphrase, { expectedChainId: opts.expectedChainId });

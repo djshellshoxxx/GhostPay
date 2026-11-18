@@ -1,12 +1,13 @@
 import { findChain, type RpcClient } from '@ghostpay/chain-adapters';
 import { secretScalarFromBytes, zeroize, type SecretScalar } from '@ghostpay/core-crypto';
+import { canonicalize } from '@ghostpay/invoice-schema';
 import { SecretBox } from '@ghostpay/secret-box';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
 import { passphraseProblemMessage } from './keystore';
 import { requireSecretExportAuthorization, type SecretExportCredential } from './keyVault';
 import type { ScanMatch } from './scanClient';
-import { captureSessionGuard, getSessionPublic, importSession, withSessionSecrets, withSessionSecretsAsync, type SessionPublic } from './session';
+import { captureSessionGuard, captureSessionVersionGuard, getSessionPublic, importSession, withSessionSecrets, withSessionSecretsAsync, type SessionPublic } from './session';
 import {
   STEALTH_EXPORT_FILENAMES,
   STEALTH_EXPORT_LIMITS,
@@ -133,7 +134,17 @@ function earlierLocator(x: ScanMatch, y: ScanMatch): boolean {
   const b = y.announcement;
   if (a.blockNumber !== b.blockNumber) return a.blockNumber < b.blockNumber;
   if (a.logIndex !== b.logIndex) return a.logIndex < b.logIndex;
-  return a.blockHash.toLowerCase() < b.blockHash.toLowerCase();
+  const aHash = a.blockHash.toLowerCase();
+  const bHash = b.blockHash.toLowerCase();
+  if (aHash !== bHash) return aHash < bHash;
+  // At one address, ephemeral key and locator, only the optional transaction hash and announced view tag can differ in
+  // the eventual public record. Compare their canonical shape in the same order as formats section 4, without deriving
+  // any secret or allowing input ordering to choose an archive's metadata.
+  const tie = (announcement: ScanMatch['announcement']): string => canonicalize({
+    announcement: announcement.transactionHash === undefined ? {} : { transactionHash: announcement.transactionHash.toLowerCase() },
+    viewTag: announcement.metadata.slice(0, 4).toLowerCase(),
+  });
+  return tie(a) < tie(b);
 }
 
 /**
@@ -317,8 +328,13 @@ export class RecoveredMasterKeys {
 
   /** Moves the decrypted scalars into boxes (wiping the scalars, also when boxing fails). */
   public static take(header: StealthMasterHeader, spending: SecretScalar, viewing: SecretScalar): RecoveredMasterKeys {
+    let spendingBox: SecretBox | undefined;
     try {
-      return new RecoveredMasterKeys(header, SecretBox.copyOf(spending, { label: 'spending' }), SecretBox.copyOf(viewing, { label: 'viewing' }));
+      spendingBox = SecretBox.copyOf(spending, { label: 'spending' });
+      return new RecoveredMasterKeys(header, spendingBox, SecretBox.copyOf(viewing, { label: 'viewing' }));
+    } catch (error) {
+      spendingBox?.dispose();
+      throw error;
     } finally {
       zeroize(spending, viewing);
     }
@@ -360,8 +376,13 @@ export type OpenedStealthExport =
   | { readonly kind: 'keypair'; readonly keys: RecoveredPaymentKeys }
   | { readonly kind: 'master'; readonly keys: RecoveredMasterKeys };
 
+/** Authenticated public metadata only; verification never returns or installs decrypted keys. */
+export type VerifiedStealthExport =
+  | { readonly kind: 'keypair'; readonly header: StealthKeypairHeader }
+  | { readonly kind: 'master'; readonly header: StealthMasterHeader };
+
 export interface OpenStealthExportOptions {
-  /** A keypair file for any other chain is refused before the KDF. */
+  /** Requires this chain for public/payment files. Chain-neutral master files cannot satisfy this constraint. */
   readonly expectedChainId?: number;
   /** Closing the panel aborts: a file decrypted afterwards is wiped and nothing is returned. */
   readonly signal?: AbortSignal;
@@ -377,7 +398,11 @@ export async function openStealthExport(text: string, passphrase: string, option
   assertOpen();
   if (text.length > STEALTH_EXPORT_LIMITS.keypairFileBytes) throw new UserFacingError({ key: 'error.stealthExport.tooLarge' });
   const format = detectStealthExportFormat(text);
-  if (format === 'public') return { kind: 'public', record: parsePublicRecord(text) };
+  if (format === 'public') {
+    const record = parsePublicRecord(text);
+    if (options.expectedChainId !== undefined && record.chainId !== options.expectedChainId) throw new UserFacingError({ key: 'error.stealthExport.wrongChain' });
+    return { kind: 'public', record };
+  }
   if (format === 'keypair') {
     const opened = await decryptPaymentKeys(text, passphrase, options.expectedChainId === undefined ? {} : { expectedChainId: options.expectedChainId });
     const keys = RecoveredPaymentKeys.take(opened.header, opened.payments);
@@ -385,6 +410,7 @@ export async function openStealthExport(text: string, passphrase: string, option
     return { kind: 'keypair', keys };
   }
   if (format === 'master') {
+    if (options.expectedChainId !== undefined) throw new UserFacingError({ key: 'error.stealthExport.wrongChain' });
     const opened = await decryptMasterBackup(text, passphrase);
     const keys = RecoveredMasterKeys.take(opened.header, opened.spendingSecret, opened.viewingSecret);
     if (options.signal?.aborted === true) { keys.dispose(); throw new UserFacingError(CANCELLED); }
@@ -393,4 +419,24 @@ export async function openStealthExport(text: string, passphrase: string, option
   throw new UserFacingError({ key: 'error.stealthExport.invalidFile' });
 }
 
-// i18n-use: error.paymentKeyExport.unsupportedChain error.paymentKeyExport.noRpc error.paymentKeyExport.wrongChain error.paymentKeyExport.codeCheckFailed error.paymentKeyExport.contractAccount error.paymentKeyExport.noPayments error.paymentKeyExport.confirmRawKey error.paymentKeyExport.recoveredKeysClosed
+/**
+ * Checks an existing backup without importing it or changing the current wallet's custody status. Authentication and
+ * address/key validation use the recovery path; owned key boxes are disposed before returning even on cancellation or a
+ * session change. A public record has no spending authority and can never count as a recoverable backup.
+ */
+export async function verifyStealthExport(text: string, passphrase: string, options: OpenStealthExportOptions = {}): Promise<VerifiedStealthExport> {
+  const unchanged = captureSessionVersionGuard();
+  const opened = await openStealthExport(text, passphrase, options);
+  if (opened.kind === 'public') throw new UserFacingError({ key: 'error.paymentKeyExport.publicRecordIsNotBackup' });
+  try {
+    unchanged();
+    if (options.signal?.aborted === true) throw new UserFacingError(CANCELLED);
+    return opened.kind === 'keypair'
+      ? { kind: 'keypair', header: opened.keys.header }
+      : { kind: 'master', header: opened.keys.header };
+  } finally {
+    opened.keys.dispose();
+  }
+}
+
+// i18n-use: error.paymentKeyExport.unsupportedChain error.paymentKeyExport.noRpc error.paymentKeyExport.wrongChain error.paymentKeyExport.codeCheckFailed error.paymentKeyExport.contractAccount error.paymentKeyExport.noPayments error.paymentKeyExport.confirmRawKey error.paymentKeyExport.recoveredKeysClosed error.paymentKeyExport.publicRecordIsNotBackup

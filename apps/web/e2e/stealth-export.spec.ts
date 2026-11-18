@@ -80,7 +80,7 @@ test('payment details: public record holds no key; encrypted keypair after vault
   // Public record: no re-authentication, no secret.
   const pub = await download(page, () => details.getByTestId('stealth-export-public').click());
   expect(pub.name).toBe('ghostpay-stealth-public.json');
-  await expect(okNotice(page, 'Public record downloaded.')).toBeVisible();
+  await expect(okNotice(page, 'Public record generated; download initiated. This file contains no private keys.')).toBeVisible();
   expect(leaksOf([pub.text], [A1_KEY, VECTORS.seller.spendingPrivateKey, VECTORS.seller.viewingPrivateKey])).toEqual([]);
   const record = codec.parsePublicRecord(pub.text);
   expect(record.stealthAddress).toBe(ADDRESS);
@@ -95,10 +95,25 @@ test('payment details: public record holds no key; encrypted keypair after vault
   await expect(details.getByText(/^Passphrase strength: /)).toBeVisible();
   const enc = await download(page, () => encrypt.click());
   expect(enc.name).toBe('ghostpay-stealth-keypair.json');
-  await expect(okNotice(page, 'Encrypted keypair downloaded.')).toBeVisible();
+  await expect(okNotice(page, 'Encrypted keypair generated; download initiated. Keep and verify the saved file.')).toBeVisible();
   await expect(details.getByLabel('Passphrase of your encrypted vault')).toHaveValue('');
   expect(leaksOf([enc.text], [A1_KEY])).toEqual([]);
   expect(await decryptInNode(enc.text, 84532)).toEqual({ scope: 'single', addresses: [ADDRESS], keys: [A1_KEY.slice(2)] });
+
+  // A download event alone does not mark retention or recoverability. Reopen the exact saved ciphertext before success.
+  const verification = details.getByTestId('stealth-export-verification');
+  await expect(verification.getByTestId('stealth-export-backup-state')).toContainText('Retention and recoverability are not yet confirmed.');
+  await expect(verification.getByRole('button', { name: 'Verify the saved backup' })).toBeDisabled();
+  const retained = verification.getByRole('checkbox', { name: 'I saved this backup file and kept its passphrase separately.' });
+  await retained.focus();
+  await page.keyboard.press('Space');
+  await expect(verification.getByTestId('stealth-export-backup-state')).toContainText('Recoverability is not yet verified.');
+  await verification.getByLabel('Saved backup file').setInputFiles({ name: enc.name, mimeType: 'application/json', buffer: Buffer.from(enc.text) });
+  await verification.getByLabel('Passphrase of the saved backup').fill(EXPORT_PASS);
+  await verification.getByRole('button', { name: 'Verify the saved backup' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(verification.getByTestId('stealth-export-backup-state')).toContainText('Saved backup verified.', { timeout: 60_000 });
+  await expect(verification.getByLabel('Passphrase of the saved backup')).toHaveValue('');
 
   // Raw key: the first click only asks; Cancel downloads nothing; the confirmation downloads exactly the section-6 text.
   await useVault(details);
@@ -115,7 +130,7 @@ test('payment details: public record holds no key; encrypted keypair after vault
   expect(downloads.names.length).toBe(before);
   const raw = await download(page, () => confirm.getByTestId('stealth-export-raw-confirm').click());
   expect(raw.name).toBe('ghostpay-stealth-private-key.txt');
-  await expect(okNotice(page, 'Private key file downloaded. Keep it offline and delete it when you no longer need it.')).toBeVisible();
+  await expect(okNotice(page, 'Private key file generated; download initiated. Confirm that you saved it. Keep it offline and delete it when you no longer need it.')).toBeVisible();
   expect(raw.text).toBe(VECTORS.files.rawPrivateKey.text.replace('Chain ID: 11155111\n', 'Chain ID: 84532\n'));
   // The key is never rendered on the page.
   expect((await page.content()).toLowerCase()).not.toContain(A1_KEY.slice(2));
@@ -206,6 +221,46 @@ test('a fresh browser with no keys opens an encrypted keypair file and validates
   }
 });
 
+test('mobile verification-only flow rejects malformed and public files, authenticates a backup, and installs no wallet', async ({ context, page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await context.route('**/*', (route) => (new URL(route.request().url()).origin === ORIGIN ? route.continue() : route.abort()));
+  await page.goto('/');
+  await nav(page).getByRole('button', { name: 'Seller keys', exact: true }).click();
+  const recovery = page.getByTestId('stealth-export-open');
+  const file = recovery.getByLabel('Stealth key export file');
+  const pass = recovery.getByLabel('Export file passphrase');
+  const verify = recovery.getByRole('button', { name: 'Verify backup without importing' });
+  const select = async (text: string): Promise<void> => {
+    await file.setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(text) });
+  };
+
+  await select('{"not":"an export"}');
+  await verify.click();
+  await expect(recovery.getByRole('alert')).toContainText('not a valid GhostPay stealth key export');
+  const publicRecord = codec.parsePublicRecord(JSON.stringify(JSON.parse(VECTORS.files.single.text).payments[0]));
+  await select(codec.serializePublicRecord(publicRecord));
+  await verify.click();
+  await expect(recovery.getByRole('alert')).toContainText('contains no private keys');
+
+  await select(VECTORS.files.single.text);
+  await pass.fill('wrong backup password');
+  await verify.click();
+  await expect(recovery.getByRole('alert')).toContainText('Wrong passphrase', { timeout: 60_000 });
+  await pass.fill(EXPORT_PASS);
+  await verify.focus();
+  await page.keyboard.press('Enter');
+  await expect(recovery).toContainText('Backup verified. It decrypted successfully', { timeout: 60_000 });
+  await expect(pass).toHaveValue('');
+  await expect(recovery.getByTestId('stealth-export-open-keypair')).toHaveCount(0);
+  await expect(recovery.getByTestId('stealth-export-open-master')).toHaveCount(0);
+  await expect(keysView(page).getByRole('button', { name: 'Generate new keys' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect((await page.content()).toLowerCase()).not.toContain(A1_KEY.slice(2));
+
+  await select(VECTORS.files.archive.text);
+  await expect(recovery).not.toContainText('Backup verified. It decrypted successfully');
+});
+
 test('secret-leak guard: no exported private key in requests, console, URL/history, storage, IndexedDB or clipboard', async ({ context, page }) => {
   const recorder = await recordLeaks(context, page);
   await sellerWithPayment(context, page, { vault: true });
@@ -229,7 +284,7 @@ test('secret-leak guard: no exported private key in requests, console, URL/histo
   const archive = await download(page, () => archivePanel.getByTestId('payment-keys-archive-download').click());
   expect(archive.name).toBe('ghostpay-stealth-keypairs.json');
   files.push(archive);
-  await expect(okNotice(page, 'Encrypted payment key archive downloaded.')).toBeVisible();
+  await expect(okNotice(page, 'Encrypted payment key archive generated; download initiated. Keep and verify the saved file.')).toBeVisible();
   expect(await decryptInNode(archive.text, 84532)).toEqual({ scope: 'all-discovered', addresses: [ADDRESS], keys: [A1_KEY.slice(2)] });
 
   // Master backup, then the archive and the master file reopened in this session.
@@ -240,7 +295,7 @@ test('secret-leak guard: no exported private key in requests, console, URL/histo
   const masterFile = await download(page, () => master.getByTestId('stealth-master-download').click());
   expect(masterFile.name).toBe('ghostpay-stealth-master.json');
   files.push(masterFile);
-  await expect(okNotice(page, 'Master backup downloaded.')).toBeVisible();
+  await expect(okNotice(page, 'Master backup generated; download initiated. Keep and verify the saved file.')).toBeVisible();
   const open = await openExportFile(page, archive.name, archive.text, EXPORT_PASS);
   const opened = open.getByTestId('stealth-export-open-keypair');
   await expect(opened).toBeVisible({ timeout: 60_000 });
@@ -303,7 +358,7 @@ test('the idle lock while the export is still deriving and encrypting discards t
   await releaseHold(page);
   await page.waitForTimeout(5_000);
   expect(downloads.names).toEqual([]);
-  await expect(okNotice(page, 'Encrypted keypair downloaded.')).toHaveCount(0);
+  await expect(okNotice(page, 'Encrypted keypair generated; download initiated. Keep and verify the saved file.')).toHaveCount(0);
   await expect(details).toBeVisible();
   await expect(details.getByLabel('Passphrase of the keystore backup file')).toHaveValue('');
   await expect(details.getByLabel('New passphrase for the export file (at least 14 characters)')).toHaveValue('');
@@ -354,6 +409,6 @@ test('wiping the keys while the master backup KDF runs discards the result: no d
   expect(after.yields).toBeGreaterThan(atClick);
   expect(downloads.names).toEqual([]);
   await expect(master).toHaveCount(0);
-  await expect(okNotice(page, 'Master backup downloaded.')).toHaveCount(0);
+  await expect(okNotice(page, 'Master backup generated; download initiated. Keep and verify the saved file.')).toHaveCount(0);
   await expect(keysView(page).getByRole('button', { name: 'Generate new keys' })).toBeVisible();
 });
