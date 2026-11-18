@@ -1,5 +1,5 @@
 import { GhostPayCryptoError, parseCompressedPoint, secretScalarFromBytes } from '@ghostpay/core-crypto';
-import { decodeFunctionData, hashTypedData } from 'viem/utils';
+import { decodeFunctionData, hashTypedData, recoverAddress } from 'viem/utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   PolicySchemeError,
@@ -305,6 +305,76 @@ describe('signPolicyTypedData signs only policy-account structs', () => {
     const bad: string[] = [];
     for (const v of malformed) bad.push(await acode(() => signPolicyTypedData(v as never, owner(), A.ownerAddress)));
     expect(bad).toEqual(malformed.map(() => 'SIGNING_FAILED'));
+  });
+
+  // A self-consistent ERC-2612 Permit: what an attacker wants the owner key to sign.
+  const permit = {
+    domain: { name: 'USD Coin', version: '2', chainId: 1, verifyingContract: USDC },
+    types: {
+      Permit: [
+        { name: 'owner', type: 'address' },
+        { name: 'spender', type: 'address' },
+        { name: 'value', type: 'uint256' },
+        { name: 'nonce', type: 'uint256' },
+        { name: 'deadline', type: 'uint256' },
+      ],
+    },
+    primaryType: 'Permit',
+    message: { owner: A.ownerAddress, spender: DEST, value: 2n ** 256n - 1n, nonce: 0n, deadline: 2n ** 256n - 1n },
+  } as const;
+  const permitDigest = hashTypedData(permit as never);
+  /** Getter returning `first` on the first read and `then` on every later read. */
+  const swapping = (first: unknown, then: unknown): PropertyDescriptor => {
+    let reads = 0;
+    return { enumerable: true, get: () => (reads++ === 0 ? first : then) };
+  };
+
+  it('reads the typed data once: getters that turn policy data into a Permit are refused', async () => {
+    const shapeSwap = Object.defineProperties({}, {
+      domain: swapping(td.domain, permit.domain),
+      types: swapping(td.types, permit.types),
+      primaryType: swapping(td.primaryType, permit.primaryType),
+      message: { enumerable: true, value: permit.message },
+      structHash: { enumerable: true, value: permitDigest },
+      digest: { enumerable: true, value: permitDigest },
+    });
+    expect(await acode(() => signPolicyTypedData(shapeSwap as never, owner(), A.ownerAddress))).toBe('SIGNING_FAILED');
+    // The digest itself swaps: the policy digest when compared, the Permit digest on later reads. Only the
+    // policy digest may be signed.
+    const digestSwap = Object.defineProperties({ ...td }, { digest: swapping(td.digest, permitDigest) });
+    const sig = await signPolicyTypedData(digestSwap, owner(), A.ownerAddress);
+    expect(await recoverAddress({ hash: td.digest, signature: sig.signature })).toBe(A.ownerAddress);
+    expect(sig.signature).toBe((await signPolicyTypedData(td, owner(), A.ownerAddress)).signature);
+  });
+
+  it('refuses a salt on the domain that is inherited or not enumerable', async () => {
+    const own = { name: td.domain.name, version: td.domain.version, chainId: td.domain.chainId, verifyingContract: td.domain.verifyingContract };
+    const inherited = Object.assign(Object.create({ salt: H1 }) as object, own);
+    const hidden = Object.defineProperty({ ...own }, 'salt', { value: H1, enumerable: false });
+    const got: string[] = [];
+    for (const domain of [inherited, hidden]) {
+      // viem reads the salt into the separator; the variant carries that salted digest, as an attacker's would.
+      const digest = hashTypedData({ domain, types: td.types, primaryType: td.primaryType, message: td.message } as never);
+      expect(digest).not.toBe(td.digest);
+      got.push(await acode(() => signPolicyTypedData({ ...td, domain, structHash: digest, digest }, owner(), A.ownerAddress)));
+    }
+    expect(got).toEqual(['SIGNING_FAILED', 'SIGNING_FAILED']);
+  });
+
+  it('signs only the digest it recomputes from the policy fields', async () => {
+    const sig = await signPolicyTypedData({ ...td, structHash: H1 }, owner(), A.ownerAddress);
+    expect(sig.signature).toBe((await signPolicyTypedData(td, owner(), A.ownerAddress)).signature);
+    const refused: unknown[] = [
+      { ...td, digest: undefined },
+      { ...td, message: { ...td.message, amount: 6n } },
+      { ...td, message: { ...td.message, amount: 5 } },
+      { ...td, message: null },
+      Object.defineProperty({ ...td }, 'message', { enumerable: true, get: () => { throw new TypeError('boom'); } }),
+      null,
+    ];
+    const got: string[] = [];
+    for (const v of refused) got.push(await acode(() => signPolicyTypedData(v as never, owner(), A.ownerAddress)).catch((e: unknown) => (e instanceof Error ? e.name : 'thrown')));
+    expect(got).toEqual(refused.map(() => 'SIGNING_FAILED'));
   });
 
   it('still signs every builder output', async () => {
