@@ -134,10 +134,13 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
   // Loading replaces the loaded keys: without a recoverable copy that needs the same confirmation as unlocking a vault
   // (L1-01, C-R12). A key change during the storage read drops the request.
   const onLoadMaster = (): void => {
+    const controller = op.start();
+    const selected = held.current;
     if (getSessionBackup() === undefined || sessionHasExternalCopy()) { install(); return; }
     const unchanged = captureSessionVersionGuard();
     void loadedKeysRecoverable().then((recoverable) => {
-      if (!mounted.current) return;
+      // A storage read belongs to this export only. Closing, locking or opening another export cancels the request.
+      if (!mounted.current || !op.current(controller) || held.current !== selected) return;
       try { unchanged(); } catch { return; }
       if (recoverable) install(); else setConfirmReplace(true);
     });

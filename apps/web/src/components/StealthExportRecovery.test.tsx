@@ -3,7 +3,7 @@ import { act, cleanup, render, screen, waitFor, within } from '@testing-library/
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyAppLock } from '../lib/appLock';
-import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from '../lib/keyVault';
+import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import * as exportModule from '../lib/paymentKeyExport';
 import type { OpenedStealthExport } from '../lib/paymentKeyExport';
 import { TEST_N, VECTORS, VECTOR_PASS, captureDownloads, loadVectorSeller, vectorAnnouncement } from '../lib/paymentKeyExport.testutil';
@@ -142,6 +142,61 @@ describe('Open a stealth key export (spec 18 flow 4)', () => {
     await screen.findByTestId('stealth-export-open-master', {}, { timeout: 30_000 });
     act(() => { clearSession(); });
     expect(screen.queryByTestId('stealth-export-open-master')).toBeNull();
+  });
+
+  it('does not apply a cancelled master-load request to an export opened later', async () => {
+    const user = userEvent.setup();
+    const store = new MemoryKeyVaultStore();
+    setKeyVaultStoreForTests(store);
+    generateSession();
+    await saveEncryptedVault(FILE_PASS, { N: TEST_N }, store);
+    const saved = await store.get();
+    const before = getSessionPublic();
+    let resolveRead: (record: string | undefined) => void = () => undefined;
+    const read = vi.spyOn(store, 'get').mockImplementationOnce(() =>
+      new Promise<string | undefined>((resolve) => { resolveRead = resolve; }));
+    render(<StealthExportRecovery announce={announce} />);
+    await openFile(user, VECTORS.files.master.text, VECTOR_PASS);
+    const first = await screen.findByTestId('stealth-export-open-master', {}, { timeout: 30_000 });
+    await user.click(within(first).getByRole('button', { name: 'Load these spending and viewing keys' }));
+    expect(read).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole('button', { name: 'Close the export and wipe its keys' }));
+    await openFile(user, VECTORS.files.master.text, VECTOR_PASS);
+    await screen.findByTestId('stealth-export-open-master', {}, { timeout: 30_000 });
+    await act(async () => { resolveRead(saved); await Promise.resolve(); });
+
+    expect(getSessionPublic()).toBe(before);
+    const reopened = screen.getByTestId('stealth-export-open-master');
+    expect(screen.queryByText(/loaded from the master backup, with a new invoice-signing key/)).toBeNull();
+    await user.click(within(reopened).getByRole('button', { name: 'Load these spending and viewing keys' }));
+    await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(VECTORS.seller.metaAddress); });
+  });
+
+  it('does not show a stale replacement confirmation on a later export', async () => {
+    const user = userEvent.setup();
+    const store = new MemoryKeyVaultStore();
+    setKeyVaultStoreForTests(store);
+    generateSession();
+    await saveEncryptedVault(FILE_PASS, { N: TEST_N }, store);
+    const before = getSessionPublic();
+    let resolveRead: (record: string | undefined) => void = () => undefined;
+    const read = vi.spyOn(store, 'get').mockImplementationOnce(() =>
+      new Promise<string | undefined>((resolve) => { resolveRead = resolve; }));
+    render(<StealthExportRecovery announce={announce} />);
+    await openFile(user, VECTORS.files.master.text, VECTOR_PASS);
+    const first = await screen.findByTestId('stealth-export-open-master', {}, { timeout: 30_000 });
+    await user.click(within(first).getByRole('button', { name: 'Load these spending and viewing keys' }));
+    expect(read).toHaveBeenCalledTimes(1);
+    act(() => { notifyAppLock('idle'); });
+
+    await openFile(user, VECTORS.files.master.text, VECTOR_PASS);
+    await screen.findByTestId('stealth-export-open-master', {}, { timeout: 30_000 });
+    await act(async () => { resolveRead(undefined); await Promise.resolve(); });
+
+    expect(getSessionPublic()).toBe(before);
+    expect(screen.queryByText('The keys loaded now have no verified backup')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Load these spending and viewing keys' }).hasAttribute('disabled')).toBe(false);
   });
 
   it('the idle lock wipes opened keys and a cancelled open shows nothing', async () => {

@@ -180,6 +180,11 @@ discover other stealth payments.
 
 ## 7. Authorization and lifecycle rules (browser)
 
+- **Combined-key boundary.** A one-time payment private key alone controls its address. A holder of the private viewing
+  key can use the payment's public announcement to compute the scheme-1 tweak and subtract it from that one-time
+  private key, recovering the master spending key modulo the secp256k1 curve order. Export and import warnings must
+  disclose this boundary before revealing payment private keys. Never give those keys to a watch-only party that
+  holds the private viewing key. Encryption protects the file at rest; it does not remove this relationship after decryption.
 - Secret exports (encrypted keypair, archive, raw key, master backup) require re-authentication that proves the
   user knows a credential for the **currently loaded** keys: the passphrase of the encrypted vault holding them, or a
   keystore backup file of the same keys with its passphrase. Having no vault is never treated as success.
