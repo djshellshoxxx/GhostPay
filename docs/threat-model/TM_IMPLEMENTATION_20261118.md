@@ -5,7 +5,7 @@
 Worker: branch-archaeology/security-tooling lane; coordinator: current Pages completion session.
 Branch: `integration/ghostpay-doc-evidence-20261118`.
 Reviewed runtime source: `e85db1ef942bda9cb54317a6c036a22484b46ff9`.
-Owned files: this ledger, `README.md`, `docs/threat-model/PRIVACY_THREAT_MODEL.md` and `docs/DEPLOYMENT_MANIFEST.md`.
+Owned files: this ledger, `README.md`, `docs/threat-model/PRIVACY_THREAT_MODEL.md` `docs/DEPLOYMENT_MANIFEST.md` and `deploy/TOR.md`.
 Acceptance: refresh #223's useful documentation against the combined source; distinguish source presence,
 actual local execution and missing release acceptance; preserve residual risks and historical evidence.
 No runtime, test, dependency, gate, deployment or release change belongs to this documentation lane.
@@ -94,13 +94,13 @@ Limit: CSP is one layer and does not protect against an origin/host that serves 
 
 **Status: DOCUMENTED_UNQUALIFIED.** An onion-hosted bundle is mistaken for Tor-routed RPC or payment anonymity.
 
-Tor guidance separates bundle hosting, browser routing and independent RPC/wallet traffic and retains UNTESTED status. Settings now exposes the acknowledged network selection; older statements denying that control are stale.
+Tor guidance separates bundle hosting, browser routing and independent RPC/wallet traffic and retains UNTESTED status. Settings exposes the acknowledged network selection. This documentation refresh corrects the older deploy/TOR.md statement denying that control and records the plain-HTTP loopback CSP limit.
 
 Source: `deploy/TOR.md`, `apps/web/src/views/Settings.tsx`, `apps/web/src/lib/defaultServices.ts`. Regression definitions: `apps/web/src/views/Settings.test.tsx`.
 
 Execution references: no recommendation-specific executed result claimed in this ledger.
 
-Remaining: Execute real Tor bootstrap/reachability/browser/provider tests and record their versions, source and traffic boundary. Fix the older deploy/TOR.md sentence claiming no Settings control when that document is next updated.
+Remaining: Execute real Tor bootstrap/reachability/browser/provider tests and record their versions, source and traffic boundary. Plain-HTTP loopback compatibility remains constrained by the shipped CSP.
 
 Limit: The browser page cannot verify Tor routing; the provider still sees request content; wallet-extension traffic is outside app control.
 
