@@ -1,7 +1,9 @@
 # Echidna harness and fee-token freeze review (2026-11-18)
 
-Status: AI-assisted review by an agent. **This is not an external audit** and does not replace one. Every claim
-below was checked against source at the commits named here. Prior handoff and audit documents were used only
+Status: AI-assisted review by an agent. **This is not an external audit** and does not replace one. Claims below
+are marked as checked against source at the commits named here, as CI evidence (a hosted step outcome or log), or
+as reported by an earlier document and not re-verified (for example the 44242366379 call counts in A4, the
+`FEE_BPS` mutants in A3, which were reasoned and not run, and on-chain absence in B1, which cannot be proven here). Prior handoff and audit documents were used only
 as pointers.
 
 ## Provenance
@@ -10,7 +12,7 @@ as pointers.
 |---|---|
 | Reviewed tree | `c487f0fe649e24a1e89f1f8fd0d82e90a3441c62` (candidate head `71abc7e55c25d45b206ac47e5ddd24e072805710` + #204 merge) |
 | Contract identity | `git diff --quiet 71abc7e5 HEAD -- packages/contracts`: identical. `git diff --stat 7a620ff1 71abc7e5 -- packages/contracts`: empty. `src/`, `script/`, `echidna.yaml` and `scripts/run-echidna.sh` are identical to `beb525dddcca103de9eda447b55cddf7ee2f428c` |
-| Harness hashes (sha256) | `EchidnaRouter.sol` `dc3b7fbd…497c`, `EchidnaSweep.sol` `c8cfeb17…1788`, `EchidnaPolicy.sol` `4bef9da6…4431`, `EchidnaPolicyReachability.t.sol` `b3ce1d4c…3dc7`, `echidna.yaml` `beed790d…4c44`, `run-echidna.sh` `688520d9…a12d`, `PolicyAccountFactory.sol` `7dfc3259…b594c44` |
+| Harness hashes (sha256) | `EchidnaRouter.sol` `dc3b7fbd…497c`, `EchidnaSweep.sol` `c8cfeb17…1788`, `EchidnaPolicy.sol` `4bef9da6…4431`, `EchidnaPolicyReachability.t.sol` `b3ce1d4c…3dc7`, `echidna.yaml` `beed790d…4c44`, `run-echidna.sh` `688520d9…a12d`, `PolicyAccountFactory.sol` `7dfc3259…b94e` |
 | Toolchain | forge 1.8.5. `binaries.soliditylang.org` is blocked by this sandbox's network policy (`forge build`: "tunnel error: unsuccessful"). Forge ran with `FOUNDRY_SOLC` pointed at a scratch shim around solcjs `0.8.28+commit.7893614a` (the same compiler release built to wasm, from registry.npmjs.org). The shim splits forge's standard-JSON input when the wasm build hits its memory limit and merges the outputs. Bytecode is per contract and unaffected. Only trace and coverage source maps could differ. Echidna is not installed locally; Echidna evidence comes from CI. |
 
 ## Part A: Echidna harnesses
@@ -23,7 +25,9 @@ Three Echidna harnesses (`packages/contracts/test/echidna/`) run under `scripts/
 
 - The Echidna exit code is exactly 1.
 - Every declared `echidna_canary_*` reports `failed!`. "failed with no transactions made" is rejected.
-- Every other declared property reports `passed!`, or `passing` together with `Total calls` ≥ the budget.
+- Every other declared property reports `passed!` or `passing`.
+- For every harness, whatever the property spelling, the report has exactly one `Total calls:` line and it is
+  ≥ `testLimit` (`run-echidna.sh:44-51`, unconditional; property and canary regexes at `:68`).
 - No result is missing, duplicated or undeclared.
 
 | Harness | Safety properties | Canaries (expected to fail) |
@@ -50,7 +54,10 @@ Command: `git log beb525dd..HEAD` and `git diff beb525dd HEAD` over `test/echidn
   are unchanged and still cover over-limit amounts, closed requests and double execution. The account still
   enforces every rule. This raises the hit rate. It does not narrow what is checked.
 - Workflow changes since `beb525dd` add `release.yml` to the trigger paths and stop cancelling in-progress
-  caller runs (`cancel-in-progress` only for `pull_request`). They also add `scripts/agent/*.test.mjs` to CI. No
+  caller runs (`cancel-in-progress` only for `pull_request`). They also add `scripts/agent/*.test.mjs` to CI, and
+  `release.yml` (+40 lines, `git diff --stat beb525dd c827d22f -- .github`) gains a `contract-analysis` job on the
+  tagged commit plus an evidence gate in `build` that requires both analyzers' `metadata.json` to show success for
+  exactly that commit. That strengthens the gate. No
   analyzer step became conditional, `continue-on-error` or unconditionally passing.
 - Nit (Info): the `test_replaysEchidnaFalsifyingSequence` comment says the harness sha256 `6a6e6921…` is "same
   as this tree". That is the `beb525dd` harness. The current harness is `4bef9da6…`. The PolicyAccount hash
@@ -127,8 +134,8 @@ Conclusions:
 ### B1. Exact scenario (from source)
 
 Scheme 2 ("GP"+2, `0x47500002`) pays funds to the **counterfactual** account
-`PolicyAccountFactory.predictAddress(owner, policyHash)`. `GhostPayPolicyRouter._checkPolicy`
-(`src/GhostPayPolicyRouter.sol:233-240`) accepts deployed or undeployed accounts. Nothing stops plain
+`PolicyAccountFactory.predictAddress(owner, policyHash)`. `GhostPayPolicyRouter._checkPolicyAccount`
+(`src/GhostPayPolicyRouter.sol:236-242`, NatSpec `:232-235`) accepts deployed or undeployed accounts. Nothing stops plain
 transfers to the same address. Withdrawing requires code at that address, and only
 `PolicyAccountFactory.deploy` can put it there.
 
@@ -191,13 +198,13 @@ stablecoins are upgradeable proxies, and Ethereum USDT also carries a transfer-f
 | Path | Blocked by code? | Evidence |
 |---|---|---|
 | `packages/contracts/script/DeployPolicy.s.sol` (factory deploy) | **No** | Requires `FEE_TOKEN` with code, `FLAT_FEE ≤ MAX_FLAT_FEE`, and a chain allowed by `DeployBase._chainAllowed`. That means the six built-in testnets **with no flag**, plus any chain in `ALLOWED_CHAIN_IDS` (mainnets included). Nothing rejects or flags `FLAT_FEE != 0` with an upgradeable or fee-switch token. The README's example command is the affected configuration. |
-| `scripts/pre-deploy-check.sh policy` | No (advisory only, same checks) | `:73-82`, `:113-123` |
+| `packages/contracts/scripts/pre-deploy-check.sh policy` | No (advisory only, same checks) | `:73-82`, `:113-123` |
 | `scripts/testnet/deploy.sh` | Not a scheme-2 path | Runs `Deploy.s.sol` (router + sweep) only |
 | `scripts/testnet/make-manifest.mjs --policy-broadcast` | No | Copies any `FEE_TOKEN` and `FLAT_FEE` into the manifest (`:114-134`) |
 | CI / release workflows | Yes (no deploy step) | `grep 'forge script\|--broadcast\|DeployPolicy' .github/workflows/` finds nothing |
 | Web client (`apps/web/src/features/policy/chain.ts`) | **Yes** | `verifyPolicyDeployment` throws for `!chain.testnet` (`:78`). `PINNED_POLICY_DEPLOYMENTS` is empty (`:34`), so every network throws `policy.deployment.untrusted` (`:84`). The feature is also behind `VITE_GHOSTPAY_EXPERIMENTAL_POLICY`. |
 | Web client deploy step (`withdraw.ts:149`) | Yes, at deploy time only | `deployCall` refuses `flatFee != 0`. The receive/create views do not check the fee first (Low, UX). |
-| Bundled manifests (`apps/web/deployments`) | Yes | The build fails on any manifest without pinned release keys, and `allowed_signers`/release keys are empty by design. The web code also does not consume manifest `policy*` fields. |
+| Bundled manifests (`apps/web/deployments`) | Yes | The build fails on any manifest unless `GHOSTPAY_RELEASE_PUBKEYS` is set (`scripts/pages/build-pages.sh:94`, `apps/web/scripts/validate-deployments.mjs:47`); it was empty in Pages CI run 44248573838 (site job env). That repository variable is the manifest trust root; `.github/release-signers/allowed_signers` (tag signing, 0 key lines) plays no part in manifest validation (`STATIC_BETA_DECISIONS.md` D3 vs D4). The web code also does not consume manifest `policy*` fields. |
 
 **Result:** GhostPay's own client cannot pay or receive through any scheme-2 factory today. That is enforced in
 code by the testnet-only check and the empty pinned profile list. **The factory deployment path itself is not
@@ -236,10 +243,10 @@ The earlier `test_probe_feeSwitchFreezesCounterfactualFunds` was a scratch probe
 
 | | A. Zero-fee factory for upgradeable / fee-switch tokens | B. Specified fail-open `_collectFee` |
 |---|---|---|
-| Change | Configuration only: deploy with `FLAT_FEE = 0` (`FEE_TOKEN` may be zero). Charge F-SECURE elsewhere, or not at all. | Contract change. Wrap the three views in bounded `staticcall`s; on view failure **or** wrong delta, emit `FeeWaived` and deploy instead of reverting. Spec, `DEVIATIONS` P7 and NatSpec must change. |
+| Change | Configuration only, with a qualifier: deploy with `FLAT_FEE = 0`. The constructor allows a zero `FEE_TOKEN` when the fee is zero (`PolicyAccountFactory.sol:84-87`), but the committed deploy path does not: `DeployPolicy.s.sol` reverts `FeeTokenNotSet` for an empty or zero `FEE_TOKEN` (`:48`, `:50`) and `FeeTokenHasNoCode` for a codeless one (`:61`), and requires `MAX_FLAT_FEE`; `packages/contracts/scripts/pre-deploy-check.sh:73` rejects a zero `FEE_TOKEN` too. So pass a real token address that has code (never called when the fee is zero); a zero `FEE_TOKEN` needs a script change, which is reviewable code, not configuration. Charge F-SECURE elsewhere, or not at all. | Contract change. Wrap the three views in bounded `staticcall`s; on view failure **or** wrong delta, emit `FeeWaived` and deploy instead of reverting. Spec, `DEVIATIONS` P7 and NatSpec must change. |
 | Freeze removed? | **Yes, fully.** `deploy` makes no token call (`_collectFee` skipped at `:114`); proven by `test_zeroFeeFactoryImmuneToBothSwitches` and `test_R6_feeFreeDeployMakesNoTokenCallAndReleasesGuard`. | Yes for (a) and (b), if implemented correctly. |
 | New risk | None on-chain. Revenue must be collected another way (client, router-side or off-chain); a cheaper policy-account creation may change the abuse model. | A wider fee-evasion surface: forcing a view out of gas (63/64 rule) or a token hook making views fail then forces a waiver. An **explicit gas floor** and a re-derived R11 bound are needed. AUD24-02 gets broader. On a wrong delta, the partial transfer has already happened: the payer may be over-debited or the recipient under-paid, and that is accepted, not reverted. |
-| Verification cost | None for the contracts. The bytecode is unchanged, the Mythril R4-R11 dispositions stay valid, and `DeployPolicy` already accepts an explicit `FLAT_FEE=0`. | New bytecode: re-run Slither, Echidna and Mythril, re-do the R4-R11 dispositions (PCs change), add new tests and a mutant set, and get an external audit before any mainnet use. |
+| Verification cost | None for the contracts. The bytecode is unchanged, the Mythril R4-R11 dispositions stay valid, and `DeployPolicy` already accepts an explicit `FLAT_FEE=0` with a real `FEE_TOKEN` that has code (never called). | New bytecode: re-run Slither, Echidna and Mythril, re-do the R4-R11 dispositions (PCs change), add new tests and a mutant set, and get an external audit before any mainnet use. |
 | Mythril gate | Unchanged (it analyses symbolic constructor args, so it stays red with the existing dispositions). | Changes, and needs new dispositions. |
 | Fits "experimental, testnet-only" (ADR-0027) | Yes | Adds contract scope ahead of the open ADR-0027 revision |
 
@@ -272,7 +279,8 @@ fail-open conditions, a gas floor, and a full re-analysis and external audit.
 |---|---|
 | `git log/diff beb525dd..HEAD -- packages/contracts/test/echidna packages/contracts/echidna.yaml packages/contracts/scripts/run-echidna.sh scripts/tests/echidna-runner.test.mjs .github/workflows` | Only `292b15b3` (additive harness actions) plus the workflow edits in A2 |
 | `node --test scripts/tests/echidna-runner.test.mjs` | 22/22 pass |
-| `gh api repos/djshellshoxxx/GhostPay/actions/runs/44248573915{,/jobs,/artifacts}` | echidna job success; mythril job failure at 06:54:55Z (the run concluded `failure`); 1 echidna artifact listed |
+| `gh api repos/djshellshoxxx/GhostPay/actions/runs/44248573915{,/jobs}` | echidna job success; mythril job failure at 06:54:55Z (the run concluded `failure`) |
+| `gh api repos/djshellshoxxx/GhostPay/actions/runs/44248573915/artifacts` | First call (before the Mythril upload at 06:54:52-54Z): 1 echidna artifact. Re-read in the critic pass: 2 artifacts, mythril 14404534228 (17069 B) and echidna 14403996094 (12396 B) |
 | `gh api …/actions/jobs/134613402183/logs` | Fetched; checkout `71abc7e5`; `ANALYSIS_OUTCOME: success` |
 | `gh run download 44248573915 …` and `gh api …/artifacts/14403996094/zip` | Blocked: proxy 403 to `productionresultssa16.blob.core.windows.net` |
 | `gh run download 44242366379 …` | Blocked: proxy 403 to `productionresultssa31.blob.core.windows.net` |

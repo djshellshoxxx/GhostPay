@@ -29,6 +29,11 @@ gh api $R/pages --jq '{build_type, source, html_url, https_enforced}'
 gh api $R/vulnerability-alerts -i | head -1              # 204 = dependency graph alerts on, 404 = off
 ```
 
+Also review the GitHub Apps installed on the repository and their permissions (Settings > GitHub Apps, or
+Settings > Integrations for the owner account). A third-party App, `graphify-labs` (app id 4356270), posted a check
+run on `71abc7e5` at 2026-11-18T07:01:20Z, so installed Apps can write checks here; remove any App that does not
+need `checks: write`.
+
 If `release` is missing, GitHub creates it **without protection** the first time `release.yml` runs, and the
 "requires approval" gate is then empty (review finding CI-04). Do section 3 before pushing any `v*` tag.
 
@@ -36,24 +41,36 @@ If `release` is missing, GitHub creates it **without protection** the first time
 
 ### 1.1 Required checks: chosen from the check runs on PR #203 head `71abc7e5`
 
-The source is `gh api $R/commits/71abc7e55c25d45b206ac47e5ddd24e072805710/check-runs`: 45 runs; app `github-actions`
-`id` 15368. Pinning `integration_id` 15368 stops another app from posting a green check under the same name.
+The source is `gh api $R/commits/71abc7e55c25d45b206ac47e5ddd24e072805710/check-runs`: 45 runs when first read, 46 on
+re-read (the extra one is the `graphify-labs` check above); app `github-actions` `id` 15368. Pinning
+`integration_id` 15368 stops another app from posting a green check under the same name.
 
 | Required | Check name | Why it can be required |
 |---|---|---|
 | yes | `changes` | CI, no path filter, same name on every PR |
-| yes | `typescript` | Aggregator: succeeds only if `ts-typecheck`, `ts-lint`, `ts-check`, all 7 `ts-test (...)` shards and `ts-test-relayer` succeeded, or all were skipped as docs-only |
-| yes | `contracts` | Aggregator over `contracts-test`, `-coverage`, `-static`, `-slither`, both `contracts-extra (...)` |
+| yes | `typescript` | Aggregator (`ci.yml:226-240`, `if: always()`) over `changes`, `ts-typecheck`, `ts-lint`, `ts-check`, all 7 `ts-test (...)` shards and `ts-test-relayer`: it fails on any result other than `success` or `skipped`. It accepts any mix of the two; it does not check all-or-nothing |
+| yes | `contracts` | Aggregator (`ci.yml:515-529`, same loop) over `changes`, `contracts-test`, `-coverage`, `-static`, `-slither`, both `contracts-extra (...)` |
 | yes | `secrets-and-egress` | Secret scan, action pinning, tx.origin, headers, self-host gate, CLI permission tests; never skipped |
 | via `code_scanning` rule | CodeQL | Default setup runs on every PR; enforced as a rule, not by name |
 | **no** | `e2e (full)`, `e2e (lean)`, `lean-candidate` | On a docs-only PR the skipped matrix job reports as `e2e` (CI runs 44253820581, 44253716389), so requiring `e2e (full)` blocks those PRs for ever. Add the aggregator in 1.3 first, then require `browser`. |
 | **no** | `echidna`, `mythril` | `contract-analysis.yml` runs only for contract paths, and Mythril is red by design (blocker 2 of the promotion packet). `release.yml` enforces both on the exact tagged commit instead. |
 | **no** | Pages, Beta acceptance, Integration, Hosting kit, CLI operator, Parallel review `validate` | All have `paths` filters, so they are absent on unrelated PRs |
 
+Whether the `ts-*` and `contracts-*` jobs run or skip depends only on `needs.changes.outputs.code == 'true'`
+(`ci.yml:21-57`, the `changes` job). The `changes` path classifier is therefore the trust anchor of both aggregators: a
+misclassified code change would skip every job and both aggregators would still pass. Review any change to the
+`changes` job as a change to the gate itself.
+
 `required_approving_review_count` is 0 because this repository has one maintainer, and GitHub does not let an
 author approve their own PR. With a second maintainer, raise it to 1 and set `require_last_push_approval: true`.
 `bypass_actors` is empty, so the owner is held to the same rule. This also applies to merges made with the
 `GHOSTPAY_GITHUB_TOKEN` PAT by `ghostpay-codex-cloud.yml`.
+
+Residual (this ruleset does not fully close CI-01): with 0 approvals and `echidna`/`mythril` not required, it would
+still have allowed PR #203's merge, which is the CI-01 evidence (`mythril` job 134613402317 completed `failure` at
+2026-11-18T06:54:55Z; merged at 06:56:49Z; reviews `COMMENTED` only, no `APPROVED`). The required set in 1.2 is
+`changes`, `typescript`, `contracts` and `secrets-and-egress` plus the `code_scanning` rule. Mythril stays enforced
+only by `release.yml` on the tagged commit.
 
 ### 1.2 `main-ruleset.json`
 
@@ -161,7 +178,12 @@ concurrent edit (#204) and the change needs its own review.
 
 ## 2. `v*` tag ruleset: `tag-ruleset.json`
 
-Only repository admins (role id 5) can create, move or delete `v*` tags. `release.yml` also requires the tag to be
+Only repository admins (role id 5) can create, move or delete `v*` tags. Bypass applies to the acting identity, not
+to a person: `ghostpay-codex-cloud.yml:62` says `GHOSTPAY_GITHUB_TOKEN` is "assumed to be the repository owner's
+PAT" (used at `:28`, `:409`, `:432`), and repository secrets reach workflows on any pushed branch (CI-05). Automation
+holding that PAT may therefore act as the admin and bypass this ruleset (and any admin-bypass rule). Do section 5's
+PAT replacement or removal first, or confirm the bypass semantics for the fine-grained PAT you use. Today the tag
+still fails closed at the empty `allowed_signers` file. `release.yml` also requires the tag to be
 annotated, signed by a key in the **default-branch** `.github/release-signers/allowed_signers` (currently 0 keys,
 so it fails closed), pointing at the checked-out commit and reachable from `main`. `draft-release` re-checks that
 the tag object did not move during approval.
@@ -221,9 +243,11 @@ gh api -X POST $R/environments/github-pages/deployment-branch-policies -f name=m
 ```
 
 `pages.yml` already publishes only on a manual `workflow_dispatch` of `main` with `deploy=true`, after the site
-build, the anvil acceptance and the release gates. The environment is the second, server-side lock. The live site
-`https://djshellshoxxx.github.io/GhostPay/` is still the 2026-10-22 build from the retired "Pages mirror" workflow
-(run 39775570505, commit `dbee6786`). Decide whether to keep it, replace it through a gated `pages.yml` run, or
+build, the anvil acceptance and the release gates. The environment is the second, server-side lock. The live bytes at
+`https://djshellshoxxx.github.io/GhostPay/` were not fetched (egress refused; the Pages API returned 403). The latest
+recorded deployment is 7251740697 to `github-pages` at 2026-10-22T12:07:53Z, from the then push-triggered "Pages
+mirror" workflow (run 39775570505, commit `dbee6786`), so the likely live content is that unqualified build (see
+[PAGES_QUALIFICATION_20261118.md](../../pages/PAGES_QUALIFICATION_20261118.md) F1). Decide whether to keep it, replace it through a gated `pages.yml` run, or
 unpublish it (`gh api -X DELETE $R/pages`, which is irreversible for the current configuration).
 
 ## 4. Actions and security settings

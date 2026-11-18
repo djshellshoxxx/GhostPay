@@ -31,8 +31,10 @@ each claim below is marked **verified here**, **CI evidence** (read from a GitHu
    **no report record was re-parsed from artifact bytes in this lane.** The eleven records below (contract, function,
    SWC, severity, PC, source map) are **transcribed** from the earlier records (artifact 14290880802, report sha256
    `f5a03aea…7f158f8`); the claims that `7a620ff1` produced the same eleven (report `4f6cc97b…`) and `d91ae16a` ten
-   without R8 (report `475b27ec…`) come from [PROMOTION_PACKET.md](../handoffs/consolidation-20261118/PROMOTION_PACKET.md)
-   and are unverified here. Uploaded zip digests (CI evidence, not report hashes): `beb525dd` `e78964b7…5162e`,
+   without R8 come from [PROMOTION_PACKET.md](../handoffs/consolidation-20261118/PROMOTION_PACKET.md) (the current
+   version, `:44`, carries `4f6cc97b…` and the ten-record claim for `d91ae16a`; the `d91ae16a` report hash `475b27ec…`
+   appears only in the earlier version `7a620ff1:docs/handoffs/consolidation-20261118/PROMOTION_PACKET.md:43`, which
+   `71abc7e5` rewrote) and are unverified here. Uploaded zip digests (CI evidence, not report hashes): `beb525dd` `e78964b7…5162e`,
    `d91ae16a` `a5ea87cc…85f6`, `7a620ff1` `d1cfff43…4cea`.
 2. *Compiler.* `forge build` fails here (`error sending request for url
    (https://binaries.soliditylang.org/linux-amd64/list.json)`, tunnel refused) and no solc 0.8.28 exists on this host.
@@ -161,12 +163,12 @@ lane reaches the same disposition from the current source independently of the e
 | Disposition | Benign: intended fail-closed behaviour, with the design residual N1 (REVIEW_FINDINGS R-11, Medium conditional) |
 | Independent conclusion | **Agree.** N1 remains an owner decision before any production scheme-2 deployment; it is not exposed while scheme 2 is undeployed |
 
-### R8: `PolicyAccountFactory.deploy` — SWC-113, Low (`allowance`) — timeout-dependent
+### R8: `PolicyAccountFactory.deploy` — SWC-113, Low (`allowance`) — nondeterministic (cause unproven)
 
 | Field | Value |
 |---|---|
 | Location | `src/PolicyAccountFactory.sol:132`; PC 1781 (STATICCALL) |
-| Reproduction | 3-step sequence repeating identical `deploy` arguments (transcribed). **Timeout-dependent:** reported at `beb525dd` (run 43981233671) and, per the promotion packet, at `7a620ff1` (44242366379); absent at `d91ae16a` (44231986631) and in an earlier local rerun, on byte-identical source, runner and compiler. Runner step wall times (CI evidence): 48m22s, 49m10s and 47m52s respectively; `71abc7e5` (44248573915) took 45m57s and its record set is not readable here |
+| Reproduction | 3-step sequence repeating identical `deploy` arguments (transcribed). **Nondeterministic (cause unproven):** reported at `beb525dd` (run 43981233671) and, per the promotion packet, at `7a620ff1` (44242366379); absent at `d91ae16a` (44231986631) and in an earlier local rerun, on byte-identical source, runner and compiler. Runner step wall times (CI evidence, step "Execute the unchanged full analyzer runner"): `beb525dd` 48m22s (job 133697930698, 00:49:32-01:37:54Z), `7a620ff1` 47m52s (job 134593129954, 05:11:48-05:59:40Z), `d91ae16a` 49m10s (job 134559059159, 03:51:55-04:41:05Z). The run without R8 was the longest; `71abc7e5` (44248573915, 06:08:55-06:54:52Z) was the shortest at 45m57s, yet its zip is 17069 bytes, the same size as the eleven-record `7a620ff1` zip (its record set is not readable here). Wall time therefore does not support calling R8 timeout-dependent |
 | Exploitability | As R7 (fail closed on a failing `allowance`). The 3-step path itself is infeasible on chain: the repeated identical `deploy` reverts `AlreadyDeployed` (`:111`) before any token call |
 | Tests | `test_R8_allowanceRevertFailsClosedWithFullRollback`, `test_R7_R8_feeReadsAreStaticCalls_mutatingReadsFailClosed`, `test_replay_R7_R8_secondIdenticalDeployRevertsBeforeAnyTokenCall`: PASS in CI |
 | Disposition | Benign: intended fail-closed behaviour; residual N1 as R7 |
@@ -210,10 +212,11 @@ benign-intended with stated invariants or residual N1). R4's model mechanism sta
 on it. No record is a real exploitable defect against the current source, so no failing-before/passing-after test
 applies.
 
-## 5. Timeout dependence and determinism
+## 5. Nondeterminism
 
-R8 is the only record known to come and go on byte-identical inputs. The cause is the bounded symbolic search
-(`--execution-timeout 900` per contract, `-t 3`) plus solver nondeterminism; the job also installs Mythril's transitive
+R8 is the only record known to come and go on byte-identical inputs; it is nondeterministic and its cause is
+unproven. A likely cause is the bounded symbolic search (`--execution-timeout 900` per contract, `-t 3`) plus solver
+nondeterminism, but the runner wall times (section 4, R8) do not track R8's presence, so this is not established; the job also installs Mythril's transitive
 dependencies unpinned, so the z3 build can differ between runs. Consequences: a run with fewer records is not evidence
 that a finding went away, a passing Mythril run would not prove complete exploration (run-mythril.sh:3), and any
 finding-specific mechanism must fail on a new or moved record but tolerate a known record being absent. Pinning
@@ -279,7 +282,8 @@ What it checks, given a disposition file, one `report.log`, the repository root 
   `contract-analysis.yml` (`ANALYZER_CHANGED`);
 - only `benign-intended` and `false-positive` dispositions are accepted (a real finding must be fixed), and the file
   must name an owner approval;
-- a record absent from the run is a note (marked when `timeoutDependent`), not a failure.
+- a record absent from the run is a note (marked when `timeoutDependent`), not a failure. The field name predates the
+  wall-time check in section 4 and only flags a record known to be intermittent; it does not assert a cause.
 
 Results here: 11/11 tests passed; six single-change mutants of the checker (skip the source hash, pass undispositioned
 issues, pass missing bytecode, ignore the analyzer pin, ignore tool errors, allow a "real" disposition) each made at
@@ -289,8 +293,13 @@ least one test fail, and the unmutated control passed. Field names follow the My
 **No disposition file is committed.** Populating one needs the exact report strings (the `function` signatures, the
 R4 contract string) and runtime bytecode hashes produced by solc 0.8.28 with the runner's JSON settings, none of which
 this lane could obtain. Wiring the checker into any gate, and choosing who may approve a disposition file, are owner
-decisions. Note also that the Codex automation's path policy (`ghostpay-codex-cloud.yml`, `scripts/tests/*`) bars
-agent PRs from editing these test files; this change needs a human-reviewed merge.
+decisions. Note also that the Codex automation's path policy (`ghostpay-codex-cloud.yml:36-55`, deny entry `scripts/tests/*`)
+bars agent PRs from editing the test file `scripts/tests/mythril-disposition-check.test.mjs`. It does **not** protect the
+checker itself: `scripts/contract-analysis/mythril-disposition-check.mjs` matches the allowed `scripts/*/*`, and the
+deny entry `*/scripts/*-check*` needs a leading path segment. `packages/contracts/scripts/run-mythril.sh` is writable
+by agent PRs too (evaluated with a copy of `agent_path_allowed()`; see ci-supply-chain-review CI-03). If the checker
+is ever wired into a gate, it must first be added to the deny list, following the policy's own rule (`:44`) that an
+agent PR may not edit what judges it. This change needs a human-reviewed merge.
 
 ## 9. Owner actions
 

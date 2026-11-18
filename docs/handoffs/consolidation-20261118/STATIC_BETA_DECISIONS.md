@@ -107,7 +107,7 @@ for relayer and ops monitor as that document requires.
 |---|---|---|
 | `github-pages` environment | Deployment branches: `main` only; required reviewer: the owner | `pages.yml` already gates on `main` + `deploy=true`; the environment rule makes the approval separate from the dispatch |
 | `release` environment | Required reviewer: the owner | `release.yml` comments assume this; it could not be observed |
-| Ruleset on `main` | Require pull request, block force-push and deletion, require the `ci.yml` and contract-analysis checks | The API reported no branch protection and no rulesets |
+| Ruleset on `main` | Require pull request, block force-push and deletion, and require the checks chosen in [OWNER_ACTION_PACKET.md](OWNER_ACTION_PACKET.md) section 1.1: `changes`, `typescript`, `contracts` and `secrets-and-egress` (pinned to `integration_id` 15368), plus a `code_scanning` rule. Do **not** require `echidna`/`mythril` (`contract-analysis.yml:3-12` is path-filtered, and Mythril is red by design) or every `ci.yml` check by name (a docs-only PR reports the skipped matrix as `e2e`, e.g. CI run 44253820581: `e2e` and `lean-candidate` skipped). Mythril is enforced at release (`release.yml` `contract-analysis` job and evidence gate) | The API reported no branch protection and no rulesets |
 | CODEOWNERS (owner review) | `.github/**`, `.github/release-signers/**`, `apps/web/deployments/**`, `apps/web/scripts/validate-deployments.mjs`, `scripts/pages/**`, `scripts/verify-tag.sh`, `packages/chain-adapters/config/matrix.json` | These files define what is trusted; no CODEOWNERS file exists |
 | Tag ruleset | Restrict creation of `v*` to the owner | Recommended in `.github/release-signers/README.md` |
 
@@ -216,7 +216,7 @@ Unsupported networks stay disabled:
 - All seven EVM testnets are `enabled: true` although none has a verified chain-level cell. Payments still stay
   disabled on each, because no signed manifest ships (`deployment` cell unverified, `ManifestState` `absent`).
 
-Drift found (not fixed; not in this task's files): `docs/operators/testnet-runbook.md`:52 says the app and relayer
+Drift found (not fixed; not in this task's files): `docs/operators/testnet-runbook.md`:53 says the app and relayer
 accept "Ethereum Sepolia and Base Sepolia only", but `chains.ts` enables seven testnets. Some components do restrict to
 those two (plus 31337): `packages/scan-source/src/guard.ts`:4, `packages/hops/src/types.ts`:7,
 `packages/payer-sponsor/src/chainGuard.ts`:4. `NEXT_PHASE_QUEUE.md` D01 repeats the runbook statement. Either the
