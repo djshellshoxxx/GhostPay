@@ -17,12 +17,19 @@ export function startServer(dist, mode = 'headers', port = 0) {
   const match = (p, pat) => pat === '/*' || (pat.endsWith('/*') ? p.startsWith(pat.slice(0, -1)) : p === pat);
   const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json', '.md': 'text/markdown' };
   const log = [];
+  const root = path.resolve(dist);
   const srv = http.createServer((req, res) => {
+    // Only the path is used; the base is a parse-only placeholder and is never contacted.
     const u = new URL(req.url, 'http://x');
-    let p = decodeURIComponent(u.pathname); if (p.endsWith('/')) p += 'index.html';
+    let p;
+    try { p = decodeURIComponent(u.pathname); } catch { res.writeHead(400, { 'content-type': 'text/plain' }); return res.end('bad path'); }
+    if (p.endsWith('/')) p += 'index.html';
     log.push({ url: req.url, referer: req.headers.referer ?? null, method: req.method });
-    const f = path.join(dist, p);
-    if (!f.startsWith(dist) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404, { 'content-type': 'text/plain' }); return res.end('nf'); }
+    const f = path.resolve(root, `.${p}`);
+    // Containment by path components, not string prefix: "/srv/dist-secret" starts with "/srv/dist" but is outside it.
+    const rel = path.relative(root, f);
+    const inside = rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel);
+    if (!inside || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404, { 'content-type': 'text/plain' }); return res.end('nf'); }
     const h = { 'content-type': types[path.extname(f)] ?? 'application/octet-stream' };
     for (const r of rules) if (match(p, r.pattern)) Object.assign(h, r.headers);
     res.writeHead(200, h); res.end(fs.readFileSync(f));
