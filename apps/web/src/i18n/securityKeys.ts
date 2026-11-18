@@ -1877,6 +1877,7 @@ export const SECURITY_KEY_GROUPS = {
     'stealthExport.details.public.hint',
     'stealthExport.details.public.download',
     'stealthExport.details.public.done',
+    'stealthExport.details.rpcPrivacy',
     'stealthExport.details.encrypted.heading',
     'stealthExport.details.encrypted.hint',
     'stealthExport.details.encrypted.download',

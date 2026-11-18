@@ -147,6 +147,7 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
           <p className="hint">{t('stealthExport.details.public.hint')}</p>
           <p><button type="button" className="btn" data-testid="stealth-export-public" onClick={onPublic}>{t('stealthExport.details.public.download')}</button></p>
 
+          <Notice kind="warn">{t('stealthExport.details.rpcPrivacy')}</Notice>
           <CredentialFields value={credential} onChange={(next) => { setCredential(next); }} disabled={busy !== undefined} />
 
           <h4>{t('stealthExport.details.encrypted.heading')}</h4>

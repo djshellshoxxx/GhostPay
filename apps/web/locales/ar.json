@@ -2321,6 +2321,7 @@
     "stealthExport.details.public.hint": "ملف ghostpay-stealth-public-v1 فيه العنوان ومفتاحه العام وموضع الإعلان. لا يحوي أي سر.",
     "stealthExport.details.public.download": "نزّل السجل العام",
     "stealthExport.details.public.done": "نُزّل السجل العام.",
+    "stealthExport.details.rpcPrivacy": "Secret exports check this payment address for contract code through the RPC used by this scan. That provider can associate the address, the request time and your connecting IP. No private key is sent. Export only if you accept this disclosure.",
     "stealthExport.details.encrypted.heading": "زوج المفاتيح المشفّر",
     "stealthExport.details.encrypted.hint": "المفتاح الخاص لمرة واحدة لهذه الدفعة، مشفّرًا بعبارة مرور جديدة (ghostpay-stealth-keypair-v1). يمكن فتحه في أي متصفح باستخدام GhostPay أو نص الاسترداد المرجعي.",
     "stealthExport.details.encrypted.download": "نزّل زوج المفاتيح المشفّر",

@@ -2321,6 +2321,7 @@
     "stealthExport.details.public.hint": "アドレス、その公開鍵、アナウンスの位置を含む ghostpay-stealth-public-v1 ファイルです。秘密は含みません。",
     "stealthExport.details.public.download": "公開レコードをダウンロード",
     "stealthExport.details.public.done": "公開レコードをダウンロードしました。",
+    "stealthExport.details.rpcPrivacy": "Secret exports check this payment address for contract code through the RPC used by this scan. That provider can associate the address, the request time and your connecting IP. No private key is sent. Export only if you accept this disclosure.",
     "stealthExport.details.encrypted.heading": "暗号化された鍵ペア",
     "stealthExport.details.encrypted.hint": "この支払いのワンタイム秘密鍵を新しいパスフレーズで暗号化したもの（ghostpay-stealth-keypair-v1）です。GhostPay または参照用の復元スクリプトで、どのブラウザーでも開けます。",
     "stealthExport.details.encrypted.download": "暗号化された鍵ペアをダウンロード",

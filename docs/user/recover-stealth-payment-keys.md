@@ -30,6 +30,14 @@ The master backup is separate from the older encrypted seller keystore (the file
 [Set up a stealth meta-address](set-up-stealth-meta-address.md)). The master backup never contains the
 invoice-signing key; payment-key files never contain master keys.
 
+### Network disclosure when creating a payment-key export
+
+Creating an encrypted single-payment export, encrypted archive or raw private-key export checks each included
+payment address for contract code through the RPC used by the scan. That provider can associate those addresses,
+request times and the connecting IP address; the check sends no private key. The single-payment export panel and
+archive instructions explain the check before the export action. Opening payment details and downloading a
+public-only record do not make that request. Opening an existing export for recovery does not require a network request.
+
 ### Encryption does not hide the public header
 
 Payment-key files encrypt their private-key body. Their public header is authenticated against tampering, but it is

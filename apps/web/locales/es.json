@@ -2321,6 +2321,7 @@
     "stealthExport.details.public.hint": "Un archivo ghostpay-stealth-public-v1 con la dirección, su clave pública y la ubicación del anuncio. No contiene ningún secreto.",
     "stealthExport.details.public.download": "Descargar el registro público",
     "stealthExport.details.public.done": "Registro público descargado.",
+    "stealthExport.details.rpcPrivacy": "Secret exports check this payment address for contract code through the RPC used by this scan. That provider can associate the address, the request time and your connecting IP. No private key is sent. Export only if you accept this disclosure.",
     "stealthExport.details.encrypted.heading": "Par de claves cifrado",
     "stealthExport.details.encrypted.hint": "La clave privada de un solo uso de este pago, cifrada con una nueva frase de contraseña (ghostpay-stealth-keypair-v1). Se puede abrir en cualquier navegador con GhostPay o con el script de recuperación de referencia.",
     "stealthExport.details.encrypted.download": "Descargar el par de claves cifrado",
