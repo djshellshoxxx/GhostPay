@@ -345,37 +345,23 @@ Acceptance: independently review new delegated registry signing, isolated escrow
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
 
 
-## Main-targeted Pages checkpoint v4 extraction — 2026-11-18
+## Sweep balance query consent — 2026-11-18
 
-Worker: ChatGPT privacy_review, Caveman surgical-patch.
-Branch: `chatgpt/ghostpay-pages-checkpoint-v4-20261118`; base main
-`dfc75ef2087fa6463ae59e0818abec01796c578d`. Reviewed #222-lane source input:
-`1dd0fa6152f67010dd38db35d46d102130b583f3`, preserved with its handoff at
-`f90499d2925a965b73533da2650c60ca9ea119ed`.
-Owned paths: `apps/web/src/lib/scanClient.ts`, `apps/web/src/lib/scanClient.test.ts`,
-`apps/web/src/lib/scanCursorSlot.ts`, `apps/web/src/lib/scanCursorSlot.test.ts`,
-`apps/web/src/lib/scanCheckpointPrivacy.test.ts`,
-`apps/web/src/lib/scannerCore.spam.nocov.test.ts`, checkpoint row only in
-`docs/threat-model/PRIVACY_THREAT_MODEL.md` and the browser-profile row only in
-`docs/threat-model/THREAT_MODEL.md` (coordinator-approved), this claim and
-`docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`.
-Acceptance: extract only identity-bound v4 checkpoint persistence/lending and the
-relevant regressions onto main; preserve main scanner body, evidence/reorg/finality
-checks and application behavior. No #222 bulk-evidence feature, transport/BTC/contract
-or dependency changes. Reproduce main's legacy behavior before product edits; run
-focused/full scanClient tests, million-announcement resume, whole-web typecheck and
-scoped lint; request independent source/test review. Record both source lanes, old
-record rescan and privacy/storage limits. No remote mutation, duplicate PR, merge,
-deployment or local browser-pass claim.
-Status: completed at main product/test source
-`7c37de5154ac18e06725ecde6d194185b2e820f2`. Main RED commit
-`1d8e61776b2e28a4a4d2e082399eefe58148ea7c` reproduced 5 failures/2 controls.
-Full scanner/privacy/helper selection passed 110/110; million-announcement resume
-passed 1/1; full-web typecheck1536MiB and scoped lint passed. Independent recovery_review
-found no blocking source issue and reran 20 privacy/helper plus 3 pending-corroboration
-lifecycle cases at the exact source. Main scanner bytes before persistence are unchanged
-except the helper import; no #222 bulk-evidence code was copied. Public/unauthenticated
-cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal dependency,
-sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
-See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
-candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-balance-consent-20261118`.
+Base: refreshed `main` at `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, necessary balance-query messages in
+`apps/web/locales/{en,es,ja,ar}.json` and their `apps/web/src/i18n/securityKeys.ts` classification, this claim,
+and `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`. The integration owner also approved explicit read-button
+clicks in the shared `Sweep.test.tsx` setup and existing `e2e/{sweep,core-journey,pages-devnet,devnet-journey}.spec.ts`
+sweep setup points; existing signing and payment assertions remain unchanged.
+Acceptance: opening Sweep never requests a balance; one explicit click makes one balance-read invocation;
+ordinary rerenders, errors and selection changes do not repeat it; changing the payment, asset, provider or session
+invalidates pending results and requires a new click. Preserve the required-private-path warning and the existing
+sweep controls. Disclose what the Settings RPC learns. Do not import #222's destination ledger or experimental features.
+Scope distinction: the existing RPC transport has its own bounded retries; this task does not claim to change that
+shared transport policy. Exact-head hosted CI and independent integration review remain required.
+
+Milestone: runtime repair `d03d529f5b785dcd129b302d122b191d3d066214` passes 120 focused tests, whole-web typecheck
+at a 1536 MiB heap cap, scoped lint and locale validation. Independent privacy review reports no remaining source
+blocker and independently passes 72 consent/signing tests. Final E2E setup additions are reviewed and linted only;
+browser execution and exact-head hosted CI remain required. See `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`.
