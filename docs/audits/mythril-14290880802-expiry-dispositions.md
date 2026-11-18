@@ -14,7 +14,11 @@ finding, changes the runner, or changes production code.
 | Sources dispositioned | `src/GhostPaySweepRelayer.sol` SHA-256 `9943c8b4…f080a`, `src/PolicyAccount.sol` SHA-256 `c860fcf7…3c1f9`; byte-identical at `beb525dd` and at this record's base `d39e304a` (`git diff --quiet beb525dd d39e304a -- packages/contracts/src`) |
 
 The report holds 11 records in total (3 Medium, 8 Low); GhostPayRouter and GhostPayPolicyRouter
-returned none. This record covers only the three SWC-116 records below. The eight
+returned none. That absence is not evidence: the same `block.timestamp > deadline` pattern exists at
+`GhostPayRouter.sol:99` and `:211` and `GhostPayPolicyRouter.sol:125` and `:256` (caller transaction
+deadlines, not signed orders), and an independent diagnostic GhostPayRouter run executed `TIMESTAMP`
+yet reported nothing. Any exception keyed to the three records below must not assume they are the
+only possible SWC-116 records. This record covers only the three SWC-116 records below. The eight
 PolicyAccountFactory/OpenZeppelin call-path records are dispositioned separately and are not
 covered or cleared here.
 
@@ -112,7 +116,8 @@ is kept.
   latitude (material only if that latitude is a meaningful fraction of `delay`, minimum
   `MIN_DELAY = 1 hours`). Mythril did not report these
   lines; in its model (the implementation, owner zero) no signature can pass `_checkOwner`, so those
-  comparisons were only reached on revert paths (`test_exp2_exp3_implementationModelNeverPassesAuthorization`).
+  comparisons were not reached at all (`:206` and `:285` revert first;
+  `test_exp2_exp3_implementationModelNeverPassesAuthorization`).
   Their absence from the report is therefore not evidence about them.
 
 ## Evidence tests
@@ -159,8 +164,10 @@ reverts: sweep `InvalidAmount` (t=0) / `Expired` (t=1); requestWithdraw `ZeroAmo
 
 ## Suppression guidance
 
-Do not add `--exclude-swc 116` to the runner: it would apply to all five contracts and hide every
-future SWC-116 record, including at the unreported timelock sites above. If a gate exception is
+Mythril 0.24.8 has no per-SWC exclusion option (`myth analyze --help` lists only the `-m` module
+whitelist; see `scripts/run-mythril.sh`). Do not drop the PredictableVariables module through `-m`: it
+would apply to all five contracts, hide every future SWC-116 record (including at the unreported
+timelock sites above) and also hide SWC-120. If a gate exception is
 wanted, it should match exactly contract, function, SWC id, source file and statement (for example
 the three `sourceMap`/`code` pairs above) and fail when the code at that location changes. That
 decision and its mechanism are outside this record.
@@ -179,3 +186,20 @@ decision and its mechanism are outside this record.
    `MIN_DELAY = 1 hours` for the unreported timelock sites (188/208/273/287), and whether client
    deadline margins and same-nonce re-signing for sweeps are adequate. Neither is settled here.
 6. Confirm no suppression or allowlist was added for these records.
+
+## Independent review (2026-11-18)
+
+Reviewed read-only by a separate agent that did not author this record, at `d4171c7b` (integrated
+`1fa4179f`; `packages/contracts/src` tree `dabfd36a` unchanged through the consolidation candidate).
+Verdicts: EXP-1, EXP-2 and EXP-3 **agree** (intended behaviour). The reviewer re-verified the report
+and metadata hashes, record identity, bytecode PCs and source maps; that each check is inclusive, has
+no grace and runs first; that expiry does not consume a nonce; and EIP-712 domain binding per clone
+and chain. They reran the 31 tests and six of their own mutants (exclusive bound at each site,
+timelock one second early at `:208` and `:287`, deadline removed from the relayer digest), and every
+mutant was caught. Conditions applied in this revision: corrected suppression guidance (no
+`--exclude-swc` exists), router-absence caveat, and timelock-reachability wording. Separate open item
+(Low, documentation): the owner cancel window at the 1h/2h policy timelocks assumes an honest, live
+block producer; on OP Stack and Arbitrum a malicious or stalled sequencer can shrink it through
+timestamp latitude, censorship or outage. This needs owner-facing documentation and UI guidance; no
+contract change addresses producer trust. The Mythril gate remains red; accepting these dispositions
+as a gate exception requires the owner's approval of a finding-specific mechanism.
