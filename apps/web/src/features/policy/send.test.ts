@@ -1,6 +1,7 @@
 import { erc20Abi } from '@ghostpay/chain-adapters';
-import { ghostPayPolicyRouterAbi, type Hex } from '@ghostpay/policy-scheme';
-import { decodeFunctionData, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
+import { buildErc20Metadata, parseMetadata } from '@ghostpay/core-crypto';
+import { ghostPayPolicyRouterAbi, policyRouterFee, type Hex } from '@ghostpay/policy-scheme';
+import { bytesToHex, decodeFunctionData, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PostBroadcastError } from '../../lib/payExec';
 import { beginAttempt, finishAttempt } from '../../lib/duplicateAttemptJournal';
@@ -243,12 +244,19 @@ describe('policy payment sending (deadline, same boundary as Pay)', () => {
 });
 
 const OTHER = '0x1111111111111111111111111111111111111111';
-/** Re-encodes a payERC20 call with its token or gross replaced (a well-formed but different call). */
+/**
+ * Re-encodes a payERC20 call with its token or gross replaced (a well-formed but different call). The metadata is rebuilt
+ * for the new token and net, so the call stays self-consistent and passes decodePolicyPaymentCalldata; only send.ts's
+ * comparison with the prepared payment can catch it.
+ */
 function payErc20With(data: Hex, change: { readonly token?: Hex; readonly gross?: bigint }): Hex {
   const d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data });
   if (d.functionName !== 'payERC20') throw new Error('fixture is not payERC20');
   const a = d.args;
-  return encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: [change.token ?? a[0], a[1], a[2], change.gross ?? a[3], a[4], a[5], a[6], a[7]] });
+  const token = change.token ?? a[0];
+  const gross = change.gross ?? a[3];
+  const metadata = bytesToHex(buildErc20Metadata(parseMetadata(a[7]).viewTag, token, gross - policyRouterFee(gross)));
+  return encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: [token, a[1], a[2], gross, a[4], a[5], a[6], metadata] });
 }
 /** A prepared payment changed consistently with its own review snapshot, so only the decode checks can catch it. */
 function consistent(t: Awaited<ReturnType<typeof setup>>, p: PreparedPolicyPayment): [PolicySendGuard, PreparedPolicyPayment] {
