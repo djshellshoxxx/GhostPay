@@ -8,11 +8,11 @@ Machine-readable twin: `branch_recovery_matrix.json` (234 entries). Packaged evi
 
 ## 0. Critical correction to the shared census
 
-`$SP/evidence/branch_census_current.json` was computed in a **shallow** checkout (`.git/shallow` = `704ca6d7`, `f43df60b`). That cut candidate history and made `claude/laughing-bardeen-4t20ys` (e96cee1a, #17), `claude/remote-extensions-10` (698404ca, #16) and refs `pr/16`, `pr/17` look non-ancestors (104 and 17 "unique" commits, 230 and 50 "differing files"). VERIFIED: in a full-history copy (`git fetch --unshallow` into a private copy `out/C/full.git`, shared repo untouched) both are ancestors of `7a620ff1`. Corrected census (`census_full.json`, rerun of `branch_census.py`): **169 ancestors / 48 non-ancestors** among 217 heads (not 167/50). This matches the prior ledger's final addendum (169 contained). Other teams using the old census for these two refs should re-derive. The same full fetch also moved three docs heads (section 5).
+The first shared census (since replaced: the packaged `evidence/census/branch_census_current.json` is the coordinator's full-history re-run) was computed in a **shallow** checkout (`.git/shallow` = `704ca6d7`, `f43df60b`). That cut candidate history and made `claude/laughing-bardeen-4t20ys` (e96cee1a, #17), `claude/remote-extensions-10` (698404ca, #16) and refs `pr/16`, `pr/17` look non-ancestors (104 and 17 "unique" commits, 230 and 50 "differing files"). VERIFIED: in a full-history copy (`git fetch --unshallow` into a private copy `out/C/full.git`, shared repo untouched) both are ancestors of `7a620ff1`. Corrected census (`census_full.json`, rerun of `branch_census.py`): **169 ancestors / 48 non-ancestors** among 217 heads (not 167/50). This matches the prior ledger's final addendum (169 contained). Other teams using the old census for these two refs should re-derive. The same full fetch also moved three docs heads (section 5).
 
 ## 1. Method (VERIFIED unless marked)
 
-1. Population: 217 heads from `git ls-remote --heads origin` (live) plus 17 `refs/remotes/pr/*` refs whose SHA is not any live head tip (7 ancestors, 10 non-ancestors; 3 of those 10, `pr/139,140,153`, are stale PR refs of branches that advanced). `nodata/zealous-hopper-lr0nxe` is a local-only name (== main `cfaebeea`; stale `origin/` tracking ref, absent on remote) and is excluded.
+1. Population: 217 heads from `git ls-remote --heads origin` (live) plus 17 `refs/remotes/pr/*` refs whose SHA is not any live head tip (7 ancestors, 10 non-ancestors; 3 of those 10, `pr/139,140,153`, are stale PR refs of branches that advanced). `nodata/zealous-hopper-lr0nxe` was a local-only name (== main `cfaebeea`) at census time and is excluded; it was pushed at 06:56:55Z as this package's branch (PR #205) and is not a recovery candidate.
 2. Ancestry: `git merge-base --is-ancestor <sha> 7a620ff1` on the full-history copy.
 3. Non-ancestors: `git cherry` (patch-ID) for unique/equivalent commits; every unique commit tested with `git apply --check` (forward = applies clean, `-R` = already present, else conflict) against an index of `7a620ff1` (275 unique commits: 29 clean, 12 already present, 233 conflict, 1 root).
 4. Content presence: per unique commit, added non-trivial lines found in the candidate version of the same file (`coverage.json`; imports/comments skipped). Heuristic (INFERRED), used only to rank, then confirmed by reading candidate code at cited lines.
@@ -31,6 +31,8 @@ Machine-readable twin: `branch_recovery_matrix.json` (234 entries). Packaged evi
 | E | 1 | 6 | 7 |
 | F | 1 | 0 | 1 |
 | **Total** | **217** | **17** | **234** |
+
+H1 note: 3 of the 17 PR-only entries (`pr/139` D, `pr/140` B, `pr/153` D) are not distinct refs — GitHub's `refs/pull/N/head` tracks each open PR's branch and these copies were fetched one rotation before the branch tips (verified 07:10Z: live `refs/pull/{139,140,153}/head` equal the branch tips). Distinct population at the snapshot: 231 (217 heads + 14 PR-only); distinct class B = 5, class D = 12.
 
 Of class C: 169 heads are ancestors of the candidate; the remaining C heads are patch-equivalent (14, one deliberately reverted) or semantically superseded (14), each with cited candidate code. Ancestry proves history inclusion, not behaviour (prior ledger caveat stands; example: `fix/remediation-f95457fd-22ecf9` content was reverted in history).
 
@@ -52,7 +54,7 @@ Recovery-method totals (non-C entries): clean/cherry-pick with reconcile 1 (#204
 - **Evidence:** git diff/apply-check 7a620ff1 vs 2693b08e; wt scratch run
 
 ### `chatgpt/zero-codex/docs-pages-scope-20261112` @ `400e20f1` (2026-11-17) class B
-- **PRs:** none
+- **PRs:** #140 open (head branch; the `pr/140` entry below is the same PR fetched one rotation earlier)
 - **Purpose:** ChatGPT zero-codex docs rotation chain: Pages wiki/README status narration, Verification-and-Release-Gates (+155 lines), CHATGPT_DOCS_MAINTENANCE_LATEST
 - **Unique functionality:** Mostly time-stamped CI/status narration superseded by candidate promotion ledger. One accurate small fix: docs/design/qr-colors.md says only `secret` is never downgraded; code (qrKinds.test.ts:40-42) makes `bearer` also win over testnet/unsigned/unverified.
 - **Features:** docs/wiki, QR trust-frame docs
@@ -127,7 +129,7 @@ Recovery-method totals (non-C entries): clean/cherry-pick with reconcile 1 (#204
 - **Unique functionality:** Mostly time-stamped CI/status narration superseded by candidate promotion ledger. One accurate small fix: docs/design/qr-colors.md says only `secret` is never downgraded; code (qrKinds.test.ts:40-42) makes `bearer` also win over testnet/unsigned/unverified. STALE PR REF: PR head differs from live branch tip (branch advanced); see entry chatgpt/zero-codex/docs-pages-scope-20261112
 - **Features:** docs/wiki, QR trust-frame docs
 - **Tests:** none (docs)
-- **Conflicts:** 101 of 109 unique commits conflict (append-only rotation file); 8 apply clean; 108 unique patches vs 7a620ff1: clean=8 conflict=100 already-present=0
+- **Conflicts:** 100 of 108 unique commits conflict (append-only rotation file); 8 apply clean; 108 unique patches vs 7a620ff1: clean=8 conflict=100 already-present=0
 - **Architecture:** docs only; status text would contradict candidate PROMOTION_PACKET if merged
 - **Security:** none; stale release claims are an integrity risk if merged blindly
 - **Recovery:** selective file recovery: hunk of docs/design/qr-colors.md only; rest archive ; effort XS (15min) for hunk
@@ -158,8 +160,8 @@ Recovery-method totals (non-C entries): clean/cherry-pick with reconcile 1 (#204
 | `automation/ghostpay-parallel-four-agents-20261103` | 68dc5b50 | #52 | 6/0 | #52 four isolated API-funded QA agents workflow + scope/spend tests + docs | New workflow ghostpay-parallel-agents.yml (325 lines), test, spend-limit doc; absent in candidate (candidate has ghostpay-parallel-review.yml). Paid third-party API use from CI. |
 | `automation/ghostpay-recurrent-backlog-20261103` | 5835736c | #51 | 3/0 | #51 twice-daily backlog Codex run + hardening of ghostpay-codex-cloud.yml | Candidate ghostpay-codex-cloud.yml already has stronger gate (same-repo, owner/bot author, independent current-head approval: lines 60-125, VERIFIED). Residual: scheduling cadence only. |
 | `chatgpt/pages-release-gate-audit-20261114` | 2221a611 | #160 | 2/0 | #160 Pages release-gate inventory G1-G7 (docs/ai/PAGES_RELEASE_GATES_2026-11-14.md) + stale ACTIVE_WORK edit | gate table source-pinned to old #157/#158/#159; superseded by candidate ledgers |
-| `chatgpt/zero-codex/audit-pages-release-20261112` | 7af4b5ff | - | 42/0 | #139 append-only randomized read-only Pages audit rotations 141-183 (docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.m | Each rotation: source-inspected only, tests not run, no reproduced defect. Audit-trail value only, no actionable finding sampled. Chain still advancing (live head 7af4b5ff = rotation 183, 05:38Z, after candidate commit). |
-| `chatgpt/zero-codex/pages-owner-ci-handoff-20261114` | 30f1604d | - | 41/0 | #153 zero-codex handoff rotations (docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md) | Status narration/ownership claims; stale vs candidate PROMOTION_PACKET. Live head 30f1604d (rotation 183). |
+| `chatgpt/zero-codex/audit-pages-release-20261112` | 7af4b5ff | #139 | 42/0 | #139 append-only randomized read-only Pages audit rotations 141-183 (docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.m | Each rotation: source-inspected only, tests not run, no reproduced defect. Audit-trail value only, no actionable finding sampled. Chain still advancing (live head 7af4b5ff = rotation 183, 05:38Z, after candidate commit). |
+| `chatgpt/zero-codex/pages-owner-ci-handoff-20261114` | 30f1604d | #153 | 41/0 | #153 zero-codex handoff rotations (docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md) | Status narration/ownership claims; stale vs candidate PROMOTION_PACKET. Live head 30f1604d (rotation 183). |
 | `checkpoint/ghostpay-source-reconciliation-20261101` | 243d98d6 | - | 2/0 | source reconciliation note 2026-11-01 | candidate has SOURCE_RECONCILIATION_2026-11-02.md; historical provenance only |
 | `codex/ghostpay-recovered-lean-checkpoint-20261028` | 371d235c | - | 19/0 | Pre-rewrite recovery snapshot lineage (shared checkpoint 71cd067d, Oct 26-28) union of the above + 0f8c82ce do | Nothing unique beyond 57dcf7e8 harness (see ghostpay-cloud-recovery-2026-10-26) and design reference for vendored-archive SBOM normalization where noted. Reconciliation vault v2 (invoices/receipts) moved to packages/ux-vault porta |
 | `codex/ghostpay-resume-20261028` | 75400888 | - | 1/0 | restart note CODEX_RESTART_2026-10-28.md | provenance only; candidate has docs/handoffs/RESTART.md |
@@ -236,7 +238,7 @@ All ancestors of `7a620ff1`. `ref sha8 [PRs]`; PR-only refs marked `pr/N`.
 | `dependabot` #85 #87 #176 | maintenance backlog | B (regenerate) | candidate already holds foundry-toolchain 1.9.2, chai 6.3.0, eslint 10.15, solana kit 8.6.0; remaining bumps still unmet (viem, vitest, vite, prettier, create-pull-request 8, scure 2.x, TS 7). |
 | `codex/setup-autonomous-agent-20261104` (#82) | maintenance backlog | E | would re-add workflow that A5-2 deliberately disabled. |
 | 5 pre-rewrite snapshot refs | archive as evidence | 1 B (cloud-recovery, carries 57dcf7e8), 4 D | verified residual: seller-vault R1-R3 harness (runs green on candidate). |
-| `semantically superseded` x12 / patch-equivalent x14 | as stated | C | spot-verified in candidate code (section 4); `happy-maxwell` and `lean-core` actually stronger in candidate. |
+| `semantically superseded` x14 / patch-equivalent x14 | as stated | C | spot-verified in candidate code (section 4); `happy-maxwell` and `lean-core` actually stronger in candidate. |
 | #204 | not classified (unfetched) | A | inspected: additive agent tooling, 11/12 tests pass on candidate, map stale. |
 
 Prior ledger "integrate (4)" and "selectively port (1)": all five are now in `7a620ff1` (verified `merge-base --is-ancestor` and merge/lane commits above).
@@ -260,4 +262,27 @@ Nothing else is recommended for recovery. No blind bulk merge of any ref; stacke
 - `e2e` harness `apps/web/e2e/flows.spec.ts` change in 21c7ed43 (CSP worker evidence tied to signed receipt) is only 56% line-present; needs anvil, not runnable here: UNVERIFIED whether candidate coverage is equivalent (INFERRED evolved).
 - Revert 051c1c12 has no rationale in its message; inferred from later test 92a05a23.
 - Dependabot `ci: bump actions` metadata says create-pull-request 8.1.1 while table says 8.1.3 (inconsistent, re-generate).
-- Local `zealous-hopper-lr0nxe` equals main and is not a remote head.
+- `nodata/zealous-hopper-lr0nxe` is this package's branch (PR #205, pushed after the census); not a recovery candidate.
+
+
+## 8. Addendum: heads created or moved after the census (2026-11-18 ~08:00Z, unclassified)
+
+Live `git ls-remote` showed 227 heads (217 at the census + 11 new − 2 gone; 9 moved). None of the new heads is contained in
+`main` `5467c158`. They belong to concurrent sessions and automation and are **not** classified here; re-run the census
+(`evidence/scripts/branch_census.py`) and coordinate through the execution prompt's step 2a before acting on them.
+
+| Head | Tip | PR | What it carries (from commit subjects) | Provisional note |
+|---|---|---|---|---|
+| `claude/ghostpay-consolidation-9xhtxg-spec18` | `a199c21e` | #213 | spec 18 format reference, K01/K02/K05/K06 codec (`packages/ux-vault/src/stealth-export-portable.ts`), independent recovery script, K04 anvil interop test, user guide (+4,094 lines) | Highest-value live work: review against FEATURE_ACCEPTANCE_CRITERIA §3 and build on it (WS-03/08/09/19/25) |
+| `claude/ghostpay-consolidation-9xhtxg-security` | `4894d0d8` | #212 | Mythril re-evaluation + unwired disposition checker, Echidna and fee-token review, CI/supply-chain review, `validate:deployments` script, static-beta decision packet, owner action packet | Overlaps WS-06, WS-20, TB-06 |
+| `claude/ghostpay-consolidation-9xhtxg-feeguard` | `9e5cc378` | #217 | DeployPolicy refuses fee-charging factories without a token-specific freeze acknowledgement | Overlaps SEC-07 / OD-04 (scheme 2 stays undeployed) |
+| `claude/ghostpay-consolidation-9xhtxg` | `c487f0fe` | #206 | #204 agent tooling re-integrated onto the consolidated tree | Supersedes this matrix's class-A recovery of #204 |
+| `claude/ghostpay-completion-audit-ot5jjm` | `f81947fa` | #209 | lane claims; hands spec 18 lanes to #213 | Claims only |
+| `nodata/wonderful-darwin-kd1h22` | `75f67d7d` | #211 | lane claims; security-closure draft mapping SEC rows to owners | Claims/docs only |
+| `chatgpt/zero-codex/audit-main-20261118-r185`, `docs-postmerge-wiki-20261118`, `handoff-postmerge-20261118` | `01a3bc0a`, `328cddc3`, `62022488` | #214, #215, #216 | docs rotation after the merge | Docs only |
+| `dependabot/github_actions/actions-b9ade1236b`, `dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c` | `199ab7ef`, `4d19655a` | #207, #210 | regenerated Dependabot groups (replacing the two removed Dependabot heads) | Covers part of the class-B dependency refresh |
+
+Moved since the census: `main` (→ `5467c158`), `nodata/wizardly-allen-qwol6u` (→ `5467c158`), this package's branch, the three
+zero-codex docs heads (#139 → `364b01f8`, #140 → `c5efadab`, #153 → `83fe9b02`), `claude/admiring-albattani-6kydor`
+(#84/#208 → `ef610872`), `claude/friendly-turing-1ui0on` (→ `20a94f24`), `dependabot/npm_and_yarn/npm-major-1ddf9439d6`
+(#87 → `bbc8ff3b`). Removed: `dependabot/github_actions/actions-1850456dc8`, `dependabot/npm_and_yarn/npm-minor-patch-9f9e7f3407`.

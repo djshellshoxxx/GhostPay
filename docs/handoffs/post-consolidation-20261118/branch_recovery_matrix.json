@@ -8,7 +8,7 @@
   "total": 234
  },
  "local_only_excluded": [
-  "nodata/zealous-hopper-lr0nxe (== main cfaebeea, tracking ref only; absent from git ls-remote)"
+  "nodata/zealous-hopper-lr0nxe (== main cfaebeea and local-only at census time; pushed 06:56:55Z as this package's branch, PR #205; not a recovery candidate)"
  ],
  "entries": [
   {
@@ -886,7 +886,13 @@
    "sha": "7af4b5ff5735f1d9f7c4609fe70b3300764f9778",
    "date": "2026-11-17T21:38:14-08:00",
    "kind": "branch",
-   "prs": [],
+   "prs": [
+    {
+     "n": 139,
+     "state": "open",
+     "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)"
+    }
+   ],
    "ancestor_of_candidate": false,
    "unique_commits": 42,
    "equivalent_commits": 0,
@@ -1000,7 +1006,13 @@
    "sha": "400e20f19d857a2fb99b90247fcba65e4f90a40a",
    "date": "2026-11-17T21:38:39-08:00",
    "kind": "branch",
-   "prs": [],
+   "prs": [
+    {
+     "n": 140,
+     "state": "open",
+     "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger"
+    }
+   ],
    "ancestor_of_candidate": false,
    "unique_commits": 109,
    "equivalent_commits": 0,
@@ -1599,7 +1611,13 @@
    "sha": "30f1604da78709dfafcc83c9db5d3e67b72d0d46",
    "date": "2026-11-17T21:39:06-08:00",
    "kind": "branch",
-   "prs": [],
+   "prs": [
+    {
+     "n": 153,
+     "state": "open",
+     "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification"
+    }
+   ],
    "ancestor_of_candidate": false,
    "unique_commits": 41,
    "equivalent_commits": 0,
@@ -6399,7 +6417,7 @@
    "unique_functionality": "Mostly time-stamped CI/status narration superseded by candidate promotion ledger. One accurate small fix: docs/design/qr-colors.md says only `secret` is never downgraded; code (qrKinds.test.ts:40-42) makes `bearer` also win over testnet/unsigned/unverified. STALE PR REF: PR head differs from live branch tip (branch advanced); see entry chatgpt/zero-codex/docs-pages-scope-20261112",
    "affected_features": "docs/wiki, QR trust-frame docs",
    "tests": "none (docs)",
-   "conflicts": "101 of 109 unique commits conflict (append-only rotation file); 8 apply clean; 108 unique patches vs 7a620ff1: clean=8 conflict=100 already-present=0",
+   "conflicts": "100 of 108 unique commits conflict (append-only rotation file); 8 apply clean; 108 unique patches vs 7a620ff1: clean=8 conflict=100 already-present=0",
    "architectural_compatibility": "docs only; status text would contradict candidate PROMOTION_PACKET if merged",
    "security_implications": "none; stale release claims are an integrity risk if merged blindly",
    "recovery_method": "selective file recovery: hunk of docs/design/qr-colors.md only; rest archive",

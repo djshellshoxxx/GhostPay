@@ -1096,7 +1096,7 @@
  {
   "id": "F-BTC-01",
   "name": "BIP-352 silent payments: keys, addresses, sender derive, receive scan, spend (full-profile web)",
-  "tier": "beta-supporting",
+  "tier": "full-profile",
   "status": "IMPLEMENTED_UNVERIFIED",
   "impl_pct": 100,
   "verif_pct": 80,
@@ -8940,7 +8940,7 @@
   "wave": 1,
   "ws": "WS-07",
   "implementation_criteria": [
-   "Refuse secret export (and warn on sweep) in vault-less sessions per the OD-01 default; offer vault creation; regression tests pin refusal"
+   "Refuse new spec-18 secret exports (and warn on sweep) in vault-less sessions per the OD-01 default; keep the keystore v1 backup available after disclosure + typed confirmation; offer vault creation; regression tests pin both"
   ],
   "release_criteria": [
    "SEC-03 closed with regression test and independent strongest-tier review"
@@ -8956,7 +8956,8 @@
   "source": "coordinator (security hold)",
   "notes": [
    "Effort is counted in the workstream item; not double-counted here."
-  ]
+  ],
+  "security_hold": "SEC-03: vault-less in-memory session has no step-up before secret export/sweep"
  },
  {
   "id": "F-KEY-02",
@@ -9036,7 +9037,8 @@
   "source": "coordinator (security hold)",
   "notes": [
    "Effort is counted in the workstream item; not double-counted here."
-  ]
+  ],
+  "security_hold": "SEC-05: vault/keystore passphrase floor accepts name+year passphrases"
  },
  {
   "id": "F-KEY-03",
@@ -9168,7 +9170,8 @@
   "notes": [
    "Converted from lost-team registry (work/rows_a.py|rows_b.py); owner IDs remapped to canonical BLOCKERS numbering (coordinator table 2026-11-18).",
    "NAME-ALIGN: golden keystore vector file named as in G-B WS-03.2 (test-vectors/keystore-v1-golden.json)."
-  ]
+  ],
+  "security_hold": "SEC-05, SEC-03: keystore export passphrase floor (SellerKeys.tsx:207) and vault-less export without step-up (SellerKeys.tsx:221-224)"
  },
  {
   "id": "F-KEY-05",
@@ -9502,7 +9505,7 @@
   },
   "unblocked": {
    "value": true,
-   "reason": "floor for new formats per OD-09 (default: score>=3 or generated)"
+   "reason": "floor for new formats per OD-09 default (WS-18 high tier: generated diceware default or ~80-bit estimate; never score>=3 alone)"
   },
   "beta_track": "B-EXIT",
   "quick_win": false,
@@ -10772,9 +10775,9 @@
   "id": "F-NET-01",
   "name": "Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP framing + browser fetch transport",
   "tier": "beta-supporting",
-  "status": "IMPLEMENTED_UNVERIFIED",
-  "impl_pct": 100,
-  "verif_pct": 80,
+  "status": "PARTIAL",
+  "impl_pct": 80,
+  "verif_pct": 65,
   "chosen": "repair",
   "comparison": {
    "recover": "NO",
@@ -16338,8 +16341,8 @@
   "name": "Scan privacy modes (spec 10 UI: transport, private-required, windows, indexer, disclosures)",
   "tier": "beta-supporting",
   "status": "IMPLEMENTED_UNVERIFIED",
-  "impl_pct": 100,
-  "verif_pct": 100,
+  "impl_pct": 90,
+  "verif_pct": 90,
   "chosen": "repair",
   "comparison": {
    "recover": "NO: no branch carries the fix",
@@ -16349,7 +16352,7 @@
    "implement": "PART: only the security requirement is missing",
    "defer": "NO: blocks beta gates"
   },
-  "rationale": "Row was VERIFIED_COMPLETE by requirements but is held at IMPLEMENTED_UNVERIFIED by open SEC-10 whose root cause is in this row's own code (CSP connect-src blocks http loopback (Chromium probe: 0 proxy hits)).",
+  "rationale": "Local-proxy transport requirement is only half implemented: accepted in Settings but blocked by the shipped CSP (SEC-10, TB-02); the requirement scores half, row is IMPLEMENTED_UNVERIFIED 90/90. Fix in WS-01.1.",
   "reuse": [],
   "estimates": {
    "recoverable_days": [
@@ -16415,10 +16418,10 @@
   "id": "F-WEB-09",
   "name": "Payment history & reconciliation ledger (encrypted IndexedDB, invoice registry)",
   "tier": "beta-core",
-  "status": "IMPLEMENTED_UNVERIFIED",
+  "status": "VERIFIED_COMPLETE",
   "impl_pct": 100,
   "verif_pct": 95,
-  "chosen": "repair",
+  "chosen": "none",
   "comparison": {
    "recover": "NO: pr/173,175,177,186 ancestors",
    "consolidate": "NO",
@@ -16516,7 +16519,8 @@
    "evidence": "apps/web/scripts/test-reconciliation-idb.mjs:71 calls invalidateFrom(100n); packages/ux-vault/src/reconciliation-portable.ts:154 (interface) and :961-965 (impl) require (block, observed, canonicalHash) -> observed.map TypeError (static); no workflow/package script references the harness (grep .github, package.json, scripts). (G-A, @7a620ff1)"
   },
   "notes": [
-   "Converted from lost-team registry (work/rows_a.py|rows_b.py); owner IDs remapped to canonical BLOCKERS numbering (coordinator table 2026-11-18)."
+   "Converted from lost-team registry (work/rows_a.py|rows_b.py); owner IDs remapped to canonical BLOCKERS numbering (coordinator table 2026-11-18).",
+   "Coordinator (post-H1): row is VERIFIED_COMPLETE after independent verification; no work beyond regression protection."
   ]
  },
  {
@@ -16581,7 +16585,7 @@
   "wave": 1,
   "ws": "WS-07",
   "implementation_criteria": [
-   "Sweep in vault-less sessions requires the OD-01 step-up path or an explicit vault prompt; e2e covers refuse/warn"
+   "Sweep in vault-less sessions stays available and shows the OD-01 warning with a vault-creation offer (default: sweep unchanged but warned); e2e covers the warning"
   ],
   "release_criteria": [
    "SEC-03 closed with regression test and independent strongest-tier review"
@@ -16597,7 +16601,8 @@
   "source": "coordinator (security hold)",
   "notes": [
    "Effort is counted in the workstream item; not double-counted here."
-  ]
+  ],
+  "security_hold": "SEC-03: direct sweep signs without step-up in vault-less sessions"
  },
  {
   "id": "F-WEB-12",
@@ -16677,7 +16682,8 @@
   "source": "coordinator (security hold)",
   "notes": [
    "Effort is counted in the workstream item; not double-counted here."
-  ]
+  ],
+  "security_hold": "SEC-03: relayer-assisted sweep signs without step-up in vault-less sessions"
  },
  {
   "id": "F-WEB-15",

@@ -4,7 +4,7 @@ Audited product source `7a620ff19ecf4e43ec568896c34188f5b2dcd3fc`. PR #203 head 
 
 Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-core/beta-supporting/full-profile rows: chosen strategy, 6-way comparison, estimates, IC), `final/BLOCKERS_AND_DECISIONS.md` (OD/OA/EX/TB), `final/security_findings.json` (SEC-01..49), `final/BRANCH_RECOVERY_MATRIX.md` §6, `NEXT_PHASE_QUEUE.md` (K/B/D), `out/F/TESTING_AND_RELEASE.md`. Registry: `ws_registry.json` (27 WS). Execution: `PARALLEL_AGENT_EXECUTION_PLAN.md`. Per-feature acceptance: `FEATURE_ACCEPTANCE_CRITERIA.md` (G-A), section = feature ID.
 
-**Every duration is an ESTIMATE** in engineer-days `[lo–hi]` (rows: lost team; new items: G-B). Elapsed times come from a list-scheduling simulation (≤6 workers + 1 coordinator lane, +10–15 % independent-review overhead per worker item, rolling merges, owner/external latency = 0) — INFERRED, not measured. Script: `$SP/out/G-B-scratch/model.py` (`simulate`, `trace`, `check_ownership`).
+**Every duration is an ESTIMATE** in engineer-days `[lo–hi]` (rows: lost team; new items: G-B). Elapsed times come from a list-scheduling simulation (≤6 workers + 1 coordinator lane, +10–15 % independent-review overhead per worker item, rolling merges, owner/external latency = 0) — INFERRED, not measured. Script: the audit's scratch `model.py` (`simulate`, `trace`, `check_ownership`), not packaged; reproduce from `ws_registry.json` estimates.
 
 ## 0. Rules
 
@@ -12,7 +12,7 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 - **Fail-closed defaults** (BLOCKERS rule): implement every decision-independent part, ship the default named for the pending OD, never treat silence as approval. Defaults used here: §6.
 - **Rolling merge**: an item merges into `ws/WS-00-integration` once reviewed + targeted tests green; a CP is a full-gate run on one recorded SHA.
 - **Frozen** (no WS owns them): `packages/contracts/src/**` (unchanged since `beb525dd`; Sepolia deploys exact reviewed source), `packages/core-crypto/src/**`, `test-vectors/scheme1.json` (F-KEY-07 REG). Change = owner approval + re-review.
-- **IDs**: canonical only (OD-01..22, OA-01..07, EX-01..07, TB-01..10, SEC-01..49). Lost-team OD numbers remapped per coordinator (04→OD-07, 05→OD-08, 07→OA-01, 08→OA-05, 09→OA-04, 10→OA-06, 11→OD-09, 12→TB-02, 13/15→OD-21, 14→OD-20, 16→TB-07, 17→OD-22). Exception, flagged: lost-team OD-16 on F-KEY-05, F-WEB-06, F-WEB-26, F-WEB-04, F-CLI-06 meant "owner acknowledges an accepted limitation", not the payer buffer; recorded as *owner-ack (no canonical ID)*, not TB-07. Locale rows also carry OD-16 (locale sub-decision of OD-20).
+- **IDs**: canonical only (OD-01..23, OA-01..07, EX-01..07, TB-01..10, SEC-01..49). Lost-team OD numbers remapped per coordinator (04→OD-07, 05→OD-08, 07→OA-01, 08→OA-05, 09→OA-04, 10→OA-06, 11→OD-09, 12→TB-02, 13/15→OD-21, 14→OD-20, 16→TB-07, 17→OD-22). Exception, flagged: lost-team OD-16 on F-KEY-05, F-WEB-06, F-WEB-26, F-WEB-04, F-CLI-06 meant "owner acknowledges an accepted limitation", not the payer buffer; recorded as *owner-ack (no canonical ID)*, not TB-07. Locale rows also carry OD-16 (locale sub-decision of OD-20).
 - **Lost-team checkpoint names** in row text map: their CP-2 (format freeze) = CP-2 here; their CP-3 (step-up) = CP-2 here (WS-07.2 merges with the freeze); their CP-5 (literal allowlist 0) = CP-5; C-03 (CI wiring) = WS-20.2; C-06 (Firefox/WebKit runs) = coordinator task at CP-5; C-08 (Pages origin assertion) = WS-04.1 → pages.yml via WS-20.1; attestation WS-20.5; B-RQ-1 (exact-SHA CI) = CP-7 gate; RV-* reviewer roles = PARALLEL_AGENT_EXECUTION_PLAN §7.
 - Columns: **Par** = can run concurrently with other WS (items inside one WS are sequential, one agent per WS); **Gate** = `start` needed for Sepolia static beta start, `exit` needed for beta exit, `none` otherwise; **Status** = UB unblocked / BLK blocked, then owner/external IDs.
 
@@ -27,7 +27,7 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 | WS-00.3 | WS-00 | baseline gates | implement | 0.25–0.5 | CP-0 | CP-0 | coord | none | UB |
 | WS-00.4 | WS-00 | census | implement | 0.1–0.25 | CP-0 | CP-0 | coord | none | UB |
 
-- `WS-00.1` Apply start-commit rule (PLAN §2); `git worktree add ../wt/WS-00-integration -b ws/WS-00-integration $START`; record SHA + tree in BASELINE.md
+- `WS-00.1` Apply start-commit rule (PLAN §2); `git checkout -B <designated branch> $START` in the main checkout (prompt section 5 step 3); record SHA + tree in BASELINE.md
 - `WS-00.2` Foundry v1.8.5 from GitHub release tarball (sha256 recorded; foundry.paradigm.xyz blocked), solc 0.8.28 solc-static-linux via FOUNDRY_SOLC (binaries.soliditylang.org blocked), Chromium path, `npm ci --ignore-scripts`, `npm run build:libs`
 - `WS-00.3` Run G-FULL on start commit; compare with CI 44242366118 (web 2,749 passed/1 skipped; e2e full 78/1, lean 66/3; forge 490 passed); record in BASELINE.md
 - `WS-00.4` Fresh read-only branch census (refs at time T) before any retirement talk (OD-19 stays pending)
@@ -51,7 +51,7 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 | WS-20.1 | WS-20 | TB-01 | repair | 0.5–1 | CP-0 | CP-1 | coord | none | UB |
 
 - `WS-00.5` Verify packet at start commit: at 71abc7e5 PROMOTION_PACKET.md:15-16 already names 7a620ff1 + the R-18 SellerKeys.test.tsx delta (VERIFIED) -> SEC-39 closed by the #203 head; record in BASELINE.md, add erratum only if the start commit differs
-- `WS-01.1` Lean: remove local-proxy mode from UI + docs; full/self-host: allow only http://127.0.0.1|localhost|[::1]:<port> of the selected endpoint (or remove); reject wss:// in checkRpcUrl and drop `wss:` from connect-src (index.html, _headers, nginx, infra proxies, csp.mjs); Playwright test under the real meta CSP; fix docs/specs/10 mode b (docs/pages/README.md:49 via WS-04.4)
+- `WS-01.1` Lean: remove local-proxy mode from UI + docs; full/self-host: remove the mode by default, or keep it with connect-src loopback entries http://127.0.0.1:*, http://localhost:*, http://[::1]:* (a static meta CSP cannot be narrowed to the chosen port; BLOCKERS TB-02) under RV-SEC review; lean CSP never widened; reject wss:// in checkRpcUrl and drop `wss:` from connect-src (index.html, _headers, nginx, infra proxies, csp.mjs); Playwright test under the real meta CSP; fix docs/specs/10 mode b (docs/pages/README.md:49 via WS-04.4)
 - `WS-01.2` F-NET-01 rows IC (OHTTP vectors; credentials omit/no-store/no-referrer in chain-adapters rpc.ts + net-transport; Tor copy); PRIVACY_THREAT_MODEL 1.1/5 refreshed (SEC-27); random JSON-RPC ids or documented (SEC-45); embedHost.ts:8 comment fix; privacyInvariants extended to chain-adapters + net-transport
 - `WS-02.1` E-17 strings (en.json via coord-request; policy-scheme.md:233; README.md:5; docs/pages via WS-04.4) + scripts/tests/privacy-claims.test.mjs banned-phrase test
 - `WS-02.2` docs/user: browser/cloud history sync of invoice fragments (E-08); translated docs stay OD-16/EX-04 gated
@@ -59,7 +59,7 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 - `WS-04.1` smoke.mjs/smoke-url.mjs/build-pages.sh: assert new URL(page_url).origin === GHOSTPAY_PAGES_ORIGIN; any origin serving other project sites = shared; pages.yml assertion + cname/https_enforced check via coord-request (WS-20)
 - `WS-04.2` scan-bundle.mjs checks every emitted *.html (inline script/CSP); single exported lean exclusion list used by localBuildProfile.mjs and scripts/pages/verify-pages-site.mjs
 - `WS-04.3` Pages banner link (build-pages.sh) target=_blank rel="noopener noreferrer"
-- `WS-07.1` authorizeKeyExport refuses when no vault (today returns undefined, keyVault.ts:257-266); keyVault.test.ts:241 "no step-up" pin replaced by refusal tests; vault-less sweep warning + beta disclosure copy (coord en.json); beforeunload guard while backup unverified (SEC-40 part 2)
+- `WS-07.1` keep `authorizeKeyExport` returning undefined for the keystore v1 backup in vault-less sessions (keyVault.ts:257-266; it is the only encrypted backup of in-memory keys, BLOCKERS OD-01) and add a disclosure + typed confirmation before that download; keyVault.test.ts:241 pin kept and extended (vault-less v1 backup allowed after confirmation; keys tied to a vault need its passphrase); new spec-18 exports refuse without a vault through WS-07.2 `requireStepUp`; vault-less sweep warning + beta disclosure copy (coord en.json); beforeunload guard while backup unverified (SEC-40 part 2)
 - `WS-18.1` Extract estimator (keystore-portable.ts:182-216) to passphrase-policy.ts; add `high` tier; generated passphrase offered as default in keystore/vault creation with explicit override; no network, bundled wordlist, lean size checked
 - `WS-18.2` KDF progress text for slow (JIT-less ~28 s) scrypt in keystore/vault flows
 - `WS-20.1` release.yml verify: per-workspace anvil policy identical to ci.yml (no global REQUIRE_ANVIL for payer-sponsor, external-pools-railgun/privacypools); local reproduction of the exact verify command list. Also applies the WS-04.1 coord-request: pages.yml deployed-origin assertion + cname/https_enforced check (C-08) at CP-1
@@ -89,7 +89,7 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 | Item | WS | Refs | Strategy | Est d | Deps | CP | Par | Gate | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | WS-03.1 | WS-03 | F-KEY-07, SEC-38, OD-10, SEC-04 | implement | 4.25–6 | CP-0 | CP-2 | Y (seq in WS) | exit | UB; OD-10 |
-| WS-03.2 | WS-03 | F-KEY-08, SEC-15, SEC-37, SEC-05 | implement | 4.25–6.5 | WS-03.1, WS-18.2 | CP-2 | Y (seq in WS) | exit | UB: floor for new formats per OD-09 (default: score>=3 or generated); OD-09 |
+| WS-03.2 | WS-03 | F-KEY-08, SEC-15, SEC-37, SEC-05 | implement | 4.25–6.5 | WS-03.1, WS-18.2 | CP-2 | Y (seq in WS) | exit | UB: floor for new formats per OD-09 default (WS-18 `high` tier: generated diceware default or ≈80-bit estimate; never score>=3 alone); OD-09 |
 | WS-07.2 | WS-07 | F-KEY-05, TB-04, SEC-03 | repair | 1.7–3.5 | WS-07.1 | CP-2 | Y | none | UB: implements OD-01 choice if recorded, else default (a); OD-01 |
 | WS-19.1 | WS-19 | SEC-04, SEC-15, SEC-38, TB-05 | implement | 3–5 | CP-0 | CP-2 | Y | exit | UB |
 | WS-19.2 | WS-19 | F-KEY-07, F-KEY-08 | implement | 0.5–1.5 | WS-19.1, WS-03.2 | CP-2 | Y | exit | UB |
@@ -100,7 +100,7 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 - `WS-07.2` requireStepUp(kind) API (vault passphrase re-entry; pluggable for OD-01 (c) WebAuthn UV); tag-archive export uses it
 - `WS-19.1` v1 keystore + CLI backup decode; scheme-1 derivation recomputes 100% of test-vectors/scheme1.json (second 5564 implementation, SEC-38); CI job via coord-request
 - `WS-19.2` Decode K01/K02 vectors (stealth-export-v1.json, fixed-salt/IV K02 vectors) at format freeze
-- `WS-20.3` Step-timing summary; single coverage pass; build web once per profile, share dist with e2e + lean-candidate; affected-only lint/typecheck on PRs (scripts/agent/affected.mjs from #204); cost-balanced shards; Mythril on nightly + tag only; lean+full e2e share one install. Required checks unchanged (typescript, contracts)
+- `WS-20.3` Step-timing summary; single coverage pass; build web once per profile, share dist with e2e + lean-candidate; affected-only lint/typecheck only as an extra fast pre-check (the full lint/typecheck still runs on every PR); cost-balanced shards; Mythril and Echidna stay on every PR that touches their paths (contract-analysis.yml:3-12) and on nightly/tag; lean+full e2e share one install. No job, analyzer, test file or required check may stop running on PRs (prompt section 3)
 
 ### Wave 4 — Nearly-complete features  (Σ 12.6–23.6 d, 14 items)
 
@@ -117,17 +117,17 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 | WS-11.3 | WS-11 | F-CLI-01 | repair | 0.25–0.35 | WS-11.2 | CP-3 | Y | none | UB |
 | WS-11.4 | WS-11 | F-CLI-03, SEC-04 | implement | 1–2.25 | WS-11.3, WS-19.1 | CP-3 | Y | exit | UB: after WS-19.1 (independent tool) rolling-merges |
 | WS-12.2 | WS-12 | F-A11Y-01 | repair | 1.25–2.5 | WS-12.1 | CP-3 | Y | exit | UB |
-| WS-12.3 | WS-12 | F-I18N-02 | repair | 0.75–1 | WS-12.2 | CP-3 | Y | exit | UB: OD-16 fail-closed default: selector lists only shipped locales; OD-20,OD-16 |
+| WS-12.3 | WS-12 | F-I18N-02 | repair | 0.75–1 | WS-12.2 | CP-3 | Y | exit | UB: OD-16 default = keep today's labelled selector (no trim); OD-20,OD-16 |
 | WS-12.4 | WS-12 | F-I18N-01 | repair | 2–4.25 | WS-12.3 | CP-3 | Y | exit | UB |
 | WS-12.5 | WS-12 | F-A11Y-03 | implement | 1.5–2.5 | WS-12.4 | CP-3 | Y | exit | UB: protocol now; run is human; EX-03 |
 
-- `WS-02.6` docs/specs/02-* disposition note for rule 2 citing negative.test.ts:200,314; owner ack recorded (no canonical ID)
+- `WS-02.6` docs/specs/02-* disposition note for rule 2 citing negative.test.ts:200,314; owner acknowledgement requested as OD-23 (engineering never records it)
 - `WS-10.1` Lean + full payer-buffer unit tests (keep v1 buffer in lean; docs fixed in WS-04.4)
 - `WS-10.2` Spec 05 2C hint on Pay; no network call
-- `WS-10.3` payeeTrust decision (ADR note; export internal or wired with tests); owner ack (no canonical ID)
+- `WS-10.3` payeeTrust decision (ADR note; export internal or wired with tests); owner acknowledgement requested as OD-23 (engineering never records it)
 - `WS-10.4` OP-stack sequencer-uptime + grace guard; deviation/USD-peg checks when configured (full profile)
 - `WS-10.5` Anvil journey: v2 bufferPolicy -> payment with buffer -> direct sweep paid only from buffer; net asserted
-- `WS-11.1` Per-log blockHash cross-check, fail closed
+- `WS-11.1` Records only (~0.1 d): F-PROTO-03 is VERIFIED_COMPLETE; the per-log canonical blockHash check exists (`packages/chain-adapters/src/logs.ts:438-460`, tests `logs.test.ts:132-148`, `scanHardening.test.ts:82`); cite it, add no code
 - `WS-11.2` REQUIRE_ANVIL=1 relayer suite evidence; relayer metadata/fallback privacy note (SEC-34)
 - `WS-11.3` CLI compiled tests evidence
 - `WS-11.4` `ghostpay backup create` output decrypted by tools/independent-recovery (no GhostPay code); keys match
@@ -169,7 +169,7 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 - `WS-21.1` frameGuard: window.top !== window.self -> refuse sensitive views unless embed protocol active; opener nulled at startup
 - `WS-21.2` createRoot onCaughtError/onUncaughtError sanitized (main.tsx:11)
 - `WS-24.2` Rows IC: web verifyManifestForFlow + CLI payment-context.ts + relayer runtime.ts call one strict verifier (G-NOTE-01)
-- `WS-24.3` Dual-provider readback reconciles both providers, fails closed on disagreement/unreachable; banner provider count
+- `WS-24.3` When the user has configured a secondary RPC (opt-in; never a built-in default or automatic fallback), readback reconciles both providers and fails closed on disagreement/unreachable; single-provider mode unchanged; banner provider count
 - `WS-24.4` ERC-6538 singleton runtime codehash per-chain pin; unknown/mismatch disables registry features; ADR-0018 stale text
 
 ### Wave 7 — Key portability / recovery / privacy: K03-K06 + KC + independent recovery proofs  (Σ 24.75–39.5 d, 11 items)
@@ -194,7 +194,7 @@ Inputs reused, not redone: lost-team per-feature registry (64 unfinished beta-co
 - `WS-09.1` K06 per rows IC (format + UI + recovery instructions)
 - `WS-19.3` K05 archive decode + per-record address check
 - `WS-19.4` K06 master backup recovers an announcement omitted from the K05 archive (offline scan of a fixture log set)
-- `WS-19.5` K04 raw key -> EIP-55 address == announced; transfer signed by the tool accepted by anvil (Foundry 1.8.5, synthetic keys)
+- `WS-19.5` K04 raw key -> EIP-55 address == announced (computed by the tool); the transfer is signed and sent with pinned Foundry 1.8.5 `cast` (the independent EVM implementation NEXT_PHASE_QUEUE K04 names) and accepted by anvil; synthetic keys only; the tool implements no transaction signing
 - `WS-23.1` Settings > Erase all GhostPay data: confirmed, backup warning, clears ghostpay.* local/session + 3 IndexedDB DBs; e2e
 - `WS-23.2` Pseudonymize slot/journal names with a viewing-key-derived key; minimize plaintext meta in the IndexedDB vault record; one-time migration with tests; keystore v1 bytes unchanged
 - `WS-25.1` K05 container format + strict atomic import + fixed vectors for WS-19
@@ -272,7 +272,7 @@ WS-90 (no items): experimental 45 + future 43 rows stay separate/deferred, out o
 
 ## 2. BROWSER-BETA READINESS track (Sepolia static beta) — separate from completion %
 
-Completion % (FEATURE_COMPLETION_MATRIX: beta scope impl 87.8 / verif 83.9) does not say whether the beta can ship. This checklist does. Sources: SECURITY_AND_PRIVACY_GAP_ANALYSIS §9(a)(b)(c), NEXT_PHASE_QUEUE B01–B06, TESTING_AND_RELEASE §5. State @ 7a620ff1: DONE / PARTIAL / OPEN / OWNER (owner-only) / UNVERIFIED.
+Completion % (FEATURE_COMPLETION_MATRIX: beta scope impl 87.2 / verif 83.5) does not say whether the beta can ship. This checklist does. Sources: SECURITY_AND_PRIVACY_GAP_ANALYSIS §9(a)(b)(c), NEXT_PHASE_QUEUE B01–B06, TESTING_AND_RELEASE §5. State @ 7a620ff1: DONE / PARTIAL / OPEN / OWNER (owner-only) / UNVERIFIED.
 
 **Start gate (CP-7)**
 
@@ -284,7 +284,7 @@ Completion % (FEATURE_COMPLETION_MATRIX: beta scope impl 87.8 / verif 83.9) does
 | BR-04 | main protection, v* tag ruleset, github-pages env reviewers (SEC-02) | UNVERIFIED (API 403) | OA-01 |
 | BR-05 | False copy fixed: local proxy, wss, "hides/unlinkable" (SEC-10/19/28, E-17) | OPEN | WS-01.1, WS-02.1, WS-04.4 |
 | BR-06 | Local-proxy path works under real CSP or removed; e2e under real meta CSP (SEC-10, TB-02) | OPEN (CSP blocks loopback; probe VERIFIED by E) | WS-01.1 |
-| BR-07 | Vault-less sweep/export: refuse or disclose (SEC-03 beta item) | OPEN (`authorizeKeyExport` returns undefined) | WS-07.1 (default: refuse secret export, warn sweep) |
+| BR-07 | Vault-less sweep/export: refuse or disclose (SEC-03 beta item) | OPEN (`authorizeKeyExport` returns undefined) | WS-07.1/07.2 (default: new spec-18 secret exports refuse without a vault; keystore v1 backup stays available with disclosure; sweep warned) |
 | BR-08 | Keystore v1 independent-decode vector in CI (SEC-15) | OPEN | WS-03.2 vector + WS-19.1 decoder + WS-20.2 job |
 | BR-09 | Strict on-chain verifier for Pay/Scan/Sweep, CLI, relayer (G-NOTE-01) + dual-provider readback (F-WEB-17) | OPEN (single provider; no canonical-announcer / 25 bps check in browser path) | WS-24.2, WS-24.3 |
 | BR-10 | No unsigned/legacy manifest path in any build (SEC-14) | OPEN (dead in default app, present in bundle) | WS-24.1 |
@@ -298,7 +298,7 @@ Completion % (FEATURE_COMPLETION_MATRIX: beta scope impl 87.8 / verif 83.9) does
 | BR-18 | Extended egress smoke: every lean view + fixture invoice, no off-site request (SEC-46) | OPEN (smoke idles home 3 s) | WS-04.5 local, WS-04.6 live |
 | BR-19 | Firefox + Tor Browser Standard/Safer manual run, KDF time recorded (SEC-41) | OPEN / UNVERIFIED | EX-02; WS-18.2 KDF progress text; WS-17.2 records |
 | BR-20 | ADR-0029 Accepted | OWNER ("Proposed") | OD-08 (after OD-06, OD-07) |
-| BR-21 | #203 merged (merge/ff, never squash) so pages.yml/release.yml on main carry the gates | OWNER | OA-01 then OA-02 |
+| BR-21 | #203 merged (merge/ff, never squash) so pages.yml/release.yml on main carry the gates | DONE after the snapshot: merge commit `5467c158` 2026-11-18T06:56:49Z (tree == `71abc7e5`); OA-01 still UNVERIFIED | OA-02 done; OA-01 |
 | BR-22 | Pages dispatch (main-only, deploy=true) + live smoke on the real origin (B05) | OWNER | OA-06; WS-04.6 |
 | BR-23 | B06 start subset on Sepolia: invoice → pay native + ERC-20 → scan → receipt → sweep → backup/restore | OPEN | WS-17.3 records; EX-01 wallets, EX-02 browsers |
 
@@ -316,7 +316,7 @@ Completion % (FEATURE_COMPLETION_MATRIX: beta scope impl 87.8 / verif 83.9) does
 | BX-08 | Firefox/WebKit Playwright where supported (C-06) + mobile download/import recorded | OPEN | coordinator at CP-5 (playwright.config.ts) + EX-02 |
 | BX-09 | B06 full: incl. 3q export + independent recovery on Sepolia; screen reader row | OPEN | WS-17.3; EX-01/02/03 |
 
-Count: 23 start + 9 exit items; 24 engineering-open/partial, 6 owner-only, 1 done (BR-11), BR-04 UNVERIFIED.
+Count: 23 start + 9 exit items; 24 engineering-open/partial, 5 owner-only, 2 done (BR-11, BR-21), BR-04 UNVERIFIED.
 
 ## 3. Critical paths (simulation; d = elapsed engineer-days from session start)
 
@@ -365,7 +365,7 @@ Slack lanes: WS-09 K06 and WS-25 K05 start at CP-2 in parallel with K03; WS-19 p
 
 - **Without parallelism** (one engineer, sequential, incl. review overhead + CP merges 5–10 d): all = 166.3–311.51 d; excluding scope-gated wave 8 = 137.22–250.7 d; beta start + exit scopes only = 90.56–160.14 d.
 - **With parallelism** (≤6 workers + coordinator): beta start engineering-ready (CP-7 minus owner latency) 16.13–28.36 d; KC 24.98–40.98 d; beta exit 26.03–43.08 d; everything incl. scope-gated wave 8 42.26–74.42 d. Worker-days 154.6–287.41; coordinator-lane days 6.7–14.1 (+ CP merges).
-- Lost-team per-row totals reused unchanged; G-B new items add 29.3–57.85 d. Matrix headline "beta scope 42.5–106 d" counted rows only; this sequence adds the SEC/TB engineering items, split lanes and review.
+- Lost-team per-row totals reused unchanged; G-B new items add 29.3–57.85 d. Matrix headline "beta scope 41–104 d" counted rows only; this sequence adds the SEC/TB engineering items, split lanes and review.
 - Not in any number: owner decision latency, external acceptance (EX-01..07), professional audit (EX-05), mainnet.
 
 ## 5. Per-wave totals
@@ -387,7 +387,7 @@ Slack lanes: WS-09 K06 and WS-25 K05 start at CP-2 in parallel with K03; WS-19 p
 
 | Decision | Default implemented now | Where |
 |---|---|---|
-| OD-01 re-auth (vault-less) | Secret export (master keystore, raw key, archive, K03–K06) refuses without encrypted-vault re-auth; sweep unchanged but warned; disclosure copy | WS-07.1, WS-07.2, WS-08, WS-09, WS-25 |
+| OD-01 re-auth (vault-less) | New spec-18 secret exports (K03–K06 encrypted and raw keys, archive) refuse without encrypted-vault re-auth; the keystore v1 backup and vault creation stay available with disclosure (BLOCKERS OD-01, constraint 4); sweep unchanged but warned | WS-07.1, WS-07.2, WS-08, WS-09, WS-25 |
 | OD-02 clipboard | No clipboard path for any new secret export; file download + held reveal; BTC/SOL/TRON seed reveal aligned or kept experimental | WS-08.2, WS-14.3 |
 | OD-03 Mythril gate | Release tags stay blocked; keyed disposition built in REPORT-ONLY mode | WS-06.1; enable WS-06.3 after OD-03 |
 | OD-06 origin | Build keeps refusing manifests on a shared origin; origin gate checks the deployed origin | WS-04.1 |
@@ -396,7 +396,7 @@ Slack lanes: WS-09 K06 and WS-25 K05 start at CP-2 in parallel with K03; WS-19 p
 | OD-10 spec 18 wording | Product rules applied (user-selected RPC, no fallback, no telemetry, lean boundary, deep-scan export only after full derivation check, announced viewTag) and recorded for sign-off | WS-03.1 |
 | OD-14 FEE_RECIPIENT | Deployment checklist requires the choice; EOA recorded in manifest; readback smoke accepts ETH | WS-05.2 |
 | OD-15 #204 | Ported as one separate reviewable commit on the integration branch | WS-22.1 |
-| OD-16 locales | Selector lists only shipped locales; es/ar/ja labelled drafts | WS-12.3 |
+| OD-16 locales | Keep today's labelled selector (machine-drafted / no-catalog notes); es/ar/ja labelled drafts; no trim | WS-12.3 |
 | OD-18 majors | Minor/patch refresh only; @scure/* 2.x, TypeScript 7, hardhat 3 deferred | WS-22.2 |
 | OD-19 retirement | Nothing deleted or closed | all (authorization limits) |
 | OD-20/21/22 scope | Full-profile/operator/merchant/distribution work limited to confirmed-defect fixes + verification; never required by lean | WS-13..16, WS-90 |

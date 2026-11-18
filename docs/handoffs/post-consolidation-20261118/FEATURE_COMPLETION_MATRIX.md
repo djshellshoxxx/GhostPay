@@ -1,6 +1,6 @@
 # GhostPay feature completion matrix (post-consolidation, 2026-11-18)
 
-**Audited source:** consolidated candidate PR [djshellshoxxx/GhostPay#203](https://github.com/djshellshoxxx/GhostPay/pull/203), product source `7a620ff19ecf4e43ec568896c34188f5b2dcd3fc` (the previous session's CI-qualified head; PR head `71abc7e5` adds documentation only). Default branch `main` = `cfaebeeae22f292cb0bb3074619b2603cb738367` (an ancestor; the candidate is not merged).
+**Audited source:** consolidated candidate PR [djshellshoxxx/GhostPay#203](https://github.com/djshellshoxxx/GhostPay/pull/203), product source `7a620ff19ecf4e43ec568896c34188f5b2dcd3fc` (the previous session's CI-qualified head; PR head `71abc7e5` adds documentation only). Default branch `main` = `cfaebeeae22f292cb0bb3074619b2603cb738367` at audit time (an ancestor); after the snapshot PR #203 was merged (2026-11-18T06:56:49Z, `main` = `5467c158`, tree == `71abc7e5`).
 
 **Machine-readable twin:** [`feature_completion_matrix.json`](feature_completion_matrix.json) (same rows, full requirement lists and evidence).
 
@@ -8,7 +8,7 @@
 
 - **Inventory.** Four independent teams inventoried every package/app directory: B1a (protocol, crypto core, contracts, account abstraction, deployments), B1b (browser application, keys, backup, storage, wallet, RPC), B2 (merchant, CLI, relayer, operations, UX packages, integrations, i18n, accessibility, hosting, docs) and B3 (multichain, privacy extensions, transport, experimental PoCs, future roadmap). All 71 package/app directories are mapped (B2 `package_coverage.md`).
 - **Requirement-weighted scoring.** Each feature lists its requirements from specifications, ADRs, tests and code, weighted core = 3, important = 2, minor = 1. Each requirement is marked implemented yes / half / no (half = code exists but is not reachable from the intended surface) and verified yes / half / no (yes = an automated test exercising the behaviour passed, run locally by the team at `7a620ff1` or green in CI run 44231986652/44242366118; half = a test exists but was not shown passing). Verification is capped at implementation per requirement.
-- **Recomputed, not self-reported.** Implementation % and verification % are recomputed by `score_features.py` from the requirement lists (rounded to 5) and the status is normalized to the rubric: VERIFIED_COMPLETE = implementation 100, verification ≥ 90 and no open defect; IMPLEMENTED_UNVERIFIED = implementation ≥ 90; PARTIAL; SPEC_ONLY (< 10 % with a spec); NOT_STARTED; EXPERIMENTAL and BLOCKED are kept as reported. Where a team's headline number differed, the recomputed one is shown; every adjustment is listed in `evidence/features/scoring_issues.md` (99 entries).
+- **Recomputed, not self-reported.** Implementation % and verification % are recomputed by `score_features.py` from the requirement lists (rounded to 5) and the status is normalized to the rubric: VERIFIED_COMPLETE = implementation 100, verification ≥ 90 and no open Medium-or-higher defect (Low/Info and fixed items do not block, as in the rubric); IMPLEMENTED_UNVERIFIED = implementation ≥ 90; PARTIAL; SPEC_ONLY (< 10 % with a spec); NOT_STARTED; EXPERIMENTAL and BLOCKED are kept as reported. Where a team's headline number differed, the recomputed one is shown; every adjustment is listed in `evidence/features/scoring_issues.md` (99 entries).
 - **Coordinator overrides** (`evidence/scripts/overrides.json`, applied by the scorer): one requirement correction verified in code (F-PROTO-03: per-log block-hash cross-check exists at `packages/chain-adapters/src/logs.ts:438-460`, tests 70/70), and a **security hold**: a row whose own code is the root cause of an open, confirmed Medium-or-higher finding cannot be VERIFIED_COMPLETE and is held at IMPLEMENTED_UNVERIFIED — F-KEY-01, F-WEB-11, F-WEB-12 (SEC-03), F-KEY-02 (SEC-05), F-WEB-07 (SEC-10). Findings that only concern the hosting context (SEC-01 shared origin) or another row (SEC-04 → spec 18 rows) do not hold a row.
 - **External acceptance is excluded** from verification % (real wallets, devices, Firefox/WebKit/Tor Browser, public-testnet deployments, independent audits). No feature has external acceptance today; it is tracked per row.
 - **Duplicates.** F-PROTO-13 and F-FUT-40 restate spec 18 (requirement 3q), which is scored once under F-KEY-07..F-KEY-12; both are excluded from aggregates and effort sums.
@@ -17,20 +17,20 @@
 
 ## Summary
 
-Distinct features: **192** (194 rows; duplicates excluded from all counts and aggregates: F-FUT-40, F-PROTO-13). Status counts: BLOCKED 7, EXPERIMENTAL 45, IMPLEMENTED_UNVERIFIED 30, PARTIAL 27, SPEC_ONLY 46, VERIFIED_COMPLETE 37.
+Distinct features: **192** (194 rows; duplicates excluded from all counts and aggregates: F-FUT-40, F-PROTO-13). Status counts: BLOCKED 7, EXPERIMENTAL 45, IMPLEMENTED_UNVERIFIED 28, PARTIAL 28, SPEC_ONLY 46, VERIFIED_COMPLETE 38.
 
 | Tier | Features | Requirement weight | Implementation % (weighted) | Verification % (weighted) | Status mix |
 |---|---:|---:|---:|---:|---|
-| beta-core | 43 | 643 | 85.3 | 83.4 | BLOCKED 3, IMPLEMENTED_UNVERIFIED 11, PARTIAL 5, SPEC_ONLY 6, VERIFIED_COMPLETE 18 |
-| beta-supporting | 39 | 465 | 91.4 | 84.9 | IMPLEMENTED_UNVERIFIED 14, PARTIAL 11, VERIFIED_COMPLETE 14 |
-| full-profile | 22 | 260 | 79.1 | 73.0 | EXPERIMENTAL 4, IMPLEMENTED_UNVERIFIED 5, PARTIAL 9, VERIFIED_COMPLETE 4 |
+| beta-core | 42 | 634 | 85.1 | 83.2 | BLOCKED 3, IMPLEMENTED_UNVERIFIED 10, PARTIAL 5, SPEC_ONLY 6, VERIFIED_COMPLETE 18 |
+| beta-supporting | 37 | 445 | 90.1 | 84.0 | IMPLEMENTED_UNVERIFIED 12, PARTIAL 12, VERIFIED_COMPLETE 13 |
+| full-profile | 25 | 291 | 81.4 | 75.0 | EXPERIMENTAL 4, IMPLEMENTED_UNVERIFIED 6, PARTIAL 9, VERIFIED_COMPLETE 6 |
 | experimental | 45 | 346 | 54.9 | 47.4 | BLOCKED 3, EXPERIMENTAL 41, VERIFIED_COMPLETE 1 |
 | future | 43 | 149 | 5.4 | 3.4 | BLOCKED 1, PARTIAL 2, SPEC_ONLY 40 |
-| **Beta scope (beta-core + beta-supporting)** | 82 | 1108 | **87.9** | **84.0** | |
-| **All tiers excluding future roadmap** | 149 | 1714 | **79.9** | **75.0** | |
-| **All tiers including future roadmap** | 192 | 1863 | **73.9** | **69.3** | |
+| **Beta scope (beta-core + beta-supporting)** | 79 | 1079 | **87.2** | **83.5** | |
+| **All tiers excluding future roadmap** | 149 | 1716 | **79.7** | **74.8** | |
+| **All tiers including future roadmap** | 192 | 1865 | **73.8** | **69.1** | |
 
-Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum of per-row ranges, before parallelism): **309–919 engineer-days**.
+Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum of per-row ranges, before parallelism): **309–920 engineer-days**.
 
 ## Tier: beta-core
 
@@ -57,7 +57,6 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-KEY-11 | Spec 18 K05: encrypted bounded bulk archive of validated one-time keys | 0 | 0 | SPEC_ONLY | M (2–3d) | implement | B1 |
 | F-KEY-12 | Spec 18 K06: separate encrypted master spend/view backup (+ KC checkpoint) | 0 | 0 | SPEC_ONLY | M (3–6d) | implement | B1 |
 | F-KEY-13 | secret-box (closure-held secret bytes, scopes, wipe) | 90 | 90 | IMPLEMENTED_UNVERIFIED | S (0.5–1d) | defer | B1 |
-| F-MER-05 | Web merchant profile, templates, printable bill, reconciliation UI (cross-ref B1b) | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B2 |
 | F-PROTO-01 | EIP-5564 scheme-1 stealth derivation, view tags, announcement check, stealth key | 100 | 100 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
 | F-PROTO-02 | Stealth meta-address encoding (st:eth:0x) + key generation | 100 | 100 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
 | F-PROTO-03 | Announcement discovery primitives: verified RPC client + reorg-safe announcement fetch/validation | 100 | 100 | VERIFIED_COMPLETE | S (0.5–1d) | repair | B1 |
@@ -71,7 +70,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-WEB-04 | Payment submission journal and honest uncertain outcomes | 90 | 90 | IMPLEMENTED_UNVERIFIED | S (1–2d) | defer | B1 |
 | F-WEB-06 | Seller scan & discovery UI (worker, checkpoints, reorg, dedupe, deep scan, auto-rescan) | 95 | 95 | IMPLEMENTED_UNVERIFIED | S (0.5–1d) | defer | B1 |
 | F-WEB-08 | RPC provider configuration (explicit, validated, chainId-checked, no fallback) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
-| F-WEB-09 | Payment history & reconciliation ledger (encrypted IndexedDB, invoice registry) | 100 | 95 | IMPLEMENTED_UNVERIFIED | S (0.5–1d) | repair | B1 |
+| F-WEB-09 | Payment history & reconciliation ledger (encrypted IndexedDB, invoice registry) | 100 | 95 | VERIFIED_COMPLETE | S (0.5–1d) | repair | B1 |
 | F-WEB-10 | Receipts (invoice-bound signed receipt, QR, archive, payer verification) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
 | F-WEB-11 | Direct sweep (self-paid gas, in-page derived key) | 100 | 100 | IMPLEMENTED_UNVERIFIED | S (0–0d) | none | B1 |
 | F-WEB-16 | Invoice URL fragment privacy (autoclear, history state, anchors, focus) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
@@ -88,8 +87,6 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-A11Y-01 | Automated accessibility: axe-core audit in Playwright (all routes, keyboard, 320px reflow, forced-colors, reduced-motion) | 90 | 85 | IMPLEMENTED_UNVERIFIED | M (1–3d) | repair | B2 |
 | F-A11Y-02 | Mobile/responsive: Chromium device-emulation projects (Pixel 7, iPhone SE, iPad Mini descriptors) | 50 | 50 | PARTIAL | S (0–1d) | defer | B2 |
 | F-A11Y-03 | Screen-reader / assistive-tech qualification | 40 | 20 | PARTIAL | M (1–3d) | implement | B2 |
-| F-BTC-01 | BIP-352 silent payments: keys, addresses, sender derive, receive scan, spend (full-profile web) | 100 | 80 | IMPLEMENTED_UNVERIFIED | M (2–4d) | consolidate | B3 |
-| F-BTC-02 | BTC header-chain validation, persistence, scan anchoring (A4 PR #74) | 100 | 100 | VERIFIED_COMPLETE | S (1–3d) | consolidate | B3 |
 | F-CLI-01 | CLI core: registry, strict arg parsing, --json, exit codes, doctor, build-info | 100 | 85 | IMPLEMENTED_UNVERIFIED | S (0–1d) | none | B2 |
 | F-CLI-02 | CLI invoice, receipt, QR, seller-pairing commands | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B2 |
 | F-CLI-04 | CLI reconcile, history, encrypted receipt archive | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B2 |
@@ -110,14 +107,14 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-MER-02 | Merchant ledger: reconciliation + accounting/tax exports | 80 | 65 | PARTIAL | M (1–3d) | consolidate | B2 |
 | F-MER-03 | Merchant hooks: signed webhooks, payment button/link, POS/NFC payload builders | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B2 |
 | F-MER-06 | Merchant examples: checkout, POS terminal, subscription cron, webhook receiver, operations, plugin conformance | 100 | 90 | VERIFIED_COMPLETE | S (1–2d) | repair | B2 |
-| F-NET-01 | Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP framing + browser fetch transport | 100 | 80 | IMPLEMENTED_UNVERIFIED | M (2–5d) | consolidate | B3 |
+| F-NET-01 | Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP framing + browser fetch transport | 80 | 65 | PARTIAL | M (2–5d) | consolidate | B3 |
 | F-NET-02 | Onion URL canonicalization / v3 checksum, reject escaped authorities (PR #122/#134) | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B3 |
 | F-OPS-03 | sandbox / test mode: deterministic mock chain, faucet, clock, fault injection | 70 | 70 | PARTIAL | S (0–1d) | none | B2 |
 | F-PROTO-05 | Announcer spam & anonymity-set bounds (spec 05) | 90 | 80 | IMPLEMENTED_UNVERIFIED | S (1–2d) | implement | B1 |
 | F-PROTO-09 | Strict payment URI builders/parsers (EIP-681, ERC-3770, BIP-21/321+sp, Solana Pay, tron:, invoice link) | 100 | 100 | VERIFIED_COMPLETE | S (0–0.5d) | none | B1 |
 | F-PROTO-10 | QR exchange: GPQ1 multipart, assembler, camera/readers, generation, seller/settings payloads | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B1 |
 | F-WEB-05 | Gas buffer UI: v1 payer buffer (lean+full) and v2 seller policy (full) | 90 | 75 | IMPLEMENTED_UNVERIFIED | S (0.5–1.5d) | repair | B1 |
-| F-WEB-07 | Scan privacy modes (spec 10 UI: transport, private-required, windows, indexer, disclosures) | 100 | 100 | IMPLEMENTED_UNVERIFIED | S (0–0d) | none | B1 |
+| F-WEB-07 | Scan privacy modes (spec 10 UI: transport, private-required, windows, indexer, disclosures) | 90 | 90 | IMPLEMENTED_UNVERIFIED | S (0.5–2d) | repair | B1 |
 | F-WEB-12 | Relayer-assisted sweep and permit refusal messages | 100 | 95 | IMPLEMENTED_UNVERIFIED | S (1–2d) | none | B1 |
 | F-WEB-13 | Seller device pairing (public config QR export/preview) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
 | F-WEB-14 | ERC-6538 registry view (publish/clear/lookup/ENS/export) | 100 | 95 | VERIFIED_COMPLETE | S (0.5–1d) | none | B1 |
@@ -129,6 +126,8 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 | ID | Feature | Impl % | Verif % | Status | Effort | Strategy | Source team |
 |---|---|---:|---:|---|---|---|---|
+| F-BTC-01 | BIP-352 silent payments: keys, addresses, sender derive, receive scan, spend (full-profile web) | 100 | 80 | IMPLEMENTED_UNVERIFIED | M (2–4d) | consolidate | B3 |
+| F-BTC-02 | BTC header-chain validation, persistence, scan anchoring (A4 PR #74) | 100 | 100 | VERIFIED_COMPLETE | S (1–3d) | none | B3 |
 | F-BTC-03 | BTC light-client scanning: BlindBit HTTP + gRPC-Web, own-node Esplora, 2-oracle cross-check, worker | 90 | 80 | IMPLEMENTED_UNVERIFIED | M (1–3d) | consolidate | B3 |
 | F-DOC-03 | Operator docs (docs/operators, 17 pages): runbooks, relayer, monitoring, release, rollback | 50 | 50 | PARTIAL | S (0–1d) | none | B2 |
 | F-HOST-01 | Self-host recipe: docker-compose + nginx + relayer image + selfhost.sh | 70 | 45 | PARTIAL | S (1–2d) | repair | B2 |
@@ -138,6 +137,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 | F-KEY-05 | Tag archive backup/restore + combined BackupPanel (spec 08) | 90 | 90 | IMPLEMENTED_UNVERIFIED | S (0.5–1d) | repair | B1 |
 | F-KEY-06 | Archive key rotation (spec 08 rotateKeys) | 100 | 100 | VERIFIED_COMPLETE | S (0–0d) | none | B1 |
 | F-MER-04 | Merchant m-of-n multisig approvals | 60 | 60 | PARTIAL | S (0–1d) | defer | B2 |
+| F-MER-05 | Web merchant profile, templates, printable bill, reconciliation UI (cross-ref B1b) | 100 | 100 | VERIFIED_COMPLETE | S (0–1d) | none | B2 |
 | F-OPS-01 | ops-monitor: read-only chain anomaly probes + bounded release-asset streaming | 80 | 75 | PARTIAL | S (1–2d) | repair | B2 |
 | F-POOL-04 | Pool withdrawal relayer service (node:http) | 100 | 60 | EXPERIMENTAL | L (5–10d) | defer | B3 |
 | F-PROTO-11 | Scan-source abstraction (range / indexer-tor / pir2 / light-client / quorum) | 70 | 70 | EXPERIMENTAL | L (3–10d) | defer | B1 |
@@ -471,7 +471,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-KEY-03 — Keystore v1 backup/restore and verified-backup gate (GP-PAGES-02)
 
-- Tier/area: beta-core / keys \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** (reported VERIFIED_COMPLETE, normalized by rubric). Implementation 100% · Verification 100% (requirement weight 19.0).
+- Tier/area: beta-core / keys \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** — security hold: SEC-05, SEC-03: keystore export passphrase floor (SellerKeys.tsx:207) and vault-less export without step-up (SellerKeys.tsx:221-224). Implementation 100% · Verification 100% (requirement weight 19.0).
 - Spec: docs/pages/RELEASE_MATRIX.md GP-PAGES-02; docs/specs/18-stealth-keypair-export.md (legacy keystore compatibility)
 - Implementation: apps/web/src/views/SellerKeys.tsx; apps/web/src/lib/session.ts; apps/web/src/lib/keystore.ts; apps/web/src/components/Common.tsx; packages/ux-vault/src/keystore-portable.ts
 - Tests: apps/web/src/views/SellerKeys.test.tsx; apps/web/src/views/SellerKeys.recovery.test.tsx; apps/web/src/lib/session.test.ts; apps/web/src/lib/keystore.test.ts; packages/ux-vault/src/portable-parity.test.ts; apps/web/e2e/recovery.spec.ts; apps/web/e2e/core-journey.spec.ts; apps/web/e2e/pages-devnet.spec.ts
@@ -630,24 +630,6 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 - Strategy: **defer** — Optional ADR for SecretScalar re-base; current wiring sufficient for beta.
 - Effort (estimate): S [0.5, 1] engineer-days
 - Unverified: 
-
-### F-MER-05 — Web merchant profile, templates, printable bill, reconciliation UI (cross-ref B1b)
-
-- Tier/area: beta-core / merchant. Status: **VERIFIED_COMPLETE**. Implementation 100% · Verification 100% (requirement weight 9.0).
-- Spec: docs/specs/14-embed-merchant-profile.md
-- Implementation: apps/web/src/components/MerchantProfilePanel.tsx; apps/web/src/lib/merchantIdentity.ts; apps/web/src/lib/reconciliationLedger.ts
-- Tests: 
-- Verified working: 
-- Missing requirements: 
-- Confirmed defects: 
-- Missing tests: 
-- Security/privacy: 
-- Dependencies: . Blockers: 
-- External acceptance: spec 14 acceptance: ADR-0002/0015 signer pinning+hosting gates
-- Related branches/PRs: 
-- Strategy: **none** — 
-- Effort (estimate): S [0, 1] engineer-days
-- Unverified: owned by B1b; B2 did not rerun web e2e (shared dist/build)
 
 ### F-PROTO-01 — EIP-5564 scheme-1 stealth derivation, view tags, announcement check, stealth key
 
@@ -885,7 +867,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-WEB-09 — Payment history & reconciliation ledger (encrypted IndexedDB, invoice registry)
 
-- Tier/area: beta-core / web/reconciliation \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** (reported VERIFIED_COMPLETE, normalized by rubric). Implementation 100% · Verification 95% (requirement weight 18.0).
+- Tier/area: beta-core / web/reconciliation \| profile: lean+full. Status: **VERIFIED_COMPLETE**. Implementation 100% · Verification 95% (requirement weight 18.0).
 - Spec: ADR-0026; docs/specs/02-scanner-robustness-and-payment-verification.md (2026-11-16 continuation)
 - Implementation: apps/web/src/components/ReconciliationLedger.tsx; apps/web/src/components/InvoicePaymentSummary.tsx; apps/web/src/lib/reconciliationVault.ts; apps/web/src/lib/reconciliationLedger.ts; apps/web/src/lib/reconciliationMatch.ts; packages/ux-vault/src/reconciliation-portable.ts; packages/ux-vault/src/reconciliation-amounts.ts
 - Tests: apps/web/src/components/ReconciliationLedger.test.tsx; apps/web/src/components/ReconciliationLedger.invoices.test.tsx; apps/web/src/lib/reconciliationVault.test.ts; apps/web/src/lib/reconciliationVault.invoices.test.ts; apps/web/src/lib/reconciliationVault.idb.test.ts; apps/web/src/lib/reconciliationMatch.test.ts; apps/web/src/lib/reconciliationLedger.test.ts; apps/web/e2e/reconciliation.spec.ts (+1 more)
@@ -1098,42 +1080,6 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 - Strategy: **implement** — manual NVDA/VoiceOver/TalkBack pass on 9 core routes; record in docs/operators
 - Effort (estimate): M [1, 3] engineer-days
 - Unverified: 
-
-### F-BTC-01 — BIP-352 silent payments: keys, addresses, sender derive, receive scan, spend (full-profile web)
-
-- Tier/area: beta-supporting / btc. Status: **IMPLEMENTED_UNVERIFIED**. Implementation 100% · Verification 80% (requirement weight 13.0).
-- Spec: docs/specs/11-bip352-wallet-hardening.md; docs/specs/12-bip352-light-client-scanning.md; docs/MULTICHAIN_SPEC.md s3
-- Implementation: packages/btc-silent-payments/src/{address,keys,sender,receiver,spend,tx,labels,uri,inputs,policy}.ts; apps/web/src/features/btc/{BtcView.tsx,scan.ts,sweep.ts,wallet.ts}
-- Tests: packages/btc-silent-payments/src/vectors.test.ts; packages/btc-silent-payments/src/spend-vectors.test.ts; packages/btc-silent-payments/src/spend-regtest.test.ts; apps/web/src/features/btc/BtcView.test.tsx; apps/web/src/features/btc/regtest.e2e.test.ts
-- Verified working: 
-- Missing requirements: 
-- Confirmed defects: 
-- Missing tests: 
-- Security/privacy: scan key never in requests (modes A/B); mode C hosted scan absent unless ADR; never claim anonymity
-- Dependencies: . Blockers: 
-- External acceptance: Real bitcoind/regtest/signet + physical device acceptance unperformed (spec 12 banner).
-- Related branches/PRs: PR #113 hard-lane closure: BTC local spend tracking + wallet policy (open)@ #113 spec 11; not independently diffed (UNVERIFIED if in candidate); PR #30 remaining waves: embed, private scanning, policy, BTC (open)@ #30
-- Strategy: **consolidate** — Real, wired in full profile (App.tsx 'btc' view; absent from AppLean). Package has BIP-352 official vectors (vectors.test.ts) + regtest-mocked spend. Needs real-node/regtest acceptance + PR #113 local spend tracking verdict.
-- Effort (estimate): M [2, 4] engineer-days
-- Unverified: whether PR #113 content is fully in candidate; regtest e2e is mocked, not real bitcoind (no bitcoind installed)
-
-### F-BTC-02 — BTC header-chain validation, persistence, scan anchoring (A4 PR #74)
-
-- Tier/area: beta-supporting / btc. Status: **VERIFIED_COMPLETE** (reported IMPLEMENTED_UNVERIFIED, normalized by rubric). Implementation 100% · Verification 100% (requirement weight 9.0).
-- Spec: docs/specs/12-bip352-light-client-scanning.md
-- Implementation: packages/btc-silent-payments/src/{header,headerchain,merkleProof,witness}.ts; packages/btc-silent-payments/src/scan/headersync.ts; apps/web/src/features/btc/{headers.ts,inclusion.ts}
-- Tests: packages/btc-silent-payments/src/header.test.ts; packages/btc-silent-payments/src/headerchain.test.ts; packages/btc-silent-payments/src/headerchain.memory.test.ts; packages/btc-silent-payments/src/merkleProof.test.ts; apps/web/src/features/btc/headers.test.ts; apps/web/src/features/btc/BtcView.headers.test.tsx
-- Verified working: 
-- Missing requirements: 
-- Confirmed defects: 
-- Missing tests: 
-- Security/privacy: 
-- Dependencies: . Blockers: 
-- External acceptance: Real Esplora/mainnet header sync unperformed.
-- Related branches/PRs: PR #74 A4 header chain (open)@ #74 candidate contains header code (VERIFIED files exist); PR head not diffed
-- Strategy: **consolidate** — headersync/headerchain/merkleProof/witness in btc-silent-payments; web headers.ts persists + anchors scans. Verify PR #74 equivalent; PoW/difficulty checks real but no real-network sync run.
-- Effort (estimate): S [1, 3] engineer-days
-- Unverified: PR #74 vs candidate delta
 
 ### F-CLI-01 — CLI core: registry, strict arg parsing, --json, exit codes, doctor, build-info
 
@@ -1497,7 +1443,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-NET-01 — Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP framing + browser fetch transport
 
-- Tier/area: beta-supporting / net. Status: **IMPLEMENTED_UNVERIFIED** (reported PARTIAL, normalized by rubric). Implementation 100% · Verification 80% (requirement weight 9.0).
+- Tier/area: beta-supporting / net. Status: **PARTIAL**. Implementation 80% · Verification 65% (requirement weight 11.0).
 - Spec: docs/specs/10-feature5-stage1-private-scanning.md; docs/remote/privacy-specs/network-privacy.md
 - Implementation: packages/net-transport/src/*; apps/web/src/lib/scanPrivacy.ts
 - Tests: packages/net-transport/src/*.test.ts (4); apps/web/src/lib/scanPrivacy.i18n.test.ts
@@ -1526,8 +1472,8 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 - Security/privacy: 
 - Dependencies: . Blockers: 
 - External acceptance: 
-- Related branches/PRs: origin/chatgpt/zero-codex/onion-canonical-host-20261111@72dde82d #122 ancestor of candidate, 0 unique patches; PR #134 port onto beta (open)@ #134
-- Strategy: **none** — onion.ts v3 checksum + url.ts; origin/chatgpt/zero-codex/onion-canonical-host-20261111 (72dde82d) is ancestor of cand with 0 unique patches (census) => landed. Verify tests pass with net-transport run.
+- Related branches/PRs: origin/chatgpt/zero-codex/onion-canonical-host-20261111@72dde82d #122 NOT an ancestor of 7a620ff1: 0 unique / 2 patch-equivalent commits (git cherry), class C; origin/chatgpt/ghostpay-onion-canonical-port-20261112@8277879e #134 port of #122; ancestor of 7a620ff1
+- Strategy: **none** — onion.ts v3 checksum + url.ts. #122 (72dde82d) is patch-equivalent to the candidate; its port #134 (8277879e) is an ancestor => landed. net-transport 149/149 pass.
 - Effort (estimate): S [0, 1] engineer-days
 - Unverified: 
 
@@ -1623,7 +1569,7 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 
 ### F-WEB-07 — Scan privacy modes (spec 10 UI: transport, private-required, windows, indexer, disclosures)
 
-- Tier/area: beta-supporting / web/scan \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** — security hold: SEC-10: local-proxy scan transport blocked by the app's own CSP while UI/docs offer it. Implementation 100% · Verification 100% (requirement weight 17.0).
+- Tier/area: beta-supporting / web/scan \| profile: lean+full. Status: **IMPLEMENTED_UNVERIFIED** (reported VERIFIED_COMPLETE, normalized by rubric). Implementation 90% · Verification 90% (requirement weight 17.0).
 - Spec: docs/specs/10-feature5-stage1-private-scanning.md
 - Implementation: apps/web/src/lib/scanPrivacy.ts; apps/web/src/views/Settings.tsx; apps/web/src/views/Scan.tsx; apps/web/src/views/Sweep.tsx; apps/web/src/lib/jitter.ts
 - Tests: apps/web/src/lib/scanPrivacy.test.ts; apps/web/src/lib/scanPrivacy.clients.test.ts; apps/web/src/lib/scanPrivacy.transport.test.ts; apps/web/src/views/Scan.privacy.test.tsx; apps/web/src/views/Settings.scanPrivacy.test.tsx; apps/web/src/views/Sweep.privacy.test.tsx; apps/web/src/privacyInvariants.test.ts
@@ -1635,8 +1581,8 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 - Dependencies: F-WEB-08 RPC config. Blockers: 
 - External acceptance: Real Tor Browser / local SOCKS-forwarder route and onion RPC unqualified
 - Related branches/PRs: 
-- Strategy: **none** — Complete in code; only external route acceptance.
-- Effort (estimate): S [0, 0] engineer-days
+- Strategy: **repair** — Fix TB-02: allow http loopback in connect-src for the full/self-host profile (or remove local-proxy from lean UI/docs) and add an e2e under the real CSP. Effort is an H1 ESTIMATE.
+- Effort (estimate): S [0.5, 2] engineer-days
 - Unverified: private-required covers scan/sweep only; Pay/Create/Registry/Home manifest checks use Settings RPC directly (disclosed rows; Team D/E to confirm wording)
 
 ### F-WEB-12 — Relayer-assisted sweep and permit refusal messages
@@ -1746,6 +1692,42 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 - Strategy: **none** — Complete.
 - Effort (estimate): S [0, 0] engineer-days
 - Unverified: 
+
+### F-BTC-01 — BIP-352 silent payments: keys, addresses, sender derive, receive scan, spend (full-profile web)
+
+- Tier/area: full-profile / btc. Status: **IMPLEMENTED_UNVERIFIED**. Implementation 100% · Verification 80% (requirement weight 13.0).
+- Spec: docs/specs/11-bip352-wallet-hardening.md; docs/specs/12-bip352-light-client-scanning.md; docs/MULTICHAIN_SPEC.md s3
+- Implementation: packages/btc-silent-payments/src/{address,keys,sender,receiver,spend,tx,labels,uri,inputs,policy}.ts; apps/web/src/features/btc/{BtcView.tsx,scan.ts,sweep.ts,wallet.ts}
+- Tests: packages/btc-silent-payments/src/vectors.test.ts; packages/btc-silent-payments/src/spend-vectors.test.ts; packages/btc-silent-payments/src/spend-regtest.test.ts; apps/web/src/features/btc/BtcView.test.tsx; apps/web/src/features/btc/regtest.e2e.test.ts
+- Verified working: 
+- Missing requirements: 
+- Confirmed defects: 
+- Missing tests: 
+- Security/privacy: scan key never in requests (modes A/B); mode C hosted scan absent unless ADR; never claim anonymity
+- Dependencies: . Blockers: 
+- External acceptance: Real bitcoind/regtest/signet + physical device acceptance unperformed (spec 12 banner).
+- Related branches/PRs: PR #113 hard-lane closure: BTC local spend tracking + wallet policy (open)@ #113 spec 11; not independently diffed (UNVERIFIED if in candidate); PR #30 remaining waves: embed, private scanning, policy, BTC (open)@ #30
+- Strategy: **consolidate** — Real, wired in full profile (App.tsx 'btc' view; absent from AppLean). Package has BIP-352 official vectors (vectors.test.ts) + regtest-mocked spend. Needs real-node/regtest acceptance + PR #113 local spend tracking verdict.
+- Effort (estimate): M [2, 4] engineer-days
+- Unverified: whether PR #113 content is fully in candidate; regtest e2e is mocked, not real bitcoind (no bitcoind installed)
+
+### F-BTC-02 — BTC header-chain validation, persistence, scan anchoring (A4 PR #74)
+
+- Tier/area: full-profile / btc. Status: **VERIFIED_COMPLETE** (reported IMPLEMENTED_UNVERIFIED, normalized by rubric). Implementation 100% · Verification 100% (requirement weight 9.0).
+- Spec: docs/specs/12-bip352-light-client-scanning.md
+- Implementation: packages/btc-silent-payments/src/{header,headerchain,merkleProof,witness}.ts; packages/btc-silent-payments/src/scan/headersync.ts; apps/web/src/features/btc/{headers.ts,inclusion.ts}
+- Tests: packages/btc-silent-payments/src/header.test.ts; packages/btc-silent-payments/src/headerchain.test.ts; packages/btc-silent-payments/src/headerchain.memory.test.ts; packages/btc-silent-payments/src/merkleProof.test.ts; apps/web/src/features/btc/headers.test.ts; apps/web/src/features/btc/BtcView.headers.test.tsx
+- Verified working: 
+- Missing requirements: 
+- Confirmed defects: 
+- Missing tests: 
+- Security/privacy: 
+- Dependencies: . Blockers: 
+- External acceptance: Real Esplora/mainnet header sync unperformed.
+- Related branches/PRs: PR #74 A4 header chain (open)@ #74 candidate contains header code (VERIFIED files exist); PR head not diffed
+- Strategy: **none** — Complete by rubric (4/4 requirements implemented and tested). Real Esplora/mainnet sync stays external acceptance; PR #74 delta stays under unverified.
+- Effort (estimate): S [1, 3] engineer-days
+- Unverified: PR #74 vs candidate delta
 
 ### F-BTC-03 — BTC light-client scanning: BlindBit HTTP + gRPC-Web, own-node Esplora, 2-oracle cross-check, worker
 
@@ -1908,6 +1890,24 @@ Estimated remaining engineering effort for all non-complete rows (ESTIMATE, sum 
 - Strategy: **defer** — approval logic only; keep as optional library
 - Effort (estimate): S [0, 1] engineer-days
 - Unverified: 
+
+### F-MER-05 — Web merchant profile, templates, printable bill, reconciliation UI (cross-ref B1b)
+
+- Tier/area: full-profile / merchant. Status: **VERIFIED_COMPLETE**. Implementation 100% · Verification 100% (requirement weight 9.0).
+- Spec: docs/specs/14-embed-merchant-profile.md
+- Implementation: apps/web/src/components/MerchantProfilePanel.tsx; apps/web/src/lib/merchantIdentity.ts; apps/web/src/lib/reconciliationLedger.ts
+- Tests: 
+- Verified working: 
+- Missing requirements: 
+- Confirmed defects: 
+- Missing tests: 
+- Security/privacy: 
+- Dependencies: . Blockers: 
+- External acceptance: spec 14 acceptance: ADR-0002/0015 signer pinning+hosting gates
+- Related branches/PRs: 
+- Strategy: **none** — 
+- Effort (estimate): S [0, 1] engineer-days
+- Unverified: owned by B1b; B2 did not rerun web e2e (shared dist/build)
 
 ### F-OPS-01 — ops-monitor: read-only chain anomaly probes + bounded release-asset streaming
 

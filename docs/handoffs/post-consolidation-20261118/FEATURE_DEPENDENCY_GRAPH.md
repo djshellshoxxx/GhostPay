@@ -320,7 +320,7 @@ Rule (BLOCKERS §0): implement every decision-independent part now; ship the fai
 | OD-13 | 7702 delegate clearing / 4337 paymaster | AA paths experimental | G-S2 (AA only) | F-AA-04, F-POOL-08, F-RLY-05, F-WEB-15 (4) |
 | OD-14 | FEE_RECIPIENT account type | deployment checklist requires the choice | CP-7 (B02), G-S2 | F-DEP-04, F-AA-01 (2) |
 | OD-15 | PR #204 scope/merge order | port only as a separate commit | CP-0 tooling | — (0) |
-| OD-16 | locale policy | selector lists only shipped locales | CP-8 (F-I18N-02) | F-DOC-04, F-DOC-01, F-I18N-02, F-I18N-03 (4) |
+| OD-16 | locale policy | keep today's labelled selector (no trim; `apps/web/src/i18n/LanguagePicker.tsx:19-23`) | CP-8 (F-I18N-02) | F-DOC-04, F-DOC-01, F-I18N-02, F-I18N-03 (4) |
 | OD-17 | Shopify / merchant plugins | no marketing as supported | none | F-INT-03 (1) |
 | OD-18 | major dependency upgrades | minor/patch only | none | — (0) |
 | OD-19 | branch retirement plan | nothing deleted or closed | none | — (0) |
@@ -334,7 +334,7 @@ All file:line refs VERIFIED by G-A @7a620ff1 unless marked. "Frozen" = G-B `froz
 
 | Component | Where (file:line) | State | Consumers (unfinished rows) | Change rule |
 |---|---|---|---|---|
-| Stealth derivation (EIP-5564 scheme 1) | `packages/core-crypto/src/stealth.ts` deriveStealthPayment :120, checkAnnouncement :157, deriveStealthSecret :212; `test-vectors/scheme1.json`; `packages/core-crypto/src/vectors.test.ts` | F-PROTO-01 VERIFIED_COMPLETE; independently re-derived 6/6 vectors (SEC-38, `$SP/final/evidence/teams/D/scripts/indep-vectors.cjs`) | F-KEY-07, F-KEY-10, F-KEY-12, F-WEB-06, WS-19 | frozen; reuse unchanged, never weaken checks |
+| Stealth derivation (EIP-5564 scheme 1) | `packages/core-crypto/src/stealth.ts` deriveStealthPayment :120, checkAnnouncement :157, deriveStealthSecret :212; `test-vectors/scheme1.json`; `packages/core-crypto/src/vectors.test.ts` | F-PROTO-01 VERIFIED_COMPLETE; independently re-derived 6/6 vectors (SEC-38, `docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/indep-vectors.cjs`) | F-KEY-07, F-KEY-10, F-KEY-12, F-WEB-06, WS-19 | frozen; reuse unchanged, never weaken checks |
 | Address correspondence | `packages/chain-adapters/src/sweep.ts` addressOfSecret :175; `apps/web/src/lib/sweep.ts` deriveVerifiedSweepKey :49 | exists, tested | F-KEY-07, F-KEY-10 | reuse |
 | Keystore v1 portable envelope | `packages/ux-vault/src/keystore-portable.ts` DEFAULT_SCRYPT :49, ceilings :54-60, derive :74-82, aad :84-86 (closure-private inside createKeystoreApi :42), encryptKeystore :313, validateKeystoreEnvelope :368, decryptKeystore :391; `tag-archive-portable.ts`; CLI binding `packages/cli/src/backup-data.ts:10` | exists; derive/aad not exported (VERIFIED) | F-KEY-03, F-KEY-08 (shared-primitive refactor), F-KEY-11, F-KEY-12, F-CLI-03, F-POOL-03 (SEC-16), F-KEY-14 | v1 bytes byte-identical (golden vector first, WS-03.2) |
 | Step-up re-authentication | `apps/web/src/lib/keyVault.ts` authorizeKeyExport :257 (returns undefined with no vault :264), authorizeEncryptedVault :328; `apps/web/src/lib/session.ts` withSessionSecrets :312, captureSessionVersionGuard :344, captureSessionGuard :352 | DEFECT SEC-03 (Medium CONFIRMED); fix WS-07.1 refuse default, WS-07.2 requireStepUp API (CP-2) | F-KEY-05, F-KEY-09, F-KEY-10, F-KEY-11, F-KEY-12 | OD-01; default refuse |
@@ -648,4 +648,4 @@ Derived from the hard-edge DAG (no edge inside a set except the listed intra-WS 
   default); F-KEY-02 → SEC-05 → WS-18.1 (OD-09 for existing flows); F-WEB-07 → SEC-10 → WS-01.1 (TB-02). All three items
   are wave 1 and already on the beta-start and beta-exit paths (BR-06, BR-07, BX-03, BX-04), so no critical path changes.
 - **F-PROTO-03 resolved** (VERIFIED_COMPLETE; see FEATURE_ACCEPTANCE_CRITERIA §8); remove it from the unfinished set.
-  The adjacency table above therefore lists 151 rows; the current unfinished set is 155 (151 − 1 + 5).
+  The adjacency table above therefore lists 151 rows; after the H1 rescoring (F-WEB-09 -> VERIFIED_COMPLETE; F-KEY-03 held by SEC-05/SEC-03; F-WEB-07 scored 90/90 instead of held) the current unfinished set is 154 (151 − 2 + 5).

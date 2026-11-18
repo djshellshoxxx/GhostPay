@@ -3,7 +3,7 @@
   "generated_by": "Team G-B",
   "date": "2026-11-18",
   "audited_source": "7a620ff19ecf4e43ec568896c34188f5b2dcd3fc",
-  "id_policy": "Canonical IDs only (OD-01..OD-22, OA-01..OA-07, EX-01..EX-07, TB-01..TB-10, SEC-01..SEC-49). Lost-team OD numbers remapped per coordinator 2026-11-18; lost-team OD-16 used as a generic owner acknowledgement on F-KEY-05/F-WEB-06/F-WEB-26/F-WEB-04/F-CLI-06 is NOT mapped to TB-07 (recorded as owner-ack, no canonical ID).",
+  "id_policy": "Canonical IDs only (OD-01..OD-23, OA-01..OA-07, EX-01..EX-07, TB-01..TB-10, SEC-01..SEC-49). Lost-team OD numbers remapped per coordinator 2026-11-18; lost-team OD-16 used as a generic owner acknowledgement on F-KEY-05/F-WEB-06/F-WEB-26/F-WEB-04/F-CLI-06 is NOT mapped to TB-07 (recorded as owner-ack, no canonical ID).",
   "coordinator_owned_paths": [
    "package-lock.json",
    "package.json",
@@ -167,7 +167,7 @@
       ""
      ],
      "parallel": false,
-     "what": "Apply start-commit rule (PLAN \u00a72); `git worktree add ../wt/WS-00-integration -b ws/WS-00-integration $START`; record SHA + tree in BASELINE.md"
+     "what": "Apply start-commit rule (PLAN \u00a72); `git checkout -B <designated branch> $START` in the main checkout (prompt section 5 step 3); record SHA + tree in BASELINE.md"
     },
     {
      "id": "WS-00.2",
@@ -270,7 +270,9 @@
     "F-NET-01",
     "F-WEB-18"
    ],
-   "contributes_to": [],
+   "contributes_to": [
+    "F-WEB-07"
+   ],
    "findings": [
     "SEC-10",
     "SEC-19",
@@ -350,7 +352,7 @@
    "worktree": "../wt/WS-01",
    "branch": "ws/WS-01-transport-honesty",
    "mapping": "WS-01 (F-NET-01, F-WEB-18)",
-   "objectives": "Make every transport claim true: local-proxy scan works under a CSP allowing only the selected loopback origin in the full/self-host profile, or is removed from lean UI + docs (coordinator default: remove from lean, fix-or-remove in full); reject wss://; fetch transports omit credentials/cache/referrer; docs match.",
+   "objectives": "Make every transport claim true: local-proxy scan works under a CSP allowing http loopback origins (any port; BLOCKERS TB-02) in the full/self-host profile only, or is removed from lean UI + docs (coordinator default: remove from lean, fix-or-remove in full); reject wss://; fetch transports omit credentials/cache/referrer; docs match.",
    "items": [
     {
      "id": "WS-01.1",
@@ -374,7 +376,7 @@
       ""
      ],
      "parallel": true,
-     "what": "Lean: remove local-proxy mode from UI + docs; full/self-host: allow only http://127.0.0.1|localhost|[::1]:<port> of the selected endpoint (or remove); reject wss:// in checkRpcUrl and drop `wss:` from connect-src (index.html, _headers, nginx, infra proxies, csp.mjs); Playwright test under the real meta CSP; fix docs/specs/10 mode b (docs/pages/README.md:49 via WS-04.4)"
+     "what": "Lean: remove local-proxy mode from UI + docs; full/self-host: remove the mode by default, or keep it with connect-src loopback entries http://127.0.0.1:*, http://localhost:*, http://[::1]:* (a static meta CSP cannot be narrowed to the chosen port; BLOCKERS TB-02) under RV-SEC review; lean CSP never widened; reject wss:// in checkRpcUrl and drop `wss:` from connect-src (index.html, _headers, nginx, infra proxies, csp.mjs); Playwright test under the real meta CSP; fix docs/specs/10 mode b (docs/pages/README.md:49 via WS-04.4)"
     },
     {
      "id": "WS-01.2",
@@ -658,7 +660,7 @@
       ""
      ],
      "parallel": true,
-     "what": "docs/specs/02-* disposition note for rule 2 citing negative.test.ts:200,314; owner ack recorded (no canonical ID)"
+     "what": "docs/specs/02-* disposition note for rule 2 citing negative.test.ts:200,314; owner acknowledgement requested as OD-23 (engineering never records it)"
     },
     {
      "id": "WS-02.7",
@@ -840,7 +842,7 @@
      "ext": [],
      "unblocked": [
       true,
-      "floor for new formats per OD-09 (default: score>=3 or generated)"
+      "floor for new formats per OD-09 default (WS-18 high tier: generated diceware default or ~80-bit estimate; never score>=3 alone)"
      ],
      "parallel": false,
      "what": "K02 per rows IC; golden keystore v1 vector first (test-vectors/keystore-v1-golden.json, injected salt/IV, test-only); docs/developer/byte-layouts.md:195-198 drift fixed (SEC-15); passphrase tier `high` from WS-18 (OD-09 default)"
@@ -1493,7 +1495,12 @@
    "features": [
     "F-KEY-05"
    ],
-   "contributes_to": [],
+   "contributes_to": [
+    "F-KEY-01",
+    "F-KEY-03",
+    "F-WEB-11",
+    "F-WEB-12"
+   ],
    "findings": [
     "SEC-03",
     "SEC-40"
@@ -1550,7 +1557,7 @@
    "worktree": "../wt/WS-07",
    "branch": "ws/WS-07-step-up",
    "mapping": "WS-07 (F-KEY-05)",
-   "objectives": "No secret export without re-authentication: vault-less sessions refuse master-keystore/raw/archive export (OD-01 default (a)); sweep unchanged but warned; one step-up API that K03-K06 consume.",
+   "objectives": "No new secret export without re-authentication: vault-less sessions refuse the spec-18 exports (K03-K06 encrypted and raw keys, archive) through one step-up API that K03-K06 consume (OD-01 default); the existing encrypted keystore v1 backup and vault creation stay available with disclosure (constraint 4; BLOCKERS OD-01); sweep unchanged but warned.",
    "items": [
     {
      "id": "WS-07.1",
@@ -1577,7 +1584,7 @@
       "fail-closed default; model choice OD-01 later"
      ],
      "parallel": true,
-     "what": "authorizeKeyExport refuses when no vault (today returns undefined, keyVault.ts:257-266); keyVault.test.ts:241 \"no step-up\" pin replaced by refusal tests; vault-less sweep warning + beta disclosure copy (coord en.json); beforeunload guard while backup unverified (SEC-40 part 2)"
+     "what": "keep authorizeKeyExport returning undefined for the keystore v1 backup in vault-less sessions (keyVault.ts:257-266; the only encrypted backup of in-memory keys, BLOCKERS OD-01) and add a disclosure + typed confirmation before that download; keyVault.test.ts:241 pin kept and extended; new spec-18 exports refuse without a vault through WS-07.2 requireStepUp; vault-less sweep warning + beta disclosure copy (coord en.json); beforeunload guard while backup unverified (SEC-40 part 2)"
     },
     {
      "id": "WS-07.2",
@@ -1899,7 +1906,8 @@
     "apps/web/src/lib/transactionOutcome.ts",
     "apps/web/src/lib/scanSpam.ts",
     "apps/web/src/views/Pay.tsx",
-    "apps/web/src/views/Pay*.test.tsx",
+    "apps/web/src/views/Pay.test.tsx",
+    "apps/web/src/views/Pay.*.test.tsx",
     "apps/web/src/views/CreateInvoice.tsx",
     "apps/web/src/views/CreateInvoice*.test.tsx",
     "packages/address-safety/**",
@@ -2009,7 +2017,7 @@
       ""
      ],
      "parallel": true,
-     "what": "payeeTrust decision (ADR note; export internal or wired with tests); owner ack (no canonical ID)"
+     "what": "payeeTrust decision (ADR note; export internal or wired with tests); owner acknowledgement requested as OD-23 (engineering never records it)"
     },
     {
      "id": "WS-10.4",
@@ -2169,7 +2177,7 @@
       ""
      ],
      "parallel": true,
-     "what": "Per-log blockHash cross-check, fail closed"
+     "what": "Records only (~0.1 d; F-PROTO-03 VERIFIED_COMPLETE): cite the existing per-log blockHash check packages/chain-adapters/src/logs.ts:438-460 + logs.test.ts:132-148; add no code"
     },
     {
      "id": "WS-11.2",
@@ -2327,7 +2335,7 @@
    "worktree": "../wt/WS-12",
    "branch": "ws/WS-12-a11y-i18n",
    "mapping": "WS-12",
-   "objectives": "Prove #201/#202 browser fixes hold; axe coverage of every dialog/theme; screen-reader protocol; literal checker (allowlist -> 0 by CP-5, each WS fixes its own files); selector lists only shipped locales (OD-16 default).",
+   "objectives": "Prove #201/#202 browser fixes hold; axe coverage of every dialog/theme; screen-reader protocol; literal checker (allowlist -> 0 by CP-5, each WS fixes its own files); selector stays as today, every listed locale labelled machine-drafted or no catalog (apps/web/src/i18n/LanguagePicker.tsx:19-23); trimming it is the owner's OD-16 choice.",
    "items": [
     {
      "id": "WS-12.1",
@@ -2404,7 +2412,7 @@
      "ext": [],
      "unblocked": [
       true,
-      "OD-16 fail-closed default: selector lists only shipped locales"
+      "OD-16 default: keep the labelled selector (no trim)"
      ],
      "parallel": true,
      "what": ""
@@ -3678,7 +3686,10 @@
    "ws": "WS-18",
    "name": "Passphrase/KDF floor: offline estimator, generated-passphrase default, high tier for new exports (SEC-05)",
    "features": [],
-   "contributes_to": [],
+   "contributes_to": [
+    "F-KEY-02",
+    "F-KEY-03"
+   ],
    "findings": [
     "SEC-05",
     "SEC-41"
@@ -3837,7 +3848,7 @@
    "worktree": "../wt/WS-19",
    "branch": "ws/WS-19-independent-recovery",
    "mapping": "new (G-B)",
-   "objectives": "Clean-room tool (author != WS-03/08/09 author) built from spec 18 text + vectors only: zero @ghostpay/* imports, zero npm deps (node>=22 scrypt/aes-256-gcm + vendored keccak-f[1600] and secp256k1 BigInt arithmetic checked against published vectors); decodes keystore v1, K02, K05, K06; derives scheme-1 stealth keys; proves spend on anvil with pinned Foundry 1.8.5.",
+   "objectives": "Clean-room tool (author != WS-03/08/09 author) built from spec 18 text + vectors only: zero @ghostpay/* imports, zero npm deps (node>=22 scrypt/aes-256-gcm + vendored keccak-f[1600] and secp256k1 BigInt arithmetic checked against published vectors); decodes keystore v1, K02, K05, K06; derives scheme-1 stealth keys and addresses; spend proofs use pinned Foundry 1.8.5 cast/anvil (no hand-rolled ECDSA or transaction signer in the tool).",
    "items": [
     {
      "id": "WS-19.1",
@@ -3967,7 +3978,7 @@
       ""
      ],
      "parallel": true,
-     "what": "K04 raw key -> EIP-55 address == announced; transfer signed by the tool accepted by anvil (Foundry 1.8.5, synthetic keys)"
+     "what": "K04 raw key -> EIP-55 address == announced (computed by the tool); the transfer is signed and sent with pinned Foundry 1.8.5 cast (the independent EVM implementation NEXT_PHASE_QUEUE K04 names) and accepted by anvil; synthetic keys only; the tool implements no transaction signing"
     }
    ]
   },
@@ -4144,7 +4155,7 @@
       ""
      ],
      "parallel": true,
-     "what": "Step-timing summary; single coverage pass; build web once per profile, share dist with e2e + lean-candidate; affected-only lint/typecheck on PRs (scripts/agent/affected.mjs from #204); cost-balanced shards; Mythril on nightly + tag only; lean+full e2e share one install. Required checks unchanged (typescript, contracts)"
+     "what": "Step-timing summary; single coverage pass; build web once per profile, share dist with e2e + lean-candidate; affected-only lint/typecheck only as an extra fast pre-check (the full lint/typecheck still runs on every PR); cost-balanced shards; Mythril and Echidna stay on every PR that touches their paths (contract-analysis.yml:3-12) and on nightly/tag; lean+full e2e share one install. No job, analyzer, test file or required check may stop running on PRs (prompt section 3)"
     },
     {
      "id": "WS-20.4",
@@ -4720,7 +4731,7 @@
       "bundling of the real manifest owner-gated"
      ],
      "parallel": false,
-     "what": "Dual-provider readback reconciles both providers, fails closed on disagreement/unreachable; banner provider count"
+     "what": "When the user has configured a secondary RPC (opt-in; never a built-in default or automatic fallback), readback reconciles both providers and fails closed on disagreement/unreachable; single-provider mode unchanged; banner provider count"
     },
     {
      "id": "WS-24.4",

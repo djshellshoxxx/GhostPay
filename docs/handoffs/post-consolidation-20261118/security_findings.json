@@ -107,7 +107,7 @@
    "F-WEB-16",
    "F-WEB-21"
   ],
-  "remediation": "Owner decision (R-15/K03): e.g. require an encrypted vault or verified backup + its passphrase before any sweep/export on mainnet; or a session unlock secret set at key generation; or WebAuthn user-verification step-up (local, origin-bound, no server). Raw/single-key export (K04) must refuse when no re-auth factor exists.",
+  "remediation": "Owner decision (R-15/K03): e.g. require an encrypted vault or verified backup + its passphrase before any sweep or spec-18 secret export on mainnet (never block creating the encrypted keystore v1 backup or a vault: constraint 4); or a session unlock secret set at key generation; or WebAuthn user-verification step-up (local, origin-bound, no server). Raw/single-key export (K04) must refuse when no re-auth factor exists.",
   "verification": "Unit + Playwright tests: vault-less session -> export/sweep/raw-export refused or re-auth enforced; lock/key change during KDF never publishes secrets.",
   "blocks": [
    "beta-exit",
@@ -313,7 +313,7 @@
   "area": "scan privacy (spec 10 stage 1)",
   "severity": "Medium",
   "status": "CONFIRMED",
-  "title": "'Local proxy' scan transport is unusable: Settings accepts http loopback endpoints but CSP connect-src blocks them in every shipped profile (fails closed)",
+  "title": "'Local proxy' scan transport over http loopback is unusable: Settings accepts http loopback endpoints but CSP connect-src blocks them in every shipped profile (fails closed; only an https loopback proxy would pass)",
   "evidence": [
    "apps/web/src/lib/scanPrivacy.ts:72-98@7a620ff1 (http loopback accepted)",
    "apps/web/index.html:13@7a620ff1; apps/web/public/_headers:5; deploy/nginx/security-headers.conf:3 (connect-src 'self' https: wss:)",
@@ -1425,7 +1425,7 @@
   "affected_features": [
    "F-CTR-07"
   ],
-  "remediation": "Define merge order; re-run CI after the second merge.",
+  "remediation": "Define merge order; re-run CI after the second merge. After the snapshot: #203 merged 06:56:49Z; #204 re-integrated with conflicts resolved as open PR #206 (c487f0fe) - review/merge #206.",
   "verification": "CI green after both merged.",
   "blocks": [],
   "notes": "Coordination: PR #204 conflicts with #203 in ci.yml and CLAUDE.md.",

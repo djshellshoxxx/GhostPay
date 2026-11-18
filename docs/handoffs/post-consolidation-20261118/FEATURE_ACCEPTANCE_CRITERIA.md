@@ -72,7 +72,7 @@ A row is first **implementation-complete (IC)** on its WS branch, then **release
 
 | ID | Method | Pass condition |
 |---|---|---|
-| P-EGRESS | `context.on('request')` collects every request for the whole flow; pattern `$SP/final/evidence/teams/E/scripts/egress_walk.mjs` | request origins subset of {site origin, RPC origins the test configured}; zero requests during secret export |
+| P-EGRESS | `context.on('request')` collects every request for the whole flow; pattern `docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/egress_walk.mjs` | request origins subset of {site origin, RPC origins the test configured}; zero requests during secret export |
 | P-STORE | after the flow `page.evaluate` dumps localStorage, sessionStorage and every IndexedDB store (incl. `ghostpay-encrypted-seller-vault`) | no fixture secret (64-hex scalar, passphrase, seed words) present |
 | P-CLIP | `page.addInitScript` replaces `navigator.clipboard.writeText/write` and `document.execCommand('copy')` with spies | zero calls (or exactly the OD-02-recorded manual copy) |
 | P-URL | `page.url()` + history entries before/after; download filename | unchanged; no secret or key material in URL, fragment or filename |
@@ -84,7 +84,7 @@ A row is first **implementation-complete (IC)** on its WS branch, then **release
 | ID | Method |
 |---|---|
 | V-VEC | committed vectors with provenance (`test-vectors/*.json`); `test-vectors/scheme1.json` + `packages/core-crypto/src/**` frozen; fixed salt/IV only through a test-only injection |
-| V-IND | `tools/independent-recovery` (WS-19: zero `@ghostpay/*` imports, zero npm deps; node>=22 scrypt + aes-256-gcm, vendored keccak-f[1600] + secp256k1) recomputes 100 % of the row's vectors. Reference pattern until it lands: `$SP/final/evidence/teams/D/scripts/indep-vectors.cjs` (elliptic + js-sha3; `vectors=6 ok=6 bad=0` on scheme1.json) and `indep-keystore-recovery.mjs` (node:crypto keystore v1 decode) |
+| V-IND | `tools/independent-recovery` (WS-19: zero `@ghostpay/*` imports, zero npm deps; node>=22 scrypt + aes-256-gcm, vendored keccak-f[1600] + secp256k1) recomputes 100 % of the row's vectors. Reference pattern until it lands: `docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/indep-vectors.cjs` (elliptic + js-sha3; `vectors=6 ok=6 bad=0` on scheme1.json) and `indep-keystore-recovery.mjs` (node:crypto keystore v1 decode) |
 | V-FOUNDRY | pinned Foundry v1.8.5 (CI foundry-toolchain `dba66c27`; locally the GitHub release tarball with recorded sha256, foundry.paradigm.xyz is blocked) `anvil`, `cast wallet address --private-key`, `cast send`; synthetic keys only |
 | V-AN | contracts: `forge test` (490), fuzz/invariant, coverage, Slither 0.11.6, Echidna 2.2.7, Mythril 0.24.8 with OD-03-approved dispositions |
 
@@ -629,7 +629,7 @@ IMPLEMENTED_UNVERIFIED 95/95 · track B-NONGATING · WS-02 (WS-02.6) · CP CP-3 
 
 #### F-WEB-09: Payment history & reconciliation ledger (encrypted IndexedDB, invoice registry)
 
-IMPLEMENTED_UNVERIFIED 100/95 · track B-NONGATING · WS-02 (WS-02.4) · CP CP-1 · decision **repair** · est 0.75-1.1 d · owner —
+VERIFIED_COMPLETE 100/95 (H1 rescoring; WS-02.4 = TB-06 script fix + regression protection only) · track B-NONGATING · WS-02 (WS-02.4) · CP CP-1 · decision **repair** · est 0.75-1.1 d · owner —
 
 > G-A verification (CONFIRMED): apps/web/scripts/test-reconciliation-idb.mjs:71 calls invalidateFrom(100n); packages/ux-vault/src/reconciliation-portable.ts:154 (interface) and :961-965 (impl) require (block, observed, canonicalHash) -> observed.map TypeError (static); no workflow/package script references the harness (grep .github, package.json, scripts). (G-A, @7a620ff1)
 
@@ -766,7 +766,7 @@ PARTIAL 40/20 · track B-EXIT · WS-12 (WS-12.5) · CP CP-3 · decision **implem
 
 #### F-BTC-01: BIP-352 silent payments: keys, addresses, sender derive, receive scan, spend (full-profile web)
 
-IMPLEMENTED_UNVERIFIED 100/80 · track POST-BETA · WS-14 (WS-14.4) · CP CP-6 · decision **defer** · est 2-4 d · owner OD-20, OD-02
+IMPLEMENTED_UNVERIFIED 100/80 (tier full-profile after H1 rescoring) · track POST-BETA · WS-14 (WS-14.4) · CP CP-6 · decision **defer** · est 2-4 d · owner OD-20, OD-02
 
 | Category | IC (implementation-complete) | RQ (release-qualified) |
 |---|---|---|
@@ -1057,7 +1057,7 @@ PARTIAL 80/65 · track POST-BETA · WS-15 (WS-15.2) · CP CP-6 · decision **con
 
 #### F-NET-01: Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP framing + browser fetch transport
 
-IMPLEMENTED_UNVERIFIED 100/80 · track B-START · WS-01 (WS-01.2) · CP CP-1 · decision **repair** · est 1.25-2.25 d · owner —
+PARTIAL 80/65 (H1 rescoring; was IMPLEMENTED_UNVERIFIED 100/80) · track B-START · WS-01 (WS-01.2) · CP CP-1 · decision **repair** · est 1.25-2.25 d · owner —
 
 | Category | IC (implementation-complete) | RQ (release-qualified) |
 |---|---|---|
@@ -1777,10 +1777,11 @@ their requirements are therefore unfinished; each closes through an existing wor
 
 | Row | Held by | Closed by | Implementation-complete criteria | Release-qualified criteria |
 |---|---|---|---|---|
-| F-KEY-01 Seller key generation, hex import, in-memory session | SEC-03 | WS-07.1 (OD-01 default) | Vault-less session: every secret export refuses with an explicit "create an encrypted vault" path; sweep shows the step-up/vault prompt or the documented warning; `keyVault.test.ts` no longer pins "no step-up" (it pins the refusal); unit + Playwright lean/full cover refuse/warn; no secret reaches fetch/URL/log/storage/clipboard | OD-01 recorded; strongest-tier independent review; CP-1 G-FULL green |
+| F-KEY-01 Seller key generation, hex import, in-memory session | SEC-03 | WS-07.1 (OD-01 default) | Vault-less session: every new spec-18 secret export (K03-K06) refuses with an explicit "create an encrypted vault" path, while the existing encrypted keystore v1 backup stays available after a disclosure + typed confirmation (BLOCKERS OD-01; constraint 4); sweep shows the step-up/vault prompt or the documented warning; `keyVault.test.ts` no longer pins "no step-up" (it pins the refusal); unit + Playwright lean/full cover refuse/warn; no secret reaches fetch/URL/log/storage/clipboard | OD-01 recorded; strongest-tier independent review; CP-1 G-FULL green |
 | F-KEY-02 Encrypted browser key vault | SEC-05 | WS-18.1 | Shared passphrase policy (estimator extracted from `keystore-portable.ts:182-216`) with a `high` tier (generated diceware default, ≈80-bit estimate) enforced for new vaults and master/raw exports; name+year probes (`evidence/teams/D/scripts/passphrase-probe.mjs`) rejected; keystore v1 decode byte-compatible (golden vector) | OD-09 recorded for existing flows; independent review |
-| F-WEB-07 Scan privacy modes | SEC-10 | WS-01.1 (TB-02) | Lean: local-proxy mode absent from UI and docs; full/self-host: only the selected loopback origin allowed in `connect-src`; Playwright under the real meta CSP proves the mode works or is absent; `wss://` rejected with a clear message (SEC-19) | Spec 10 acceptance text matches behaviour; review |
-| F-WEB-11 Direct sweep | SEC-03 | WS-07.1 | As F-KEY-01 for the sweep path (`Sweep.tsx:150-154`): vault-less sweep requires the OD-01 step-up or explicit vault prompt; e2e refuse/warn; sweep on vault sessions unchanged | OD-01 recorded; review |
+| F-WEB-07 Scan privacy modes | SEC-10 | WS-01.1 (TB-02) | Lean: local-proxy mode absent from UI and docs; full/self-host: mode removed, or `connect-src` gains only `http://127.0.0.1:*`, `http://localhost:*`, `http://[::1]:*` (BLOCKERS TB-02); Playwright under the real meta CSP proves the mode works or is absent; `wss://` rejected with a clear message (SEC-19) | Spec 10 acceptance text matches behaviour; review |
+| F-KEY-03 Keystore v1 backup/restore + verified-backup gate (hold added by the H1 rescoring) | SEC-05, SEC-03 | WS-18.1 + WS-07.1 (WS-02.7 harness) | keystore export uses the WS-18 policy (`SellerKeys.tsx:207`); vault-less export keeps working after disclosure + typed confirmation (`SellerKeys.tsx:221-224`, OD-01 default); R1-R3 seller-vault harness green | OD-01 / OD-09 recorded; review |
+| F-WEB-11 Direct sweep | SEC-03 | WS-07.1 | As F-KEY-01 for the sweep path (`Sweep.tsx:150-154`): vault-less sweep stays available with the OD-01 warning and a vault-creation offer (default: sweep unchanged but warned); e2e covers the warning; sweep on vault sessions unchanged | OD-01 recorded; review |
 | F-WEB-12 Relayer-assisted sweep | SEC-03 | WS-07.1 | Same rule as F-WEB-11; permit-refusal messages unchanged; relayer client stays opt-in | OD-01 recorded; review |
 
 **Correction — F-PROTO-03 is VERIFIED_COMPLETE.** Its only missing requirement (per-log canonical block-hash cross-check,

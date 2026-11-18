@@ -4808,9 +4808,9 @@
     {
      "req": "Transports direct / tor-browser / local-proxy (loopback only) with honest copy (page cannot verify Tor)",
      "weight": 3,
-     "implemented": "yes",
-     "verified": "yes",
-     "evidence": "scanPrivacy.ts:10-11,72-95; scanPrivacy.test 32"
+     "implemented": "half",
+     "verified": "half",
+     "evidence": "H1: http-loopback local proxy accepted (scanPrivacy.ts:72-98) but blocked by shipped CSP connect-src 'self' https: wss: (apps/web/index.html:13 @7a620ff1; own lean build); SEC-10, TB-02"
     },
     {
      "req": "requireProxy blocks scan instead of direct fallback (fail closed)",
@@ -4875,28 +4875,29 @@
    ],
    "blockers": [],
    "external_acceptance": "Real Tor Browser / local SOCKS-forwarder route and onion RPC unqualified",
-   "implementation_pct": 100,
-   "verification_pct": 100,
+   "implementation_pct": 90,
+   "verification_pct": 90,
    "status": "IMPLEMENTED_UNVERIFIED",
    "effort": {
     "size": "S",
     "engineer_days": [
-     0,
-     0
+     0.5,
+     2
     ]
    },
-   "strategy": "none",
-   "strategy_detail": "Complete in code; only external route acceptance.",
+   "strategy": "repair",
+   "strategy_detail": "Fix TB-02: allow http loopback in connect-src for the full/self-host profile (or remove local-proxy from lean UI/docs) and add an e2e under the real CSP. Effort is an H1 ESTIMATE.",
    "evidence": [
     "CI run 44242366118 @7a620ff1 success (gh api): ts-test(web) 197 files/2749 pass/1 skip; e2e full 78 pass/1 skip; e2e lean 66 pass/3 skip",
-    "local vitest @7a620ff1 (no coverage): 146 apps/web files, 2273 pass/0 fail/12 skip (anvil-only), exit 0, 412 s"
+    "local vitest @7a620ff1 (no coverage): 146 apps/web files, 2273 pass/0 fail/12 skip (anvil-only), exit 0, 412 s",
+    "coordinator override: H1: http-loopback local proxy accepted (scanPrivacy.ts:72-98) but blocked by shipped CSP connect-src 'self' https: wss: (apps/web/index.html:13 @7a620ff1; own lean build); SEC-10, TB-02"
    ],
    "unverified": [
     "private-required covers scan/sweep only; Pay/Create/Registry/Home manifest checks use Settings RPC directly (disclosed rows; Team D/E to confirm wording)"
    ],
-   "status_hold": "SEC-10: local-proxy scan transport blocked by the app's own CSP while UI/docs offer it",
    "requirement_weight_total": 17.0,
-   "source_team_file": "B1/features_web.json"
+   "source_team_file": "B1/features_web.json",
+   "status_reported_by_team": "VERIFIED_COMPLETE"
   },
   {
    "id": "F-WEB-08",
@@ -5135,7 +5136,7 @@
    "external_acceptance": "none beyond browser/device matrix",
    "implementation_pct": 100,
    "verification_pct": 95,
-   "status": "IMPLEMENTED_UNVERIFIED",
+   "status": "VERIFIED_COMPLETE",
    "effort": {
     "size": "S",
     "engineer_days": [
@@ -5153,8 +5154,7 @@
    ],
    "unverified": [],
    "requirement_weight_total": 18.0,
-   "source_team_file": "B1/features_web.json",
-   "status_reported_by_team": "VERIFIED_COMPLETE"
+   "source_team_file": "B1/features_web.json"
   },
   {
    "id": "F-WEB-10",
@@ -7349,9 +7349,9 @@
     "gh api run 44239860965 conclusion=failure, job 'ts-test (web)'"
    ],
    "unverified": [],
+   "status_hold": "SEC-05, SEC-03: keystore export passphrase floor (SellerKeys.tsx:207) and vault-less export without step-up (SellerKeys.tsx:221-224)",
    "requirement_weight_total": 19.0,
-   "source_team_file": "B1/features_web.json",
-   "status_reported_by_team": "VERIFIED_COMPLETE"
+   "source_team_file": "B1/features_web.json"
   },
   {
    "id": "F-KEY-04",
@@ -9353,7 +9353,7 @@
    "id": "F-MER-05",
    "name": "Web merchant profile, templates, printable bill, reconciliation UI (cross-ref B1b)",
    "area": "merchant",
-   "tier": "beta-core",
+   "tier": "full-profile",
    "spec_refs": [
     "docs/specs/14-embed-merchant-profile.md"
    ],
@@ -12685,7 +12685,7 @@
    "id": "F-BTC-01",
    "name": "BIP-352 silent payments: keys, addresses, sender derive, receive scan, spend (full-profile web)",
    "area": "btc",
-   "tier": "beta-supporting",
+   "tier": "full-profile",
    "spec_refs": [
     "docs/specs/11-bip352-wallet-hardening.md",
     "docs/specs/12-bip352-light-client-scanning.md",
@@ -12791,7 +12791,7 @@
    "id": "F-BTC-02",
    "name": "BTC header-chain validation, persistence, scan anchoring (A4 PR #74)",
    "area": "btc",
-   "tier": "beta-supporting",
+   "tier": "full-profile",
    "spec_refs": [
     "docs/specs/12-bip352-light-client-scanning.md"
    ],
@@ -12864,8 +12864,8 @@
      3
     ]
    },
-   "strategy": "consolidate",
-   "strategy_detail": "headersync/headerchain/merkleProof/witness in btc-silent-payments; web headers.ts persists + anchors scans. Verify PR #74 equivalent; PoW/difficulty checks real but no real-network sync run.",
+   "strategy": "none",
+   "strategy_detail": "Complete by rubric (4/4 requirements implemented and tested). Real Esplora/mainnet sync stays external acceptance; PR #74 delta stays under unverified.",
    "evidence": [
     "local vitest btc-silent-payments @7a620ff1: files 32 passed (32); tests 559 passed (559); exit=0"
    ],
@@ -14502,6 +14502,13 @@
      "implemented": "yes",
      "verified": "half",
      "evidence": "copy says user asserts"
+    },
+    {
+     "req": "local-proxy profile usable from the shipped browser builds",
+     "weight": 2,
+     "implemented": "no",
+     "verified": "no",
+     "evidence": "H1: CSP connect-src blocks http loopback in every shipped profile (apps/web/index.html:13, public/_headers:5, deploy/nginx/security-headers.conf:3 @7a620ff1); SEC-10, TB-02"
     }
    ],
    "verified_working": [],
@@ -14512,9 +14519,9 @@
    "dependencies": [],
    "blockers": [],
    "external_acceptance": "Real Tor/onion route not exercised.",
-   "implementation_pct": 100,
-   "verification_pct": 80,
-   "status": "IMPLEMENTED_UNVERIFIED",
+   "implementation_pct": 80,
+   "verification_pct": 65,
+   "status": "PARTIAL",
    "effort": {
     "size": "M",
     "engineer_days": [
@@ -14528,9 +14535,8 @@
     "local vitest net-transport @7a620ff1: files 4 passed (4); tests 149 passed (149); exit=0"
    ],
    "unverified": [],
-   "requirement_weight_total": 9.0,
-   "source_team_file": "B3/features.json",
-   "status_reported_by_team": "PARTIAL"
+   "requirement_weight_total": 11.0,
+   "source_team_file": "B3/features.json"
   },
   {
    "id": "F-NET-02",
@@ -14550,13 +14556,13 @@
      "ref": "origin/chatgpt/zero-codex/onion-canonical-host-20261111",
      "sha": "72dde82d",
      "pr": "122",
-     "note": "ancestor of candidate, 0 unique patches"
+     "note": "NOT an ancestor of 7a620ff1: 0 unique / 2 patch-equivalent commits (git cherry), class C"
     },
     {
-     "ref": "PR #134 port onto beta (open)",
-     "sha": "",
+     "ref": "origin/chatgpt/ghostpay-onion-canonical-port-20261112",
+     "sha": "8277879e",
      "pr": "134",
-     "note": ""
+     "note": "port of #122; ancestor of 7a620ff1"
     }
    ],
    "requirements": [
@@ -14594,7 +14600,7 @@
     ]
    },
    "strategy": "none",
-   "strategy_detail": "onion.ts v3 checksum + url.ts; origin/chatgpt/zero-codex/onion-canonical-host-20261111 (72dde82d) is ancestor of cand with 0 unique patches (census) => landed. Verify tests pass with net-transport run.",
+   "strategy_detail": "onion.ts v3 checksum + url.ts. #122 (72dde82d) is patch-equivalent to the candidate; its port #134 (8277879e) is an ancestor => landed. net-transport 149/149 pass.",
    "evidence": [
     "local vitest net-transport @7a620ff1: files 4 passed (4); tests 149 passed (149); exit=0"
    ],

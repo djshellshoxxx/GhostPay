@@ -4,6 +4,8 @@
 
 Audit date 2026-11-18. Read-only. Tags: VERIFIED (command/code at SHA) | INFERRED | UNVERIFIED.
 
+> **After this snapshot (H1, 07:10Z):** PR #203 was merged at 06:56:49Z (`main` = `5467c158`, tree == `71abc7e5`), so A21 is done; GitHub then auto-marked 26 contained PRs merged (A33 partly overtaken); #204 was re-integrated onto the consolidated tree as open PR #206 (`c487f0fe`, A26). Rows below describe the snapshot.
+
 ## 1 Scope & baseline SHAs
 
 | Item | SHA / value |
@@ -29,9 +31,9 @@ Scope: reconstruct prior consolidation plan, classify delivery, delta after cens
 | tasks/plan.md | ACTIVE_WORK.md lane table (7 lanes: reimport, tagarchive, specs, cigates, echidna, mythril-expiry, mythril-factory) + RETIREMENT_PLAN "Phase E of the gameplan" + NEXT_PHASE_QUEUE. "Gameplan" itself is not in tree. |
 | tasks/todo.md | CANDIDATE_INTEGRATION merge sequence; REVIEW_FINDINGS R-01..R-17, FR-*; PROMOTION_PACKET blockers/next actions |
 | decisions.md | CANDIDATE_INTEGRATION "Decisions taken during integration"; spec 18 "owner-approved next-phase portability scope" |
-| evidence/branch_census.json | BRANCH_DISPOSITION_LEDGER (215-ref table) + my `$SP/evidence/branch_census_current.json`. Ledger-named data files (`branch_census_20261118.json/.tsv`, `census_20261118.py`, `refs_now.tsv`, `census_final_addendum.json`) NOT in tree |
+| evidence/branch_census.json | BRANCH_DISPOSITION_LEDGER (215-ref table) + the full-history census `evidence/census/branch_census_current.json`. Ledger-named data files (`branch_census_20261118.json/.tsv`, `census_20261118.py`, `refs_now.tsv`, `census_final_addendum.json`) NOT in tree |
 | outstanding_graph.json | RETIREMENT_PLAN + ledger category sections (49 outstanding refs) |
-| open_prs_snapshot.json | ledger PR metadata line (202 PRs: 145 open/25 merged/32 closed); `$SP/evidence/open_prs.json` (first 100 open only) |
+| open_prs_snapshot.json | ledger PR metadata line (202 PRs: 145 open/25 merged/32 closed); `evidence/prs/open_prs.json` (first 100 open only) |
 | feature_/pages_ci_/security_findings.md | REVIEW_FINDINGS, VALIDATION_MATRIX (CI table by head), PROMOTION_PACKET analyzer table |
 | team_j_unified.md | `docs/handoffs/agents/TEAM_J_UNIFIED.md` present (different date) |
 
@@ -61,7 +63,7 @@ Ancestry check (VERIFIED, `merge-base --is-ancestor <head> 7a620ff1`): #187 beb5
 | A10 | Exercise release gate on a real signed tag run | VALIDATION_MATRIX 'Not run' | NOT STARTED | - | Packet/matrix state not run; no v* tag in refs (not exhaustively checked). Before/after: Needs owner-signed tag, trust root empty by design. |
 | A11 | Mythril SWC-116 x3 individual dispositions (R-08) | REVIEW_FINDINGS R-08; CANDIDATE_INTEGRATION | COMPLETED | `d4171c7b`, `1fa4179f`, `3f10fcaf` | VERIFIED files docs/audits/mythril-14290880802-expiry-dispositions.md (206 lines) and packages/contracts/test/MythrilExpiryDispositions.t.sol present. Test pass counts (31) UNVERIFIED (no forge here). Before/after: Disposition = documentation + tests; no suppression. |
 | A12 | Mythril PolicyAccountFactory x8 dispositions (R-10) | REVIEW_FINDINGS R-10 | COMPLETED | `2d54ab60`, `afbce0a6`, `1e1121b3` | VERIFIED docs/audits/mythril-14290880802-factory-dispositions.md (322 lines), MythrilFactoryDispositions.t.sol present; docs/audits/26-contract-security-review-2026-11.md modified (M-03 partially closed). 33 tests UNVERIFIED (no forge).  |
-| A13 | Make Mythril gate green / approve per-finding disposition mechanism | PROMOTION_PACKET blocker 2 | BLOCKED | - | Mythril on d91ae16a failure, 10 records (run 44231986631). On 7a620ff1 Mythril job 134593129954 was in_progress at query time. Before/after: Owner decision: finding-specific source-matched disposition or keep releases blocked. |
+| A13 | Make Mythril gate green / approve per-finding disposition mechanism | PROMOTION_PACKET blocker 2 | BLOCKED | - | Mythril on d91ae16a failure, 10 records (run 44231986631). On 7a620ff1 Mythril job 134593129954 concluded failure (exactly the 11 dispositioned records per PROMOTION_PACKET @71abc7e5). Before/after: Owner decision: finding-specific source-matched disposition or keep releases blocked. |
 | A14 | Echidna exec_native/exec_token canaries reachable within 300k budget (R-12) | REVIEW_FINDINGS R-12 | COMPLETED | `292b15b3`, `81aa5e68`, `cc9a8d74`, `c0878314` | VERIFIED harness change: EchidnaPolicy.sol +35/-3 , EchidnaPolicyReachability.t.sol +216; contract src/lib/script diff beb525dd..7a620ff1 empty. CI: Echidna success on d91ae16a (44231986631) and on 7a620ff1 (run 44242366379, job echidna 134593129480 success). Before/after: before: Echidna red 43981233671 / 44226410225 (canary). after: green x2. |
 | A15 | Contextual-help blur deferral (FR-M1) + hover target | REVIEW_FINDINGS FR-M1; CANDIDATE_INTEGRATION | COMPLETED | `4a3d47d8`, `86b6e9e5`, `af32d7f7` | VERIFIED files changed ContextHelp.tsx/.test.tsx, app.css, contextual-help.spec.ts. Behavior not re-run.  |
 | A16 | Blocked keystore download no longer leaves form busy (FR-L3) | REVIEW_FINDINGS FR-L3 | COMPLETED | `cfb482f9`, `7a620ff1` | VERIFIED SellerKeys.tsx:228-236 try/catch around downloadText, setBusy(false), fail(error), backup unrecorded. Test later hardened in 7a620ff1 after CI flake (run 44239860965 failed on ceea9fdd). Before/after: Flake fix is test-only but not docs-only. |
@@ -153,7 +155,7 @@ CodeQL on 7a620ff1 not checked: UNVERIFIED.
 - Root cause of the #201/#202 lost click and browser regressions: no browser re-run (could run Playwright; not done).
 - Branch protection, rulesets, environment reviewers, CodeQL/Dependabot/secret-scan inventories: no admin API access.
 - Release gate behavior on a real tag: never executed.
-- Mythril result on `7a620ff1`: run in progress.
+- Mythril per-record output on `7a620ff1`: job 134593129954 concluded failure; the records are not readable here (artifact 403); per PROMOTION_PACKET @`71abc7e5` it reports exactly the 11 dispositioned records.
 - Independent AI reviews (R-05, final combined review): reports only.
 - PRs outside first 100 open, closed/merged PR changes after census.
 - Whether Mythril R8 (SWC-113 PC 1781) is timeout dependent.

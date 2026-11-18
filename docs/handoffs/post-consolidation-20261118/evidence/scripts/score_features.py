@@ -18,6 +18,18 @@ REQFIX = {}
 for c in OVR.get("requirement_corrections", []):
     REQFIX.setdefault(c["id"], []).append(c)
 HOLDS = {h["id"]: h for h in OVR.get("security_holds", [])}
+# H1 additions: tier/field corrections, requirement additions, severity-aware VC rule (rubric: no OPEN Medium+ defect).
+import re
+TIERFIX = {c["id"]: c for c in OVR.get("tier_corrections", [])}
+FIELDFIX = {c["id"]: c for c in OVR.get("field_corrections", [])}
+REQADD = {}
+for c in OVR.get("requirement_additions", []):
+    REQADD.setdefault(c["id"], []).append(c)
+_MEDPLUS = re.compile(r"\s*(Critical|High|Medium)\b")
+_SEV = re.compile(r"\s*(Critical|High|Medium|Low|Info)\b")
+def open_medium_plus(defects):
+    """Defects that block VERIFIED_COMPLETE: Medium+ or of unknown severity; entries marked fixed/closed do not block."""
+    return [d for d in defects or [] if (_MEDPLUS.match(str(d)) or not _SEV.match(str(d))) and not re.search(r"\b(fixed|resolved|closed)\b", str(d), re.I)]
 rows, issues, seen = [], [], {}
 for path in inputs:
     data = json.load(open(path))
@@ -33,6 +45,16 @@ for path in inputs:
             issues.append(f"duplicate id {fid} in {path} (first in {seen[fid]})")
             continue
         seen[fid] = path
+        for c in REQADD.get(fid, []):
+            f.setdefault("requirements", []).append({k: c[k] for k in ("req", "weight", "implemented", "verified", "evidence")})
+            issues.append(f"{fid}: requirement '{c['req'][:60]}' added by override ({c['evidence'][:80]})")
+        if fid in TIERFIX and f.get("tier") != TIERFIX[fid]["tier"]:
+            issues.append(f"{fid}: tier {f.get('tier')} corrected to {TIERFIX[fid]['tier']} by override ({TIERFIX[fid]['evidence'][:80]})")
+            f["tier"] = TIERFIX[fid]["tier"]
+        if fid in FIELDFIX:
+            for k, v in FIELDFIX[fid]["fields"].items():
+                f[k] = v
+            issues.append(f"{fid}: fields {sorted(FIELDFIX[fid]['fields'])} corrected by override")
         reqs = f.get("requirements") or []
         for c in REQFIX.get(fid, []):
             hit = [r for r in reqs if str(r.get("req", "")).startswith(c["req_prefix"])]
@@ -71,7 +93,7 @@ for path in inputs:
         if st not in STATUSES:
             issues.append(f"{fid}: unknown status {st}")
         elif ci is not None and st not in ("EXPERIMENTAL", "BLOCKED"):
-            exp = ("VERIFIED_COMPLETE" if ci == 100 and cv >= 90 and not f.get("confirmed_defects") else
+            exp = ("VERIFIED_COMPLETE" if ci == 100 and cv >= 90 and not open_medium_plus(f.get("confirmed_defects")) else
                    "IMPLEMENTED_UNVERIFIED" if ci >= 90 else
                    "SPEC_ONLY" if ci < 10 and f.get("spec_refs") else
                    "NOT_STARTED" if ci < 10 else "PARTIAL")

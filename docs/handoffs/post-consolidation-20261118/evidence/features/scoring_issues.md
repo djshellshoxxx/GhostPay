@@ -24,25 +24,32 @@
 - F-DEP-05: reported verif 80 != computed 75 (computed used)
 - F-WEB-04: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
 - F-WEB-06: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
-- F-WEB-07: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-10 (local-proxy scan transport blocked by the app's own CSP while UI/docs offer it)
-- F-WEB-09: status VERIFIED_COMPLETE normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-07: fields ['effort', 'strategy', 'strategy_detail'] corrected by override
+- F-WEB-07: requirement 'Transports direct / tor-browser / local-proxy' corrected by override (H1: http-loopback local proxy accepted (scanPrivacy.ts:72-98) but blocked by shi)
+- F-WEB-07: reported impl 100 != computed 90 (computed used)
+- F-WEB-07: reported verif 100 != computed 90 (computed used)
+- F-WEB-07: status VERIFIED_COMPLETE normalized to rubric-implied IMPLEMENTED_UNVERIFIED
 - F-WEB-11: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (direct sweep signs without step-up in vault-less sessions)
 - F-WEB-12: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (relayer-assisted sweep signs without step-up in vault-less sessions)
 - F-WEB-18: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
 - F-KEY-01: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-03 (vault-less in-memory session has no step-up before secret export/sweep)
 - F-KEY-02: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-05 (vault/keystore passphrase floor accepts name+year passphrases)
-- F-KEY-03: status VERIFIED_COMPLETE normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-03: VERIFIED_COMPLETE held at IMPLEMENTED_UNVERIFIED by open SEC-05, SEC-03 (keystore export passphrase floor (SellerKeys.tsx:207) and vault-less export without step-up (SellerKeys.tsx:221-224))
 - F-KEY-05: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
 - F-KEY-13: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
 - F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Encrypted profiles/contacts (PBKDF2 600k + AES-256-GCM, AAD '
 - F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Backup export/import merge/replace with report'
 - F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Lookalike/confusable findings on contacts'
 - F-KEY-14: reported verif 65 != computed 30 (computed used)
+- F-MER-05: tier beta-core corrected to full-profile by override (H1: MerchantProfilePanel/MerchantTemplateIssuer/merchantIdentity/merchantTemplat)
 - F-INT-03: status SPEC_ONLY normalized to rubric-implied PARTIAL
 - F-RLY-01: requirement verified > implemented (verification capped at implementation): 'Price feeds: operator constants, not oracles (DEVIATIONS 2)'
 - F-RLY-01: reported verif 90 != computed 80 (computed used)
 - F-A11Y-03: status NOT_STARTED normalized to rubric-implied PARTIAL
+- F-BTC-01: tier beta-supporting corrected to full-profile by override (H1: BtcView only in App.tsx ORDER (full); AppLean renders CORE_ORDER (AppShell.t)
 - F-BTC-01: reported impl 90 != computed 100 (computed used)
+- F-BTC-02: tier beta-supporting corrected to full-profile by override (H1: header chain reachable only from the full-profile BTC view)
+- F-BTC-02: fields ['strategy', 'strategy_detail'] corrected by override
 - F-BTC-02: reported impl 90 != computed 100 (computed used)
 - F-BTC-02: reported verif 75 != computed 100 (computed used)
 - F-BTC-02: status IMPLEMENTED_UNVERIFIED normalized to rubric-implied VERIFIED_COMPLETE
@@ -89,9 +96,9 @@
 - F-PRIV-04: reported verif 75 != computed 60 (computed used)
 - F-PRIV-05: reported impl 70 != computed 80 (computed used)
 - F-PRIV-05: reported verif 75 != computed 60 (computed used)
-- F-NET-01: reported impl 70 != computed 100 (computed used)
-- F-NET-01: reported verif 65 != computed 80 (computed used)
-- F-NET-01: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-NET-01: requirement 'local-proxy profile usable from the shipped browser builds' added by override (H1: CSP connect-src blocks http loopback in every shipped profile (apps/web/inde)
+- F-NET-01: reported impl 70 != computed 80 (computed used)
+- F-NET-02: fields ['related_branches', 'strategy_detail'] corrected by override
 - F-NET-02: reported impl 95 != computed 100 (computed used)
 - F-NET-02: reported verif 85 != computed 100 (computed used)
 - F-NET-02: status IMPLEMENTED_UNVERIFIED normalized to rubric-implied VERIFIED_COMPLETE

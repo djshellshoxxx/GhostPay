@@ -9,7 +9,9 @@ Prepared 2026-11-18 by the post-consolidation audit session. Package:
 Paste this whole file as the first message of a fresh Claude Code session on `djshellshoxxx/GhostPay`.
 It is self-contained. The audit package it came from is on branch `nodata/zealous-hopper-lr0nxe` under
 `docs/handoffs/post-consolidation-20261118/` (fetch it: `git fetch origin nodata/zealous-hopper-lr0nxe` then
-`git show FETCH_HEAD:docs/handoffs/post-consolidation-20261118/<file>`). Where this prompt and a package file differ,
+`git show FETCH_HEAD:docs/handoffs/post-consolidation-20261118/<file>`; whole package: `mkdir -p "$TMPDIR/pkg" && git archive
+FETCH_HEAD docs/handoffs/post-consolidation-20261118 | tar -x -C "$TMPDIR/pkg"`; once PR #205 is merged, read the same path on
+`main`). Where this prompt and a package file differ,
 re-verify against the repository; the repository wins over both.
 
 ## 1. Role and configuration
@@ -28,22 +30,36 @@ candidate already contains almost all historical work, so reuse means the in-tre
 Independently verify every milestone, integrate qualified changes into your integration branch, and **continue
 through the subsequent waves without stopping after one milestone**. Implement the decision-independent parts of
 owner-gated items behind fail-closed defaults (section 10). Experimental and future rows are not promoted (section
-7.4). You are done only when section 17 holds.
+7.4): they count as owner-gated (OD-20/OD-21 scope; each future row needs the owner to schedule it, NEXT_PHASE_QUEUE
+D07), not as technically unblocked. Rows whose chosen strategy is `defer`
+while their item is unblocked (F-CLI-06, F-DOC-01, F-KEY-13, F-OPS-03, F-RLY-04, F-WEB-04, F-WEB-06) and the owner-ack rows
+(F-WEB-04, F-WEB-06, F-WEB-26, F-CLI-06) are not complete when their item lands: implement every missing requirement
+(`feature_completion_matrix.json` `missing_requirements`) that is technically unblocked and inside constraints 1-5; a
+limitation a constraint requires (F-CLI-06 refund execute would need hosted signing) is documented, never built. Accepting a
+limitation is owner decision OD-23 (section 10); engineering never writes "owner ack recorded". You are done only when
+section 17 holds.
 
 ## 3. Authorization boundary
 AUTHORIZED without further approval:
 - Create local worktrees and local task branches; implement code, tests, docs and CI changes inside the scope below.
 - Commit to, and push, ONLY the session's designated development branch (the one named in this session's system
-  instructions); use it as the integration branch. Open ONE draft PR for it (see section 14), keep it updated,
+  instructions; if none is named, ask the owner and push nothing); use it as the integration branch. Open ONE draft PR for it (see section 14), keep it updated,
   subscribe to its activity, fix CI failures on it (section 14).
 - Run any local build, test, analyzer, fuzzing or devnet (anvil, regtest) using synthetic keys only.
 - Spawn sub-agents and worktrees per section 12.
 NOT AUTHORIZED (stop and record in the handoff as an owner action):
-- Merging into `main` or any protected/shared branch; marking PRs ready-for-review on behalf of the owner is allowed
-  only when every gate in section 13 passes, and merging is never allowed.
+- Merging into `main` or any protected/shared branch (never allowed). Marking any PR other than your own draft
+  ready-for-review (readiness and merging of #203/#204/#206 and other sessions' PRs are owner actions, OA-02); your own PR
+  may be marked ready only when every gate of sections 13 and 17 passes.
+- Any other GitHub write: comments, reviews, approvals, labels or pushes on other PRs/branches, issues, releases,
+  environment approvals; dispatching `pages.yml` with `deploy=true`, `release.yml`, `ghostpay-codex-cloud.yml` or
+  `ghostpay-parallel-review.yml`. Allowed: `workflow_dispatch` of test-only workflows (`ci.yml`, `hosting-kit.yml`,
+  `cli-operator.yml`, `integration.yml`, `beta-acceptance.yml`, `nightly.yml`) on your own designated branch when path
+  filters skipped them (CP-7 needs their run ids).
 - Public deployment (GitHub Pages deploy, Wiki publication, onion publication), releases, tags, signing with real
   keys, broadcasting to any public network (testnet or mainnet) with real or owner keys.
-- Deleting, force-pushing or rewriting any branch other than your own designated branch; closing other PRs.
+- Deleting, force-pushing or rewriting any branch; your designated branch may be reset once, before its first push
+  (section 5 step 3), and is never rewritten afterwards (bad merge: `git revert -m 1`, PLAN 9.9); closing other PRs.
 - Adding custody, admin withdrawal, hosted signing, server key management, mandatory backends, telemetry or
   analytics; weakening, skipping or deleting any test or security gate; suppressing analyzer findings.
 - Deciding any item in section 10 (owner decisions/actions) — implement only the decision-independent parts and the listed default.
@@ -53,26 +69,47 @@ NOT AUTHORIZED (stop and record in the handoff as an owner action):
 | Item | Value (verify at start) |
 |---|---|
 | Repository | `djshellshoxxx/GhostPay` (default branch `main`) |
-| `main` | `cfaebeeae22f292cb0bb3074619b2603cb738367` (merge #189, 2026-11-16); **unprotected** per prior session (API 404 "Branch not protected") |
-| Consolidated candidate | PR [#203](https://github.com/djshellshoxxx/GhostPay/pull/203), branch `nodata/wizardly-allen-qwol6u`; product source **`7a620ff19ecf4e43ec568896c34188f5b2dcd3fc`** (tree `594c9f6a`), 1,484 commits ahead of `main` (fast-forwardable); PR head `71abc7e55c25d45b206ac47e5ddd24e072805710` adds documentation only |
+| `main` | `5467c158069c5bab264b6a653ac56e89e13f3e13` = the owner's merge commit of PR #203 (2026-11-18T06:56:49Z; parents `cfaebeea` + `71abc7e5`; tree `f17da552` == tree of `71abc7e5`, so product source == `7a620ff1`; VERIFIED `git ls-remote` 07:55Z). Before the merge: `cfaebeeae22f292cb0bb3074619b2603cb738367` (merge #189). Protection still UNVERIFIED (prior session: API 404 "Branch not protected") |
+| Consolidated candidate | PR [#203](https://github.com/djshellshoxxx/GhostPay/pull/203), branch `nodata/wizardly-allen-qwol6u`; product source **`7a620ff19ecf4e43ec568896c34188f5b2dcd3fc`** (tree `594c9f6a`), 1,484 commits ahead of the old `main` `cfaebeea`; PR head `71abc7e55c25d45b206ac47e5ddd24e072805710` adds documentation only; **merged into `main` 2026-11-18T06:56:49Z** as merge commit `5467c158` (not squash) |
 | CI on `7a620ff1` | CI 44242366118 **24/24 success** (web 2,749 passed / 1 skipped; e2e full 78 passed / 1 skipped; lean 66 / 3 skipped); Pages, Beta acceptance, Integration, Hosting kit, CLI operator, CodeQL success; Contract analysis 44242366379: Echidna success (13 properties, 11 canaries), **Mythril red by design** (11 dispositioned records) |
 | Local audit re-run on `7a620ff1` | typecheck/lint exit 0; `npm test` 0 failures (~12k passed, 78 skipped); lean/full builds OK; Playwright mocked e2e lean 66/3, full 78/1; `forge test` contracts 490/0, pool 86/0, payer-hiding 109/0; npm audit prod 0; 111 actions pinned; release tarball + SBOM reproducible |
-| Other open work | PR [#204](https://github.com/djshellshoxxx/GhostPay/pull/204) `nodata/eager-babbage-0w6sf6` @ `2693b08e` (agent tooling; conflicts with #203 only in `.github/workflows/ci.yml` (1 line) and `CLAUDE.md` (add/add)); ChatGPT `chatgpt/zero-codex/*` rotation keeps pushing docs-only commits (#139 `7af4b5ff`, #140 `400e20f1`, #153 `30f1604d` at audit time) |
-| Branches / PRs | 217 remote heads at audit time (+ `nodata/zealous-hopper-lr0nxe` for this package); 169 contained in `7a620ff1`, 48 not; 202 PRs (145 open) + #205 |
+| Other open work | PR [#204](https://github.com/djshellshoxxx/GhostPay/pull/204) `nodata/eager-babbage-0w6sf6` @ `2693b08e` (agent tooling; conflicts with #203 only in `.github/workflows/ci.yml` (1 line) and `CLAUDE.md` (add/add)); ChatGPT `chatgpt/zero-codex/*` rotation keeps pushing docs-only commits (#139 `7af4b5ff`, #140 `400e20f1`, #153 `30f1604d` at audit time). Opened after the snapshot (open at 07:55Z): #206 (#204 re-integrated onto main, conflicts resolved), #207/#210 Dependabot, #208 another execution prompt, #209/#211 completion runs, #212 security/release reconciliation, #213 spec 18 [WIP], #214-#216 docs rotation, #217 DeployPolicy N1 guard: see section 5 step 2a |
+| Branches / PRs | 217 remote heads at audit time (+ `nodata/zealous-hopper-lr0nxe` for this package); 169 contained in `7a620ff1`, 48 not; 202 PRs (145 open) + #205 at audit time; #206-#217 opened 2026-11-18 06:57-07:53Z |
 | Unified foundation | PR [#187](https://github.com/djshellshoxxx/GhostPay/pull/187) `beb525dddcca103de9eda447b55cddf7ee2f428c` (tree `36177d29`); contracts `src/lib/script` unchanged since |
 
 Drift checks: (1) `git merge-base --is-ancestor 7a620ff19ecf4e43ec568896c34188f5b2dcd3fc <START_SHA>`; (2)
 `git diff --stat 7a620ff1 <START_SHA> -- . ':!docs'` empty, or review every non-doc change before relying on section 7;
 (3) CI conclusions on START_SHA match the row above; (4) re-run
-`python3 -I docs/handoffs/post-consolidation-20261118/evidence/scripts/branch_census.py` (needs the package files
-from `nodata/zealous-hopper-lr0nxe`) if you will act on any branch row. The clone must not be shallow
+`git show origin/nodata/zealous-hopper-lr0nxe:docs/handoffs/post-consolidation-20261118/evidence/scripts/branch_census.py >
+"$TMPDIR/branch_census.py" && python3 -I "$TMPDIR/branch_census.py" "$PWD" <START_SHA> "$(git rev-parse origin/main)"
+"$TMPDIR/census.json"` (usage `<repo> <candidate_sha> <main_sha> <out_json>`; needs `refs/remotes/pr/*` from section 5 step 1) if you will act on any branch row. The clone must not be shallow
 (`git rev-parse --is-shallow-repository` → `false`; else `git fetch --unshallow`): a shallow clone misreported ancestry in this audit.
 
 ## 5. Start procedure (mandatory, before any edit)
-1. `git fetch --all --prune` and `git fetch origin '+refs/pull/*/head:refs/remotes/pr/*'`.
+1. `git rev-parse --is-shallow-repository` (if `true`: `git fetch --unshallow origin`), then `git fetch --all --prune` and
+   `git fetch origin '+refs/pull/*/head:refs/remotes/pr/*'`.
 2. Record: `main` SHA, PR #203 state and head SHA, PR #204 state, your designated branch, open PRs updated since
    2026-11-18, CI state of PR #203 head. Compare with section 4. Any drift: list it, then re-run the drift checks in
    section 4 before trusting downstream sections.
+2a. Concurrent-work census (mandatory; `docs/ai/WORKFLOW.md:17`: "Prefer a nonoverlapping task rather than changing files
+   claimed by another worker"). Other agent sessions write to this repository under the owner's account. Open at
+   2026-11-18T07:55Z (VERIFIED `git ls-remote` + PR search), all created after the audit snapshot: #206 (#204 agent tooling
+   re-integrated onto `main`), #207/#210 (Dependabot actions / npm minor-patch), #208 (another execution prompt), #209 and
+   #211 (completion runs with exclusive path claims in `docs/ai/ACTIVE_WORK.md`: transport/settings, Pages hosting
+   hardening, CI/release/supply chain, key-management docs, the qr-colors and seller-vault ports, scheme-2 client gates,
+   SOL/TRON seed reveal and meta-address format, storage linkability, ContextHelp/focus), #212 (Mythril/Echidna/fee-token review,
+   `validate:deployments`, owner packets), #213 ([WIP] spec 18 K01-K06 @ `a199c21`:
+   `packages/ux-vault/src/stealth-export-portable.ts`, `docs/specs/18-stealth-keypair-export-formats.md`,
+   `test-vectors/stealth-export.json`, `scripts/recovery/stealth-export-recover.mjs`, `scripts/recovery/raw-key-anvil.test.mjs`),
+   #214-#216 (docs rotation), #217 (DeployPolicy N1 guard). For every open PR created or updated since 2026-11-18 and every
+   claim section of `docs/ai/ACTIVE_WORK.md` on `main` and on those PR heads, map its paths, rows and findings to WS items
+   (section 12). An item another active session has claimed or is implementing is OWNED-ELSEWHERE: do not start it; review
+   that PR read-only at each checkpoint and adopt its result once it is on `main`; re-plan the item only if that PR is closed
+   unmerged or has had no commit for 24 h, and record the decision. Spec 18 formats are single-sourced: never create a
+   second format id, AAD domain, vector file or independent recovery tool next to one already on `main` or in an open PR;
+   WS-03/08/09/19/25 then become review-and-complete items against that format. Record the claim map in BASELINE.md, claim
+   only unclaimed paths in `docs/ai/ACTIVE_WORK.md` (insert your own section; never edit another session's section), and put
+   any real conflict in the PR body and HANDOFF.md as an owner question.
 3. Choose START_SHA:
    - If PR #203 is merged into `main`: START_SHA = current `main` HEAD (verify `git merge-base --is-ancestor
      7a620ff19ecf4e43ec568896c34188f5b2dcd3fc main`).
@@ -82,7 +119,8 @@ from `nodata/zealous-hopper-lr0nxe`) if you will act on any branch row. The clon
    new, so this destroys nothing; confirm it has no unpushed commits first.
 4. Install exactly like CI: `npm ci --ignore-scripts && npm run build:libs`. Install pinned Foundry (see the
    `setup-forge` action in `.github/actions/`) if the network allows; if not, record the blocker and keep working:
-   only contract and devnet gates are blocked, not unrelated work.
+   only contract and devnet gates are blocked, not unrelated work (run the `REQUIRE_ANVIL=1` lines of G-FULL without
+   `REQUIRE_ANVIL`, record the anvil suites as UNVERIFIED locally and take them from the PR's CI run).
 5. Run the baseline: `npm run typecheck`, `npm run lint`, `npm test`, lean + full web builds, `npm run
    ci:scan-secrets`, `npm run ci:check-actions`. Record pass/fail counts. Pre-existing failures become WS-00 items (section 12).
 6. Write `docs/ai/ACTIVE_WORK.md` on your branch: coordinator, branch, START_SHA, workstreams, owned paths,
@@ -115,21 +153,24 @@ Source: `FEATURE_COMPLETION_MATRIX.md` + `feature_completion_matrix.json` (requi
 script; external acceptance excluded) and `completion_strategy.json` (six-way strategy comparison per feature).
 
 ### 7.1 Current state
-- 192 distinct features: **37 VERIFIED_COMPLETE, 30 IMPLEMENTED_UNVERIFIED, 27 PARTIAL, 46 SPEC_ONLY, 45
-  EXPERIMENTAL, 7 BLOCKED** (155 unfinished). Beta-core (43): 18 complete, 11 implemented-unverified, 5 partial,
-  3 blocked, 6 spec-only (spec 18 K01–K06). Five rows (F-KEY-01, F-KEY-02, F-WEB-07, F-WEB-11, F-WEB-12) meet their
-  requirements but are held by open SEC-03/SEC-05/SEC-10 (security-hold rule).
-- Requirement-weighted implementation / verification: beta scope **87.9 % / 84.0 %**; all tiers excluding the future
-  roadmap 79.9 % / 75.0 %; all tiers 73.9 % / 69.3 %. These measure specified behaviour, not release readiness:
+- 192 distinct features: **38 VERIFIED_COMPLETE, 28 IMPLEMENTED_UNVERIFIED, 28 PARTIAL, 46 SPEC_ONLY, 45
+  EXPERIMENTAL, 7 BLOCKED** (154 unfinished; `evidence/features/stats.json` after the H1 rescoring: F-WEB-09 ->
+  VERIFIED_COMPLETE, F-NET-01 -> PARTIAL 80/65, F-WEB-07 -> 90/90, F-BTC-01/F-BTC-02/F-MER-05 -> full-profile).
+  Beta-core (42): 18 complete, 10 implemented-unverified, 5 partial, 3 blocked, 6 spec-only (spec 18 K01–K06). Five rows
+  (F-KEY-01, F-KEY-02, F-KEY-03, F-WEB-11, F-WEB-12) meet their requirements but are held by open SEC-03/SEC-05
+  (security-hold rule); the SEC-10 local-proxy gap is scored into F-WEB-07 and F-NET-01.
+- Requirement-weighted implementation / verification: beta scope **87.2 % / 83.5 %**; all tiers excluding the future
+  roadmap 79.7 % / 74.8 %; all tiers 73.8 % / 69.1 %. These measure specified behaviour, not release readiness:
   **nothing is release-ready** (no deployment of record, empty release keys, Mythril gate red by design, `main`
   unprotected, shared Pages origin).
-- Largest gap: spec 18 key portability has **zero code** (F-KEY-07..F-KEY-12), which also leaves no
+- Largest gap: spec 18 key portability has **zero code on `main`** (F-KEY-07..F-KEY-12; open PR #213 [WIP] already carries a
+  K01/K02/K05/K06 codec, an independent recovery script and a K04 anvil test: section 5 step 2a), which also leaves no
   GhostPay-independent recovery path (SEC-04) — the main violation of constraint 4.
 
-### 7.2 Unfinished beta-core, beta-supporting and full-profile rows (68)
+### 7.2 Unfinished beta-core, beta-supporting and full-profile rows (67)
 "Owner gates" lists canonical IDs from section 10; Wave and WS (items) per sections 11–12; full six-way comparison per row in `completion_strategy.json`.
 
-**beta-core: 25 unfinished**
+**beta-core: 24 unfinished**
 
 | ID | Feature | Impl / Verif % | Status | Strategy | Wave | WS (items) | Owner gates |
 |---|---|---|---|---|---|---|---|
@@ -143,7 +184,7 @@ script; external acceptance excluded) and `completion_strategy.json` (six-way st
 | F-I18N-01 | Web i18n framework: catalogs, translator, plurals/ICU-lite, RT | 90 / 90 | IMPLEMENTED_UNVERIFIED | repair | 4 | WS-12 (WS-12.4) | — |
 | F-KEY-01 | Seller key generation, hex import and in-memory session | 100 / 100 | IMPLEMENTED_UNVERIFIED (security hold) | repair | 1 | WS-07 (WS-07.1) | OD-01 |
 | F-KEY-02 | Encrypted browser key vault (IndexedDB), unlock, step-up, dele | 100 / 100 | IMPLEMENTED_UNVERIFIED (security hold) | repair | 1 | WS-18 (WS-18.1) | OD-09 |
-| F-KEY-03 | Keystore v1 backup/restore and verified-backup gate (GP-PAGES- | 100 / 100 | IMPLEMENTED_UNVERIFIED | recover | 5 | WS-02 (WS-02.7) | — |
+| F-KEY-03 | Keystore v1 backup/restore and verified-backup gate (GP-PAGES- | 100 / 100 | IMPLEMENTED_UNVERIFIED (security hold: SEC-05, SEC-03) | recover | 5 | WS-02 (WS-02.7; hold released by WS-07.1 + WS-18.1) | OD-01, OD-09 |
 | F-KEY-07 | Spec 18 K01: public/keypair/master schemas + verified derivati | 0 / 0 | SPEC_ONLY | implement | 3 | WS-03 (WS-03.1, WS-19.2) | OD-10 |
 | F-KEY-08 | Spec 18 K02: encrypted single-keypair envelope + atomic import | 0 / 0 | SPEC_ONLY | implement | 3 | WS-03 (WS-03.2, WS-19.2) | OD-09, OD-10 |
 | F-KEY-09 | Spec 18 K03: seller payment-row export UI (public + encrypted) | 0 / 0 | SPEC_ONLY | implement | 7 | WS-08 (WS-08.1) | OD-01, OD-02, OD-10 |
@@ -153,20 +194,18 @@ script; external acceptance excluded) and `completion_strategy.json` (six-way st
 | F-KEY-13 | secret-box (closure-held secret bytes, scopes, wipe) | 90 / 90 | IMPLEMENTED_UNVERIFIED | defer | 8 | WS-03 (WS-03.3) | — |
 | F-WEB-04 | Payment submission journal and honest uncertain outcomes | 90 / 90 | IMPLEMENTED_UNVERIFIED | defer | 8 | WS-10 (WS-10.6) | — |
 | F-WEB-06 | Seller scan & discovery UI (worker, checkpoints, reorg, dedupe | 95 / 95 | IMPLEMENTED_UNVERIFIED | defer | 4 | WS-02 (WS-02.6) | — |
-| F-WEB-09 | Payment history & reconciliation ledger (encrypted IndexedDB,  | 100 / 95 | IMPLEMENTED_UNVERIFIED | repair | 2 | WS-02 (WS-02.4) | — |
 | F-WEB-11 | Direct sweep (self-paid gas, in-page derived key) | 100 / 100 | IMPLEMENTED_UNVERIFIED (security hold) | repair | 1 | WS-07 (WS-07.1) | OD-01 |
 | F-WEB-17 | Bundled signed manifests + on-chain readback in UI | 80 / 80 | PARTIAL | repair | 6 | WS-24 (WS-24.3) | OA-03, OA-04, OD-06, OD-07 |
 | F-WEB-21 | Lean static Pages build profile (product surface) | 80 / 80 | BLOCKED | defer | 9 | WS-04 (WS-04.6) | OA-01, OA-02, OA-03, OA-05, OA-06, OD-06, OD-07, OD-08 |
 | F-WEB-26 | address-safety (strict addresses, lookalikes, display-text san | 90 / 80 | IMPLEMENTED_UNVERIFIED | repair | 4 | WS-10 (WS-10.3) | — |
 
-**beta-supporting: 25 unfinished**
+**beta-supporting: 24 unfinished**
 
 | ID | Feature | Impl / Verif % | Status | Strategy | Wave | WS (items) | Owner gates |
 |---|---|---|---|---|---|---|---|
 | F-A11Y-01 | Automated accessibility: axe-core audit in Playwright (all rou | 90 / 85 | IMPLEMENTED_UNVERIFIED | repair | 4 | WS-12 (WS-12.2) | — |
 | F-A11Y-02 | Mobile/responsive: Chromium device-emulation projects (Pixel 7 | 50 / 50 | PARTIAL | defer | 9 | WS-17 (WS-17.2) | — |
 | F-A11Y-03 | Screen-reader / assistive-tech qualification | 40 / 20 | PARTIAL | implement | 4 | WS-12 (WS-12.5) | — |
-| F-BTC-01 | BIP-352 silent payments: keys, addresses, sender derive, recei | 100 / 80 | IMPLEMENTED_UNVERIFIED | defer | 8 | WS-14 (WS-14.4) | OD-02, OD-20 |
 | F-CLI-01 | CLI core: registry, strict arg parsing, --json, exit codes, do | 100 / 85 | IMPLEMENTED_UNVERIFIED | repair | 4 | WS-11 (WS-11.3) | — |
 | F-CLI-05 | CLI read-only chain/payment/scan/registry commands | 100 / 80 | IMPLEMENTED_UNVERIFIED | defer | 9 | WS-17 (WS-17.1) | OA-04 |
 | F-CLI-06 | CLI merchant commands: refunds, installments, subscriptions, w | 80 / 80 | PARTIAL | defer | 8 | WS-15 (WS-15.1) | — |
@@ -181,18 +220,19 @@ script; external acceptance excluded) and `completion_strategy.json` (six-way st
 | F-I18N-03 | packages/i18n localisation framework (CLI/library) + CLI i18n  | 60 / 60 | PARTIAL | consolidate | 8 | WS-12 (WS-12.6) | OD-16, OD-20 |
 | F-MER-01 | Merchant billing: subscriptions, schedules, installments, refu | 85 / 85 | PARTIAL | defer | 8 | WS-15 (WS-15.5) | OD-20 |
 | F-MER-02 | Merchant ledger: reconciliation + accounting/tax exports | 80 / 65 | PARTIAL | consolidate | 8 | WS-15 (WS-15.2) | OD-20 |
-| F-NET-01 | Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP frami | 100 / 80 | IMPLEMENTED_UNVERIFIED | repair | 1 | WS-01 (WS-01.2) | — |
+| F-NET-01 | Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP frami | 80 / 65 | PARTIAL | repair | 1 | WS-01 (WS-01.2) | — |
 | F-OPS-03 | sandbox / test mode: deterministic mock chain, faucet, clock,  | 70 / 70 | PARTIAL | defer | 8 | WS-16 (WS-16.3) | — |
 | F-PROTO-05 | Announcer spam & anonymity-set bounds (spec 05) | 90 / 80 | IMPLEMENTED_UNVERIFIED | implement | 4 | WS-10 (WS-10.2) | — |
 | F-WEB-05 | Gas buffer UI: v1 payer buffer (lean+full) and v2 seller polic | 90 / 75 | IMPLEMENTED_UNVERIFIED | repair | 4 | WS-10 (WS-10.1) | — |
-| F-WEB-07 | Scan privacy modes (spec 10 UI: transport, private-required, w | 100 / 100 | IMPLEMENTED_UNVERIFIED (security hold) | repair | 1 | WS-01 (WS-01.1) | — |
+| F-WEB-07 | Scan privacy modes (spec 10 UI: transport, private-required, w | 90 / 90 | IMPLEMENTED_UNVERIFIED | repair | 1 | WS-01 (WS-01.1) | — |
 | F-WEB-12 | Relayer-assisted sweep and permit refusal messages | 100 / 95 | IMPLEMENTED_UNVERIFIED (security hold) | repair | 1 | WS-07 (WS-07.1) | OD-01 |
 | F-WEB-23 | Home / About / help pages / contextual help (lost-click fix) | 100 / 85 | IMPLEMENTED_UNVERIFIED | repair | 1 | WS-02 (WS-02.1) | — |
 
-**full-profile: 18 unfinished**
+**full-profile: 19 unfinished**
 
 | ID | Feature | Impl / Verif % | Status | Strategy | Wave | WS (items) | Owner gates |
 |---|---|---|---|---|---|---|---|
+| F-BTC-01 | BIP-352 silent payments: keys, addresses, sender derive, recei | 100 / 80 | IMPLEMENTED_UNVERIFIED | defer | 8 | WS-14 (WS-14.4) | OD-02, OD-20 |
 | F-BTC-03 | BTC light-client scanning: BlindBit HTTP + gRPC-Web, own-node  | 90 / 80 | IMPLEMENTED_UNVERIFIED | defer | 8 | WS-14 (WS-14.5) | OD-20, OD-21 |
 | F-DOC-03 | Operator docs (docs/operators, 17 pages): runbooks, relayer, m | 50 / 50 | PARTIAL | defer | 9 | WS-13 (WS-13.5) | OA-04 |
 | F-HOST-01 | Self-host recipe: docker-compose + nginx + relayer image + sel | 70 / 45 | PARTIAL | repair | 8 | WS-13 (WS-13.1) | — |
@@ -212,8 +252,8 @@ script; external acceptance excluded) and `completion_strategy.json` (six-way st
 | F-WEB-02 | Fiat-quote invoices and price-feed UI (spec 03) | 90 / 80 | IMPLEMENTED_UNVERIFIED | repair | 4 | WS-10 (WS-10.4) | — |
 | F-WEB-18 | Embed SDK checkout (popup default, opt-in iframe postMessage h | 95 / 95 | IMPLEMENTED_UNVERIFIED | defer | 9 | WS-01 (WS-01.3) | OD-07 |
 
-### 7.3 Do not regress (37 VERIFIED_COMPLETE rows and every currently green suite)
-- **VERIFIED_COMPLETE** (37): F-BTC-02, F-CLI-02, F-CLI-04, F-CTR-01, F-CTR-02, F-CTR-03, F-CTR-05, F-KEY-04, F-KEY-06, F-MER-03, F-MER-05, F-MER-06, F-NET-02, F-NET-04, F-PROTO-01, F-PROTO-02, F-PROTO-03, F-PROTO-04, F-PROTO-06, F-PROTO-07, F-PROTO-08, F-PROTO-09, F-PROTO-10, F-RLY-02, F-RLY-03, F-WEB-01, F-WEB-03, F-WEB-08, F-WEB-10, F-WEB-13, F-WEB-14, F-WEB-16, F-WEB-19, F-WEB-20, F-WEB-22, F-WEB-24, F-WEB-25
+### 7.3 Do not regress (38 VERIFIED_COMPLETE rows and every currently green suite)
+- **VERIFIED_COMPLETE** (38): F-BTC-02, F-CLI-02, F-CLI-04, F-CTR-01, F-CTR-02, F-CTR-03, F-CTR-05, F-KEY-04, F-KEY-06, F-MER-03, F-MER-05, F-MER-06, F-NET-02, F-NET-04, F-PROTO-01, F-PROTO-02, F-PROTO-03, F-PROTO-04, F-PROTO-06, F-PROTO-07, F-PROTO-08, F-PROTO-09, F-PROTO-10, F-RLY-02, F-RLY-03, F-WEB-01, F-WEB-03, F-WEB-08, F-WEB-09, F-WEB-10, F-WEB-13, F-WEB-14, F-WEB-16, F-WEB-19, F-WEB-20, F-WEB-22, F-WEB-24, F-WEB-25
 
 ### 7.4 Experimental and future rows (not promoted in this phase; OD-20/OD-21)
 - **experimental** (44 unfinished): F-AA-01, F-AA-02, F-AA-03, F-AA-04, F-AA-05, F-BTC-04, F-BTC-05, F-EVMX-01, F-INT-04, F-MER-07, F-NET-03, F-OPS-02, F-POOL-01, F-POOL-02, F-POOL-03, F-POOL-05, F-POOL-06, F-POOL-07, F-POOL-08, F-POOL-09, F-PRIV-01, F-PRIV-02, F-PRIV-03, F-PRIV-04, F-PRIV-05, F-RLY-05, F-SOL-02, F-TRX-02, F-UX-01, F-UX-02, F-UX-03, F-UX-04, F-UX-05, F-UX-06, F-UX-07, F-UX-08, F-UX-09, F-UX-10, F-UX-11, F-UX-12, F-UX-13, F-UX-14, F-UX-15, F-WEB-15
@@ -224,13 +264,20 @@ F-PROTO-13 and F-FUT-40 duplicate spec 18 and are tracked under F-KEY-07..F-KEY-
 
 ## 8. Recoverable branch work (from `BRANCH_RECOVERY_MATRIX.md`, 234 refs: A 1, B 6, C 205, D 14, E 7, F 1)
 The candidate already contains nearly all historical work. Recover only:
-1. **#204 agent tooling** (class A, `nodata/eager-babbage-0w6sf6` @ `2693b08e`): new files apply cleanly; regenerate
+1. **#204 agent tooling** (class A, `nodata/eager-babbage-0w6sf6` @ `2693b08e`) is **superseded** by open PR #206
+   (`c487f0fe`, #204 re-integrated onto `71abc7e5` with conflicts resolved and `PACKAGE_MAP.md` regenerated). Do not port it
+   again: WS-22.1 = run `node --test scripts/agent/workspaces.test.mjs` once #206 is on `main`. Only if #206 is closed
+   unmerged: new files apply cleanly; regenerate
    `PACKAGE_MAP.md` (its one failing test), merge `CLAUDE.md` (add/add), re-apply the one `ci.yml` line (append
    `scripts/agent/*.test.mjs` to the shard-0 `node --test` line). Coordinator-owned (shared files); separate commit.
 2. **Seller-vault R1–R3 Chromium harness** (class B): commit `57dcf7e8` on `ghostpay-cloud-recovery-2026-10-26`, file
    `apps/web/scripts/test-seller-vault-idb.mjs` — verified passing against `7a620ff1`, adds real-browser coverage the
-   candidate lacks; selective file recovery + wire into `package.json`/CI.
-3. **Dependency refresh** (class B, Dependabot #85/#87/#176): regenerate minor/patch updates on top of START_SHA (viem
+   candidate lacks; selective file recovery (the candidate already has a 75-line two-tab version; take the 228-line
+   `57dcf7e8` version, +157/-4: `git diff 7a620ff1 57dcf7e8 -- apps/web/scripts/test-seller-vault-idb.mjs`) + wire into
+   `package.json`/CI.
+3. **Dependency refresh** (class B, Dependabot #85/#87/#176; superseded by the fresh Dependabot PRs #207 actions and #210 npm
+   minor/patch, open 2026-11-18): prefer the owner merging #207/#210 and verify them with G-FULL once on `main`; otherwise
+   regenerate minor/patch updates on top of START_SHA (viem
    2.57.19, vitest/coverage 5.1.0, vite 8.3.8, prettier 3.10.1, playwright 1.65, create-pull-request 8); majors
    (`@scure/*` 2.x, TypeScript 7, hardhat 3) only per OD-18.
 4. **`docs/design/qr-colors.md` hunk** from `chatgpt/zero-codex/docs-pages-scope-20261112` (doc contradicts the
@@ -277,6 +324,19 @@ regression test:
 | SEC-29 | Low | UNVERIFIED | R-03 | ContextHelp hover-leave still collapses an open explanation, shifting layout (residual of R-02/ |  |
 | SEC-30 | Low | INTENDED | R-04 | #201 focus scope also focuses main after in-view paste/QR/Forget/cancel; comment names only dee |  |
 
+Info findings, closed here too unless owner-gated (full rows: `security_findings.json`): SEC-31 policy-account owner-key
+freeze race -> WS-90 (scheme 2); SEC-32 release trust roots empty (blocks sepolia-beta, release-tag) -> WS-05.4 after
+OD-07/OA-03; SEC-33 Mythril red by design -> WS-06.1, WS-06.3 (OD-03); SEC-34 relayer cannot steal (record) -> WS-11.2;
+SEC-35 7702 delegation persists -> WS-90 (OD-13); SEC-36 FEE_RECIPIENT must accept ETH -> WS-05.2 (OD-14); SEC-37
+best-effort zeroization -> WS-03.2; SEC-38 independent scheme-1 check -> WS-03.1, WS-19.1; SEC-39 packet docs-only claim ->
+WS-00.5 (closed at `71abc7e5`); SEC-40 banner same-tab link, no beforeunload guard -> WS-04.3, WS-07.1; SEC-41 Tor
+Browser/JIT-less scrypt (blocks sepolia-beta) -> WS-18.2, WS-17.2, EX-02; SEC-42 React root error logging -> WS-21.2; SEC-43
+no SRI, unsigned Pages checksums -> WS-01.3, WS-20.5; SEC-44 public Playwright key denylist -> WS-05.1; SEC-45 RPC
+fingerprinting -> WS-01.2; SEC-46 smoke idles 3 s (blocks sepolia-beta) -> WS-04.5, WS-04.6; SEC-47 release analysis gate
+unexercised (blocks release-tag) -> WS-06.3, WS-20.6; SEC-48 alert inventories unreadable (blocks mainnet) -> WS-20.4
+(OA-07); SEC-49 #204/#203 conflict -> #206 (OD-15). Owner-gated, no closure this phase: SEC-06, SEC-07, SEC-11, SEC-12,
+SEC-31, SEC-35 (scheme 2, WS-90: OD-04/05/11/12/13).
+
 Security gates (exact definitions in the analysis §9): **(a)** before any public Pages deploy: SEC-01, SEC-02,
 SEC-08, SEC-09, copy fixes SEC-10/19/28; **(b)** Sepolia beta: (a) + release key and signed manifest (SEC-32), exact
 -SHA CI + analyzers (SEC-33), attested Pages checksums, local-proxy fixed or removed (SEC-10), live egress smoke
@@ -297,7 +357,7 @@ Full table with options and evidence: `BLOCKERS_AND_DECISIONS.md`. Never decide 
 
 | ID | Pending decision / action | Default you implement now |
 |---|---|---|
-| OD-01 | Re-auth for vault-less seller sessions | Secret export refuses unless an encrypted vault exists (re-auth = vault passphrase); sweep warns |
+| OD-01 | Re-auth for vault-less seller sessions | New spec-18 secret exports (K03–K06 encrypted and raw keys, archive) refuse in vault-less sessions (re-auth = vault passphrase via `requireStepUp`); the existing encrypted keystore v1 backup and vault creation stay available with disclosure (constraint 4: a vault-less seller must always be able to make an encrypted backup); sweep unchanged but warned |
 | OD-02 | Clipboard for raw keys; BTC/SOL/TRON seed reveal | No clipboard path for any new secret export; file download + held reveal only |
 | OD-03 | Mythril release-gate policy | Build the keyed, source-matched disposition mechanism behind a disabled flag; releases stay blocked |
 | OD-04 / OD-05 / OD-11 / OD-13 / OD-14 | Scheme-2 fee-token freeze, policy-hash linkability, L2 delays, 7702 clearing, FEE_RECIPIENT type | Scheme 2 / AA stay undeployed and experimental; no contract changes without a spec + review |
@@ -306,12 +366,13 @@ Full table with options and evidence: `BLOCKERS_AND_DECISIONS.md`. Never decide 
 | OD-09 | Passphrase floor for master/raw exports | New spec 18 exports enforce the stricter floor (generated diceware default, ≈80-bit estimate) |
 | OD-10 | Spec 18 wording | Apply: user-selected RPC with no fallback, no telemetry, lean boundary enforced, deep-scan match exportable only after full derivation check; public record carries the announced viewTag; record in spec 18 for sign-off |
 | OD-12 | Guardian recovery (ADR-0028) | No guardian code paths |
-| OD-15 | #204 scope / merge order | Port #204 as a separate reviewable commit (section 8.1) |
-| OD-16 / OD-17 / OD-20 | Locales, Shopify, scope beyond the EVM beta | Keep today's behaviour (unshipped languages already labelled, `LanguagePicker.tsx:19-23`); es/ar/ja stay marked as drafts; nothing promoted |
+| OD-15 | #204 scope / merge order | #204 was re-integrated as open PR #206: do not port again; adopt #206 once the owner merges it; port per section 8.1 only if #206 is closed unmerged |
+| OD-16 / OD-17 / OD-20 | Locales, Shopify, scope beyond the EVM beta | Keep today's behaviour (unshipped languages already labelled, `apps/web/src/i18n/LanguagePicker.tsx:19-23`; do not trim the selector, that is the owner's OD-16 choice); es/ar/ja stay marked as drafts; nothing promoted |
 | OD-18 | Major dependency upgrades | Minor/patch only |
 | OD-19 | Branch retirement | Delete/close nothing |
 | OD-21 | Operator-run optional services | Stay optional/experimental, out of lean |
-| OA-01..OA-07 | Branch protection/rulesets, merge #203, release keys, Sepolia broadcast, Pages source + gh-pages retirement, Pages deploy dispatch, security-inventory access | Prepare scripts/docs/checklists; never perform |
+| OD-23 | Accept documented limitations (owner-ack rows F-WEB-04, F-WEB-06, F-WEB-26, F-CLI-06) | Document each limitation in docs/user and the spec; the row stays unfinished in the report; never record an owner acknowledgement on the owner's behalf |
+| OA-01..OA-07 | Branch protection/rulesets, merge #203 (OA-02 done 2026-11-18T06:56:49Z, `5467c158`), release keys, Sepolia broadcast, Pages source + gh-pages retirement, Pages deploy dispatch, security-inventory access | Prepare scripts/docs/checklists; never perform |
 | EX-01..EX-07 | Real wallets, Firefox/WebKit/Tor/mobile, screen readers, native review, external audit, chain-matrix provider evidence, live nodes | Mark the matching verification gate "external pending"; continue other work |
 
 ## 11. Dependency order, waves and critical paths
@@ -352,8 +413,8 @@ Checkpoint timing with ≤ 6 workers (simulation, ESTIMATE; owner latency exclud
 Critical path to beta exit: WS-00 → WS-03.1 (K01) → WS-03.2 (K02) → WS-19.2 (independent decode) → CP-2 freeze →
 WS-08.1 (K03) → WS-08.2 (K04) → WS-19.5 (independent K04 recovery proof on anvil) → CP-5 (KC) → B06 records (CP-8).
 Critical path to Sepolia beta start (engineering side): WS-05.1 signing helper → WS-05.2 anvil rehearsal → WS-05.3
-matrix revalidation → WS-24.4 → CP-4 → owner chain (OD-06 → OD-07 → OA-03 → OD-08 → OA-01 → OA-02 → OA-05 → OA-04 →
-OA-06) → WS-05.4 evidence → WS-04.6 live smoke → CP-7.
+matrix revalidation → WS-24.4 → CP-4 → owner chain (OD-06 → OD-07 → OA-03 → OD-08 → OA-01 → [OA-02 done] → OA-05 → OA-04 Sepolia
+broadcast) → WS-05.4 evidence + owner-signed manifest bundled → OA-06 Pages dispatch → WS-04.6 live smoke → CP-7.
 
 Effort (ESTIMATE):
 
@@ -381,9 +442,9 @@ Start gate (CP-7):
 | BR-04 | main protection, v* tag ruleset, github-pages env reviewers (SEC-02) | UNVERIFIED (API 403) | OA-01 |
 | BR-05 | False copy fixed: local proxy, wss, "hides/unlinkable" (SEC-10/19/28, E-17) | OPEN | WS-01.1, WS-02.1, WS-04.4 |
 | BR-06 | Local-proxy path works under real CSP or removed; e2e under real meta CSP (SEC-10, TB-02) | OPEN (CSP blocks loopback; probe VERIFIED by E) | WS-01.1 |
-| BR-07 | Vault-less sweep/export: refuse or disclose (SEC-03 beta item) | OPEN (`authorizeKeyExport` returns undefined) | WS-07.1 (default: refuse secret export, warn sweep) |
+| BR-07 | Vault-less sweep/export: refuse or disclose (SEC-03 beta item) | OPEN (`authorizeKeyExport` returns undefined) | WS-07.1/07.2 (default: new spec-18 secret exports refuse without a vault; keystore v1 backup stays available with disclosure; sweep warned) |
 | BR-08 | Keystore v1 independent-decode vector in CI (SEC-15) | OPEN | WS-03.2 vector + WS-19.1 decoder + WS-20.2 job |
-| BR-09 | Strict on-chain verifier for Pay/Scan/Sweep, CLI, relayer (G-NOTE-01) + dual-provider readback (F-WEB-17) | OPEN (single provider; no canonical-announcer / 25 bps check in browser path) | WS-24.2, WS-24.3 |
+| BR-09 | Strict on-chain verifier for Pay/Scan/Sweep, CLI, relayer (G-NOTE-01) + dual-provider readback when the user configured a secondary RPC (opt-in; never a built-in default or automatic fallback) (F-WEB-17) | OPEN (single provider; no canonical-announcer / 25 bps check in browser path) | WS-24.2, WS-24.3 |
 | BR-10 | No unsigned/legacy manifest path in any build (SEC-14) | OPEN (dead in default app, present in bundle) | WS-24.1 |
 | BR-11 | Lean keeps scheme 2, relayer, BTC/SOL/TRON, 7702/4337 out | DONE (VERIFIED by D: CORE_ORDER, VITE flag) | keep localBuildProfile.test.mjs + AppLean tests green every CP |
 | BR-12 | Lean payer buffer behaviour == docs (TB-07) | OPEN (docs say no buffer; lean offers it) | WS-04.4 docs + WS-10.1 lean test (default keep buffer) |
@@ -395,7 +456,7 @@ Start gate (CP-7):
 | BR-18 | Extended egress smoke: every lean view + fixture invoice, no off-site request (SEC-46) | OPEN (smoke idles home 3 s) | WS-04.5 local, WS-04.6 live |
 | BR-19 | Firefox + Tor Browser Standard/Safer manual run, KDF time recorded (SEC-41) | OPEN / UNVERIFIED | EX-02; WS-18.2 KDF progress text; WS-17.2 records |
 | BR-20 | ADR-0029 Accepted | OWNER ("Proposed") | OD-08 (after OD-06, OD-07) |
-| BR-21 | #203 merged (merge/ff, never squash) so pages.yml/release.yml on main carry the gates | OWNER | OA-01 then OA-02 |
+| BR-21 | #203 merged (merge/ff, never squash) so pages.yml/release.yml on main carry the gates | DONE after the snapshot: merge commit `5467c158` 2026-11-18T06:56:49Z (tree == `71abc7e5`); OA-01 still UNVERIFIED | OA-02 done; OA-01 |
 | BR-22 | Pages dispatch (main-only, deploy=true) + live smoke on the real origin (B05) | OWNER | OA-06; WS-04.6 |
 | BR-23 | B06 start subset on Sepolia: invoice → pay native + ERC-20 → scan → receipt → sweep → backup/restore | OPEN | WS-17.3 records; EX-01 wallets, EX-02 browsers |
 
@@ -413,16 +474,29 @@ Exit gate (CP-8) = start gate +:
 | BX-08 | Firefox/WebKit Playwright where supported (C-06) + mobile download/import recorded | OPEN | coordinator at CP-5 (playwright.config.ts) + EX-02 |
 | BX-09 | B06 full: incl. 3q export + independent recovery on Sepolia; screen reader row | OPEN | WS-17.3; EX-01/02/03 |
 
-Count: 23 start + 9 exit items; 24 engineering-open/partial, 6 owner-only, 1 done (BR-11), BR-04 UNVERIFIED.
+Count: 23 start + 9 exit items; 24 engineering-open/partial, 5 owner-only, 2 done (BR-11, BR-21), BR-04 UNVERIFIED.
 
 ## 12. Workstreams, agents and ownership
 Detail: `PARALLEL_AGENT_EXECUTION_PLAN.md` (one card per workstream with objectives, items, owned paths, tests,
 handoff additions) and `ws_registry.json`. **Naming:** wherever the plan says `ws/WS-00-integration`, it means your
 designated development branch (the integration branch; the only branch you push). Workers use local branches
-`ws/<WS-ID>-<slug>` in worktrees `../wt/<WS-ID>`; commits `<WS-ID>.<n>: <imperative summary>` with the session's
+`ws/<WS-ID>-<slug>` in worktrees `../wt/<WS-ID>` (set up with `npm ci --ignore-scripts && npm run build:libs`; re-run
+`npm run build:libs` after every fast-forward to the integration tip, because workspace packages resolve each other through
+their built `dist`, `.github/actions/setup-node-libs/action.yml:20-22`); commits `<WS-ID>.<n>: <imperative summary>` with the session's
 attribution trailers. One coordinator (strongest tier) owns integration, coordinator-owned paths, checkpoints and the
 evidence ledger `docs/handoffs/next-phase-20261118/` (BASELINE.md, WS_STATUS.md, CP-n.md); it executes only WS-00,
 WS-20 and WS-22 and never implements product features or reviews its own work.
+**Tiers** (owner preference: the least expensive model that does the job reliably; escalate for cryptography, security,
+concurrency, architecture and integration): strongest = Claude Opus 5.5 at effort `xhigh` (the session itself, crypto/
+security/integration workers, RV-CRYPTO/RV-SEC/RV-REL reviews and both two-key reviews — always strongest); mid = Claude
+Sonnet 5.5 (bounded UI, tests, docs-with-code, ops); cheap = Claude Haiku 5.5 (records, mechanical edits, evidence
+collection), always reviewed by mid or strongest. Set model/effort per sub-agent only where the harness exposes it;
+otherwise sub-agents inherit the session model. If a tier cannot be selected, use strongest. Escalate after two failed
+attempts on one hypothesis.
+**Integration worktree:** the integration branch is your designated branch in the main checkout (section 5 step 3). Skip the
+plan's `git worktree add ../wt/WS-00-integration -b ws/WS-00-integration "$START"` (PLAN 2, WS-00.1) and the card branches
+`ws/WS-00-rebaseline`, `ws/WS-20-ci-release`, `ws/WS-22-tooling-deps`, which all point at that one worktree: coordinator
+WS work is committed on short-lived local branches cut from the integration tip (or directly on it) and merged `--no-ff`.
 
 | WS | Name | Exec | Impl/Review tier | Deps (WS) | CPs | Est d | Unblocked | Owner gate |
 |---|---|---|---|---|---|---|---|---|
@@ -452,7 +526,7 @@ WS-20 and WS-22 and never implements product features or reviews its own work.
 | WS-23 | Local data privacy: confirmed erase-all + linkable storage identifiers pseudonymized (SEC-23, SEC-22) | worker | strongest/strongest | WS-00,WS-01,WS-07,WS-10 | CP-5 | 3–6 | all | - |
 | WS-24 | Strict on-chain verifier for web/CLI/relayer + dual-provider readback + registry pin; legacy manifest path removed | worker | strongest/strongest | WS-00,WS-05 | CP-2,CP-4 | 6.75–11.25 | all | OD-07,OA-04 |
 | WS-25 | Spec 18 K05: encrypted bounded bulk archive of validated one-time keys (format, import, panel) | worker | strongest/strongest | WS-00,WS-03,WS-07,WS-08,WS-18,WS-19 | CP-5 | 3.25–4.25 | all | - |
-| WS-90 | Experimental (45) + future (43): keep separate / defer | none | cheap/mid | - | - | 0–0 | all | OD-04,OD-05,OD-11,OD-12,OD-13,OD-20,OD-21,OD-22,OD-17 |
+| WS-90 | Experimental (45 rows incl. complete F-NET-04; 44 unfinished) + future (43): keep separate / defer | none | cheap/mid | - | - | 0–0 | all | OD-04,OD-05,OD-11,OD-12,OD-13,OD-20,OD-21,OD-22,OD-17 |
 
 Coordinator-owned paths (workers request changes via one `coord-request(<WS>)` commit):
 `package-lock.json`, `package.json`, `tsconfig.base.json`, `.github/workflows/**`, `.github/dependabot.yml`, `.github/actions/**`, `CLAUDE.md`, `AGENTS.md`, `docs/ai/**`, `apps/web/src/App.tsx`, `apps/web/src/AppLean.tsx`, `apps/web/src/AppShell.tsx`, `apps/web/locales/**`, `apps/web/playwright.config.ts`, `apps/web/vite.config.ts`, `apps/web/vitest.config.ts`, `apps/web/vitest.nocov.config.ts`, `eslint.config.js`, `docs/handoffs/**`, `.claude/skills/**`, `scripts/agent/**`, `docs/adr/README.md`, `packages/ux-vault/src/portable.ts`, `packages/ux-vault/src/index.ts`
@@ -461,8 +535,14 @@ Coordinator-owned paths (workers request changes via one `coord-request(<WS>)` c
 - A path no active WS owns in a window is coordinator-merged the same way.
 
 Exclusive ownership:
-- `owned_paths` are exclusive while the WS is active; transfer only by `handover_in` at a CP (registry). Validator `check_ownership()`: 0 overlaps among WS active in the same window, 0 worker overlaps with coordinator paths (VERIFIED by run; negative test with injected overlaps detected 80 conflicts).
-- Frozen, nobody owns: `packages/contracts/src/**`, `packages/core-crypto/src/**`, `test-vectors/scheme1.json`.
+- `owned_paths` are exclusive while the WS is active; transfer only by `handover_in` at a CP (registry). Validator `check_ownership()`: 0 overlaps among WS active in the same window, 0 worker overlaps with coordinator paths (VERIFIED by run of the audit's unpackaged scratch `model.py`; its windows are per CP number, so items of CP-3 and CP-5 that
+  run concurrently are not compared; negative test with injected overlaps detected 80 conflicts).
+- A more specific owned path beats an overlapping glob of another WS: WS-09 `docs/user/master-backup-recovery.md` inside WS-02
+  `docs/user/**`; WS-08 `apps/web/src/views/PaymentDetails*.test.tsx` inside WS-10 `apps/web/src/views/Pay*.test.tsx`.
+- Frozen, nobody owns: `packages/contracts/src/**`, `packages/core-crypto/src/**`, `test-vectors/scheme1.json`. Changing one
+  needs owner approval + re-review (record an owner question). No K01-K06 item needs it: spec 18 uses only the exported
+  core-crypto API (`deriveStealthSecret`, `checkAnnouncement`, `unsafeRevealSecret`, `zeroize`, `secretScalarFromBytes`;
+  `packages/core-crypto/src/index.ts:7-15`, VERIFIED @7a620ff1).
 - Reading any file is free. Needing to edit a non-owned path = STOP + handover request (recovery §9.2).
 
 Concurrency (≤ 6 workers + coordinator lane), planned windows:
@@ -489,7 +569,9 @@ Independent reviewer rules:
 - Two-key points: CP-2 format freeze and CP-5 KC need a second, separate strongest reviewer (independent secret-flow review, NEXT_PHASE_QUEUE KC).
 - Inputs: diff vs base, owned-paths check output, handoff block, test transcripts. Reviewer re-runs at least the WS card test commands for touched areas.
 - Output: APPROVE | CHANGES (blocking findings, `path:line`, severity) | ESCALATE (security finding → coordinator, private). Reviewer never commits to the author branch.
-- Blocking always: secret in logs/URL/storage/clipboard/telemetry; new network egress or fallback request; weakened gate/verifier/CSP; frozen-path diff; lean bundle importing relayer/operator/CLI runtime; unbounded parser; partial-state import; test deleted/skipped without coordinator approval.
+- Blocking always: secret in logs/URL/storage/clipboard/telemetry; new network egress or fallback request; weakened gate/verifier/CSP (one reviewed exception: if WS-01.1 keeps local-proxy mode in the full/self-host profile,
+  that profile's CSP may add only `http://127.0.0.1:*`, `http://localhost:*`, `http://[::1]:*` to `connect-src` (BLOCKERS
+  TB-02); the lean CSP is never widened; the default is to remove the mode); frozen-path diff; lean bundle importing relayer/operator/CLI runtime; unbounded parser; partial-state import; test deleted/skipped without coordinator approval.
 
 Handoff block (every item; coordinator appends to `docs/handoffs/next-phase-20261118/ws/<WS-ID>.md`):
 ```text
@@ -506,12 +588,14 @@ ws-specific=<see WS card "Handoff +">
 Checkpoint gate G-FULL (run on the exact SHA being qualified; record exit codes and counts):
 ```bash
 # G-FULL — run from the worktree root on the exact SHA being qualified; record exit codes + pass/skip counts
+: "${START:?set START to START_SHA or to the last origin/main merged into the integration branch}"   # used by the frozen-path line
 npm run typecheck
 npm run lint
 (cd packages/contracts && forge build)                                     # artifacts for anvil suites
+SOLC_0828="${SOLC_0828:-$HOME/.svm/0.8.28/solc-0.8.28}"; test -x "$SOLC_0828"   # written by the forge build above (ci.yml:152, foundry.toml:8-10); else the solc-static-linux v0.8.28 release binary
 ANVIL_BIN=$(command -v anvil) SOLC_BIN=$SOLC_0828 REQUIRE_ANVIL=1 npm test -w apps/web -w packages/chain-adapters -w packages/policy-scheme
 ANVIL_BIN=$(command -v anvil) REQUIRE_ANVIL=1 npm test -w apps/relayer
-ANVIL_BIN=$(command -v anvil) npm test -w packages/confidential-contracts   # hardhat; needs binaries.soliditylang.org (blocked here: HH502)
+ANVIL_BIN=$(command -v anvil) npm test -w packages/confidential-contracts   # hardhat; needs binaries.soliditylang.org (HH502 in the audit environment -> then CI-only, UNVERIFIED locally)
 npm test $(npm query .workspace | jq -r '.[].location' | grep -vxE 'apps/web|apps/relayer|packages/chain-adapters|packages/policy-scheme|packages/confidential-contracts' | sed 's/^/-w /') --if-present
 node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs scripts/pages/*.test.mjs apps/web/scripts/localBuildProfile.test.mjs
 GHOSTPAY_LOCAL_BUILD_PROFILE=lean npm run build -w @ghostpay/web           # postbuild = scan-bundle
@@ -519,6 +603,10 @@ GHOSTPAY_LOCAL_BUILD_PROFILE=full npm run build -w @ghostpay/web
 (cd apps/web && GHOSTPAY_LOCAL_BUILD_PROFILE=lean npx playwright test)     # baseline 66 passed / 3 skipped
 (cd apps/web && GHOSTPAY_LOCAL_BUILD_PROFILE=full npx playwright test)     # baseline 78 passed / 1 skipped
 (cd packages/contracts && forge build --sizes && forge test && forge fmt --check && forge snapshot --check --no-match-test "testFuzz|invariant")
+(cd packages/pool-contracts && forge build --sizes && forge test && forge fmt --check)    # ci.yml:473-506; baseline 86/0
+(cd packages/payer-hiding-contracts && bash scripts/fetch-entrypoint.sh && forge build --sizes && forge test && forge fmt --check)   # baseline 109/0
+node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs   # ci.yml:111
+python3 scripts/tests/audit-permissions.test.py                                   # ci.yml:553
 npm run ci:scan-secrets
 npm run ci:check-actions
 git diff --exit-code "$START" -- packages/contracts/src packages/core-crypto/src test-vectors/scheme1.json   # frozen paths
@@ -526,6 +614,11 @@ git diff --exit-code "$START" -- packages/contracts/src packages/core-crypto/src
 Never set `REQUIRE_ANVIL=1` globally (TB-01). Install Foundry 1.8.5 and solc 0.8.28 from their GitHub release
 tarballs if `foundry.paradigm.xyz` / `binaries.soliditylang.org` are blocked (verified workable in the audit).
 `packages/confidential-contracts` (hardhat) may stay CI-only.
+
+Planned files (absent at `7a620ff1`, VERIFIED): `scripts/agent/workspaces.test.mjs` (#204/#206), `scripts/tests/privacy-claims.test.mjs`
+(WS-02.1), `tools/independent-recovery/` (WS-19.1; reconcile with #213 `scripts/recovery/` first), `scripts/testnet/sign-manifest.mjs`
+(WS-05.1), `check-chain-matrix.mjs --revalidate --rpc` (WS-05.3; today only `[--release]`), `apps/web/src/lib/stepUp.ts` (WS-07.2).
+A gate naming one of them applies once its item has merged.
 
 | CP | Meaning | Gate = G-FULL + |
 |---|---|---|
@@ -553,35 +646,45 @@ Per-feature measurable criteria: `FEATURE_ACCEPTANCE_CRITERIA.md` (every unfinis
   requires an independent recovery proof with a pinned external tool (Foundry `cast`/`anvil` 1.8.5) on synthetic keys;
   K06 requires offline recovery of a historic announcement omitted from the payment archive; legacy keystore v1 stays
   byte-compatible.
-- Checkpoint gate (every CP and before each push): `npm run typecheck`; `npm run lint`; `npm test`; lean + full web
-  builds; Playwright lean + full; `forge test` in `packages/contracts` when contracts or tooling changed;
-  `npm run ci:scan-secrets`; `npm run ci:check-actions`; `node --test` script suites touched; then the PR's GitHub CI
-  green on the pushed head. Contract changes additionally need Slither/Echidna CI green and a Mythril record diff
+- Checkpoint gate (every CP): G-FULL (section 12) on the exact SHA plus the CP row's extra commands. Before each push at
+  least `npm run typecheck`, `npm run lint`, the touched workspaces' tests with the G-FULL anvil policy,
+  `npm run ci:scan-secrets` and `npm run ci:check-actions`. Then the PR's GitHub CI green on the pushed head. Contract changes additionally need Slither/Echidna CI green and a Mythril record diff
   showing no new record.
 
 ## 14. Integration procedure (coordinator only)
 1. Workers commit only on their local task branch `ws/<WS-ID>-<slug>` in their own worktree, only inside owned paths.
    Shared files (package-lock.json, root package.json, tsconfig.base.json, .github/workflows/*, CLAUDE.md, AGENTS.md,
-   docs/ai/ACTIVE_WORK.md, i18n catalogs, apps/web/src/App*.tsx route tables) are coordinator-owned: workers send a
-   patch request in their handoff instead of editing.
+   docs/ai/ACTIVE_WORK.md, i18n catalogs, apps/web/src/App*.tsx route tables) are coordinator-owned: workers request the
+   change as one separate `coord-request(<WS>)` commit of append-only hunks in their branch (section 12), which the
+   coordinator re-applies or merges.
 2. A milestone is "qualified" only when: its acceptance criteria (section 13) pass at the worker head, an
    independent reviewer agent (never the author) has reviewed the diff with the security checklist, and the
    coordinator re-runs the affected tests after merging into the integration branch.
 3. Merge worker branches into the integration branch with `git merge --no-ff` (never squash shared history), one
    workstream at a time; re-run affected package tests + typecheck after each; full suite at each checkpoint.
-4. Push the integration branch at every checkpoint. Draft PR base: `main` if PR #203 merged; otherwise stack on
+4. Push the integration branch after every merge, not only at checkpoints: it is the only durable copy of the work (a
+   container restart lost Team G's results during this audit). Draft PR base: `main` if PR #203 merged; otherwise stack on
    `nodata/wizardly-allen-qwol6u` and say so in the PR body. Mirror the repository PR template if one exists.
 5. Never merge red. If CI fails, diagnose the first error, fix forward on the integration branch, re-run.
-6. Re-census the open PRs/branches each checkpoint: new commits from external writers (the ChatGPT `chatgpt/zero-codex/*`
-   rotation is an active writer) are evaluated for recovery, never blindly merged.
+6. Re-census the open PRs/branches and every `docs/ai/ACTIVE_WORK.md` claim at each checkpoint (section 5 step 2a): new
+   commits from external writers (the ChatGPT `chatgpt/zero-codex/*` rotation, Dependabot, and other Claude/Codex sessions
+   such as #206/#209/#211/#212/#213) are evaluated for recovery or adoption, never blindly merged and never duplicated.
+7. When `origin/main` has moved (another session's PR merged), merge it into the integration branch at the next checkpoint
+   (`git merge --no-ff origin/main`; never rebase the pushed branch), resolve conflicts per section 16, re-run G-FULL, and
+   re-check every item whose files or rows the merged work touched (mark it DONE-ELSEWHERE when its acceptance criteria
+   pass on the merged head). The frozen-path check then compares against the last merged `origin/main`.
 
 ## 15. Durable handoffs
 After every qualified milestone and before any context-heavy step, update `docs/ai/HANDOFF.md` and the workstream
 section of `docs/ai/ACTIVE_WORK.md` on the integration branch and push. Each handoff records: integration branch +
 HEAD SHA + tree; START_SHA; workstreams done/in-progress/blocked with their head SHAs; exact commands run and
 pass/fail counts; CI run ids; remaining defects with severity; owner decisions pending; the next 3 concrete actions.
-Workers end with a handoff block in Caveman format: TASK | SCOPE | CONSTRAINTS | RESULT | EVIDENCE | BLOCKERS plus
-their branch head SHA.
+Workers end every item with the section 12 HANDOFF block, Caveman-compressed (the `TASK | SCOPE | CONSTRAINTS | RESULT |
+EVIDENCE | BLOCKERS` layout is only the brief fallback of section 1). Worker branches are local and never pushed, so at least
+every 4 hours of worker time, before any long step and before context compaction, export each active worker branch
+(`git -C ../wt/<WS-ID> format-patch <base>..HEAD -o <repo>/docs/handoffs/next-phase-20261118/wip/<WS-ID>/`), commit the patches
+on the integration branch as documentation only (never applied before review; deleted when the item merges) and push;
+HANDOFF.md records the restore command (`git am`).
 
 ## 16. Recovery procedures
 Detail (failing tests, conflicts, blocked features, context exhaustion, CI unavailable, dependency changes, vulnerabilities, estimate overrun, bad merge): `PARALLEL_AGENT_EXECUTION_PLAN.md` §9.
@@ -595,6 +698,9 @@ Detail (failing tests, conflicts, blocked features, context exhaustion, CI unava
 - Context exhaustion: write the handoff (section 15) first, then continue; after compaction re-read ACTIVE_WORK.md
   and HANDOFF.md before acting.
 - CI unavailable: run the equivalent local commands, record "local only", keep the gate open until CI confirms.
+- Container restart / lost local state: re-clone (not shallow), redo section 5 steps 1-4 on the pushed integration branch,
+  restore worker WIP from `docs/handoffs/next-phase-20261118/wip/` with `git am`, re-read ACTIVE_WORK.md, HANDOFF.md and the
+  latest CP-n.md, then continue.
 - Dependency change: only the coordinator edits lockfiles; justify each new dependency (maintained, pinned exact
   version, licence recorded in THIRD_PARTY.md); prefer existing dependencies.
 - Discovered vulnerability: stop the affected workstream, record severity/evidence, fix with a regression test
@@ -603,6 +709,6 @@ Detail (failing tests, conflicts, blocked features, context exhaustion, CI unava
 ## 17. Final completion criteria and report
 Stop only when every technically unblocked item in sections 7–10 is implemented, independently reviewed, integrated
 and green on the integration branch, and every remaining item is BLOCKED with an exact owner/external action.
-Do not declare success while any required test or security gate is red or unrun. Final report: START_SHA,
-integration HEAD, PR link, items completed with evidence, items blocked with unblock action, gates status table,
+Do not declare success while any required test or security gate is red or unrun. Final report (also committed as
+`docs/handoffs/next-phase-20261118/FINAL.md` and summarized in the PR body): START_SHA, integration HEAD, PR link, items completed with evidence, items blocked with unblock action, gates status table,
 remaining risks, owner decisions, and the next prompt if work remains.

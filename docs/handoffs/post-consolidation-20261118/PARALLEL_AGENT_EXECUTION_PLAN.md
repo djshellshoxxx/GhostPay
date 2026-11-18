@@ -26,8 +26,9 @@ else
   [ -z "$(git diff --name-only $Q $H | grep -vE '^docs/|\.md$')" ] || { echo "STOP: non-doc change above 7a620ff1 -> requalify"; exit 1; }
   START=$H
 fi
-git worktree add ../wt/WS-00-integration -b ws/WS-00-integration "$START"
-mkdir -p ../wt/WS-00-integration/docs/handoffs/next-phase-20261118 && echo "START=$START" >> ../wt/WS-00-integration/docs/handoffs/next-phase-20261118/BASELINE.md
+DESIGNATED=<the session's designated branch>   # the integration branch; never a second branch or worktree
+git checkout -B "$DESIGNATED" "$START"          # main checkout; only before its first push
+mkdir -p docs/handoffs/next-phase-20261118 && echo "START=$START" >> docs/handoffs/next-phase-20261118/BASELINE.md
 ```
 
 VERIFIED 2026-11-18: main lacks 7a620ff1; #203 head 71abc7e5 differs only in 4 docs files → START = 71abc7e5 today. If STOP fires: coordinator runs G-FULL on the new head, records it, asks owner before using it.
@@ -49,7 +50,7 @@ VERIFIED 2026-11-18: main lacks 7a620ff1; #203 head 71abc7e5 differs only in 4 d
 
 ### 3.3 Exclusive ownership
 
-- `owned_paths` are exclusive while the WS is active; transfer only by `handover_in` at a CP (registry). Validator `check_ownership()`: 0 overlaps among WS active in the same window, 0 worker overlaps with coordinator paths (VERIFIED by run; negative test with injected overlaps detected 80 conflicts).
+- `owned_paths` are exclusive while the WS is active; transfer only by `handover_in` at a CP (registry). Validator `check_ownership()` (audit scratch `model.py`, not packaged; windows are per CP number, so CP-3 and CP-5 items that run concurrently are not compared): 0 overlaps among WS active in the same window, 0 worker overlaps with coordinator paths (VERIFIED by run; negative test with injected overlaps detected 80 conflicts). A more specific owned path beats an overlapping glob of another WS (WS-09 `docs/user/master-backup-recovery.md` in WS-02 `docs/user/**`).
 - Frozen, nobody owns: `packages/contracts/src/**`, `packages/core-crypto/src/**`, `test-vectors/scheme1.json`.
 - Reading any file is free. Needing to edit a non-owned path = STOP + handover request (recovery §9.2).
 
@@ -113,11 +114,11 @@ ws-specific=<see WS card "Handoff +">
 - **Map**  · **Exec** coordinator · **Tier** impl strongest / review strongest · **Est** 0.75–1.6 d · **CP** CP-0 · **Unblocked** all
 - **Features (owns)** - · **Findings** SEC-39 · **TB** TB-10
 - **Deps** - · **Owner gate** - · **External** -
-- **Worktree** `../wt/WS-00-integration` · **Branch** `ws/WS-00-rebaseline`
+- **Worktree** main checkout (integration) · **Branch** the designated integration branch itself
 - **Owned (exclusive)** `docs/handoffs/next-phase-20261118/**`
 - **Objective** Fix start commit by rule; bootstrap toolchain; record baseline gate numbers; fresh census; create integration branch ws/WS-00-integration; erratum for packet docs-only claim (SEC-39).
 - **Items**
-  - `WS-00.1` w0 CP-0 0.1–0.25 d [implement] deps CP-0 · UB — Apply start-commit rule (PLAN §2); `git worktree add ../wt/WS-00-integration -b ws/WS-00-integration $START`; record SHA + tree in BASELINE.md
+  - `WS-00.1` w0 CP-0 0.1–0.25 d [implement] deps CP-0 · UB — Apply start-commit rule (PLAN §2); `git checkout -B <designated branch> $START` in the main checkout (prompt section 5 step 3); record SHA + tree in BASELINE.md
   - `WS-00.2` w0 CP-0 0.25–0.5 d [implement] deps CP-0 · UB — Foundry v1.8.5 from GitHub release tarball (sha256 recorded; foundry.paradigm.xyz blocked), solc 0.8.28 solc-static-linux via FOUNDRY_SOLC (binaries.soliditylang.org blocked), Chromium path, `npm ci --ignore-scripts`, `npm run build:libs`
   - `WS-00.3` w0 CP-0 0.25–0.5 d [implement] deps CP-0 · UB — Run G-FULL on start commit; compare with CI 44242366118 (web 2,749 passed/1 skipped; e2e full 78/1, lean 66/3; forge 490 passed); record in BASELINE.md
   - `WS-00.4` w0 CP-0 0.1–0.25 d [implement] deps CP-0 · UB — Fresh read-only branch census (refs at time T) before any retirement talk (OD-19 stays pending)
@@ -138,9 +139,9 @@ G-FULL (§8) on START; record counts
 - **Worktree** `../wt/WS-01` · **Branch** `ws/WS-01-transport-honesty`
 - **Owned (exclusive)** `packages/net-transport/**`, `packages/chain-adapters/src/rpc.ts`, `packages/chain-adapters/src/rpc*.test.ts`, `apps/web/src/lib/scanPrivacy.ts`, `apps/web/src/lib/scanPrivacy*.test.ts`, `apps/web/src/lib/settings.ts`, `apps/web/src/lib/settings*.test.ts`, `apps/web/src/lib/settingsExchange.ts`, `apps/web/src/lib/settingsExchange*.test.ts`, `apps/web/src/views/Settings.tsx`, `apps/web/src/views/Settings*.test.tsx`, `apps/web/index.html`, `apps/web/public/_headers`, `apps/web/scripts/csp.mjs`, `apps/web/src/buildScripts.test.ts`, `apps/web/src/privacyInvariants.test.ts`, `deploy/nginx/security-headers.conf`, `deploy/nginx/security-headers-embed.conf`, `infra/proxy/ghostpay-headers.conf`, `infra/proxy/Caddyfile`, `infra/web/Caddyfile.static`, `apps/web/src/lib/embedHost.ts`, `apps/web/scripts/embed-sri.mjs`, `apps/web/public/ghostpay-embed-v2.js`, `docs/specs/10-feature5-stage1-private-scanning.md`, `docs/threat-model/PRIVACY_THREAT_MODEL.md`, `apps/web/e2e/scan-transport-csp.spec.ts`
 - **Hands over** WS-13 at CP-1 (`deploy/nginx/security-headers.conf`, `deploy/nginx/security-headers-embed.conf`, `infra/proxy/ghostpay-headers.conf`, `infra/proxy/Caddyfile`, `infra/web/Caddyfile.static`); WS-23 at CP-1 (`apps/web/src/views/Settings.tsx`, `apps/web/src/views/Settings*.test.tsx`)
-- **Objective** Make every transport claim true: local-proxy scan works under a CSP allowing only the selected loopback origin in the full/self-host profile, or is removed from lean UI + docs (coordinator default: remove from lean, fix-or-remove in full); reject wss://; fetch transports omit credentials/cache/referrer; docs match.
+- **Objective** Make every transport claim true: local-proxy scan works under a CSP allowing http loopback origins (any port; BLOCKERS TB-02) in the full/self-host profile only, or is removed from lean UI + docs (coordinator default: remove from lean, fix-or-remove in full); reject wss://; fetch transports omit credentials/cache/referrer; docs match.
 - **Items**
-  - `WS-01.1` w1 CP-1 1–2 d [repair] deps CP-0 · UB — Lean: remove local-proxy mode from UI + docs; full/self-host: allow only http://127.0.0.1|localhost|[::1]:<port> of the selected endpoint (or remove); reject wss:// in checkRpcUrl and drop `wss:` from connect-src (index.html, _headers, nginx, infra proxies, csp.mjs); Playwright test under the real meta CSP; fix docs/specs/10 mode b (docs/pages/README.md:49 via WS-04.4)
+  - `WS-01.1` w1 CP-1 1–2 d [repair] deps CP-0 · UB — Lean: remove local-proxy mode from UI + docs; full/self-host: remove the mode by default, or keep it with connect-src loopback entries http://127.0.0.1:*, http://localhost:*, http://[::1]:* (a static meta CSP cannot be narrowed to the chosen port; BLOCKERS TB-02) under RV-SEC review; lean CSP never widened; reject wss:// in checkRpcUrl and drop `wss:` from connect-src (index.html, _headers, nginx, infra proxies, csp.mjs); Playwright test under the real meta CSP; fix docs/specs/10 mode b (docs/pages/README.md:49 via WS-04.4)
   - `WS-01.2` w1 CP-1 1.6–3 d [repair] deps CP-0 · UB — F-NET-01 rows IC (OHTTP vectors; credentials omit/no-store/no-referrer in chain-adapters rpc.ts + net-transport; Tor copy); PRIVACY_THREAT_MODEL 1.1/5 refreshed (SEC-27); random JSON-RPC ids or documented (SEC-45); embedHost.ts:8 comment fix; privacyInvariants extended to chain-adapters + net-transport
   - `WS-01.3` w9 CP-9 0.55–1.25 d [defer] deps CP-4 · BLK: release trust root; OD-07 — Publish embed v2 SHA-384 SRI + hash in signed release notes after OD-07 trust root (owner key)
 - **Acceptance** FEATURE_ACCEPTANCE_CRITERIA.md §F-NET-01, §F-WEB-18; SEC remediation: SEC-10, SEC-19, SEC-27, SEC-20, SEC-45, SEC-43; BLOCKERS §5 TB-02; item text = done-when for non-row items
@@ -172,7 +173,7 @@ bash deploy/selftest.sh
   - `WS-02.3` w1 CP-1 0.25–0.75 d [repair] deps CP-0 · UB — TB-10 remainder: stale chain-adapters README text; Slither "no detector exclusions" claim (docs/developer/security-model.md, docs/audits/00-slither-triage.md) corrected to the CI reality (Low/Info excluded)
   - `WS-02.4` w2 CP-1 0.75–1.1 d [repair] deps CP-0 · UB — apps/web/scripts/test-reconciliation-idb.mjs:71 -> invalidateFrom(block, observed, canonicalHash); CI wiring by WS-20.2
   - `WS-02.5` w2 CP-1 0.6–1.35 d [repair] deps CP-0 · UB; OA-04 — chain-adapters README/TODO-VERIFY consistent with quote.ts FEEDS (4 testnet feeds)
-  - `WS-02.6` w4 CP-3 0–0.45 d [defer] deps CP-0 · UB — docs/specs/02-* disposition note for rule 2 citing negative.test.ts:200,314; owner ack recorded (no canonical ID)
+  - `WS-02.6` w4 CP-3 0–0.45 d [defer] deps CP-0 · UB — docs/specs/02-* disposition note for rule 2 citing negative.test.ts:200,314; owner acknowledgement requested as OD-23 (engineering never records it)
   - `WS-02.7` w5 CP-3 0.85–1.75 d [recover] deps WS-02.6 · UB — Recover 57dcf7e8 apps/web/scripts/test-seller-vault-idb.mjs (R1-R3 + two-tab); independent decode vector moves to WS-19.1
   - `WS-02.8` w5 CP-3 0.7–1.45 d [repair] deps WS-02.7 · UB — docs/design/qr-colors.md hunk from 400e20f1 (bearer precedence matches qrKinds.test.ts:40-42); #140 wiki text not imported
 - **Acceptance** FEATURE_ACCEPTANCE_CRITERIA.md §F-WEB-23, §F-DOC-01, §F-WEB-09, §F-DEP-05, §F-WEB-06, §F-KEY-03, §F-DOC-02; SEC remediation: SEC-28, SEC-21, SEC-17, SEC-15; BLOCKERS §5 TB-10, TB-06; item text = done-when for non-row items
@@ -198,7 +199,7 @@ node scripts/i18n/check.mjs   # after coord-request merge
 - **Objective** Freeze K01/K02 (CP-2): strict typed formats, verified derivation, new AAD domain envelope, golden v1 vector; legacy keystore v1 byte-identical; no secret JSON-hex plaintext.
 - **Items**
   - `WS-03.1` w3 CP-2 4.25–6 d [implement] deps CP-0 · UB; OD-10 — K01 per rows IC; OD-10 recommendation applied + recorded in spec 18 for owner sign-off; D-21 hash convention recorded
-  - `WS-03.2` w3 CP-2 4.25–6.5 d [implement] deps WS-03.1, WS-18.2 · UB: floor for new formats per OD-09 (default: score>=3 or generated); OD-09 — K02 per rows IC; golden keystore v1 vector first (test-vectors/keystore-v1-golden.json, injected salt/IV, test-only); docs/developer/byte-layouts.md:195-198 drift fixed (SEC-15); passphrase tier `high` from WS-18 (OD-09 default)
+  - `WS-03.2` w3 CP-2 4.25–6.5 d [implement] deps WS-03.1, WS-18.2 · UB: floor for new formats per OD-09 default (WS-18 `high` tier: generated diceware default or ≈80-bit estimate; never score>=3 alone); OD-09 — K02 per rows IC; golden keystore v1 vector first (test-vectors/keystore-v1-golden.json, injected salt/IV, test-only); docs/developer/byte-layouts.md:195-198 drift fixed (SEC-15); passphrase tier `high` from WS-18 (OD-09 default)
   - `WS-03.3` w8 CP-6 1.1–2.25 d [defer] deps CP-5 · UB — secret-box wiring revisit after KC (deferred; suites stay green)
 - **Acceptance** FEATURE_ACCEPTANCE_CRITERIA.md §F-KEY-07, §F-KEY-08, §F-KEY-13; SEC remediation: SEC-04, SEC-38, SEC-05, SEC-37, SEC-15; item text = done-when for non-row items
 - **Security review** REQUIRED, strongest, RV-CRYPTO; second strongest reviewer signs the CP-2 format freeze
@@ -297,9 +298,9 @@ mythril/echidna/slither absent locally: analyzer evidence = contract-analysis.ym
 - **Worktree** `../wt/WS-07` · **Branch** `ws/WS-07-step-up`
 - **Owned (exclusive)** `apps/web/src/lib/keyVault.ts`, `apps/web/src/lib/keyVault*.test.ts`, `apps/web/src/lib/session.ts`, `apps/web/src/lib/session*.test.ts`, `apps/web/src/lib/stepUp.ts`, `apps/web/src/lib/stepUp*.test.ts`, `apps/web/src/views/SellerKeys.tsx`, `apps/web/src/views/SellerKeys*.test.tsx`, `apps/web/src/views/Sweep.tsx`, `apps/web/src/views/Sweep*.test.tsx`, `apps/web/src/components/BackupPanel.tsx`, `apps/web/src/components/BackupPanel*.test.tsx`, `apps/web/src/components/TagArchive.tsx`, `apps/web/src/components/TagArchive*.test.tsx`, `apps/web/src/lib/tagArchive.ts`, `apps/web/e2e/backup-panel.spec.ts`
 - **Hands over** WS-09 at CP-2 (`apps/web/src/lib/session.ts`, `apps/web/src/lib/session*.test.ts`, `apps/web/src/views/SellerKeys.tsx`, `apps/web/src/views/SellerKeys*.test.tsx`); WS-23 at CP-2 (`apps/web/src/lib/keyVault.ts`, `apps/web/src/lib/keyVault*.test.ts`)
-- **Objective** No secret export without re-authentication: vault-less sessions refuse master-keystore/raw/archive export (OD-01 default (a)); sweep unchanged but warned; one step-up API that K03-K06 consume.
+- **Objective** No new secret export without re-authentication: vault-less sessions refuse the spec-18 exports (K03-K06 encrypted and raw keys, archive) through one step-up API that K03-K06 consume (OD-01 default); the existing encrypted keystore v1 backup and vault creation stay available with disclosure (constraint 4; BLOCKERS OD-01); sweep unchanged but warned.
 - **Items**
-  - `WS-07.1` w1 CP-1 1.25–2.5 d [repair] deps CP-0 · UB: fail-closed default; model choice OD-01 later; OD-01 — authorizeKeyExport refuses when no vault (today returns undefined, keyVault.ts:257-266); keyVault.test.ts:241 "no step-up" pin replaced by refusal tests; vault-less sweep warning + beta disclosure copy (coord en.json); beforeunload guard while backup unverified (SEC-40 part 2)
+  - `WS-07.1` w1 CP-1 1.25–2.5 d [repair] deps CP-0 · UB: fail-closed default; model choice OD-01 later; OD-01 — keep `authorizeKeyExport` returning undefined for the keystore v1 backup in vault-less sessions (keyVault.ts:257-266; it is the only encrypted backup of in-memory keys, BLOCKERS OD-01) and add a disclosure + typed confirmation before that download; keyVault.test.ts:241 pin kept and extended (vault-less v1 backup allowed after confirmation; keys tied to a vault need its passphrase); new spec-18 exports refuse without a vault through WS-07.2 `requireStepUp`; vault-less sweep warning + beta disclosure copy (coord en.json); beforeunload guard while backup unverified (SEC-40 part 2)
   - `WS-07.2` w3 CP-2 1.7–3.5 d [repair] deps WS-07.1 · UB: implements OD-01 choice if recorded, else default (a); OD-01 — requireStepUp(kind) API (vault passphrase re-entry; pluggable for OD-01 (c) WebAuthn UV); tag-archive export uses it
 - **Acceptance** FEATURE_ACCEPTANCE_CRITERIA.md §F-KEY-05; SEC remediation: SEC-03, SEC-40; BLOCKERS §5 TB-04; item text = done-when for non-row items
 - **Security review** REQUIRED, strongest, RV-CRYPTO (secret-export authorization)
@@ -308,7 +309,7 @@ mythril/echidna/slither absent locally: analyzer evidence = contract-analysis.ym
 (cd apps/web && npx vitest run src/lib/keyVault src/lib/session src/lib/stepUp src/views/SellerKeys src/views/Sweep src/components/BackupPanel src/components/TagArchive)
 (cd apps/web && for p in lean full; do GHOSTPAY_LOCAL_BUILD_PROFILE=$p npx playwright test e2e/backup-panel.spec.ts e2e/recovery.spec.ts e2e/sweep.spec.ts || exit 1; done)
 ```
-- **Handoff +** refusal matrix: session {vault, vault-less} × export {keystore, raw, archive, sweep} × factor {none, wrong, right}
+- **Handoff +** refusal matrix: session {vault, vault-less} × export {keystore v1 backup, raw, archive, K03/K06, sweep} × factor {none, wrong, right}; vault-less keystore v1 backup = allowed after disclosure + typed confirmation (BLOCKERS OD-01), every other vault-less secret export = refused, sweep = warned
 
 ### WS-08 — Spec 18 K03-K04: Payment details export UI (public + encrypted keypair), raw single-key export
 
@@ -362,14 +363,14 @@ npm test -w @ghostpay/cli   # CLI keystore v1 unchanged
 - **Features (owns)** F-WEB-05 F-PROTO-05 F-WEB-26 F-WEB-02 F-CTR-06 F-WEB-04 · **Findings** - · **TB** TB-07
 - **Deps** WS-00, WS-02, WS-04 · **Owner gate** - · **External** -
 - **Worktree** `../wt/WS-10` · **Branch** `ws/WS-10-payer-ux`
-- **Owned (exclusive)** `apps/web/src/lib/pay.ts`, `apps/web/src/lib/pay*.test.ts`, `apps/web/src/lib/payExec.ts`, `apps/web/src/lib/payExec*.test.ts`, `apps/web/src/lib/displayText.ts`, `apps/web/src/lib/transactionOutcome.ts`, `apps/web/src/lib/scanSpam.ts`, `apps/web/src/views/Pay.tsx`, `apps/web/src/views/Pay*.test.tsx`, `apps/web/src/views/CreateInvoice.tsx`, `apps/web/src/views/CreateInvoice*.test.tsx`, `packages/address-safety/**`, `packages/chain-adapters/src/quote.ts`, `packages/chain-adapters/src/quote*.test.ts`, `apps/web/src/lib/duplicateAttemptJournal.ts`, `docs/user/seller-privacy.md`
+- **Owned (exclusive)** `apps/web/src/lib/pay.ts`, `apps/web/src/lib/pay*.test.ts`, `apps/web/src/lib/payExec.ts`, `apps/web/src/lib/payExec*.test.ts`, `apps/web/src/lib/displayText.ts`, `apps/web/src/lib/transactionOutcome.ts`, `apps/web/src/lib/scanSpam.ts`, `apps/web/src/views/Pay.tsx`, `apps/web/src/views/Pay.test.tsx`, `apps/web/src/views/Pay.*.test.tsx`, `apps/web/src/views/CreateInvoice.tsx`, `apps/web/src/views/CreateInvoice*.test.tsx`, `packages/address-safety/**`, `packages/chain-adapters/src/quote.ts`, `packages/chain-adapters/src/quote*.test.ts`, `apps/web/src/lib/duplicateAttemptJournal.ts`, `docs/user/seller-privacy.md`
 - **Handover in** after CP-1 from WS-02: `docs/user/seller-privacy.md`
 - **Hands over** WS-23 at CP-3 (`apps/web/src/lib/duplicateAttemptJournal.ts`)
 - **Objective** Close the payer-side gaps: lean payer-buffer test (TB-07 default), spec 05 2C hint, payeeTrust decision, OP-stack sequencer guard, v2 buffer anvil journey.
 - **Items**
   - `WS-10.1` w4 CP-3 0.45–1.1 d [repair] deps WS-04.4 · UB — Lean + full payer-buffer unit tests (keep v1 buffer in lean; docs fixed in WS-04.4)
   - `WS-10.2` w4 CP-3 0.75–1.35 d [implement] deps WS-10.1 · UB — Spec 05 2C hint on Pay; no network call
-  - `WS-10.3` w4 CP-3 0.7–1.5 d [repair] deps WS-10.2 · UB — payeeTrust decision (ADR note; export internal or wired with tests); owner ack (no canonical ID)
+  - `WS-10.3` w4 CP-3 0.7–1.5 d [repair] deps WS-10.2 · UB — payeeTrust decision (ADR note; export internal or wired with tests); owner acknowledgement requested as OD-23 (engineering never records it)
   - `WS-10.4` w4 CP-3 1.5–2.5 d [repair] deps WS-10.3 · UB — OP-stack sequencer-uptime + grace guard; deviation/USD-peg checks when configured (full profile)
   - `WS-10.5` w4 CP-3 1.5–2 d [implement] deps WS-10.4 · UB — Anvil journey: v2 bufferPolicy -> payment with buffer -> direct sweep paid only from buffer; net asserted
   - `WS-10.6` w8 CP-6 2–3.75 d [defer] deps CP-5 · UB — Confirm disclosure present (deferred)
@@ -395,7 +396,7 @@ node --test apps/web/scripts/localBuildProfile.test.mjs   # lean excludes fiat
 - **Owned (exclusive)** `packages/chain-adapters/src/logs.ts`, `packages/chain-adapters/src/logs*.test.ts`, `packages/chain-adapters/src/scanVerify.ts`, `packages/chain-adapters/src/scanVerify*.test.ts`, `packages/chain-adapters/src/scanHardening.test.ts`, `apps/web/src/lib/scannerCore.fuzz.test.ts`, `packages/cli/src/backup-data.ts`, `packages/cli/src/commands/backup.ts`, `packages/cli/test/compiled.test.mjs`, `packages/cli/test/backup-independent.test.mjs`, `docs/developer/relayer-privacy.md`
 - **Objective** Fail-closed per-log blockHash check; relayer + CLI compiled evidence; CLI backup decrypted by the independent tool.
 - **Items**
-  - `WS-11.1` w4 CP-3 0.7–1.5 d [repair] deps CP-0 · UB — Per-log blockHash cross-check, fail closed
+  - `WS-11.1` w4 CP-3 0.7–1.5 d [repair] deps CP-0 · UB — Records only (~0.1 d; F-PROTO-03 VERIFIED_COMPLETE): cite the existing per-log blockHash check `packages/chain-adapters/src/logs.ts:438-460` + `logs.test.ts:132-148`; add no code
   - `WS-11.2` w4 CP-3 0.25–0.35 d [repair] deps WS-11.1 · UB — REQUIRE_ANVIL=1 relayer suite evidence; relayer metadata/fallback privacy note (SEC-34)
   - `WS-11.3` w4 CP-3 0.25–0.35 d [repair] deps WS-11.2 · UB — CLI compiled tests evidence
   - `WS-11.4` w4 CP-3 1–2.25 d [implement] deps WS-11.3, WS-19.1 · UB: after WS-19.1 (independent tool) rolling-merges — `ghostpay backup create` output decrypted by tools/independent-recovery (no GhostPay code); keys match
@@ -418,11 +419,11 @@ node --test packages/cli/test/backup-independent.test.mjs
 - **Deps** WS-00 · **Owner gate** OD-20, OD-16 · **External** EX-03, EX-04
 - **Worktree** `../wt/WS-12` · **Branch** `ws/WS-12-a11y-i18n`
 - **Owned (exclusive)** `apps/web/e2e/accessibility-audit.ts`, `apps/web/e2e/accessibility.spec.ts`, `apps/web/e2e/contextual-help.spec.ts`, `apps/web/e2e/focus-scope.spec.ts`, `apps/web/src/i18n/**`, `packages/i18n/**`, `packages/ux-i18n/**`, `scripts/i18n/**`, `docs/accessibility/**`, `apps/web/src/components/ContextHelp.tsx`, `apps/web/src/components/ContextHelp*.test.tsx`, `apps/web/src/AppShell.i18n.test.tsx`
-- **Objective** Prove #201/#202 browser fixes hold; axe coverage of every dialog/theme; screen-reader protocol; literal checker (allowlist -> 0 by CP-5, each WS fixes its own files); selector lists only shipped locales (OD-16 default).
+- **Objective** Prove #201/#202 browser fixes hold; axe coverage of every dialog/theme; screen-reader protocol; literal checker (allowlist -> 0 by CP-5, each WS fixes its own files); selector stays as today: every listed locale labelled machine-drafted/no catalog (`apps/web/src/i18n/LanguagePicker.tsx:19-23`); trimming it to shipped locales is the owner's OD-16 choice.
 - **Items**
   - `WS-12.1` w2 CP-1 0.75–1.5 d [repair] deps CP-0 · UB — Playwright re-run of #201/#202 lost-click/focus paths (POST_CONSOLIDATION_AUDIT §7); ContextHelp hover-leave collapse (SEC-29, UNVERIFIED) reproduce-then-fix; paste-submit focus test (SEC-30)
   - `WS-12.2` w4 CP-3 1.25–2.5 d [repair] deps WS-12.1 · UB
-  - `WS-12.3` w4 CP-3 0.75–1 d [repair] deps WS-12.2 · UB: OD-16 fail-closed default: selector lists only shipped locales; OD-20,OD-16
+  - `WS-12.3` w4 CP-3 0.75–1 d [repair] deps WS-12.2 · UB: OD-16 default = keep today's labelled selector (no trim); OD-20,OD-16
   - `WS-12.4` w4 CP-3 2–4.25 d [repair] deps WS-12.3 · UB — literals.test.ts in report mode; allowlist shrinks per CP; 0 by CP-5
   - `WS-12.5` w4 CP-3 1.5–2.5 d [implement] deps WS-12.4 · UB: protocol now; run is human; EX-03 — Screen-reader protocol doc + log template; AT runs are EX-03
   - `WS-12.6` w8 CP-6 0.75–1.5 d [consolidate] deps CP-5 · UB; OD-20,OD-16 — Ownership ADR for the two i18n stacks
@@ -590,13 +591,13 @@ GHOSTPAY_LOCAL_BUILD_PROFILE=lean npm run build -w @ghostpay/web   # record lean
 - **Deps** WS-00, WS-03, WS-08, WS-09, WS-25 · **Owner gate** - · **External** -
 - **Worktree** `../wt/WS-19` · **Branch** `ws/WS-19-independent-recovery`
 - **Owned (exclusive)** `tools/independent-recovery/**`, `docs/recovery/independent-recovery.md`, `test-vectors/independent-recovery/**`
-- **Objective** Clean-room tool (author != WS-03/08/09 author) built from spec 18 text + vectors only: zero @ghostpay/* imports, zero npm deps (node>=22 scrypt/aes-256-gcm + vendored keccak-f[1600] and secp256k1 BigInt arithmetic checked against published vectors); decodes keystore v1, K02, K05, K06; derives scheme-1 stealth keys; proves spend on anvil with pinned Foundry 1.8.5.
+- **Objective** Clean-room tool (author != WS-03/08/09 author) built from spec 18 text + vectors only: zero @ghostpay/* imports, zero npm deps (node>=22 scrypt/aes-256-gcm + vendored keccak-f[1600] and secp256k1 BigInt arithmetic checked against published vectors); decodes keystore v1, K02, K05, K06; derives scheme-1 stealth keys and addresses; spend proofs use pinned Foundry 1.8.5 cast/anvil (no hand-rolled ECDSA or transaction signer in the tool).
 - **Items**
   - `WS-19.1` w3 CP-2 3–5 d [implement] deps CP-0 · UB — v1 keystore + CLI backup decode; scheme-1 derivation recomputes 100% of test-vectors/scheme1.json (second 5564 implementation, SEC-38); CI job via coord-request
   - `WS-19.2` w3 CP-2 0.5–1.5 d [implement] deps WS-19.1, WS-03.2 · UB — Decode K01/K02 vectors (stealth-export-v1.json, fixed-salt/IV K02 vectors) at format freeze
   - `WS-19.3` w7 CP-5 0.25–0.5 d [implement] deps WS-25.1 · UB — K05 archive decode + per-record address check
   - `WS-19.4` w7 CP-5 0.5–1 d [implement] deps WS-09.1 · UB — K06 master backup recovers an announcement omitted from the K05 archive (offline scan of a fixture log set)
-  - `WS-19.5` w7 CP-5 0.75–1.5 d [implement] deps WS-08.2 · UB — K04 raw key -> EIP-55 address == announced; transfer signed by the tool accepted by anvil (Foundry 1.8.5, synthetic keys)
+  - `WS-19.5` w7 CP-5 0.75–1.5 d [implement] deps WS-08.2 · UB — K04 raw key -> EIP-55 address == announced (computed by the tool); the transfer is signed and sent with pinned Foundry 1.8.5 `cast` (the independent EVM implementation NEXT_PHASE_QUEUE K04 names) and accepted by anvil; synthetic keys only; the tool implements no transaction signing
 - **Acceptance** FEATURE_ACCEPTANCE_CRITERIA.md §F-KEY-07, §F-KEY-08, §F-KEY-11, §F-KEY-12, §F-KEY-10; SEC remediation: SEC-04, SEC-15, SEC-38; BLOCKERS §5 TB-05; item text = done-when for non-row items
 - **Security review** REQUIRED, strongest, RV-CRYPTO + clean-room check (reviewer confirms spec + vectors were the only inputs)
 - **Tests**
@@ -614,13 +615,13 @@ anvil --version   # 1.8.5; proof tests start their own anvil, synthetic keys onl
 - **Map** new (G-B) · **Exec** coordinator · **Tier** impl strongest / review strongest · **Est** 4.45–9 d · **CP** CP-1, CP-2, CP-7, CP-9 · **Unblocked** partial
 - **Features (owns)** - · **Contributes to** F-AA-05 · **Findings** SEC-26 SEC-48 SEC-02 SEC-43 SEC-47 · **TB** TB-01 TB-09 TB-06
 - **Deps** WS-00, WS-02, WS-19, WS-22 · **Owner gate** OA-07, OD-07, OA-03, OA-01 · **External** -
-- **Worktree** `../wt/WS-00-integration` · **Branch** `ws/WS-20-ci-release`
+- **Worktree** main checkout (integration) · **Branch** short-lived local `ws/WS-20-ci-release` cut from the integration tip, merged `--no-ff`
 - **Owned (exclusive)** `.github/workflows/**`, `.github/dependabot.yml`, `.github/actions/**`, `scripts/ci/**`, `scripts/tests/workflows.test.mjs`, `scripts/tests/workflow-files.test.mjs`, `scripts/tests/contract-analysis-workflow.test.mjs`, `scripts/tests/release-verify*.test.mjs`
 - **Objective** Release verify cannot fail for env reasons; every existing test suite runs somewhere; PR critical path shorter without third-party actions; attestation ready for the owner key.
 - **Items**
   - `WS-20.1` w1 CP-1 0.5–1 d [repair] deps CP-0 · UB — release.yml verify: per-workspace anvil policy identical to ci.yml (no global REQUIRE_ANVIL for payer-sponsor, external-pools-railgun/privacypools); local reproduction of the exact verify command list. Also applies the WS-04.1 coord-request: pages.yml deployed-origin assertion + cname/https_enforced check (C-08) at CP-1
   - `WS-20.2` w2 CP-2 1.1–2.25 d [implement] deps WS-02.4 · UB — Nightly/path-filtered job: 56 examples/ tests, anvil/circuit suites (payer-sponsor, railgun, privacypools, pool-relayer, pool-circuits), policy-recovery model tests (F-AA-05 Info), test-reconciliation-idb + seller-vault harness, `npm run test:compiled -w @ghostpay/cli`, independent-recovery vectors (WS-19); dependabot docker ecosystem entries (SEC-26)
-  - `WS-20.3` w3 CP-2 2–4 d [refactor] deps WS-20.2 · UB — Step-timing summary; single coverage pass; build web once per profile, share dist with e2e + lean-candidate; affected-only lint/typecheck on PRs (scripts/agent/affected.mjs from #204); cost-balanced shards; Mythril on nightly + tag only; lean+full e2e share one install. Required checks unchanged (typescript, contracts)
+  - `WS-20.3` w3 CP-2 2–4 d [refactor] deps WS-20.2 · UB — Step-timing summary; single coverage pass; build web once per profile, share dist with e2e + lean-candidate; affected-only lint/typecheck only as an extra fast pre-check (the full lint/typecheck still runs on every PR); cost-balanced shards; Mythril and Echidna stay on every PR that touches their paths (contract-analysis.yml:3-12) and on nightly/tag; lean+full e2e share one install. No job, analyzer, test file or required check may stop running on PRs (prompt section 3)
   - `WS-20.4` w9 CP-7 0.1–0.25 d [implement] deps CP-4 · BLK: owner exports or grants read access; OA-07 — Review CodeQL / Dependabot / secret-scanning alert inventories once OA-07 lands; record counts + dispositions in CP-7.md
   - `WS-20.5` w9 CP-7 0.5–1 d [implement] deps CP-4 · BLK: owner key + protection; OD-07,OA-03,OA-01 — pages.yml: actions/attest-build-provenance on Pages SHA256SUMS; signed checksum publication path (owner signs); deployed-origin assertion (C-08) already landed at CP-1 via WS-20.1
   - `WS-20.6` w9 CP-9 0.25–0.5 d [implement] deps WS-20.5 · BLK: owner runs the tag rehearsal; OA-01,OA-03 — Runbook for a signed pre-release tag rehearsal in a sandbox repo; OWNER executes (agents never tag)
@@ -659,7 +660,7 @@ TB-01: run release.yml `verify` step list verbatim with Foundry 1.8.5 → exit 0
 - **Map** new (G-B) · **Exec** coordinator · **Tier** impl strongest / review mid · **Est** 1.5–3.5 d · **CP** CP-1 · **Unblocked** all
 - **Features (owns)** - · **Findings** SEC-49 SEC-25 · **TB** -
 - **Deps** WS-00 · **Owner gate** OD-15, OD-18 · **External** -
-- **Worktree** `../wt/WS-00-integration` · **Branch** `ws/WS-22-tooling-deps`
+- **Worktree** main checkout (integration) · **Branch** short-lived local `ws/WS-22-tooling-deps` cut from the integration tip, merged `--no-ff`
 - **Owned (exclusive)** `CLAUDE.md`, `AGENTS.md`, `docs/ai/**`, `.claude/skills/**`, `scripts/agent/**`, `package.json`, `package-lock.json`
 - **Objective** Port #204 as one separate reviewable commit (regenerated PACKAGE_MAP.md, merged CLAUDE.md, ci.yml line); refresh minor/patch deps once, early, with full gates; majors deferred.
 - **Items**
@@ -712,7 +713,7 @@ npm test -w @ghostpay/ux-vault
 - **Items**
   - `WS-24.1` w2 CP-2 0.5–1 d [repair] deps CP-0 · UB — Move loadManifest (manifest.ts:52-101) + verifyTextManifestSignature to test utilities; unit test that no production module exports them; bundle-scan rule line in scan-bundle.mjs via coord-request (no WS owns it in window 2)
   - `WS-24.2` w6 CP-4 3–5.5 d [refactor] deps WS-24.1, WS-05.1 · UB: announcer codehash pin waits for B02/B04 evidence — Rows IC: web verifyManifestForFlow + CLI payment-context.ts + relayer runtime.ts call one strict verifier (G-NOTE-01)
-  - `WS-24.3` w6 CP-4 1.75–3 d [repair] deps WS-24.2 · UB: bundling of the real manifest owner-gated; OD-07 — Dual-provider readback reconciles both providers, fails closed on disagreement/unreachable; banner provider count
+  - `WS-24.3` w6 CP-4 1.75–3 d [repair] deps WS-24.2 · UB: bundling of the real manifest owner-gated; OD-07 — When the user has configured a secondary RPC (opt-in; never a built-in default or automatic fallback), readback reconciles both providers and fails closed on disagreement/unreachable; single-provider mode unchanged; banner provider count
   - `WS-24.4` w6 CP-4 1.5–1.75 d [repair] deps WS-24.3, WS-05.3 · UB: pin values after B04; OA-04 — ERC-6538 singleton runtime codehash per-chain pin; unknown/mismatch disables registry features; ADR-0018 stale text
 - **Acceptance** FEATURE_ACCEPTANCE_CRITERIA.md §F-DEP-02, §F-WEB-17, §F-CTR-04; SEC remediation: SEC-14, G-NOTE-01; BLOCKERS §5 TB-10; item text = done-when for non-row items
 - **Security review** REQUIRED, strongest, RV-REL/RV-WEB (verifier strictness)
@@ -808,9 +809,11 @@ Planned lanes from the simulation (lo estimates, review overhead included; days 
 
 ```bash
 # G-FULL — run from the worktree root on the exact SHA being qualified; record exit codes + pass/skip counts
+: "${START:?set START to START_SHA or to the last origin/main merged into the integration branch}"   # used by the frozen-path line
 npm run typecheck
 npm run lint
 (cd packages/contracts && forge build)                                     # artifacts for anvil suites
+SOLC_0828="${SOLC_0828:-$HOME/.svm/0.8.28/solc-0.8.28}"; test -x "$SOLC_0828"   # written by the forge build above (ci.yml:152, foundry.toml:8-10); else the solc-static-linux v0.8.28 release binary
 ANVIL_BIN=$(command -v anvil) SOLC_BIN=$SOLC_0828 REQUIRE_ANVIL=1 npm test -w apps/web -w packages/chain-adapters -w packages/policy-scheme
 ANVIL_BIN=$(command -v anvil) REQUIRE_ANVIL=1 npm test -w apps/relayer
 ANVIL_BIN=$(command -v anvil) npm test -w packages/confidential-contracts   # hardhat; needs binaries.soliditylang.org (blocked here: HH502)
@@ -821,6 +824,10 @@ GHOSTPAY_LOCAL_BUILD_PROFILE=full npm run build -w @ghostpay/web
 (cd apps/web && GHOSTPAY_LOCAL_BUILD_PROFILE=lean npx playwright test)     # baseline 66 passed / 3 skipped
 (cd apps/web && GHOSTPAY_LOCAL_BUILD_PROFILE=full npx playwright test)     # baseline 78 passed / 1 skipped
 (cd packages/contracts && forge build --sizes && forge test && forge fmt --check && forge snapshot --check --no-match-test "testFuzz|invariant")
+(cd packages/pool-contracts && forge build --sizes && forge test && forge fmt --check)    # ci.yml:473-506; baseline 86/0
+(cd packages/payer-hiding-contracts && bash scripts/fetch-entrypoint.sh && forge build --sizes && forge test && forge fmt --check)   # baseline 109/0
+node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs   # ci.yml:111
+python3 scripts/tests/audit-permissions.test.py                                   # ci.yml:553
 npm run ci:scan-secrets
 npm run ci:check-actions
 git diff --exit-code "$START" -- packages/contracts/src packages/core-crypto/src test-vectors/scheme1.json   # frozen paths
