@@ -336,6 +336,8 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByText(/Claimed, not confirmed/)).toHaveCount(0);
     const panel = page.getByRole('region', { name: 'Seller-signed receipt' });
     await expect(panel).toBeVisible();
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
     if (!lean) await expect(panel).toContainText('The invoice digest is entered manually and is not matched against invoice contents.');
     // Nothing is signed without explicit consent.
     await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
@@ -356,6 +358,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
 
       const invoiceDigest = `0x${'b'.repeat(64)}`;
       await digestInput.fill(invoiceDigest);
+      await includeAddress.check();
       await panel.getByRole('button', { name: 'Sign receipt' }).click();
       const jsonBox = page.getByLabel('Signed receipt JSON');
       await expect(jsonBox).toBeVisible();
@@ -458,6 +461,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(panel.getByRole('button', { name: 'Sign receipt', exact: true })).toBeDisabled();
     await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
     await auditAccessibility(page, 'flow-bound-receipt-awaiting-signing-consent');
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const boundText = await panel.getByLabel('Signed receipt JSON').inputValue();

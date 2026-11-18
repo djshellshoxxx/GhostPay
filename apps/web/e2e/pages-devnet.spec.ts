@@ -4,13 +4,14 @@ import { createServer } from 'node:http';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import {
-  FRAGMENT_PREFIX, canonicalize, decodeBase64Url, encodeBase64Url, invoiceDigest as calculateInvoiceDigest, parseFragment,
+  invoiceDigest as calculateInvoiceDigest, parseFragment,
 } from '@ghostpay/invoice-schema';
 import { ANNOUNCEMENT_TOPIC, decodePaymentCalldata, tokensForChain, type Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { getAddress, keccak256, parseTransaction, recoverTransactionAddress, toHex, type Address } from 'viem';
 import { verifyReceipt } from '../src/lib/receipts';
 import { generateKeys, openFresh } from './helpers';
+import { tamperInvoiceLink } from './devnet/invoiceTamper';
 import { ANVIL_ACCOUNTS, APP_RPC, Anvil, loadDevnet, type DevnetState } from './devnet/chain';
 import { identityOf, keysView, nav, receiptPanel, reviewToFinalCheck, scan, scanMatches, sweepJournal, sweepView, walletJournal } from './devnet/ui';
 import {
@@ -126,19 +127,6 @@ async function scanFromZero(page: Page, resume: boolean): Promise<void> {
   await page.getByRole('button', { name: 'Start scan' }).click();
   await expect(page.getByText(/^Finished\./)).toBeVisible({ timeout: 60_000 });
 }
-
-/** A copy of a signed invoice link whose public amount was changed after signing (the signature no longer verifies). */
-function tamperInvoiceLink(link: string): string {
-  const url = new URL(link);
-  expect(url.hash.startsWith(FRAGMENT_PREFIX)).toBe(true);
-  const envelope = JSON.parse(new TextDecoder().decode(decodeBase64Url(url.hash.slice(FRAGMENT_PREFIX.length)))) as { alg: string; inv: { amountPolicy: { mode: string; tokenAmount: string } }; sig: string };
-  expect(envelope.alg).toBe('none');
-  expect(envelope.inv.amountPolicy.mode).toBe('fixed_token');
-  envelope.inv.amountPolicy.tokenAmount = (BigInt(envelope.inv.amountPolicy.tokenAmount) / 10n).toString();
-  url.hash = FRAGMENT_PREFIX + encodeBase64Url(new TextEncoder().encode(canonicalize(envelope)));
-  return url.toString();
-}
-
 
 /**
  * Pages transport fidelity: an upstream HTTP error is not a successful JSON-RPC transport.
@@ -347,6 +335,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     link = await createPagesInvoice(sp, baseURL ?? '', { description: 'Pages devnet consulting', register: true });
     const opened = await parseFragment(new URL(link).hash);
     expect(opened.verification.signatureValid).toBe(true);
+    expect(opened.encrypted).toBe(true);
     expect(opened.invoice).toMatchObject({ chainId: 84532, token: 'native', signer: identity.signer, metaAddress: identity.meta });
     digest = `0x${bytesToHex(calculateInvoiceDigest(opened.invoice))}`;
 
@@ -479,6 +468,24 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await panel.getByLabel('I consent to opening this invoice locally to bind the receipt.').check();
     await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
+    await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
+    const minimized: unknown = JSON.parse(await panel.getByLabel('Signed receipt JSON').inputValue());
+    expect(verifyReceipt(minimized)).toBe(true);
+    expect(minimized).not.toHaveProperty('stealthAddress');
+    expect(minimized).toMatchObject({
+      invoiceDigest: digest, chainId: 84532, asset: 'native', amountMinorUnits: net0.toString(),
+      txHash: payHash.toLowerCase(), signerPublicKey: identity.signer,
+    });
+
+    // Rebind and explicitly opt into the full receipt before checking its address and archiving it.
+    await panel.getByRole('button', { name: 'Clear invoice binding', exact: true }).click();
+    await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
+    await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receipt: unknown = JSON.parse(await panel.getByLabel('Signed receipt JSON').inputValue());
@@ -510,6 +517,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const rawBefore = net.sentRaw.length;
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     const sign = await prepareDirectSweep(s, VAULT_PASS);
     await sign.click();
     await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
@@ -539,6 +547,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // A second sweep of the same one-time address is refused before signing; nothing new reaches the chain.
     await nav(s).getByRole('button', { name: 'Seller keys' }).click();
     await nav(s).getByRole('button', { name: 'Sweep' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await expect(sweepView(s).locator('code', { hasText: stealth })).toBeVisible();
     const again = await prepareDirectSweep(s, VAULT_PASS);
     await again.click();
@@ -615,6 +624,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     // The swept address cannot be swept again from the reopened profile either.
     const rawBefore = net.sentRaw.length;
     await scanMatches(sp).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(sp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     const sign = await prepareDirectSweep(sp, VAULT_PASS);
     await sign.click();
     await expect(sweepView(sp).getByText('The balance does not cover the network fee.', { exact: false })).toBeVisible({ timeout: 30_000 });
@@ -700,6 +710,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
 
     // Already swept: the restored keys see the dust balance and refuse; nothing new on chain.
     await scanMatches(rp).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(rp).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await expect(sweepView(rp).locator('code', { hasText: stealth })).toBeVisible();
     const sign = await prepareDirectSweep(rp);
     await sign.click();
@@ -833,8 +844,14 @@ test.describe('GitHub Pages artifact: refusals', () => {
     try {
       const s = await quickSeller(c);
       const genuine = await createPagesInvoice(s, baseURL ?? '', { description: 'Pages tamper check' });
+      const original = await parseFragment(new URL(genuine).hash);
+      expect(original.encrypted).toBe(true);
+      expect(original.verification.signatureValid).toBe(true);
       const forged = tamperInvoiceLink(genuine);
-      expect((await parseFragment(new URL(forged).hash)).verification.signatureValid).toBe(false);
+      const altered = await parseFragment(new URL(forged).hash);
+      expect(altered.encrypted).toBe(true);
+      expect(altered.invoice.amountPolicy).toMatchObject({ mode: 'fixed_token', tokenAmount: (PRICE / 10n).toString() });
+      expect(altered.verification.signatureValid).toBe(false);
       const payer = await openPayer(c, ACCOUNTS.rejectPayer);
       const nonce = await anvil.nonce(ACCOUNTS.rejectPayer);
       await openFresh(payer.page, forged);
