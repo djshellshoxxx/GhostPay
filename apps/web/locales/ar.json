@@ -2257,6 +2257,25 @@
     "btc.oracle.secondUrl": "Second oracle URL",
     "btc.oracle.lightChecks": "Light mode recomputes each matched transaction ID and verifies its exact taproot output, amount and Merkle inclusion against the checked header hash. It does not verify witness data, previous outputs, scripts or full-block consensus.",
     "btc.oracle.lightLimits": "Inclusion proofs do not prove that the oracle supplied every payment or that the server showed the best chain. A second oracle can expose disagreement but colluding servers can still omit data. Spent status remains the Esplora server's report.",
-    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations."
+    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations.",
+    "error.stealthExport.conflict": "تتشارك دفعتان عنوان تخفٍّ واحدًا لكن بمفتاحي إعلان مختلفين، لذلك لم يُصدَّر أي شيء.",
+    "error.stealthExport.duplicate": "يحتوي هذا الملف على عنوان التخفي نفسه أكثر من مرة.",
+    "error.stealthExport.invalidAnnouncement": "إعلان هذه الدفعة غير صالح، لذلك لا يمكن تصدير مفتاحها.",
+    "error.stealthExport.invalidChain": "سلسلة هذه الدفعة غير صالحة.",
+    "error.stealthExport.invalidFile": "هذا ليس ملف تصدير مفاتيح تخفٍّ صالحًا من GhostPay.",
+    "error.stealthExport.invalidRecord": "أحد سجلات الدفع غير صالح، لذلك لم يُصدَّر أي شيء.",
+    "error.stealthExport.invalidScryptCost": "تكلفة scrypt غير صالحة.",
+    "error.stealthExport.invalidTime": "وقت التصدير غير صالح.",
+    "error.stealthExport.keyDoesNotMatch": "أحد المفاتيح في هذا التصدير لا يطابق عنوان التخفي الخاص به. لم يُصدَّر أو يُستورد أي شيء.",
+    "error.stealthExport.masterKeysDoNotMatch": "المفاتيح الرئيسية لا تطابق مفاتيحها العامة أو العنوان الوصفي. لم يُصدَّر أو يُستورد أي شيء.",
+    "error.stealthExport.mixedChains": "يجب أن تكون جميع الدفعات في التصدير الواحد على السلسلة نفسها.",
+    "error.stealthExport.noWebCrypto": "هذا المتصفح لا يدعم Web Crypto.",
+    "error.stealthExport.scopeMismatch": "عدد الدفعات لا يطابق نطاق التصدير.",
+    "error.stealthExport.tooLarge": "هذا الملف أكبر من الحد المسموح به لتصدير مفاتيح التخفي.",
+    "error.stealthExport.tooMany": "يحتوي التصدير على {maximum} مفتاح دفع على الأكثر.",
+    "error.stealthExport.unsupportedScheme": "لا يمكن تصدير إلا دفعات التخفي من نوع EVM وفق المخطط 1 من ERC-5564.",
+    "error.stealthExport.unsupportedVersion": "أُنشئ هذا التصدير بإصدار أحدث من GhostPay ولا يمكن قراءته.",
+    "error.stealthExport.wrongChain": "ينتمي هذا الملف إلى سلسلة مختلفة.",
+    "error.stealthExport.wrongPassphraseOrModified": "عبارة مرور خاطئة، أو تم تعديل ملف التصدير."
   }
 }

@@ -2257,6 +2257,25 @@
     "btc.oracle.secondUrl": "Second oracle URL",
     "btc.oracle.lightChecks": "Light mode recomputes each matched transaction ID and verifies its exact taproot output, amount and Merkle inclusion against the checked header hash. It does not verify witness data, previous outputs, scripts or full-block consensus.",
     "btc.oracle.lightLimits": "Inclusion proofs do not prove that the oracle supplied every payment or that the server showed the best chain. A second oracle can expose disagreement but colluding servers can still omit data. Spent status remains the Esplora server's report.",
-    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations."
+    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations.",
+    "error.stealthExport.conflict": "Two payments share a stealth address but have different announcement keys, so nothing was exported.",
+    "error.stealthExport.duplicate": "This file lists the same stealth address more than once.",
+    "error.stealthExport.invalidAnnouncement": "The announcement for this payment is malformed, so its key cannot be exported.",
+    "error.stealthExport.invalidChain": "The chain of this payment is invalid.",
+    "error.stealthExport.invalidFile": "This is not a valid GhostPay stealth key export file.",
+    "error.stealthExport.invalidRecord": "A payment record is invalid, so nothing was exported.",
+    "error.stealthExport.invalidScryptCost": "Invalid scrypt cost.",
+    "error.stealthExport.invalidTime": "The export time is invalid.",
+    "error.stealthExport.keyDoesNotMatch": "A key in this export does not match its stealth address. Nothing was exported or imported.",
+    "error.stealthExport.masterKeysDoNotMatch": "The master keys do not match their public keys or meta-address. Nothing was exported or imported.",
+    "error.stealthExport.mixedChains": "All payments in one export must be on the same chain.",
+    "error.stealthExport.noWebCrypto": "This browser has no Web Crypto support.",
+    "error.stealthExport.scopeMismatch": "The number of payments does not match the export scope.",
+    "error.stealthExport.tooLarge": "This file is larger than the stealth key export limit.",
+    "error.stealthExport.tooMany": "An export holds at most {maximum} payment keys.",
+    "error.stealthExport.unsupportedScheme": "Only ERC-5564 scheme-1 EVM stealth payments can be exported.",
+    "error.stealthExport.unsupportedVersion": "This export was made by a newer GhostPay and cannot be read.",
+    "error.stealthExport.wrongChain": "This file belongs to a different chain.",
+    "error.stealthExport.wrongPassphraseOrModified": "Wrong passphrase, or the export file was modified."
   }
 }

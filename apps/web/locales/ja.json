@@ -2257,6 +2257,25 @@
     "btc.oracle.secondUrl": "Second oracle URL",
     "btc.oracle.lightChecks": "Light mode recomputes each matched transaction ID and verifies its exact taproot output, amount and Merkle inclusion against the checked header hash. It does not verify witness data, previous outputs, scripts or full-block consensus.",
     "btc.oracle.lightLimits": "Inclusion proofs do not prove that the oracle supplied every payment or that the server showed the best chain. A second oracle can expose disagreement but colluding servers can still omit data. Spent status remains the Esplora server's report.",
-    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations."
+    "btc.oracle.resultsNote": "Results passed the selected proof and source checks. Different endpoints are not proof of independent operators; header withholding, omitted oracle data and server-reported spent status remain limitations.",
+    "error.stealthExport.conflict": "2 件の支払いが同じステルスアドレスを共有していますが、告知鍵が異なるため、何もエクスポートしませんでした。",
+    "error.stealthExport.duplicate": "このファイルには同じステルスアドレスが複数回含まれています。",
+    "error.stealthExport.invalidAnnouncement": "この支払いの告知が不正なため、その鍵はエクスポートできません。",
+    "error.stealthExport.invalidChain": "この支払いのチェーンが無効です。",
+    "error.stealthExport.invalidFile": "これは有効な GhostPay ステルス鍵エクスポートファイルではありません。",
+    "error.stealthExport.invalidRecord": "支払い記録が無効なため、何もエクスポートしませんでした。",
+    "error.stealthExport.invalidScryptCost": "無効な scrypt コストです。",
+    "error.stealthExport.invalidTime": "エクスポート時刻が無効です。",
+    "error.stealthExport.keyDoesNotMatch": "このエクスポート内の鍵がそのステルスアドレスと一致しません。何もエクスポートもインポートもしていません。",
+    "error.stealthExport.masterKeysDoNotMatch": "マスター鍵が公開鍵またはメタアドレスと一致しません。何もエクスポートもインポートもしていません。",
+    "error.stealthExport.mixedChains": "1 つのエクスポートに含める支払いはすべて同じチェーンである必要があります。",
+    "error.stealthExport.noWebCrypto": "このブラウザーは Web Crypto に対応していません。",
+    "error.stealthExport.scopeMismatch": "支払いの件数がエクスポートの範囲と一致しません。",
+    "error.stealthExport.tooLarge": "このファイルはステルス鍵エクスポートの上限を超えています。",
+    "error.stealthExport.tooMany": "1 つのエクスポートに含められる支払い鍵は最大 {maximum} 個です。",
+    "error.stealthExport.unsupportedScheme": "エクスポートできるのは ERC-5564 スキーム 1 の EVM ステルス支払いだけです。",
+    "error.stealthExport.unsupportedVersion": "このエクスポートは新しいバージョンの GhostPay で作成されたため、読み取れません。",
+    "error.stealthExport.wrongChain": "このファイルは別のチェーンのものです。",
+    "error.stealthExport.wrongPassphraseOrModified": "パスフレーズが間違っているか、エクスポートファイルが改変されています。"
   }
 }

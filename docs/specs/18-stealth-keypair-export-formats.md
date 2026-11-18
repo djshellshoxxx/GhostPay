@@ -14,12 +14,13 @@ never appears in any of them.
 
 1. **Encoding.** UTF-8 JSON text containing only printable ASCII (U+0020–U+007E) plus `\n`, `\r`, `\t` whitespace.
    Any other character anywhere in the file is rejected. Parsers use strict JSON (duplicate keys rejected) and exact
-   key sets: an unknown or missing key at any level is rejected. Exporters write pretty JSON (2-space indent).
+   key sets: an unknown or missing key at any level is rejected. Exporters write pretty JSON (2-space indent, keys in
+   the order shown in this document, no trailing newline), so the reference vectors are byte-reproducible.
 2. **Hex.** Every key, point, hash, salt, IV and ciphertext is `0x` + lowercase hex with an even number of digits.
    Addresses are EIP-55 checksummed (`0x` + 40 hex) and must equal their own checksum form.
 3. **Integers.** `version`, `schemeId`, `chainId`, `count`, `logIndex`, `N`, `r`, `p`, `dkLen`, `tagLength` are JSON
-   integers (safe integers, non-negative). `blockNumber` is a decimal string without leading zeros (`"0"` allowed),
-   because block numbers are 64-bit.
+   integers (safe integers, non-negative). `blockNumber` is a decimal string without leading zeros (`"0"` allowed)
+   and at most 2^64 - 1, because block numbers are 64-bit.
 4. **Time.** `exportedAt` is RFC 3339 UTC with whole seconds: `YYYY-MM-DDTHH:MM:SSZ`.
 5. **Canonical form.** `canonical(x)` is the JSON serialization with object keys sorted by code point, no insignificant
    whitespace, integers in decimal, strings as `JSON.stringify` writes them (identical to Python
@@ -64,6 +65,9 @@ never appears in any of them.
   invented. `blockHash` + `logIndex` is the stable locator (`ScannedAnnouncement.id`).
 - A derived key/address match is **ownership**, not payment confirmation or finality. The record deliberately carries
   no receipt status.
+- A public-only record is not authenticated: it carries no secret and no MAC. Apart from the `publicKey` /
+  `stealthAddress` binding above, its fields are only as trustworthy as the place the file came from. Inside an
+  encrypted file the same record is authenticated as part of the header.
 
 ## 3. Encryption envelope (shared by the keypair and master formats)
 
@@ -83,7 +87,10 @@ never appears in any of them.
   object **without** `ciphertext`, and `DOMAIN` is `GhostPay.stealth-keypair.v1` or `GhostPay.stealth-master.v1`.
   Every public field (including KDF parameters, salt, IV, chain, scope, count and every payment record) is therefore
   authenticated; changing any byte of the header makes decryption fail.
-- **Plaintext.** `canonical(body)` (see each format). After decryption the plaintext buffer is wiped.
+- **Plaintext.** `canonical(body)` (see each format): lowercase hex, no whitespace. Importers require the decrypted
+  plaintext to be exactly that text; anything else is rejected. Because every body has a fixed canonical length, the
+  ciphertext length is fixed too (body plus the 16-byte tag: keypair 17 + 69 * count + 16 bytes, master 166 + 16 bytes)
+  and a file with any other ciphertext length is rejected before the KDF. After decryption the plaintext buffer is wiped.
 - **Passphrase policy.** The keystore policy (`passphraseProblemMessage`: at least 14 characters and the strength
   estimator). Wrong passphrase and tampering are indistinguishable by design (one error).
 - **Failure is atomic.** Any failure (bounds, parse, KDF, authentication, body shape, scalar range, key/address
@@ -117,7 +124,8 @@ never appears in any of them.
   equals its `stealthAddress`.
 - **Export-time deduplication.** Several scan matches can share one one-time address (F1 router replay). Exporters
   keep one entry per `stealthAddress`: identical address and ephemeral key -> one entry, keeping the locator with the
-  lowest (`blockNumber`, `logIndex`); same address with a different ephemeral key -> refused as a conflict (it cannot
+  lowest (`blockNumber`, `logIndex`), ties broken by the lower `blockHash` and then by the lower canonical record, so the
+  result does not depend on input order; same address with a different ephemeral key -> refused as a conflict (it cannot
   arise from correct scheme-1 derivation).
 - **Import.** An importer may require an expected chain; a different `chainId` is rejected (`wrongChain`). Master keys
   never appear in this format.
@@ -164,6 +172,8 @@ Chain ID: 11155111
 Address: 0x<EIP-55>
 Private key: 0x<64 lowercase hex>
 ```
+
+The text is ASCII with LF line endings, exactly the lines above (one empty line after the warnings) and a final LF.
 
 The key is importable into an EVM wallet that supports private-key (EOA) import. Importing it does not let a wallet
 discover other stealth payments.
