@@ -61,5 +61,6 @@ test('audit report keeps the existing report mode and uses the umask for a new r
   const fresh = join(dir, 'fresh.md');
   const umask = process.umask();
   assert.equal(run('--data', data, fresh).status, 0);
-  assert.equal(statSync(fresh).mode & 0o777, 0o666 & ~umask);
+  // The generator creates new reports as 0o644 & ~umask (never group/other writable), matching audit-permissions.test.py.
+  assert.equal(statSync(fresh).mode & 0o777, 0o644 & ~umask);
 });
