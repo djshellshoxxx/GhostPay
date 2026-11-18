@@ -112,6 +112,33 @@ test('tool errors, a missing analysis and malformed documents never pass', () =>
   assert.throws(() => parseReport('[1]\n{"a":1}\n{1}\n'), InputError);
 });
 
+test('runner failures never become successful disposition checks because JSON looks valid', () => {
+  for (const rc of [0, 2, 126, 127, 137, 143]) {
+    const result = check({ reportText: report().replace('(rc=1)', `(rc=${rc})`) });
+    assert.ok(codes(result).includes('RUNNER_ERROR'), `runner exit ${rc}: ${JSON.stringify(result)}`);
+    assert.equal(result.ok, false);
+  }
+  const cleanButFailed = `${doc([])}\n::error::mythril: A reported issues or failed (rc=1)\n${doc([])}\n`;
+  const result = check({ reportText: cleanButFailed });
+  assert.ok(codes(result).includes('RUNNER_ERROR'), JSON.stringify(result));
+  assert.equal(result.ok, false);
+});
+
+test('malformed, unassociated and duplicate runner error annotations fail closed', () => {
+  const annotation = '::error::mythril: A reported issues or failed (rc=1)';
+  const reports = [
+    report().replace(annotation, '::error::mythril: A failed without a valid exit code'),
+    `${annotation}\n${doc([issue()])}\n${doc([])}\n`,
+    report().replace(annotation, `${annotation}\n${annotation}`),
+    report().replace(annotation, '::error::analysis output was truncated'),
+  ];
+  for (const reportText of reports) {
+    const result = check({ reportText });
+    assert.ok(codes(result).includes('RUNNER_ERROR'), JSON.stringify(result));
+    assert.equal(result.ok, false);
+  }
+});
+
 test('a record absent from this run is a note, not a failure, and is marked when timeout-dependent', () => {
   const r8 = record({ id: 'R8', swcId: '113', pc: 1781, timeoutDependent: true });
   const result = check({ dispositions: dispositions([record(), r8]) });

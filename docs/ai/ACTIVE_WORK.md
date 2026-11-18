@@ -1,3 +1,13 @@
+# Mythril disposition checker validation — 2026-11-18
+
+Worker: ChatGPT security review, Caveman workflow. Branch: `chatgpt/ghostpay-mythril-checker-failclosed-20261118`.
+Base: PR #212, `4894d0d8d94333dffa8ae3937a4d8314f27c686f`.
+Owned paths: `scripts/contract-analysis/mythril-disposition-check.mjs`, its focused tests, this claim and the task handoff.
+Acceptance: reproduce the candidate checker's acceptance of a clean-looking JSON document followed by an abnormal
+analyzer exit; reject abnormal, malformed and inconsistent runner error annotations; preserve legitimate finding
+dispositions. Keep the checker unwired and the production Mythril runner unchanged. Per-target analysis provenance
+remains a separate prerequisite to any future gate integration because clean raw reports contain no target identity.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
