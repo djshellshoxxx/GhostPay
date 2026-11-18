@@ -1,4 +1,4 @@
-import { CHAINS, createClient, type ChainConfig, type RpcClient } from '@ghostpay/chain-adapters';
+import { CHAINS, ChainAdapterError, createClient, fetchTransport, type ChainConfig, type RpcClient, type RpcTransport } from '@ghostpay/chain-adapters';
 import {
   WEB_NETWORK_SELECTION_KEY,
   checkOwnNodeRpcUrl,
@@ -59,23 +59,37 @@ export function loadNetworkSelection(storage: Storage | undefined = safeStorage(
 
 /**
  * `createRpc` that enforces `own-node` when it is selected: the RPC URL must be loopback or a v3 onion URL, otherwise
- * nothing is contacted (fail closed, no fallback to the configured third-party URL).
+ * nothing is contacted (fail closed, no fallback to the configured third-party URL). The transport rechecks the current
+ * selection before every dispatch, including retries from clients cached before the selection changed.
  */
 export function createSelectedRpc(
   selection: () => WebNetworkSelection = loadNetworkSelection,
-  create: (chain: ChainConfig, url: string, opts: { readonly allowInsecureLocalhost: boolean }) => Promise<RpcClient> = (chain, url, opts) =>
+  create: (chain: ChainConfig, url: string, opts: { readonly allowInsecureLocalhost: boolean; readonly transport: RpcTransport }) => Promise<RpcClient> = (chain, url, opts) =>
     createClient(chain, url, opts),
 ): (chain: ChainConfig, url: string) => Promise<RpcClient> {
   return (chain, url) => {
-    if (selection().rpcMode !== 'own-node') return create(chain, url, { allowInsecureLocalhost: false });
+    const ownNode = selection().rpcMode === 'own-node';
     let checked: string;
     try {
-      checked = checkOwnNodeRpcUrl(url, { kind: 'evm', chainId: chain.chainId });
+      checked = ownNode ? checkOwnNodeRpcUrl(url, { kind: 'evm', chainId: chain.chainId }) : url;
     } catch {
       return Promise.reject(new UserFacingError({ key: 'error.network.ownNodeRpcRefused' }));
     }
+    const transport: RpcTransport = {
+      send(target, body, init) {
+        if (selection().rpcMode === 'own-node') {
+          try {
+            checkOwnNodeRpcUrl(target, { kind: 'evm', chainId: chain.chainId });
+          } catch {
+            // A policy refusal is not a transient transport failure: no retry and no endpoint or request in the error.
+            return Promise.reject(new ChainAdapterError('RPC_URL_REJECTED', 'own-node requires a loopback or v3 onion endpoint'));
+          }
+        }
+        return fetchTransport.send(target, body, init);
+      },
+    };
     // Own node on loopback may be plain http (it never leaves this computer); onion URLs still need https here.
-    return create(chain, checked, { allowInsecureLocalhost: true });
+    return create(chain, checked, { allowInsecureLocalhost: ownNode, transport });
   };
 }
 
