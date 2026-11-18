@@ -35,7 +35,7 @@ describe('checkHandle', () => {
       ['a'.repeat(33), 'TOO_LONG'],
       [' alice', 'INVISIBLE'],
       ['ali​ce', 'INVISIBLE'],
-      ['ali‮ce', 'INVISIBLE'],
+      ['ali\u202ece', 'INVISIBLE'],
       ['ali ce', 'INVISIBLE'],
       ['éric', 'INVISIBLE'],
       ['аlice', 'CONFUSABLE_NON_ASCII'],
@@ -117,7 +117,7 @@ describe('book', () => {
     expect(code(add('carol', 'bad'))).toBe('TARGET');
     expect(code(() => addEntry(base, { handle: 'carol', metaAddress: META_C, addedAt: -1 }))).toBe('BOOK');
     expect(
-      code(() => addEntry(base, { handle: 'carol', metaAddress: META_C, label: 'x‮', addedAt: 1 })),
+      code(() => addEntry(base, { handle: 'carol', metaAddress: META_C, label: 'x\u202e', addedAt: 1 })),
     ).toBe('TEXT');
     expect(findLookalikes(base, 'al1ce').map((e) => e.handle)).toEqual(['alice']);
     expect(findLookalikes(base, 'alice')).toEqual([]);

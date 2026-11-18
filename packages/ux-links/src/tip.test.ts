@@ -90,7 +90,7 @@ describe('tip page', () => {
       [{ decimals: 19 }, 'TIP'],
       [{ decimals: 'x' }, 'TIP'],
       [{ title: '' }, 'TEXT'],
-      [{ title: 'a‮b' }, 'TEXT'],
+      [{ title: 'a\u202eb' }, 'TEXT'],
       [{ description: 'x'.repeat(501) }, 'TEXT'],
       [{ handle: 'аlice' }, 'HANDLE'],
       [{ target: 'x' }, 'TARGET'],

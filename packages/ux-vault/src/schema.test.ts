@@ -97,7 +97,7 @@ describe('schema', () => {
         '","name":"a","address":"x","chain":"eth","tag":"@@","ts":1}]}',
     ],
     ['bad id', JSON.stringify({ schema: 2, contacts: [{ ...c(ID1), id: 'nope' }] })],
-    ['bad label', JSON.stringify({ schema: 2, contacts: [{ ...c(ID1), label: 'a‮b' }] })],
+    ['bad label', JSON.stringify({ schema: 2, contacts: [{ ...c(ID1), label: 'a\u202eb' }] })],
     ['bad address', JSON.stringify({ schema: 2, contacts: [{ ...c(ID1), address: 'a b' }] })],
     ['bad network', JSON.stringify({ schema: 2, contacts: [{ ...c(ID1), network: 'E T' }] })],
     ['bad tags', JSON.stringify({ schema: 2, contacts: [{ ...c(ID1), tags: 'x' }] })],
