@@ -267,3 +267,35 @@ describe('LF-074edb61e-4 / LF-2789f780b-2 / LF-29de09c05-1: per-client cap on la
     expect(s.relayer.service.heldClientSlots(CHAIN_ID)).toBe(0);
   });
 });
+
+describe('LF-29de09c05-4: a malformed request target answers 400 invalid_url, not 500', () => {
+  /** Sends one raw request line (fetch normalizes targets) and returns the status code and body. */
+  const raw = (s: Harness, target: string): Promise<{ status: number; body: string }> =>
+    new Promise((resolve, reject) => {
+      const sock = connect(Number(new URL(s.url).port), '127.0.0.1');
+      let text = '';
+      sock.once('error', reject);
+      sock.on('data', (x: Buffer) => {
+        text += x.toString();
+      });
+      sock.once('close', () => {
+        const status = Number(/^HTTP\/1\.1 (\d{3})/.exec(text)?.[1] ?? 0);
+        resolve({ status, body: text.slice(text.indexOf('\r\n\r\n') + 4) });
+      });
+      sock.write(`GET ${target} HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n`);
+    });
+
+  it.each(['//', '//[', '//a:b@', '//x:99999/'])('GET %s', async (target) => {
+    const s = await start();
+    const r = await raw(s, target);
+    expect(r.status).toBe(400);
+    expect(JSON.parse(r.body)).toEqual({ error: { code: 'invalid_url' } });
+    const line = s.logs.map((l) => JSON.parse(l) as Record<string, unknown>).find((l) => l['event'] === 'request');
+    expect(line).toMatchObject({ level: 'info', route: 'other', status: 400, errorClass: 'invalid_url' });
+  });
+
+  it('a well-formed path with an odd escape is still routed normally', async () => {
+    const s = await start();
+    expect((await raw(s, '/%zz')).status).toBe(404);
+  });
+});

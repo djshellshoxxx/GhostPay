@@ -75,7 +75,7 @@ Quote pricing: `gas.griefReserveBps` (default 0, max 5000) is added to the gas t
 carries a margin for gas lost when an owner drains or revokes first; how to derive a value from measured gas and the
 observed mined-revert rate is in `docs/audits/26-relayer-completion.md` section 4a. `quoteTtlSeconds` is at most 60 (default 60).
 
-Other classes: `invalid_*` 400 (field-level validation), `unsupported_media_type` 415, `body_too_large` 413,
+Other classes: `invalid_*` 400 (field-level validation; `invalid_url` for a request target that does not parse), `unsupported_media_type` 415, `body_too_large` 413,
 `rate_limited_ip` / `client_queue_full` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
 `internal_error` 500.
 

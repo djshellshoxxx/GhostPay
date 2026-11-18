@@ -295,7 +295,13 @@ export class RelayerHttpServer {
   private async dispatch(c: Ctx): Promise<void> {
     const { req, res } = c;
     // Reject query-bearing requests: these endpoints never accept URL parameters, which could leak sensitive data into logs.
-    const target = new URL(req.url ?? '/', 'http://relayer.invalid');
+    // A target URL parsing rejects (`//`, a bad authority) is the client's error, not an internal one (N-03).
+    let target: URL;
+    try {
+      target = new URL(req.url ?? '/', 'http://relayer.invalid');
+    } catch {
+      throw new RelayerError(400, 'invalid_url');
+    }
     if (target.search !== '') throw new RelayerError(400, 'unexpected_query');
     const path = target.pathname;
     if (isRoute(path)) c.route = path;
