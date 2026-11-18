@@ -71,21 +71,20 @@ describe('TronView', () => {
     expect(screen.queryByRole('button', { name: 'Show backup keys' })).toBeNull();
   });
 
-  it('copies the key backup only after a warning, and Lock empties the clipboard again', async () => {
+  it('has no clipboard path for the backup keys: reveal, hide and Lock never call clipboard.writeText', async () => {
     const { user } = await setup();
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup keys' }));
-    const backup = screen.getByText(/^[0-9a-f]{128}$/).textContent;
-    await user.click(screen.getByRole('button', { name: 'Copy keys' }));
-    expect(writeText).not.toHaveBeenCalled();
-    expect(screen.getByText(/Other apps and web pages can read the clipboard/)).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(backup);
+    expect(screen.getByText(/^[0-9a-f]{128}$/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Copy keys' })).toBeNull();
+    expect(screen.queryByText(/Other apps and web pages can read the clipboard/)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Hide keys' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup keys' }));
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
-    expect(writeText).toHaveBeenCalledTimes(2);
+    expect(screen.queryByText(/^[0-9a-f]{128}$/)).toBeNull();
+    expect(writeText).not.toHaveBeenCalled();
   });
 
   it('imports the same keys that a backup describes', async () => {
