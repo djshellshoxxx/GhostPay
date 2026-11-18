@@ -15,14 +15,30 @@ Hardening in `docker-compose.yml`: `read_only`, `cap_drop: ALL`, `no-new-privile
 
 State: the `api-state` named volume holds the relayer's durable state (`/var/lib/ghostpay-relayer/state.json`, config key `state.file`); it is the api container's only writable path besides `/tmp`. Run one api container per volume, back it up and roll back per the [relayer runbook](../docs/operators/relayer-runbook.md). nginx limits request bodies to 16 KiB and exposes only `/api/{healthz,v1/info,v1/quote,v1/sweep}`; `/metrics` is never routed.
 
-You still must: terminate TLS in front of `127.0.0.1:${GHOSTPAY_HTTP_PORT}` (Caddy, Cloudflare Tunnel, host nginx); fund and limit the relayer hot key conservatively; set `allowedOrigins` to your origin; consider egress filtering for the api container (allow only your RPC hosts).
+You still must: terminate TLS in front of `127.0.0.1:${GHOSTPAY_HTTP_PORT}` (Caddy, Cloudflare Tunnel, host nginx) and send HSTS there (see below); fund and limit the relayer hot key conservatively; set `allowedOrigins` to your origin; consider egress filtering for the api container (allow only your RPC hosts).
 
 Behind the onion service the proxy sees only the Tor container's IP, so per-IP rate limits in the relayer collapse into one bucket; that is a known trade-off, not a bug.
 
 ## Pin images
-`.env.example` uses tags. Before production, resolve them to digests (`docker buildx imagetools inspect`) and pin `name@sha256:...`. Not done here (no network).
+Every third-party image is pinned by tag and multi-arch index digest, in `docker-compose.yml` (defaults), `.env.example` and `tor/Dockerfile`; `bash deploy/selftest.sh` fails if a default loses its digest or the three disagree. The relayer image is already pinned in `apps/relayer/Dockerfile`; `ghostpay-relayer:local` and `ghostpay-tor:local` are built locally.
+
+| Image | Pin | Resolved |
+| --- | --- | --- |
+| web (nginx) | `nginxinc/nginx-unprivileged:1.27-alpine@sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0` | 2026-11-18 |
+| tor base | `debian:bookworm-20261104-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc` (what `bookworm-slim` pointed to) | 2026-11-18 |
+
+The digests were read from `registry-1.docker.io` (the `docker-content-digest` of the OCI image index, cross-checked by hashing the fetched index). Re-resolve with `docker buildx imagetools inspect <name>:<tag>` (its top-level `Digest:`) before changing a pin, and review the new tag's release notes; Dependabot (`.github/dependabot.yml`, `docker` and `docker-compose` ecosystems) proposes the updates weekly. The nginx 1.27 branch is old: moving to a current stable tag (the hosting kit uses `1.30.6-alpine`) is an update to review like any other, not done silently here.
+
+## HSTS at the TLS terminator
+The nginx container listens on plain HTTP on loopback and deliberately sends no `Strict-Transport-Security` (browsers ignore it over HTTP, and the onion service is HTTP by design). HSTS belongs on the public HTTPS edge that terminates TLS in front of `127.0.0.1:${GHOSTPAY_HTTP_PORT}`:
+
+- Caddy: `header Strict-Transport-Security "max-age=31536000; includeSubDomains"` in the site block.
+- Host nginx: `add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;` in the `listen 443 ssl` server block (and redirect port 80 to HTTPS).
+- Cloudflare Tunnel: SSL/TLS > Edge Certificates > HTTP Strict Transport Security (HSTS), same values.
+
+Start with a short `max-age` (for example 300) and raise it once HTTPS is stable; add `preload` only after an explicit decision, because leaving the preload list takes months. Check the live origin: `curl -sI https://<your-origin>/ | grep -i '^strict-transport-security'` must print the header (`docs/operators/monitoring.md` alerts when it is absent).
 
 ## Validation status
-`bash deploy/selftest.sh` (also run in CI) covers archive validation (valid bundle, symlink and traversal archives) and the release gate: `--tarball` is refused without `--manifest` or an authenticity check, with a wrong `--expect-sha256`, a commit the manifest does not record or that is not a full lower-case SHA, or a failing `gh attestation verify` (called with exactly `--signer-workflow` release.yml, `--source-ref` the tag, `--source-digest` the commit and `--deny-self-hosted-runners`), and nothing is extracted or started; a verified bundle is installed and nothing starts until `start` is typed or the script is re-run (the printed re-run command keeps `--onion` and a non-default `--env-file`). `bash -n` passes. Docker Compose is unavailable in this environment, so compose config, image builds, container startup, and live mount permissions were not tested. `shellcheck` is unavailable; shell syntax was checked with `bash -n`.
+`bash deploy/selftest.sh` (also run in CI) covers archive validation (valid bundle, symlink and traversal archives) and the release gate: `--tarball` is refused without `--manifest` or an authenticity check, with a wrong `--expect-sha256`, a commit the manifest does not record or that is not a full lower-case SHA, or a failing `gh attestation verify` (called with exactly `--signer-workflow` release.yml, `--source-ref` the tag, `--source-digest` the commit and `--deny-self-hosted-runners`), and nothing is extracted or started; a verified bundle is installed and nothing starts until `start` is typed or the script is re-run (the printed re-run command keeps `--onion` and a non-default `--env-file`). It also checks that every third-party image default is pinned by digest. `bash -n` passes. On 2026-11-18 `docker compose --profile onion config` rendered the pinned images (Compose v5.7.1, no Docker daemon); image builds, container startup and live mount permissions were not tested. `shellcheck` is unavailable; shell syntax was checked with `bash -n`.
 
 Spec: `docs/remote/usability/specs/self-host-one-command.md`. Tor notes: `TOR.md`. Bundle notes: `BUILD-WEB.md`.
