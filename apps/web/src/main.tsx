@@ -13,8 +13,18 @@ import './styles/app.css';
  * views' ErrorBoundary still renders the localized error panel.
  */
 export function rootErrorClass(error: unknown): string {
-  const name = error instanceof Error ? error.name : '';
-  return /^[A-Z][A-Za-z0-9]{0,39}$/.test(name) ? name : 'Error';
+  // Error.name is mutable and can contain secrets or a throwing getter. Return only fixed labels; never read it.
+  // A Proxy can also throw during instanceof's prototype inspection, so classification must fail safely.
+  try {
+    if (error instanceof TypeError) return 'TypeError';
+    if (error instanceof RangeError) return 'RangeError';
+    if (error instanceof ReferenceError) return 'ReferenceError';
+    if (error instanceof SyntaxError) return 'SyntaxError';
+    if (error instanceof URIError) return 'URIError';
+    if (error instanceof EvalError) return 'EvalError';
+    if (error instanceof AggregateError) return 'AggregateError';
+  } catch { /* Reporting an error must not expose or rethrow the original value. */ }
+  return 'Error';
 }
 const report = (kind: string) => (error: unknown): void => {
   console.error(`GhostPay: ${kind} render error (${rootErrorClass(error)})`);

@@ -1,3 +1,18 @@
+# Pages beta consolidation continuation — 2026-11-18
+
+Worker: ChatGPT coordinator, with independent branch archaeology, recovery/security and CI reviewers.
+Branch: `integration/ghostpay-pages-completion-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: consolidation conflicts and Pages security/privacy integration, focused regression tests,
+this registry, and `docs/handoffs/pages-completion-20261118/`.
+Recovery, dependency and security-tooling implementation use separate worktrees and branches.
+Existing remote PRs are read-only source inputs. The #209 extraction includes Pages hosting protections,
+root error reporting and backup navigation; release-test relaxation and unrelated workflow updates are excluded.
+Acceptance: preserve non-custodial client-side key handling and testnet restrictions; integrate only reviewed changes;
+execute focused and combined tests; obtain independent review; record source and evidence before any main merge.
+No deployment, release, branch deletion, force-push, or paid agent workflow activation is authorized.
+This restores the coordinator claim first committed in `b828b44e`, dropped during registry reconciliation.
+
 # Pages privacy consolidation — 2026-11-18
 
 Worker: ChatGPT coordinator. Branch: `integration/ghostpay-privacy-20261118`.
@@ -9,6 +24,13 @@ All publication, main merge, hosted qualification and release actions remain coo
 
 
 # Pages idle-clock integration — 2026-11-18
+
+Worker: ChatGPT coordinator, with independent privacy-review implementation and source review.
+Branch: `chatgpt/ghostpay-pages-idle-clock-20261118`; base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/AppShell.tsx`, `apps/web/src/AppShell.idleClock.test.tsx`, and the idle-clock handoff.
+Acceptance: reproduce clock rollback on current main, retain sleep-aware wall-time checks, add monotonic expiry,
+preserve sole-copy key recovery policy, pass focused shell tests and scoped lint, then require exact-head CI.
+Source `613667be` is now staged in the consolidation branch; final combined-head qualification remains pending.
 
 # Session-only sweep destination history — 2026-11-18
 

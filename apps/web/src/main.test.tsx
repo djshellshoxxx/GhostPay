@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // SEC-42 / E-19: React's default root error reporting logs caught render errors with their message and component
-// stack, which may carry input snippets. main.tsx passes handlers that log only a sanitized error class name.
+// stack, which may carry input snippets. main.tsx passes handlers that log only a fixed built-in error class.
 const created: { options?: Record<string, unknown> | undefined } = {};
 vi.mock('react-dom/client', () => ({
   createRoot: (_el: Element, options?: Record<string, unknown>) => {
@@ -53,5 +53,33 @@ describe('main.tsx root error handlers (SEC-42)', () => {
     expect(text).not.toContain('Secret');
     expect(text).toContain('TypeError');
     for (const args of logged) for (const a of args) expect(typeof a).toBe('string');
+  });
+
+  it('does not log an identifier-shaped secret in Error.name', async () => {
+    const { rootErrorClass } = await import('./main');
+    const error = new Error('private');
+    error.name = 'Password123Secret';
+    expect(rootErrorClass(error)).toBe('Error');
+    (created.options?.['onCaughtError'] as (e: unknown) => void)(error);
+    expect(logged).toEqual([['GhostPay: caught render error (Error)']]);
+  });
+
+  it('does not inspect name getters and contains hostile prototype inspection', async () => {
+    const { rootErrorClass } = await import('./main');
+    const readName = vi.fn((): never => { throw new Error('private getter value'); });
+    const error = new TypeError('private');
+    Object.defineProperty(error, 'name', { get: readName });
+    expect(rootErrorClass(error)).toBe('TypeError');
+    expect(readName).not.toHaveBeenCalled();
+    const hostile = new Proxy({}, { getPrototypeOf: (): never => { throw new Error('private proxy value'); } });
+    expect(rootErrorClass(hostile)).toBe('Error');
+    for (const name of ['onCaughtError', 'onUncaughtError', 'onRecoverableError']) {
+      expect(() => (created.options?.[name] as (e: unknown) => void)(hostile)).not.toThrow();
+    }
+    expect(logged).toEqual([
+      ['GhostPay: caught render error (Error)'],
+      ['GhostPay: uncaught render error (Error)'],
+      ['GhostPay: recoverable render error (Error)'],
+    ]);
   });
 });
