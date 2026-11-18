@@ -98,6 +98,13 @@ try {
     if (!requestWithinPublishedSite(r.url(), site)) foreign.push(r.url());
   });
   page.on('pageerror', (e) => errors.push(String(e)));
+  // React's custom root handlers report render failures to the console, including errors caught by the view boundary.
+  // Record only a fixed marker: console arguments and message suffixes may carry input and must not enter smoke output.
+  page.on('console', (message) => {
+    if (message.type() === 'error' && /^GhostPay: (?:caught|uncaught|recoverable) render error \(/.test(message.text())) {
+      errors.push('GhostPay render error');
+    }
+  });
   page.on('requestfailed', (r) => {
     if (new URL(r.url()).origin === site.origin) errors.push(`request failed: ${r.url()}`);
   });
