@@ -6,6 +6,10 @@ name: Release
 # .github/release-signers/allowed_signers, read from the default branch. That file ships with no key: until the owner
 # adds the release-signing public key, every run fails closed at the tag check (human gate).
 #
+# Echidna and Mythril must pass on exactly the tagged commit in this run: `contract-analysis` calls the same reusable
+# workflow as contract pull requests and nightly, and `build` needs it and re-checks its uploaded evidence. A failed,
+# cancelled, skipped or absent analyzer result, or evidence for another commit, stops the release before any build.
+#
 # It does NOT publish anywhere: no IPFS, ENS, Tor or Pages (hosting is intentionally not enabled; see the
 # disabled stub at the bottom). A maintainer must approve the `release` environment (Settings > Environments >
 # release > Required reviewers) before the build and draft jobs run, and must publish the draft by hand.
@@ -88,9 +92,17 @@ jobs:
       - run: bash scripts/check-actions-pinned.sh
       - run: npm audit --omit=dev --audit-level=high
 
+  # The unchanged full analyzer runners on the tagged commit (github.sha), only after the signed-tag check passed.
+  # Its jobs upload contract-analysis-<analyzer>-<sha> evidence even when they fail; `build` checks it.
+  contract-analysis:
+    needs: verify
+    uses: ./.github/workflows/contract-analysis.yml
+    permissions:
+      contents: read
+
   build:
     name: Build, attest (requires approval)
-    needs: verify
+    needs: [verify, contract-analysis]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: release
@@ -133,6 +145,32 @@ jobs:
           bash "$trust/verify-tag.sh" --allowed-signers "$trust/allowed_signers" --pgp-keys "$trust/pgp-keys.asc" \
             --ancestor-of "$base" "$TAG" "$(git rev-parse HEAD)"
           echo "tag_object=$(git rev-parse "refs/tags/$TAG")" >> "$GITHUB_OUTPUT"
+      # Evidence from this run only (no run-id or token): a missing analyzer artifact fails the download.
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: contract-analysis-echidna-${{ github.sha }}
+          path: ${{ runner.temp }}/contract-analysis/echidna
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: contract-analysis-mythril-${{ github.sha }}
+          path: ${{ runner.temp }}/contract-analysis/mythril
+      - name: Echidna and Mythril passed on exactly the verified commit
+        id: analysis-gate
+        run: |
+          set -euo pipefail
+          head="$(git rev-parse HEAD)"
+          for analyzer in echidna mythril; do
+            # One JSON document; the runner exit, step outcome and both commits must all match this build.
+            if ! jq -es --arg analyzer "$analyzer" --arg requested "$GITHUB_SHA" --arg head "$head" '
+              length == 1 and (.[0] | type == "object" and .schemaVersion == 1 and .analyzer == $analyzer and
+                .requestedCommit == $requested and .checkoutCommit == $head and .analysisOutcome == "success" and
+                .runnerExitCode == 0 and .reportPresent == true)
+            ' "$RUNNER_TEMP/contract-analysis/$analyzer/metadata.json" > /dev/null; then
+              echo "::error::$analyzer evidence is missing, unsuccessful or not for $head (requested $GITHUB_SHA)"
+              exit 1
+            fi
+            echo "$analyzer passed on $head"
+          done
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"

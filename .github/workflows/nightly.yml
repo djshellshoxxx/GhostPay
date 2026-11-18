@@ -11,7 +11,8 @@ concurrency:
   group: nightly-${{ github.ref }}
   cancel-in-progress: false
 
-# Deep scheduled checks. Native analyzers are also reused by contract-related pull requests; no secrets, read-only token.
+# Deep scheduled checks. Native analyzers are also reused by contract-related pull requests and, as a required gate on
+# the tagged commit, by release.yml; no secrets, read-only token. The release does not run the other nightly jobs.
 #
 # Open gaps, deliberately NOT faked here (docs/operators/release-and-verify.md "Open gaps"):
 #   - Mutation testing (gambit) and mainnet-fork tests: no CI configuration exists yet.

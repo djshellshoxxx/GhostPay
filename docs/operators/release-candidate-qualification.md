@@ -47,7 +47,9 @@ expected and is the correct behavior.
    Never move or re-push a tag after the workflow started; cut a new RC number instead.
 
 3. **Gates.** Confirm the CI run for the commit is green (typecheck, lint, tests incl. anvil e2e, contracts, Slither,
-   secret scan, pinned actions) and that the latest nightly (fuzz, audit, reproducibility) is green. Locally:
+   secret scan, pinned actions) and that the latest nightly (fuzz, audit, reproducibility) is green. Echidna and
+   Mythril are not taken from CI or nightly: `release.yml` runs them on the tagged commit as a required gate (step 6).
+   Locally:
    ```
    npm run typecheck && npm run lint && npm test
    node --test scripts/tests/release-*.test.mjs
@@ -72,8 +74,12 @@ expected and is the correct behavior.
    including two `npm ci`). Then compare the local tarball hash from step 4 with the one in the draft (step 7).
 
 6. **Workflow run.** Watch `release.yml` for `$TAG`. `verify` must show
-   `OK: $TAG ... signed by pinned signer ... reachable from refs/remotes/origin/main`. Approve `build` (gate G3) only
-   after `verify` passed; `build` re-verifies the tag and must log `channel=release` and `RESULT: hash checks passed`.
+   `OK: $TAG ... signed by pinned signer ... reachable from refs/remotes/origin/main`. `contract-analysis / echidna`
+   and `contract-analysis / mythril` then run on the tagged commit; `build` needs them, so GitHub requests its approval
+   only after `verify` and both analyzers passed. Approve `build` (gate G3) only then; `build` re-verifies the tag and
+   must log `echidna passed on <commit>`, `mythril passed on <commit>`, `channel=release` and
+   `RESULT: hash checks passed`. Any failed, cancelled, skipped or missing analyzer result stops the release: there is
+   no override.
    Approve `draft-release` (gate G3) only after `build` passed.
 
 7. **Download the draft and verify it** (separate machine, fresh directory):
@@ -125,6 +131,7 @@ expected and is the correct behavior.
 | Step | Catches |
 |---|---|
 | 2, 6, 9 | Unsigned/forged tags, tags signed by an unpinned key, tags re-named or moved, tags on unreviewed commits |
+| 6 | A tagged commit whose Echidna properties or canaries, or Mythril analysis, did not pass in the release run itself |
 | 4, 7 | Development or dirty builds labelled as releases, wrong commit, mismatched version, tampered or incomplete assets, unsafe archive entries |
 | 5, 7 | Non-reproducible output; a runner that produced different bytes than the source |
 | 8 | Assets not produced by this repository's release workflow at this tag |

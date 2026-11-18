@@ -9,14 +9,17 @@ on:
       - '.github/actions/setup-forge/**'
       - '.github/workflows/contract-analysis.yml'
       - '.github/workflows/nightly.yml'
+      - '.github/workflows/release.yml'
   workflow_call:
 
 permissions:
   contents: read
 
+# Superseded pull request analysis is cancelled. In-progress analysis for a caller (release on a tag, nightly) is
+# never cancelled by a newer run in the same group; a cancelled analyzer fails the calling release.
 concurrency:
   group: contract-analysis-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   analysis:
