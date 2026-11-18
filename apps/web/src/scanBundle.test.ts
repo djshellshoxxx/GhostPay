@@ -170,6 +170,32 @@ describe('scan-bundle', () => {
     expect(scan(build({}, { html: GOOD_HTML.replace('<body></body>', '<body><a href="https://github.com/example">x</a></body>') })).join()).toMatch(/index\.html: unexpected origin/);
   });
 
+  // SEC-09: a Pages build compiles its declared origin in (VITE_GHOSTPAY_PAGES_ORIGIN) to compare with location.origin;
+  // exactly that origin literal is allowed, nothing under it and no other origin.
+  it('allows exactly the declared own origin of the build and nothing else', () => {
+    const js = (text: string): ReturnType<typeof build> => build({ 'dist/assets/b.js': text });
+    const own = { ownOrigin: 'https://owner.github.io' };
+    const b = js('const o="https://owner.github.io";');
+    expect(scanBundle(b.dist, b.src, b.cfg, own)).toEqual([]);
+    expect(scanBundle(b.dist, b.src, b.cfg, {}).join()).toMatch(/unexpected origin or hostname "https:\/\/owner\.github\.io"/);
+    for (const bad of ['fetch("https://owner.github.io/other/x")', 'const o="https://owner.github.io.evil.example"', 'const o="http://owner.github.io"']) {
+      const c = js(bad);
+      expect(scanBundle(c.dist, c.src, c.cfg, own).join(), bad).toMatch(/unexpected origin/);
+    }
+    // A declaration that is not exactly an origin allows nothing.
+    const d = js('const o="https://owner.github.io/GhostPay/";');
+    expect(scanBundle(d.dist, d.src, d.cfg, { ownOrigin: 'https://owner.github.io/GhostPay/' }).join()).toMatch(/unexpected origin/);
+    // Default: the build's own VITE_GHOSTPAY_PAGES_ORIGIN (build-pages.sh sets it for the build and its scan).
+    const before = process.env['VITE_GHOSTPAY_PAGES_ORIGIN'];
+    process.env['VITE_GHOSTPAY_PAGES_ORIGIN'] = 'https://owner.github.io';
+    try {
+      expect(scan(b)).toEqual([]);
+    } finally {
+      if (before === undefined) delete process.env['VITE_GHOSTPAY_PAGES_ORIGIN'];
+      else process.env['VITE_GHOSTPAY_PAGES_ORIGIN'] = before;
+    }
+  });
+
   // SEC-24: the lean module report in dist is checked against the one exclusion list the Pages verifier also uses.
   it('fails a lean build whose module report renders any excluded module from the shared list', () => {
     const report = (modules: readonly object[]): string => JSON.stringify({ format: 'ghostpay-lean-build/1', profile: 'lean', chunks: [{ fileName: 'assets/a.js', modules }], workers: [] });

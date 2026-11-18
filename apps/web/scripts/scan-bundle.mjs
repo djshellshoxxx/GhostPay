@@ -89,11 +89,27 @@ function scanInnerHtml(text, label, problems) {
   if (all > allowed) problems.push(`${label}: ${String(all - allowed)} innerHTML assignment(s) outside the known React DOM fingerprints`);
 }
 
-function scanHosts(text, label, problems) {
+function scanHosts(text, label, problems, ownOrigin) {
   for (const m of text.matchAll(/\b(?:https?|wss?):\/\/([A-Za-z0-9][A-Za-z0-9.-]*)?[^\s"'`<>)\\]*/g)) {
     const full = m[0];
     if (m[1] === undefined) continue; // a bare "https://" scheme literal used for prefix checks
+    if (ownOrigin !== undefined && full === ownOrigin) continue;
     if (!ALLOWED_URLS.some((a) => full.startsWith(a.prefix))) problems.push(`${label}: unexpected origin or hostname "${full.slice(0, 80)}"`);
+  }
+}
+
+/**
+ * The build's own declared serving origin (SEC-09): scripts/pages/build-pages.sh compiles GHOSTPAY_PAGES_ORIGIN in as
+ * VITE_GHOSTPAY_PAGES_ORIGIN so the app can compare it with location.origin; it is never fetched. Only that exact
+ * literal is allowed (no path under it, no other origin), and only when the declaration is exactly an origin.
+ */
+function ownOriginOf(raw) {
+  if (typeof raw !== 'string' || raw === '') return undefined;
+  try {
+    const u = new URL(raw);
+    return u.origin === raw && /^https?:$/.test(u.protocol) ? raw : undefined;
+  } catch {
+    return undefined;
   }
 }
 
@@ -129,7 +145,6 @@ function scanHtmlDocument(html, label, problems) {
   scanHosts(label === 'index.html' ? html : html.replace(/(<a\b[^>]*?\bhref\s*=\s*)(["'])https:\/\/[^"'<>\s]*\2/gi, '$1$2#$2'), label, problems);
 }
 
-/** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
 /**
  * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
  * literal (e.g. "https://x") cannot swallow same-line code. Conservative: an unterminated literal
@@ -160,8 +175,13 @@ export function stripComments(src) {
   return out;
 }
 
-export function scanBundle(distDir, srcDir, viteConfigPath) {
+/**
+ * Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems.
+ * `options.ownOrigin` defaults to the build's VITE_GHOSTPAY_PAGES_ORIGIN (see ownOriginOf).
+ */
+export function scanBundle(distDir, srcDir, viteConfigPath, { ownOrigin = process.env['VITE_GHOSTPAY_PAGES_ORIGIN'] } = {}) {
   const problems = [];
+  const own = ownOriginOf(ownOrigin);
   if (!existsSync(distDir)) return [`dist directory not found: ${distDir}`];
   const files = walk(distDir);
   const rel = (f) => relative(distDir, f).split(sep).join('/');
@@ -172,7 +192,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     if (/\.(js|mjs|css)$/.test(r)) {
       const text = readFileSync(f, 'utf8');
       if (/sourceMappingURL/.test(text)) problems.push(`${r}: sourceMappingURL reference`);
-      scanHosts(text, r, problems);
+      scanHosts(text, r, problems, r.endsWith('.css') ? undefined : own);
       if (r.endsWith('.css')) {
         if (/@import/.test(text)) problems.push(`${r}: @import in CSS`);
         if (/url\(\s*["']?(?:https?:)?\/\//.test(text)) problems.push(`${r}: remote url() in CSS`);
