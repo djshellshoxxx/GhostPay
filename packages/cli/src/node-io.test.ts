@@ -37,7 +37,7 @@ describe('node adapter', () => {
     await expect(io.writeFile(p, 'two', { overwrite: false })).rejects.toThrow();
     await io.writeFile(p, 'three', { overwrite: true });
     expect(await io.readFile(p)).toBe('three');
-    expect((await stat(p)).mode & 0o077).toBe(0);
+    if (process.platform !== 'win32') expect((await stat(p)).mode & 0o077).toBe(0);
     await expect(io.readFile(join(dir, 'missing'))).rejects.toThrow();
   });
   it('rejects oversized files and stdin', async () => {

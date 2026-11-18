@@ -37,6 +37,16 @@ describe('fiat', () => {
     expect(formatFiat(5n, 'USD')).toBe('USD 0.05');
     expect(formatFiat(500n, 'JPY')).toBe('JPY 500');
   });
+  it('formats negative minor units with a single leading minus (regression RED baseline)', () => {
+    expect(formatFiat(-5n, 'USD')).toBe('USD -0.05');
+    expect(formatFiat(-12_345n, 'USD')).toBe('USD -123.45');
+    expect(formatFiat(-2n, 'JPY')).toBe('JPY -2');
+    expect(formatFiat(-1n, 'USD')).toBe('USD -0.01');
+    expect(formatFiat(-100n, 'USD')).toBe('USD -1.00');
+    expect(formatFiat(-123_456_789n, 'USD')).toBe('USD -1234567.89');
+    expect(formatFiat(0n, 'USD')).toBe('USD 0.00');
+    expect(formatFiat(0n, 'USD')).not.toContain('-');
+  });
   it('rounds tax half up', () => {
     expect(taxFor(10_000n, 500)).toBe(500n);
     expect(taxFor(1n, 5000)).toBe(1n);
@@ -57,5 +67,12 @@ describe('display helpers', () => {
   });
   it('formats unix time in UTC', () => {
     expect(formatUnix(0)).toBe('1970-01-01 00:00:00 UTC');
+    expect(formatUnix(253_402_300_799)).toBe('9999-12-31 23:59:59 UTC');
+    expect(formatUnix(8.64e12)).toBe('+275760-09-13 00:00:00 UTC');
+  });
+  it('never throws for a time outside the Date range, so a hostile invoice cannot crash a render (G1-01)', () => {
+    for (const s of [Number.MAX_SAFE_INTEGER, 8.64e12 + 1, -8.64e12 - 1, NaN, Infinity, -Infinity]) {
+      expect(formatUnix(s)).toBe('invalid time');
+    }
   });
 });

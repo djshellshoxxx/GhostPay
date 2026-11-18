@@ -1,8 +1,15 @@
 import { buildErc20Metadata, deriveStealthPayment, encodeMetaAddress, generateKeySet, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { checkAnnouncement } from '@ghostpay/core-crypto';
+import { describe, expect, it, vi } from 'vitest';
 import { ScanProtocol, ScanSession, type FromWorker, type ToWorker, type WireLog } from './scannerCore';
+
+// Pass-through spy: counts the curve work (ECDH per call) without changing what core-crypto answers.
+vi.mock('@ghostpay/core-crypto', async (importOriginal) => {
+  const real = await importOriginal<typeof import('@ghostpay/core-crypto')>();
+  return { ...real, checkAnnouncement: vi.fn(real.checkAnnouncement) };
+});
 
 const hex = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
 
@@ -78,6 +85,57 @@ describe('ScanSession', () => {
     const f = fixture();
     expect(() => new ScanSession(new Uint8Array(32), f.spendHex)).toThrow();
     expect(() => new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), 'zz')).toThrow(/INVALID_POINT/);
+  });
+
+  // Spec 05: a replayed announcement (same content, another position) is the cheapest spam; it costs one lookup, not an ECDH.
+  describe('replay memo (spec 05)', () => {
+    const copies = (log: WireLog, n: number, prefix: string): WireLog[] => Array.from({ length: n }, (_, i) => ({ ...log, id: `${prefix}${String(i)}` }));
+    it('checks each distinct announcement once per session, across batches, and still finds the real payment', () => {
+      const f = fixture();
+      const s = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+      vi.mocked(checkAnnouncement).mockClear();
+      const first = s.processBatch([...copies(f.other, 500, 'a'), ...copies(f.mine, 500, 'b')]);
+      const second = s.processBatch([...copies(f.other, 500, 'c'), ...copies(f.mine, 500, 'd')]);
+      expect(first.map((m) => m.id)).toEqual(copies(f.mine, 500, 'b').map((m) => m.id));
+      expect(second.map((m) => m.id)).toEqual(copies(f.mine, 500, 'd').map((m) => m.id));
+      expect(s.scanned).toBe(2000);
+      expect(vi.mocked(checkAnnouncement)).toHaveBeenCalledTimes(2);
+      s.dispose();
+    });
+    it('does not let a memoised rejection hide a later announcement that reuses the key with my address, and keys the memo on the tag and deep-scan flag', () => {
+      const f = fixture();
+      const bytes = Uint8Array.from(f.mine.metadata.slice(2).match(/../g) ?? [], (h) => parseInt(h, 16));
+      bytes[0] = bytes[0]! ^ 0x5a;
+      const wrongTag: WireLog = { ...f.mine, id: 'wt', metadata: `0x${hex(bytes)}` };
+      const wrongAddress: WireLog = { ...f.mine, id: 'wa', stealthAddress: f.other.stealthAddress };
+      const s = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+      expect(s.processBatch([wrongAddress, wrongTag])).toEqual([]);
+      // Same ephemeral key as the two rejections above, now with the right address and tag: found.
+      expect(s.processBatch([{ ...f.mine, id: 'real' }])).toEqual([{ id: 'real', stealthAddress: f.mine.stealthAddress, tagMatches: true }]);
+      expect(s.processBatch([{ ...wrongTag, id: 'deep', skipTag: true }])).toEqual([{ id: 'deep', stealthAddress: f.mine.stealthAddress, tagMatches: false }]);
+      expect(s.processBatch([{ ...wrongTag, id: 'shallow' }])).toEqual([]);
+      s.dispose();
+    });
+    it('never memoises a malformed announcement, so a later well-formed one with the same key is checked', () => {
+      const f = fixture();
+      const s = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+      vi.mocked(checkAnnouncement).mockClear();
+      expect(s.processBatch([{ ...f.mine, id: 'bad', metadata: '0xzz' }, { ...f.mine, id: 'bad2', metadata: '0xzz' }])).toEqual([]);
+      expect(s.processBatch([{ ...f.mine, id: 'ok' }])).toHaveLength(1);
+      expect(vi.mocked(checkAnnouncement)).toHaveBeenCalledTimes(3);
+      s.dispose();
+    });
+    it('forgets everything on dispose and cancel', () => {
+      const f = fixture();
+      const s = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+      s.processBatch([f.mine, f.other]);
+      const memo = (s as unknown as { readonly memo: Map<string, unknown> }).memo;
+      expect(memo.size).toBe(2);
+      s.cancel();
+      expect(memo.size).toBe(0);
+      s.dispose();
+      expect(memo.size).toBe(0);
+    });
   });
 });
 

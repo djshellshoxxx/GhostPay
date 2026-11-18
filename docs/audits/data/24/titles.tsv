@@ -1,0 +1,83 @@
+L1-01	Keys/session	Idle lock wipes never-backed-up keys; payments to them become unrecoverable
+L1-02	Keys/session	Sweep passphrase gate bypassed by deleting the vault or exporting a keystore without step-up
+L1-03	Scanner/ledger	One-RPC checkpoint mismatch tombstones the whole reconciliation ledger (root shared with L3-F1)
+L1-04	Keys/session	"Wipe keys" leaves the tag vault unlocked for the next identity in the tab
+L1-05	Pay/sweep	Sweep status check could overwrite a newer lock (no compare-and-swap)
+L1-06	Keys/session	Passphrase strength check accepts guessable phrases
+L1-07	Keys/session	requireSession hands all plaintext scalars to callers that need one
+I-1	Keys/session	Storage keys derived from public keys survive "wipe keys" (device-seller linkability)
+I-2	Keys/session	Archive export silently omits chains disabled in the build
+I-3	Keys/session	Optional tag fields not type-checked
+L2-F1	Pay/sweep	Pre-send dry run cannot refuse a revert (node error detail dropped)
+L2-F2	Pay/sweep	Native direct sweep on L2s with an L1 data fee; failure jams the lock
+L2-F3	Pay/sweep	Wallet-altered transaction check skipped when the RPC is slow
+L2-F4	Pay/sweep	Seller-chosen fiat total not checked against a fixed token amount
+L2-I1	Pay/sweep	Fiat quote slippage shown but not enforced
+L2-I2	Pay/sweep	Huge timestamps blank the app (same as G1-01)
+L2-I3	Pay/sweep	Wallet rejection leaves an 'unknown' payment-journal entry
+L2-I4	Pay/sweep	Live manifest read-back ignores the secondary RPC
+L3-F1	Scanner/ledger	A different or missing anchor hash from one RPC tombstones the ledger and rescans from 0
+L3-F2	Scanner/ledger	Second-RPC comparison stalls on log spam or head lag
+L3-F3	Scanner/ledger	Worker batch timeout on slower devices for large pages
+L3-F4	Scanner/ledger	Non-default open-log budget defers a page on every run
+L3-F5	Scanner/ledger	Second-RPC disclosure understates what that RPC learns
+L3-F6	Scanner/ledger	Indexer/Esplora/Solana/TRON bodies read without a streaming size cap
+L3-F7	Embed	Embed profile adds no gate beyond frame-ancestors
+L3-F8	Hosting	CSP/SRI postbuild helpers are dead code since consolidation
+L3-F9	Keys/session	Scan slot keys linkable to the public meta-address (duplicate of I-1)
+L4-01	Scanner/ledger	Announcement spam in one block stops every scan behind it
+L4-02	Pay/sweep	Deep-scan payment with a wrong view tag offers a Sweep that throws
+L4-03	Chain views	Esplora client aborts on blocks whose tx count is a multiple of 25
+L4-04	Chain views	BTC verification text claims genesis anchoring that is not done
+L4-05	Chain views	Non-EVM responses read without a streaming size limit
+L4-I1	Chain adapters	Manifest digest has no domain prefix
+L4-I3	Core crypto	SecretBytes does not block toHex/toBase64; registry accepts bad-checksum addresses
+L5-01	Relayer	Permit lapsing before inclusion produces a relayer-paid revert
+L5-02	Relayer	Shared global loss cap lets reverts deny every sweep; trips at half the cap
+L5-03	Relayer	Global quote bucket exhaustible from a few addresses
+L5-04	Relayer	Spend groups never evicted; newcomers share one overflow group
+L5-05	Relayer	deploy/ compose puts every client in one rate-limit bucket
+L5-06	Relayer	Receipt timeout holds budgets and lane; breaker and health miss stuck txs
+L5-07	Relayer	Stale trustProxyHops key in docs crash-loops the relayer
+L5-08	Relayer	Gas reserve default 0 (no beta-chain impact)
+L5-10	Relayer	RPC outage never opens the breaker
+L7-L3	Hosting	deploy/nginx proxies any /api/ path including /metrics
+L7-M1	Hosting	Kit README promises a rendered _headers that static export drops
+L7-M2	Hosting	selfhost.sh never compares --commit
+L7-M3	Hosting	Archive path ignores --expect-sha256
+L7-M4	CI	Pages workflow restores library dist from cache
+L7-L1	Embed	Embed headers lack ACAO for the SRI snippet
+L7-L2	Hosting	Attribute check not config-proof ($GIT_DIR/info/attributes)
+L7-L4	CI	PR file listing truncation (3000 files) fails open
+L7-L5	Hosting	Directory target re-read after verification
+L7-I1	Hosting	infra/proxy camera policy drift
+F1	Contracts (flagged)	Policy factory fee waiver needs a standing allowance; any approver deploys free
+F2	Contracts (flagged)	payERC20WithBuffer strands native buffer with a non-zero limits root
+F3	Contracts (flagged)	Docs describe the N-01 salt ABI that consolidation dropped
+F4	Contracts (flagged)	Policy factory/router code hash not pinned
+F5	Packages (preserved)	verifyReceipt marks any final router claim verified
+F6	Contracts	Local announcer build cannot reach the canonical CREATE2 address (by design)
+L8-01	Packages (preserved)	Dev pool ceremony makes proofs forgeable (testnet only, accepted)
+L8-02	Packages (preserved)	Plugin hooks run in the host realm (not wired)
+L8-03	Packages (preserved)	Payjoin stores are memory-only (not wired)
+L8-04	Packages (preserved)	PIR client would ship if createScanSource were imported
+L8-05	Packages (preserved)	Payjoin URL check accepts private hosts (not wired)
+L8-06	Packages (preserved)	Pool relayer key stays in /proc environ
+L8-07	Packages (preserved)	Pool SDK backup KDF weaker; import trusts logN up to 20
+L8-08	Packages (preserved)	payer-sponsor drains oversized bodies
+L8-09	Packages (preserved)	Test-only self-signed key in net-harness (accepted)
+G1-01	Pay/sweep	Huge expiry or quote timestamps blank the app (no error boundary)
+G1-02	Embed	Embed profile accepts any origin (later-preserved, not reachable as shipped)
+G1-03	Packages (preserved)	Payment-link host check accepts hex/short IPv4 forms
+G2-01	Chain views	BTC view preselects every output; no linkage warning
+G2-02	Chain views	App idle lock does not lock BTC/Solana/TRON views
+G2-03	Chain views	Chain-view secrets shown and copied without a reveal step
+G2-04	Chain views	BTC view never zeroizes keys or tweaks
+G2-05	Keys/session	Controlled secret inputs mirror values into the DOM attribute
+G2-06	Keys/session	Passphrase fields invite browser password saving
+G3-01	Merchant plugins	WooCommerce secrets stored as readable gateway settings
+G3-02	Merchant plugins	Plugins scale amounts by display decimals, not ISO-4217 exponents
+G3-03	Merchant plugins	PrestaShop webhook selects a dropped column; every event fails
+G3-04	Merchant plugins	WooCommerce event claim is not atomic
+G3-05	Merchant plugins	WooCommerce transitions ignore order state and superseded invoices
+G3-06	Merchant plugins	Example receiver acknowledges in-flight duplicates

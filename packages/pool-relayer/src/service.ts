@@ -54,6 +54,8 @@ export interface ServiceDeps {
   readonly lossBudget?: LossBudget;
   readonly logger?: Logger;
   readonly receiptTimeoutMs?: number;
+  /** Most relay requests admitted per chain at once (verifying, queued or sending); the rest get 503 `queue_full` (default 32). */
+  readonly maxQueue?: number;
 }
 
 /** Relay result. */
@@ -87,8 +89,15 @@ export class PoolRelayerService {
   private readonly loss: LossBudget;
   private readonly scopes = new Map<string, bigint>();
   private readonly lanes = new Map<number, Promise<unknown>>();
+  private readonly admitted = new Map<number, number>();
+  private readonly maxQueue: number;
 
   public constructor(private readonly d: ServiceDeps) {
+    const maxQueue = d.maxQueue === undefined ? 32 : d.maxQueue;
+    if (!Number.isSafeInteger(maxQueue) || maxQueue < 1) {
+      throw new Error('maxQueue must be a positive safe integer');
+    }
+    this.maxQueue = maxQueue;
     this.cfg = d.config;
     this.logger = d.logger ?? nullLogger;
     for (const p of d.config.pools) {
@@ -201,6 +210,20 @@ export class PoolRelayerService {
 
   /** `/v1/relay`. */
   public async relay(r: RelayRequest, ctx: CallContext): Promise<RelayResult> {
+    // Bounded admission per chain: proof checks and queued sends are not allowed to pile up without limit.
+    const n = this.admitted.get(r.chainId) ?? 0;
+    if (n >= this.maxQueue) throw new RelayerError(503, 'queue_full', 5);
+    this.admitted.set(r.chainId, n + 1);
+    try {
+      return await this.relayAdmitted(r, ctx);
+    } finally {
+      const left = (this.admitted.get(r.chainId) ?? 1) - 1;
+      if (left <= 0) this.admitted.delete(r.chainId);
+      else this.admitted.set(r.chainId, left);
+    }
+  }
+
+  private async relayAdmitted(r: RelayRequest, ctx: CallContext): Promise<RelayResult> {
     const log = (cls: string, extra: { txHash?: Hex } = {}): void => {
       this.logger.log(cls === 'confirmed' ? 'info' : 'warn', 'relay', { chainId: r.chainId, errorClass: cls, ...(ctx.requestId === undefined ? {} : { requestId: ctx.requestId }), ...extra });
     };

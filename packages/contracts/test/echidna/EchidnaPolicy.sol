@@ -133,6 +133,18 @@ contract EchidnaPolicy {
         _request(WRONG_PK, native, amount, nonceIdx, false);
     }
 
+    /// @dev Asset-specific owner requests, always within the limit (`request` keeps covering over-limit
+    /// amounts). With one random asset per `request`, a 20-call sequence rarely held the three requests of
+    /// one asset that `echidna_canary_exec_native` / `_exec_token` need, so a 300k-call campaign could end
+    /// without reaching them (contract-analysis run 43981233671). Same signing, nonce pool and bookkeeping.
+    function requestNative(uint256 amount, uint8 nonceIdx) external {
+        _request(OWNER_PK, true, amount, nonceIdx, false);
+    }
+
+    function requestToken(uint256 amount, uint8 nonceIdx) external {
+        _request(OWNER_PK, false, amount, nonceIdx, false);
+    }
+
     function _request(uint256 pk, bool native, uint256 amount, uint8 nonceIdx, bool bigAmount)
         internal
     {
@@ -168,7 +180,31 @@ contract EchidnaPolicy {
 
     function execute(uint8 idx) external {
         if (recs.length == 0) return;
-        Rec storage r = recs[idx % recs.length];
+        _execute(recs[idx % recs.length]);
+    }
+
+    /// @dev Like `execute`, but `idx` picks among the requests the harness still tracks as open (neither
+    /// executed nor cancelled) instead of among all of them, most of which are closed late in a sequence.
+    /// The account still enforces every rule (timelock, destination, window, status) and the same
+    /// post-conditions are checked; `execute` and `reExecute` keep trying closed requests.
+    function executePending(uint8 idx) external {
+        uint256 open;
+        for (uint256 i = 0; i < recs.length; i++) {
+            if (!recs[i].executed) open++;
+        }
+        if (open == 0) return;
+        uint256 k = idx % open;
+        for (uint256 i = 0; i < recs.length; i++) {
+            if (recs[i].executed) continue;
+            if (k == 0) {
+                _execute(recs[i]);
+                return;
+            }
+            k--;
+        }
+    }
+
+    function _execute(Rec storage r) internal {
         address dest = acct.destination();
         uint256 beforeD = r.token == address(0) ? dest.balance : token.balanceOf(dest);
         uint256 beforeA =

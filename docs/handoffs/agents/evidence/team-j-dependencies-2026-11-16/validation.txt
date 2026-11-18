@@ -1,0 +1,194 @@
+Source: 379fe3004f06261949a7cd3303ae1699927bdc6a
+Base: ab5039a3da0a1653df85b8ecbda6973947827547
+Node: 24.22.1
+Lock SHA256: e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e
+Non-dev installed lock records: 154, all exactly unchanged; no new/removed production records.
+
+
+PASS: npm10.9.8 final clean install, NODE_OPTIONS=--max-old-space-size=512 npm_config_maxsockets=1; lock SHA256 verified unchanged
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+
+added 722 packages in 16s
+
+
+PASS: final dependency integration checks (5/5)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> ghostpay@0.1.0 test:dependency-tooling
+> node --test scripts/tests/dependency-tooling.test.mjs
+
+✔ Mocha serializes worker options without mutating functions or losing RegExp/Date (20.129346ms)
+✔ Mocha discovers nested globs, honors minimatch ignores, and runs parallel workers (541.365899ms)
+✔ Mocha watch discovery retains Glob pattern objects and dotfile matching (23.890413ms)
+✔ Mocha failure reporter still renders unified and inline diffs (311.959703ms)
+✔ solc tmp API writes and removes SMT files and rejects traversal prefixes (79.331603ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1065.993182
+
+
+PASS: core-crypto + secret-box lint
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+
+> @ghostpay/secret-box@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+
+
+PASS: native solc 0.8.28 compile (36 files)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/confidential-contracts@0.1.0 compile
+> hardhat compile
+
+Compiled 36 Solidity files successfully (evm target: cancun).
+
+
+PASS: confidential-contracts TypeScript
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/confidential-contracts@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+
+PASS: native Anvil chain guard and router suite (39/39)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/confidential-contracts@0.1.0 test
+> hardhat test test/chainGuard.test.ts test/router.test.ts
+
+
+
+  testnet-only chain guard (CT-C-8)
+    ✔ refuses chain 1 for MockERC20, token and router (268ms)
+    ✔ refuses chain 10 for MockERC20, token and router (277ms)
+    ✔ refuses chain 137 for MockERC20, token and router (227ms)
+    ✔ refuses chain 8453 for MockERC20, token and router (205ms)
+    ✔ refuses chain 42161 for MockERC20, token and router (216ms)
+    ✔ refuses chain 84532 for MockERC20, token and router (218ms)
+    ✔ refuses chain 11155420 for MockERC20, token and router (224ms)
+    ✔ allows chain 31337 (252ms)
+    ✔ allows chain 11155111 (260ms)
+
+  GhostPayConfidentialRouter: construction
+    ✔ exposes the normative constants (94ms)
+    ✔ CT_SELECTOR is the selector of confidentialTransfer(address,bytes32) (62ms)
+    ✔ rejects bad constructor arguments (74ms)
+    ✔ test token and underlying are labelled as test assets (38ms)
+
+  GhostPayConfidentialRouter: payConfidential
+    ✔ splits gross into net (stealth) and fee (router), amounts decrypt exactly (595ms)
+    ✔ emits exactly the 57-byte metadata with the net handle at [25:57] (CT-C-4) (867ms)
+    ✔ insufficient balance: no revert, stealth gets 0 (silent zero transfer, CT-PAY-6) (236ms)
+    ✔ zero gross: succeeds, nothing moves (232ms)
+    ✔ payments below 400 base units pay no fee (251ms)
+    ✔ forwards the ETH buffer to the stealth address (196ms)
+    ✔ reverts BufferTooLarge when msg.value > maxBufferWei (215ms)
+    ✔ reverts NativeTransferFailed when the stealth address rejects ETH (200ms)
+    ✔ reverts Expired after the deadline (151ms)
+    ✔ reverts InvalidStealth for zero, router and fee recipient (137ms)
+    ✔ reverts InvalidEphemeralKey for wrong length or prefix (394ms)
+    ✔ reverts TokenNotAllowed for a token outside the constructor set (178ms)
+    ✔ reverts NotOperator without approval and after the operator window (CT-C-5) (203ms)
+    ✔ a third party cannot spend a payer's balance (input bound to msg.sender) (346ms)
+    ✔ rejects an encrypted input made for another user (179ms)
+    ✔ rejects plain ETH and unknown calls (NoDirectETH) (60ms)
+    ✔ holds the reentrancy guard on the ETH-forwarding path (268ms)
+
+  GhostPayConfidentialRouter: ACL and event leakage
+    ✔ never allows the fee recipient on a per-payment handle (CT-C-7) (314ms)
+    ✔ no log word of the payment tx equals the gross, net or fee (T3, CT-C-2) (373ms)
+
+  GhostPayConfidentialRouter: flushFees (CT-C-6)
+    ✔ reverts FlushTooEarly before any payment and inside the epoch (300ms)
+    ✔ reverts TokenNotAllowed for an unknown token
+    ✔ moves the full fee balance to the recipient once per epoch (538ms)
+    ✔ a payment after an idle period cannot be flushed on its own (epoch restarts at the first unflushed payment) (466ms)
+    ✔ the fee epoch starts at the first unflushed payment and is not reset by later payments (377ms)
+
+  test token wrap/unwrap (public amounts by design)
+    ✔ wrap -> unwrap -> publicDecrypt -> finalizeUnwrap returns the plaintext ERC-20 (255ms)
+    ✔ MockERC20 mint is public (test token) (65ms)
+
+
+  39 passing (10s)
+
+
+
+INCOMPLETE: full 1000-run FHE fuzz; exit137
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/confidential-contracts@0.1.0 test
+> hardhat test
+
+
+
+  testnet-only chain guard (CT-C-8)
+      anvil not found: chain-guard tests SKIPPED (set ANVIL_BIN)
+    - refuses chain 1 for MockERC20, token and router
+    - refuses chain 10 for MockERC20, token and router
+    - refuses chain 137 for MockERC20, token and router
+    - refuses chain 8453 for MockERC20, token and router
+    - refuses chain 42161 for MockERC20, token and router
+    - refuses chain 84532 for MockERC20, token and router
+    - refuses chain 11155420 for MockERC20, token and router
+    - allows chain 31337
+    - allows chain 11155111
+
+  fee split fuzz (CT-C-3), seed 1337, 1000 runs
+    ✔ boundary values each in a fresh deployment: fee == t/400, fee + net == t (2945ms)
+Killed
+npm error Lifecycle script `test` failed with error:
+npm error code 137
+npm error path /workspace/scratch/a9f2ae0b1bda/ghostpay-dependencies/packages/confidential-contracts
+npm error workspace @ghostpay/confidential-contracts@0.1.0
+npm error location /workspace/scratch/a9f2ae0b1bda/ghostpay-dependencies/packages/confidential-contracts
+npm error command failed
+npm error command sh -c hardhat test
+
+
+INCOMPLETE: existing quick FHE fuzz; exit137
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/confidential-contracts@0.1.0 test:quick
+> FUZZ_RUNS=100 INV_SEQUENCES=2 hardhat test
+
+
+
+  testnet-only chain guard (CT-C-8)
+    ✔ refuses chain 1 for MockERC20, token and router (266ms)
+    ✔ refuses chain 10 for MockERC20, token and router (277ms)
+    ✔ refuses chain 137 for MockERC20, token and router (271ms)
+    ✔ refuses chain 8453 for MockERC20, token and router (234ms)
+    ✔ refuses chain 42161 for MockERC20, token and router (218ms)
+    ✔ refuses chain 84532 for MockERC20, token and router (387ms)
+    ✔ refuses chain 11155420 for MockERC20, token and router (219ms)
+    ✔ allows chain 31337 (292ms)
+    ✔ allows chain 11155111 (277ms)
+
+  fee split fuzz (CT-C-3), seed 1337, 100 runs
+    ✔ boundary values each in a fresh deployment: fee == t/400, fee + net == t (4314ms)
+Killed
+npm error Lifecycle script `test:quick` failed with error:
+npm error code 137
+npm error path /workspace/scratch/a9f2ae0b1bda/ghostpay-dependencies/packages/confidential-contracts
+npm error workspace @ghostpay/confidential-contracts@0.1.0
+npm error location /workspace/scratch/a9f2ae0b1bda/ghostpay-dependencies/packages/confidential-contracts
+npm error command failed
+npm error command sh -c FUZZ_RUNS=100 INV_SEQUENCES=2 hardhat test
+
+
+INCOMPLETE: bounded npm11.9.0 ci; shell reported exit137
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.

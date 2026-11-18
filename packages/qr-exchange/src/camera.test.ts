@@ -1,6 +1,6 @@
 import qrcode from 'qrcode-generator';
 import { describe, expect, it, vi } from 'vitest';
-import { MAX_SCAN_TEXT_LEN, scanFromVideo, startCamera, stopVideo } from './camera.js';
+import { activeDeviceId, listVideoInputs, MAX_SCAN_TEXT_LEN, scanFromVideo, startCamera, stopVideo } from './camera.js';
 import type { FrameReader, MediaDevicesLike, VideoLike } from './camera.js';
 import { QrExchangeError } from './errors.js';
 import { qrMatrix, qrSvgPath } from './generate.js';
@@ -68,10 +68,31 @@ describe('startCamera', () => {
     const mk = (name: string): MediaDevicesLike => ({ getUserMedia: () => Promise.reject(Object.assign(new Error('x'), { name })) });
     expect(await codeOf(startCamera(v, mk('NotAllowedError')))).toBe('CAMERA_DENIED');
     expect(await codeOf(startCamera(v, mk('SecurityError')))).toBe('CAMERA_DENIED');
-    expect(await codeOf(startCamera(v, mk('NotFoundError')))).toBe('CAMERA_UNAVAILABLE');
+    expect(await codeOf(startCamera(v, mk('NotFoundError')))).toBe('CAMERA_NOT_FOUND');
+    expect(await codeOf(startCamera(v, mk('OverconstrainedError')))).toBe('CAMERA_NOT_FOUND');
+    expect(await codeOf(startCamera(v, mk('NotReadableError')))).toBe('CAMERA_IN_USE');
+    expect(await codeOf(startCamera(v, mk('AbortError')))).toBe('CAMERA_IN_USE');
+    expect(await codeOf(startCamera(v, mk('TypeError')))).toBe('CAMERA_UNAVAILABLE');
+    // Legacy Chrome names.
+    expect(await codeOf(startCamera(v, mk('PermissionDeniedError')))).toBe('CAMERA_DENIED');
+    expect(await codeOf(startCamera(v, mk('DevicesNotFoundError')))).toBe('CAMERA_NOT_FOUND');
+    expect(await codeOf(startCamera(v, mk('TrackStartError')))).toBe('CAMERA_IN_USE');
     expect(await codeOf(startCamera(v, { getUserMedia: () => Promise.reject(new Error('str')) }))).toBe('CAMERA_UNAVAILABLE');
     expect(await codeOf(startCamera(v, undefined))).toBe('CAMERA_UNAVAILABLE');
     expect(await codeOf(startCamera(v, {} as MediaDevicesLike))).toBe('CAMERA_UNAVAILABLE');
+    // Browsers hide navigator.mediaDevices on insecure pages: say so instead of a generic "unavailable".
+    expect(await codeOf(startCamera(v, undefined, { secureContext: false }))).toBe('CAMERA_INSECURE');
+    expect(await codeOf(startCamera(v, undefined, { secureContext: true }))).toBe('CAMERA_UNAVAILABLE');
+  });
+  it('requests a specific device only when a deviceId is given; rejects malformed ids before prompting', async () => {
+    const { stream } = fakeStream();
+    const gum = vi.fn().mockResolvedValue(stream);
+    await startCamera(fakeVideo(), { getUserMedia: gum }, { deviceId: 'cam-2' });
+    expect(gum).toHaveBeenCalledWith({ video: { deviceId: { exact: 'cam-2' }, width: { ideal: 1280 } }, audio: false });
+    const gum2 = vi.fn();
+    expect(await codeOf(startCamera(fakeVideo(), { getUserMedia: gum2 }, { deviceId: '' }))).toBe('BAD_INPUT');
+    expect(await codeOf(startCamera(fakeVideo(), { getUserMedia: gum2 }, { deviceId: 'x'.repeat(513) }))).toBe('BAD_INPUT');
+    expect(gum2).not.toHaveBeenCalled();
   });
   it('stops tracks if play fails or abort happens mid-prompt; no prompt if pre-aborted', async () => {
     const a = fakeStream();
@@ -120,6 +141,31 @@ describe('startCamera', () => {
 
     stopVideo(video);
     expect(b.stops.every((s) => s.mock.calls.length === 1)).toBe(true);
+  });
+});
+
+describe('camera devices', () => {
+  it('lists distinct non-empty video input ids without reading labels, bounded', async () => {
+    const label = vi.fn(() => 'Secret camera name');
+    const dev = (kind: string, deviceId: string) => ({ kind, deviceId, get label() { return label(); } });
+    const md = (list: unknown[]): MediaDevicesLike => ({ getUserMedia: vi.fn(), enumerateDevices: () => Promise.resolve(list as never) });
+    expect(await listVideoInputs(md([dev('audioinput', 'a'), dev('videoinput', 'v1'), dev('videoinput', ''), dev('videoinput', 'v1'), dev('videoinput', 'v2')]))).toEqual(['v1', 'v2']);
+    expect(label).not.toHaveBeenCalled();
+    const many = Array.from({ length: 40 }, (_, i) => dev('videoinput', `v${String(i)}`));
+    expect((await listVideoInputs(md(many))).length).toBe(16);
+    expect(await listVideoInputs(md([null, { kind: 'videoinput', deviceId: 7 }, dev('videoinput', 'x'.repeat(600))]))).toEqual([]);
+    expect(await listVideoInputs(md('nope' as never))).toEqual([]);
+    expect(await listVideoInputs(undefined)).toEqual([]);
+    expect(await listVideoInputs({ getUserMedia: vi.fn() })).toEqual([]);
+    expect(await listVideoInputs({ getUserMedia: vi.fn(), enumerateDevices: () => Promise.reject(new Error('x')) })).toEqual([]);
+  });
+  it('reads the active device id from the first track settings when available', () => {
+    expect(activeDeviceId(fakeVideo())).toBeUndefined();
+    expect(activeDeviceId(fakeVideo({ srcObject: { getTracks: () => [{ stop: vi.fn(), getSettings: () => ({ deviceId: 'cam-1' }) }] } }))).toBe('cam-1');
+    expect(activeDeviceId(fakeVideo({ srcObject: { getTracks: () => [{ stop: vi.fn() }] } }))).toBeUndefined();
+    expect(activeDeviceId(fakeVideo({ srcObject: { getTracks: () => [] } }))).toBeUndefined();
+    expect(activeDeviceId(fakeVideo({ srcObject: { getTracks: () => [{ stop: vi.fn(), getSettings: () => ({ deviceId: '' }) }] } }))).toBeUndefined();
+    expect(activeDeviceId(fakeVideo({ srcObject: { getTracks: () => { throw new Error('x'); } } }))).toBeUndefined();
   });
 });
 

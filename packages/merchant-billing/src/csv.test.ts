@@ -50,6 +50,28 @@ describe('formula guard', () => {
     expect(() => assertNoFormula(c, 'row 2')).toThrow(BillingError);
   });
   it.each(['Alice', 'a=b', 'x-y', '', '1+1'])('allows %j', (c) => expect(() => assertNoFormula(c, 'r')).not.toThrow());
+  it.each([
+    '=1+1', '+2', '-3', '@SUM(A1)', '   =cmd', '\t=SUM(A1)', '\r+1', '  \t=1',
+    '=HYPERLINK("https://example.invalid/?secret=only-test", "open")',
+  ])('escapes exported formula-leading merchant fields without trusting them as spreadsheet data: %j', cell => {
+    expect(() => assertNoFormula(cell, 'row 2')).toThrow(BillingError);
+    const exported = csvEscapeCell(cell);
+    // CSV quoting can surround the leading apostrophe, but must not remove it.
+    expect(exported.startsWith("'") || exported.startsWith("\"'")).toBe(true);
+    if (!cell.includes('\t') && !cell.includes('\r')) {
+      expect(parseCsv(exported)[0]![0]).toBe(`'${cell}`);
+    }
+    expect(() => assertNoFormula(exported, 'row 2')).not.toThrow();
+  });
+
+  it('preserves the escaped literal value after CSV parsing for comma/quote formula payloads', () => {
+    const formula = '=HYPERLINK("https://example.invalid/test?x=1,2","open")';
+    const exported = csvEscapeCell(formula);
+    expect(exported.startsWith("\"'")).toBe(true);
+    expect(parseCsv(['field', exported].join('\n'))).toEqual([['field'], [`'${formula}`]]);
+    expect(() => assertNoFormula(parseCsv(exported)[0]![0]!, 'row 1')).not.toThrow();
+  });
+
   it('csvEscapeCell neutralizes and quotes', () => {
     expect(csvEscapeCell('=1+1')).toBe("'=1+1");
     expect(csvEscapeCell('  @x')).toBe("'  @x");

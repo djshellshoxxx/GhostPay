@@ -18,7 +18,15 @@ export interface NetworkPort {
   }): Promise<{ readonly status: number; readonly body: string }>;
 }
 
-/** Host-provided key/value store. Keys are namespaced before reaching it. */
+/**
+ * Host-provided key/value store. Keys are namespaced before reaching it.
+ * Calls must settle only after their effect/read is complete. The host must
+ * provide atomic per-key updates and coherent reads; a valid but torn index
+ * cannot be detected by this interface. Share one port
+ * instance across all contexts that access the same backing store in this realm.
+ * Cross-process/realm writers require host-level serialization; this interface
+ * does not provide database transactions or multi-process quota enforcement.
+ */
 export interface StoragePort {
   get(key: string): Promise<string | undefined>;
   set(key: string, value: string): Promise<void>;
@@ -60,6 +68,24 @@ export interface ContextHandle {
 
 const KEY_RE = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const INDEX_KEY = '~index';
+// The longest valid serialized index: 64 quoted keys of 64 code units plus commas.
+const MAX_INDEX_LENGTH = MAX_STORAGE_KEYS * 67 + 1;
+const storageQueues = new WeakMap<StoragePort, Map<string, Promise<unknown>>>();
+
+function serialStorage<T>(store: StoragePort, pluginId: string, op: () => Promise<T>): Promise<T> {
+  let queues = storageQueues.get(store);
+  if (queues === undefined) {
+    queues = new Map();
+    storageQueues.set(store, queues);
+  }
+  const next = (queues.get(pluginId) ?? Promise.resolve()).then(op, op);
+  const tail = next.catch(() => undefined);
+  queues.set(pluginId, tail);
+  void tail.then(() => {
+    if (queues.get(pluginId) === tail) queues.delete(pluginId);
+  });
+  return next;
+}
 
 function namespaced(pluginId: string, key: string): string {
   return `plugin/${pluginId}/${key}`;
@@ -89,13 +115,14 @@ function checkUrl(raw: unknown, hosts: ReadonlySet<string>): string {
 async function readIndex(port: StoragePort, pluginId: string): Promise<string[]> {
   const raw = await port.get(namespaced(pluginId, INDEX_KEY));
   if (raw === undefined) return [];
+  if (typeof raw !== 'string' || raw.length > MAX_INDEX_LENGTH) throw new PluginError('LIMIT', 'storage.index');
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch {
     throw new PluginError('LIMIT', 'storage.index');
   }
-  if (!Array.isArray(parsed) || !parsed.every((k) => typeof k === 'string' && KEY_RE.test(k))) {
+  if (!Array.isArray(parsed) || parsed.length > MAX_STORAGE_KEYS || new Set(parsed).size !== parsed.length || !parsed.every((k) => typeof k === 'string' && KEY_RE.test(k))) {
     throw new PluginError('LIMIT', 'storage.index');
   }
   return parsed as string[];
@@ -165,18 +192,16 @@ export function createContext(
       if (typeof k !== 'string' || !KEY_RE.test(k)) throw new PluginError('PERMISSION', 'storage.key');
       return k;
     };
-    // Index updates are read-modify-write: serialize mutations so concurrent calls
-    // from one plugin cannot lose index entries or overshoot the key quota.
-    let tail: Promise<unknown> = Promise.resolve();
-    const serial = <T>(op: () => Promise<T>): Promise<T> => {
-      const next = tail.then(op, op);
-      tail = next.catch(() => undefined);
-      return next;
-    };
+    // Serialize mutations across invocations, not just calls in one context.
+    const serial = <T>(op: () => Promise<T>): Promise<T> => serialStorage(store, pluginId, op);
     ctx.storage = Object.freeze({
       get: async (k: string) => {
         guard();
-        return store.get(namespaced(pluginId, key(k)));
+        const value = await store.get(namespaced(pluginId, key(k)));
+        guard();
+        if (value !== undefined && (typeof value !== 'string' || value.length > MAX_STORAGE_VALUE))
+          throw new PluginError('LIMIT', 'storage.value');
+        return value;
       },
       set: async (k: string, v: string) => {
         guard();
@@ -186,6 +211,7 @@ export function createContext(
         return serial(async () => {
           guard();
           const index = await readIndex(store, pluginId);
+          guard();
           if (!index.includes(kk)) {
             if (index.length >= MAX_STORAGE_KEYS) throw new PluginError('LIMIT', 'storage.keys');
             index.push(kk);
@@ -193,6 +219,7 @@ export function createContext(
           }
           guard();
           await store.set(namespaced(pluginId, kk), v);
+          guard();
         });
       },
       delete: async (k: string) => {
@@ -201,9 +228,12 @@ export function createContext(
         return serial(async () => {
           guard();
           const index = await readIndex(store, pluginId);
+          guard();
           await store.delete(namespaced(pluginId, kk));
+          guard();
           if (index.includes(kk)) {
             await store.set(namespaced(pluginId, INDEX_KEY), JSON.stringify(index.filter((x) => x !== kk)));
+            guard();
           }
         });
       },

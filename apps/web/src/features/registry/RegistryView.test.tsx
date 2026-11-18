@@ -3,13 +3,15 @@ import { buildRegisterKeysCall, ERC6538_ENTRY_TYPEHASH, ERC6538_REGISTRY_ADDRESS
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { decodeFunctionData, encodeAbiParameters, keccak256, toBytes } from 'viem/utils';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { clearSession, generateSession, getSessionPublic } from '../../lib/session';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { sepolia } from 'viem/chains';
+import { captureSessionGuard, clearSession, generateSession, getSessionPublic, importSession, markKeystoreDownloaded } from '../../lib/session';
 import { buildClearRegistryCall } from '../../lib/registry';
 import { SETTINGS_KEY } from '../../lib/settings';
 import type { WalletInfo } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
 import { mockRpc } from '../../test/mockRpc';
+import { generateWaivedSession } from '../../test/keys';
 import { makeServices, renderApp } from '../../test/render';
 
 const SEPOLIA = 11155111;
@@ -65,8 +67,42 @@ describe('Registry view', () => {
     expect(screen.getByText(/Load or generate keys/)).toBeTruthy();
   });
 
+  it('C-R1: an unverified download still blocks publishing until the seller explicitly waives the backup gate', async () => {
+    const pub = generateSession();
+    const wallet = new MockWallet({ chainId: SEPOLIA });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.queryByText(pub.metaAddress)).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Find wallets' })).toBeNull();
+    // The lookup and the QR review stay available: they publish nothing.
+    expect(screen.getByRole('button', { name: 'Look up' })).toBeTruthy();
+    act(() => { markKeystoreDownloaded(captureSessionGuard()); });
+    // Download is not verification: publishing and the public meta-address remain gated.
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.queryByText(pub.metaAddress)).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
+    await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+    expect(screen.getByText(pub.metaAddress)).toBeTruthy();
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Find wallets' }));
+    await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    expect(await screen.findByRole('button', { name: 'Review publish transaction' })).toBeTruthy();
+  });
+
+  it('payment keys imported without an invoice signer can reach the registry consent gate', async () => {
+    const pub = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    await open();
+    expect(screen.getByText(pub.metaAddress)).toBeTruthy();
+    expect(screen.getByRole('checkbox')).toBeTruthy();
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Find wallets' })).toBeNull();
+  });
+
   it('publishes only after explicit consent, previews the call, and verifies it on the RPC', async () => {
-    generateSession();
+    generateWaivedSession();
     const meta = getSessionPublic()!.metaAddress;
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const rpc = chain(wallet);
@@ -88,7 +124,7 @@ describe('Registry view', () => {
   });
 
   it('does not publish if consent is withdrawn during the wallet network recheck', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     let block = false;
     let release: (() => void) | undefined;
@@ -112,7 +148,7 @@ describe('Registry view', () => {
     expect(wallet.sent).toBeUndefined();
   });
   it('unchecking consent drops the connection and review', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(screen.getByRole('checkbox'));
@@ -124,7 +160,7 @@ describe('Registry view', () => {
   });
 
   it('refuses to review when the registry has no code on the chain (fail closed)', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet, '0x')), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(screen.getByRole('checkbox'));
@@ -137,7 +173,7 @@ describe('Registry view', () => {
   });
 
   it('requires the expected ERC-6538 type hash before registry use', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const rpc = chain(wallet, '0x6001', '0x', `0x${'11'.repeat(32)}`);
     const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
@@ -150,7 +186,7 @@ describe('Registry view', () => {
   });
 
   it('reviews and clears the current entry through registerKeys(1, empty bytes)', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(screen.getByRole('checkbox'));
@@ -169,7 +205,7 @@ describe('Registry view', () => {
   });
 
   it('requires an RPC endpoint', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }), false);
     await user.click(screen.getByRole('checkbox'));
@@ -189,6 +225,55 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('button', { name: 'Look up' }));
     expect(await screen.findByText(/Read-only call/)).toBeTruthy();
     expect(screen.getAllByText(meta).length).toBeGreaterThan(0);
+  });
+
+  it('resolves an ENS name only after the lookup click and shows its registrant before use', async () => {
+    const meta = generateSession().metaAddress;
+    const who = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+    const request = vi.fn((method: string, params: readonly unknown[]) => {
+      if (method === 'eth_getCode') return '0x6001';
+      const call = params[0] as { to: string; data: string };
+      if (call.to.toLowerCase() === sepolia.contracts.ensUniversalResolver.address.toLowerCase()) {
+        return encodeAbiParameters([{ type: 'bytes' }, { type: 'address' }], [encodeAbiParameters([{ type: 'address' }], [who]), who]);
+      }
+      return call.data === TYPEHASH_CALL ? ERC6538_ENTRY_TYPEHASH : encodeAbiParameters([{ type: 'bytes' }], [metaAddressToRegistryBytes(meta)]);
+    });
+    const createRpc = vi.fn(() => Promise.resolve(mockRpc(SEPOLIA, request)));
+    const user = await open(makeServices({ createRpc }));
+    await user.type(screen.getByLabelText(/Wallet address/), 'RaFFY.eth');
+    expect(createRpc).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Look up' }));
+    expect(await screen.findByText(/ENS name raffy.eth resolved/)).toBeTruthy();
+    expect(screen.getByText(who)).toBeTruthy();
+    expect(createRpc).toHaveBeenCalledTimes(1);
+    const calls = request.mock.calls.filter(([method]) => method === 'eth_call');
+    const lookup = calls[calls.length - 1]![1][0] as { data: `0x${string}` };
+    expect(decodeFunctionData({ abi: erc6538RegistryAbi, data: lookup.data }).args).toEqual([who, 1n]);
+    expect(screen.getAllByText(meta).length).toBeGreaterThan(0);
+    await user.clear(screen.getByLabelText(/Wallet address/));
+    expect(screen.queryByText(/ENS name raffy.eth resolved/)).toBeNull();
+    expect(screen.queryByText(/Read-only call/)).toBeNull();
+  });
+
+  it('discards an ENS answer after input changes, including changing back to the same name', async () => {
+    let release: ((answer: string) => void) | undefined;
+    const request = vi.fn((method: string) => {
+      if (method === 'eth_getCode') return Promise.resolve('0x6001');
+      return new Promise<string>((resolve) => { release = resolve; });
+    });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(mockRpc(SEPOLIA, request)) }));
+    const box = screen.getByLabelText(/Wallet address/);
+    await user.type(box, 'alice.eth');
+    await user.click(screen.getByRole('button', { name: 'Look up' }));
+    await waitFor(() => { expect(release).toBeTypeOf('function'); });
+    await user.clear(box);
+    await user.type(box, 'alice.eth');
+    const who = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+    await act(async () => { release?.(encodeAbiParameters([{ type: 'bytes' }, { type: 'address' }], [encodeAbiParameters([{ type: 'address' }], [who]), who])); await Promise.resolve(); });
+    await waitFor(() => { expect(screen.getByRole('button', { name: 'Look up' }).hasAttribute('disabled')).toBe(false); });
+    expect(screen.queryByText(/Read-only call/)).toBeNull();
+    expect(screen.queryByText(who)).toBeNull();
+    expect(request).toHaveBeenCalledTimes(2);
   });
 
   it('reports no entry, bad input and malformed entries', async () => {

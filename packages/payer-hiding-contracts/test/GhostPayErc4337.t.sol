@@ -430,6 +430,29 @@ contract GhostPayErc4337Test is PHBase {
         _expectFailedOp(op, "AA32 paymaster expired or not due");
     }
 
+    function testFuzz_paymaster_rejectsInvertedWindowWithoutSpendingDeposit(
+        uint48 untilSeed,
+        uint48 afterSeed,
+        uint48 nowSec
+    ) public {
+        uint48 validUntil = uint48(bound(untilSeed, 1, type(uint48).max - 1));
+        uint48 validAfter = uint48(bound(afterSeed, uint256(validUntil) + 1, type(uint48).max));
+        EpOp memory op = _fullOp(true);
+        op.paymasterAndData =
+            _pmData(op, validUntil, validAfter, signerPk, address(paymaster), block.chainid);
+        op.signature = _ownerSign(op);
+        uint256 depositBefore = ep.balanceOf(address(paymaster));
+        uint256 tokensBefore = token.balanceOf(_account());
+        vm.warp(nowSec);
+
+        _expectFailedOp(op, "AA32 paymaster expired or not due");
+
+        assertEq(ep.balanceOf(address(paymaster)), depositBefore, "deposit not spent");
+        assertEq(beneficiary.balance, 0, "beneficiary not paid");
+        assertEq(token.balanceOf(_account()), tokensBefore, "account tokens not spent");
+        assertEq(_account().code.length, 0, "counterfactual deployment rolled back");
+    }
+
     function test_paymaster_rejectsWrongChainInSignedData() public {
         EpOp memory op = _baseOp(
             abi.encodeCall(

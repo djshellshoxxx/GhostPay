@@ -8,6 +8,12 @@ building.** Only `sol-devnet` and `sol-testnet` are accepted by the adapter. Spe
 `docs/remote/chain-ports/solana.md`; what was actually built and how it differs:
 `docs/remote/chain-ports/solana-impl.md` and [DEVIATIONS.md](./DEVIATIONS.md).
 
+**Not interoperable with `@ghostpay/solana-stealth`.** That package is a separate Solana stealth format: it uses
+`st:sol:` meta-addresses (with a cluster byte) and `gpst1:` + base58 memos, while this package uses `gpsol:`
+base58check meta-addresses and `gpst1:` + base64url memos. This package is the one imported by the CLI
+(`packages/cli`); the web app imports `@ghostpay/solana-stealth`. A meta-address or memo from one cannot be
+used with the other.
+
 Runtime dependencies (exact pins): `@noble/curves` 2.4.0, `@noble/hashes` 2.4.0, `@scure/base` 1.2.6.
 
 ## Scheme (v1)

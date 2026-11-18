@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BillingError, listPeriods, periodAt, periodIndexAt, periodStart, validateSchedule, type ScheduleSpec } from './index.js';
+import { BillingError, MAX_PERIOD_INDEX, listPeriods, periodAt, periodIndexAt, periodStart, validateSchedule, type ScheduleSpec } from './index.js';
 import { D, JAN31 } from './fixtures.testutil.js';
 
 const iso = (t: number): string => new Date(t * 1000).toISOString();
@@ -32,6 +32,20 @@ describe('schedule', () => {
     expect(periodIndexAt(monthly, periodStart(monthly, 1) - 1)).toBe(0);
     expect(periodIndexAt(monthly, periodStart(monthly, 1))).toBe(1);
     expect(periodIndexAt(monthly, periodStart(monthly, 7) + 5)).toBe(7);
+  });
+  it.each([
+    ['weekly', { anchor: 0, cadence: { kind: 'weekly', every: 1 } }],
+    ['custom', { anchor: 0, cadence: { kind: 'custom', seconds: 3_600 } }],
+  ] as const)('treats the maximum %s start as a non-billable sentinel, not a final period', (_name, spec) => {
+    const last = periodAt(spec, MAX_PERIOD_INDEX - 1);
+    const boundary = periodStart(spec, MAX_PERIOD_INDEX);
+    expect(last).toEqual({ index: MAX_PERIOD_INDEX - 1, start: periodStart(spec, MAX_PERIOD_INDEX - 1), end: boundary });
+    expect(listPeriods(spec, MAX_PERIOD_INDEX - 1, 1)).toEqual([last]);
+    expect(periodIndexAt(spec, last.start)).toBe(MAX_PERIOD_INDEX - 1);
+    expect(periodIndexAt(spec, boundary - 1)).toBe(MAX_PERIOD_INDEX - 1);
+    expect(() => periodIndexAt(spec, boundary)).toThrow(BillingError);
+    expect(() => periodAt(spec, MAX_PERIOD_INDEX)).toThrow(BillingError);
+    expect(() => listPeriods(spec, MAX_PERIOD_INDEX, 1)).toThrow(BillingError);
   });
   it('rejects invalid specs and beyond horizon', () => {
     expect(() => validateSchedule({ anchor: -1, cadence: { kind: 'weekly', every: 1 } })).toThrow(BillingError);

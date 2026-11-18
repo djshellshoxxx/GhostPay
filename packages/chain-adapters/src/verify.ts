@@ -73,14 +73,17 @@ function sortedJson(v: unknown): string {
   return JSON.stringify(v);
 }
 
+/** Domain for structured deployment manifests, distinct from legacy text manifests and receipts. */
+export const STRUCTURED_MANIFEST_SIGNING_DOMAIN = 'GhostPay/structured-deployment-manifest/v1\n';
+
 /**
- * Digest that a release key signs: `keccak256(utf8(canonicalManifestJson(manifest)))`.
+ * Digest a release key signs: Keccak-256 of the UTF-8 structured domain followed by canonical manifest JSON.
  *
  * @param m Validated manifest.
  * @returns 32-byte digest.
  */
 export function manifestDigest(m: DeploymentManifest): Hex {
-  return keccak256(toBytes(canonicalManifestJson(m)));
+  return keccak256(toBytes(STRUCTURED_MANIFEST_SIGNING_DOMAIN + canonicalManifestJson(m)));
 }
 
 /** Outcome of {@link verifyManifestSignature}. */

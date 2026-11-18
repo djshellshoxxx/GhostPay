@@ -20,7 +20,7 @@ TypeScript side of the payer-address modes PH-1 to PH-4 and the testnet sponsor 
 npm run typecheck && npm run lint && npm test      # from this directory; build contracts first for the anvil e2e (see below)
 ```
 
-The anvil end-to-end test (`src/e2e.anvil.test.ts`) runs the real contracts (GhostPayRouter, relay, delegate with a type-4 transaction, EntryPoint v0.7, factory, paymaster) through `SponsorService`. It needs `anvil` (`ANVIL_BIN` or `/home/user/tools/anvil`) and the Foundry artifacts: `cd ../payer-hiding-contracts && ./scripts/fetch-entrypoint.sh && FOUNDRY_SOLC=... forge build`. It skips when they are missing; `REQUIRE_ANVIL=1` makes it fail instead.
+The anvil end-to-end test (`src/e2e.anvil.test.ts`) runs the real contracts (GhostPayRouter, relay, delegate with a type-4 transaction, EntryPoint v0.7, factory, paymaster) through `SponsorService`. It needs `anvil` (`ANVIL_BIN` or `/home/user/tools/anvil`) and the Foundry artifacts: `cd ../payer-hiding-contracts && ./scripts/fetch-entrypoint.sh && FOUNDRY_SOLC=... forge build`. It skips when they are missing; `REQUIRE_ANVIL=1` makes it fail instead. The `.github/workflows/ci.yml` test shards build only `packages/contracts` (for `chain-adapters` and `policy-scheme`) and do not build `packages/payer-hiding-contracts` before `payer-sponsor` tests, so this test is skipped there.
 
 `test-vectors/ph-vectors.json` holds the golden vectors shared with the Foundry test `GoldenVectors.t.sol` (`GEN_VECTORS=1 npx vitest run src/vectors.test.ts` rewrites it from this package; the Foundry side then must still pass).
 

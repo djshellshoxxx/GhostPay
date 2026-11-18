@@ -54,6 +54,12 @@ describe('About / Privacy', () => {
     await openAbout(makeServices({ loadManifest: () => Promise.resolve({ status: 'invalid', reason: 'x' }) }));
     expect((await screen.findAllByText(/payments disabled on this chain/)).length).toBe(7);
   });
+
+  it('fails closed on a rejected manifest lookup instead of showing loading indefinitely', async () => {
+    await openAbout(makeServices({ loadManifest: () => Promise.reject(new Error('private manifest lookup detail')) }));
+    expect(await screen.findAllByText(/payments disabled on this chain/)).toHaveLength(7);
+    expect(document.body.textContent).not.toContain('private manifest lookup detail');
+  });
 });
 
 describe('Home', () => {

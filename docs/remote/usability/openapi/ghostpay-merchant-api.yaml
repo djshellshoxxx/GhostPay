@@ -205,7 +205,12 @@ components:
           properties:
             invoiceId: { type: string, pattern: '^[0-9a-f]{32}$' }
             currency: { type: string, pattern: '^[A-Z]{3}$' }
-            amountMinor: { $ref: '#/components/schemas/DecimalString' }
+            amountMinor:
+              allOf: [{ $ref: '#/components/schemas/DecimalString' }]
+              description: >-
+                Cumulative amount received so far for the invoice (never a single payment), in minor units of
+                `currency`, for every event type. Normative definition: docs/remote/usability/specs/webhooks.md R8.
+                A webhook is a notification, not payment proof; confirm with the canonical on-chain verifier.
             paymentId: { type: string, pattern: '^[A-Za-z0-9_-]{1,64}$' }
     ErrorBody:
       type: object

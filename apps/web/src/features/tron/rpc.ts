@@ -1,3 +1,7 @@
+import { SOURCE_TRANSLATOR } from '../../i18n/source';
+import type { MessageKey } from '../../i18n/catalog';
+import type { Translator } from '../../i18n/translator';
+import { UserFacingError, displayMessage, type DisplayMessage, type MessageDescriptor } from '../../lib/errors';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import {
@@ -13,8 +17,8 @@ import {
 import { MAINNET_GENESIS } from './network';
 
 /** An error whose message is written for the user and safe to display. */
-export class TronViewError extends Error {
-  public constructor(message: string) {
+export class TronViewError extends UserFacingError {
+  public constructor(message: string | MessageDescriptor) {
     super(message);
     this.name = 'TronViewError';
   }
@@ -26,16 +30,16 @@ export function createRpc(url: string, fetchFn: (url: string, init: RequestInit)
 }
 
 const rec = (v: unknown): Record<string, unknown> => {
-  if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new TronViewError('The node sent an unexpected answer.');
+  if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new TronViewError({ key: 'tron.error.response' });
   return v as Record<string, unknown>;
 };
 
 /** Refuses a node whose block 0 is the TRON mainnet genesis block, whatever network was selected. */
 export async function checkNetwork(rpc: TronRpc, signal?: AbortSignal): Promise<void> {
   const [genesis] = await getBlockRange(rpc, 0n, 0n, signal);
-  if (genesis === undefined) throw new TronViewError('The node did not report its first block.');
+  if (genesis === undefined) throw new TronViewError({ key: 'tron.error.firstBlock' });
   if (genesis.blockId.toLowerCase() === MAINNET_GENESIS) {
-    throw new TronViewError('This node reports TRON mainnet. Mainnet is disabled.');
+    throw new TronViewError({ key: 'tron.error.mainnet' });
   }
 }
 
@@ -47,7 +51,7 @@ async function account(rpc: TronRpc, address: string, signal?: AbortSignal): Pro
 export async function getBalanceSun(rpc: TronRpc, address: string, signal?: AbortSignal): Promise<bigint> {
   const b = (await account(rpc, address, signal))['balance'];
   if (b === undefined) return 0n;
-  if (typeof b !== 'number' || !Number.isSafeInteger(b) || b < 0) throw new TronViewError('The node sent an unexpected answer.');
+  if (typeof b !== 'number' || !Number.isSafeInteger(b) || b < 0) throw new TronViewError({ key: 'tron.error.response' });
   return BigInt(b);
 }
 
@@ -70,38 +74,50 @@ export async function fetchMemo(rpc: TronRpc, txID: string, signal?: AbortSignal
   const rawHex = tx['raw_data_hex'];
   const data = rec(tx['raw_data'])['data'];
   if (typeof rawHex !== 'string' || !/^(?:[0-9a-f]{2})+$/i.test(rawHex) || typeof data !== 'string' || !/^(?:[0-9a-f]{2})+$/i.test(data)) {
-    throw new TronViewError('The node sent an unexpected answer.');
+    throw new TronViewError({ key: 'tron.error.response' });
   }
-  if (bytesToHex(sha256(hexToBytes(rawHex))) !== txID.toLowerCase()) throw new TronViewError('The node sent an unexpected answer.');
+  if (bytesToHex(sha256(hexToBytes(rawHex))) !== txID.toLowerCase()) throw new TronViewError({ key: 'tron.error.response' });
   const memo = hexToBytes(data);
-  if (parseAnnouncementMemo(memo) === undefined) throw new TronViewError('The funding transaction has no readable announcement.');
+  if (parseAnnouncementMemo(memo) === undefined) throw new TronViewError({ key: 'tron.error.memo' });
   return memo;
 }
 
 /** Submits a signed transaction (hex) and checks the node acknowledges the same transaction id. */
 export async function broadcastHex(rpc: TronRpc, signedHex: string, txID: string, signal?: AbortSignal): Promise<string> {
   const r = rec(await rpc.post('/wallet/broadcasthex', { transaction: signedHex }, signal));
-  if (r['result'] !== true) throw new TronViewError('The node rejected the transaction.');
+  if (r['result'] !== true) throw new TronViewError({ key: 'tron.error.rejected' });
   if (typeof r['txid'] !== 'string' || r['txid'].toLowerCase() !== txID.toLowerCase()) {
-    throw new TronViewError('The node acknowledged a different transaction than the one that was signed.');
+    throw new TronViewError({ key: 'tron.error.differentTx' });
   }
   return txID;
 }
 
-const FRIENDLY: Readonly<Record<string, string>> = {
-  INVALID_ADDRESS: 'That is not a valid TRON address.',
-  INVALID_META_ADDRESS: 'That is not a valid TRON stealth address.',
-  INSECURE_ENDPOINT: 'The node URL must use https (http only for localhost).',
-  TRANSPORT_FAILURE: 'The node could not be reached or refused the request.',
-  INVALID_RESPONSE: 'The node sent an answer this app cannot read.',
-  INVALID_INPUT: 'One of the inputs is not valid.',
-  INVALID_AMOUNT: 'The amount is not valid.',
-  KEY_MISMATCH: 'The announcement does not match this wallet.',
-  ABORTED: 'Cancelled.',
+const FRIENDLY: Readonly<Record<string, MessageKey>> = {
+  INVALID_ADDRESS: 'tron.error.invalidAddress',
+  INVALID_META_ADDRESS: 'tron.error.invalidMetaAddress',
+  INVALID_AMOUNT: 'tron.error.invalidAmount',
+  INVALID_INPUT: 'tron.error.invalidInput',
+  INVALID_MEMO: 'tron.error.invalidMemo',
+  INVALID_PROTOBUF: 'tron.error.invalidProtobuf',
+  CHAIN_MISMATCH: 'tron.error.chainMismatch',
+  CHAIN_DISABLED: 'tron.error.chainDisabled',
+  TRANSPORT_FAILURE: 'tron.error.transportFailure',
+  INVALID_RESPONSE: 'tron.error.invalidResponse',
+  INSECURE_ENDPOINT: 'tron.error.insecureEndpoint',
+  ABORTED: 'tron.error.aborted',
+  UNSUPPORTED: 'tron.error.unsupported',
+  KEY_MISMATCH: 'tron.error.keyMismatch',
+  SIGNATURE_INVALID: 'tron.error.signatureInvalid',
 };
 
-export function tronErrorMessage(e: unknown): string {
-  if (e instanceof TronViewError) return e.message;
-  if (e instanceof TronAdapterError) return FRIENDLY[e.code] ?? e.message;
-  return 'Something went wrong. Nothing was sent.';
+/** Capture only catalog-backed public diagnostics before an async result enters view state. */
+export function captureTronErrorMessage(e: unknown): DisplayMessage {
+  if (e instanceof TronViewError) return e.translation ?? e.message;
+  return { key: e instanceof TronAdapterError ? FRIENDLY[e.code] ?? 'error.unknown' : 'error.unknown' };
 }
+
+export function tronErrorMessage(e: unknown, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
+  return displayMessage(captureTronErrorMessage(e), t);
+}
+
+// i18n-use: tron.error.response tron.error.firstBlock tron.error.mainnet tron.error.memo tron.error.rejected tron.error.differentTx tron.error.invalidAddress tron.error.invalidMetaAddress tron.error.invalidAmount tron.error.invalidInput tron.error.invalidMemo tron.error.invalidProtobuf tron.error.chainMismatch tron.error.chainDisabled tron.error.transportFailure tron.error.invalidResponse tron.error.insecureEndpoint tron.error.aborted tron.error.unsupported tron.error.keyMismatch tron.error.signatureInvalid

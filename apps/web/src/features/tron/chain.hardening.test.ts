@@ -1,7 +1,7 @@
 import { TronAdapterError, type TronRpc } from '@ghostpay/tron-adapter';
 import { describe, expect, it } from 'vitest';
 import { BACKUP_A, DEST, mockTron, walletA } from './fixtures.testutil';
-import { MAINNET_GENESIS, tronNetwork } from './network';
+import { MAINNET_GENESIS, NILE_GENESIS, SHASTA_GENESIS, tronNetwork } from './network';
 import { broadcastHex, checkNetwork, createRpc, fetchMemo, getBalanceSun, isActivated, tronErrorMessage, TronViewError } from './rpc';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
 import { ACTIVATION_FEE_SUN, reviewSweep, signSweep } from './sweep';
@@ -26,6 +26,19 @@ describe('TRON untrusted-node and wallet boundaries', () => {
     const chain = mockTron(walletA());
     chain.genesis = MAINNET_GENESIS.toUpperCase();
     await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn))).rejects.toThrow(/mainnet/);
+  });
+
+  it('pins the genesis block ids published in tronprotocol/tips tip-474 and keeps them distinct', async () => {
+    expect(MAINNET_GENESIS).toBe('00000000000000001ebf88508a03865c71d452e25f4d51194196a1d22b6653dc');
+    expect(NILE_GENESIS).toBe('0000000000000000d698d4192c56cb6be724a558448e2684802de4d6cd8690dc');
+    expect(SHASTA_GENESIS).toBe('0000000000000000de1aa88295e1fcf982742f773e0419c5a9c134c994a9059e');
+    expect(new Set([MAINNET_GENESIS, NILE_GENESIS, SHASTA_GENESIS]).size).toBe(3);
+    // A Nile or Shasta node is not mistaken for mainnet.
+    for (const g of [NILE_GENESIS, SHASTA_GENESIS]) {
+      const chain = mockTron(walletA());
+      chain.genesis = g;
+      await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn))).resolves.toBeUndefined();
+    }
   });
 
   it.each([null, [], { balance: -1 }, { balance: 1.5 }, { balance: '42' }, { balance: Number.MAX_SAFE_INTEGER + 1 }])('rejects malformed account balances %#', async (value) => {
@@ -177,4 +190,21 @@ describe('TRON scan and sweep hardening', () => {
     expect(chain.calls).not.toContain('/wallet/broadcasthex');
     wipeWallet(stranger);
   });
+  it('refuses to derive and sign after cancellation even when a node ignores AbortSignal', async () => {
+    const wallet = walletA();
+    const chain = mockTron(wallet);
+    const rpc = createRpc('http://127.0.0.1:9090', chain.fetchFn);
+    const result = await scanForPayments({ rpc, wallet, fromBlock: 500n, signal: signal() });
+    const found = result.found[0];
+    if (found === undefined) throw new Error('fixture must yield a payment');
+    const controller = new AbortController();
+    controller.abort();
+    const review = reviewSweep(wallet, found, DEST, { params: { bandwidthFeeSun: 1000n, energyFeeSun: 420n }, destinationActivated: true });
+    await expect(signSweep({
+      rpc: { post: (path, body) => rpc.post(path, body) },
+      wallet, found, review, nowMs: 1_700_000_000_000, signal: controller.signal,
+    })).rejects.toThrow('Cancelled.');
+    expect(chain.broadcasts).toEqual([]);
+  });
+
 });

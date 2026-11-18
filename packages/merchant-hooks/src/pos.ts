@@ -34,6 +34,14 @@ export interface PosState {
   readonly expiresAt?: number;
 }
 
+/**
+ * Input of {@link posReduce}. These are POS-internal events, not webhook bodies: a `payment` carries
+ * the amount of ONE payment and successive payments are added up. A webhook's `data.amountMinor` is
+ * the cumulative total received for the invoice (`docs/remote/usability/specs/webhooks.md` R8), so
+ * an integrator feeding webhooks into the POS must pass the delta (`amountMinor - state.paidMinor`,
+ * skipped when not positive), not the webhook value itself. Neither is payment proof: confirm with
+ * the canonical on-chain verifier.
+ */
 export type PosEvent =
   | { readonly type: 'start'; readonly sessionId: string; readonly invoiceId: string; readonly currency: string; readonly dueMinor: bigint; readonly ttlSeconds: number }
   | { readonly type: 'payment'; readonly invoiceId: string; readonly currency: string; readonly amountMinor: bigint }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Reproducibility check: builds the release twice in two separate clean directories (different paths) and fails
-# if the tarball or SBOM differ.
+# Reproducibility check: builds the release twice in two separate clean directories (different paths, different
+# directory basenames and depths) and fails if the tarball or SBOM differ.
 #
 # Usage: scripts/repro-check.sh [--head | --worktree]
 #   --head      (default) `git clone` the current HEAD into each directory (committed state only)
@@ -23,8 +23,9 @@ cleanup() { if [ "${KEEP:-0}" = "1" ]; then echo "kept $tmp"; else rm -rf "$tmp"
 trap cleanup EXIT
 
 declare -a sums=()
-for run in a-first b-second/nested; do
-  dir="$tmp/$run/ghostpay"
+# Different basenames on purpose: tools such as `npm sbom` embed the checkout directory name.
+for run in a-first/ghostpay b-second/nested/GhostPay-repro; do
+  dir="$tmp/$run"
   mkdir -p "$dir"
   if [ "$mode" = "--head" ]; then
     git clone --quiet --no-hardlinks "$repo" "$dir"

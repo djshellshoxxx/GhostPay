@@ -227,6 +227,9 @@ describe('validateOnionUrl (NP-T-7, AT-NP-6)', () => {
     expect(isValidV3OnionHost(DDG.replace('a', '1'))).toBe(false); // '1' is not in the base32 alphabet
     expect(isValidV3OnionHost('example.com')).toBe(false);
     const bad = [
+      `https://%64${DDG.slice(1)}/`, // percent-encoded first hostname byte must not normalize into a trusted address
+      `https://${DDG.slice(0, 56)}%2eonion/`, // encoded dot must not bypass raw authority canonicalization
+      `https://${DDG.slice(0, 56)}%2Eonion/`, // mixed-case escape must also fail
       `https://${DDG.toUpperCase()}/`,
       `https://${DDG.slice(0, 10)}${DDG.slice(10, 11).toUpperCase()}${DDG.slice(11)}/`,
       `https://user@${DDG}/`,

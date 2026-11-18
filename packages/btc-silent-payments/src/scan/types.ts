@@ -25,6 +25,23 @@ export interface BlockOutputs {
   readonly outputs: readonly BlockOutput[];
 }
 
+/** One outpoint consumed by a transaction of a block. */
+export interface BlockSpend {
+  /** Spent outpoint's transaction id (64 hex chars). */
+  readonly txid: string;
+  readonly vout: number;
+  /** Id of the transaction that spends it (64 hex chars). */
+  readonly spentBy: string;
+}
+
+/** Every outpoint consumed by the transactions of one block (coinbase excluded). */
+export interface BlockSpends {
+  readonly height: number;
+  /** 64 hex chars. */
+  readonly blockHash: string;
+  readonly spends: readonly BlockSpend[];
+}
+
 /**
  * Where block-level scan data comes from (an oracle, an own node or a test fake).
  *
@@ -39,4 +56,9 @@ export interface TweakSource {
   getTweaks(height: number, signal?: AbortSignal): Promise<BlockTweaks>;
   /** Taproot outputs created in the block at `height`. */
   getOutputs(height: number, signal?: AbortSignal): Promise<BlockOutputs>;
+  /**
+   * Optional: all outpoints spent by the block at `height`. Lets a wallet learn whether its outputs were spent
+   * by matching locally, instead of asking a server per outpoint (which would reveal its UTXOs).
+   */
+  getSpends?(height: number, signal?: AbortSignal): Promise<BlockSpends>;
 }

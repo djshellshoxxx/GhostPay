@@ -12,7 +12,8 @@ the operators docs; this page explains the machinery for developers. Evidence le
 |---|---|---|
 | `ci.yml` | PR, push to `main`, manual | `typescript` (Foundry 1.8.5, `npm ci --ignore-scripts`, `build:libs`, contract artifacts for anvil, typecheck, lint, `npm test` with `REQUIRE_ANVIL=1`, web build, `npm audit --omit=dev --audit-level=high`); `e2e` (Playwright Chromium); `contracts` (`forge fmt --check`, `build --sizes`, `test`, `snapshot --check`, coverage + lcov artifact, NatSpec, Slither); `secrets-and-egress` (`scan-secrets.sh`, `check-actions-pinned.sh`) |
 | `nightly.yml` | 03:17 UTC, manual | `forge test --fuzz-runs 100000`, Slither, dependency audit (+ `npm audit signatures`), `repro-check.sh --head` |
-| `release.yml` | tag `v*` | `verify` -> `build` (environment `release`, manual approval) -> `draft-release` (environment `release`); ends at a **draft** GitHub release; the `publish-static` job is a disabled stub (`if: false`) |
+| `contract-analysis.yml` | contract PRs, called by nightly and release | Echidna and Mythril on the requested commit; uploads per-analyzer metadata and report evidence |
+| `release.yml` | tag `v*` | `verify` -> `contract-analysis` (reusable workflow on the tagged commit) -> `build` (needs both; re-checks analyzer evidence for the tagged commit; environment `release`, manual approval) -> `draft-release` (environment `release`); ends at a **draft** GitHub release; the `publish-static` job is a disabled stub (`if: false`) |
 
 All actions are pinned to full SHAs; permissions are least-privilege per job; no job receives deployment, RPC, pinning or signing
 secrets. CI rewrites the sandbox `solc` line of `foundry.toml` with `sed` before any `forge` command.
@@ -76,7 +77,8 @@ independent rebuild. The in-app release-hash widget is informational only.
 One-time repository settings: environment `release` with required reviewers; protected `v*` tag ruleset; your signing key
 registered and its fingerprint published through an independent channel.
 
-1. `main` is green (CI and the latest nightly), open audit findings acknowledged in the notes.
+1. `main` is green (CI and the latest nightly), open audit findings acknowledged in the notes. The release run itself
+   requires Echidna and Mythril to pass on the tagged commit.
 2. `git tag -s v1.2.3 -m "GhostPay v1.2.3" && git push origin v1.2.3` (annotated and signed; `release.yml` rejects lightweight
    or unsigned tags; it can only confirm a signature block is *present*).
 3. Approve the `release` environment for `build`, then for `draft-release`.
