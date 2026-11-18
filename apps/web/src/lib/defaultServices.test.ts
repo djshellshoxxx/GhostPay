@@ -64,9 +64,9 @@ describe('TM14 network selection (default unchanged)', () => {
 
   it('default mode passes the URL through exactly as before', async () => {
     const seen: unknown[] = [];
-    const rpc = createSelectedRpc(() => loadNetworkSelection(undefined), (_c, url, opts) => { seen.push([url, opts]); return Promise.resolve({} as never); });
+    const rpc = createSelectedRpc(() => loadNetworkSelection(undefined), (_c, url, opts) => { seen.push([url, opts.allowInsecureLocalhost, typeof opts.transport.send]); return Promise.resolve({} as never); });
     await rpc(chain, 'https://rpc.example.org');
-    expect(seen).toEqual([['https://rpc.example.org', { allowInsecureLocalhost: false }]]);
+    expect(seen).toEqual([['https://rpc.example.org', false, 'function']]);
   });
 
   it('own-node refuses a third-party RPC without contacting it and allows loopback http', async () => {
