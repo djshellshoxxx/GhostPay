@@ -214,7 +214,7 @@ holds no user data (nonce, tx hash, wei amounts; records deleted on settlement).
   (deadline <= 30 min bounds that).
 - **Drain protection:** per-IP and per-owner token buckets (bounded LRU), simulation before every send, gas price cap,
   gas limit cap, per-chain daily budget, balance floor, error-rate breaker with half-open probe, one in-flight transaction
-  per chain with a bounded queue, 16 KiB body cap, header/request timeouts, connection cap (1024 in total and
+  per chain with a bounded queue, 16 KiB body cap, header/request timeouts (10 s / 15 s, enforced by a 1 s check instead of Node's 30 s default), connection cap (1024 in total and
   `server.maxConnectionsPerIp` per peer, default 64, 1..1024; peers in `trustedProxies` are exempt).
 - **Quote integrity:** HMAC binds the whole order; tampering or replaying across chains/tokens/owners fails.
 - **Not covered:** per-owner limits apply to `/v1/sweep` only (quotes are unauthenticated, limited only per client IP,

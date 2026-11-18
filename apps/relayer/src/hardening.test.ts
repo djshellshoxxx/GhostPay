@@ -6,7 +6,9 @@ import { CHAIN_ID, DEST, FakeChain, NOW_MS, OWNER, USDC, call, errCode, prepare,
 import type { RelayerConfig } from './config.js';
 import type { PolicyDecision, PolicyGate } from './policy.js';
 import { createLogger, createStdoutSink } from './log.js';
+import { KeyHasher, RateLimiter } from './limiter.js';
 import { buildRelayer } from './runtime.js';
+import { DEFAULT_TIMEOUTS, RelayerHttpServer } from './server.js';
 
 /**
  * Regression tests for relayer hardening that the octopus merge 84c2c185 dropped (lane L4). Each block names the
@@ -397,4 +399,46 @@ describe('LF-074edb61e-1: quote-path RPC failures feed the circuit breaker', () 
     await settle(50);
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
   });
+});
+
+describe('LF-074edb61e-9: slow and idle sockets are cut promptly (connectionsCheckingInterval)', () => {
+  const servers: RelayerHttpServer[] = [];
+  afterEach(async () => {
+    for (const x of servers.splice(0)) await x.close();
+  });
+
+  /** A second listener over the harness service with short header/request timeouts and the production check interval. */
+  const shortTimeoutServer = async (s: Harness): Promise<number> => {
+    const config = testConfig();
+    const hasher = new KeyHasher(3_600_000, () => s.clock.ms);
+    const limiter = (): RateLimiter => new RateLimiter({ perMinute: 600, burst: 100, maxKeys: 100 }, hasher, () => s.clock.ms);
+    const server = new RelayerHttpServer({
+      config, service: s.relayer.service, ipLimiter: limiter(), quoteGroupLimiter: limiter(),
+      timeouts: { headersMs: 1_000, requestMs: 1_500 },
+    });
+    servers.push(server);
+    return (await server.listen()).port;
+  };
+
+  it('production timeouts: headers 10 s, request 15 s, keep-alive 5 s, checked every second', () => {
+    expect(DEFAULT_TIMEOUTS).toEqual({ headersMs: 10_000, requestMs: 15_000, keepAliveMs: 5_000, checkIntervalMs: 1_000 });
+  });
+
+  it('a client dripping headers is closed within headersTimeout plus about one check interval, not the Node default of 30 s', async () => {
+    const s = await start();
+    const port = await shortTimeoutServer(s);
+    const sock = connect(port, '127.0.0.1');
+    sock.once('error', () => undefined);
+    await new Promise<void>((r) => sock.once('connect', () => r()));
+    const started = Date.now();
+    sock.write('GET /healthz HTTP/1.1\r\nHost: x\r\n');
+    const drip = setInterval(() => sock.write('X-Drip: 1\r\n'), 200);
+    const closedAfter = await new Promise<number>((resolve) => {
+      sock.once('close', () => resolve(Date.now() - started));
+      setTimeout(() => resolve(Number.POSITIVE_INFINITY), 8_000);
+    });
+    clearInterval(drip);
+    sock.destroy();
+    expect(closedAfter).toBeLessThan(4_000);
+  }, 15_000);
 });

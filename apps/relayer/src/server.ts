@@ -23,6 +23,24 @@ import { parseQuoteRequest, parseSweepRequest } from './validate.js';
 /** Maximum accepted request body in bytes (16 KiB). */
 export const MAX_BODY_BYTES = 16 * 1024;
 
+/** Socket timeouts of the payment API listener, ms. */
+export interface ServerTimeouts {
+  /** Complete request headers must arrive within this (slow-header clients). */
+  readonly headersMs: number;
+  /** The whole request must arrive within this (slow-body clients). */
+  readonly requestMs: number;
+  /** An idle keep-alive connection is closed after this. */
+  readonly keepAliveMs: number;
+  /**
+   * How often Node checks the header and request timeouts (`connectionsCheckingInterval`). Node's default of 30 s
+   * would let a header-dripping client hold a connection for about 30 s whatever `headersMs` says (S4).
+   */
+  readonly checkIntervalMs: number;
+}
+
+/** Production socket timeouts. */
+export const DEFAULT_TIMEOUTS: ServerTimeouts = Object.freeze({ headersMs: 10_000, requestMs: 15_000, keepAliveMs: 5_000, checkIntervalMs: 1_000 });
+
 /** Dependencies of {@link RelayerHttpServer}. */
 export interface HttpDeps {
   readonly config: RelayerConfig;
@@ -37,6 +55,8 @@ export interface HttpDeps {
   readonly monotonic?: () => number;
   /** Request id generator (tests). */
   readonly newRequestId?: () => string;
+  /** Overrides {@link DEFAULT_TIMEOUTS} (tests). */
+  readonly timeouts?: Partial<ServerTimeouts>;
 }
 
 type Route = '/healthz' | '/v1/info' | '/v1/quote' | '/v1/sweep';
@@ -143,12 +163,13 @@ export class RelayerHttpServer {
       { ratePerSecond: rl.quoteGlobalPerMinute / 60, burst: rl.quoteGlobalBurst, maxKeys: 1 },
       d.monotonic ?? monotonicNow,
     );
-    this.server = createServer({ maxHeaderSize: 8192 }, (req, res) => {
+    const timeouts = { ...DEFAULT_TIMEOUTS, ...d.timeouts };
+    this.server = createServer({ maxHeaderSize: 8192, connectionsCheckingInterval: timeouts.checkIntervalMs }, (req, res) => {
       void this.handle(req, res);
     });
-    this.server.headersTimeout = 10_000;
-    this.server.requestTimeout = 15_000;
-    this.server.keepAliveTimeout = 5_000;
+    this.server.headersTimeout = timeouts.headersMs;
+    this.server.requestTimeout = timeouts.requestMs;
+    this.server.keepAliveTimeout = timeouts.keepAliveMs;
     this.server.maxConnections = MAX_CONNECTIONS;
     this.server.on('connection', (sock: Socket) => {
       this.admitConnection(sock);
