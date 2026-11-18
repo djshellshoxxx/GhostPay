@@ -1,0 +1,14 @@
+[
+  {
+    "path": "apps/web/src/views/Settings.test.tsx",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/2bc2098298d90928eb1acafad969f28316bb05fc/apps/web/src/views/Settings.test.tsx",
+    "start_line": 47,
+    "start_column": 47,
+    "end_line": 47,
+    "end_column": 95,
+    "annotation_level": "failure",
+    "title": "Clear text storage of sensitive information",
+    "message": "This stores sensitive data returned by [an access to SECRET](1) as clear text.",
+    "raw_details": null
+  }
+]

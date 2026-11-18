@@ -1,0 +1,10 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/GhostPay/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  37 passed (37)
+   Start at  06:09:24
+   Duration  3.73s (import 53%, transform 36%, tests 11%, worker 1%)
+

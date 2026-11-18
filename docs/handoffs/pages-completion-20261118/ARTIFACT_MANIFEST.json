@@ -1,0 +1,583 @@
+{
+  "captured_utc": "2026-11-18 14:37:21 UTC",
+  "stable_copied_artifacts": [
+    {
+      "packet_path": "RECONCILIATION_MATRIX.json",
+      "original_path": "analysis-branches/RECONCILIATION_MATRIX.json",
+      "sha256": "efeeb22c04d41d01c34d300c9b0d2a722580cc62e077d37e15486a4090221491",
+      "bytes": 2055605,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "RECONCILIATION_MATRIX.md",
+      "original_path": "analysis-branches/RECONCILIATION_MATRIX.md",
+      "sha256": "be48d99cdcf68784b12b84d2410e55a3379c01997da1213812ef71c2f680d2a6",
+      "bytes": 77129,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "PAGES_FEATURE_THREAT_EVIDENCE_20261118.json",
+      "original_path": "analysis-branches/PAGES_FEATURE_THREAT_EVIDENCE_20261118.json",
+      "sha256": "9e538e3f277e0bb0da17c7ea66219dbb50982207812e1db5649461e8d23b0b21",
+      "bytes": 48755,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "PAGES_FEATURE_THREAT_EVIDENCE_20261118.md",
+      "original_path": "analysis-branches/PAGES_FEATURE_THREAT_EVIDENCE_20261118.md",
+      "sha256": "8125c08b36f9b2563d4ab5efff69137b2ccb226eb5dd9dfd7b538f5673d078bf",
+      "bytes": 34835,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "REMAINING_PR_DELTA_REVIEW_20261118.json",
+      "original_path": "analysis-branches/REMAINING_PR_DELTA_REVIEW_20261118.json",
+      "sha256": "7383db177fd11700b489ed62cf1cd600620729d10c784b872e34ff0d94e85b8a",
+      "bytes": 1016,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "REMAINING_PR_DELTA_REVIEW_20261118.md",
+      "original_path": "analysis-branches/REMAINING_PR_DELTA_REVIEW_20261118.md",
+      "sha256": "12cc1df8a392d2d74d3984dc876f2fec530700bee86d6e12595daa0d32d96902",
+      "bytes": 6975,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "reviews/INDEPENDENT_SOURCE_REVIEW.md",
+      "original_path": "analysis-branches/INDEPENDENT_SOURCE_REVIEW.md",
+      "sha256": "0d8959a1be03b58324a43f26bbada9646a3cf263bfd8238667bc2d836b9455ec",
+      "bytes": 5634,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "reviews/KEYSTORE_SCRATCH_INDEPENDENT_REVIEW_20261118.md",
+      "original_path": "analysis-branches/KEYSTORE_SCRATCH_INDEPENDENT_REVIEW_20261118.md",
+      "sha256": "e3688a8c1258e7eee0ffe83c4a7e83a79c9d81fdaf600c91b589864ceae613e3",
+      "bytes": 2169,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "reviews/INDEPENDENT_SECURITY_TOOLING_REVIEW.md",
+      "original_path": "analysis-ci/independent-security-tooling-review.md",
+      "sha256": "2775039b9bf9a92e30cdfc7172bb126235401eb8108a3e8d43e14cf0477fcccb",
+      "bytes": 8117,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "NATIVE_QUALIFICATION_20261118.md",
+      "original_path": "analysis-ci/NATIVE_QUALIFICATION_20261118.md",
+      "sha256": "24c9ab77466f1c9e2dca77f791dc098f36793b1e77e461efa4ef7298f29519cf",
+      "bytes": 5562,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "reviews/PAGES_RECOVERY_INTEGRATION_20261118.md",
+      "original_git_path": "docs/handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md",
+      "source_commit": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "sha256": "2e7f017711f050104257400e568d51cffeca5b8b1458a737d1cd542ba103ac55",
+      "bytes": 13177,
+      "copy_mode": "exact git blob"
+    },
+    {
+      "packet_path": "reviews/DEPENDENCY_QUALIFICATION_20261118.md",
+      "original_git_path": "docs/handoffs/agents/DEPENDENCY_QUALIFICATION_20261118.md",
+      "source_commit": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "sha256": "ac4e8c8db231a18bdec03986fb01790faf7653bebd3efed649345870d94b7cd1",
+      "bytes": 6877,
+      "copy_mode": "exact git blob"
+    },
+    {
+      "packet_path": "reviews/PAGES_SMOKE_RENDER_ERRORS_20261118.md",
+      "original_git_path": "docs/handoffs/agents/PAGES_SMOKE_RENDER_ERRORS_20261118.md",
+      "source_commit": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "sha256": "5685a3f8abd268dcd18a4872f521be242cb6c842991041540b03d88c7115a8af",
+      "bytes": 8448,
+      "copy_mode": "exact git blob"
+    },
+    {
+      "packet_path": "evidence/initial/stage1-web-tests.log",
+      "original_path": "stage1-web-tests.log",
+      "sha256": "af7fcbb1ba7bd86dc5b78282d6498c4dcf11cf884ad4892eb6c415f20c9a1231",
+      "bytes": 319,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/initial/stage1-invoice-tests.log",
+      "original_path": "stage1-invoice-tests.log",
+      "sha256": "0024a61c9c09586716ad569f5191f76e4ae8b84bf82b8105d7cbc7d0ccff2674",
+      "bytes": 2825,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/privacy/privacy-focused-tests.log",
+      "original_path": "privacy-focused-tests.log",
+      "sha256": "4941d2b311c638b76d99f4ec7ccd1da90e56f8db3b8c47e1c5ae2d60be5ce4db",
+      "bytes": 613,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/privacy/bulk-cancel-red.log",
+      "original_path": "bulk-cancel-red.log",
+      "sha256": "bed432b95e170b0cb652cbc93b6693760be6cc08438b69a1b0c22547ea8bb632",
+      "bytes": 5704,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/privacy/bulk-cancel-green.log",
+      "original_path": "bulk-cancel-green.log",
+      "sha256": "4bb3061ae9bc3cab8ef68190015db20b25aa0886b9a52e7299cc79e6c882cb95",
+      "bytes": 326,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/privacy/bulk-cancel-final.log",
+      "original_path": "bulk-cancel-final.log",
+      "sha256": "2aaf945f6232c22c025017f688e02c80d603fb98855991e2aec97b4345f0d734",
+      "bytes": 326,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/privacy/sweep-disclosure-red.log",
+      "original_path": "sweep-disclosure-red.log",
+      "sha256": "514bdedd316e7677abb7fb1a7c3619325effb1b67679330d667622b731d7b310",
+      "bytes": 1788,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/privacy/sweep-disclosure-green.log",
+      "original_path": "sweep-disclosure-green.log",
+      "sha256": "795555934b76fc97fad3f356ca7e1fbd0ed220108b4c85d162c5b449bd79549d",
+      "bytes": 311,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/hosting/pages-error-red.log",
+      "original_path": "pages-error-red.log",
+      "sha256": "24b730c5c5d6a14eb00f77439426ad39d2f80507f4de78be2b91b07c04aec660",
+      "bytes": 2146,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/hosting/pages-hosting-web-green.log",
+      "original_path": "pages-hosting-web-green.log",
+      "sha256": "012d7e3c9e0d368f34d2539abb064e39875a5488f79c737c31de653c5cdfbb93",
+      "bytes": 615,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/hosting/pages-hosting-script-green.log",
+      "original_path": "pages-hosting-script-green.log",
+      "sha256": "2364b7630939097a80b83affaa67f4f870a6adc4ec2a5072e3289b04116d68d7",
+      "bytes": 7345,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/independent/independent-scan-client.log",
+      "original_path": "analysis-ci/independent-scan-client.log",
+      "sha256": "2738e259327b7c89cfc58420df8d6de61739c90ff92283f2a8e83e7972ba3ffe",
+      "bytes": 200,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/independent/independent-bulk-cancellation.log",
+      "original_path": "analysis-ci/independent-bulk-cancellation.log",
+      "sha256": "121f07bc09028640212be3452146220e8c92007f91a4a8e101ab63bae163dd50",
+      "bytes": 224,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/independent/independent-pages-smoke-render-errors.log",
+      "original_path": "analysis-ci/independent-pages-smoke-render-errors.log",
+      "sha256": "8604bfeb7df0d96a0d2bbf9cf801c5a707782f8943474fe361e26f263abcb601",
+      "bytes": 952,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/independent/independent-security-tooling-tests.log",
+      "original_path": "analysis-ci/independent-security-tooling-tests.log",
+      "sha256": "503392a68223529d77038570761233ac46b829a990e47efd98394df6e5a30ffe",
+      "bytes": 4387,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/independent/independent-security-gates.log",
+      "original_path": "analysis-ci/independent-security-gates.log",
+      "sha256": "af0672397abc1d4732c6a8a05f9b18391c6e2bcdaebc4a762644ac1aa5e2a15f",
+      "bytes": 2710,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/native/combined-forge-contracts-185.log",
+      "original_path": "analysis-ci/combined-forge-contracts-185.log",
+      "sha256": "d7f30f705efe31e00c5ff319361fd6478f6023f0c757e4e5e87c167a02d25fe3",
+      "bytes": 45126,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/native/combined-raw-key-anvil-185.log",
+      "original_path": "analysis-ci/combined-raw-key-anvil-185.log",
+      "sha256": "f44c77a6f4dd5cc75ef80ac8b05567e327fd4596752b3c63ff7ac41f97946413",
+      "bytes": 637,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/native/combined-slither-0116.log",
+      "original_path": "analysis-ci/combined-slither-0116.log",
+      "sha256": "f21caa956bd4d2f718d8eb004b1634846acf56d9427c9c5529f54295453e4576",
+      "bytes": 345,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/native/combined-foundry-config.json",
+      "original_path": "analysis-ci/combined-foundry-config.json",
+      "sha256": "4a88cebbde09d2dc6a141755808245e61672ae2d55f6765e39beb4180e6ec72b",
+      "bytes": 2633,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/dependencies/dependency-audit-full.json",
+      "original_path": "analysis-ci/dependency-audit-full.json",
+      "sha256": "d634c3aafcc6c79c9f410f40c616607363966b87ef43694ca0390ff802fbce78",
+      "bytes": 15597,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/dependencies/dependency-audit-production.json",
+      "original_path": "analysis-ci/dependency-audit-production.json",
+      "sha256": "a2a9e0305caa842aa574277712005fc0600e350d218f5ae9e5d78e97256a4473",
+      "bytes": 366,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/dependencies/picomatch-current-registry.json",
+      "original_path": "analysis-ci/picomatch-current-registry.json",
+      "sha256": "24b48c86311c74394481356a87d0dbc50fefc18c092cc5c8932df5d1f51ba16d",
+      "bytes": 2060,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-web-final.log",
+      "original_path": "analysis-security/recovery-web-final.log",
+      "sha256": "5903f2bb22bb72cd5cc4e98c58f53cbc4a7c32eb59908c54c3f34ff3b70f81e9",
+      "bytes": 421,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-vault-coverage-retry.log",
+      "original_path": "analysis-security/recovery-vault-coverage-retry.log",
+      "sha256": "1ba3d0fc33a0dc9ba376cc8aea5934bdbd3280096e0edcb34fb365a5ff9ce73f",
+      "bytes": 1785,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-node-after-build.log",
+      "original_path": "analysis-security/recovery-node-after-build.log",
+      "sha256": "6ad74e80e8175c81a630f26b473a6712eefa31a3c8322f8aebdfc39962ea7760",
+      "bytes": 1871,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-raw-key-foundry151.log",
+      "original_path": "analysis-security/recovery-raw-key-foundry151.log",
+      "sha256": "5dacf3d93b7936852c7261e027b9fabd85ae560c1ecc678379cd8f3d0205c7c8",
+      "bytes": 180,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-i18n.log",
+      "original_path": "analysis-security/recovery-i18n.log",
+      "sha256": "13fadfa7951b87097a6bd82c6388a969c39d9f78db5f1a5826b0650a1e694267",
+      "bytes": 37886,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-i18n-extract.log",
+      "original_path": "analysis-security/recovery-i18n-extract.log",
+      "sha256": "81553beccf3a8951bc587d7157b8bc2f0d9331d27dc17e047c0720d38595926d",
+      "bytes": 4832,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-disclosure-red.log",
+      "original_path": "analysis-security/recovery-disclosure-red.log",
+      "sha256": "8435366b510e5d54df66a4cb0c609b9d0250077343d3026989c21265fe341c0e",
+      "bytes": 10114,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-disclosure-green.log",
+      "original_path": "analysis-security/recovery-disclosure-green.log",
+      "sha256": "6fe12bf82cec0c73a71412ae804e42efbf023c6807ee004a35c4690b06b6e5d7",
+      "bytes": 230,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/recovery/recovery-independent-export-ui.log",
+      "original_path": "security-tooling-evidence/recovery-independent-export-ui.log",
+      "sha256": "e14926f2d18afe9a5e3816f224afed9e7fc97c7f78c73c348ddd6d352936166f",
+      "bytes": 416,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/hosting/pages-smoke-render-errors-red.log",
+      "original_path": "analysis-security/pages-smoke-render-errors-red.log",
+      "sha256": "10d404c0ca8f0c2761650c62800172e04c12a88038d34ad9630084e07e27fa96",
+      "bytes": 5399,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/hosting/pages-smoke-render-errors-green.log",
+      "original_path": "analysis-security/pages-smoke-render-errors-green.log",
+      "sha256": "d26c9c8db31a4308c8d8acd3241ca6dc24223d913a6866be2ad0a71cc79294ec",
+      "bytes": 955,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/hosting/pages-smoke-script-suite.log",
+      "original_path": "analysis-security/pages-smoke-script-suite.log",
+      "sha256": "93aa2577bd169afcc708a09286f38803bbfe0c2dcd71a3a6d1a93349d49176f5",
+      "bytes": 7554,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/static-results.json",
+      "original_path": "qualification/static-results.json",
+      "sha256": "831bc7d6f70209b0ba6f9230144db699fa784f90823ce5c9d86102611b133d3c",
+      "bytes": 1080,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/tested-source.txt",
+      "original_path": "qualification/tested-source.txt",
+      "sha256": "082d9dbe4f883d35c4068679de0c045ffc195bae2827608993411c585f0203ae",
+      "bytes": 41,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/typecheck.log",
+      "original_path": "qualification/typecheck.log",
+      "sha256": "08c8b38e44ec36d4bb655110e864b051dad1be7e834574c9440df75d5ec596df",
+      "bytes": 7928,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/lint.log",
+      "original_path": "qualification/lint.log",
+      "sha256": "be2d9371d31ffbbfe78ec404728d98911a6b62f0745776aec054adf1db22e258",
+      "bytes": 19721,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/web-typecheck-retry.log",
+      "original_path": "qualification/web-typecheck-retry.log",
+      "sha256": "8ca9c8fd5dbf64ffdd4c9c422416e6b174fe621bfbcd5f3696077160c6e29b3a",
+      "bytes": 341,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/web-lint-retry.log",
+      "original_path": "qualification/web-lint-retry.log",
+      "sha256": "858e9cb18108c4a3e687c498e1d0e5affe9688aabf0e9030c77614936427b2b4",
+      "bytes": 875,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/keystore-memory-red.log",
+      "original_path": "qualification/keystore-memory-red.log",
+      "sha256": "9062b844f78d2259b8534f682c4cffa56c8dbcdf4056585102d19068b659c863",
+      "bytes": 4354,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/keystore-memory-green.log",
+      "original_path": "qualification/keystore-memory-green.log",
+      "sha256": "61fd124153cde2a276fee0adf4ebbcb684b3c624583876ce59b18d196ea60f7b",
+      "bytes": 893,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/keystore-memory-typecheck.log",
+      "original_path": "qualification/keystore-memory-typecheck.log",
+      "sha256": "5cdc0279a7091de97f67d8d75e923c3cc4f7ad6e09a67a4e6ac9ffd767231c0a",
+      "bytes": 396,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/keystore-memory-lint.log",
+      "original_path": "qualification/keystore-memory-lint.log",
+      "sha256": "8cb30b50af0c33b2f62739949479f70a14b64e0a0709da19a5bcb09c4a3460ea",
+      "bytes": 579,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/keystore-memory-build.log",
+      "original_path": "qualification/keystore-memory-build.log",
+      "sha256": "669277703418ef45057647d5fd36a11fe02e4067604c988b19eea8b7098e9950",
+      "bytes": 390,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/pages-scripts-final.log",
+      "original_path": "qualification/pages-scripts-final.log",
+      "sha256": "c1c3555779dd8383ab72287aa2d950c39c7acfbf718bc7c97da2710349196066",
+      "bytes": 8196,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/install.log",
+      "original_path": "qualification/install.log",
+      "sha256": "459422bf32aae46659756801867157c98afc59c965caeb8ad1bbdcb2444d0314",
+      "bytes": 577,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/build-libs.log",
+      "original_path": "qualification/build-libs.log",
+      "sha256": "08cf1b30b225ba58b68f77a3fd207b69d009fc4cdcad00802ab24c90febe498f",
+      "bytes": 30867,
+      "copy_mode": "byte-identical stable artifact"
+    },
+    {
+      "packet_path": "publication/publication-map.json",
+      "original_path": "analysis-publish/publication-map.json",
+      "sha256": "c047b2e53a548d53c6434b8acc8a7312b663d966abe50a327faa198c677fb2c6",
+      "bytes": 90007,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "publication/PUBLICATION.md",
+      "original_path": "analysis-publish/PUBLICATION.md",
+      "sha256": "4328416d91fc47dd93583d5ac1fc30f95a25e62d62d423b36c9d818d8aed9892",
+      "bytes": 3044,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "publication/PUBLICATION_PACKET_REVIEW_20261118.json",
+      "original_path": "analysis-branches/PUBLICATION_PACKET_REVIEW_20261118.json",
+      "sha256": "3f217ed208b5cd184f4e8224d43f639f51e4dd180f8ccc2fa88772a892588f74",
+      "bytes": 1715,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/hosted/pr238-initial-ci-snapshot.json",
+      "original_path": "analysis-ci/pr238-initial-ci-snapshot.json",
+      "sha256": "93d7dcf02fc9655e72adb5d39dec6b9dd502f33a0e8a9792ae289a768f5c740e",
+      "bytes": 124078,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/light-results.json",
+      "original_path": "qualification/light-results.json",
+      "sha256": "a31df701f9c65001c483c6fba6a71d2a2000c25e65bcd354162080f2c56c4f11",
+      "bytes": 1078,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/secrets.log",
+      "original_path": "qualification/secrets.log",
+      "sha256": "43dbd358e7adfda20304b91beabef03a8ac665d8128617974958ad008e7f6fed",
+      "bytes": 440,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/action-pins.log",
+      "original_path": "qualification/action-pins.log",
+      "sha256": "5bffa073e696d0adabd49c6480bda6dab731dba2dc93578ad1b0d7fbd0b74594",
+      "bytes": 485,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/i18n-check.log",
+      "original_path": "qualification/i18n-check.log",
+      "sha256": "ce859ceb0206a5451075e880ceef506123620ec40c9081f692f9f019da8be5eb",
+      "bytes": 43620,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/i18n-extract.log",
+      "original_path": "qualification/i18n-extract.log",
+      "sha256": "37f60734f319f7e72eaf0c5bb8c38486f2feb6dbe2ab1456a8968ec898f11c57",
+      "bytes": 5109,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/audit-full.log",
+      "original_path": "qualification/audit-full.log",
+      "sha256": "d789e4d1aca708e575efb76cadffc85c92d721034af78487540941a09a18863a",
+      "bytes": 17238,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/audit-production.log",
+      "original_path": "qualification/audit-production.log",
+      "sha256": "63ba5ac9cfcdabd700b9b863f10ca190306105dfc7a2ba0809bebdf11e200282",
+      "bytes": 691,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/security/codeql-222-annotations-live.json",
+      "original_path": "analysis-ci/codeql-222-annotations-live.json",
+      "sha256": "2b0495e8ce93d7c0c4c27a65361aa6b637c50f83920fc9aa19e5363984399011",
+      "bytes": 513,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/security/Settings.test.source.txt",
+      "original_git_path": "apps/web/src/views/Settings.test.tsx",
+      "source_commit": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "same_blob_at": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "git_blob": "f73eee0286e0b0e490674ab5578240dcf796579c",
+      "sha256": "0f24660b71096655b6edb3c2a571600eeab7ca67f96ba98a15dab730e8e6c35e",
+      "bytes": 22007,
+      "copy_mode": "exact git blob",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/build/source-before-builds.json",
+      "original_path": "analysis-build/source-before-builds.json",
+      "sha256": "007d1e8255c7ff4f57ca8c66089f7f47e521924426c3f155f0dd4f98d4744eb8",
+      "bytes": 511,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/build/clean-install.json",
+      "original_path": "analysis-build/clean-install.json",
+      "sha256": "b8a032d4839e1e7b0fe2c722deca0c5fb9ed8ed3bbadd043eeeda23b9315e113",
+      "bytes": 738,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/build/clean-install.log",
+      "original_path": "analysis-build/logs/clean-install.log",
+      "sha256": "2541e66aaaa54f679989cf618d35f03024ccc2b6c97cd81fe9bdf0c503b818d6",
+      "bytes": 565,
+      "copy_mode": "byte-identical stable artifact",
+      "appended_utc": "2026-11-18 15:01:41 UTC"
+    }
+  ],
+  "running_outputs_not_copied": [
+    "qualification/package-tests.log"
+  ],
+  "notes": [
+    "Copied logs are source-pinned historical execution records even if the coordinator has a later run.",
+    "Generated reports/metadata are tracked by git; source copies retain their independent SHA-256.",
+    "Referenced workspace-local paths identify original execution locations; packet_path identifies the durable copy.",
+    "Post-publication additions preserve the original 62 artifacts and their hashes. Initial CI counts, build interruption and prior analyzer states remain timestamped observations, not current success claims."
+  ],
+  "updated_utc": "2026-11-18 15:01:41 UTC"
+}

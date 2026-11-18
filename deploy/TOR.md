@@ -33,8 +33,17 @@ Per-purpose selection (TM14): `packages/net-transport/src/selection.ts` and `app
 an optional `ghostpay.networkProfiles.v1` selection (`rpcProfile` and `relayerProfile`: `direct` or `tor-browser`;
 `rpcMode`: `single` or `own-node`). It applies only after the first-use notices were acknowledged; otherwise the
 default (direct, single RPC) applies. `tor-browser` is ambient: requests use the same `fetch`, and nothing is
-verified. `own-node` refuses an RPC URL that is not loopback or a v3 onion URL, without contacting it. There is no
-Settings control for this selection yet.
+verified. Settings exposes these per-purpose profiles and the own-node mode, with a first-use acknowledgment
+before a non-default selection applies. Tor Browser and own-node status remain **unverified**; a profile label
+is not proof of routing or endpoint ownership. `own-node` refuses an RPC URL that is not loopback or a v3 onion
+URL, without contacting it, and rechecks the selection before each dispatch from a cached client.
+
+The scan endpoint validator separately accepts plain HTTP loopback URLs for `local-proxy`, but the shipped CSP
+allows only `'self' https: wss:` and `GHOSTPAY_CONNECT_ORIGINS` accepts only HTTPS/WSS origins. A cross-origin
+plain-HTTP loopback proxy is therefore blocked by that policy. URL validation does not establish browser
+reachability, and this document does not instruct the app to bypass the policy or fall back to another provider.
+See the [source-pinned TM ledger](../docs/threat-model/TM_IMPLEMENTATION_20261118.md) and
+[current completion report](../docs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md) for qualification.
 
 ## Relayer behind Tor
 
