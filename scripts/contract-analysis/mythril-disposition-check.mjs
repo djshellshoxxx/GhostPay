@@ -6,6 +6,8 @@
 // Validates a finding-specific Mythril disposition file against one runner report (report.log of
 // packages/contracts/scripts/run-mythril.sh) and the current repository. It exits 0 only when
 //   - the report holds exactly `expectedAnalyses` analysis documents, each `success: true, error: null`;
+//   - runner error annotations only describe the ordinary exit 1 for a preceding nonempty issue report;
+//     abnormal exits, clean-looking reports followed by failure, and malformed annotations fail closed;
 //   - every reported issue matches exactly one disposition record by (contract, function, SWC id, PC, severity),
 //     and the record's optional sourceMap / filename / lineno still equal the issue's;
 //   - for EVERY record: each listed source file still has the recorded sha256; the runtime bytecode of the named
@@ -16,6 +18,10 @@
 //     dispositioned) and the file names an owner approval.
 // Records the report does not contain are listed as notes (symbolic search under a timeout is not deterministic) and
 // do not fail the check. Exit codes: 0 pass, 1 a key no longer matches, 2 unusable input.
+// Raw runner output does not identify the target of clean analysis documents. Counting them cannot prove that all
+// intended contracts were analyzed once: duplicate clean output can substitute for a missing target. This helper
+// does not certify analysis coverage or provenance; binding each target and process outcome to retained evidence is
+// a separate prerequisite to any future release-gate integration.
 //
 // Usage: node scripts/contract-analysis/mythril-disposition-check.mjs --dispositions <file.json> --report <report.log>
 //          [--root <repository root>] [--bytecode <Contract>=<file with runtime bytecode hex>]...
@@ -56,6 +62,25 @@ export function parseReport(text) {
     analyses.push({ line: index + 1, value });
   }
   return analyses;
+}
+
+/** Keep the runner's explicit process failures separate from dispositions of successfully reported findings. */
+function checkRunnerErrors(text, analyses, fail) {
+  const annotated = new Set();
+  for (const [index, raw] of text.split('\n').entries()) {
+    const line = raw.trim();
+    if (!line.startsWith('::error')) continue;
+    const annotation = /^::error::mythril: [A-Za-z_$][A-Za-z0-9_$]* reported issues or failed \(rc=([0-9]+)\)$/.exec(line);
+    const preceding = analyses.findLast((analysis) => analysis.line < index + 1);
+    const value = preceding?.value;
+    // Mythril 0.24.8 uses exit 1 for findings. The unchanged runner also emits an error annotation when the
+    // analyzer crashes or when JSON validation fails; neither can be justified by a finding disposition.
+    if (!annotation || annotation[1] !== '1' || !preceding || annotated.has(preceding.line)
+      || value.success !== true || value.error !== null || !Array.isArray(value.issues) || value.issues.length === 0) {
+      fail('RUNNER_ERROR', `report line ${index + 1}: runner failure is not an ordinary issue-report exit`);
+    }
+    if (preceding) annotated.add(preceding.line);
+  }
 }
 
 /** Reads the pins the analysis actually uses today from the runner script and the analysis workflow. */
@@ -149,6 +174,7 @@ export function checkDispositions({ dispositions, reportText, root, bytecodes = 
   if (analyses.length !== file.expectedAnalyses) {
     fail('ANALYSIS_COUNT', `report holds ${analyses.length} analysis documents, expected ${file.expectedAnalyses}`);
   }
+  checkRunnerErrors(reportText, analyses, fail);
   const matched = new Set();
   for (const { line, value } of analyses) {
     if (value.success !== true || !('error' in value) || value.error !== null || !Array.isArray(value.issues)) {
