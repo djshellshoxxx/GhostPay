@@ -40,7 +40,7 @@ test('startup hash rejects a redirect without contacting its destination, includ
   await page.waitForLoadState('networkidle');
   expect(hashReads).toBe(2);
   expect(forbidden).toEqual([]);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('ghostpay.scanPrivacy.v1') ?? '{}'))).toEqual(PRIVATE_SETTINGS);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('ghostpay.scanPrivacy.v1') ?? '{}') as unknown)).toEqual(PRIVATE_SETTINGS);
 });
 
 test('startup hash never follows a same-origin redirect either', async ({ context, page }) => {

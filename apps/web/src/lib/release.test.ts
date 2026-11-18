@@ -35,12 +35,13 @@ describe('release hash network isolation', () => {
   afterEach(() => { vi.useRealTimers(); });
 
   it('forbids redirects and browser credentials on the automatic startup fetch', async () => {
-    const fetchFn = vi.fn(() => Promise.resolve(new Response('abc')));
+    const fetchFn = vi.fn<(url: string, init: RequestInit) => Promise<Response>>(() => Promise.resolve(new Response('abc')));
     await computeReleaseHash('/assets/entry.js', fetchFn, 'https://app.test/');
     expect(fetchFn).toHaveBeenCalledWith('https://app.test/assets/entry.js', expect.objectContaining({
       mode: 'same-origin', redirect: 'error', credentials: 'omit', cache: 'no-store',
-      referrerPolicy: 'no-referrer', signal: expect.any(AbortSignal),
+      referrerPolicy: 'no-referrer',
     }));
+    expect(fetchFn.mock.calls[0]?.[1].signal).toBeInstanceOf(AbortSignal);
     expect(fetchFn).toHaveBeenCalledTimes(1);
   });
 

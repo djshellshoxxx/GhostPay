@@ -7,7 +7,9 @@
 - Target: existing static Pages beta; full-profile chain adapters are qualified separately from lean shipping.
 - Implementation: existing adapters only. No changes to contracts, hosted relayers, recovery, dependencies,
   active central policy/UI, CI, deployment configuration or Mythril release gates.
-- Integration status: focused PR preparation; no merge, deployment or release claimed.
+- Integration status: [draft PR #241](https://github.com/djshellshoxxx/GhostPay/pull/241) is open with the
+  requested title. The complete policy feature remains blocked on the separately owned work below.
+  No merge, deployment or release claimed.
 
 Before edits, the five low-level net-transport candidates were compared against #222/#228/#231/#233/#238:
 they are byte-identical to main and have no current ownership claim. The two SDK RPC files were checked
@@ -69,12 +71,41 @@ The inventory and human exposure matrix are in [`docs/privacy/`](../privacy/brow
 | `npm run build` for net-transport, solana-stealth and tron-adapter | All affected library builds passed. |
 | `node --test scripts/tests/network-isolation-native.test.mjs` | 18 independent behavioral subtests plus parent: 19 passed, zero skips, exit 0. Portable current-source tests run in the existing script CI job. |
 | Full production Vite build with authored E2E manifest, `RAYON_NUM_THREADS=1` | Passed, exit 0. `apps/web/scripts/scan-bundle.mjs` passed, 19 files. This is not a full typecheck/build gate. |
+| Lean production Vite build with authored E2E manifest, `RAYON_NUM_THREADS=1` | Passed, exit 0; the unchanged lean bundle scanner passed. |
 | Local full web typecheck and transport lint | Environment killed with exit 137; a smaller web heap exhausted with exit 134. No pass claimed. Original hosted CI commands remain unchanged. |
 | Local Chromium Playwright startup | Blocked before tests: browser process singleton `socket()` returns EPERM. Four new cases fail at launch; no browser behavior result inferred. Hosted CI must execute full and lean suites. |
 
-Full required combined CI, browser acceptance, current-head reconciliation and merge qualification remain
-pending. Contract/relayer source is unchanged; their original hosted regression jobs remain enabled.
-No tests, assertions, coverage thresholds, security checks or workflow gates were weakened.
+### First published head and CI repair
+
+First published implementation: `fc992c2a1dc8dead9ad9cdb8e47d79bc16d34d92`, tree
+`65995f14b7f63294b0778a4f7078a6bf6192095f`. Its GitHub merge-test commit
+`65009e5640523af120f997ac4f48ce977be31576` has that same tree and the initial main as its other parent.
+[CI run 44422174791](https://github.com/djshellshoxxx/GhostPay/actions/runs/44422174791) executed the
+unchanged clean-install and regression jobs. Observed successful results on that head:
+
+- Full repository typechecking, all TypeScript unit-test shards, contract aggregate and relayer regressions.
+- Web tests: 2,763 passed / one skipped, plus three separate no-coverage tests passed.
+- Lean Playwright: 70 passed / three skipped. All four new startup-isolation cases actually executed and passed,
+  including a real reload after settings were persisted once, forbidden redirects and real request metadata.
+- Full Playwright: 82 passed / one skipped; all four new startup-isolation cases executed and passed here too.
+- Script-test shard: 236 passed, including the inventory checks and 18 native-HTTP behavioral subtests.
+- Pages artifact build and Anvil browser validation (16 passed), beta acceptance (three passed), CodeQL,
+  secrets/egress checks and reproducible lean candidate builds.
+
+The first lint job failed with 11 errors in the new code. They were repaired without suppressing rules or
+removing assertions: SDK promise rejection paths now create fixed `Error` objects earlier; test URL handling
+uses explicit narrowing; the adversarial `undefined` rejection remains tested through a mock; web tests use
+typed signal assertions and an `unknown` JSON result. Focused transport (44), SDK (51 + 33), release (18)
+and independent native tests (19 runner tests / 18 behavioral probes) passed after these corrections. Both
+SDK typechecks and typed lint checks passed again. Independent evidence hashes were refreshed after the
+runtime change; the cap-failure classification and caller-abort behavior remain intact. Typed lint also passed
+on the corrected web and net-transport files. Final first-head check count: 35 successful, two failed (lint and
+its dependent TypeScript aggregate), three intentional Pages publication/smoke/release skips, none pending.
+
+The PR checks are the authoritative result for the corrected final head. First-head successes are not
+represented as final-head passes. Main was rechecked before publication and remained at the initial SHA.
+Contract/relayer source is unchanged; their original hosted regression jobs remain enabled. No tests,
+assertions, coverage thresholds, security checks or workflow gates were weakened.
 
 ## Independent review
 

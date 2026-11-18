@@ -112,7 +112,8 @@ describe('fetch transport isolation and bounded failures', () => {
     Object.assign(new RpcHttpError(503), { message: `destination ${ENDPOINT} payload ${BODY}` }),
     undefined,
   ])('does not trust class names or error text from a fetch implementation', async (error) => {
-    const pending = createFetchTransport({ fetchImpl: () => Promise.reject(error) }).send(ENDPOINT, BODY, LIMITS);
+    const fetchImpl = vi.fn<FetchLike>().mockRejectedValue(error);
+    const pending = createFetchTransport({ fetchImpl }).send(ENDPOINT, BODY, LIMITS);
     await expect(pending).rejects.toMatchObject({ code: 'RPC_FAILURE', message: 'RPC_FAILURE: transport error or timeout' });
   });
 

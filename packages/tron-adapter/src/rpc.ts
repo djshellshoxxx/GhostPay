@@ -43,11 +43,11 @@ function interruptible<T>(run: () => Promise<T>, signal: AbortSignal): Promise<T
     try {
       void run().then(
         (value) => { signal.removeEventListener('abort', onAbort); resolve(value); },
-        (error: unknown) => { signal.removeEventListener('abort', onAbort); reject(error); },
+        () => { signal.removeEventListener('abort', onAbort); reject(new Error('RPC request failed')); },
       );
-    } catch (error) {
+    } catch {
       signal.removeEventListener('abort', onAbort);
-      reject(error);
+      reject(new Error('RPC request failed'));
     }
   });
 }

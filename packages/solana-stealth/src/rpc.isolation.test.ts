@@ -6,6 +6,11 @@ const LIMIT = 8 * 1024 * 1024;
 const response = () => new Response('{"id":1,"result":7}');
 const pending = <T>(): Promise<T> => new Promise<T>(() => undefined);
 
+function requestUrl(input: Parameters<typeof globalThis.fetch>[0] | undefined): string | undefined {
+  if (typeof input === 'string' || input === undefined) return input;
+  return input instanceof URL ? input.href : input.url;
+}
+
 function observe(promise: Promise<unknown>): { settled: boolean; error?: unknown; value?: unknown } {
   const state: { settled: boolean; error?: unknown; value?: unknown } = { settled: false };
   void promise.then(
@@ -24,7 +29,7 @@ describe('Solana RPC network isolation', () => {
     const rpc = createHttpRpc({ url: 'https://rpc.invalid/path?token=chosen', fetch });
     await expect(rpc.request('getSlot', [])).resolves.toBe(7);
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(String(fetch.mock.calls[0]?.[0])).toBe('https://rpc.invalid/path?token=chosen');
+    expect(requestUrl(fetch.mock.calls[0]?.[0])).toBe('https://rpc.invalid/path?token=chosen');
     expect(fetch.mock.calls[0]?.[1]).toMatchObject({
       method: 'POST', redirect: 'error', credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer',
     });
@@ -42,7 +47,7 @@ describe('Solana RPC network isolation', () => {
   it('retains explicit IPv6 loopback and the selected URL path', async () => {
     const fetch = vi.fn<typeof globalThis.fetch>(() => Promise.resolve(response()));
     await expect(createHttpRpc({ url: 'http://[::1]:8899/rpc', fetch }).request('getSlot', [])).resolves.toBe(7);
-    expect(String(fetch.mock.calls[0]?.[0])).toBe('http://[::1]:8899/rpc');
+    expect(requestUrl(fetch.mock.calls[0]?.[0])).toBe('http://[::1]:8899/rpc');
   });
 
   it('does not dispatch an already-cancelled operation', async () => {

@@ -14,6 +14,10 @@ Acceptance: reproduce and fix unintended redirect egress, cancelled/stale reques
 unbounded transport failure and untrusted error disclosure in these paths; prove no fallback,
 bounded failure and fixed error messages with controlled fixtures and browser requests. Record
 source-pinned findings, exact checks and unresolved integration dependencies.
+Status: implemented and independently re-reviewed in draft PR #241. Hosted first-head typecheck,
+unit/integration suites and lean browser acceptance passed; 11 lint errors were corrected with their
+adversarial assertions preserved. Final-head checks and the separately owned policy integration are
+tracked in `docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md` and the PR.
 
 Active inputs remain read-only: privacy #222 (`2bc20982`), own-node #228 (`685fe1a3`), Sweep
 consent #231 (`d9ff3868`), browser fixtures #233 (`67cf835d`), integration #238 (`198aa5ba`),

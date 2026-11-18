@@ -6,6 +6,11 @@ const LIMIT = 8 * 1024 * 1024;
 const response = () => new Response('{"ok":true}');
 const pending = <T>(): Promise<T> => new Promise<T>(() => undefined);
 
+function requestUrl(input: Parameters<typeof globalThis.fetch>[0] | undefined): string | undefined {
+  if (typeof input === 'string' || input === undefined) return input;
+  return input instanceof URL ? input.href : input.url;
+}
+
 function observe(promise: Promise<unknown>): { settled: boolean; error?: unknown; value?: unknown } {
   const state: { settled: boolean; error?: unknown; value?: unknown } = { settled: false };
   void promise.then(
@@ -24,7 +29,7 @@ describe('TRON RPC network isolation', () => {
     const rpc = createHttpRpc({ baseUrl: 'https://rpc.invalid/api/', apiKey: 'chosen', fetch });
     await expect(rpc.post('/wallet/getnowblock', {})).resolves.toEqual({ ok: true });
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(String(fetch.mock.calls[0]?.[0])).toBe('https://rpc.invalid/api/wallet/getnowblock');
+    expect(requestUrl(fetch.mock.calls[0]?.[0])).toBe('https://rpc.invalid/api/wallet/getnowblock');
     expect(fetch.mock.calls[0]?.[1]).toMatchObject({
       method: 'POST', redirect: 'error', credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer',
       headers: { 'TRON-PRO-API-KEY': 'chosen' },
@@ -44,7 +49,7 @@ describe('TRON RPC network isolation', () => {
     const fetch = vi.fn<typeof globalThis.fetch>(() => Promise.resolve(response()));
     await expect(createHttpRpc({ baseUrl: 'http://[::1]:9090/api/', fetch }).post('/wallet/getnowblock', {}))
       .resolves.toEqual({ ok: true });
-    expect(String(fetch.mock.calls[0]?.[0])).toBe('http://[::1]:9090/api/wallet/getnowblock');
+    expect(requestUrl(fetch.mock.calls[0]?.[0])).toBe('http://[::1]:9090/api/wallet/getnowblock');
   });
 
   it('does not dispatch an already-cancelled operation', async () => {
