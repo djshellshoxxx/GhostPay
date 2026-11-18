@@ -128,9 +128,9 @@ describe('fetchBytes URL joining', () => {
     const { fetchBytes } = await import('./fetcher.js');
     const seen: string[] = [];
     const rel = {
-      fetch: async (u: string) => {
+      fetch: (u: string) => {
         seen.push(u);
-        return { ok: true, arrayBuffer: async () => new ArrayBuffer(0) };
+        return Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)) });
       },
     } as never;
     await fetchBytes(rel, 'https://h.example/base///', '//p/q');
