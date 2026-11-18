@@ -83,6 +83,12 @@ Compare the commit with the release you expect, then download the `pages-site-<c
 curl -fsS "$base/index.html" | sha256sum
 ```
 
+Successful publishing runs also create GitHub build-provenance attestations for the checksum subjects. Download
+the served files and verify them with `gh attestation verify`, binding verification to this repository, the expected
+Pages workflow and the expected source commit. The workflow first verifies that the checksum list contains exactly
+the served files and that every hash matches. Provenance identifies the build; it does not establish that the source
+or serving host is trustworthy. A candidate PR does not establish that a publishing attestation has been created.
+
 ## For developers
 
 ### Build locally

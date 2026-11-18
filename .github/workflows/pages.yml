@@ -4,7 +4,7 @@ name: Pages
 #
 # GitHub Pages cannot set response headers: only the <meta http-equiv="Content-Security-Policy"> in index.html applies.
 # frame-ancestors, X-Frame-Options, nosniff, Permissions-Policy, COOP/CORP and Cache-Control cannot be set, so
-# clickjacking protection is absent and the iframe embed mode is unavailable (docs/pages/README.md).
+# header-enforced framing protection is absent; sensitive views refuse framing and Pages embed mode stays unavailable.
 #
 # Triggers:
 #   pull_request       validation only: Pages verifier/server tests, the Pages artifact build + independent site

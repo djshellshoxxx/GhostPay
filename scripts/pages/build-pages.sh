@@ -156,7 +156,7 @@ const devNote = dev === '1' ? '<strong>Development build</strong> (not a release
 const sharedNote = shared === '1'
   ? ' This web address is shared with every other GitHub Pages site of the same account, which can read this site\'s browser storage and control its pages: use it only for testing and never load keys that hold real funds.'
   : '';
-const banner = `<p class="gp-pages-mirror" role="note" id="gp-pages-mirror"><strong>GitHub Pages mirror.</strong> ${devNote}${state}${sharedNote} This host cannot send security headers (no clickjacking protection). Before trusting it, compare the served files with the published SHA256SUMS: <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/docs/pages/README.md" target="_blank" rel="noopener noreferrer">how to verify (opens in a new tab)</a>.</p>`;
+const banner = `<p class="gp-pages-mirror" role="note" id="gp-pages-mirror"><strong>GitHub Pages mirror.</strong> ${devNote}${state}${sharedNote} This host cannot send framing security headers; the app refuses sensitive views while framed. Before trusting it, compare the served files with the published SHA256SUMS: <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/docs/pages/README.md" target="_blank" rel="noopener noreferrer">how to verify (opens in a new tab)</a>.</p>`;
 let html = readFileSync(indexPath, 'utf8');
 if (!/<body[^>]*>/.test(html) || !html.includes('</head>')) throw new Error('index.html has no <head>/<body> to label');
 html = html.replace('</head>', '    <link rel="stylesheet" href="./pages-mirror.css" />\n  </head>').replace(/<body([^>]*)>/, (m) => `${m}\n    ${banner}`);
