@@ -299,6 +299,10 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   if (feeTo === ctx.hotKeyAddress && !allowFeeToHotKey) return bad(`${path}.feeTo`, 'must differ from the hot key unless allowFeeToHotKey is enabled');
   const feeToNumber = BigInt(feeTo);
   if (feeToNumber === 0n || (feeToNumber >= 1n && feeToNumber <= 10n)) return bad(`${path}.feeTo`, 'must not be the zero or a precompile address');
+  // R07-2: the web client refuses every quote whose feeTo is not the signed manifest's fee recipient, so a relayer with
+  // another feeTo would start cleanly and serve nothing. Refuse at load instead.
+  if (manifest !== undefined && manifest.feeRecipient.toLowerCase() !== feeTo.toLowerCase())
+    return bad(`${path}.feeTo`, 'differs from the deployment manifest feeRecipient (clients refuse such quotes)');
 
   if ((c['rpcUrl'] === undefined) === (c['rpcUrlEnv'] === undefined)) return bad(path, 'set exactly one of rpcUrl and rpcUrlEnv');
   const envName = c['rpcUrlEnv'];

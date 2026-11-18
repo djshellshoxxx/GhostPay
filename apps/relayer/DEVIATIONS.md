@@ -98,3 +98,8 @@ Contract code wins over docs. Items for the lead to confirm or reject.
   quote reads are not recorded (they would dilute send and receipt failures in the window), so isolated read
   failures accumulate until sweep outcomes push them out of the `breaker.windowSize` window. The quote path has no
   funding read today; source-check and price-feed refusals stay neutral on both paths, as in the lane.
+- `feeTo` pinned to the manifest (R07-2, LF-2d64ee5c3-2): with a signed deployment manifest for the chain, a `feeTo`
+  (or the hot key under `allowFeeToHotKey`) that is not the manifest's top-level `feeRecipient` stops startup. The web
+  client refuses quotes whose `feeTo` differs, so such a relayer could only ever refuse. Without a manifest (testnet,
+  dev chain) `feeTo` is the operator's choice. `deploy/config/relayer.config.example.json` (outside this directory)
+  carries a placeholder `feeTo`; an operator with a manifest must set it to the manifest's recipient.

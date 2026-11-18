@@ -76,7 +76,7 @@ Strict validation: unknown keys, wildcard or non-https origins, plain-http or cr
 stop startup, with an error naming the unknown key. Top-level keys in the example: `listen`, `allowedOrigins`, `trustedProxies`, `quoteTtlSeconds`,
 `deadline { minSeconds, maxSeconds }`, `rateLimit`, `breaker`, `server { maxConnectionsPerIp }` (default 64 concurrent
 connections per peer, 1..1024, trusted proxies exempt), `queue { maxPending, maxPerClient, receiptTimeoutSeconds }`, `shutdownGraceSeconds`, `chains[]` with
-`chainId`, `rpcUrl` or `rpcUrlEnv`, `feeTo`, `tokens[] { address, usdStable: true }`, `nativeUsdPrice`, `gasUnits
+`chainId`, `rpcUrl` or `rpcUrlEnv`, `feeTo` (must equal the manifest's `feeRecipient` when a manifest exists), `tokens[] { address, usdStable: true }`, `nativeUsdPrice`, `gasUnits
 { sweep, sweepWithPermit }`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Operator numbers have no
 defaults on purpose; the example values are placeholders, not measurements.
 

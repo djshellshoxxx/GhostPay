@@ -110,7 +110,8 @@ signatures stop startup. The web build and ops monitor use the same manifest dig
 | `allowFeeToHotKey` | Defaults to `false`; set `true` only when fee proceeds are intentionally sent to the signing key. `feeTo` must be explicit otherwise, and zero/precompile recipients are rejected. |
 
 Per chain: `rpcUrl`|`rpcUrlEnv`, `sweepRelayer` (optional; taken from the manifest when present, must match it if both),
-`feeTo` (required unless `allowFeeToHotKey: true`), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
+`feeTo` (required unless `allowFeeToHotKey: true`; when a signed manifest exists for the chain it must equal the
+manifest's `feeRecipient`, because the web client refuses every quote whose `feeTo` differs: startup stops otherwise), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
 chain-adapters allowlist or must be given), exactly one of `nativeUsdPrice` or `nativeUsdFeed`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`,
 `dailyBudgetWei`, `minBalanceWei`. Operator numbers (`gasUnits`, fixed `nativeUsdPrice`, caps, budget) have no defaults on
 purpose and must be set from your own measurements. The example file's values are placeholders, not measurements.
