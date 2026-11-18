@@ -318,20 +318,58 @@ function addressOfSecret(secret: Uint8Array): Address {
   return getAddress(`0x${bytesToHex(keccak_256(pub.subarray(1)).subarray(12)).slice(2)}`);
 }
 
+/** @internal Same field names and types, in the same order. */
+function sameFields(got: unknown, want: readonly { readonly name: string; readonly type: string }[]): boolean {
+  if (!Array.isArray(got) || got.length !== want.length) return false;
+  return want.every((w, i) => {
+    const f: unknown = got[i];
+    return typeof f === 'object' && f !== null && (f as { name?: unknown }).name === w.name && (f as { type?: unknown }).type === w.type;
+  });
+}
+
+/** @internal Refuses typed data that is not exactly one of this package's policy-account structs. */
+function assertPolicyShape(td: AnyPolicyTypedData): void {
+  const pt: unknown = td.primaryType;
+  if (typeof pt !== 'string' || !Object.hasOwn(POLICY_TYPES, pt)) return fail('SIGNING_FAILED', 'unknown primary type');
+  const types: unknown = td.types;
+  const keys = typeof types === 'object' && types !== null ? Object.keys(types) : [];
+  if (keys.length !== 1 || keys[0] !== pt || !sameFields((types as Record<string, unknown>)[pt], POLICY_TYPES[pt as keyof typeof POLICY_TYPES])) {
+    return fail('SIGNING_FAILED', 'types are not policy types');
+  }
+  const d: unknown = td.domain;
+  // Exactly the four fields of the contract's domain: an extra field (such as `salt`) changes the separator.
+  const domainKeys = typeof d === 'object' && d !== null ? Object.keys(d).sort().join(',') : '';
+  const domain = d as PolicyDomain;
+  if (domainKeys !== 'chainId,name,verifyingContract,version' || domain.name !== POLICY_DOMAIN_NAME || domain.version !== POLICY_DOMAIN_VERSION) {
+    return fail('SIGNING_FAILED', 'domain is not the policy account domain');
+  }
+  try {
+    chainIdOf(domain.chainId);
+    nonZeroAddr(domain.verifyingContract, 'verifyingContract');
+  } catch {
+    return fail('SIGNING_FAILED', 'invalid domain');
+  }
+}
+
 /**
  * Signs policy typed data with the owner key.
  *
  * @remarks Deterministic RFC 6979 low-s ECDSA (noble) over `td.digest`, which is re-checked against
- * viem's `hashTypedData`. If `expectedOwner` is given the key must map to it, and the signature is
- * recovered and compared before returning (OpenZeppelin `ECDSA.recover` accepts exactly this form).
+ * viem's `hashTypedData`. Before that, the structure must be exactly a policy-account struct: the
+ * domain has only `name`, `version`, `chainId` and `verifyingContract`, with this package's name and
+ * version, a valid chain id and a non-zero contract, and `primaryType` and `types` are exactly one
+ * entry of {@link POLICY_TYPES}. If `expectedOwner` is given the key must map to it, and the signature
+ * is recovered and compared before returning (OpenZeppelin `ECDSA.recover` accepts exactly this form).
  *
  * @param td Typed data from one of the builders.
  * @param ownerSecret Owner key ({@link deriveScheme2OwnerKey}).
  * @param expectedOwner The account's `owner()`; strongly recommended.
  * @returns 65-byte signature and its parts.
  * @throws {PolicySchemeError} `SIGNING_FAILED`.
- * @security The secret copy is zeroized after use; the secret is never logged. Signing anything
- * except a digest from these builders is impossible through this function.
+ * @security The secret copy is zeroized after use; the secret is never logged. Foreign typed data
+ * (another domain, type or primary type) is refused, so the owner key is not a generic EIP-712
+ * signer through this function. It does not check the message values: sign only builder output.
+ * `expectedOwner` is optional but strongly recommended.
  * @testVector policy-scheme.withdraws
  */
 export async function signPolicyTypedData(
@@ -339,6 +377,7 @@ export async function signPolicyTypedData(
   ownerSecret: SecretScalar,
   expectedOwner?: Address,
 ): Promise<PolicySignature> {
+  assertPolicyShape(td);
   const viaViem = viemDigest(td.domain, td.types, td.primaryType, td.message);
   if (viaViem !== td.digest) return fail('SIGNING_FAILED', 'digest mismatch');
   const key = unsafeRevealSecret(ownerSecret);

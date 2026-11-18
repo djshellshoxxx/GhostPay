@@ -1,5 +1,5 @@
 import { GhostPayCryptoError, parseCompressedPoint, secretScalarFromBytes } from '@ghostpay/core-crypto';
-import { decodeFunctionData } from 'viem/utils';
+import { decodeFunctionData, hashTypedData } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import {
   PolicySchemeError,
@@ -254,5 +254,66 @@ describe('calldata', () => {
     ].map((c) => decodeFunctionData({ abi: policyAccountAbi, data: c.data }).functionName);
     expect(names).toEqual(['executeWithdraw', 'cancel', 'proposeDestination', 'executeDestinationChange', 'cancelDestination']);
     expect(code(() => encodeExecuteWithdraw(ZERO_ADDRESS, td.structHash))).toBe('INVALID_ADDRESS');
+  });
+});
+
+// Repro from the PR #218 dropped-fix triage (T-b85e0b59-4): check of b85e0b59 lost in merge 84c2c185.
+describe('signPolicyTypedData signs only policy-account structs', () => {
+  const owner = (): ReturnType<typeof secretScalarFromBytes> => secretScalarFromBytes(hexBytes(A.ownerPrivateKey));
+  const td = buildWithdrawTypedData({ chainId: 1, account: A.accountAddress, token: USDC, amount: 5n, deadline: 10n, nonce: 1n, limit: null });
+  // Each variant carries its own correct digest, so only the shape check can refuse it.
+  const consistent = (v: Record<string, unknown>): never => {
+    const digest = hashTypedData(v as never);
+    return { ...v, structHash: digest, digest } as never;
+  };
+  const withdrawTypes = td.types.Withdraw;
+
+  it('refuses a self-consistent foreign struct under a foreign domain', async () => {
+    const foreign = {
+      domain: { name: 'Evil', version: '1', chainId: 1, verifyingContract: A.accountAddress },
+      types: { Transfer: [{ name: 'amt', type: 'uint256' }] },
+      primaryType: 'Transfer',
+      message: { amt: 1n },
+    };
+    expect(await acode(() => signPolicyTypedData(consistent(foreign), owner(), A.ownerAddress))).toBe('SIGNING_FAILED');
+  });
+
+  it('refuses foreign domains, types and primary types even with a matching digest', async () => {
+    const variants: Record<string, unknown>[] = [
+      { ...td, domain: { ...td.domain, name: 'Evil' } },
+      { ...td, domain: { ...td.domain, version: '2' } },
+      { ...td, domain: { ...td.domain, salt: H1 } },
+      { ...td, domain: { ...td.domain, verifyingContract: ZERO_ADDRESS } },
+      { ...td, types: { Withdraw: [{ name: 'x', type: 'uint256' }] }, message: { x: 1n } },
+      { ...td, types: { Withdraw: withdrawTypes.slice(0, 4) } },
+      { ...td, types: { Withdraw: withdrawTypes.map((f) => (f.name === 'amount' ? { ...f, type: 'uint128' } : f)) } },
+      { ...td, types: { Withdraw: withdrawTypes, Extra: [{ name: 'y', type: 'uint256' }] } },
+      { ...td, primaryType: 'Transfer', types: { Transfer: withdrawTypes } },
+      { ...td, primaryType: 'hasOwnProperty', types: { hasOwnProperty: withdrawTypes } },
+    ];
+    const got: string[] = [];
+    for (const v of variants) got.push(await acode(() => signPolicyTypedData(consistent(v), owner(), A.ownerAddress)));
+    expect(got).toEqual(variants.map(() => 'SIGNING_FAILED'));
+    // Malformed shapes are refused before any hashing (no TypeError escapes).
+    const malformed: Record<string, unknown>[] = [
+      { ...td, domain: { ...td.domain, chainId: 0 } },
+      { ...td, domain: null },
+      { ...td, types: null },
+      { ...td, types: { Withdraw: [null, ...withdrawTypes.slice(1)] } },
+      { ...td, primaryType: 1 },
+    ];
+    const bad: string[] = [];
+    for (const v of malformed) bad.push(await acode(() => signPolicyTypedData(v as never, owner(), A.ownerAddress)));
+    expect(bad).toEqual(malformed.map(() => 'SIGNING_FAILED'));
+  });
+
+  it('still signs every builder output', async () => {
+    const tds = [
+      td,
+      buildCancelWithdrawTypedData(1, A.accountAddress, H1),
+      buildProposeDestinationTypedData({ chainId: 1, account: A.accountAddress, newDestination: DEST, deadline: 1n, nonce: 3n }),
+      buildCancelDestinationTypedData(1, A.accountAddress, H1),
+    ];
+    for (const t of tds) expect(await acode(() => signPolicyTypedData(t, owner(), A.ownerAddress))).toBe('no error');
   });
 });
