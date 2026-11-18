@@ -51,7 +51,7 @@ const cases: [string, () => unknown, string][] = [
   ['tag char', () => P.parseBitcoinUri(`bitcoin:${F.BTC_BECH32}?label=a%F3%A0%80%81`), 'UNSAFE_TEXT'],
   ['non NFC', () => P.parseBitcoinUri(`bitcoin:${F.BTC_BECH32}?label=e%CC%81`), 'UNSAFE_TEXT'],
   ['long label', () => P.parseBitcoinUri(`bitcoin:${F.BTC_BECH32}?label=${'a'.repeat(129)}`), 'TOO_LONG'],
-  ['builder bad label', () => P.buildBitcoinUri({ address: F.BTC_BECH32, label: 'a‮b' }), 'UNSAFE_TEXT'],
+  ['builder bad label', () => P.buildBitcoinUri({ address: F.BTC_BECH32, label: 'a\u202eb' }), 'UNSAFE_TEXT'],
   ['builder empty label', () => P.buildBitcoinUri({ address: F.BTC_BECH32, label: '' }), 'UNSAFE_TEXT'],
   // bitcoin
   ['btc dup amount', () => P.parseBitcoinUri(`bitcoin:${F.BTC_BECH32}?amount=1&amount=2`), 'DUPLICATE_PARAM'],

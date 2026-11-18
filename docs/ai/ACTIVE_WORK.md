@@ -99,7 +99,25 @@ review and verification in progress.
 Not claimed (left to PR #209 / #211): SEC-09/SEC-10 Pages origin and loopback CSP, every other #205 row.
 Out of scope: deployment, signing, release, mainnet, contract source changes, branch deletion, owner decisions.
 
-# Repository consolidation — 2026-11-18 (active)
+
+# Pages beta security tooling extraction — 2026-11-18
+
+Worker: ChatGPT branch-archaeology/security-tooling worker. Coordinator: current Pages integration session.
+Branch: `integration/ghostpay-security-tooling-20261118`; base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+
+Owned paths: standalone Mythril disposition helper and its tests; web deployment-validator npm entrypoint and
+regressions; local audit static helper and tests; HTTPS-only pinned download commands; bidirectional-character
+source escapes; shared RPC fetch metadata regression; viewing-key boundary regression and directly related docs;
+agent workflow path-policy and untrusted-input hardening plus focused tests; cached-solc integrity verification.
+Source inputs: #212 + #225, #224 + #226, and selected security changes from #220. These branches remain read-only.
+
+Acceptance: preserve source pins, current action pins, runner selection, existing workflow triggers and approval
+gates; the Mythril helper remains unwired; reproduce applicable pre-fix regressions and run focused Node/Vitest,
+typecheck, lint and security checks. No contract, D-1 proof-design, deployment, publication or gate-policy change.
+The coordinator owns browser privacy/receipts, shared integration and remote writes. RPC fetch options overlap #222
+and must resolve to the same `omit`/`no-referrer`/`no-store` behavior.
+
+# Repository consolidation — 2026-11-18 (historical)
 
 
 Coordinator: Claude Code session (integration owner). Integration branch: `nodata/wizardly-allen-qwol6u`, created from

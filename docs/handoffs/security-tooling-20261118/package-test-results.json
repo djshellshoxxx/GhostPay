@@ -1,0 +1,88 @@
+[
+  {
+    "name": "rpc-red",
+    "cwd": "packages/chain-adapters",
+    "command": "../../node_modules/.bin/vitest run src/rpc.test.ts --coverage.enabled=false --maxWorkers=1",
+    "exit_code": 1,
+    "seconds": 2.08,
+    "summary": [
+      "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+      "Test Files  1 failed (1)",
+      "Tests  1 failed | 86 passed (87)",
+      "Duration  1.43s (transform 48%, import 39%, tests 12%, worker 2%)"
+    ]
+  },
+  {
+    "name": "rpc-green",
+    "cwd": "packages/chain-adapters",
+    "command": "../../node_modules/.bin/vitest run src/rpc.test.ts --coverage.enabled=false --maxWorkers=1",
+    "exit_code": 0,
+    "seconds": 1.77,
+    "summary": [
+      "Test Files  1 passed (1)",
+      "Tests  87 passed (87)",
+      "Duration  1.04s (import 65%, transform 27%, tests 6%, worker 2%)"
+    ]
+  },
+  {
+    "name": "key-boundary-green",
+    "cwd": "packages/core-crypto",
+    "command": "../../node_modules/.bin/vitest run src/viewing-key-boundary.test.ts --coverage.enabled=false --maxWorkers=1",
+    "exit_code": 0,
+    "seconds": 1.91,
+    "summary": [
+      "Test Files  1 passed (1)",
+      "Tests  1 passed (1)",
+      "Duration  1.14s (import 43%, transform 36%, tests 20%, worker 1%)"
+    ]
+  },
+  {
+    "name": "i18n-format-green",
+    "cwd": "packages/i18n",
+    "command": "../../node_modules/.bin/vitest run src/format.test.ts --coverage.enabled=false --maxWorkers=1",
+    "exit_code": 0,
+    "seconds": 1.25,
+    "summary": [
+      "Test Files  1 passed (1)",
+      "Tests  27 passed (27)",
+      "Duration  490ms (transform 70%, tests 22%, import 7%, worker 1%)"
+    ]
+  },
+  {
+    "name": "deployment-validator-red",
+    "cwd": "apps/web",
+    "command": "../../node_modules/.bin/vitest run src/validateDeploymentsScript.test.ts --coverage.enabled=false --maxWorkers=1",
+    "exit_code": 1,
+    "seconds": 12.42,
+    "summary": [
+      "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+      "Test Files  1 failed (1)",
+      "Tests  2 failed | 1 passed (3)",
+      "Duration  11.70s (tests 84%, transform 9%, import 8%)"
+    ]
+  },
+  {
+    "name": "deployment-validator-green",
+    "cwd": "apps/web",
+    "command": "../../node_modules/.bin/vitest run src/validateDeploymentsScript.test.ts --coverage.enabled=false --maxWorkers=1",
+    "exit_code": 0,
+    "seconds": 10.13,
+    "summary": [
+      "Test Files  1 passed (1)",
+      "Tests  3 passed (3)",
+      "Duration  9.40s (tests 80%, import 13%, transform 6%)"
+    ]
+  },
+  {
+    "name": "web-visible-bidi-green",
+    "cwd": "apps/web",
+    "command": "../../node_modules/.bin/vitest run src/i18n/message.test.ts src/lib/displayText.test.ts src/lib/hardening.test.ts --coverage.enabled=false --maxWorkers=1",
+    "exit_code": 0,
+    "seconds": 7.32,
+    "summary": [
+      "Test Files  3 passed (3)",
+      "Tests  59 passed (59)",
+      "Duration  6.67s (transform 58%, import 28%, tests 13%, worker 1%)"
+    ]
+  }
+]

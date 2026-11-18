@@ -106,6 +106,7 @@ export const fetchTransport: RpcTransport = {
         body,
         signal: ctl.signal,
         redirect: 'error',
+        // Match the other egress points: no ambient cookies, no Referer, no cached RPC answers (audit C-1).
         credentials: 'omit',
         referrerPolicy: 'no-referrer',
         cache: 'no-store',

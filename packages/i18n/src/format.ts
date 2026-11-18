@@ -17,11 +17,11 @@ export interface FormatOptions {
 }
 
 export const MAX_OUTPUT_LENGTH = 20_000;
-const FSI = '⁨';
-const PDI = '⁩';
+const FSI = '\u2068';
+const PDI = '\u2069';
 
 /* eslint-disable no-control-regex -- stripping control characters is the point */
-const STRIP = /[\u0000-\u001f\u007f-\u009f؜‎‏‪-‮⁦-⁩]/g;
+const STRIP = /[\u0000-\u001f\u007f-\u009f\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/g;
 /* eslint-enable no-control-regex */
 
 /** Entity-escape for HTML text and attribute contexts. */

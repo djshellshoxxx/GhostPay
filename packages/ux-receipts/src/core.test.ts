@@ -179,12 +179,12 @@ describe('validators', () => {
     expect(isSafeMemo('')).toBe(false);
     expect(isSafeMemo('a'.repeat(141))).toBe(false);
     expect(isSafeMemo('a\nb')).toBe(false);
-    expect(isSafeMemo('a‮b')).toBe(false);
+    expect(isSafeMemo('a\u202eb')).toBe(false);
     expect(isSafeMemo('a​b')).toBe(false);
     expect(isSafeMemo(3)).toBe(false);
   });
   it('sanitize + forbidden names', () => {
-    expect(sanitizeForDisplay('a‮b\u0007')).toBe('a�b�');
+    expect(sanitizeForDisplay('a\u202eb\u0007')).toBe('a�b�');
     for (const n of ['viewingKey', 'spending_key', 'stealth-meta', 'seedPhrase', 'privKey', 'scanKey']) {
       expect(isForbiddenFieldName(n)).toBe(true);
     }

@@ -13,7 +13,7 @@ const inv = createInvoice({
   chainId: 84532, metaAddress: encodeMetaAddress(seller), fiat: { currency: 'USD', minorUnits: '1000' }, token: 'native',
   amountPolicy: { mode: 'fixed_token', tokenAmount: '1000000000000000' }, quote: { source: 'seller:fixed', timestamp: 1, expiresAt: 2, maxSlippageBps: 50 },
   expiresAt: 4102444800, lineItems: [{ description: XSS, quantity: '1', unitMinorUnits: '1000' }], tax: { rateBps: 0, minorUnits: '0' },
-  feePolicy: 'payer_pays', memo: `javascript:alert(1) ${XSS} ‮evil`, signer: signerPublicKeyHex(signKey) });
+  feePolicy: 'payer_pays', memo: `javascript:alert(1) ${XSS} \u202eevil`, signer: signerPublicKeyHex(signKey) });
 const fragment = await encodeFragment(signInvoice(inv, signKey));
 const report = (k, v) => console.log(`${k.padEnd(58)} ${v}`);
 
