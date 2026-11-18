@@ -198,8 +198,10 @@ export function AppShell(props: AppShellProps): ReactNode {
       first.current = false;
       return;
     }
+    // A new invoice deep link must move focus even when Pay is already selected.
+    // Benign anchor changes do not update fragment and must not steal focus.
     main.current?.focus();
-  }, [view]);
+  }, [view, fragment]);
 
   const rpcFor = useCallback(
     (urls: Readonly<Record<string, string>>, chainId: number): Promise<RpcClient | undefined> => {
