@@ -53,7 +53,21 @@ owner-approved, finding-specific mechanism; PR #212 contains an unwired candidat
 
 ### 2.1 Local Mythril run (this branch's contract sources = `main`)
 
-_Pending: filled in from the final verification run before merge._
+Run 2026-11-18 07:57–08:24 UTC, three then two contracts in parallel on a 4-core host, Python 3.12, outputs archived in
+[`data/mythril-local-20261118/`](data/mythril-local-20261118/) (raw JSON, `src.sha256` of the analysed sources, timings).
+
+| Contract | Result | Records | JSON sha256 |
+|---|---|---|---|
+| GhostPayRouter | `success:true`, 0 issues, rc 0 | — | `8e0e1368…87b6be8a` |
+| GhostPaySweepRelayer | `success:true`, rc 1 | SWC-116 Low `sweep` line 83, PC 785 = **EXP-1** | `775e9bb2…4449f5ef` |
+| GhostPayPolicyRouter | `success:true`, 0 issues, rc 0 | — | `8e0e1368…87b6be8a` |
+| PolicyAccount | `success:true`, rc 1 | SWC-116 Low line 161 PC 1876 `8390:50` = **EXP-2**; line 262 PC 5077 `12988:48` = **EXP-3** | `a7c386e0…6e626d33e3` |
+| PolicyAccountFactory | `success:true`, rc 1 | SWC-110 Low clone fallback PC 30 = **R4**; SWC-107 Med :117 PC 999 = **R5**; SWC-107 Low ReentrancyGuard:99 PC 1170 = **R6**; SWC-113 Low :131 PC 1668 = **R7**; SWC-107 Med Clones:104 PC 2887 = **R9**; SWC-107 Low SafeERC20:227 PC 2978 = **R10**; SWC-104 Med SafeERC20:227 PC 2978 = **R11** | `ca3e43a9…29a7f2a22` |
+
+10 of 11 records reproduce with identical SWC, severity, PC and line; no new record appeared. R8 (3-step sequence,
+PC 1781) was not reproduced, as in the earlier local rerun: symbolic search under a timeout is not deterministic. Its
+absence is not evidence either way; its disposition rests on source review and the R8 tests. The router absence carries
+the caveat of the expiry record (same timestamp pattern exists there).
 
 ## 3. Additional red-team findings
 
