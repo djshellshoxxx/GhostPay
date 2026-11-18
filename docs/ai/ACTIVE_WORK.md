@@ -42,6 +42,18 @@ new Spec 18 verify-only button while retaining all assertions, timing and releas
 Run only bounded focused checks during the coordinator's full web coverage run;
 fresh hosted browser/lint results remain necessary. No runtime or remote changes.
 
+Hosted real-crypto synchronization follow-up, `lifecycle_review`: local source
+`7d99c223e977938cd96c5e496232bad44a3b4799`, published candidate
+`b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73`; hosted job `135212473022`.
+Owned path: `apps/web/src/components/StealthExportVerification.test.tsx` only.
+The two real-verification cases exceeded Testing Library's default polling deadline
+while the KDF remained active. Observe the actual call-through verification promise
+and await its settlement inside React `act` before the existing DOM assertions.
+Require the real rejection for the wrong passphrase. Preserve cryptography, KDF cost,
+all assertions, the global test deadline and every gate; no synthetic success or delays.
+Acceptance: focused 14-case file and the existing 13-file feature selection execute,
+with separate source review and a fresh hosted full-web result still required.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:

@@ -23,6 +23,19 @@ function deferred<T>(): { readonly promise: Promise<T>; readonly resolve: (value
   return { promise, resolve };
 }
 
+/** Observe the component's real verification without replacing crypto or racing the DOM polling deadline. */
+function observeVerification(): Promise<{ readonly operation: Promise<exports.VerifiedStealthExport> }> {
+  const started = deferred<{ readonly operation: Promise<exports.VerifiedStealthExport> }>();
+  const actual = exports.verifyStealthExport;
+  vi.spyOn(exports, 'verifyStealthExport').mockImplementation((...args) => {
+    const operation = actual(...args);
+    // Carry the promise in an object so observation resolves when verification starts, including rejection paths.
+    started.resolve({ operation });
+    return operation;
+  });
+  return started.promise;
+}
+
 beforeEach(() => { clearSession(); generateSession(); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); clearSession(); });
 
@@ -56,6 +69,7 @@ describe('saved Spec 18 export verification', () => {
 
   it('requires retention confirmation and a saved file, authenticates its keys, and never changes seller custody', async () => {
     const user = userEvent.setup();
+    const started = observeVerification();
     const announce = vi.fn();
     const wallet = getSessionPublic(); const backup = getSessionBackup();
     render(<StealthExportVerification file={generated} announce={announce} {...startedDownload} />);
@@ -68,6 +82,10 @@ describe('saved Spec 18 export verification', () => {
     expect(state()).toContain('You confirmed keeping this backup. Recoverability is not yet verified.');
     await user.type(screen.getByLabelText('Passphrase of the saved backup'), VECTOR_PASS);
     await user.click(submit());
+    await act(async () => {
+      const { operation } = await started;
+      await operation;
+    });
     await waitFor(() => { expect(state()).toContain('Saved backup verified.'); });
     expect(announce).toHaveBeenCalledOnce();
     expect(getSessionPublic()).toBe(wallet);
@@ -91,10 +109,15 @@ describe('saved Spec 18 export verification', () => {
 
   it('a wrong password cannot mark the saved file verified', async () => {
     const user = userEvent.setup();
+    const started = observeVerification();
     const announce = vi.fn();
     render(<StealthExportVerification file={generated} announce={announce} {...startedDownload} />);
     await fill(user, generated.text, 'not the backup password');
     await user.click(submit());
+    await act(async () => {
+      const { operation } = await started;
+      await expect(operation).rejects.toThrow(/Wrong passphrase/);
+    });
     expect((await screen.findByRole('alert')).textContent).toContain('Wrong passphrase');
     expect(state()).not.toContain('Saved backup verified.');
     expect(announce).not.toHaveBeenCalled();
