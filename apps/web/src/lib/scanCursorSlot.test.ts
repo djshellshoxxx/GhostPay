@@ -1,3 +1,4 @@
+import { hkdf } from '@noble/hashes/hkdf.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -5,6 +6,12 @@ import { checkpointKeyId, localCheckpointStore } from './scanClient';
 import { CHECKPOINT_SLOT_PREFIX, checkpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import * as session from './session';
 import { clearSession, generateSession, getSessionPublic, importSession, type SessionPublic } from './session';
+
+// The real HKDF unless a test makes it fail.
+vi.mock('@noble/hashes/hkdf.js', async (importOriginal) => {
+  const real = await importOriginal<typeof import('@noble/hashes/hkdf.js')>();
+  return { ...real, hkdf: vi.fn(real.hkdf) };
+});
 
 /** SEC-22: a scan cursor slot must not tell anyone holding only a seller's public keys that this browser scans for them. */
 
@@ -207,6 +214,47 @@ describe('SEC-22 scan cursor slot names', () => {
       for (let i = 0; i < 10; i++) expect(cp.load(84532, keyId)).toEqual(CURSOR);
       expect(lent).toHaveBeenCalledTimes(3);
       for (const r of lent.mock.results) expect((r.value as Uint8Array).every((b) => b === 0)).toBe(true);
+    } finally {
+      lent.mockRestore();
+    }
+  });
+
+  it('wipe the lent copy of the session viewing key when the derivation using it throws', () => {
+    const pub = generateSession();
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    const lent = vi.spyOn(session, 'revealViewingKey');
+    try {
+      let seen: Uint8Array | undefined;
+      expect(() => sessionViewingKey(keyId, (vk) => { seen = vk; throw new Error('derivation failed'); })).toThrow('derivation failed');
+      expect(lent).toHaveBeenCalledTimes(1);
+      expect(seen).toBe(lent.mock.results[0]?.value);
+      expect(seen?.length).toBe(32);
+      expect(seen?.every((b) => b === 0)).toBe(true);
+    } finally {
+      lent.mockRestore();
+    }
+  });
+
+  it('wipe the copy, write nothing and keep no name when HKDF throws inside the real store', () => {
+    const pub = generateSession();
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    const lent = vi.spyOn(session, 'revealViewingKey');
+    try {
+      const st = mem();
+      const cp = localCheckpointStore(st);
+      let input: Uint8Array | undefined;
+      vi.mocked(hkdf).mockImplementationOnce((_hash, ikm) => { input = ikm; throw new Error('hkdf failed'); });
+      expect(cp.load(84532, keyId)).toBeUndefined();
+      vi.mocked(hkdf).mockImplementationOnce(() => { throw new Error('hkdf failed'); });
+      cp.save(84532, keyId, CURSOR);
+      expect(st.map.size).toBe(0);
+      expect(lent).toHaveBeenCalledTimes(2);
+      expect(input).toBe(lent.mock.results[0]?.value);
+      for (const r of lent.mock.results) expect((r.value as Uint8Array).every((b) => b === 0)).toBe(true);
+      // Nothing was kept from the failures: the next use derives (and lends) again, and works.
+      cp.save(84532, keyId, CURSOR);
+      expect(cp.load(84532, keyId)).toEqual(CURSOR);
+      expect(lent).toHaveBeenCalledTimes(3);
     } finally {
       lent.mockRestore();
     }
