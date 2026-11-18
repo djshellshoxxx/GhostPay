@@ -1,4 +1,4 @@
-import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog, type ScanCursor } from '@ghostpay/chain-adapters';
+import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcClient, type RpcLog, type ScanCursor } from '@ghostpay/chain-adapters';
 import { buildErc20Metadata, encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { describe, expect, it, vi } from 'vitest';
 import { decodeAbiParameters, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
@@ -147,6 +147,47 @@ describe('runScan', () => {
     expect(res.cursor.nextBlock).toBeLessThan(500_000n);
     expect(worker.received.some((m) => m.type === 'cancel')).toBe(true);
     expect(worker.terminated).toBe(true);
+  });
+
+  it.each(['primary', 'secondary'] as const)('cancels both bulk evidence batches when the %s receipt lookup outlives the scan', async (cancelAt) => {
+    const s = setup();
+    const controller = new AbortController();
+    const worker = new InlineWorker();
+    const afterCancellation: string[] = [];
+    let cancelled = false;
+    const wrap = (name: 'primary' | 'secondary'): RpcClient => {
+      const rpc = chainWith(2500, s.logs);
+      const note = (method: string): void => {
+        if (controller.signal.aborted) afterCancellation.push(`${name}:${method}`);
+        if (!cancelled && name === cancelAt && method === 'eth_getTransactionReceipt') {
+          cancelled = true;
+          controller.abort();
+        }
+      };
+      return {
+        chainId: rpc.chainId,
+        blockNumber: () => { note('head'); return rpc.blockNumber(); },
+        getBlock: (n) => { note('block'); return rpc.getBlock(n); },
+        getLogs: (filter) => { note('logs'); return rpc.getLogs(filter); },
+        request: (method, params) => { note(method); return rpc.request(method, params); },
+      };
+    };
+    const onMatch = vi.fn();
+    const save = vi.fn();
+    const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
+    const result = await runScan({
+      chain, manifest, client: wrap('primary'), secondaryClient: wrap('secondary'),
+      cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+      viewingKey, createWorker: () => worker, signal: controller.signal, bulkEvidence: 10, onMatch,
+      checkpoints: { load: () => undefined, save, clear: () => undefined },
+    });
+    expect(cancelled).toBe(true);
+    expect(afterCancellation).toEqual([]);
+    expect(result.matches).toEqual([]);
+    expect(onMatch).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+    expect(worker.terminated).toBe(true);
+    expect(viewingKey.every((byte) => byte === 0)).toBe(true);
   });
 
   it('awaits persistent reorg invalidation before processing replacement logs', async () => {

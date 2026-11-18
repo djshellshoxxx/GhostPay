@@ -405,8 +405,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         });
         if (targets.length > 0) {
           [evidence, secondaryEvidence] = await Promise.all([
-            fetchRouterEvidence(p.client, targets),
-            p.secondaryClient === undefined ? Promise.resolve(undefined) : fetchRouterEvidence(p.secondaryClient, targets),
+            fetchRouterEvidence(p.client, targets, 4, p.signal),
+            p.secondaryClient === undefined ? Promise.resolve(undefined) : fetchRouterEvidence(p.secondaryClient, targets, 4, p.signal),
           ]);
           evidenceRequests += evidence.requests + (secondaryEvidence?.requests ?? 0);
         }

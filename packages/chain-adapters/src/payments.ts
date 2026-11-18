@@ -223,45 +223,63 @@ function shuffle<T>(items: T[], random: () => number): T[] {
 
 /**
  * TM12: reads, from one provider, the head, every target block's hash, each target's receipt and transaction, and the
- * block hashes again. Requests go out in the targets' (random) order, `concurrency` at a time. Never throws: a failed
+ * block hashes again. Targets are processed in their random order, `concurrency` at a time; each transaction target
+ * issues up to two simultaneous requests. Never throws: a failed
  * read leaves its entry out. Cost: `1 + 2 * blocks + 2 * targets` requests.
  *
  * @param client Provider to read from.
  * @param targets From {@link selectEvidenceTargets}.
- * @param concurrency Parallel requests (1 to 16, default 4).
+ * @param concurrency Parallel targets (1 to 16, default 4); transaction lookup uses up to twice that many RPC calls.
+ * @param signal The owning scan's cancellation signal. Cancellation stops scheduling new RPC calls and discards the
+ * batch. Calls already dispatched use the client's existing bounded timeout/retry policy; this does not abort transport.
  */
-export async function fetchRouterEvidence(client: RpcClient, targets: readonly RouterEvidenceTarget[], concurrency = 4): Promise<RouterEvidenceBatch> {
+export async function fetchRouterEvidence(client: RpcClient, targets: readonly RouterEvidenceTarget[], concurrency = 4, signal?: AbortSignal): Promise<RouterEvidenceBatch> {
   const limit = Math.max(1, Math.min(16, Number.isSafeInteger(concurrency) ? concurrency : 4));
+  const active = (): boolean => signal?.aborted !== true;
   let requests = 0;
   const pooled = async <T>(items: readonly T[], run: (item: T) => Promise<void>): Promise<void> => {
-    for (let k = 0; k < items.length; k += limit) await Promise.all(items.slice(k, k + limit).map(run));
+    for (let k = 0; k < items.length && active(); k += limit) {
+      await Promise.all(items.slice(k, k + limit).map((item) => active() ? run(item) : Promise.resolve()));
+    }
   };
   const blockNumbers = [...new Set(targets.map((t) => t.blockNumber))];
   const readBlocks = async (into: Map<bigint, string | null>): Promise<void> => pooled(blockNumbers, async (n) => {
     requests++;
     try {
       const b = await client.getBlock(n);
-      into.set(n, b === null ? null : b.hash.toLowerCase());
+      if (active()) into.set(n, b === null ? null : b.hash.toLowerCase());
     } catch { /* absent: could not confirm */ }
   });
   let head: bigint | undefined;
-  requests++;
-  try { head = await client.blockNumber(); } catch { head = undefined; }
+  if (active()) {
+    requests++;
+    try { head = await client.blockNumber(); } catch { head = undefined; }
+  }
   const blocksBefore = new Map<bigint, string | null>();
   const blocksAfter = new Map<bigint, string | null>();
   const transactions = new Map<string, { readonly receipt: unknown; readonly tx: unknown }>();
   await readBlocks(blocksBefore);
   await pooled(targets, async (t) => {
-    requests += 2;
+    const read = (method: string): Promise<unknown> => {
+      if (!active()) return Promise.resolve(undefined);
+      requests++;
+      return client.request(method, [t.transactionHash]);
+    };
     try {
       const [receipt, tx] = await Promise.all([
-        client.request('eth_getTransactionReceipt', [t.transactionHash]),
-        client.request('eth_getTransactionByHash', [t.transactionHash]),
+        read('eth_getTransactionReceipt'),
+        read('eth_getTransactionByHash'),
       ]);
-      transactions.set(t.transactionHash.toLowerCase(), { receipt, tx });
+      if (active()) transactions.set(t.transactionHash.toLowerCase(), { receipt, tx });
     } catch { /* absent: could not confirm */ }
   });
   await readBlocks(blocksAfter);
+  if (!active()) {
+    head = undefined;
+    blocksBefore.clear();
+    blocksAfter.clear();
+    transactions.clear();
+  }
   return { chainId: client.chainId, head, blocksBefore, blocksAfter, transactions, requests };
 }
 
