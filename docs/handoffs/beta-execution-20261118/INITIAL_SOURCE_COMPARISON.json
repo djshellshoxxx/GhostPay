@@ -1,0 +1,2018 @@
+{
+  "starting_main": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+  "prs": [
+    {
+      "number": 224,
+      "title": "SonarCloud triage of all 107 findings + static-server/bidi/download hardening; D03 (AUD24-01) decision packet",
+      "head": "nodata/jolly-rubin-u4zd45",
+      "head_sha": "1054daabc5cabe958466ec144582d76137b54910",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "apps/web/src/i18n/message.test.ts",
+        "apps/web/src/lib/displayText.test.ts",
+        "apps/web/src/lib/hardening.test.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/audits/poc/poc-03-invoice-parser-fuzz.mjs",
+        "docs/audits/poc/poc-04-browser-csp-xss-referrer.mjs",
+        "docs/audits/poc/static-server.mjs",
+        "docs/audits/poc/static-server.test.mjs",
+        "docs/audits/sonarcloud-triage-2026-11-18.md",
+        "docs/handoffs/decision-packets/D03-AUD24-01-policy-hash-calldata.md",
+        "infra/integration/Dockerfile.runner",
+        "infra/integration/Dockerfile.solana",
+        "packages/address-safety/src/text.test.ts",
+        "packages/i18n/src/format.test.ts",
+        "packages/i18n/src/format.ts",
+        "packages/invoice-schema/src/text-hygiene.test.ts",
+        "packages/merchant-billing/src/csv.test.ts",
+        "packages/merchant-billing/src/payouts.test.ts",
+        "packages/payment-uri/src/fuzz.test.ts",
+        "packages/payment-uri/src/negative.test.ts",
+        "packages/plugin-api/src/manifest.test.ts",
+        "packages/pool-circuits/scripts/install-circom.sh",
+        "packages/ux-fiat/src/fiat.test.ts",
+        "packages/ux-intake/src/nlamount.test.ts",
+        "packages/ux-intake/src/payload.test.ts",
+        "packages/ux-links/src/amount.test.ts",
+        "packages/ux-links/src/handle.test.ts",
+        "packages/ux-links/src/request.test.ts",
+        "packages/ux-links/src/tip.test.ts",
+        "packages/ux-notify/src/redact.test.ts",
+        "packages/ux-presets/src/validate.test.ts",
+        "packages/ux-privacy/src/policy.test.ts",
+        "packages/ux-receipts/src/core.test.ts",
+        "packages/ux-receipts/src/receipt.test.ts",
+        "packages/ux-schedule/src/template.test.ts",
+        "packages/ux-vault/src/contacts.test.ts",
+        "packages/ux-vault/src/schema.test.ts",
+        "packages/ux-vault/src/vault.test.ts",
+        "scripts/integration/run-in-runner.sh",
+        "scripts/regtest/Dockerfile.bitcoind"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "apps/web/src/i18n/message.test.ts",
+        "apps/web/src/lib/displayText.test.ts",
+        "apps/web/src/lib/hardening.test.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/audits/poc/poc-03-invoice-parser-fuzz.mjs",
+        "docs/audits/poc/poc-04-browser-csp-xss-referrer.mjs",
+        "docs/audits/poc/static-server.mjs",
+        "docs/audits/poc/static-server.test.mjs",
+        "docs/audits/sonarcloud-triage-2026-11-18.md",
+        "docs/handoffs/decision-packets/D03-AUD24-01-policy-hash-calldata.md",
+        "infra/integration/Dockerfile.runner",
+        "infra/integration/Dockerfile.solana",
+        "packages/address-safety/src/text.test.ts",
+        "packages/i18n/src/format.test.ts",
+        "packages/i18n/src/format.ts",
+        "packages/invoice-schema/src/text-hygiene.test.ts",
+        "packages/merchant-billing/src/csv.test.ts",
+        "packages/merchant-billing/src/payouts.test.ts",
+        "packages/payment-uri/src/fuzz.test.ts",
+        "packages/payment-uri/src/negative.test.ts",
+        "packages/plugin-api/src/manifest.test.ts",
+        "packages/pool-circuits/scripts/install-circom.sh",
+        "packages/ux-fiat/src/fiat.test.ts",
+        "packages/ux-intake/src/nlamount.test.ts",
+        "packages/ux-intake/src/payload.test.ts",
+        "packages/ux-links/src/amount.test.ts",
+        "packages/ux-links/src/handle.test.ts",
+        "packages/ux-links/src/request.test.ts",
+        "packages/ux-links/src/tip.test.ts",
+        "packages/ux-notify/src/redact.test.ts",
+        "packages/ux-presets/src/validate.test.ts",
+        "packages/ux-privacy/src/policy.test.ts",
+        "packages/ux-receipts/src/core.test.ts",
+        "packages/ux-receipts/src/receipt.test.ts",
+        "packages/ux-schedule/src/template.test.ts",
+        "packages/ux-vault/src/contacts.test.ts",
+        "packages/ux-vault/src/schema.test.ts",
+        "packages/ux-vault/src/vault.test.ts",
+        "scripts/integration/run-in-runner.sh",
+        "scripts/regtest/Dockerfile.bitcoind"
+      ]
+    },
+    {
+      "number": 223,
+      "title": "docs: sync docs with current code (2026-11-18)",
+      "head": "nodata/doc-sweep-20261118",
+      "head_sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "README.md",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/developer/local-setup.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "README.md",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/developer/local-setup.md"
+      ]
+    },
+    {
+      "number": 222,
+      "title": "privacy: implement threat-model recommendations TM1-TM15",
+      "head": "privacy/hardening-recommendations",
+      "head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "apps/relayer/Dockerfile",
+        "apps/relayer/PRIVACY.md",
+        "apps/relayer/README.md",
+        "apps/relayer/package.json",
+        "apps/relayer/src/config.ts",
+        "apps/relayer/src/log.ts",
+        "apps/relayer/src/privacy.test.ts",
+        "apps/relayer/src/runtime.ts",
+        "apps/relayer/src/server.ts",
+        "apps/relayer/tsconfig.json",
+        "apps/relayer/vitest.config.ts",
+        "apps/web/e2e/helpers.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/package.json",
+        "apps/web/scripts/apply-csp.d.mts",
+        "apps/web/scripts/apply-csp.mjs",
+        "apps/web/src/buildScripts.test.ts",
+        "apps/web/src/components/ReceiptPanel.test.tsx",
+        "apps/web/src/components/ReceiptPanel.tsx",
+        "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/fixtures.testutil.ts",
+        "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+        "apps/web/src/features/btc/scan.localSpends.test.ts",
+        "apps/web/src/features/btc/scan.ts",
+        "apps/web/src/features/chainViews.i18n.test.tsx",
+        "apps/web/src/features/solana/SolanaView.lock.test.tsx",
+        "apps/web/src/features/solana/SolanaView.test.tsx",
+        "apps/web/src/features/solana/SolanaView.tsx",
+        "apps/web/src/features/solana/chain.hardening.test.ts",
+        "apps/web/src/features/solana/scan-secrets.hardening.test.ts",
+        "apps/web/src/features/solana/scan.ts",
+        "apps/web/src/features/solana/sweep.ts",
+        "apps/web/src/features/tron/TronView.lock.test.tsx",
+        "apps/web/src/features/tron/TronView.test.tsx",
+        "apps/web/src/features/tron/TronView.tsx",
+        "apps/web/src/features/tron/chain.hardening.test.ts",
+        "apps/web/src/features/tron/scan.ts",
+        "apps/web/src/features/tron/sweep.ts",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/defaultServices.test.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/receipts.test.ts",
+        "apps/web/src/lib/receipts.ts",
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/relayerContract.test.ts",
+        "apps/web/src/lib/scanClient.test.ts",
+        "apps/web/src/lib/scanClient.ts",
+        "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+        "apps/web/src/lib/scanPrivacy.test.ts",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+        "apps/web/src/lib/settings.test.ts",
+        "apps/web/src/lib/settings.ts",
+        "apps/web/src/lib/sweep.test.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/CreateInvoice.test.tsx",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/Scan.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/views/Settings.test.tsx",
+        "apps/web/src/views/Settings.tsx",
+        "apps/web/src/views/Sweep.privacy.test.tsx",
+        "apps/web/src/views/Sweep.test.tsx",
+        "apps/web/src/views/Sweep.tsx",
+        "deploy/BUILD-WEB.md",
+        "deploy/README.md",
+        "deploy/TOR.md",
+        "docs/audits/17-final-security-snapshot.md",
+        "docs/threat-model/PRIVACY_THREAT_MODEL.md",
+        "docs/user/privacy-limits.md",
+        "docs/user/sweep-and-gas-privacy.md",
+        "package-lock.json",
+        "packages/chain-adapters/src/payments.test.ts",
+        "packages/chain-adapters/src/payments.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/cli/src/receipt-parity.test.ts",
+        "packages/invoice-schema/src/receipts.test.ts",
+        "packages/invoice-schema/src/receipts.ts",
+        "packages/net-transport/README.md",
+        "packages/net-transport/src/browser.test.ts",
+        "packages/net-transport/src/browser.ts",
+        "packages/net-transport/src/claims.ts",
+        "packages/net-transport/src/index.ts",
+        "packages/net-transport/src/selection.test.ts",
+        "packages/net-transport/src/selection.ts",
+        "packages/pir-two-server/README.md",
+        "packages/scan-source/README.md",
+        "packages/scan-source/src/composite.test.ts",
+        "packages/scan-source/src/index.ts",
+        "packages/scan-source/src/padded.test.ts",
+        "packages/scan-source/src/padded.ts",
+        "packages/scan-source/src/pir2.test.ts",
+        "packages/scan-source/src/pir2.ts",
+        "packages/scan-source/src/range.test.ts",
+        "packages/scan-source/src/range.ts"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "apps/relayer/Dockerfile",
+        "apps/relayer/PRIVACY.md",
+        "apps/relayer/README.md",
+        "apps/relayer/package.json",
+        "apps/relayer/src/config.ts",
+        "apps/relayer/src/log.ts",
+        "apps/relayer/src/privacy.test.ts",
+        "apps/relayer/src/runtime.ts",
+        "apps/relayer/src/server.ts",
+        "apps/relayer/tsconfig.json",
+        "apps/relayer/vitest.config.ts",
+        "apps/web/e2e/helpers.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/package.json",
+        "apps/web/scripts/apply-csp.d.mts",
+        "apps/web/scripts/apply-csp.mjs",
+        "apps/web/src/buildScripts.test.ts",
+        "apps/web/src/components/ReceiptPanel.test.tsx",
+        "apps/web/src/components/ReceiptPanel.tsx",
+        "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/fixtures.testutil.ts",
+        "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+        "apps/web/src/features/btc/scan.localSpends.test.ts",
+        "apps/web/src/features/btc/scan.ts",
+        "apps/web/src/features/chainViews.i18n.test.tsx",
+        "apps/web/src/features/solana/SolanaView.lock.test.tsx",
+        "apps/web/src/features/solana/SolanaView.test.tsx",
+        "apps/web/src/features/solana/SolanaView.tsx",
+        "apps/web/src/features/solana/chain.hardening.test.ts",
+        "apps/web/src/features/solana/scan-secrets.hardening.test.ts",
+        "apps/web/src/features/solana/scan.ts",
+        "apps/web/src/features/solana/sweep.ts",
+        "apps/web/src/features/tron/TronView.lock.test.tsx",
+        "apps/web/src/features/tron/TronView.test.tsx",
+        "apps/web/src/features/tron/TronView.tsx",
+        "apps/web/src/features/tron/chain.hardening.test.ts",
+        "apps/web/src/features/tron/scan.ts",
+        "apps/web/src/features/tron/sweep.ts",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/defaultServices.test.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/receipts.test.ts",
+        "apps/web/src/lib/receipts.ts",
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/relayerContract.test.ts",
+        "apps/web/src/lib/scanClient.test.ts",
+        "apps/web/src/lib/scanClient.ts",
+        "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+        "apps/web/src/lib/scanPrivacy.test.ts",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+        "apps/web/src/lib/settings.test.ts",
+        "apps/web/src/lib/settings.ts",
+        "apps/web/src/lib/sweep.test.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/CreateInvoice.test.tsx",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/Scan.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/views/Settings.test.tsx",
+        "apps/web/src/views/Settings.tsx",
+        "apps/web/src/views/Sweep.privacy.test.tsx",
+        "apps/web/src/views/Sweep.test.tsx",
+        "apps/web/src/views/Sweep.tsx",
+        "deploy/BUILD-WEB.md",
+        "deploy/README.md",
+        "deploy/TOR.md",
+        "docs/audits/17-final-security-snapshot.md",
+        "docs/threat-model/PRIVACY_THREAT_MODEL.md",
+        "docs/user/privacy-limits.md",
+        "docs/user/sweep-and-gas-privacy.md",
+        "package-lock.json",
+        "packages/chain-adapters/src/payments.test.ts",
+        "packages/chain-adapters/src/payments.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/cli/src/receipt-parity.test.ts",
+        "packages/invoice-schema/src/receipts.test.ts",
+        "packages/invoice-schema/src/receipts.ts",
+        "packages/net-transport/README.md",
+        "packages/net-transport/src/browser.test.ts",
+        "packages/net-transport/src/browser.ts",
+        "packages/net-transport/src/claims.ts",
+        "packages/net-transport/src/index.ts",
+        "packages/net-transport/src/selection.test.ts",
+        "packages/net-transport/src/selection.ts",
+        "packages/pir-two-server/README.md",
+        "packages/scan-source/README.md",
+        "packages/scan-source/src/composite.test.ts",
+        "packages/scan-source/src/index.ts",
+        "packages/scan-source/src/padded.test.ts",
+        "packages/scan-source/src/padded.ts",
+        "packages/scan-source/src/pir2.test.ts",
+        "packages/scan-source/src/pir2.ts",
+        "packages/scan-source/src/range.test.ts",
+        "packages/scan-source/src/range.ts"
+      ]
+    },
+    {
+      "number": 221,
+      "title": "docs: record post-consolidation PR retirement and the branch-protection owner script",
+      "head": "nodata/wizardly-allen-qwol6u",
+      "head_sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/handoffs/consolidation-20261118/BRANCH_PROTECTION.md",
+        "docs/handoffs/consolidation-20261118/RETIREMENT_LOG.md",
+        "docs/handoffs/consolidation-20261118/RETIREMENT_PLAN.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/handoffs/consolidation-20261118/BRANCH_PROTECTION.md",
+        "docs/handoffs/consolidation-20261118/RETIREMENT_LOG.md",
+        "docs/handoffs/consolidation-20261118/RETIREMENT_PLAN.md"
+      ]
+    },
+    {
+      "number": 220,
+      "title": "Security remediation 2026-11-18: Mythril re-evaluation, red-team fixes (CI policy, RPC egress, confidential router, ledger), key-boundary docs",
+      "head": "security/mythril-full-remediation-20261118",
+      "head_sha": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        ".github/actions/setup-forge/action.yml",
+        ".github/workflows/beta-acceptance.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/contract-analysis.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        ".github/workflows/hosting-kit.yml",
+        ".github/workflows/integration.yml",
+        ".github/workflows/nightly.yml",
+        ".github/workflows/pages.yml",
+        ".github/workflows/release.yml",
+        "docs/audits/data/mythril-local-20261118/GhostPayPolicyRouter.json",
+        "docs/audits/data/mythril-local-20261118/GhostPayRouter.json",
+        "docs/audits/data/mythril-local-20261118/GhostPaySweepRelayer.json",
+        "docs/audits/data/mythril-local-20261118/PolicyAccount.json",
+        "docs/audits/data/mythril-local-20261118/PolicyAccountFactory.json",
+        "docs/audits/data/mythril-local-20261118/src.sha256",
+        "docs/audits/data/mythril-local-20261118/summary.txt",
+        "docs/audits/security-remediation-20261118.md",
+        "docs/specs/ideas/06-watch-only-airgapped-signer.md",
+        "docs/threat-model/THREAT_MODEL.md",
+        "docs/user/set-up-stealth-meta-address.md",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/confidential-contracts/contracts/GhostPayConfidentialRouter.sol",
+        "packages/confidential-contracts/contracts/mocks/ReturnBombStealth.sol",
+        "packages/confidential-contracts/test/router.test.ts",
+        "packages/contracts/DEVIATIONS.md",
+        "packages/core-crypto/src/viewing-key-boundary.test.ts",
+        "packages/merchant-ledger/src/ledger.test.ts",
+        "packages/merchant-ledger/src/reconcile.ts",
+        "packages/ux-flow/src/reconcile.ts",
+        "scripts/tests/ghostpay-automation-hardening.test.mjs",
+        "scripts/tests/ghostpay-parallel-review-workflow.test.mjs"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".github/actions/setup-forge/action.yml",
+        ".github/workflows/beta-acceptance.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/contract-analysis.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        ".github/workflows/hosting-kit.yml",
+        ".github/workflows/integration.yml",
+        ".github/workflows/nightly.yml",
+        ".github/workflows/pages.yml",
+        ".github/workflows/release.yml",
+        "docs/audits/data/mythril-local-20261118/GhostPayPolicyRouter.json",
+        "docs/audits/data/mythril-local-20261118/GhostPayRouter.json",
+        "docs/audits/data/mythril-local-20261118/GhostPaySweepRelayer.json",
+        "docs/audits/data/mythril-local-20261118/PolicyAccount.json",
+        "docs/audits/data/mythril-local-20261118/PolicyAccountFactory.json",
+        "docs/audits/data/mythril-local-20261118/src.sha256",
+        "docs/audits/data/mythril-local-20261118/summary.txt",
+        "docs/audits/security-remediation-20261118.md",
+        "docs/specs/ideas/06-watch-only-airgapped-signer.md",
+        "docs/threat-model/THREAT_MODEL.md",
+        "docs/user/set-up-stealth-meta-address.md",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/confidential-contracts/contracts/GhostPayConfidentialRouter.sol",
+        "packages/confidential-contracts/contracts/mocks/ReturnBombStealth.sol",
+        "packages/confidential-contracts/test/router.test.ts",
+        "packages/contracts/DEVIATIONS.md",
+        "packages/core-crypto/src/viewing-key-boundary.test.ts",
+        "packages/merchant-ledger/src/ledger.test.ts",
+        "packages/merchant-ledger/src/reconcile.ts",
+        "packages/ux-flow/src/reconcile.ts",
+        "scripts/tests/ghostpay-automation-hardening.test.mjs",
+        "scripts/tests/ghostpay-parallel-review-workflow.test.mjs"
+      ]
+    },
+    {
+      "number": 219,
+      "title": "Bitcoin scan: recognise spent outputs locally; per-outpoint provider query becomes opt-in (spec 12)",
+      "head": "claude/vibrant-cori-scu18b",
+      "head_sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "apps/web/DEVIATIONS.md",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/fixtures.testutil.ts",
+        "apps/web/src/features/btc/headers.test.ts",
+        "apps/web/src/features/btc/oracleSource.test.ts",
+        "apps/web/src/features/btc/oracleSource.ts",
+        "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+        "apps/web/src/features/btc/scan.spends.test.ts",
+        "apps/web/src/features/btc/scan.ts",
+        "apps/web/src/features/btc/scanWorker.test.ts",
+        "apps/web/src/features/btc/scanWorkerClient.ts",
+        "apps/web/src/features/btc/scanWorkerMessages.ts",
+        "apps/web/src/features/btc/scanWorkerProtocol.ts",
+        "apps/web/src/features/btc/verification.ts",
+        "apps/web/src/i18n/securityKeys.ts",
+        "packages/btc-silent-payments/src/scan/headersync.test.ts",
+        "packages/btc-silent-payments/src/scan/headersync.ts"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "apps/web/DEVIATIONS.md",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/fixtures.testutil.ts",
+        "apps/web/src/features/btc/headers.test.ts",
+        "apps/web/src/features/btc/oracleSource.test.ts",
+        "apps/web/src/features/btc/oracleSource.ts",
+        "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+        "apps/web/src/features/btc/scan.spends.test.ts",
+        "apps/web/src/features/btc/scan.ts",
+        "apps/web/src/features/btc/scanWorker.test.ts",
+        "apps/web/src/features/btc/scanWorkerClient.ts",
+        "apps/web/src/features/btc/scanWorkerMessages.ts",
+        "apps/web/src/features/btc/scanWorkerProtocol.ts",
+        "apps/web/src/features/btc/verification.ts",
+        "apps/web/src/i18n/securityKeys.ts",
+        "packages/btc-silent-payments/src/scan/headersync.test.ts",
+        "packages/btc-silent-payments/src/scan/headersync.ts"
+      ]
+    },
+    {
+      "number": 218,
+      "title": "Restore fixes dropped by merge 84c2c185 that main still lacks: CLI, sweep destination, quote age, relayer (claim + integration)",
+      "head": "claude/exciting-brown-7v69cr",
+      "head_sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "apps/relayer/DEVIATIONS.md",
+        "apps/relayer/PRIVACY.md",
+        "apps/relayer/README.md",
+        "apps/relayer/relayer.config.example.json",
+        "apps/relayer/src/api.test.ts",
+        "apps/relayer/src/config.test.ts",
+        "apps/relayer/src/config.ts",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/harness.testutil.ts",
+        "apps/relayer/src/lane.ts",
+        "apps/relayer/src/log.ts",
+        "apps/relayer/src/main.ts",
+        "apps/relayer/src/server.ts",
+        "apps/relayer/src/service.ts",
+        "apps/relayer/src/stress.test.ts",
+        "apps/relayer/src/validate.ts",
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/developer/api/apps.md",
+        "docs/handoffs/completion-20261118-lostfix/HANDOVER.md",
+        "docs/handoffs/completion-20261118-lostfix/evidence/dropped-fix-triage-main-2026-11-18.json",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-50881e47.1.t.sol.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-50881e47.2.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.3.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.4.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.5.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.6.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.7.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/scripts/lost-fix-scan.py",
+        "docs/operators/relayer-runbook.md",
+        "packages/cli/README.md",
+        "packages/cli/src/args.ts",
+        "packages/cli/src/commands/i18n.ts",
+        "packages/cli/src/commands/reconcile.ts",
+        "packages/cli/src/ctx.ts",
+        "packages/cli/src/global-switches.test.ts",
+        "packages/cli/src/io.ts",
+        "packages/cli/src/observation-input.test.ts",
+        "packages/cli/src/payment-commands.test.ts",
+        "packages/cli/src/payment-input.ts",
+        "packages/cli/src/reconcile-stored-only.test.ts",
+        "packages/cli/src/run.ts",
+        "packages/cli/src/untrusted-echo.test.ts",
+        "packages/invoice-schema/DEVIATIONS.md",
+        "packages/invoice-schema/README.md",
+        "packages/invoice-schema/src/envelope.test.ts",
+        "packages/invoice-schema/src/envelope.ts",
+        "packages/invoice-schema/src/errors.ts",
+        "packages/relayer-guard/DEVIATIONS.md",
+        "packages/relayer-guard/README.md",
+        "packages/relayer-guard/src/index.ts",
+        "packages/relayer-guard/src/limiter.abuse.test.ts",
+        "packages/relayer-guard/src/limiter.test.ts",
+        "packages/relayer-guard/src/limiter.ts",
+        "packages/ux-core/src/errors.ts",
+        "scripts/devnet/e2e.mjs"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "apps/relayer/DEVIATIONS.md",
+        "apps/relayer/PRIVACY.md",
+        "apps/relayer/README.md",
+        "apps/relayer/relayer.config.example.json",
+        "apps/relayer/src/api.test.ts",
+        "apps/relayer/src/config.test.ts",
+        "apps/relayer/src/config.ts",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/harness.testutil.ts",
+        "apps/relayer/src/lane.ts",
+        "apps/relayer/src/log.ts",
+        "apps/relayer/src/main.ts",
+        "apps/relayer/src/server.ts",
+        "apps/relayer/src/service.ts",
+        "apps/relayer/src/stress.test.ts",
+        "apps/relayer/src/validate.ts",
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/developer/api/apps.md",
+        "docs/handoffs/completion-20261118-lostfix/HANDOVER.md",
+        "docs/handoffs/completion-20261118-lostfix/evidence/dropped-fix-triage-main-2026-11-18.json",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-50881e47.1.t.sol.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-50881e47.2.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.3.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.4.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.5.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.6.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/repro/repro.T-b85e0b59.7.test.ts.txt",
+        "docs/handoffs/completion-20261118-lostfix/evidence/scripts/lost-fix-scan.py",
+        "docs/operators/relayer-runbook.md",
+        "packages/cli/README.md",
+        "packages/cli/src/args.ts",
+        "packages/cli/src/commands/i18n.ts",
+        "packages/cli/src/commands/reconcile.ts",
+        "packages/cli/src/ctx.ts",
+        "packages/cli/src/global-switches.test.ts",
+        "packages/cli/src/io.ts",
+        "packages/cli/src/observation-input.test.ts",
+        "packages/cli/src/payment-commands.test.ts",
+        "packages/cli/src/payment-input.ts",
+        "packages/cli/src/reconcile-stored-only.test.ts",
+        "packages/cli/src/run.ts",
+        "packages/cli/src/untrusted-echo.test.ts",
+        "packages/invoice-schema/DEVIATIONS.md",
+        "packages/invoice-schema/README.md",
+        "packages/invoice-schema/src/envelope.test.ts",
+        "packages/invoice-schema/src/envelope.ts",
+        "packages/invoice-schema/src/errors.ts",
+        "packages/relayer-guard/DEVIATIONS.md",
+        "packages/relayer-guard/README.md",
+        "packages/relayer-guard/src/index.ts",
+        "packages/relayer-guard/src/limiter.abuse.test.ts",
+        "packages/relayer-guard/src/limiter.test.ts",
+        "packages/relayer-guard/src/limiter.ts",
+        "packages/ux-core/src/errors.ts",
+        "scripts/devnet/e2e.mjs"
+      ]
+    },
+    {
+      "number": 217,
+      "title": "DeployPolicy: refuse fee-charging factories without a token-specific freeze acknowledgement (N1 / SEC-E2-01)",
+      "head": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "head_sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/operators/deployment-runbook.md",
+        "packages/contracts/.gas-snapshot",
+        "packages/contracts/README.md",
+        "packages/contracts/script/DeployPolicy.s.sol",
+        "packages/contracts/scripts/pre-deploy-check.sh",
+        "packages/contracts/test/DeployChecksum.t.sol",
+        "packages/contracts/test/DeployPolicy.t.sol"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/operators/deployment-runbook.md",
+        "packages/contracts/.gas-snapshot",
+        "packages/contracts/README.md",
+        "packages/contracts/script/DeployPolicy.s.sol",
+        "packages/contracts/scripts/pre-deploy-check.sh",
+        "packages/contracts/test/DeployChecksum.t.sol",
+        "packages/contracts/test/DeployPolicy.t.sol"
+      ]
+    },
+    {
+      "number": 216,
+      "title": "docs(handoff): post-merge GhostPay zero-Codex source and ownership reconciliation",
+      "head": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "head_sha": "a78a5467f5eb7de83b9ea9f08c6633ada30e026d",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md"
+      ]
+    },
+    {
+      "number": 215,
+      "title": "docs(wiki): post-consolidation Pages User/Developer current-status banner",
+      "head": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "head_sha": "b43b134028357455a557ca95f820e7dfd586eef7",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+        "docs/wiki/Developer-Guide.md",
+        "docs/wiki/Home.md",
+        "docs/wiki/User-Guide.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+        "docs/wiki/Developer-Guide.md",
+        "docs/wiki/Home.md",
+        "docs/wiki/User-Guide.md"
+      ]
+    },
+    {
+      "number": 214,
+      "title": "docs(audit): post-consolidation randomized Pages audit rotation 185",
+      "head": "chatgpt/zero-codex/audit-main-20261118-r185",
+      "head_sha": "7490aac58ece15f9e4ec9979fbe48987354618fa",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md"
+      ]
+    },
+    {
+      "number": 213,
+      "title": "[WIP] Spec 18 / requirement 3q: stealth keypair export and independent recovery (K01-K06)",
+      "head": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "head_sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        ".github/workflows/ci.yml",
+        "apps/web/e2e/stealth-export.spec.ts",
+        "apps/web/e2e/stealthExportFixtures.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/StealthExportArchive.tsx",
+        "apps/web/src/components/StealthExportCommon.tsx",
+        "apps/web/src/components/StealthExportMaster.tsx",
+        "apps/web/src/components/StealthExportPayment.test.tsx",
+        "apps/web/src/components/StealthExportPayment.tsx",
+        "apps/web/src/components/StealthExportRecovery.test.tsx",
+        "apps/web/src/components/StealthExportRecovery.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/keyVault.secretExport.test.ts",
+        "apps/web/src/lib/keyVault.ts",
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.testutil.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "apps/web/src/lib/session.ts",
+        "apps/web/src/lib/stealthExport.ts",
+        "apps/web/src/views/Scan.stealthExport.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+        "apps/web/src/views/SellerKeys.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/specs/18-stealth-keypair-export-formats.md",
+        "docs/user/README.md",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/portable-errors.ts",
+        "packages/ux-vault/src/portable.ts",
+        "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/raw-key-anvil.test.mjs",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs",
+        "test-vectors/README.md",
+        "test-vectors/generate-stealth-export.mjs",
+        "test-vectors/stealth-export.json"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".github/workflows/ci.yml",
+        "apps/web/e2e/stealth-export.spec.ts",
+        "apps/web/e2e/stealthExportFixtures.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/StealthExportArchive.tsx",
+        "apps/web/src/components/StealthExportCommon.tsx",
+        "apps/web/src/components/StealthExportMaster.tsx",
+        "apps/web/src/components/StealthExportPayment.test.tsx",
+        "apps/web/src/components/StealthExportPayment.tsx",
+        "apps/web/src/components/StealthExportRecovery.test.tsx",
+        "apps/web/src/components/StealthExportRecovery.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/keyVault.secretExport.test.ts",
+        "apps/web/src/lib/keyVault.ts",
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.testutil.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "apps/web/src/lib/session.ts",
+        "apps/web/src/lib/stealthExport.ts",
+        "apps/web/src/views/Scan.stealthExport.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+        "apps/web/src/views/SellerKeys.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/specs/18-stealth-keypair-export-formats.md",
+        "docs/user/README.md",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/portable-errors.ts",
+        "packages/ux-vault/src/portable.ts",
+        "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/raw-key-anvil.test.mjs",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs",
+        "test-vectors/README.md",
+        "test-vectors/generate-stealth-export.mjs",
+        "test-vectors/stealth-export.json"
+      ]
+    },
+    {
+      "number": 212,
+      "title": "Security and release-gate reconciliation: Mythril/Echidna/fee-token re-evaluation, CI review, owner packets",
+      "head": "claude/ghostpay-consolidation-9xhtxg-security",
+      "head_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        ".github/dependabot.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        "apps/web/deployments/README.md",
+        "apps/web/package.json",
+        "apps/web/src/validateDeploymentsScript.test.ts",
+        "docs/audits/ci-supply-chain-review-20261118.md",
+        "docs/audits/echidna-and-fee-token-review-20261118.md",
+        "docs/audits/mythril-reevaluation-20261118.md",
+        "docs/handoffs/consolidation-20261118/OWNER_ACTION_PACKET.md",
+        "docs/handoffs/consolidation-20261118/STATIC_BETA_DECISIONS.md",
+        "docs/pages/PAGES_QUALIFICATION_20261118.md",
+        "scripts/contract-analysis/mythril-disposition-check.mjs",
+        "scripts/tests/mythril-disposition-check.test.mjs"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".github/dependabot.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        "apps/web/deployments/README.md",
+        "apps/web/package.json",
+        "apps/web/src/validateDeploymentsScript.test.ts",
+        "docs/audits/ci-supply-chain-review-20261118.md",
+        "docs/audits/echidna-and-fee-token-review-20261118.md",
+        "docs/audits/mythril-reevaluation-20261118.md",
+        "docs/handoffs/consolidation-20261118/OWNER_ACTION_PACKET.md",
+        "docs/handoffs/consolidation-20261118/STATIC_BETA_DECISIONS.md",
+        "docs/pages/PAGES_QUALIFICATION_20261118.md",
+        "scripts/contract-analysis/mythril-disposition-check.mjs",
+        "scripts/tests/mythril-disposition-check.test.mjs"
+      ]
+    },
+    {
+      "number": 211,
+      "title": "Completion run 2026-11-18 (gap-fill): claims + integration",
+      "head": "nodata/wonderful-darwin-kd1h22",
+      "head_sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "apps/web/e2e/focus-scope.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/SecretBackup.test.tsx",
+        "apps/web/src/components/SecretBackup.tsx",
+        "apps/web/src/components/SecretBackup.views.test.tsx",
+        "apps/web/src/components/SharedComponents.i18n.test.tsx",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx",
+        "apps/web/src/features/policy/PolicyCreate.tsx",
+        "apps/web/src/features/policy/PolicyPay.tsx",
+        "apps/web/src/features/policy/create.ts",
+        "apps/web/src/features/policy/pay.selfcheck.test.ts",
+        "apps/web/src/features/policy/pay.ts",
+        "apps/web/src/features/policy/policy.logic.test.ts",
+        "apps/web/src/features/policy/send.test.ts",
+        "apps/web/src/features/policy/send.ts",
+        "apps/web/src/features/solana/SolanaView.test.tsx",
+        "apps/web/src/features/solana/SolanaView.tsx",
+        "apps/web/src/features/tron/TronView.test.tsx",
+        "apps/web/src/features/tron/TronView.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/appLock.ts",
+        "apps/web/src/lib/scanClient.test.ts",
+        "apps/web/src/lib/scanClient.ts",
+        "apps/web/src/lib/scanCursorSlot.test.ts",
+        "apps/web/src/lib/scanCursorSlot.ts",
+        "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/chains/bitcoin.md",
+        "docs/developer/api/policy-scheme.md",
+        "docs/handoffs/completion-20261118-gapfill/HANDOFF.md",
+        "docs/handoffs/completion-20261118-gapfill/LEDGER.md",
+        "docs/handoffs/completion-20261118-gapfill/SECURITY_CLOSURE.md",
+        "docs/user/bitcoin-silent-payments.md",
+        "docs/user/solana-payments.md",
+        "docs/user/tron-payments.md",
+        "packages/chain-solana/DEVIATIONS.md",
+        "packages/chain-solana/README.md",
+        "packages/chain-solana/scripts/gen-meta-address-sol-tron-vectors.mjs",
+        "packages/chain-solana/src/adapter.test.ts",
+        "packages/chain-solana/src/adapter.ts",
+        "packages/chain-solana/src/announcement.test.ts",
+        "packages/chain-solana/src/announcement.ts",
+        "packages/chain-solana/src/errors.ts",
+        "packages/chain-solana/src/hash.ts",
+        "packages/chain-solana/src/index.ts",
+        "packages/chain-solana/src/interop.test.ts",
+        "packages/chain-solana/src/keys.test.ts",
+        "packages/chain-solana/src/keys.ts",
+        "packages/chain-solana/src/properties.test.ts",
+        "packages/chain-solana/src/reference.testutil.ts",
+        "packages/chain-solana/src/stealth.test.ts",
+        "packages/chain-solana/src/stealth.ts",
+        "packages/chain-solana/src/vectors.test.ts",
+        "packages/chain-solana/test-vectors/self-generated-v1.json",
+        "packages/chain-tron/DEVIATIONS.md",
+        "packages/chain-tron/README.md",
+        "packages/chain-tron/src/adapter.test.ts",
+        "packages/chain-tron/src/adapter.ts",
+        "packages/chain-tron/src/errors.ts",
+        "packages/chain-tron/src/index.ts",
+        "packages/chain-tron/src/interop.test.ts",
+        "packages/chain-tron/src/meta.test.ts",
+        "packages/chain-tron/src/meta.ts",
+        "packages/chain-tron/src/stealth.test.ts",
+        "packages/chain-tron/src/stealth.ts",
+        "packages/cli/src/chain-commands.test.ts",
+        "packages/cli/src/commands/chain.ts",
+        "packages/cli/src/payment-context.ts",
+        "packages/policy-scheme/README.md",
+        "packages/policy-scheme/src/client.test.ts",
+        "packages/policy-scheme/src/derive.ts",
+        "packages/policy-scheme/src/eip712.ts",
+        "packages/policy-scheme/src/index.ts",
+        "packages/policy-scheme/src/limits.ts",
+        "packages/policy-scheme/src/negative.test.ts",
+        "packages/policy-scheme/src/record.ts",
+        "packages/policy-scheme/src/router.test.ts",
+        "packages/policy-scheme/src/router.ts",
+        "test-vectors/meta-address-sol-tron-v1.json"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "apps/web/e2e/focus-scope.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/SecretBackup.test.tsx",
+        "apps/web/src/components/SecretBackup.tsx",
+        "apps/web/src/components/SecretBackup.views.test.tsx",
+        "apps/web/src/components/SharedComponents.i18n.test.tsx",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx",
+        "apps/web/src/features/policy/PolicyCreate.tsx",
+        "apps/web/src/features/policy/PolicyPay.tsx",
+        "apps/web/src/features/policy/create.ts",
+        "apps/web/src/features/policy/pay.selfcheck.test.ts",
+        "apps/web/src/features/policy/pay.ts",
+        "apps/web/src/features/policy/policy.logic.test.ts",
+        "apps/web/src/features/policy/send.test.ts",
+        "apps/web/src/features/policy/send.ts",
+        "apps/web/src/features/solana/SolanaView.test.tsx",
+        "apps/web/src/features/solana/SolanaView.tsx",
+        "apps/web/src/features/tron/TronView.test.tsx",
+        "apps/web/src/features/tron/TronView.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/appLock.ts",
+        "apps/web/src/lib/scanClient.test.ts",
+        "apps/web/src/lib/scanClient.ts",
+        "apps/web/src/lib/scanCursorSlot.test.ts",
+        "apps/web/src/lib/scanCursorSlot.ts",
+        "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/chains/bitcoin.md",
+        "docs/developer/api/policy-scheme.md",
+        "docs/handoffs/completion-20261118-gapfill/HANDOFF.md",
+        "docs/handoffs/completion-20261118-gapfill/LEDGER.md",
+        "docs/handoffs/completion-20261118-gapfill/SECURITY_CLOSURE.md",
+        "docs/user/bitcoin-silent-payments.md",
+        "docs/user/solana-payments.md",
+        "docs/user/tron-payments.md",
+        "packages/chain-solana/DEVIATIONS.md",
+        "packages/chain-solana/README.md",
+        "packages/chain-solana/scripts/gen-meta-address-sol-tron-vectors.mjs",
+        "packages/chain-solana/src/adapter.test.ts",
+        "packages/chain-solana/src/adapter.ts",
+        "packages/chain-solana/src/announcement.test.ts",
+        "packages/chain-solana/src/announcement.ts",
+        "packages/chain-solana/src/errors.ts",
+        "packages/chain-solana/src/hash.ts",
+        "packages/chain-solana/src/index.ts",
+        "packages/chain-solana/src/interop.test.ts",
+        "packages/chain-solana/src/keys.test.ts",
+        "packages/chain-solana/src/keys.ts",
+        "packages/chain-solana/src/properties.test.ts",
+        "packages/chain-solana/src/reference.testutil.ts",
+        "packages/chain-solana/src/stealth.test.ts",
+        "packages/chain-solana/src/stealth.ts",
+        "packages/chain-solana/src/vectors.test.ts",
+        "packages/chain-solana/test-vectors/self-generated-v1.json",
+        "packages/chain-tron/DEVIATIONS.md",
+        "packages/chain-tron/README.md",
+        "packages/chain-tron/src/adapter.test.ts",
+        "packages/chain-tron/src/adapter.ts",
+        "packages/chain-tron/src/errors.ts",
+        "packages/chain-tron/src/index.ts",
+        "packages/chain-tron/src/interop.test.ts",
+        "packages/chain-tron/src/meta.test.ts",
+        "packages/chain-tron/src/meta.ts",
+        "packages/chain-tron/src/stealth.test.ts",
+        "packages/chain-tron/src/stealth.ts",
+        "packages/cli/src/chain-commands.test.ts",
+        "packages/cli/src/commands/chain.ts",
+        "packages/cli/src/payment-context.ts",
+        "packages/policy-scheme/README.md",
+        "packages/policy-scheme/src/client.test.ts",
+        "packages/policy-scheme/src/derive.ts",
+        "packages/policy-scheme/src/eip712.ts",
+        "packages/policy-scheme/src/index.ts",
+        "packages/policy-scheme/src/limits.ts",
+        "packages/policy-scheme/src/negative.test.ts",
+        "packages/policy-scheme/src/record.ts",
+        "packages/policy-scheme/src/router.test.ts",
+        "packages/policy-scheme/src/router.ts",
+        "test-vectors/meta-address-sol-tron-v1.json"
+      ]
+    },
+    {
+      "number": 209,
+      "title": "Completion run 2026-11-18: claims + integration",
+      "head": "claude/ghostpay-completion-audit-ot5jjm",
+      "head_sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        ".github/dependabot.yml",
+        ".github/workflows/nightly.yml",
+        ".github/workflows/pages.yml",
+        ".github/workflows/release.yml",
+        "apps/web/scripts/scan-bundle.d.mts",
+        "apps/web/scripts/scan-bundle.mjs",
+        "apps/web/scripts/test-reconciliation-idb.mjs",
+        "apps/web/scripts/test-seller-vault-idb.mjs",
+        "apps/web/scripts/validate-deployments.d.mts",
+        "apps/web/scripts/validate-deployments.mjs",
+        "apps/web/src/AppShell.beforeUnload.test.tsx",
+        "apps/web/src/AppShell.frameGuard.test.tsx",
+        "apps/web/src/AppShell.tsx",
+        "apps/web/src/lib/frameGuard.test.ts",
+        "apps/web/src/lib/frameGuard.ts",
+        "apps/web/src/lib/manifest.test.ts",
+        "apps/web/src/lib/manifest.ts",
+        "apps/web/src/main.test.tsx",
+        "apps/web/src/main.tsx",
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/releaseKeyDenylist.test.ts",
+        "apps/web/src/scanBundle.test.ts",
+        "deploy/.env.example",
+        "deploy/README.md",
+        "deploy/docker-compose.yml",
+        "deploy/nginx/security-headers.conf",
+        "deploy/selftest.sh",
+        "deploy/tor/Dockerfile",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/design/qr-colors.md",
+        "docs/handoffs/completion-20261118/evidence/phase0/open_prs.md",
+        "scripts/pages/build-pages.sh",
+        "scripts/pages/fixtures/smoke-invoice.txt",
+        "scripts/pages/lean-exclusions.d.mts",
+        "scripts/pages/lean-exclusions.mjs",
+        "scripts/pages/pages-hosting.test.mjs",
+        "scripts/pages/smoke-url.mjs",
+        "scripts/pages/smoke-url.test.mjs",
+        "scripts/pages/smoke-walk.mjs",
+        "scripts/pages/smoke-walk.test.mjs",
+        "scripts/pages/smoke.mjs",
+        "scripts/pages/verify-pages-site.mjs",
+        "scripts/pages/verify-pages-site.test.mjs",
+        "scripts/tests/nightly-workflow.test.mjs",
+        "scripts/tests/release-ci-anvil-parity.test.mjs"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".github/dependabot.yml",
+        ".github/workflows/nightly.yml",
+        ".github/workflows/pages.yml",
+        ".github/workflows/release.yml",
+        "apps/web/scripts/scan-bundle.d.mts",
+        "apps/web/scripts/scan-bundle.mjs",
+        "apps/web/scripts/test-reconciliation-idb.mjs",
+        "apps/web/scripts/test-seller-vault-idb.mjs",
+        "apps/web/scripts/validate-deployments.d.mts",
+        "apps/web/scripts/validate-deployments.mjs",
+        "apps/web/src/AppShell.beforeUnload.test.tsx",
+        "apps/web/src/AppShell.frameGuard.test.tsx",
+        "apps/web/src/AppShell.tsx",
+        "apps/web/src/lib/frameGuard.test.ts",
+        "apps/web/src/lib/frameGuard.ts",
+        "apps/web/src/lib/manifest.test.ts",
+        "apps/web/src/lib/manifest.ts",
+        "apps/web/src/main.test.tsx",
+        "apps/web/src/main.tsx",
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/releaseKeyDenylist.test.ts",
+        "apps/web/src/scanBundle.test.ts",
+        "deploy/.env.example",
+        "deploy/README.md",
+        "deploy/docker-compose.yml",
+        "deploy/nginx/security-headers.conf",
+        "deploy/selftest.sh",
+        "deploy/tor/Dockerfile",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/design/qr-colors.md",
+        "docs/handoffs/completion-20261118/evidence/phase0/open_prs.md",
+        "scripts/pages/build-pages.sh",
+        "scripts/pages/fixtures/smoke-invoice.txt",
+        "scripts/pages/lean-exclusions.d.mts",
+        "scripts/pages/lean-exclusions.mjs",
+        "scripts/pages/pages-hosting.test.mjs",
+        "scripts/pages/smoke-url.mjs",
+        "scripts/pages/smoke-url.test.mjs",
+        "scripts/pages/smoke-walk.mjs",
+        "scripts/pages/smoke-walk.test.mjs",
+        "scripts/pages/smoke.mjs",
+        "scripts/pages/verify-pages-site.mjs",
+        "scripts/pages/verify-pages-site.test.mjs",
+        "scripts/tests/nightly-workflow.test.mjs",
+        "scripts/tests/release-ci-anvil-parity.test.mjs"
+      ]
+    },
+    {
+      "number": 208,
+      "title": "docs(handoff): cooperative completion, audit and security-closure execution prompt",
+      "head": "claude/admiring-albattani-6kydor",
+      "head_sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/handoffs/completion-20261118/EXECUTION_PROMPT.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/handoffs/completion-20261118/EXECUTION_PROMPT.md"
+      ]
+    },
+    {
+      "number": 206,
+      "title": "Integrate #204 agent tooling onto consolidated main (conflicts resolved)",
+      "head": "claude/ghostpay-consolidation-9xhtxg",
+      "head_sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        ".claude/skills/ghostpay-affected-checks/SKILL.md",
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        ".claude/skills/ghostpay-package-map/SKILL.md",
+        ".claude/skills/ghostpay-security-invariants/REFERENCE.md",
+        ".claude/skills/ghostpay-security-invariants/SKILL.md",
+        ".github/workflows/ci.yml",
+        "CLAUDE.md",
+        "scripts/agent/affected.mjs",
+        "scripts/agent/package-map.mjs",
+        "scripts/agent/workspaces.mjs",
+        "scripts/agent/workspaces.test.mjs"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".claude/skills/ghostpay-affected-checks/SKILL.md",
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        ".claude/skills/ghostpay-package-map/SKILL.md",
+        ".claude/skills/ghostpay-security-invariants/REFERENCE.md",
+        ".claude/skills/ghostpay-security-invariants/SKILL.md",
+        ".github/workflows/ci.yml",
+        "CLAUDE.md",
+        "scripts/agent/affected.mjs",
+        "scripts/agent/package-map.mjs",
+        "scripts/agent/workspaces.mjs",
+        "scripts/agent/workspaces.test.mjs"
+      ]
+    },
+    {
+      "number": 205,
+      "title": "docs(audit): post-consolidation audit and feature-completion execution package (2026-11-18)",
+      "head": "nodata/zealous-hopper-lr0nxe",
+      "head_sha": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "base": "main",
+      "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/handoffs/GhostPay_Post_Consolidation_Completion_Package.zip",
+        "docs/handoffs/post-consolidation-20261118/BLOCKERS_AND_DECISIONS.md",
+        "docs/handoffs/post-consolidation-20261118/BRANCH_RECOVERY_MATRIX.md",
+        "docs/handoffs/post-consolidation-20261118/EVIDENCE_INDEX.md",
+        "docs/handoffs/post-consolidation-20261118/FEATURE_ACCEPTANCE_CRITERIA.md",
+        "docs/handoffs/post-consolidation-20261118/FEATURE_COMPLETION_MATRIX.md",
+        "docs/handoffs/post-consolidation-20261118/FEATURE_DEPENDENCY_GRAPH.md",
+        "docs/handoffs/post-consolidation-20261118/GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+        "docs/handoffs/post-consolidation-20261118/IMPLEMENTATION_SEQUENCE.md",
+        "docs/handoffs/post-consolidation-20261118/PARALLEL_AGENT_EXECUTION_PLAN.md",
+        "docs/handoffs/post-consolidation-20261118/POST_CONSOLIDATION_AUDIT.md",
+        "docs/handoffs/post-consolidation-20261118/README.md",
+        "docs/handoffs/post-consolidation-20261118/SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+        "docs/handoffs/post-consolidation-20261118/branch_recovery_matrix.json",
+        "docs/handoffs/post-consolidation-20261118/completion_strategy.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/census/branch_census_current.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/features/matrix_header.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/features/scoring_issues.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/features/stats.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/prs/open_prs.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/prs/prs_search.jsonl",
+        "docs/handoffs/post-consolidation-20261118/evidence/scripts/branch_census.py",
+        "docs/handoffs/post-consolidation-20261118/evidence/scripts/overrides.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/scripts/render_matrix.py",
+        "docs/handoffs/post-consolidation-20261118/evidence/scripts/score_features.py",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/A/consolidation_tasks.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_proto.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_proto.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_web.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_web.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B2/features.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B2/features.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B2/package_coverage.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B3/features.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B3/features.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/C/census_full.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/C/patchcheck.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/SECURITY_CRYPTO.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/findings.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/indep-keystore-recovery.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/indep-vectors.cjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/make-findings.cjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/passphrase-probe.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/SECURITY_PRIVACY_BROWSER.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/findings.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/csp_loopback_probe.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/egress_walk.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/jitless_bench.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/make_findings.py",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/F/TESTING_AND_RELEASE.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/F/test_inventory.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/verification/REVIEW_H2.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/verification/VERIFICATION_REPORT_H1.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/verification/corrections_h1.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/verification/corrections_h2.json",
+        "docs/handoffs/post-consolidation-20261118/feature_completion_matrix.json",
+        "docs/handoffs/post-consolidation-20261118/security_findings.json",
+        "docs/handoffs/post-consolidation-20261118/ws_registry.json"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/handoffs/GhostPay_Post_Consolidation_Completion_Package.zip",
+        "docs/handoffs/post-consolidation-20261118/BLOCKERS_AND_DECISIONS.md",
+        "docs/handoffs/post-consolidation-20261118/BRANCH_RECOVERY_MATRIX.md",
+        "docs/handoffs/post-consolidation-20261118/EVIDENCE_INDEX.md",
+        "docs/handoffs/post-consolidation-20261118/FEATURE_ACCEPTANCE_CRITERIA.md",
+        "docs/handoffs/post-consolidation-20261118/FEATURE_COMPLETION_MATRIX.md",
+        "docs/handoffs/post-consolidation-20261118/FEATURE_DEPENDENCY_GRAPH.md",
+        "docs/handoffs/post-consolidation-20261118/GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+        "docs/handoffs/post-consolidation-20261118/IMPLEMENTATION_SEQUENCE.md",
+        "docs/handoffs/post-consolidation-20261118/PARALLEL_AGENT_EXECUTION_PLAN.md",
+        "docs/handoffs/post-consolidation-20261118/POST_CONSOLIDATION_AUDIT.md",
+        "docs/handoffs/post-consolidation-20261118/README.md",
+        "docs/handoffs/post-consolidation-20261118/SECURITY_AND_PRIVACY_GAP_ANALYSIS.md",
+        "docs/handoffs/post-consolidation-20261118/branch_recovery_matrix.json",
+        "docs/handoffs/post-consolidation-20261118/completion_strategy.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/census/branch_census_current.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/features/matrix_header.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/features/scoring_issues.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/features/stats.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/prs/open_prs.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/prs/prs_search.jsonl",
+        "docs/handoffs/post-consolidation-20261118/evidence/scripts/branch_census.py",
+        "docs/handoffs/post-consolidation-20261118/evidence/scripts/overrides.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/scripts/render_matrix.py",
+        "docs/handoffs/post-consolidation-20261118/evidence/scripts/score_features.py",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/A/consolidation_tasks.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_proto.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_proto.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_web.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B1/features_web.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B2/features.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B2/features.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B2/package_coverage.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B3/features.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/B3/features.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/C/census_full.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/C/patchcheck.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/SECURITY_CRYPTO.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/findings.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/indep-keystore-recovery.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/indep-vectors.cjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/make-findings.cjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/passphrase-probe.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/SECURITY_PRIVACY_BROWSER.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/findings.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/csp_loopback_probe.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/egress_walk.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/jitless_bench.mjs",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/make_findings.py",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/F/TESTING_AND_RELEASE.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/teams/F/test_inventory.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/verification/REVIEW_H2.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/verification/VERIFICATION_REPORT_H1.md",
+        "docs/handoffs/post-consolidation-20261118/evidence/verification/corrections_h1.json",
+        "docs/handoffs/post-consolidation-20261118/evidence/verification/corrections_h2.json",
+        "docs/handoffs/post-consolidation-20261118/feature_completion_matrix.json",
+        "docs/handoffs/post-consolidation-20261118/security_findings.json",
+        "docs/handoffs/post-consolidation-20261118/ws_registry.json"
+      ]
+    },
+    {
+      "number": 204,
+      "title": "Add agent guide, package map, affected-checks and security-invariants skills",
+      "head": "nodata/eager-babbage-0w6sf6",
+      "head_sha": "2693b08ed4b1dae35fad604a2324b790f1eee5dc",
+      "base": "main",
+      "base_sha": "cfaebeeae22f292cb0bb3074619b2603cb738367",
+      "draft": true,
+      "mergeable": false,
+      "files": [
+        ".claude/skills/ghostpay-affected-checks/SKILL.md",
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        ".claude/skills/ghostpay-package-map/SKILL.md",
+        ".claude/skills/ghostpay-security-invariants/REFERENCE.md",
+        ".claude/skills/ghostpay-security-invariants/SKILL.md",
+        ".github/workflows/ci.yml",
+        "CLAUDE.md",
+        "scripts/agent/affected.mjs",
+        "scripts/agent/package-map.mjs",
+        "scripts/agent/workspaces.mjs",
+        "scripts/agent/workspaces.test.mjs"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".claude/skills/ghostpay-affected-checks/SKILL.md",
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        ".claude/skills/ghostpay-package-map/SKILL.md",
+        ".claude/skills/ghostpay-security-invariants/REFERENCE.md",
+        ".claude/skills/ghostpay-security-invariants/SKILL.md",
+        ".github/workflows/ci.yml",
+        "CLAUDE.md",
+        "scripts/agent/affected.mjs",
+        "scripts/agent/package-map.mjs",
+        "scripts/agent/workspaces.mjs",
+        "scripts/agent/workspaces.test.mjs"
+      ]
+    },
+    {
+      "number": 160,
+      "title": "docs(pages): source-pinned integration and release-gate inventory",
+      "head": "chatgpt/pages-release-gate-audit-20261114",
+      "head_sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "base": "integration/consolidated-2026-11-14",
+      "base_sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/ai/PAGES_RELEASE_GATES_2026-11-14.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/ai/PAGES_RELEASE_GATES_2026-11-14.md"
+      ]
+    },
+    {
+      "number": 153,
+      "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification",
+      "head": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "head_sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "base": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "base_sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md"
+      ]
+    },
+    {
+      "number": 140,
+      "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger",
+      "head": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "head_sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "base": "claude/ghostpay-github-pages-up6cj6",
+      "base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "README.md",
+        "docs/design/qr-colors.md",
+        "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+        "docs/handoffs/CHATGPT_GITHUB_COLLABORATION_LATEST.md",
+        "docs/wiki/Codebase-Map.md",
+        "docs/wiki/Developer-Guide.md",
+        "docs/wiki/Home.md",
+        "docs/wiki/QR-and-Devices.md",
+        "docs/wiki/User-Guide.md",
+        "docs/wiki/Verification-and-Release-Gates.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [
+        "docs/handoffs/CHATGPT_GITHUB_COLLABORATION_LATEST.md",
+        "docs/wiki/QR-and-Devices.md"
+      ],
+      "different_files": [
+        "README.md",
+        "docs/design/qr-colors.md",
+        "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+        "docs/wiki/Codebase-Map.md",
+        "docs/wiki/Developer-Guide.md",
+        "docs/wiki/Home.md",
+        "docs/wiki/User-Guide.md",
+        "docs/wiki/Verification-and-Release-Gates.md"
+      ]
+    },
+    {
+      "number": 139,
+      "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)",
+      "head": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "head_sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "base": "claude/ghostpay-github-pages-up6cj6",
+      "base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md"
+      ]
+    },
+    {
+      "number": 127,
+      "title": "fix(ux-guide): reject non-plain and inherited questionnaire answers (test-first)",
+      "head": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "head_sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "base": "integration/ghostpay-beta-consolidated-20261109",
+      "base_sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "packages/ux-guide/src/profiles.test.ts",
+        "packages/ux-guide/src/profiles.ts"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [
+        "packages/ux-guide/src/profiles.test.ts",
+        "packages/ux-guide/src/profiles.ts"
+      ],
+      "different_files": []
+    },
+    {
+      "number": 82,
+      "title": "Configure OpenAI autonomous development workflow and prompts",
+      "head": "codex/setup-autonomous-agent-20261104",
+      "head_sha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "base": "main",
+      "base_sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d",
+      "draft": true,
+      "mergeable": false,
+      "files": [
+        ".github/agent-prompts/repository-scope.md",
+        ".github/workflows/openai-agents.yml"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".github/agent-prompts/repository-scope.md",
+        ".github/workflows/openai-agents.yml"
+      ]
+    },
+    {
+      "number": 52,
+      "title": "ci: add four parallel API-funded GhostPay QA agents with guarded integration",
+      "head": "automation/ghostpay-parallel-four-agents-20261103",
+      "head_sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "base": "main",
+      "base_sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        ".github/workflows/ghostpay-parallel-agents.yml",
+        "docs/handoffs/GHOSTPAY_PARALLEL_API_QA_2026-11-03.md",
+        "scripts/tests/ghostpay-parallel-workflow.test.mjs"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".github/workflows/ghostpay-parallel-agents.yml",
+        "docs/handoffs/GHOSTPAY_PARALLEL_API_QA_2026-11-03.md",
+        "scripts/tests/ghostpay-parallel-workflow.test.mjs"
+      ]
+    },
+    {
+      "number": 51,
+      "title": "ci: continue GhostPay API-funded backlog development twice daily",
+      "head": "automation/ghostpay-recurrent-backlog-20261103",
+      "head_sha": "5835736c12968231ac7b3152e394077bee453622",
+      "base": "main",
+      "base_sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "draft": false,
+      "mergeable": false,
+      "files": [
+        ".github/workflows/ghostpay-codex-cloud.yml"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [],
+      "different_files": [
+        ".github/workflows/ghostpay-codex-cloud.yml"
+      ]
+    },
+    {
+      "number": 42,
+      "title": "docs(handoff): Haiku wave prompts and Opus M1 milestone prompt",
+      "head": "claude/sharp-bohr-uigfgh",
+      "head_sha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "base": "main",
+      "base_sha": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "draft": true,
+      "mergeable": true,
+      "files": [
+        "docs/handoffs/HAIKU-WAVE-2-2026-10-30.md",
+        "docs/handoffs/HAIKU-WAVE-2026-10-30.md"
+      ],
+      "head_ancestor_main": false,
+      "equal_files": [
+        "docs/handoffs/HAIKU-WAVE-2-2026-10-30.md",
+        "docs/handoffs/HAIKU-WAVE-2026-10-30.md"
+      ],
+      "different_files": []
+    }
+  ],
+  "overlaps": [
+    [
+      "docs/ai/ACTIVE_WORK.md",
+      [
+        224,
+        223,
+        218,
+        213,
+        211,
+        209,
+        160
+      ]
+    ],
+    [
+      "README.md",
+      [
+        223,
+        140
+      ]
+    ],
+    [
+      "apps/relayer/PRIVACY.md",
+      [
+        222,
+        218
+      ]
+    ],
+    [
+      "apps/relayer/README.md",
+      [
+        222,
+        218
+      ]
+    ],
+    [
+      "apps/relayer/src/config.ts",
+      [
+        222,
+        218
+      ]
+    ],
+    [
+      "apps/relayer/src/log.ts",
+      [
+        222,
+        218
+      ]
+    ],
+    [
+      "apps/relayer/src/server.ts",
+      [
+        222,
+        218
+      ]
+    ],
+    [
+      "apps/web/locales/ar.json",
+      [
+        222,
+        219,
+        213,
+        211
+      ]
+    ],
+    [
+      "apps/web/locales/en.json",
+      [
+        222,
+        219,
+        213,
+        211
+      ]
+    ],
+    [
+      "apps/web/locales/es.json",
+      [
+        222,
+        219,
+        213,
+        211
+      ]
+    ],
+    [
+      "apps/web/locales/ja.json",
+      [
+        222,
+        219,
+        213,
+        211
+      ]
+    ],
+    [
+      "apps/web/package.json",
+      [
+        222,
+        212
+      ]
+    ],
+    [
+      "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+      [
+        222,
+        219
+      ]
+    ],
+    [
+      "apps/web/src/features/btc/BtcView.test.tsx",
+      [
+        222,
+        219,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/features/btc/BtcView.tsx",
+      [
+        222,
+        219,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/features/btc/esplora.test.ts",
+      [
+        222,
+        219
+      ]
+    ],
+    [
+      "apps/web/src/features/btc/esplora.ts",
+      [
+        222,
+        219
+      ]
+    ],
+    [
+      "apps/web/src/features/btc/fixtures.testutil.ts",
+      [
+        222,
+        219
+      ]
+    ],
+    [
+      "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+      [
+        222,
+        219
+      ]
+    ],
+    [
+      "apps/web/src/features/btc/scan.ts",
+      [
+        222,
+        219
+      ]
+    ],
+    [
+      "apps/web/src/features/solana/SolanaView.test.tsx",
+      [
+        222,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/features/solana/SolanaView.tsx",
+      [
+        222,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/features/tron/TronView.test.tsx",
+      [
+        222,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/features/tron/TronView.tsx",
+      [
+        222,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/i18n/securityKeys.ts",
+      [
+        222,
+        219,
+        213,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/lib/relayerClient.test.ts",
+      [
+        222,
+        218
+      ]
+    ],
+    [
+      "apps/web/src/lib/relayerClient.ts",
+      [
+        222,
+        218
+      ]
+    ],
+    [
+      "apps/web/src/lib/scanClient.test.ts",
+      [
+        222,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/lib/scanClient.ts",
+      [
+        222,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+      [
+        222,
+        211
+      ]
+    ],
+    [
+      "apps/web/src/views/Scan.tsx",
+      [
+        222,
+        213
+      ]
+    ],
+    [
+      "deploy/README.md",
+      [
+        222,
+        209
+      ]
+    ],
+    [
+      "packages/chain-adapters/src/rpc.test.ts",
+      [
+        222,
+        220
+      ]
+    ],
+    [
+      "packages/chain-adapters/src/rpc.ts",
+      [
+        222,
+        220
+      ]
+    ],
+    [
+      ".github/workflows/ci.yml",
+      [
+        220,
+        213,
+        206,
+        204
+      ]
+    ],
+    [
+      ".github/workflows/ghostpay-codex-cloud.yml",
+      [
+        220,
+        212,
+        51
+      ]
+    ],
+    [
+      ".github/workflows/ghostpay-parallel-review.yml",
+      [
+        220,
+        212
+      ]
+    ],
+    [
+      ".github/workflows/nightly.yml",
+      [
+        220,
+        209
+      ]
+    ],
+    [
+      ".github/workflows/pages.yml",
+      [
+        220,
+        209
+      ]
+    ],
+    [
+      ".github/workflows/release.yml",
+      [
+        220,
+        209
+      ]
+    ],
+    [
+      "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+      [
+        216,
+        153
+      ]
+    ],
+    [
+      "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+      [
+        215,
+        140
+      ]
+    ],
+    [
+      "docs/wiki/Developer-Guide.md",
+      [
+        215,
+        140
+      ]
+    ],
+    [
+      "docs/wiki/Home.md",
+      [
+        215,
+        140
+      ]
+    ],
+    [
+      "docs/wiki/User-Guide.md",
+      [
+        215,
+        140
+      ]
+    ],
+    [
+      "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md",
+      [
+        214,
+        139
+      ]
+    ],
+    [
+      ".github/dependabot.yml",
+      [
+        212,
+        209
+      ]
+    ],
+    [
+      "docs/design/qr-colors.md",
+      [
+        209,
+        140
+      ]
+    ],
+    [
+      ".claude/skills/ghostpay-affected-checks/SKILL.md",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      ".claude/skills/ghostpay-package-map/SKILL.md",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      ".claude/skills/ghostpay-security-invariants/REFERENCE.md",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      ".claude/skills/ghostpay-security-invariants/SKILL.md",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      "CLAUDE.md",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      "scripts/agent/affected.mjs",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      "scripts/agent/package-map.mjs",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      "scripts/agent/workspaces.mjs",
+      [
+        206,
+        204
+      ]
+    ],
+    [
+      "scripts/agent/workspaces.test.mjs",
+      [
+        206,
+        204
+      ]
+    ]
+  ]
+}

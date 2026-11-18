@@ -1,0 +1,50 @@
+{
+  "description": "Bounded extraction of npm explain picomatch --json. Recursive ancestor repetition is omitted; the four immediate installed consumers and root-lock reachability are retained.",
+  "source_main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "lockfile_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+  "original_output_sha256": "7dab090ba3f750e51ffc91535e79bd2f211de40e32acfe3b4eb70f92b9dc65db",
+  "command": "npm explain picomatch --json",
+  "package": {
+    "name": "picomatch",
+    "version": "4.0.7",
+    "location": "node_modules/picomatch",
+    "dev": true,
+    "optional": false,
+    "peer": false,
+    "overridden": false
+  },
+  "consumers": [
+    {
+      "name": "fdir",
+      "version": "6.5.0",
+      "location": "node_modules/fdir",
+      "dependency_kind": "peerOptional",
+      "requirement": "^3 || ^4",
+      "root_lock_dev": true
+    },
+    {
+      "name": "tinyglobby",
+      "version": "0.2.17",
+      "location": "node_modules/tinyglobby",
+      "dependency_kind": "prod",
+      "requirement": "^4.0.4",
+      "root_lock_dev": true
+    },
+    {
+      "name": "vite",
+      "version": "8.3.5",
+      "location": "node_modules/vite",
+      "dependency_kind": "prod",
+      "requirement": "^4.0.7",
+      "root_lock_dev": true
+    },
+    {
+      "name": "vitest",
+      "version": "5.0.5",
+      "location": "node_modules/vitest",
+      "dependency_kind": "prod",
+      "requirement": "^4.0.7",
+      "root_lock_dev": true
+    }
+  ]
+}

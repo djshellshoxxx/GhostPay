@@ -1,0 +1,164 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "reviewed_at_utc": "2026-11-18T13:53:11Z",
+  "review_scope": "Read-only run/job-log and exact-source comparison; no tests, source changes, workflow reruns or remote mutations.",
+  "pr": 230,
+  "run_id": 44296171884,
+  "job_id": 134773650635,
+  "run_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44296171884",
+  "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44296171884/job/134773650635",
+  "run_head_sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+  "run_base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+  "checked_out_sha": "c827d641c1bd4c50353d486e9df9a207bb4bb0d5",
+  "checked_out_parents": [
+    "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "0b2609c2c83143741ad343bfb08234a2d1182aa5"
+  ],
+  "checked_out_tree": "979f41c3a27e1eaa2f906fbca7a36c9b7d0b72d3",
+  "source_identity": "Synthetic merge c827d641 has the same full Git tree as published #230 head 0b2609c2; the run did not include sibling #233.",
+  "status": "completed",
+  "conclusion": "failure",
+  "run_attempt": 1,
+  "created_at": "2026-11-18T11:36:05Z",
+  "updated_at": "2026-11-18T13:44:17Z",
+  "command": "bash scripts/beta/acceptance.sh --skip-build",
+  "toolchain": {
+    "node": "v22.23.4",
+    "anvil": "1.8.5",
+    "forge": "1.8.5"
+  },
+  "stages": {
+    "lib": {
+      "outcome": "pass",
+      "steps": 14,
+      "local_transactions": 14,
+      "summary_seconds": 3
+    },
+    "cli": {
+      "outcome": "pass",
+      "checks_passed": 124,
+      "checks_total": 124,
+      "expected_chain31337_gap_assertions": 11,
+      "summary_seconds": 37
+    },
+    "browser": {
+      "outcome": "fail",
+      "passed": 2,
+      "failed": 1,
+      "test_cases_not_run": 0,
+      "summary_seconds": 27,
+      "playwright_reported_seconds": 23.8
+    }
+  },
+  "failure": {
+    "file": "apps/web/e2e/devnet-journey.spec.ts",
+    "line": 176,
+    "assertion": "expect(receipt).toMatchObject({... stealthAddress ...})",
+    "detail": "The only missing expected property is stealthAddress. The preceding verifyReceipt(receipt) === true assertion passed; expected chain, native amount, invoice digest, signer and transaction hash matched.",
+    "intended_behavior": "ReceiptPanel starts includeAddress=false and passes that option into receiptSigningFields; the fixture signs without opting in, so the default minimized receipt omits the address.",
+    "classification": "Inherited browser fixture assumption, already present on #222; #230 changes neither this fixture nor ReceiptPanel.",
+    "downstream_unreached": [
+      "payer receipt import/binding verification in first journey",
+      "direct sweep",
+      "second-sweep/dust rejection"
+    ],
+    "other_browser_cases_passed": [
+      "reload while payment is pending retains hash, blocks duplicate submission and is mined exactly once",
+      "wrong-chain wallet connection and network change before send block the payment"
+    ]
+  },
+  "sibling_repair": {
+    "pr": 233,
+    "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+    "base": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "addresses_all_observed_browser_failures_in_source": true,
+    "exact_changes": "The devnet journey asserts the address opt-in checkbox is initially unchecked, explicitly checks it before signing, and preserves the original receipt-signature and full-address/fact assertions. It also adds explicit balance-read clicks before the later first sweep and dust reentry.",
+    "unchanged_runtime_blob": "a4df04cc7b95dbdd7927e3b7177afeb7bec17d85",
+    "old_devnet_fixture_blob": "029ffe3c21bc293f5bd82a2349b0258d8c63a553",
+    "repaired_devnet_fixture_blob": "9426aa6fe1df0af34bacc4601db35999b8425fea",
+    "comparison_evidence": "git diff #222..#230 -- devnet-journey.spec.ts ReceiptPanel.tsx is empty; git diff #230..#233 for the same paths contains only the explicit receipt opt-in and balance-read fixture setup. ReceiptPanel blob is identical.",
+    "integration": "#230 and #233 are siblings on #222. Their reviewed changes must be combined and the resulting exact candidate requalified; #230 alone does not contain the fixture repair.",
+    "qualification": "The sole observed browser failure is covered by existing source changes, not a demonstrated passing rerun. This job remains failed; unexecuted later steps may still expose additional failures."
+  },
+  "artifact_warning": {
+    "upload_step_conclusion": "success",
+    "actual_upload": "No artifacts uploaded; action warned that the existing log glob matched no files.",
+    "path": "scripts/beta/.state/*.log",
+    "include_hidden_files": false,
+    "workflow_blob": "b4b7867299c97a334a2c52a3f97ed5c2b90e3a00",
+    "existing_capture_repair_pr": 237,
+    "existing_capture_repair_head": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+    "qualification": "Same hidden-directory filtering behavior already reviewed for #237; #237 is not present in this run. Actual repaired hosted upload is not established by this failed job."
+  },
+  "new_product_defect_established": false,
+  "tests_executed_locally_in_this_review": 0,
+  "source_edits_performed": false,
+  "remote_mutations_performed": false,
+  "log_line_count": 1224,
+  "log_excerpts": [
+    {
+      "line": 102,
+      "text": "2026-11-18T13:40:10.0860149Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c827d641c1bd4c50353d486e9df9a207bb4bb0d5:refs/remotes/pull/230/merge"
+    },
+    {
+      "line": 129,
+      "text": "2026-11-18T13:40:11.3078872Z HEAD is now at c827d64 Merge 0b2609c2c83143741ad343bfb08234a2d1182aa5 into 2bc2098298d90928eb1acafad969f28316bb05fc"
+    },
+    {
+      "line": 944,
+      "text": "2026-11-18T13:42:38.9913386Z node v22.23.4; anvil Version: 1.8.5; forge Version: 1.8.5"
+    },
+    {
+      "line": 961,
+      "text": "2026-11-18T13:43:10.5111372Z E2E OK: 14 steps, 14 transactions"
+    },
+    {
+      "line": 1091,
+      "text": "2026-11-18T13:43:47.1008508Z == CLI devnet e2e: 124/124 checks passed"
+    },
+    {
+      "line": 1092,
+      "text": "2026-11-18T13:43:47.1008866Z gap assertions (fail-closed on 31337): 11"
+    },
+    {
+      "line": 1139,
+      "text": "2026-11-18T13:44:14.5445677Z       175 |     expect(verifyReceipt(receipt)).toBe(true);"
+    },
+    {
+      "line": 1140,
+      "text": "2026-11-18T13:44:14.5445885Z     > 176 |     expect(receipt).toMatchObject({"
+    },
+    {
+      "line": 1153,
+      "text": "2026-11-18T13:44:14.5450051Z   1 failed"
+    },
+    {
+      "line": 1155,
+      "text": "2026-11-18T13:44:14.5451312Z   2 passed (23.8s)"
+    },
+    {
+      "line": 1177,
+      "text": "2026-11-18T13:44:14.5870497Z == summary (commit c827d641c1bd4c50353d486e9df9a207bb4bb0d5)"
+    },
+    {
+      "line": 1178,
+      "text": "2026-11-18T13:44:14.5870732Z PASS lib (3s)"
+    },
+    {
+      "line": 1179,
+      "text": "2026-11-18T13:44:14.5870858Z PASS cli (37s)"
+    },
+    {
+      "line": 1180,
+      "text": "2026-11-18T13:44:14.5871012Z FAIL browser exit=1 (27s)"
+    },
+    {
+      "line": 1192,
+      "text": "2026-11-18T13:44:14.6174434Z   include-hidden-files: false"
+    },
+    {
+      "line": 1195,
+      "text": "2026-11-18T13:44:14.7122596Z ##[warning]No files were found with the provided path: scripts/beta/.state/*.log. No artifacts will be uploaded."
+    }
+  ]
+}

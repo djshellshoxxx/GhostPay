@@ -1,0 +1,113 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "run_id": 44279444368,
+  "job_id": 134715943959,
+  "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44279444368/job/134715943959",
+  "run_head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+  "run_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+  "checked_out_sha": "644a43ee6366298f418a0aca5a40ecf974871748",
+  "status": "completed",
+  "conclusion": "failure",
+  "updated_at": "2026-11-18T13:06:09Z",
+  "command": "bash scripts/beta/acceptance.sh --skip-build",
+  "toolchain": {
+    "node": "v22.23.4",
+    "anvil": "1.8.5",
+    "forge": "1.8.5"
+  },
+  "stages": {
+    "lib": {
+      "outcome": "pass",
+      "steps": 14,
+      "local_transactions": 14,
+      "seconds": 5
+    },
+    "cli": {
+      "outcome": "pass",
+      "checks_passed": 124,
+      "checks_total": 124,
+      "expected_chain31337_gap_assertions": 11,
+      "seconds": 37
+    },
+    "browser": {
+      "outcome": "fail",
+      "passed": 2,
+      "failed": 1,
+      "test_cases_not_run": 0,
+      "seconds": 28
+    }
+  },
+  "failure": {
+    "file": "apps/web/e2e/devnet-journey.spec.ts",
+    "line": 176,
+    "assertion": "expect(receipt).toMatchObject({... stealthAddress ...})",
+    "detail": "Expected stealthAddress is absent; verifyReceipt(receipt) returned true immediately before this assertion.",
+    "classification": "Fixture assumes address-inclusive receipt while #222 defaults to address minimization.",
+    "downstream_unreached": [
+      "payer receipt import/binding verification in first journey",
+      "direct sweep",
+      "second-sweep/dust rejection"
+    ]
+  },
+  "repair": {
+    "pr": 233,
+    "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+    "tree": "d2344cba3807580c3314fe38b91a1a58de1a1d4a",
+    "source_comparison": "devnet journey asserts address opt-in initially unchecked and checks it before signing; original address and signature assertions retained; later sweep/reentry setup explicitly clicks the balance-read button.",
+    "qualification": "Sole observed failing assertion is addressed in source; no passing rerun established. Old result remains red.",
+    "workflow_runs": [
+      {
+        "id": 44304211061,
+        "name": "Pages",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 167,
+        "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44304211061/jobs",
+        "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44304211061/logs",
+        "workflow_id": 392799214
+      },
+      {
+        "id": 44304211191,
+        "name": "Beta acceptance",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 176,
+        "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44304211191/jobs",
+        "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44304211191/logs",
+        "workflow_id": 414091144
+      },
+      {
+        "id": 44304211893,
+        "name": "CI",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 1344,
+        "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44304211893/jobs",
+        "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44304211893/logs",
+        "workflow_id": 391558649
+      },
+      {
+        "id": 44304210915,
+        "name": "Hosting kit",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 286,
+        "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44304210915/jobs",
+        "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44304210915/logs",
+        "workflow_id": 398745505
+      }
+    ]
+  },
+  "artifact_warning": "Upload step reported no files at scripts/beta/.state/*.log; include-hidden-files was false. No acceptance artifact uploaded, though job log is available.",
+  "local_log": "/workspace/scratch/fb6d03ffb806/pr222-beta-acceptance-134715943959.log",
+  "new_product_defect_found": false,
+  "code_edits_performed": false,
+  "tests_executed_locally_in_this_review": false,
+  "artifact_capture_repair": {
+    "pr": 237,
+    "head": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+    "local_tested_source": "05a3b45bda60d18a6922c0897d48bd8984bad377",
+    "change": "include-hidden-files: true under the existing narrow scripts/beta/.state/*.log upload path",
+    "verification": "Six existing workflow tests, 111 pinned action uses, secret scan and independent source review passed. Actual hosted artifact capture remains pending. No missing-file policy, gate, path or private fixture upload was widened."
+  }
+}

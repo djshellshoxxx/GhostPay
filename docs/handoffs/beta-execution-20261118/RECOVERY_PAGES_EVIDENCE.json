@@ -1,0 +1,16 @@
+{
+  "format": "ghostpay-pages-site/1",
+  "commit": "1b0dd02e78d1d3f8dd117977c589eaa62671b3da",
+  "profile": "lean",
+  "base": "relative (./)",
+  "paymentsEnabledChainIds": [],
+  "status": "DEMO: payments disabled on every chain (no deployment manifest)",
+  "release": true,
+  "origin": null,
+  "sharedOrigin": true,
+  "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "lockfileSha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+  "sha256sumsSha256": "b922ec899f5c92c6401f0842d48188662527662008a30b9c0b6d65c509d3762c",
+  "files": 16,
+  "limits": "GitHub Pages cannot send HTTP headers: only the meta CSP applies (no frame-ancestors, nosniff, COOP, Permissions-Policy). The origin is shared with every other Pages site of the account (GP-PAGES-01). Not an audited or production host."
+}

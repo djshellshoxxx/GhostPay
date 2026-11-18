@@ -1,0 +1,569 @@
+{
+  "removed": {
+    "apps/relayer/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "apps/relayer/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "apps/relayer/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "apps/relayer/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "apps/relayer/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "apps/web/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "apps/web/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "apps/web/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "apps/web/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "apps/web/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "apps/web/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/address-safety/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/address-safety/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/address-safety/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/address-safety/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/address-safety/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/address-safety/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/amount-blur/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/amount-blur/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/amount-blur/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/amount-blur/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/amount-blur/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/amount-blur/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/chain-adapters/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/chain-adapters/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/chain-adapters/node_modules/viem/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/chain-adapters/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/chain-adapters/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/chain-evm-extra/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/chain-evm-extra/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/chain-evm-extra/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/chain-evm-extra/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/chain-evm-extra/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/chain-evm-extra/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/cli/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/cli/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/cli/node_modules/viem/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/cli/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/cli/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/confidential-amounts/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/confidential-amounts/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/confidential-amounts/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/confidential-amounts/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/confidential-amounts/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/core-crypto/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/core-crypto/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/core-crypto/node_modules/viem/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/core-crypto/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/core-crypto/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/donation/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/donation/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/donation/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/donation/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/donation/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/external-pools-privacypools/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/external-pools-privacypools/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/external-pools-privacypools/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/external-pools-privacypools/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/external-pools-privacypools/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/external-pools-privacypools/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/external-pools-railgun/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/external-pools-railgun/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/external-pools-railgun/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/external-pools-railgun/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/external-pools-railgun/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/external-pools-railgun/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/external-pools/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/external-pools/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/external-pools/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/external-pools/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/external-pools/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/external-pools/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/hops/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/hops/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/hops/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/hops/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/hops/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/hops/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/hygiene/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/hygiene/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/hygiene/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/hygiene/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/hygiene/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/hygiene/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/metadata-hardening/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/metadata-hardening/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/metadata-hardening/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/metadata-hardening/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/metadata-hardening/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/metadata-hardening/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/net-transport/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/net-transport/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/net-transport/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/net-transport/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/net-transport/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/net-transport/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/ops-monitor/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/ops-monitor/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/ops-monitor/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/ops-monitor/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/ops-monitor/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/payer-sponsor/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/payer-sponsor/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/payer-sponsor/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/payer-sponsor/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/payer-sponsor/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/policy-scheme/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/policy-scheme/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/policy-scheme/node_modules/viem/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/policy-scheme/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/policy-scheme/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/pool-circuits/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/pool-circuits/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/pool-circuits/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/pool-circuits/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/pool-circuits/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/pool-relayer/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/pool-relayer/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/pool-relayer/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/pool-relayer/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/pool-relayer/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/pool-sdk/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/pool-sdk/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/pool-sdk/node_modules/@noble/curves/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/pool-sdk/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/pool-sdk/node_modules/viem/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/pool-sdk/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ],
+    "packages/tx-review/node_modules/@noble/ciphers": [
+      "node_modules/ox/node_modules/@noble/ciphers"
+    ],
+    "packages/tx-review/node_modules/@noble/curves": [
+      "node_modules/ox/node_modules/@noble/curves",
+      "node_modules/viem/node_modules/@noble/curves"
+    ],
+    "packages/tx-review/node_modules/@noble/hashes": [
+      "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "node_modules/ox/node_modules/@noble/hashes",
+      "node_modules/snarkjs/node_modules/@noble/hashes",
+      "node_modules/viem/node_modules/@noble/hashes"
+    ],
+    "packages/tx-review/node_modules/viem": [
+      "node_modules/viem"
+    ],
+    "packages/tx-review/node_modules/viem/node_modules/ox": [
+      "node_modules/ox"
+    ]
+  },
+  "optionalPlatformRecordsUnchanged": true
+}

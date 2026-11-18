@@ -1,0 +1,172 @@
+{
+  "provenance": "Existing hosted analysis independently downloaded and parsed in this execution; no new local Mythril campaign is claimed.",
+  "run_id": 44267960327,
+  "job_id": 134677092580,
+  "artifact_id": 14417019854,
+  "zip_sha256": "e3de18f42b81cb95ef99ff7260742bd00f122dcb24d3e856297d5383ead16f30",
+  "metadata": {
+    "schemaVersion": 1,
+    "analyzer": "mythril",
+    "requestedCommit": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+    "checkoutCommit": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+    "analysisOutcome": "failure",
+    "runnerExitCode": 1,
+    "reportPresent": true,
+    "fullReportBytes": 283170,
+    "fullReportSha256": "4f6cc97b9c17d6ac60510d8545e8af8d4e63a0f1bcb70067f6ae00af62b07736",
+    "retainedBytes": 283170,
+    "truncated": false,
+    "retention": "At most the last 8 MiB; truncation applies only to the artifact, not the gate's input."
+  },
+  "computed_report_sha256": "4f6cc97b9c17d6ac60510d8545e8af8d4e63a0f1bcb70067f6ae00af62b07736",
+  "analysis_documents": [
+    {
+      "success": true,
+      "error": null,
+      "issues": 0
+    },
+    {
+      "success": true,
+      "error": null,
+      "issues": 1
+    },
+    {
+      "success": true,
+      "error": null,
+      "issues": 0
+    },
+    {
+      "success": true,
+      "error": null,
+      "issues": 2
+    },
+    {
+      "success": true,
+      "error": null,
+      "issues": 8
+    }
+  ],
+  "findings": [
+    {
+      "record": "R1",
+      "title": "Dependence on predictable environment variable",
+      "swc-id": "116",
+      "severity": "Low",
+      "contract": "GhostPaySweepRelayer",
+      "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+      "address": 785,
+      "filename": "src/GhostPaySweepRelayer.sol",
+      "lineno": 83
+    },
+    {
+      "record": "R2",
+      "title": "Dependence on predictable environment variable",
+      "swc-id": "116",
+      "severity": "Low",
+      "contract": "PolicyAccount",
+      "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+      "address": 1876,
+      "filename": "src/PolicyAccount.sol",
+      "lineno": 161
+    },
+    {
+      "record": "R3",
+      "title": "Dependence on predictable environment variable",
+      "swc-id": "116",
+      "severity": "Low",
+      "contract": "PolicyAccount",
+      "function": "proposeDestination(address,uint256,uint256,bytes)",
+      "address": 5077,
+      "filename": "src/PolicyAccount.sol",
+      "lineno": 262
+    },
+    {
+      "record": "R4",
+      "title": "Exception State",
+      "swc-id": "110",
+      "severity": "Low",
+      "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+      "function": "fallback",
+      "address": 30,
+      "filename": null,
+      "lineno": null
+    },
+    {
+      "record": "R5",
+      "title": "State access after external call",
+      "swc-id": "107",
+      "severity": "Medium",
+      "contract": "PolicyAccountFactory",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 999,
+      "filename": "src/PolicyAccountFactory.sol",
+      "lineno": 117
+    },
+    {
+      "record": "R6",
+      "title": "State access after external call",
+      "swc-id": "107",
+      "severity": "Low",
+      "contract": "PolicyAccountFactory",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 1170,
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+      "lineno": 99
+    },
+    {
+      "record": "R7",
+      "title": "Multiple Calls in a Single Transaction",
+      "swc-id": "113",
+      "severity": "Low",
+      "contract": "PolicyAccountFactory",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 1668,
+      "filename": "src/PolicyAccountFactory.sol",
+      "lineno": 131
+    },
+    {
+      "record": "R8",
+      "title": "Multiple Calls in a Single Transaction",
+      "swc-id": "113",
+      "severity": "Low",
+      "contract": "PolicyAccountFactory",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 1781,
+      "filename": "src/PolicyAccountFactory.sol",
+      "lineno": 132
+    },
+    {
+      "record": "R9",
+      "title": "State access after external call",
+      "swc-id": "107",
+      "severity": "Medium",
+      "contract": "PolicyAccountFactory",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 2887,
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+      "lineno": 104
+    },
+    {
+      "record": "R10",
+      "title": "External Call To User-Supplied Address",
+      "swc-id": "107",
+      "severity": "Low",
+      "contract": "PolicyAccountFactory",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 2978,
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lineno": 227
+    },
+    {
+      "record": "R11",
+      "title": "Unchecked return value from external call.",
+      "swc-id": "104",
+      "severity": "Medium",
+      "contract": "PolicyAccountFactory",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 2978,
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lineno": 227
+    }
+  ]
+}

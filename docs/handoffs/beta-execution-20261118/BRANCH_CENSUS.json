@@ -1,0 +1,1718 @@
+{
+  "captured_at": "2026-11-18T13:36:18.601575+00:00",
+  "note": "Actual remote branch heads only; symbolic refs are excluded. Captured after the twelve repair/completion publications and before this final report update; the report self-head reflects its prior published version. The census is a retention/evidence snapshot, not a deletion plan.",
+  "main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "remote_branches": 243,
+  "branches": [
+    {
+      "branch": "ai/agent-harness-20261113",
+      "sha": "15dc9c192c6086f2e51bcce68ca18ea483968b57",
+      "main_only_commits": 1489,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "automation/api-funded-ghostpay-cloud-20261103",
+      "sha": "29ce481d2d4a964f0acc42cc5233eb2d9c3e9482",
+      "main_only_commits": 1503,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "automation/ghostpay-parallel-four-agents-20261103",
+      "sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "main_only_commits": 1501,
+      "branch_only_commits": 6,
+      "head_in_main": false
+    },
+    {
+      "branch": "automation/ghostpay-parallel-review-wave-20261103",
+      "sha": "03a3f5701c89e19667f309bb5f01bd36793a5474",
+      "main_only_commits": 1498,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "automation/ghostpay-recurrent-backlog-20261103",
+      "sha": "5835736c12968231ac7b3152e394077bee453622",
+      "main_only_commits": 1501,
+      "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "backup/codex-observed-pr37-915d710-20261028",
+      "sha": "915d71053e2335dfff638b729b160f9df3200c22",
+      "main_only_commits": 1339,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "backup/pr30-before-consolidation-20261025",
+      "sha": "356fe5e44d42db1731d6b35794c6474afcc23037",
+      "main_only_commits": 1482,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "backup/pr31-before-consolidation-20261025",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "main_only_commits": 1504,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/consolidation-reconciliation-20261113",
+      "sha": "3cf3437a8d9dbe3ec1d9056adb73fb93f0f2929c",
+      "main_only_commits": 1493,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "sha": "392dca9746155c379c2e289078805ae87932c99d",
+      "main_only_commits": 0,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-beta-log-artifact-20261118",
+      "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "main_only_commits": 0,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-beta-qualification-20261112",
+      "sha": "c11f905b362ae2b0734b4dc6ff348fe3c5e0fcfa",
+      "main_only_commits": 616,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-billing-horizon-port-20261112",
+      "sha": "eb21d57c8ad1550481d5d674fa6356ac98f146f0",
+      "main_only_commits": 737,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-cli-sentinel-port-20261112",
+      "sha": "3fd18ef4011b8d6e094ac49a13c0e6ccc2c0c9c9",
+      "main_only_commits": 736,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "sha": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+      "main_only_commits": 358,
+      "branch_only_commits": 7,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-integration-matrix-20261112",
+      "sha": "1a5e815d8446f00a63f98de261081910c9c78ce6",
+      "main_only_commits": 737,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-invoice-validation-20261118",
+      "sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "main_only_commits": 0,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-merchant-csv-port-20261112",
+      "sha": "bbc7dda4ce275613296609a5001bac36c888229e",
+      "main_only_commits": 737,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "main_only_commits": 4,
+      "branch_only_commits": 7,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-onion-canonical-port-20261112",
+      "sha": "8277879eeaa003c31fd76b4f840b9628f4b02cf7",
+      "main_only_commits": 736,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-own-node-guard-20261118",
+      "sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "main_only_commits": 4,
+      "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+      "sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "main_only_commits": 0,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-client-hardening-20261115",
+      "sha": "f3872e90eb255b46a773d78f4f5adb6239db2b4f",
+      "main_only_commits": 573,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-gp02-gp04-review-20261115",
+      "sha": "9b3a3070499a2a6d70349d540f7aaaed006426e9",
+      "main_only_commits": 577,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-idle-clock-20261118",
+      "sha": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "main_only_commits": 0,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-second-pass-notes-20261115",
+      "sha": "cf6a8d69620af6271e573a8b20fe1562e89ef81c",
+      "main_only_commits": 572,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "main_only_commits": 4,
+      "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-recovery-review-20261118",
+      "sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "main_only_commits": 5,
+      "branch_only_commits": 7,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "sha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "main_only_commits": 358,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "main_only_commits": 374,
+      "branch_only_commits": 5,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-sensitive-surface-audit-20261115",
+      "sha": "90a145740a163a9515e5c70e79be33610b67b293",
+      "main_only_commits": 571,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115",
+      "sha": "97a617b5b95f04a1e736c5c730c587ef0824d05a",
+      "main_only_commits": 570,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "sha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "main_only_commits": 738,
+      "branch_only_commits": 6,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-sonar-review-20261118",
+      "sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "main_only_commits": 4,
+      "branch_only_commits": 6,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+      "sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "main_only_commits": 0,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "main_only_commits": 4,
+      "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/ghostpay-top-down-audit-20261115",
+      "sha": "775756931be4683f47e8af6b2ecf26f9458897d7",
+      "main_only_commits": 569,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-ux-clock-port-20261112",
+      "sha": "c3173f849ad6ce3d3e5a4c4b2a1efdb7d9c937df",
+      "main_only_commits": 736,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-ux-guide-port-20261112",
+      "sha": "f3a9b2389f8ba32f7a3cccce2cdabc186c23df1b",
+      "main_only_commits": 736,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-viem-alignment-20261118",
+      "sha": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "main_only_commits": 4,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/pages-browser-fixes-combined-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "main_only_commits": 374,
+      "branch_only_commits": 5,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/pages-release-gate-audit-20261114",
+      "sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "main_only_commits": 374,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex-continuation-spec-20261109",
+      "sha": "d15921981ecfe8342886c27c52af43c22c1c6205",
+      "main_only_commits": 1493,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/audit-main-20261118-r185",
+      "sha": "7490aac58ece15f9e4ec9979fbe48987354618fa",
+      "main_only_commits": 4,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "main_only_commits": 521,
+      "branch_only_commits": 43,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/audit-secret-box-20261110",
+      "sha": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+      "main_only_commits": 886,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
+      "sha": "0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa",
+      "main_only_commits": 913,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "main_only_commits": 914,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "main_only_commits": 413,
+      "branch_only_commits": 110,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "sha": "b43b134028357455a557ca95f820e7dfd586eef7",
+      "main_only_commits": 4,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/docs-wiki-20261110",
+      "sha": "fa375dbc1f2416b27d75e44487e5a382f237b379",
+      "main_only_commits": 853,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "sha": "a78a5467f5eb7de83b9ea9f08c6633ada30e026d",
+      "main_only_commits": 4,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+      "sha": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790",
+      "main_only_commits": 911,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "sha": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "main_only_commits": 914,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "sha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "main_only_commits": 914,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+      "sha": "5280569b7eaad9b4d996861410211cd40d005fdb",
+      "main_only_commits": 911,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "sha": "9732adb949cc7191beddcb986dff76e9f9534537",
+      "main_only_commits": 547,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "sha": "433307b869acf2d81b2d12b415631076a89f7213",
+      "main_only_commits": 570,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+      "sha": "81fd4c032e29a87ce509236a0398468022c23012",
+      "main_only_commits": 579,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "main_only_commits": 594,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+      "main_only_commits": 560,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+      "main_only_commits": 549,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "main_only_commits": 551,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+      "main_only_commits": 546,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "sha": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+      "main_only_commits": 568,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+      "sha": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+      "main_only_commits": 542,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "sha": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+      "main_only_commits": 545,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "main_only_commits": 586,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "main_only_commits": 552,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "sha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "main_only_commits": 580,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "main_only_commits": 549,
+      "branch_only_commits": 42,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "main_only_commits": 358,
+      "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "main_only_commits": 553,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "main_only_commits": 374,
+      "branch_only_commits": 7,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "sha": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+      "main_only_commits": 564,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "main_only_commits": 581,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+      "main_only_commits": 565,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+      "sha": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "main_only_commits": 579,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "main_only_commits": 557,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+      "sha": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "main_only_commits": 597,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+      "main_only_commits": 543,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "main_only_commits": 374,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+      "sha": "eece5aff554255ca6c02e53849403f66123b8e40",
+      "main_only_commits": 593,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "sha": "17f681915f25441f5c38326ad718b8082495d52a",
+      "main_only_commits": 562,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "main_only_commits": 557,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+      "sha": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891",
+      "main_only_commits": 597,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/qualify-98-20261110",
+      "sha": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c",
+      "main_only_commits": 885,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+      "sha": "83d17adb4a07ff2120c6674a5128684e4f13776a",
+      "main_only_commits": 913,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+      "sha": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3",
+      "main_only_commits": 912,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+      "sha": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a",
+      "main_only_commits": 911,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+      "sha": "bbe300b7fb21829350f66677d270a689f3a79ecf",
+      "main_only_commits": 910,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+      "sha": "0ab175e552485032672c59d9b38c733545c7c50f",
+      "main_only_commits": 913,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "main_only_commits": 914,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "main_only_commits": 914,
+      "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "checkpoint/ghostpay-recovery-20261102",
+      "sha": "1dffa5a366fc88a4428823634f43247913048915",
+      "main_only_commits": 1505,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "sha": "243d98d67c7cbcc854b2107da5461e4718cb6272",
+      "main_only_commits": 1184,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/admiring-albattani-6kydor",
+      "sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "main_only_commits": 4,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/adoring-wozniak-850ue6",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "main_only_commits": 1504,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704",
+      "main_only_commits": 1173,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-a4-btc-headersync",
+      "sha": "27d1580c5c535cef5ea44491716d0d86712df841",
+      "main_only_commits": 1165,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-a5-announcer-budget",
+      "sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "main_only_commits": 1170,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-a6-combined-backup",
+      "sha": "f5d219851a4715cb947eb224976f97a7bec49380",
+      "main_only_commits": 1164,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-a7-policy-send-guard",
+      "sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "main_only_commits": 1167,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-b1-core-journey",
+      "sha": "e0a499bdd95da4d9dd24a19a73fe9609e302b104",
+      "main_only_commits": 1168,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-b2-lean-bound-receipts",
+      "sha": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0",
+      "main_only_commits": 1169,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-b3-sweep-permit-states",
+      "sha": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc",
+      "main_only_commits": 1142,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-b5-testnet-feeds",
+      "sha": "76199cdac3ee336e2751995d511111467141d943",
+      "main_only_commits": 1172,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-c1-reconciliation-adr",
+      "sha": "1e87109119c1945ea81bfa7e29bc9d1663984bf7",
+      "main_only_commits": 1169,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-c2-qr-pairing",
+      "sha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+      "main_only_commits": 1167,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+      "main_only_commits": 1152,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-c4-i18n-pay",
+      "sha": "e02d04c7540607624e4bf4627566a5e605242fe1",
+      "main_only_commits": 1170,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-c4-i18n-scan",
+      "sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+      "main_only_commits": 1164,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-c5-device-matrix",
+      "sha": "92af349a2e877d6cf94e7ed95a6466163a205089",
+      "main_only_commits": 1170,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ar-c7-embed-iframe-e2e",
+      "sha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+      "main_only_commits": 1169,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/consolidation-2026-11-04",
+      "sha": "a28ca06a83dc621a2bcb0eb0432889d7b4416285",
+      "main_only_commits": 1040,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cool-albattani-xopr89",
+      "sha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+      "main_only_commits": 1417,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-c2",
+      "sha": "b9cba0978cade31e15faa4067adae448e4dcbc04",
+      "main_only_commits": 1075,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-c4",
+      "sha": "511c23bd925504b02d329e1c82bc30593d3ac496",
+      "main_only_commits": 1081,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-c5",
+      "sha": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+      "main_only_commits": 1075,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-w1",
+      "sha": "704e268bfa7df57964175f820f67400834bdce43",
+      "main_only_commits": 1081,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-w10",
+      "sha": "391454b2609b97dd9e98f65df470dfb880e16142",
+      "main_only_commits": 1058,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-w11",
+      "sha": "764020c208c144e165437e244b6a1bc43673dc5f",
+      "main_only_commits": 1059,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-w5",
+      "sha": "f030376a331445f5059061f24238acb5cf867b29",
+      "main_only_commits": 1080,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-w6",
+      "sha": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
+      "main_only_commits": 1075,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-w7",
+      "sha": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+      "main_only_commits": 1059,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-w8",
+      "sha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+      "main_only_commits": 1496,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/cw-w9",
+      "sha": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+      "main_only_commits": 1059,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/docs-screenshots",
+      "sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+      "main_only_commits": 1493,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/docs-snapshot-1",
+      "sha": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
+      "main_only_commits": 2154,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/docs-snapshot-2",
+      "sha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+      "main_only_commits": 2153,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/exciting-brown-7v69cr",
+      "sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "main_only_commits": 4,
+      "branch_only_commits": 34,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/friendly-turing-1ui0on",
+      "sha": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+      "main_only_commits": 4,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+      "main_only_commits": 738,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "sha": "b6a0871d0618c5ee804947af22d21b794948fa3d",
+      "main_only_commits": 1191,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ghostpay-autonomous-prompt-scpgun",
+      "sha": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
+      "main_only_commits": 1496,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ghostpay-completion-audit-ot5jjm",
+      "sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "main_only_commits": 4,
+      "branch_only_commits": 24,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg",
+      "sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+      "main_only_commits": 2,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "main_only_commits": 4,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-security",
+      "sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "main_only_commits": 4,
+      "branch_only_commits": 6,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "main_only_commits": 5,
+      "branch_only_commits": 6,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "main_only_commits": 600,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "main_only_commits": 1494,
+      "branch_only_commits": 8,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/gifted-planck-115x2k",
+      "sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "main_only_commits": 1197,
+      "branch_only_commits": 4,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/gracious-heisenberg-97ji6q",
+      "sha": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+      "main_only_commits": 1472,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/haiku-wave-2-handoff-qepfoe",
+      "sha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "main_only_commits": 1184,
+      "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/happy-maxwell-onl4x5",
+      "sha": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "main_only_commits": 1184,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/hopeful-bardeen-8ch6l8",
+      "sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "main_only_commits": 1493,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/inspiring-fermat-vxv689",
+      "sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+      "main_only_commits": 2184,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/kind-faraday-8qzf6e",
+      "sha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+      "main_only_commits": 893,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/laughing-bardeen-4t20ys",
+      "sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "main_only_commits": 2024,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/lucid-meitner-apalzc",
+      "sha": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f",
+      "main_only_commits": 332,
+      "branch_only_commits": 19,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/nice-ritchie-8vivls",
+      "sha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+      "main_only_commits": 904,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/pages-site-1",
+      "sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "main_only_commits": 2140,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/portable-hosting-kit",
+      "sha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+      "main_only_commits": 1465,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-1",
+      "sha": "39cce4663d98c7da06775441a301040af51907ed",
+      "main_only_commits": 2127,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-10",
+      "sha": "698404ca488c87347858105bda66be21bf428303",
+      "main_only_commits": 2111,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-2",
+      "sha": "df150cbdb58203789f5afc3050e75d92c655fa49",
+      "main_only_commits": 2162,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-3",
+      "sha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+      "main_only_commits": 2095,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-4",
+      "sha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+      "main_only_commits": 2120,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-5",
+      "sha": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+      "main_only_commits": 2121,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-6",
+      "sha": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+      "main_only_commits": 2124,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-7",
+      "sha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+      "main_only_commits": 2112,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-8",
+      "sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "main_only_commits": 2114,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/remote-extensions-9",
+      "sha": "f09decc278c2052c90dfa209a7098888c8d9877a",
+      "main_only_commits": 2117,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/sharp-bohr-uigfgh",
+      "sha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "main_only_commits": 1506,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/vibrant-cori-scu18b",
+      "sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "main_only_commits": 4,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/vigilant-johnson-yjgq94",
+      "sha": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "main_only_commits": 578,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "claude/wizardly-babbage-mfsdrl",
+      "sha": "ade77362de33156de849989e26206126f978bb8f",
+      "main_only_commits": 1496,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "claude/wonderful-thompson-ir89i9",
+      "sha": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
+      "main_only_commits": 896,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-approval-gated-auto-integration-20261109",
+      "sha": "e36786bce4e752cb79d60bdca4b640e36ad45753",
+      "main_only_commits": 1492,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-canonical-time-20261116",
+      "sha": "27852ba898968a08f7d7c448fac8b19058189281",
+      "main_only_commits": 84,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-caveman-completion-20261116",
+      "sha": "0c4c3c8d951a9d6e71affcdaa26478911c8037f1",
+      "main_only_commits": 86,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-caveman-followup-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "main_only_commits": 85,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-cloud-41868394956",
+      "sha": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "main_only_commits": 1497,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "codex/ghostpay-companion-merchant-20261109",
+      "sha": "b748ecdce06d2dfa911144814161c31a46a09e9b",
+      "main_only_commits": 950,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-completion-20261116",
+      "sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e",
+      "main_only_commits": 111,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-consolidation-20261030",
+      "sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "main_only_commits": 1184,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-consolidation-audit-20261104",
+      "sha": "e2ac398c2c8943a244239b9d6ffa2181e13e7782",
+      "main_only_commits": 1494,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-continuation-20261109",
+      "sha": "0a68a57b77a70d3bcf4635ccbc5190d735e71f40",
+      "main_only_commits": 1005,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-integrate-product-cli-20261109",
+      "sha": "3ec039c554f7052b859975facb2b634a1763d5cf",
+      "main_only_commits": 920,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-mythril-recovery-20261116",
+      "sha": "ffd957e28f982f5c6d2dc00f51143766b2406773",
+      "main_only_commits": 110,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-observability-20261116",
+      "sha": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09",
+      "main_only_commits": 84,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-ops-response-cap-20261116",
+      "sha": "73371b57040c61bdb480e724e8593313d95c6781",
+      "main_only_commits": 84,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-policy-localization-20261109",
+      "sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac",
+      "main_only_commits": 968,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-product-20261109",
+      "sha": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2",
+      "main_only_commits": 992,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "sha": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "main_only_commits": 1506,
+      "branch_only_commits": 19,
+      "head_in_main": false
+    },
+    {
+      "branch": "codex/ghostpay-registry-recovery-20261116",
+      "sha": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c",
+      "main_only_commits": 110,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-research-acceptance-tests-41750257638",
+      "sha": "57b414bfbc1fa9de9ef68675b9181b4c148f18e4",
+      "main_only_commits": 1496,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-research-documentation-ux-41750257638",
+      "sha": "96fc22c42a704d1c590d56d624fff15a945c8231",
+      "main_only_commits": 1496,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-research-release-qualification-41750257638",
+      "sha": "6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4",
+      "main_only_commits": 1496,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-research-security-review-41750257638",
+      "sha": "2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21",
+      "main_only_commits": 1496,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-resume-20261028",
+      "sha": "75400888c96b9bddb2a406dd8fd6d273521aebb2",
+      "main_only_commits": 1367,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "main_only_commits": 1197,
+      "branch_only_commits": 5,
+      "head_in_main": false
+    },
+    {
+      "branch": "codex/ghostpay-spec09-matrix-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "main_only_commits": 85,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/ghostpay-unified-completion",
+      "sha": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+      "main_only_commits": 77,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/recovery-spec02-unqualified-20261116",
+      "sha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+      "main_only_commits": 111,
+      "branch_only_commits": 4,
+      "head_in_main": false
+    },
+    {
+      "branch": "codex/seller-ledger-receipt-qr",
+      "sha": "bb011134c1bf9cd0e75090fec75d85235d637281",
+      "main_only_commits": 1548,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "codex/setup-autonomous-agent-20261104",
+      "sha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "main_only_commits": 1495,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "consolidation/ops-monitor-bounded-streams-20261116",
+      "sha": "d2e8689b038034233d6587cfca547bff3321fcde",
+      "main_only_commits": 1493,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "consolidation/six-verified-boundaries-20261116",
+      "sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0",
+      "main_only_commits": 1491,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "dependabot/github_actions/actions-b9ade1236b",
+      "sha": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "main_only_commits": 4,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/follow-redirects-1.16.2",
+      "sha": "6bffb63d1638253e677511672ffd32c24ac8f2f6",
+      "main_only_commits": 1502,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "sha": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "main_only_commits": 4,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "sha": "4d19655a2e5d93ad9378803cd4163245168aca24",
+      "main_only_commits": 4,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "docs/future-privacy-feature-specs-20261109",
+      "sha": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "main_only_commits": 1495,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "docs/ghostpay-3q-stealth-keypair-export-20261116",
+      "sha": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83",
+      "main_only_commits": 75,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "docs/ghostpay-deep-research-20261103",
+      "sha": "894dc868dc5d07102ecb7f6a1e251381d8127f61",
+      "main_only_commits": 1496,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "docs/ghostpay-privacy-architecture-5a-5l-20261116",
+      "sha": "e05044d4209de7e9cc242c8a83e5fc2264663174",
+      "main_only_commits": 76,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "docs/lean-release-handoff-2026-10-24",
+      "sha": "2b032d77fef95d5eaa446a72fda2eef46e83bbcd",
+      "main_only_commits": 1507,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "docs/readme-and-wiki",
+      "sha": "ab2b61687210f79fa5401c8a25fa9a96bcb1ca61",
+      "main_only_commits": 2205,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "sha": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "main_only_commits": 1502,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "fix/ghostpay-reconciliation-saturated-state-20261109",
+      "sha": "a864949d9ee48cb48a43710f5dbd382032ab8db9",
+      "main_only_commits": 967,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "fix/remediation-b16c7936-5ce634",
+      "sha": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "main_only_commits": 1170,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "fix/remediation-f95457fd-22ecf9",
+      "sha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "main_only_commits": 1167,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "gh-pages",
+      "sha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+      "main_only_commits": 2216,
+      "branch_only_commits": 3,
+      "head_in_main": false
+    },
+    {
+      "branch": "ghostpay-cloud-recovery-2026-10-26",
+      "sha": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "main_only_commits": 1506,
+      "branch_only_commits": 12,
+      "head_in_main": false
+    },
+    {
+      "branch": "ghostpay-local-lean-boundary-20261027",
+      "sha": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "main_only_commits": 1506,
+      "branch_only_commits": 18,
+      "head_in_main": false
+    },
+    {
+      "branch": "ghostpay-offline-deps-2026-10-27",
+      "sha": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "main_only_commits": 1506,
+      "branch_only_commits": 13,
+      "head_in_main": false
+    },
+    {
+      "branch": "ghostpay-sbom-repro-2026-10-27",
+      "sha": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "main_only_commits": 1506,
+      "branch_only_commits": 14,
+      "head_in_main": false
+    },
+    {
+      "branch": "gpt/ghostpay-beta-spec-20261109",
+      "sha": "6697390ff482ba18985de075412ba542e38040ab",
+      "main_only_commits": 943,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "gpt/ghostpay-cli-completion-20261109",
+      "sha": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04",
+      "main_only_commits": 945,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "gpt/ghostpay-product-completion-20261109",
+      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee",
+      "main_only_commits": 948,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "haiku/ghostpay-h01-inventory-20261111",
+      "sha": "747239db1a9b641d761736062c64bfb766d363ed",
+      "main_only_commits": 1493,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "haiku/l1-i18n-20261114",
+      "sha": "c6a9033449cd9717d022f1c37913f951b1baaa6e",
+      "main_only_commits": 557,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "haiku/l2-pkg-20261114",
+      "sha": "0c8b111cbe899a49b3cb03dc32c375b36ca9768d",
+      "main_only_commits": 580,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "haiku/l3-ledger-20261114",
+      "sha": "8c91051b449248bfc822a6578a3815b3c9d83ce3",
+      "main_only_commits": 580,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "integration/consolidated-2026-10-21",
+      "sha": "c206655ebfa747b3dd56b1dc9f4e7f16e641a833",
+      "main_only_commits": 1557,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "integration/consolidated-2026-11-14",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461",
+      "main_only_commits": 358,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "integration/ghostpay-accepted-20261102",
+      "sha": "f8193502e602c99bb24ff956f142671750b744a0",
+      "main_only_commits": 1174,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "main_only_commits": 914,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "main_only_commits": 0,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "nodata/doc-sweep-20261118",
+      "sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "main_only_commits": 4,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "nodata/eager-babbage-0w6sf6",
+      "sha": "2693b08ed4b1dae35fad604a2324b790f1eee5dc",
+      "main_only_commits": 1488,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "nodata/jolly-rubin-u4zd45",
+      "sha": "1054daabc5cabe958466ec144582d76137b54910",
+      "main_only_commits": 4,
+      "branch_only_commits": 5,
+      "head_in_main": false
+    },
+    {
+      "branch": "nodata/wizardly-allen-qwol6u",
+      "sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "main_only_commits": 4,
+      "branch_only_commits": 1,
+      "head_in_main": false
+    },
+    {
+      "branch": "nodata/wonderful-darwin-kd1h22",
+      "sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "main_only_commits": 4,
+      "branch_only_commits": 48,
+      "head_in_main": false
+    },
+    {
+      "branch": "nodata/zealous-hopper-lr0nxe",
+      "sha": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "main_only_commits": 4,
+      "branch_only_commits": 4,
+      "head_in_main": false
+    },
+    {
+      "branch": "privacy/hardening-recommendations",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "main_only_commits": 4,
+      "branch_only_commits": 2,
+      "head_in_main": false
+    },
+    {
+      "branch": "research/privacy-evidence-matrix-20261110",
+      "sha": "a0a2d1dfbbdb10d89ef1a6ca4557d286d0e3f49e",
+      "main_only_commits": 1493,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "security/mythril-full-remediation-20261118",
+      "sha": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "main_only_commits": 4,
+      "branch_only_commits": 9,
+      "head_in_main": false
+    },
+    {
+      "branch": "work/ghostpay-consolidation-review-20261025",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "main_only_commits": 1504,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "work/ghostpay-pr26-qa-2026-10-24",
+      "sha": "77e7d7b6dd21da1995259c8950141db0d34bcb6e",
+      "main_only_commits": 1521,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    },
+    {
+      "branch": "work/local-reconstruction-2026-10-24",
+      "sha": "bd320d530c725c0edc820b496ea298d741c7ba9e",
+      "main_only_commits": 1530,
+      "branch_only_commits": 0,
+      "head_in_main": true
+    }
+  ],
+  "excluded_symbolic_refs": [
+    {
+      "ref": "refs/remotes/origin/HEAD",
+      "target": "refs/remotes/origin/gpt/ghostpay-product-completion-20261109",
+      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee"
+    }
+  ],
+  "heads_in_main": 164,
+  "heads_not_in_main": 79
+}

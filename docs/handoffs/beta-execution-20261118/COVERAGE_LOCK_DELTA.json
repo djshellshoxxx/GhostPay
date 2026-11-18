@@ -1,0 +1,4387 @@
+{
+  "base": "0597852aeede368b0b8819be0c4cd68c9b1a6081",
+  "changes": [
+    {
+      "path": "",
+      "before": {
+        "name": "ghostpay",
+        "version": "0.1.0",
+        "license": "UNLICENSED",
+        "workspaces": [
+          "packages/*",
+          "apps/*"
+        ],
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": {
+        "name": "ghostpay",
+        "version": "0.1.0",
+        "license": "UNLICENSED",
+        "workspaces": [
+          "packages/*",
+          "apps/*"
+        ],
+        "devDependencies": {
+          "@vitest/coverage-v8": "5.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      }
+    },
+    {
+      "path": "apps/relayer/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "apps/relayer/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "apps/relayer/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "apps/web/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "apps/web/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "apps/web/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "node_modules/@vitest/coverage-v8",
+      "before": null,
+      "after": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      }
+    },
+    {
+      "path": "node_modules/@vitest/istanbul-lib-coverage",
+      "before": null,
+      "after": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      }
+    },
+    {
+      "path": "node_modules/@vitest/istanbul-lib-report",
+      "before": null,
+      "after": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      }
+    },
+    {
+      "path": "packages/address-safety/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/address-safety/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/address-safety/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/amount-blur/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/amount-blur/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/amount-blur/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-family/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-family/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-family/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-payjoin/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-payjoin/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-payjoin/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-silent-payments/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-silent-payments/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/btc-silent-payments/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-adapters/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-adapters/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-adapters/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-evm-extra/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-evm-extra/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-evm-extra/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-solana/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-solana/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-solana/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-tron/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-tron/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/chain-tron/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/cli/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/cli/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/cli/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/confidential-amounts/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/confidential-amounts/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/confidential-amounts/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/core-crypto/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/core-crypto/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/core-crypto/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/donation/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/donation/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/donation/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools-privacypools/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools-privacypools/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools-privacypools/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools-railgun/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools-railgun/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools-railgun/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/external-pools/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/hops/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/hops/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/hops/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/hygiene/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/hygiene/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/hygiene/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/i18n/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/i18n/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/i18n/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/invoice-schema/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/invoice-schema/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/invoice-schema/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-billing/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-billing/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-billing/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-hooks/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-hooks/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-hooks/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-ledger/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-ledger/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-ledger/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-multisig/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-multisig/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/merchant-multisig/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/metadata-hardening/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/metadata-hardening/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/metadata-hardening/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/net-harness/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/net-harness/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/net-harness/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/net-transport/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/net-transport/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/net-transport/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ops-monitor/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ops-monitor/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ops-monitor/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/payer-sponsor/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/payer-sponsor/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/payer-sponsor/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/payment-uri/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/payment-uri/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/payment-uri/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pir-two-server/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pir-two-server/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pir-two-server/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/plugin-api/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/plugin-api/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/plugin-api/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/policy-scheme/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/policy-scheme/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/policy-scheme/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-circuits/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-circuits/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-circuits/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-prover/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-prover/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-prover/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-relayer/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-relayer/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-relayer/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-sdk/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-sdk/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/pool-sdk/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/privacy-pipeline/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/privacy-pipeline/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/privacy-pipeline/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/privacy-profiles/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/privacy-profiles/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/privacy-profiles/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/qr-exchange/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/qr-exchange/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/qr-exchange/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/relayer-guard/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/relayer-guard/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/relayer-guard/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/sandbox/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/sandbox/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/sandbox/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/scan-source/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/scan-source/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/scan-source/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/sdk/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/sdk/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/sdk/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/secret-box/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/secret-box/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/secret-box/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/solana-stealth/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/solana-stealth/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/solana-stealth/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/tron-adapter/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/tron-adapter/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/tron-adapter/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/tx-review/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/tx-review/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/tx-review/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-connect/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-connect/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-connect/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-core/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-core/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-core/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-export/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-export/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-export/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-fees/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-fees/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-fees/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-fiat/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-fiat/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-fiat/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-flow/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-flow/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-flow/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-guide/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-guide/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-guide/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-i18n/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-i18n/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-i18n/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-intake/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-intake/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-intake/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-links/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-links/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-links/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-notify/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-notify/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-notify/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-presets/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-presets/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-presets/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-privacy/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-privacy/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-privacy/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-receipts/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-receipts/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-receipts/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-sandbox/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-sandbox/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-sandbox/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-schedule/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-schedule/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-schedule/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-vault/node_modules/@vitest/coverage-v8",
+      "before": {
+        "version": "5.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-5.1.0.tgz",
+        "integrity": "sha512-OY9aShBQG5KOIw2zCo9fDoCHI9RHliNHJ//nM7m6jGg41Hyke9JOGWmeMlK74xYErsxMoK8mIB3gAeEyFVA7LA==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@bcoe/v8-coverage": "^1.0.2",
+          "@vitest/istanbul-lib-coverage": "^2.1.0",
+          "@vitest/istanbul-lib-report": "^2.1.0",
+          "ast-v8-to-istanbul": "^1.0.7",
+          "magicast": "^0.5.5",
+          "obug": "^3.0.0",
+          "std-env": "^4.3.0",
+          "tinyrainbow": "^3.2.0"
+        },
+        "funding": {
+          "url": "https://opencollective.com/vitest"
+        },
+        "peerDependencies": {
+          "@vitest/browser": "5.1.0",
+          "vitest": "5.1.0"
+        },
+        "peerDependenciesMeta": {
+          "@vitest/browser": {
+            "optional": true
+          }
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-vault/node_modules/@vitest/istanbul-lib-coverage",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-coverage/-/istanbul-lib-coverage-2.1.0.tgz",
+        "integrity": "sha512-WOjuS+xcjSIy7ruYBQ+9BUcV7XZQ0FyVcbWbWxW9TRx/kLGx5SQaeFRIFDJxjNplb6YsT7SpKo2zuXXUo91OIQ==",
+        "dev": true,
+        "license": "MIT",
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    },
+    {
+      "path": "packages/ux-vault/node_modules/@vitest/istanbul-lib-report",
+      "before": {
+        "version": "2.1.0",
+        "resolved": "https://registry.npmjs.org/@vitest/istanbul-lib-report/-/istanbul-lib-report-2.1.0.tgz",
+        "integrity": "sha512-+ZFta25nWtGCOBG9/IET8w1RO5Oawsd6H8Uf6AJ9EA/StFuKVtKAEJEJ6uRt84OH+T4YkI0ASmIHAhRA+0KVxw==",
+        "dev": true,
+        "license": "MIT",
+        "dependencies": {
+          "@vitest/istanbul-lib-coverage": "2.1.0"
+        },
+        "engines": {
+          "node": ">=22"
+        }
+      },
+      "after": null
+    }
+  ]
+}
