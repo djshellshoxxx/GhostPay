@@ -108,25 +108,17 @@ describe('SecretBackup text', () => {
     const keys = englishBackupText('keys');
     expect(keys.title).toBe('Backup keys');
     expect(keys.warning).toBe('Anyone with these keys controls the wallet. They are not stored anywhere.');
-    expect([keys.show, keys.hide, keys.copy]).toEqual(['Show backup keys', 'Hide keys', 'Copy keys']);
-    expect(keys.copyConfirm).toBe('Copy anyway');
-    expect(keys.copyFailed).toBe('Copy failed: select the text manually.');
+    expect([keys.show, keys.hide]).toEqual(['Show backup keys', 'Hide keys']);
   });
 
-  it('translates the neutral button labels and keeps the clipboard and key-handling warnings English', async () => {
+  it('translates the neutral button labels and keeps the key-handling warning English, with no copy control', async () => {
     const user = userEvent.setup();
-    const unreviewedWarning = 'Borrador de advertencia del portapapeles sin revisión.';
     function Backup(): React.ReactNode { return <SecretBackup reveal={() => 'a'.repeat(128)} text={localizedBackupText(useLocale(), 'keys')} />; }
-    // The shipped draft currently retains this warning in English; a distinct draft proves fallback is enforced.
-    render(<I18nProvider initialPreference="es" target={document.documentElement} loader={(locale) => Promise.resolve(locale === 'es'
-      ? { ...es, messages: { ...es.messages, 'btc.seed.copyWarning': unreviewedWarning } }
-      : SOURCE_CATALOG)}><Backup /></I18nProvider>);
+    render(<I18nProvider initialPreference="es" target={document.documentElement} loader={(locale) => Promise.resolve(locale === 'es' ? es : SOURCE_CATALOG)}><Backup /></I18nProvider>);
     await user.click(await screen.findByRole('button', { name: draft('es', 'secret.keys.show') }));
     expect(screen.getByText(english('secret.keys.warning'))).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: draft('es', 'secret.keys.copy') }));
-    expect(screen.getByText(english('btc.seed.copyWarning'))).toBeTruthy();
-    expect(screen.queryByText(unreviewedWarning)).toBeNull();
-    expect(screen.getByRole('button', { name: english('btc.seed.copyConfirm') })).toBeTruthy();
+    expect(screen.getByRole('button', { name: draft('es', 'secret.keys.hide') })).toBeTruthy();
+    expect(screen.getAllByRole('button')).toHaveLength(1);
   });
 });
 

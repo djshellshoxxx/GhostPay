@@ -68,21 +68,20 @@ describe('SolanaView', () => {
     expect(screen.queryByRole('button', { name: 'Show backup seed' })).toBeNull();
   });
 
-  it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
+  it('has no clipboard path for the backup seed: reveal, hide and Lock never call clipboard.writeText', async () => {
     const { user } = await setup();
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
-    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
-    await user.click(screen.getByRole('button', { name: 'Copy seed' }));
-    expect(writeText).not.toHaveBeenCalled();
-    expect(screen.getByText(/Other apps and web pages can read the clipboard/)).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(screen.getByText(/^[0-9a-f]{64}$/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Copy seed' })).toBeNull();
+    expect(screen.queryByText(/Other apps and web pages can read the clipboard/)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Hide seed' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
-    expect(writeText).toHaveBeenCalledTimes(2);
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(writeText).not.toHaveBeenCalled();
   });
 
   it('rejects a malformed seed with a message', async () => {
