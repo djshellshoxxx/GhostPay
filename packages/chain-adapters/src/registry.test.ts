@@ -54,7 +54,40 @@ describe('ERC-6538 registry helpers', () => {
   it('builds lookup call and rejects non-addresses', () => {
     const c = buildLookupCall('0x70997970c51812dc3a010c7d01b50e0d17dc79c8');
     expect(c.preview.registrant).toBe('0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
+    expect(buildLookupCall('0x70997970C51812dc3A010C7d01b50e0d17dc79C8').preview.registrant).toBe('0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
     expect(() => buildLookupCall('vitalik.eth')).toThrow(/INVALID_INPUT/);
+  });
+
+  it('refuses a registrant with a wrong EIP-55 checksum instead of normalizing it (L4-I3)', async () => {
+    // One letter's case flipped: a mistyped or altered address must not silently become a different valid one.
+    const bad = '0x70997970c51812dc3A010C7d01b50e0d17dc79C8';
+    expect(() => buildLookupCall(bad)).toThrow(/INVALID_INPUT: registrant address checksum does not match/);
+    expect(() => buildLookupCall('0x70997970C51812dc3A010C7d01b50e0d17dc79c8')).toThrow(/checksum does not match/);
+    const calls: string[] = [];
+    await expect(lookupMetaAddress(client((m) => { calls.push(m); return '0x6001'; }), bad)).rejects.toThrow(/checksum does not match/);
+    expect(calls).toEqual([]);
+  });
+
+  it('accepts an all-uppercase registrant, which like all-lowercase carries no EIP-55 checksum (B2-R4)', async () => {
+    const upper = '0x70997970C51812DC3A010C7D01B50E0D17DC79C8';
+    const c = buildLookupCall(upper);
+    expect(c.preview.registrant).toBe('0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
+    expect(c.data).toBe(buildLookupCall(upper.toLowerCase()).data);
+    const calls: string[] = [];
+    await expect(lookupMetaAddress(client((m) => { calls.push(m); return m === 'eth_getCode' ? '0x6001' : encodeAbiParameters([{ type: 'bytes' }], ['0x']); }), upper)).resolves.toBeUndefined();
+    expect(calls).toEqual(['eth_getCode', 'eth_call']);
+    // Only the hex digits count: a 0X prefix is no address, whatever the case after it.
+    expect(() => buildLookupCall(`0X${upper.slice(2)}`)).toThrow(/registrant is not an address/);
+  });
+
+  it('EXTRA05-F1: a mixed-case registrant with a broken EIP-55 checksum (likely typo) is refused', async () => {
+    // Valid checksum: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8. One letter case flipped -> invalid checksum.
+    const bad = '0x70997970c51812dc3A010C7d01b50e0d17dc79C8';
+    expect(() => buildLookupCall(bad)).toThrow(/INVALID_INPUT/);
+    await expect(lookupMetaAddress(client(() => '0x6001'), bad)).rejects.toThrow(/INVALID_INPUT/);
+    // Unchecksummed single-case forms stay accepted (EIP-55: no checksum to verify).
+    expect(buildLookupCall('0x70997970C51812DC3A010C7D01B50E0D17DC79C8').preview.registrant).toBe('0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
+    expect(buildLookupCall('0x70997970C51812dc3A010C7d01b50e0d17dc79C8').preview.registrant).toBe('0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
   });
 
   it('fails closed when the registry has no code or answers garbage', async () => {

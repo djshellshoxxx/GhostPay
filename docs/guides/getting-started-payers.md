@@ -1,6 +1,6 @@
 # Getting started: payers
 
-> **Pre-audit, testnet only.** Nothing is deployed, so the app will refuse to pay until a deployment manifest exists for the chain. Use test funds.
+> **Experimental, testnet development.** The ordinary payment flow remains unavailable without accepted deployment signatures and on-chain verification. A hosted preview or listed network does not establish a qualified deployment. See the [current product guide](../user/product-guide.md).
 
 A seller sends you an invoice link. Your wallet pays the **GhostPay router**, which takes a 0.25% fee and sends the rest to a fresh one-time address derived for this payment. You cannot recognise that address; that is normal.
 
@@ -12,10 +12,10 @@ Your payer address, the token, the amounts, the time and the router use are **pu
 
 ## Before you open the link
 
-1. **The link is a bearer secret.** Do not post it publicly.
+1. **A link containing its decryption key is a bearer secret.** Passphrase-protected links need the separate passphrase. Share either mode deliberately.
 2. **Prefer pasting** it into the app's Pay page, or use a private window. Browsers may save the part after `#` in history even though the app clears the address bar.
 3. **Check where it came from.** A valid signature means the invoice was not altered, not that the seller is who they claim.
-4. Make sure you are on a site you trust. There is **no official host yet**; a lookalike site is a real risk.
+4. Make sure you are using the intended build and host. A familiar-looking page does not establish release authenticity.
 
 ## Review screen
 
@@ -25,17 +25,21 @@ Your payer address, the token, the amounts, the time and the router use are **pu
 | Gross / fee / net | Gross is what you pay; fee 0.25% of gross | Numbers do not add up |
 | Expiry | In the future | Expired (blocked) |
 | Signature | "matches key" and, if you pinned it, the key you know | Invalid (hard stop) |
-| Router and fee recipient | Match addresses published by the project through a channel you trust | They differ. The app does not yet verify the manifest signature. |
+| Router and fee recipient | Match reviewed deployment information; the app accepts the bundled manifest signature and on-chain readback | Addresses differ, deployment information is absent, or verification is incomplete |
 
-Fiat-priced invoices cannot be paid today (no feed); ask for a token-priced invoice.
+Fiat-priced invoices require a configured feed for the exact chain, asset and currency, a fresh valid quote, and accepted deployment information. The full build has ETH/USD and USDC/USD feed configurations for Sepolia and Base Sepolia; other pairs can remain unavailable, and the lean build uses fixed-token invoices. If a required feed is unavailable, ask for a token-priced invoice.
 
 ## Paying
 
-1. Connect a browser wallet (WalletConnect is not built).
+1. Connect the intended browser wallet account and chain. A separate WalletConnect session-model package does not establish an operational relay integration in this flow.
 2. For ERC-20, approve **exactly the gross amount** shown, or sign a permit if the token supports it.
 3. Confirm. The wallet should show the **router** address, not the seller.
 4. The app compares what your wallet sent with the preview and refuses if the target, amount or data changed. Configure your own RPC in Settings so it can verify.
-5. "Included" means mined, not final. Keep the transaction hash; the seller may ask for it.
+5. "Included" means mined, not final. Keep the transaction reference, original invoice and digital receipt. A reference alone does not prove the correct recipient, asset or amount.
+
+An unknown broadcast outcome may already have been sent. Check the wallet and any known transaction reference
+before clearing an attempt or retrying. Clearing local state cannot cancel an on-chain transaction. An approval
+or permit is separate from the payment and may remain effective if a later payment step fails.
 
 ## Optional extras (off by default)
 

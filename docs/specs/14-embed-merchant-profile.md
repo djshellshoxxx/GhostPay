@@ -16,3 +16,45 @@ As Roadmap 2B: XSS via attributes (strict parsing, fuzz), spoofed messages, clic
 Fuzz attributes and message schema; malicious parent page; origin mismatch; replayed nonce; popup blocked; profile with bad signature/over-size/expired; Playwright with hostile host page.
 ## 4. Acceptance
 - [ ] Roadmap F2 checklist ticked. - [ ] SDK hash published in release. - [ ] No secrets reachable by merchant DOM. - [ ] Default stays popup.
+
+
+## Implementation continuation — 2026-11-16
+
+The full-profile checkout now provides explicit remote HTTPS loading, signed-field/template presentation and
+user-confirmed origin/key pins with change warnings. See `docs/user/merchant-profiles.md` for request boundaries,
+local-storage limits and SDK attributes. Inline profiles retain the key-control-only disclosure. Templates never
+modify or authorize a separately signed invoice. Matching loaded merchant keys can explicitly issue a new invoice from a selected template, including a signed
+`allowAmount`-permitted decimal request. Release SDK hash publication and external merchant/browser acceptance remain open. This does not authorize a
+profile or local pin as an iframe, business-identity, invoice or payment credential.
+
+
+## Merchant issuance and the remaining profile-only checkout decision
+
+The existing seller authority model permits local template issuance: the loaded invoice-signing key must match the
+verified profile, and its backup must be recoverable and verified (or the seller must already have typed the existing
+waiver). The merchant explicitly selects an enabled, profile-allowed chain/asset, fixed token amount and fee policy.
+`buildInvoiceLink` signs a fresh independent invoice. Template fiat minor units are preserved separately from token units. The existing invoice v1/v2 protocol caps fiat
+and line-item minor units at 30 decimal digits. Profiles may contain 39 digits; those larger values remain visible but
+invoice issuance refuses them explicitly without clipping, rounding or expanding the signed invoice wire format. Template duration is preserved in exact seconds. Optional
+`data-amount` is a bounded decimal currency request; only signed `allowAmount` permits it. Neither profile display nor
+an amount request changes an existing payer invoice.
+
+The SDK still requires `data-invoice`. A public profile alone cannot produce today's valid invoice: profile v1 has
+no stealth meta-address/destination, no fee policy, no token-address binding or pricing policy, and its signature uses
+`GhostPay.MerchantProfile.v1` rather than the invoice signature domain. A token symbol and fiat amount do not supply
+those missing authorizations. Reusing the profile signature as an invoice signature would fail verification and must
+not be introduced.
+
+Two concrete expansion choices remain for unattended attribute-only checkout:
+
+1. Keep the current signature model and define an authenticated per-order invoice issuance transport. A merchant
+   signing service would retain signing authority; specify service custody, request authentication, response bounds,
+   order replay/idempotency and merchant availability before wiring it. The new local issuance flow requires no such
+   service and already generates usable `data-invoice` links.
+2. Define a new signed profile/payment-intent schema that binds the stealth meta-address, exact permitted chain/token
+   addresses, fee authority, pricing/quote limits, nonce/order semantics and expiry, plus an explicit payer verifier
+   compatible with that new authorization domain. This changes payment authority and requires schema/threat-model
+   approval; adding fields or bypassing the existing invoice verifier is not an implementation detail.
+
+No new custody service, signing credential, profile-authorized payment verifier, or destination/fee default was
+silently selected. This is the exact remaining scope decision; it does not block merchant-side local issuance.

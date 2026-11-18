@@ -18,6 +18,11 @@ abstract contract DeployBase is Script {
     /// @notice `FEE_RECIPIENT` equals the broadcasting account (a signer key must not collect fees).
     /// @param recipient The offending address.
     error FeeRecipientIsBroadcaster(address recipient);
+    /// @notice An address variable is not spelled in EIP-55 checksummed form (for example all lowercase,
+    /// or with a typo the checksum catches). Copy the checksummed address, e.g. from `cast to-check-sum-address`.
+    /// @param name The environment variable.
+    /// @param value The rejected value as given.
+    error AddressNotChecksummed(string name, string value);
 
     /// @dev Reads one environment variable as a string (unset reads as empty). Virtual so that tests can
     /// inject configuration without touching the process-global environment shared by parallel suites.
@@ -30,11 +35,25 @@ abstract contract DeployBase is Script {
         return keccak256(bytes(_env(name))) == keccak256(bytes("1"));
     }
 
-    /// @dev Parses and validates the common `FEE_RECIPIENT` variable.
+    /// @dev Parses an address that must be spelled exactly in its EIP-55 checksummed form.
+    /// `vm.parseAddress` accepts any letter case, so a mistyped lowercase address would otherwise be
+    /// accepted; `vm.toString(address)` returns the checksummed spelling to compare with.
+    function _parseChecksummedAddress(string memory name, string memory raw)
+        internal
+        pure
+        returns (address a)
+    {
+        a = vm.parseAddress(raw);
+        if (keccak256(bytes(vm.toString(a))) != keccak256(bytes(raw))) {
+            revert AddressNotChecksummed(name, raw);
+        }
+    }
+
+    /// @dev Parses and validates the common `FEE_RECIPIENT` variable (EIP-55 checksummed, non-zero).
     function _feeRecipient(address broadcaster) internal view returns (address feeRecipient) {
         string memory feeRaw = _env("FEE_RECIPIENT");
         if (bytes(feeRaw).length == 0) revert FeeRecipientNotSet();
-        feeRecipient = vm.parseAddress(feeRaw);
+        feeRecipient = _parseChecksummedAddress("FEE_RECIPIENT", feeRaw);
         if (feeRecipient == address(0)) revert FeeRecipientNotSet();
         if (feeRecipient == broadcaster) revert FeeRecipientIsBroadcaster(feeRecipient);
     }

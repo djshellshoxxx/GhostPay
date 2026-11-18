@@ -100,17 +100,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   padding: 16px;
   background: #ffffff;
   color: #000000;
   border: var(--qr-width) solid var(--qr-c);
 }
-.qr-large .qr { width: min(90vmin, 40rem); }
+.qr-large .qr { width: min(90vmin, 40rem); max-width: 100%; flex-shrink: 0; }
 .qr-large .qr-note { color: #000000; }
-.qr-large-label { display: flex; align-items: center; gap: 8px; font-weight: 700; margin: 0; }
+.qr-large-label { display: flex; align-items: center; gap: 8px; font-weight: 700; margin: auto 0 0; }
 .qr-large .btn { color: #000000; background: #ffffff; border: 2px solid #000000; }
+.qr-large > .btn:last-child { margin-block-end: auto; }
 
 @media (prefers-reduced-motion: no-preference) {
   .qr-frame { transition: border-color 0.2s; }
@@ -118,6 +119,6 @@
 
 /* Secret codes are never printed by default. */
 @media print {
-  .qr-kind-secret .qr-body, .qr-kind-secret .qr-actions { display: none; }
-  .qr-kind-secret::after { content: 'Secret QR code not printed.'; }
+  .qr-kind-secret .qr-body, .qr-kind-secret .qr-actions, .qr-kind-secret .qr-large { display: none; }
+  .qr-kind-secret::after { content: attr(data-qr-print-note); }
 }

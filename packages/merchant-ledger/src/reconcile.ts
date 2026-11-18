@@ -148,11 +148,11 @@ export function reconcile(
         continue;
       }
     }
-    if (p.observedAt >= target.raw.expiresAt) target.late.push(p.id);
-    else {
+    // Count only when provably before expiry: a NaN time fails `<` and stays uncounted (fail closed).
+    if (p.observedAt < target.raw.expiresAt) {
       target.counted += amt;
       target.ids.push(p.id);
-    }
+    } else target.late.push(p.id);
   }
   const results: InvoiceResult[] = [...map.values()].map((i) => {
     const tol = tolFor(i.due, options.tolerance);

@@ -256,6 +256,13 @@ describe('invoice link', () => {
     );
     expect(parseInvoiceLink(`http://127.0.0.1/pay${frag}`, { allowLocalDev: true }).host).toBe('127.0.0.1');
   });
+  it('accepts names whose last label is not a number, even with numeric or hex-like labels before it', () => {
+    for (const host of ['0x7f.example', '1.2.3.example', '10.0.0.1a', 'a0x1.example', '0xg1']) {
+      expect(parseInvoiceLink(`https://${host}/pay${frag}`).host).toBe(host);
+      // The WHATWG URL parser agrees: these stay domain names, not IPv4 addresses.
+      expect(new URL(`https://${host}/pay`).hostname).toBe(host);
+    }
+  });
 });
 
 describe('dispatcher and misc', () => {

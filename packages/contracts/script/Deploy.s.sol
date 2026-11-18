@@ -19,6 +19,8 @@ import {IERC5564Announcer} from "../src/interfaces/IERC5564Announcer.sol";
 /// - `ALLOWED_CHAIN_IDS` (optional, comma separated, spaces tolerated): extra chain ids allowed besides
 ///   the built-in testnet list. Mainnet deployments MUST list their chain id explicitly.
 /// - `ALLOW_LOCAL=1` (optional): additionally allows chain id 31337 (anvil / forge test).
+/// Address variables must be spelled in EIP-55 checksummed form; any other spelling reverts with
+/// `AddressNotChecksummed`, so a mistyped lowercase address cannot become an immutable.
 /// Every immutable is read back after deployment and compared with the inputs.
 /// Sign with `--account`, `--ledger` or `--trezor`; never pass a raw private key on a shared machine.
 contract Deploy is DeployBase {
@@ -42,8 +44,9 @@ contract Deploy is DeployBase {
     function run() external returns (GhostPayRouter router, GhostPaySweepRelayer relayer) {
         address feeRecipient = _feeRecipient(msg.sender);
         string memory announcerRaw = _env("ANNOUNCER");
-        address announcer =
-            bytes(announcerRaw).length == 0 ? CANONICAL_ANNOUNCER : vm.parseAddress(announcerRaw);
+        address announcer = bytes(announcerRaw).length == 0
+            ? CANONICAL_ANNOUNCER
+            : _parseChecksummedAddress("ANNOUNCER", announcerRaw);
 
         if (!_chainAllowed(block.chainid)) revert ChainNotAllowed(block.chainid);
         if (announcer != CANONICAL_ANNOUNCER && !_flag("ALLOW_CUSTOM_ANNOUNCER")) {

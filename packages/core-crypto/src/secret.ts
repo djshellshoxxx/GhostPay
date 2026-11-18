@@ -10,10 +10,12 @@ export const CURVE_ORDER: bigint = secp256k1.Point.Fn.ORDER;
 
 /**
  * A 32-byte secret scalar in [1, n-1]. Instances throw on `JSON.stringify`,
- * `String()`, template interpolation, `util.inspect`/`console.log`, `slice` and `subarray`.
+ * `String()`, template interpolation, `util.inspect`/`console.log`, `slice`, `subarray`,
+ * `toReversed`, `toSorted`, `with` and `toBase64`.
  *
- * @security Best-effort guardrail (audit S3-08), not a boundary: spread, `Array.from`, `Buffer.from`,
- * `structuredClone` and `TextDecoder` still read the bytes. Long-lived keys belong in a
+ * @security Best-effort guardrail (audit S3-08, L4-I3), not a boundary: spread, `Array.from`, `Buffer.from`,
+ * `structuredClone`, `TextDecoder`, element-wise methods such as `map` and `join`, and the native `toHex` (which
+ * `@noble/curves` itself uses to read secret keys) still read the bytes. Long-lived keys belong in a
  * `@ghostpay/secret-box` `SecretBox` (apps/web `session.ts` does this); a `SecretScalar` should only be a short-lived
  * temporary, wiped with {@link zeroize}.
  */
@@ -54,6 +56,20 @@ class SecretBytes extends Uint8Array<ArrayBuffer> {
     throw new TypeError(REDACTED);
   }
   public override subarray(): never {
+    throw new TypeError(REDACTED);
+  }
+  // L4-I3: the ES2023 copies create a plain Uint8Array directly (no species), and `toBase64` (current browsers) is
+  // text. Not `toHex`: @noble/curves reads every secret key through `bytes.toHex()` where the engine has it.
+  public toReversed(): never {
+    throw new TypeError(REDACTED);
+  }
+  public toSorted(): never {
+    throw new TypeError(REDACTED);
+  }
+  public with(): never {
+    throw new TypeError(REDACTED);
+  }
+  public toBase64(): never {
     throw new TypeError(REDACTED);
   }
 }

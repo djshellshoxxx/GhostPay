@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-16",
+  "contractsSourceCommit": "365a1c38770ba02826d7e039dbeef44e5a966323",
+  "correctedGateCommit": "5d1e6499ec9781963d7eb2230a4d968ef2a21b7a",
+  "contractsHarnessesAndConfigsDiffFromSourceCommit": "empty",
+  "sourceFiles": [
+    {
+      "path": "packages/contracts/src/GhostPayRouter.sol",
+      "sha256": "cc2fbfcc6c221ace6e7b888ca9bb3ca7886d0898dc33d40804dd3839067bffc8"
+    },
+    {
+      "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a"
+    },
+    {
+      "path": "packages/contracts/src/GhostPayPolicyRouter.sol",
+      "sha256": "2799f00d68b53d606fa1a146899fe29d056a87bb390d9c2badadc6c8c4ce2a37"
+    },
+    {
+      "path": "packages/contracts/src/PolicyAccount.sol",
+      "sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9"
+    },
+    {
+      "path": "packages/contracts/src/PolicyAccountFactory.sol",
+      "sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e"
+    },
+    {
+      "path": "packages/contracts/test/echidna/EchidnaRouter.sol",
+      "sha256": "dc3b7fbdba53b2883f5a32803641c253e808cc5eb3e25b1c1113a84bea62497c"
+    },
+    {
+      "path": "packages/contracts/test/echidna/EchidnaSweep.sol",
+      "sha256": "c8cfeb17cb51b1346a16db6f51bb8b86b2a96e9cdcc4a357de2f518aaef61788"
+    },
+    {
+      "path": "packages/contracts/test/echidna/EchidnaPolicy.sol",
+      "sha256": "6a6e692181f3c92496628ee056520eccdd248c16a3acd6356439efb44fbc951e"
+    },
+    {
+      "path": "packages/contracts/echidna.yaml",
+      "sha256": "beed790d8643859c9074d598c797a3b05b51459608fbfcff8f7d071d1b594c44"
+    },
+    {
+      "path": "packages/contracts/foundry.toml",
+      "sha256": "07fb03295f899933c3a6e85e3cb080184f6d3f7f5f089c9528891fa2b9191f8c"
+    },
+    {
+      "path": "packages/contracts/scripts/run-echidna.sh",
+      "sha256": "688520d99f8aa0df28edadb108029e35e7ced3290acfec3da0702f709702a12d"
+    },
+    {
+      "path": "packages/contracts/scripts/run-mythril.sh",
+      "sha256": "270857448c9438d48363efb5cd15eee73465a0a9169360f630ce4eb8dc4053bc"
+    }
+  ],
+  "toolchain": {
+    "echidna": {
+      "version": "2.2.7",
+      "archiveSha256": "d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314",
+      "checksumVerifiedAgainst": "repository nightly.yml ECHIDNA_SHA256"
+    },
+    "foundry": {
+      "version": "1.8.5",
+      "commit": "51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f",
+      "archiveSha256": "6c66ffcc55fa4249197721baa3098bc208014ea1d8aa04b2ed50ac6bccffb226",
+      "checksumVerifiedAgainst": null,
+      "note": "Official archive fetched; separate .sha256 URL404. Digest records downloaded bytes, not signature/checksum qualification."
+    },
+    "solc": {
+      "version": "0.8.28+commit.7893614a",
+      "binarySha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+      "checksumVerifiedAgainst": "official binaries.soliditylang.org compiler list"
+    },
+    "mythril": "0.24.8",
+    "cryticCompile": "0.4.2",
+    "slither": "0.11.6",
+    "solcSelect": "1.2.0"
+  },
+  "echidna": {
+    "configuration": {
+      "testLimit": 300000,
+      "seqLen": 20,
+      "shrinkLimit": 2000,
+      "workers": 4,
+      "seed": 20261021
+    },
+    "attempt1": {
+      "outerSeconds": 600,
+      "wrapperExitCode": 124,
+      "lastReportedCalls": 203858,
+      "complete": false
+    },
+    "attempt2": {
+      "outerSeconds": 2700,
+      "wrapperExitCode": 2,
+      "wrapperTailParseError": "Active wrapper file was edited after its for-loop had already been parsed. Does not qualify as clean wrapper execution.",
+      "nativeHarnesses": [
+        {
+          "name": "EchidnaRouter",
+          "exitCode": 1,
+          "totalCalls": 300021,
+          "realPropertiesUnviolated": 4,
+          "canariesReached": 4,
+          "complete": true
+        },
+        {
+          "name": "EchidnaSweep",
+          "exitCode": 1,
+          "totalCalls": 300063,
+          "realPropertiesUnviolated": 4,
+          "canariesReached": 2,
+          "complete": true
+        },
+        {
+          "name": "EchidnaPolicy",
+          "exitCode": 137,
+          "lastReportedCalls": 257048,
+          "observedCanariesReached": 5,
+          "complete": false
+        }
+      ]
+    },
+    "policyRetry": {
+      "exitCode": 137,
+      "nativeReturnCode": -9,
+      "budgetTermination": null,
+      "elapsedSeconds": 16.276545262997388,
+      "sampledMaxTreeRssKiB": 802368,
+      "childMaxRssKiB": 812540,
+      "childUserSeconds": 17.12279,
+      "childSystemSeconds": 1.9279169999999999,
+      "memoryBudgetMiB": 1024,
+      "rssSamplingSeconds": 1,
+      "processTimeoutSeconds": 900
+    },
+    "fullSuiteQualified": false,
+    "correctedGateReplay": {
+      "exitCode": 1,
+      "acceptedHarnessReports": [
+        "EchidnaRouter",
+        "EchidnaSweep"
+      ],
+      "rejectedHarnessReports": [
+        "EchidnaPolicy"
+      ],
+      "executesAnalyzer": false,
+      "reason": "Actual Policy output/status137 has neither final inventory nor completed call total."
+    }
+  },
+  "mythril": {
+    "compiler": "0.8.28",
+    "evmVersion": "cancun",
+    "optimizerRuns": 200,
+    "transactionCount": 3,
+    "executionTimeoutSeconds": 900,
+    "initialWrapperOuterSeconds": 1200,
+    "initialWrapperExitCode": 124,
+    "contracts": [
+      {
+        "name": "GhostPayRouter",
+        "exitCode": 137,
+        "complete": false
+      },
+      {
+        "name": "GhostPaySweepRelayer",
+        "exitCode": 1,
+        "reportProduced": true,
+        "lowSwc116Findings": 1
+      },
+      {
+        "name": "GhostPayPolicyRouter",
+        "exitCode": 137,
+        "complete": false
+      },
+      {
+        "name": "PolicyAccount",
+        "continuationExitCode": 1,
+        "reportProduced": true,
+        "lowSwc116Findings": 2
+      },
+      {
+        "name": "PolicyAccountFactory",
+        "continuationExitCode": 137,
+        "complete": false
+      }
+    ],
+    "fullSuiteQualified": false
+  },
+  "slither": {
+    "command": "slither . --filter-paths 'lib|test|script' --fail-medium --exclude-informational --exclude-low",
+    "exitCode": 0,
+    "contracts": 34,
+    "detectors": 64,
+    "results": 0
+  },
+  "artifacts": [
+    {
+      "path": "EchidnaRouter.final-report.txt",
+      "sha256": "954054899bafafa654c45a941d5dccd600a614c1368be6481ac7bd924b7994dc",
+      "bytes": 1671,
+      "description": "Unmodified final native report excerpt; excludes compilation/progress lines, includes all properties and completed call total."
+    },
+    {
+      "path": "EchidnaSweep.final-report.txt",
+      "sha256": "25f01c53a7a11aee6a26e83fbd27a47b13aad7d6f6686b47fd1c5fed1172e4f6",
+      "bytes": 850,
+      "description": "Unmodified final native report excerpt; excludes compilation/progress lines, includes all properties and completed call total."
+    },
+    {
+      "path": "echidna-attempt-1.partial.log.gz",
+      "sha256": "2aa7ad336fdd4252c672f4e37f8fa230a5a21cd52d04f29417dda9a117c86954",
+      "bytes": 5927,
+      "rawSha256": "646ead713461555d701e6b0edcc4a0447f1d10f288112483d97748d95b980ede",
+      "rawBytes": 39921,
+      "description": "Buffered native Router output from first outer600s exit124; incomplete, not a passing report."
+    },
+    {
+      "path": "echidna-attempt-2.raw.log.gz",
+      "sha256": "cfd14d59f8d91ff129cde67073ab0722850e90acb2ed65810e7c88f6a2ef3547",
+      "bytes": 14359,
+      "rawSha256": "d3087a597b535256fcfc099eae3ffa2d4c62dc5a63f07332b1a4e7f5d7854a28",
+      "rawBytes": 92926,
+      "description": "Full original wrapper stream: Router/Sweep complete, Policy137 incomplete; includes old parser rejections and tail parse error caused by editing the active shell file."
+    },
+    {
+      "path": "echidna-policy-retry.raw.log.gz",
+      "sha256": "23313aa63610ed78d886ec7ee05e55e1c722159c772f35a26897b1e216a72374",
+      "bytes": 1787,
+      "rawSha256": "0f27498d2904899d1240ac466252d4ef03858850b09948b21000bc2683658908",
+      "rawBytes": 10313,
+      "description": "Sole isolated retry: native SIGKILL before final inventory, not a passing report."
+    },
+    {
+      "path": "echidna-policy-resources.json",
+      "sha256": "8d4d148398339639bc355454fe38c2a3aa6e55eb2e1cff2e2c7cefb99d494576",
+      "bytes": 341,
+      "rawSha256": "8d4d148398339639bc355454fe38c2a3aa6e55eb2e1cff2e2c7cefb99d494576",
+      "rawBytes": 341,
+      "description": "Measured retry resource/exit metadata; budgetTermination:null means neither watchdog limit fired."
+    },
+    {
+      "path": "mythril-attempt-1.raw.log.gz",
+      "sha256": "ab863cb69eb345aef6a77d8254b9712e0668c949139e1ed362d09ae31bc9d813",
+      "bytes": 4917,
+      "rawSha256": "857346a1eead3db793c0dd92ed504a204ca8f3558484611f8749b06cf11bd50e",
+      "rawBytes": 17601,
+      "description": "Full original Mythril wrapper stream before outer1200s termination; two SIGKILLs and one reported expiry finding."
+    },
+    {
+      "path": "mythril-continuation.log",
+      "sha256": "6c24cc478c10744a869e7ab3b1989ead63e9d5ec7dc687ddbe9b6cd3a0c63155",
+      "bytes": 937,
+      "rawSha256": "6c24cc478c10744a869e7ab3b1989ead63e9d5ec7dc687ddbe9b6cd3a0c63155",
+      "rawBytes": 937,
+      "description": "PolicyAccount rc1 with two findings; PolicyAccountFactory rc137."
+    },
+    {
+      "path": "mythril-PolicyAccount.json.gz",
+      "sha256": "a1a65f0f155fb953f7eef1799f19d9296e17677b7f3a4f8d7b4e75849fa2b23f",
+      "bytes": 7629,
+      "rawSha256": "9eff14ef92f10b2a11a15e4ad0f4cf194564a5b274029bbc814f424e6c6cc301",
+      "rawBytes": 47195,
+      "description": "Unmodified native JSON from direct PolicyAccount continuation."
+    },
+    {
+      "path": "mythril-factory.stdout.gz",
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "bytes": 20,
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawBytes": 0,
+      "description": "Empty native stdout from killed factory analysis; no issue-free JSON report exists."
+    },
+    {
+      "path": "slither.log",
+      "sha256": "bc63a68fc92765572d6dc2ec3ec727648b90676ef1e5ad8af741674388a1bf33",
+      "bytes": 357,
+      "rawSha256": "bc63a68fc92765572d6dc2ec3ec727648b90676ef1e5ad8af741674388a1bf33",
+      "rawBytes": 357,
+      "description": "Exact configured nightly Slither command completed0;34contracts64detectors0results."
+    },
+    {
+      "path": "analyzer-fixtures.log",
+      "sha256": "498934f5ec6f2c9d4db18a829b5b94537c86293b5816653e278690e5683243e1",
+      "bytes": 3612,
+      "rawSha256": "498934f5ec6f2c9d4db18a829b5b94537c86293b5816653e278690e5683243e1",
+      "rawBytes": 3612,
+      "description": "41passing wrapper fixtures; not a native analyzer campaign."
+    },
+    {
+      "path": "mythril-environment.txt",
+      "sha256": "552ca5db416705aea424a744cc131f374db1c97ddedc8ed13cf01f9090bbec24",
+      "bytes": 1693,
+      "rawSha256": "552ca5db416705aea424a744cc131f374db1c97ddedc8ed13cf01f9090bbec24",
+      "rawBytes": 1693,
+      "description": "Actual isolated Python package graph for Mythril and crytic-compile."
+    },
+    {
+      "path": "slither-environment.txt",
+      "sha256": "d2cf6cf14ee9533d57f69e958a12f57e0b2626db4aa8adf3c35df5e63f16b8ab",
+      "bytes": 848,
+      "rawSha256": "d2cf6cf14ee9533d57f69e958a12f57e0b2626db4aa8adf3c35df5e63f16b8ab",
+      "rawBytes": 848,
+      "description": "Actual isolated Python package graph for Slither."
+    },
+    {
+      "path": "mythril-host-launcher.txt",
+      "sha256": "e1ea1a9cc27a2d9b58a414eaabad5ad244952337c62822922f21c6b3f898fcfb",
+      "bytes": 329,
+      "rawSha256": "e1ea1a9cc27a2d9b58a414eaabad5ad244952337c62822922f21c6b3f898fcfb",
+      "rawBytes": 329,
+      "description": "Transport-only py-solc-x download host workaround; no symbolic analyzer code change."
+    },
+    {
+      "path": "policy-resource-launcher.txt",
+      "sha256": "0e1ef5e49a362e66e3627a032458e39276a8a925883996180675ee830fc4f622",
+      "bytes": 3065,
+      "rawSha256": "0e1ef5e49a362e66e3627a032458e39276a8a925883996180675ee830fc4f622",
+      "rawBytes": 3065,
+      "description": "Immutable actual retry launcher; sampled process-tree RSS/time guard; no analyzer setting change."
+    },
+    {
+      "path": "mythril-findings.json",
+      "sha256": "ea6c5024ab50d7458b2b8bc03f8d7a9240b45ec002400c0de77b16fc8fd2c6fc",
+      "bytes": 2700,
+      "description": "Exact selected finding fields; full native reports are preserved separately; source disposition is in the handoff."
+    },
+    {
+      "path": "echidna-report-replay.log.gz",
+      "sha256": "0b0b8aa96dc34fc42dcd9e0fc55c04c26e3cde6c504b34796edc56278151d78d",
+      "bytes": 11225,
+      "rawSha256": "1b6096da63d485ead6ada07525f9fc7fcd2f4317e7f99e7f40be23e659a25f46",
+      "rawBytes": 72515,
+      "description": "Corrected gate5d1e6499 replay of captured native outputs and native status1/1/137. Exit1 rejects only incomplete Policy. No analyzer re-execution."
+    }
+  ]
+}

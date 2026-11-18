@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { contrastRatio, deltaE, type Cvd } from './qrContrast';
-import { QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrPalette } from './qrKinds';
+import { MAX_PRINT_QR_LINK_CHARS, printQrPolicy, QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrPalette } from './qrKinds';
 
 const css = readFileSync(new URL('../styles/qr.css', import.meta.url), 'utf8');
 
@@ -36,6 +36,10 @@ describe('taxonomy', () => {
     expect(kindForPayload('payment-request', { unsigned: true })).toBe('caution');
     expect(kindForPayload('receipt', { unverified: true })).toBe('caution');
     expect(kindForPayload('invoice-link-with-key')).toBe('bearer');
+    // A testnet or unverified marker must not hide that the QR itself carries a decryption key.
+    // CAUTION lacks the bearer-capability warning shown by the PRIVATE LINK frame.
+    expect(kindForPayload('invoice-link-with-key', { testnet: true })).toBe('bearer');
+    expect(kindForPayload('invoice-link-with-key', { unsigned: true, unverified: true })).toBe('bearer');
     expect(kindForPayload('rpc-list')).toBe('device');
     expect(kindForPayload('signed-manifest')).toBe('proof');
   });
@@ -85,5 +89,19 @@ describe('palette', () => {
     expect(css).not.toMatch(/url\(|@import|http/);
     expect(css).toContain('@media (forced-colors: active)');
     expect(css).toContain('@media (prefers-contrast: more)');
+  });
+});
+
+describe('printQrPolicy', () => {
+  it('prints a QR only for short links', () => {
+    expect(printQrPolicy('x'.repeat(MAX_PRINT_QR_LINK_CHARS), true).includeQr).toBe(true);
+    expect(printQrPolicy('x'.repeat(MAX_PRINT_QR_LINK_CHARS + 1), true).includeQr).toBe(false);
+    expect(printQrPolicy(undefined, true).includeQr).toBe(false);
+    expect(printQrPolicy('', true).includeQr).toBe(false);
+  });
+  it('warns about bearer links unless passphrase protected, and picks the frame kind', () => {
+    expect(printQrPolicy('abc', false)).toEqual({ includeQr: true, kind: 'bearer', bearerWarning: true });
+    expect(printQrPolicy('abc', true)).toEqual({ includeQr: true, kind: 'shareable', bearerWarning: false });
+    expect(printQrPolicy(undefined, false).bearerWarning).toBe(false);
   });
 });

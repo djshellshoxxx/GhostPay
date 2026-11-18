@@ -1,5 +1,14 @@
 # Reuse research: milestone-escrow
 
+> Historical survey; upstream license, maintenance and revision observations below have not been
+> refreshed. The proposed administrator-only `Pausable` control and shared milestone identifiers
+> conflict with specification 17's no-admin and independent-stage requirements. They are not
+> accepted implementation guidance. The current supporting work is an isolated
+> [design model](../../../scripts/experimental/milestone-escrow/README.md) which reuses GhostPay's
+> existing policy-recovery transition/oracle testing pattern, adds no dependency and imports no
+> external escrow code. Future contract work must recheck exact pinned upstream files and licenses
+> after the separate custody and dispute authority decision.
+
 Scope: read-only. No clones, no installs, no code copied. Verified = fetched in this session. Unverified = stated as such.
 Repo HEAD check: GhostPay HEAD d699e4d. Existing milestone code in repo: none found in *.sol (grep "milestone" hits only docs).
 GitHub REST API and `gh` returned 403 for all repos in this session ("not enabled for this session"). SHAs below come from github.com commit pages (fetched), not the API.

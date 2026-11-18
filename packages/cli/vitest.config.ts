@@ -8,6 +8,15 @@ const src = (name: string): string =>
 export default defineConfig({
   resolve: {
     alias: {
+      '@ghostpay/ux-vault/portable': fileURLToPath(new URL('../ux-vault/src/portable.ts', import.meta.url)),
+      '@ghostpay/core-crypto': src('core-crypto'),
+      '@ghostpay/chain-adapters': src('chain-adapters'),
+      '@ghostpay/btc-silent-payments': src('btc-silent-payments'),
+      '@ghostpay/chain-solana': src('chain-solana'),
+      '@ghostpay/chain-tron': src('chain-tron'),
+      '@ghostpay/qr-exchange': src('qr-exchange'),
+      '@ghostpay/ux-vault': src('ux-vault'),
+      '@ghostpay/merchant-multisig': src('merchant-multisig'),
       '@ghostpay/i18n': src('i18n'),
       '@ghostpay/invoice-schema': src('invoice-schema'),
       '@ghostpay/merchant-billing': src('merchant-billing'),

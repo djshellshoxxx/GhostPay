@@ -3,6 +3,7 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient } from './esplora';
+import { EsploraHeaderSource, loadHeaderChain, MemoryHeaderStore, syncHeaders } from './headers';
 import { btcNetwork } from './network';
 import { scanForPayments } from './scan';
 import { reviewSweep, signSweep } from './sweep';
@@ -22,13 +23,18 @@ describe.skipIf(url === undefined || seed === undefined || dest === undefined)('
     const wallet = walletFromSeedHex(seed ?? '', net);
     const client = new EsploraClient({ baseUrl: url ?? '', fetchFn: (u, i) => fetch(u, i) });
     await client.checkNetwork(net);
+    // As the view does: check the shim's headers from genesis (it has no /blocks/:height, so one header at a time).
+    const store = new MemoryHeaderStore();
+    const { chain: headers } = await loadHeaderChain(net, store);
+    await syncHeaders({ chain: headers, sources: [new EsploraHeaderSource(client)], store });
 
-    const first = await scanForPayments({ client, wallet, fromHeight: from });
+    const first = await scanForPayments({ client, wallet, fromHeight: from, headers });
+    expect(first.headerAnchored).toBe(true);
     expect(first.found).toHaveLength(1);
     expect(first.found[0]?.amountSats).toBe(expected);
 
     const review = reviewSweep(wallet, first.found, dest ?? '', 2);
-    const signed = signSweep(wallet, first.found, review);
+    const signed = await signSweep(wallet, first.found, review);
     const txid = await client.broadcast(signed.rawHex);
     expect(txid).toBe(signed.txid);
 

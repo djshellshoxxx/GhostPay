@@ -124,24 +124,40 @@ contract SweepAuditTest is SweepBase {
     function test_crossRelayerAndCrossChainReplayRejected() public {
         _approveRelayer(address(token), type(uint256).max);
         IGhostPaySweepRelayer.Sweep memory s = _sweep(10);
+        bytes32 digest = _digest(s);
         bytes memory sig = _sign(ownerPk, s);
+        // Positive control: the signature is valid for (relayer, home chain), so InvalidSignature below
+        // can only come from domain separation, never from a bad signature.
+        (uint8 v, bytes32 r, bytes32 sg) = vm.sign(ownerPk, digest);
+        assertEq(ecrecover(digest, v, r, sg), owner);
+        bytes32 homeSeparator = relayer.DOMAIN_SEPARATOR();
 
         GhostPaySweepRelayer other = new GhostPaySweepRelayer();
+        assertTrue(other.DOMAIN_SEPARATOR() != homeSeparator);
         vm.prank(owner);
         token.approve(address(other), type(uint256).max);
         vm.prank(submitter);
         vm.expectRevert(IGhostPaySweepRelayer.InvalidSignature.selector);
         other.sweep(s, sig);
 
-        // vm.getChainId: under --ir-minimum block.chainid is re-read after vm.chainId.
+        // vm.getChainId(), never a `block.chainid` local: via-IR (forge coverage --ir-minimum) treats
+        // CHAINID as movable and re-reads it at each use, so the "saved" id follows vm.chainId and the
+        // chain is never restored.
         uint256 originalChain = vm.getChainId();
         vm.chainId(originalChain + 1);
+        assertEq(vm.getChainId(), originalChain + 1);
+        assertTrue(relayer.DOMAIN_SEPARATOR() != homeSeparator);
         vm.prank(submitter);
         vm.expectRevert(IGhostPaySweepRelayer.InvalidSignature.selector);
         relayer.sweep(s, sig);
+        assertFalse(relayer.nonceUsed(owner, s.nonce));
+
         vm.chainId(originalChain);
+        assertEq(vm.getChainId(), originalChain);
+        assertEq(relayer.DOMAIN_SEPARATOR(), homeSeparator);
         vm.prank(submitter);
         relayer.sweep(s, sig);
+        assertTrue(relayer.nonceUsed(owner, s.nonce));
     }
 
     // ---------------------------------------------------------------- S-04 destination / feeTo aliasing

@@ -24,7 +24,12 @@ function fakeRpc(log = []) {
     switch (method) {
       case 'getblockcount': return 7;
       case 'getblockhash': if (params[0] > 7) throw new Error('Block height out of range'); return H('d');
-      case 'getblock': assert.deepEqual(params, [H('d'), 3]); return block;
+      case 'getblock':
+        assert.equal(params[0], H('d'));
+        // Verbosity 1 lists txids only; verbosity 3 has every transaction with its prevouts.
+        if (params[1] === 1) return { hash: H('d'), height: 3, nTx: block.tx.length, tx: block.tx.map((t) => t.txid) };
+        assert.equal(params[1], 3);
+        return block;
       case 'getblockheader': assert.deepEqual(params, [H('d'), false]); return '00'.repeat(80);
       case 'gettxout': return params[0] === H('b') ? { value: 0.0005 } : null;
       case 'sendrawtransaction': return H('e');
@@ -70,11 +75,28 @@ test('routes', async () => {
   const p1 = JSON.parse((await h('GET', `/block/${H('d')}/txs/25`)).body);
   assert.equal(p1.length, 7);
   assert.equal((await h('GET', `/block/${H('d')}/txs/10`)).status, 400);
+  // Like electrs: a start index at or past the end is an error, not an empty page.
+  const past = await h('GET', `/block/${H('d')}/txs/50`);
+  assert.deepEqual([past.status, past.body], [400, 'start index out of range']);
   assert.deepEqual(JSON.parse((await h('GET', `/tx/${H('b')}/outspend/0`)).body), { spent: false });
   assert.deepEqual(JSON.parse((await h('GET', `/tx/${H('f')}/outspend/0`)).body), { spent: true });
   assert.equal(JSON.parse((await h('GET', '/fee-estimates')).body)['1'], 1);
   assert.equal((await h('POST', '/tx', '0200ff\n')).body, H('e'));
   assert.deepEqual(log.at(-1), ['sendrawtransaction', ['0200ff']]);
+});
+
+test('GET /block/:hash gives the summary the app reads its page count from (getblock verbosity 1)', async () => {
+  const log = [];
+  const h = createHandler(fakeRpc(log));
+  const r = await h('GET', `/block/${H('d')}`);
+  assert.equal(r.status, 200);
+  assert.equal(r.type, 'application/json');
+  assert.deepEqual(JSON.parse(r.body), { id: H('d'), height: 3, tx_count: 32 });
+  assert.deepEqual(log.at(-1), ['getblock', [H('d'), 1]]);
+  // Exactly the pages the summary announces exist, the last one partial.
+  const pages = [];
+  for (let start = 0; start < 32; start += 25) pages.push(JSON.parse((await h('GET', `/block/${H('d')}/txs/${String(start)}`)).body).length);
+  assert.deepEqual(pages, [25, 7]);
 });
 
 test('rejects bad input and maps upstream failures to 502', async () => {
@@ -83,6 +105,7 @@ test('rejects bad input and maps upstream failures to 502', async () => {
   assert.equal((await h('POST', '/tx', '123')).status, 400);
   assert.equal((await h('GET', '/nope')).status, 404);
   assert.equal((await h('GET', '/block/xyz/txs/0')).status, 404);
+  assert.equal((await h('GET', '/block/xyz')).status, 404);
   const broken = createHandler(async () => { throw new Error('connection refused'); });
   const r = await broken('GET', '/blocks/tip/height');
   assert.equal(r.status, 502);

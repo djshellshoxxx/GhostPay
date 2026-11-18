@@ -39,7 +39,7 @@ Remaining, in dependency order:
    (spec 12 ScanState), witness binding via wtxid commitment. Do not describe current checks as SPV.
 4. Spec 13 remaining: invoice bufferPolicy (new schema version + ADR), fiat estimate once spec 03 feeds are populated
    with verified addresses (FEEDS is empty), permit+buffer contract path only after CONTRACTS_SPEC + audit.
-5. Spec 05 announcer spam lanes/budget (cursor semantics are the hard part; current per-run budget + resumable
+5. **LANDED (lanes, budget and backlog cursor are in `apps/web/src/lib/scanClient.ts` and `scanSpam.ts`; note kept as history):** Spec 05 announcer spam lanes/budget (cursor semantics are the hard part; current per-run budget + resumable
    limitReached already avoids silent drops).
 6. TRON Nile/Shasta positive genesis pinning: needs a fetched, sourced block-0 id (trongrid was 403 from the
    container network policy). Do not pin from memory.

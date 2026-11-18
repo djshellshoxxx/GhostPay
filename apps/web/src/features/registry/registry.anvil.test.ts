@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { encodeFunctionData } from 'viem/utils';
-import { assertRegistryDeployed, erc6538RegistryAbi, buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress } from '@ghostpay/chain-adapters';
+import { assertRegistryDeployed, erc6538RegistryAbi, buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, buildRegistryNonceCall, buildIncrementNonceTx, buildRegistryDelegationRequest, signRegistryDelegation, type RegistryDelegationRequest, type SignedRegistryDelegation, type Hex } from '@ghostpay/chain-adapters';
 import { encodeMetaAddress, generateKeySet } from '@ghostpay/core-crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -27,6 +27,18 @@ function compileRuntime(): string {
   if (m?.[1] === undefined) throw new Error('could not compile reference registry');
   return `0x${m[1]}`;
 }
+
+function compileWallet(): Hex {
+  const out = execFileSync(SOLC, ['--bin', '--evm-version', 'cancun', '--optimize', resolve(import.meta.dirname, 'ref/Registry1271Wallet.test.sol')], { encoding: 'utf8' });
+  const m = /Registry1271Wallet =======\s*Binary:\s*\n([0-9a-f]+)/.exec(out);
+  if (m?.[1] === undefined) throw new Error('could not compile contract-wallet fixture');
+  return `0x${m[1]}`;
+}
+
+const walletAbi = [
+  { type: 'function', name: 'approve', stateMutability: 'nonpayable', inputs: [{ name: 'digest', type: 'bytes32' }, { name: 'signature', type: 'bytes' }, { name: 'mode', type: 'uint8' }], outputs: [] },
+  { type: 'function', name: 'invalidate', stateMutability: 'nonpayable', inputs: [{ name: 'registry', type: 'address' }], outputs: [] },
+] as const;
 
 function startAnvil(): Promise<{ proc: ChildProcess; url: string }> {
   return new Promise((ok, bad) => {
@@ -61,7 +73,7 @@ describe('ERC-6538 helpers vs reference registry (anvil)', () => {
       return j.result;
     };
     const client = { request: rpc };
-    type Receipt = { status: string; logs: { address: string; topics: string[] }[] };
+    type Receipt = { status: string; contractAddress?: Hex; logs: { address: string; topics: string[] }[] };
     const receiptOf = async (hash: string): Promise<Receipt> => {
       for (let i = 0; i < 100; i++) {
         const r = (await rpc('eth_getTransactionReceipt', [hash])) as Receipt | null;
@@ -69,6 +81,26 @@ describe('ERC-6538 helpers vs reference registry (anvil)', () => {
         await new Promise((res) => setTimeout(res, 50));
       }
       throw new Error('no receipt');
+    };
+    const nonceOf = async (registrant: string): Promise<bigint> => {
+      const { to, data } = buildRegistryNonceCall(registrant);
+      return BigInt(await rpc('eth_call', [{ to, data }, 'latest']) as string);
+    };
+    const signRequest = async (request: RegistryDelegationRequest): Promise<Hex> => await rpc('eth_signTypedData_v4', [request.registrant, JSON.stringify({
+      ...request.typedData,
+      types: {
+        ...request.typedData.types,
+        EIP712Domain: [
+          { name: 'name', type: 'string' }, { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' }, { name: 'verifyingContract', type: 'address' },
+        ],
+      },
+    }, (_key, value: unknown) => typeof value === 'bigint' ? value.toString() : value)]) as Hex;
+    const verifyAuthorization = async (authorization: SignedRegistryDelegation): Promise<boolean> => {
+      if (BigInt(await rpc('eth_chainId', []) as string) !== BigInt(authorization.typedData.domain.chainId)) return false;
+      if (await nonceOf(authorization.registrant) !== authorization.typedData.message.nonce) return false;
+      const { to, data } = authorization.transaction;
+      return await rpc('eth_call', [{ from, to, data }, 'latest']) === '0x';
     };
 
     beforeAll(async () => {
@@ -110,6 +142,111 @@ describe('ERC-6538 helpers vs reference registry (anvil)', () => {
       const data = encodeFunctionData({ abi: erc6538RegistryAbi, functionName: 'registerKeys', args: [1n, `0x${'02'.repeat(66)}`] });
       await receiptOf((await rpc('eth_sendTransaction', [{ from, to: ERC6538_REGISTRY_ADDRESS, data }])) as string);
       await expect(lookupMetaAddress(client, from)).rejects.toThrow(/INVALID_INPUT/);
+    });
+
+    it('executes delegated registration, rejects replay and invalidates outstanding authorizations', async () => {
+      const sender = ((await rpc('eth_accounts', [])) as string[])[1]!;
+      const nonce = async (): Promise<bigint> => nonceOf(from);
+      const authorize = async (metaAddress: string) => signRegistryDelegation({ chainId: 31337, registrant: from, metaAddress, nonce: await nonce() }, { sign: signRequest, verify: verifyAuthorization });
+      const first = encodeMetaAddress(generateKeySet());
+      const before = await nonce();
+      const delegated = (await authorize(first)).transaction;
+      const tx = { from: sender, to: delegated.to, data: delegated.data };
+      expect((await receiptOf(await rpc('eth_sendTransaction', [tx]) as string)).status).toBe('0x1');
+      expect(await lookupMetaAddress(client, from)).toBe(first);
+      expect(await lookupMetaAddress(client, sender)).toBeUndefined();
+      expect(await nonce()).toBe(before + 1n);
+      // A reverted estimate must not consume another nonce or alter the registered keys.
+      await expect(rpc('eth_estimateGas', [tx])).rejects.toThrow();
+      expect(await nonce()).toBe(before + 1n);
+
+      const second = encodeMetaAddress(generateKeySet());
+      const stale = (await authorize(second)).transaction;
+      const invalidate = buildIncrementNonceTx();
+      expect((await receiptOf(await rpc('eth_sendTransaction', [{ from, to: invalidate.to, data: invalidate.data }]) as string)).status).toBe('0x1');
+      expect(await nonce()).toBe(before + 2n);
+      await expect(rpc('eth_estimateGas', [{ from: sender, to: stale.to, data: stale.data }])).rejects.toThrow();
+      expect(await lookupMetaAddress(client, from)).toBe(first);
+      expect(await nonce()).toBe(before + 2n);
+      const fresh = (await authorize(second)).transaction;
+      expect((await receiptOf(await rpc('eth_sendTransaction', [{ from: sender, to: fresh.to, data: fresh.data }]) as string)).status).toBe('0x1');
+      expect(await lookupMetaAddress(client, from)).toBe(second);
+      expect(await nonce()).toBe(before + 3n);
+    });
+
+    it('refuses wrong EOA chain, nonce, keys and registrant without consuming authorization', async () => {
+      const metaAddress = encodeMetaAddress(generateKeySet());
+      const nonce = await nonceOf(from);
+      const input = { chainId: 31337, registrant: from, metaAddress, nonce };
+      const original = await signRegistryDelegation(input, { sign: signRequest, verify: verifyAuthorization });
+      const other = ((await rpc('eth_accounts', [])) as string[])[1]!;
+      for (const changed of [{ chainId: 1 }, { nonce: nonce + 1n }, { metaAddress: encodeMetaAddress(generateKeySet()) }, { registrant: other }]) {
+        await expect(signRegistryDelegation({ ...input, ...changed }, { sign: () => Promise.resolve(original.signature), verify: verifyAuthorization })).rejects.toThrow();
+      }
+      // A wrong-chain request fails the required chain check before contract simulation.
+      await expect(signRegistryDelegation({ ...input, chainId: 1 }, { sign: signRequest, verify: verifyAuthorization })).rejects.toThrow();
+      // A wrong-chain signature paired with the correct request reaches the actual registry and is rejected there.
+      const wrongChainSignature = await signRequest(buildRegistryDelegationRequest({ ...input, chainId: 1 }));
+      await expect(signRegistryDelegation(input, { sign: () => Promise.resolve(wrongChainSignature), verify: verifyAuthorization })).rejects.toThrow();
+      const request = buildRegistryDelegationRequest(input);
+      const wrongSignerSignature = await signRequest({ ...request, registrant: other as Hex });
+      await expect(signRegistryDelegation(input, { sign: () => Promise.resolve(wrongSignerSignature), verify: verifyAuthorization })).rejects.toThrow();
+      const wrongContractSignature = await signRequest({ ...request, typedData: {
+        ...request.typedData, domain: { ...request.typedData.domain, verifyingContract: other as Hex },
+      } });
+      await expect(signRegistryDelegation(input, { sign: () => Promise.resolve(wrongContractSignature), verify: verifyAuthorization })).rejects.toThrow();
+      expect(await nonceOf(from)).toBe(nonce);
+      expect(await verifyAuthorization(original)).toBe(true);
+    });
+
+    it.each(['0x', '0x1234abcd', `0x${'ab'.repeat(65)}`] as Hex[])('executes ERC-1271 opaque authorization (%s), rejects replay and invalidation', async (signature) => {
+      const deployed = await receiptOf(await rpc('eth_sendTransaction', [{ from, data: compileWallet(), gas: '0x300000' }]) as string);
+      expect(deployed.status).toBe('0x1');
+      expect(deployed.contractAddress).toBeTruthy();
+      const wallet = deployed.contractAddress!;
+      const metaAddress = encodeMetaAddress(generateKeySet());
+      const input = { chainId: 31337, registrant: wallet, metaAddress, nonce: await nonceOf(wallet) };
+      const request = buildRegistryDelegationRequest(input);
+      const approve = async (digest: Hex, bytes: Hex, mode: number) => {
+        const data = encodeFunctionData({ abi: walletAbi, functionName: 'approve', args: [digest, bytes, mode] });
+        expect((await receiptOf(await rpc('eth_sendTransaction', [{ from, to: wallet, data }]) as string)).status).toBe('0x1');
+      };
+      await approve(request.digest, signature, 0);
+      const callbacks = { sign: () => Promise.resolve(signature), verify: verifyAuthorization };
+      const signed = await signRegistryDelegation(input, callbacks);
+      const tx = { from, to: signed.transaction.to, data: signed.transaction.data };
+      expect((await receiptOf(await rpc('eth_sendTransaction', [tx]) as string)).status).toBe('0x1');
+      expect(await lookupMetaAddress(client, wallet)).toBe(metaAddress);
+      expect(await nonceOf(wallet)).toBe(1n);
+      expect(await verifyAuthorization(signed)).toBe(false);
+      await expect(rpc('eth_call', [tx, 'latest'])).rejects.toThrow();
+      expect(await nonceOf(wallet)).toBe(1n);
+
+      const next = { ...input, nonce: 1n, metaAddress: encodeMetaAddress(generateKeySet()) };
+      const nextRequest = buildRegistryDelegationRequest(next);
+      // The contract wallet rejects altered opaque bytes, wrong magic, revert, and a digest from another chain.
+      await approve(nextRequest.digest, signature, 1);
+      await expect(signRegistryDelegation(next, callbacks)).rejects.toThrow();
+      await approve(nextRequest.digest, signature, 2);
+      await expect(signRegistryDelegation(next, callbacks)).rejects.toThrow();
+      await approve(buildRegistryDelegationRequest({ ...next, chainId: 1 }).digest, signature, 0);
+      await expect(signRegistryDelegation(next, callbacks)).rejects.toThrow();
+      await approve(nextRequest.digest, signature, 0);
+      await expect(signRegistryDelegation(next, { ...callbacks, sign: () => Promise.resolve(`${signature}ff` as Hex) })).rejects.toThrow();
+      expect(await nonceOf(wallet)).toBe(1n);
+      const stale = await signRegistryDelegation(next, callbacks);
+      const invalidate = encodeFunctionData({ abi: walletAbi, functionName: 'invalidate', args: [ERC6538_REGISTRY_ADDRESS] });
+      expect((await receiptOf(await rpc('eth_sendTransaction', [{ from, to: wallet, data: invalidate }]) as string)).status).toBe('0x1');
+      expect(await verifyAuthorization(stale)).toBe(false);
+      await expect(rpc('eth_call', [{ from, to: stale.transaction.to, data: stale.transaction.data }, 'latest'])).rejects.toThrow();
+      expect(await lookupMetaAddress(client, wallet)).toBe(metaAddress);
+      expect(await nonceOf(wallet)).toBe(2n);
+      const freshInput = { ...next, nonce: 2n };
+      await approve(buildRegistryDelegationRequest(freshInput).digest, signature, 0);
+      const fresh = await signRegistryDelegation(freshInput, callbacks);
+      expect((await receiptOf(await rpc('eth_sendTransaction', [{ from, to: fresh.transaction.to, data: fresh.transaction.data }]) as string)).status).toBe('0x1');
+      expect(await lookupMetaAddress(client, wallet)).toBe(next.metaAddress);
+      expect(await nonceOf(wallet)).toBe(3n);
     });
   });
 });

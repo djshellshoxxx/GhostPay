@@ -20,7 +20,14 @@ All mainnet tokens; USDT, DAI, PYUSD, FDUSD, USDe, WETH/wrapped native, WBTC. Ad
 
 ## Price feeds
 
-None. Chainlink feed addresses/heartbeats unverified (docs.chain.link unreachable). `FEEDS` stays empty; fiat pricing hard-disabled in the UI.
+Testnet only, from saved Chainlink reference data (`docs/chains/SOURCES-2026-11-04.md`, retrieved 2026-11-04). Proxy addresses; feed `decimals` 8 (not display `decimalPlaces`).
+
+| chainId | Pair | Proxy (EIP-55) | Heartbeat |
+|---|---|---|---|
+| 84532 | ETH/USD | `0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1` | 1200 s |
+| 84532 | USDC/USD | `0xd30e2101a97dcbAeBCBC04F14C3f624E67A35165` | 86400 s |
+
+Heartbeat is source metadata, not a freshness guarantee: `readPrice` still requires an explicit `maxAgeSeconds`, and runtime `decimals()` / `latestRoundData()` are still checked. Mainnets have no feed; fiat pricing stays disabled there. Not verified here: on-chain proxy code, live rounds.
 
 ## Parameters
 

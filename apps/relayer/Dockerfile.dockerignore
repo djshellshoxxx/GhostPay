@@ -1,0 +1,14 @@
+# Keeps the build context small and free of local secrets/state. Used by BuildKit for apps/relayer/Dockerfile.
+**/node_modules
+**/dist
+**/coverage
+.git
+.env
+.env.*
+**/*.key
+**/*.secret
+**/state.json
+packages/contracts/cache
+packages/contracts/out
+apps/web
+!apps/web/package.json

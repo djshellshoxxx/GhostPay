@@ -1,17 +1,37 @@
 import { QrExchangeError } from './errors.js';
+import type { QrExchangeErrorCode } from './errors.js';
 
 /** Minimal structural types so the core never touches the DOM and tests can use fakes. */
 export interface MediaTrackLike {
   stop(): void;
+  /** Only `deviceId` is read (to pick the next camera); labels are never read. */
+  getSettings?(): { readonly deviceId?: string };
 }
 export interface MediaStreamLike {
   getTracks(): readonly MediaTrackLike[];
 }
+/** Rear camera by default; a specific camera only after the user asked to switch. */
+export interface CameraConstraints {
+  readonly video:
+    | { readonly facingMode: 'environment'; readonly width: { readonly ideal: number } }
+    | { readonly deviceId: { readonly exact: string }; readonly width: { readonly ideal: number } };
+  readonly audio: false;
+}
+/** Only `kind` and `deviceId` are read; device labels are never read or logged. */
+export interface MediaDeviceInfoLike {
+  readonly kind: string;
+  readonly deviceId: string;
+}
 export interface MediaDevicesLike {
-  getUserMedia(constraints: {
-    video: { facingMode: 'environment'; width: { ideal: number } };
-    audio: false;
-  }): Promise<MediaStreamLike>;
+  getUserMedia(constraints: CameraConstraints): Promise<MediaStreamLike>;
+  enumerateDevices?(): Promise<readonly MediaDeviceInfoLike[]>;
+}
+export interface StartCameraOptions {
+  readonly signal?: AbortSignal | undefined;
+  /** Exact camera to open (from listVideoInputs); omitted means the rear-facing default. */
+  readonly deviceId?: string | undefined;
+  /** Pass `isSecureContext`: a missing mediaDevices on an insecure page is then reported as CAMERA_INSECURE. */
+  readonly secureContext?: boolean | undefined;
 }
 export interface VideoLike {
   /** Typed `unknown` so a real HTMLVideoElement is assignable; only MediaStream-like values are acted upon. */
@@ -31,6 +51,8 @@ const HAVE_CURRENT_DATA = 2;
 export const MAX_SCAN_TEXT_LEN = 4096;
 const MAX_CONSECUTIVE_READ_FAILURES = 30;
 const stoppedTracks = new WeakSet<object>();
+const MAX_DEVICE_ID_LEN = 512;
+const MAX_VIDEO_INPUTS = 16;
 
 function isAborted(signal: AbortSignal | undefined): boolean {
   return signal?.aborted === true;
@@ -66,25 +88,56 @@ export function stopVideo(video: VideoLike): void {
   video.srcObject = null;
 }
 
+function validDeviceId(id: unknown): id is string {
+  return typeof id === 'string' && id.length > 0 && id.length <= MAX_DEVICE_ID_LEN;
+}
+
+/** Maps getUserMedia DOMException names (including legacy Chrome aliases) to fixed, content-free codes. */
+function cameraErrorCode(e: unknown): QrExchangeErrorCode {
+  const name = typeof e === 'object' && e !== null ? (e as { name?: unknown }).name : undefined;
+  switch (name) {
+    case 'NotAllowedError':
+    case 'SecurityError':
+    case 'PermissionDeniedError':
+      return 'CAMERA_DENIED';
+    case 'NotFoundError':
+    case 'OverconstrainedError':
+    case 'DevicesNotFoundError':
+      return 'CAMERA_NOT_FOUND';
+    case 'NotReadableError':
+    case 'AbortError':
+    case 'TrackStartError':
+      return 'CAMERA_IN_USE';
+    default:
+      return 'CAMERA_UNAVAILABLE';
+  }
+}
+
 /**
- * Asks for the rear camera and attaches it to `video`. Must be called from an explicit user action: nothing in
+ * Asks for the rear camera (or `deviceId`) and attaches it to `video`. Must be called from an explicit user action: nothing in
  * this package starts the camera on its own. On any failure the tracks are stopped before the error is thrown.
  */
 export async function startCamera(
   video: VideoLike,
   mediaDevices: MediaDevicesLike | undefined,
-  options: { readonly signal?: AbortSignal } = {},
+  options: StartCameraOptions = {},
 ): Promise<void> {
   if (mediaDevices === undefined || typeof mediaDevices.getUserMedia !== 'function') {
-    throw new QrExchangeError('CAMERA_UNAVAILABLE');
+    throw new QrExchangeError(options.secureContext === false ? 'CAMERA_INSECURE' : 'CAMERA_UNAVAILABLE');
   }
+  const { deviceId } = options;
+  if (deviceId !== undefined && !validDeviceId(deviceId)) throw new QrExchangeError('BAD_INPUT');
   if (isAborted(options.signal)) throw new QrExchangeError('ABORTED');
   let stream: MediaStreamLike;
   try {
-    stream = await mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 } }, audio: false });
+    stream = await mediaDevices.getUserMedia({
+      video: deviceId === undefined
+        ? { facingMode: 'environment', width: { ideal: 1280 } }
+        : { deviceId: { exact: deviceId }, width: { ideal: 1280 } },
+      audio: false,
+    });
   } catch (e) {
-    const name = typeof e === 'object' && e !== null ? (e as { name?: unknown }).name : undefined;
-    throw new QrExchangeError(name === 'NotAllowedError' || name === 'SecurityError' ? 'CAMERA_DENIED' : 'CAMERA_UNAVAILABLE');
+    throw new QrExchangeError(cameraErrorCode(e));
   }
   if (isAborted(options.signal)) {
     stopStream(stream);
@@ -102,6 +155,42 @@ export async function startCamera(
     if (video.srcObject === stream) video.srcObject = null;
     stopStream(stream);
     throw new QrExchangeError(isAborted(options.signal) ? 'ABORTED' : 'CAMERA_UNAVAILABLE');
+  }
+}
+
+/**
+ * Distinct, non-empty ids of the video inputs (at most 16), for a "switch camera" control. Call after a stream
+ * started: before permission browsers may report empty ids. Labels are never read. Resolves [] on any failure.
+ */
+export async function listVideoInputs(mediaDevices: MediaDevicesLike | undefined): Promise<string[]> {
+  if (mediaDevices === undefined || typeof mediaDevices.enumerateDevices !== 'function') return [];
+  let devices: unknown;
+  try {
+    devices = await mediaDevices.enumerateDevices();
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(devices)) return [];
+  const out: string[] = [];
+  for (const d of devices as unknown[]) {
+    if (typeof d !== 'object' || d === null) continue;
+    const { kind, deviceId } = d as { kind?: unknown; deviceId?: unknown };
+    if (kind !== 'videoinput' || !validDeviceId(deviceId) || out.includes(deviceId)) continue;
+    out.push(deviceId);
+    if (out.length >= MAX_VIDEO_INPUTS) break;
+  }
+  return out;
+}
+
+/** Device id of the element's current video track, when the platform reports one. */
+export function activeDeviceId(video: VideoLike): string | undefined {
+  const stream = video.srcObject;
+  if (!isStream(stream)) return undefined;
+  try {
+    const id = stream.getTracks()[0]?.getSettings?.().deviceId;
+    return validDeviceId(id) ? id : undefined;
+  } catch {
+    return undefined;
   }
 }
 

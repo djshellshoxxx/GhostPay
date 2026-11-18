@@ -1,11 +1,5 @@
 # @ghostpay/ux-i18n
 
-Pure-logic i18n, accessibility and help/glossary helpers. No DOM, network, timers or analytics; `Intl` is injectable.
+Deprecated: use @ghostpay/i18n; thin re-export kept for compatibility.
 
-- Messages: `parseMessage`, `formatMessage`, `createTranslator` (ICU-lite plural/select/placeholders, values sanitised and HTML-escaped by default), `checkCatalogCompleteness`.
-- Locale: `parseLocale`, `negotiateLocale`, `fallbackChain`, `parseAcceptLanguage`, `isRtl`.
-- Formatting: `formatNumberParts`, `formatDateParts`.
-- a11y: `buildAccessibleName`, `buildLiveRegionMessage`, `contrastRatio`/`rateContrast`, `validateFocusOrder`, `validateAriaLabels`.
-- Help: `EN_CATALOG`, `EN_HELP` (glossary + topics), `lookupHelp`, `searchGlossary`, `linkGlossaryTerms`, `estimateReadingLevel`, `validateRegistry`.
-
-Docs: docs/remote/usability/ (specs/ux-i18n-*.md, wiring/ux-i18n.md, audit-ux-i18n.md).
+All former functionality now lives in `@ghostpay/i18n` (`src/ux/`). Colliding names are exported there with a `Ux`/`ux` prefix (for example `uxParseLocale`, `UxI18nError`); this package maps them back to the old names.

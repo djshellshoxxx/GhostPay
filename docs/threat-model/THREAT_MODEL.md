@@ -27,7 +27,7 @@ Trust boundaries: browser tab (keys live here) | wallet extension | static host/
 | Anyone holding the invoice link | Entire invoice (bearer link) | Seller keys |
 | Anyone holding two invoices of one seller | They share a seller (stable meta-address, D3) | Keys |
 | Fee recipient (project owner) | Aggregate fees on-chain only | Payer or seller identity beyond public chain data |
-| Browser profile / device owner | The invoice link, if the browser's history database stored it (S3-03); settings and RPC URLs in `localStorage` | Keys, unless the browser/OS is compromised |
+| Browser profile / device owner | The invoice link, if the browser's history database stored it (S3-03); settings and RPC URLs in `localStorage`; that this browser was used with a given seller identity: scan checkpoints (`localStorage`) and the encrypted scan history (IndexedDB) are stored under an unsalted SHA-256 of the public spending and viewing keys, which anyone can compute from the meta-address, and they stay after the keys are wiped from memory until the site's data is cleared (audit I-1); if the optional encrypted seller vault is saved, its meta-address and invoice-signing public key in clear and a ciphertext open to offline passphrase guessing; the count, chain ids and timestamps of local tags; any plaintext reconciliation ledger an older build left in `localStorage` | Keys, unless the browser/OS is compromised or the vault passphrase is guessed; tag and scan-history contents |
 
 ## 3. Data-flow diagrams
 
@@ -139,7 +139,7 @@ Legend: S spoofing, T tampering, R repudiation, I information disclosure, D deni
 | R | Seller denies issuing an invoice | Signature by invoice-signing key | Only meaningful if the key was pinned |
 | I | Link read by a third party | AES-GCM envelope option; key in fragment; "bearer link" label | Anyone with the link reads it. Persisted in browser history DB (S3-03, **Open**), clipboard managers, messengers' link previews |
 | I | Same meta-address in every invoice | None | D3 **Open** (per-client meta-address is backlog) |
-| D | Oversized or hostile payload | 16 KiB cap, depth limit, no duplicate keys, fail closed, fuzz tests | Mitigated |
+| D | Oversized or hostile payload | 16 KiB cap, depth limit, no duplicate keys, fail closed, fuzz tests; invoice and quote times capped at 9999-12-31T23:59:59Z, so a validly signed link with a huge time is rejected instead of crashing the review render (G1-01); total time formatting in the web app | Mitigated. A view-level `ErrorBoundary` component exists; wrapping the view switch in `App.tsx` with it (so any other render error shows an error panel, not a blank app) is pending integration |
 | E | Hostile text becomes script (XSS) | React text rendering, no `innerHTML`, CSP `script-src 'self'`, lint bans, bundle scan, e2e "hostile text is rendered inert" | Bidi/zero-width characters accepted in text fields (S3-12, Low, Open) |
 
 ### 4.2 Payment flow
@@ -197,6 +197,21 @@ Legend: S spoofing, T tampering, R repudiation, I information disclosure, D deni
 | I | Host logs IP / user agent | Disclosure in privacy table | Accepted |
 | D | Host takedown / DNS or account compromise | IPFS/Tor mirrors planned | Not built |
 | E | Maintainer account takeover | Required reviewers on the `release` environment (to be configured) | Owner action |
+
+### 4.6 Permit griefing
+
+**Attack.** The stealth key signs an ERC-2612 permit that is outside the sweep signature and the quote MAC. Anyone who sees it can submit it first (the contract tolerates this), and the owner can also revoke the allowance or sweep first. The relayer pays gas for a sweep that then reverts or earns no fee; repeating this drains the hot key's gas balance.
+
+**Mitigations in the relayer (`apps/relayer/src/service.ts`).**
+- When the owner's allowance already covers the amount, the permit is dropped and plain `sweep` is used, so a front-run permit still succeeds (counter `relayer_permit_skipped_total`).
+- A short allowance with a permit whose deadline is before the sweep deadline or already past is refused as `permit_expired` before any simulation.
+- With the permit still in use, a generic `simulation_reverted` or `token_transfer_failed` is reported as `permit_failed` and nothing is broadcast.
+- The sweep is simulated before broadcast and again immediately before sending.
+- Per-owner failure counter (`FailureBudgets`, owner key only): 3 costly user-attributable failures per hour, then sweeps are refused up front; counter `relayer_owner_failures_total`. `nonce_used` is not a strike. These are constants, not config.
+- A sweep that passes simulation but reverts when mined (owner drains first) is charged to the loss budget and counted as a strike (`relayer_mined_reverts_total`; `relayer_loss_budget_denied_total` when the budget refuses).
+- `gas.griefReserveBps` (0 to 5000) raises the gas term of the quoted fee; `quoteTtlSeconds` is capped at 60.
+
+**Residual risk** (`apps/relayer/DEVIATIONS.md`). The relayer cannot rebuild the token's EIP-712 domain, so `sig_invalid` and `nonce_consumed` are both reported as `permit_failed`. `gas.griefReserveBps` defaults to 0 (UNVERIFIED, to be tuned per chain), so by default no margin is priced in. The `PermitSkipped` event (spec 04 option C) needs a contract change and is not done, and the anvil owner-drains-first and front-run e2e was not run for this change. Losses are bounded, not eliminated.
 
 ## 5. LINDDUN privacy view
 
@@ -264,6 +279,48 @@ OR 1. Drain gas funds
  4. Steal user funds                                                    blocked on-chain: destination, amount, fee, feeTo are signed
 ```
 
+### 6.3a Permit griefing (spec 04)
+
+Assets: relayer gas, owner funds, honest error reporting. The ERC-2612 permit is outside the sweep signature and the
+quote MAC; only `permit.value >= amount` couples it to the order, and the contract swallows a failed permit.
+
+```
+Waste relayer gas or mislead the owner through the permit
+OR 1. Front-run the owner's permit (ERC-2612 text)          ctl: allowance re-read in-lane; covered -> permit dropped, plain sweep (anvil e2e)
+OR 2. Submit a permit that is bad (wrong sig/nonce/domain)  ctl: simulation before send; failure classified from nonces()/DOMAIN_SEPARATOR()
+                                                                 (permit_nonce_consumed / permit_signature_invalid / permit_unsupported_token);
+                                                                 counts against the owner (3 per hour, then owner_failure_limit)
+OR 3. Permit that lapses before the sweep deadline           ctl: permit_expired unless permit.deadline >= sweep.deadline (L5-01)
+OR 4. Owner drains or revokes between simulation and mining  ctl: two simulations next to the send, deadline margin; residual: one mined
+                                                                 revert per attempt, charged to the loss budget and the owner, and bounded by
+                                                                 the persisted daily budget; griefReserveBps prices a margin (default 0, UNVERIFIED)
+OR 5. DAI-style / non-standard permit token                  ctl: token allowlist permit flag; usdStable only; unsupported -> 422 before broadcast
+OR 6. Cross-chain permit replay                              ctl: token domain includes chainId (UNVERIFIED for fork rebuild of vendored OZ)
+Residual: option C (on-chain PermitSkipped event) deferred; clients get no automatic fallback (owner chooses direct sweep or approve).
+```
+
+### 6.3b Relayer restart and state loss
+
+```
+Spend more than the daily budget or double-use a hot-key nonce through a restart
+OR 1. Crash/restart to reset the daily budget                ctl: state journal persists day + spent wei; corrupt file = startup error
+OR 2. Clock stepped back to re-open yesterday's budget       ctl: the budget day only moves forward
+OR 3. Crash between broadcast and acknowledgement            ctl: hash journaled before broadcast; restart blocks the lane until a receipt
+                                                                 or the node's pending nonce settles it; never a new nonce on a lost answer
+OR 4. Two processes with one hot key and one state file      ctl: exclusive heartbeat lock with a per-process token; every journal write is
+                                                                 fenced by it (a process that lost the lock cannot write or start a send);
+                                                                 the lock is released only after the shutdown drain
+OR 5. Two processes with one hot key on separate storage     gap: unsupported, not detected (no distributed coordination)
+OR 6. Disk full / unwritable journal                         ctl: refusal before signing (state_unavailable); after broadcast the change is
+                                                                 applied in memory, alerted, /healthz degraded, and the next full-snapshot write
+                                                                 persists it (removals are never lost, so no double release on restart)
+OR 7. Wall clock far ahead once, flapping, then corrected     ctl: a new day needs both wall and monotonic clocks past midnight; a saved day more
+                                                                 than one day ahead keeps its spending on today's day; residual: the wall clock
+                                                                 is trusted at each process start (restart + clock flap grants a budget)
+Not persisted (bounded by the persisted daily budget): rate limits, per-key loss budget, owner failure counter, breaker window.
+Privacy: the journal holds nonces, tx hashes and wei only; records are deleted on settlement (apps/relayer/PRIVACY.md).
+```
+
 ### 6.4 Oracle failure (goal: payer overpays/underpays, or payment blocked)
 
 ```
@@ -287,7 +344,7 @@ Ratings are those of [audit 04](../audits/04-independent-design-analysis.md). "S
 | D1 | Sweep destroys the privacy the product sells: payer follows stealth address to the destination | High | Use a fresh destination; payer can follow; relayer sees X; gasless is not unlinkable ([guide](../user/sweep-and-gas-privacy.md)) | Docs done. App: generic notice exists; sharper copy and destination-history warning **In progress** |
 | D2 | Single-router anonymity set and fingerprint | Medium | GhostPay payments are enumerable; anonymity set is GhostPay users | Accepted; now in the user privacy page |
 | D3 | Seller meta-address is a stable public identifier | Medium | Two invoices prove one seller; registry makes it public | Open; documented; per-client mode is backlog |
-| D4 | Payer-controlled view tag lets a payment go undetected | Medium | Payer can hide a payment from a tag-filtered scan; ask for a tx hash | Open; deep-scan mode and proof flow not built |
+| D4 | Payer-controlled view tag lets a payment go undetected | Medium | Payer can hide a payment from a tag-filtered scan; ask for a tx hash | Open; deep-scan mode built (opt-in: router announcements are checked without the view tag, a wrong tag is marked, and the payment can be swept); proof flow not built |
 | D5 | Immutable fee recipient vs token blacklist / non-payable recipient | Medium | Checkout for an asset can stop until a new router ships | Open; operator requirements and migration written ([runbook](../operators/deployment-runbook.md), ADR-0013) |
 | D6 | Policy account: stolen-key resistance is bounded, no recovery | Medium | Do not market as theft-proof; destination becomes public | Open; ADR-0014 marks it experimental, contracts only |
 | D7 | Frontend compromise is total compromise | High (inherent) | Verify releases from a separate machine; no official host | Open; release pipeline drafted; signing, manifest pinning **In progress**; hosting gated (ADR-0015) |

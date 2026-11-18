@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="960" height="560" role="img" aria-labelledby="ttl dsc">
 <title id="ttl">Bitcoin silent payments flow</title>
-<desc id="dsc">BIP-352 flow. The seller generates scan and spend keys and shares one sp1 address. The payer's silent-payments-capable wallet derives a unique taproot output from the sum of its input private keys and that address and broadcasts an ordinary transaction with no announcement. The receiver scans block tweak data from an oracle or own node using the scan key, derives the spend key and sweeps. A library exists in the repository but is not wired into the web app or relayer.</desc>
+<desc id="dsc">BIP-352 flow. The seller generates scan and spend keys and shares one sp1 address. The payer's silent-payments-capable wallet derives a unique taproot output from the sum of its input private keys and that address and broadcasts an ordinary transaction with no announcement. The receiver scans block tweak data from an oracle or own node using the scan key, derives the spend key and sweeps. The BIP-352 library backs a full-build test view for receive, scan and sweep, separate from the EVM invoice flow and relayer.</desc>
 <style>
 :root{--bg:#ffffff;--fg:#1b1f24;--mut:#4d5866;--box:#eef1f6;--line:#6b778a;--acc:#1f4fc4;--accbg:#dbe6ff;--warn:#8a4b00;--warnbg:#fff0d0;--bad:#a8200f;--badbg:#fde4e1;--ok:#13663a;--okbg:#dcf3e4}
 @media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6e9ee;--mut:#a3aebd;--box:#1a212b;--line:#7d8a9d;--acc:#8fb2ff;--accbg:#1c2c52;--warn:#ffb454;--warnbg:#3a2a0e;--bad:#ff9b92;--badbg:#411a17;--ok:#74d9a0;--okbg:#12331f}}
@@ -21,7 +21,7 @@ svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-s
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
 <rect class="bg" width="960" height="560"/>
 <text class="t h" x="24" y="34">Bitcoin silent payments (BIP-352)</text>
-<text class="t m s" x="24" y="54">Library only: tested against the official vectors; not in the web app or relayer; not verified on a real network.</text>
+<text class="t m s" x="24" y="54">Full-build test view: receive, scan and sweep; no relayer; live qualification remains separate.</text>
 <rect class="box acc" x="20" y="90" width="220" height="100" rx="8"/>
 <text class="t ta b" x="130.0" y="119.5">1  Seller keys + address</text>
 <text class="t ta m s" x="130.0" y="136.5">scan key + spend key</text>
@@ -65,5 +65,5 @@ svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-s
 <text class="t s" x="36" y="457">The payer needs a silent-payments-capable wallet; support is uneven. A web page cannot build the payer's output for an ordinary wallet.</text>
 <text class="t s" x="36" y="475">An oracle you do not run can see which block heights you ask about and can lie or withhold; running your own node is better.</text>
 <text class="t s" x="36" y="493">No enforceable GhostPay fee on Bitcoin. Hosted scanning is only a possible later product (planned).</text>
-<text class="t s" x="36" y="511">Status: planned for the product. The library is built and tested; the app does not use it yet.</text>
+<text class="t s" x="36" y="511">Status: library and full-build test view implemented; separate from EVM invoices and the relayer.</text>
 </svg>

@@ -3,7 +3,8 @@ import { ERC6538_REGISTRY_ADDRESS } from '@ghostpay/chain-adapters';
 import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, generateSession } from '../lib/session';
+import { clearSession } from '../lib/session';
+import { generateWaivedSession } from '../test/keys';
 import { renderApp, makeServices } from '../test/render';
 
 beforeEach(() => {
@@ -32,7 +33,7 @@ describe('Public registry route (G-07)', () => {
   });
 
   it('requires explicit public-link consent before wallet discovery', async () => {
-    generateSession();
+    generateWaivedSession();
     const user = await openRegistry();
     expect(screen.getByText(/Registering writes your meta-address into a public contract/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Find wallets' })).toBeNull();
