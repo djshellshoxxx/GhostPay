@@ -1,5 +1,5 @@
 import { fail } from './errors.js';
-import { buildLimitsTree, type LimitsTree, type TokenLimit } from './limits.js';
+import { buildLimitsTree, getLimitProof, limitLeafHash, verifyLimitProof, type LimitsTree, type TokenLimit } from './limits.js';
 import { decodeScheme2MetaAddress } from './meta.js';
 import { computePolicyHash, validatePolicy, type Policy } from './policy.js';
 import { MAX_UINT256, ZERO_ADDRESS, ZERO_HASH, addr, bytes32, type Address, type Hex } from './types.js';
@@ -84,11 +84,13 @@ export function buildPolicyRecord(input: PolicyRecordInput): PolicyRecord {
  * @remarks With a non-zero `limitsRoot`, `PolicyAccount.requestWithdraw` needs a limits leaf for the token, while
  * `GhostPayPolicyRouter` (and any plain transfer) accepts every token and the native coin. An asset without a leaf
  * therefore stays in the account forever. A zero root covers every asset. Tokens are compared by address, ignoring
- * case; `'native'` and the zero address mean the native coin. Fails closed (`false`) when the record has no tree or
- * its tree root is not the policy's `limitsRoot`.
+ * case; `'native'` and the zero address mean the native coin. Fails closed (`false`) when the record has no tree, when
+ * the tree rebuilt from its leaves' `(token, limit, windowSeconds)` does not have the policy's `limitsRoot` (a
+ * hand-built or altered tree), or when the token's leaf does not prove against that root.
  *
  * Only the recipient, or someone holding the recipient's record, can answer this: a scheme-2 meta-address carries
  * the policy hash alone, so a payer who has only the meta-address cannot tell which assets are covered.
+ * `payERC20WithBuffer` also sends native coin to the account, so a payment that way needs `'native'` covered too.
  *
  * @param record Record from {@link buildPolicyRecord} or {@link parsePolicyRecord}.
  * @param token ERC-20 address, or `'native'` (equivalently the zero address).
@@ -103,7 +105,18 @@ export function policyCoversToken(record: Pick<PolicyRecord, 'policy' | 'tree'>,
   if (root === ZERO_HASH) return true;
   const tree = record.tree;
   if (tree === null || tree.root.toLowerCase() !== root) return false;
-  return tree.leaves.some((l) => l.token.toLowerCase() === t);
+  const entry = tree.leaves.find((l) => l.token.toLowerCase() === t);
+  if (entry === undefined) return false;
+  try {
+    // Recompute every leaf like the contract does: an appended or altered entry changes the rebuilt root.
+    const rebuilt = buildLimitsTree(tree.leaves.map(({ token: k, limit, windowSeconds }) => ({ token: k, limit, windowSeconds })));
+    if (rebuilt.root.toLowerCase() !== root) return false;
+    const leaf = limitLeafHash({ token: entry.token, limit: entry.limit, windowSeconds: entry.windowSeconds });
+    const proof = getLimitProof(rebuilt, entry.token);
+    return proof.leaf === leaf && verifyLimitProof(root, leaf, proof.proof);
+  } catch {
+    return false;
+  }
 }
 
 /**

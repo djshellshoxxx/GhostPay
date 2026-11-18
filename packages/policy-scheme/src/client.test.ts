@@ -10,6 +10,7 @@ import {
   buildPolicyRecord,
   consumeWindow,
   findPolicyFromCandidates,
+  limitLeafHash,
   parsePolicyRecord,
   policyCoversToken,
   serializePolicyRecord,
@@ -184,6 +185,24 @@ describe('policy token coverage (SEC-11)', () => {
     const rec = buildPolicyRecord(acct('acct-001'));
     expect(policyCoversToken({ ...rec, tree: null }, USDC)).toBe(false);
     expect(policyCoversToken({ ...rec, policy: { ...rec.policy, limitsRoot: `0x${'11'.repeat(32)}` } }, USDC)).toBe(false);
+  });
+  it('fails closed on a hand-built tree whose leaf for the token is not provably in the limits root', () => {
+    const rec = buildPolicyRecord(acct('acct-001')); // tree-2: native and USDC
+    const tree = rec.tree;
+    if (tree === null) throw new Error('fixture has no tree');
+    const usdcLeaf = tree.leaves.find((l) => l.token.toLowerCase() === USDC.toLowerCase());
+    if (usdcLeaf === undefined) throw new Error('fixture has no USDC leaf');
+    // An extra DAI entry reusing USDC's leaf hash: the stored root still matches, but the contract recomputes the leaf
+    // from (token, limit, windowSeconds) and reverts with InvalidLimitProof.
+    const reusedHash = { ...tree, leaves: [...tree.leaves, { ...usdcLeaf, token: DAI }] };
+    expect(policyCoversToken({ ...rec, tree: reusedHash }, DAI)).toBe(false);
+    // An extra DAI entry with its own correct leaf hash that is not in the tree.
+    const daiLimit = { token: DAI, limit: usdcLeaf.limit, windowSeconds: usdcLeaf.windowSeconds };
+    const notInTree = { ...tree, leaves: [...tree.leaves, { ...daiLimit, leaf: limitLeafHash(daiLimit) }] };
+    expect(policyCoversToken({ ...rec, tree: notInTree }, DAI)).toBe(false);
+    // The genuine leaves still verify.
+    expect(policyCoversToken(rec, USDC)).toBe(true);
+    expect(policyCoversToken(rec, 'native')).toBe(true);
   });
   it('refuses a malformed token', () => {
     const rec = buildPolicyRecord(acct('acct-002'));

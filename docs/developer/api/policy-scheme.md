@@ -212,7 +212,7 @@ const built = buildPolicyPaymentTx({
   router: '0x00000000000000000000000000000000000f0003', feeRecipient: '0x00000000000000000000000000000000000f0004',
   deployment, payment: pay, token: USDC, gross: 1_000_000n, deadline: 1_900_000_000n,
 });
-// built.method 'payERC20', fee 2500n, net 997500n, selector 0x95e21466
+// built.method 'payERC20', fee 2500n, net 997500n, selector 0x0730d511
 const dec = decodePolicyPaymentCalldata(built.tx.data, deployment);
 dec.method;                                                       // 'payERC20'
 dec.owner === pay.ownerAddress && dec.policyHash === policyHash;  // true; the policy hash is in built.tx.data (AUD24-01)
