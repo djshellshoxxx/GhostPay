@@ -11,7 +11,8 @@
 #   GHOSTPAY_RELEASE_PUBKEYS        release public keys that verify those manifests (required when any is present).
 #   GP_COMMIT                       commit recorded in build-info.json (default: git HEAD; must match HEAD in CI).
 #   GHOSTPAY_PAGES_ORIGIN           the origin the site is served from (https://host[:port], no path), recorded in the
-#                                   evidence and the banner. Required when manifests are bundled. A *.github.io origin is
+#                                   evidence and the banner, and compiled in: served from any other origin, the app
+#                                   trusts no manifest and says so (SEC-09). Required when manifests are bundled. A *.github.io origin is
 #                                   SHARED by every GitHub Pages site of that account (GP-PAGES-01): any of them can read
 #                                   this site's browser storage and script its pages.
 #   GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet
@@ -110,13 +111,15 @@ fi
 
 log="$work/build.log"
 echo "== build apps/web (lean profile, relative base) at $commit"
-# Clean environment: no inherited VITE_* switches, release keys only as supplied, reproducible timestamps.
+# Clean environment: no inherited VITE_* switches, release keys only as supplied, reproducible timestamps. The one VITE_*
+# value set here is the declared origin: the app refuses manifest trust when served from any other origin (SEC-09).
 if ! (
   cd "$ROOT/apps/web"
   env -i PATH="$PATH" HOME="$HOME" TMPDIR="${TMPDIR:-/tmp}" CI="${CI:-}" TZ=UTC LC_ALL=C \
     GHOSTPAY_LOCAL_BUILD_PROFILE=lean \
     GHOSTPAY_RELEASE_PUBKEYS="${GHOSTPAY_RELEASE_PUBKEYS:-}" \
     GHOSTPAY_PAGES_DEV="$dev" \
+    VITE_GHOSTPAY_PAGES_ORIGIN="$origin" \
     GHOSTPAY_DEPLOYMENTS_DIR="$deployments" \
     GP_COMMIT="$commit" SOURCE_DATE_EPOCH="$epoch" \
     bash -c 'npx tsc -p tsconfig.json --noEmit && npx vite build --outDir "$0" --emptyOutDir && node e2e/devnet/scan-dist.mjs "$0"' "$work/dist"

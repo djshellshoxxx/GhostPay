@@ -7,6 +7,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { BUNDLED_MANIFESTS } from './bundledManifests';
 import { RELEASE_PUBLIC_KEYS } from './releaseKeys';
+import { currentOriginCheck, originMismatch, type OriginCheck } from './frameGuard';
 
 /**
  * Result of looking for `deployments/<chainId>.json`:
@@ -29,14 +30,21 @@ export type ManifestState =
       readonly warning?: string;
     };
 
-/** Loads a manifest compiled into this app bundle. Runtime callers must never substitute an origin-fetched manifest. */
+/**
+ * Loads a manifest compiled into this app bundle. Runtime callers must never substitute an origin-fetched manifest.
+ * A copy served from another origin than the one its build declares (SEC-09) trusts no manifest: payments stay disabled.
+ */
 export function loadBundledManifest(
   chainId: number,
   source: Readonly<Record<string, string>> = BUNDLED_MANIFESTS,
   releaseKeys: readonly string[] = RELEASE_PUBLIC_KEYS,
+  origin: OriginCheck | undefined = currentOriginCheck(),
 ): ManifestState {
   const text = Object.hasOwn(source, String(chainId)) ? source[String(chainId)] : undefined;
   if (text === undefined) return { status: 'absent' };
+  if (origin !== undefined && originMismatch(origin.declared, origin.actual)) {
+    return { status: 'invalid', reason: `This copy is served from ${origin.actual}, but its build was declared for ${origin.declared ?? 'another origin'}; deployment manifests are not trusted here.` };
+  }
   if (releaseKeys.length === 0) return { status: 'invalid', reason: 'No release verification key is configured; deployment manifests are disabled.' };
   try {
     const manifest = loadDeployment(text, chainId);
