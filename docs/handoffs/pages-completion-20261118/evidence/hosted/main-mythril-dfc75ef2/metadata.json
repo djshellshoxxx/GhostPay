@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "analyzer": "mythril",
+  "requestedCommit": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "checkoutCommit": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "analysisOutcome": "failure",
+  "runnerExitCode": 1,
+  "reportPresent": true,
+  "fullReportBytes": 283205,
+  "fullReportSha256": "40e9faf6e54b4e5f1e683cb07d6522eea55f5bff50fcf46eeb5395d615c932f7",
+  "retainedBytes": 283205,
+  "truncated": false,
+  "retention": "At most the last 8 MiB; truncation applies only to the artifact, not the gate's input."
+}

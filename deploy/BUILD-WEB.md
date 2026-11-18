@@ -22,3 +22,16 @@ tar -xzf release-out/ghostpay-web-*.tar.gz -C /tmp/x && cp -a /tmp/x/ghostpay-we
 Compare the tarball hash with the published one (`scripts/repro-check.sh`). A bundle built from an untagged tree is for testing only.
 
 Checks the script runs: `index.html` present, no `*.map`. nginx serves the headers from `apps/web/public/_headers` (mirrored in `nginx/security-headers.conf`; keep both in sync when that file changes).
+
+## Tight `connect-src` (recommended default for hosted builds)
+
+By default the CSP says `connect-src 'self' https: wss:`, so the page may talk to any https/wss host, because RPC and relayer URLs are user data. A hosted build should instead set the exact origins it needs:
+```
+GHOSTPAY_CONNECT_ORIGINS="https://rpc.example.org,https://relay.example.org" \
+GHOSTPAY_REQUIRE_TIGHT_CSP=1 npm run build --workspace apps/web
+```
+Bare `https://` or `wss://` origins only, comma separated, no path. `npm run build` runs `apps/web/scripts/apply-csp.mjs` as its first postbuild step. It rewrites `dist/_headers` and the meta CSP in `dist/index.html` to `connect-src 'self' <origins>`, then fails if any `connect-src` still differs from that list. `GHOSTPAY_REQUIRE_TIGHT_CSP=1` also fails the build when the list is empty. `scan-bundle` then runs as before.
+
+Tradeoff: an RPC or relayer origin a user adds in Settings is blocked by the browser until it is added to the list and the site is rebuilt and redeployed. Users cannot widen the policy themselves. Without the list the policy stays broad and a compromised page could send data to any https host.
+
+The nginx files in `deploy/nginx/` carry their own copy of the CSP and are not rewritten by this step: edit the `connect-src` there to the same origin list when you serve through nginx.

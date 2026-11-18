@@ -19,6 +19,7 @@ import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { notifyAppLock } from './lib/appLock';
+import { FRAME_REFUSAL, ORIGIN_MISMATCH, currentOriginCheck, embedModeEnabled, frameRefusesView, isFramed, originMismatch } from './lib/frameGuard';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
 export const IDLE_CHECK_MS = 20_000;
@@ -38,8 +39,20 @@ export interface AppShellProps {
 
 export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'registry', 'settings', 'about']);
 
-function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode }): ReactNode {
+/** Shown instead of a key, sweep or settings view while the page is framed by another site (SEC-18). */
+function FrameRefusal(): ReactNode {
+  return (
+    <Notice kind="warn" title={FRAME_REFUSAL.title}>
+      {FRAME_REFUSAL.body}{' '}
+      {/* The app root without the current fragment: an invoice link is never handed to the new tab. */}
+      <a href="./" target="_blank" rel="noopener noreferrer">{FRAME_REFUSAL.action}</a>
+    </Notice>
+  );
+}
+
+function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode; readonly framedRefusal: boolean }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  if (props.framedRefusal) return <FrameRefusal />;
   switch (props.view) {
     case 'home':
       return <Home />;
@@ -90,6 +103,14 @@ export function AppShell(props: AppShellProps): ReactNode {
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
+  // Framed by another site outside the explicit embed mode: key, sweep and settings views are refused (SEC-18).
+  const [framed] = useState(() => isFramed(window));
+  const embedMode = embedModeEnabled(import.meta.env, profile);
+  // Served from another origin than the build declares (SEC-09): manifests are refused in loadBundledManifest; say why.
+  const [wrongOrigin] = useState(() => {
+    const check = currentOriginCheck();
+    return check !== undefined && originMismatch(check.declared, check.actual) ? check : undefined;
+  });
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
 
   // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
@@ -134,10 +155,13 @@ export function AppShell(props: AppShellProps): ReactNode {
     const minutes = settings.lockTimeoutMin;
     const timeoutMs = minutes * 60_000;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    // Wall-clock deadline (GP-PAGES-04): a sleeping device pauses timers, so the lock also checks `Date.now()` against the
-    // last activity when the page becomes visible or focused, on an interval, and before activity re-arms it; `locked`
-    // makes one idle period lock once.
-    let lastActivity = Date.now();
+    // Both clocks enforce the deadline (GP-PAGES-04): wall time advances across device sleep on platforms that pause
+    // performance.now(), while monotonic time prevents a wall-clock adjustment from extending the idle period.
+    // Any rollback since the last observation locks immediately, including when both timers and monotonic time paused.
+    let lastActivityWall = Date.now();
+    let lastActivityMonotonic = performance.now();
+    let lastObservedWall = lastActivityWall;
+    let lastObservedMonotonic = lastActivityMonotonic;
     let locked = false;
     const lock = (): void => {
       if (locked) return;
@@ -164,12 +188,23 @@ export function AppShell(props: AppShellProps): ReactNode {
         setLive({ key: 'app.idle.wiped' });
       });
     };
-    const overdue = (): boolean => Date.now() - lastActivity >= timeoutMs;
+    const overdue = (): boolean => {
+      const wall = Date.now();
+      const monotonic = performance.now();
+      const rolledBack = wall < lastObservedWall || monotonic < lastObservedMonotonic;
+      lastObservedWall = wall;
+      lastObservedMonotonic = monotonic;
+      return rolledBack || !Number.isFinite(wall) || !Number.isFinite(monotonic) ||
+        wall - lastActivityWall >= timeoutMs || monotonic - lastActivityMonotonic >= timeoutMs;
+    };
     const check = (): void => { if (overdue()) lock(); };
     const arm = (): void => {
       // Activity after a sleep that passed the deadline locks first; the activity then starts the next idle period.
       check();
-      lastActivity = Date.now();
+      lastActivityWall = Date.now();
+      lastActivityMonotonic = performance.now();
+      lastObservedWall = lastActivityWall;
+      lastObservedMonotonic = lastActivityMonotonic;
       locked = false;
       if (timer !== undefined) clearTimeout(timer);
       timer = setTimeout(lock, timeoutMs);
@@ -192,6 +227,17 @@ export function AppShell(props: AppShellProps): ReactNode {
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [services, settings.lockTimeoutMin]);
+
+  // Leaving the page while seller keys exist only here (no verified backup) loses them and every payment to their
+  // meta-address: ask the browser to confirm (SEC-40). Reads the existing backup state only; nothing is stored.
+  const unsavedKeys = session !== undefined && backup?.verified !== true;
+  useEffect(() => {
+    if (!unsavedKeys) return;
+    // preventDefault is the standard; a truthy returnValue covers older engines.
+    const onBeforeUnload = (e: BeforeUnloadEvent): void => { e.preventDefault(); e.returnValue = true; };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => { window.removeEventListener('beforeunload', onBeforeUnload); };
+  }, [unsavedKeys]);
 
   useEffect(() => {
     if (first.current) {
@@ -267,6 +313,9 @@ export function AppShell(props: AppShellProps): ReactNode {
       </header>
       <main id="main" tabIndex={-1} ref={main}>
         {props.mainPrelude}
+        {wrongOrigin !== undefined && (
+          <Notice kind="error" title={ORIGIN_MISMATCH.title}>{ORIGIN_MISMATCH.body(wrongOrigin.declared ?? 'another origin', wrongOrigin.actual)}</Notice>
+        )}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
             {t('app.backup.unverified.body')}
@@ -289,7 +338,7 @@ export function AppShell(props: AppShellProps): ReactNode {
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
           <ShellProfileContext.Provider value={profile}>
-            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={props.sellerArchive} />
+            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={props.sellerArchive} framedRefusal={frameRefusesView(view, framed, embedMode)} />
           </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>

@@ -75,6 +75,12 @@ describe('Scan and receive', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Seller keys' })).toBeTruthy();
   });
 
+  it('TM2: tells the user the RPC provider sees which transactions paid them', async () => {
+    generateSession();
+    await openScan(makeServices());
+    expect(screen.getByText(/Your RPC provider sees which transactions paid you/)).toBeTruthy();
+  });
+
   it('refuses to scan without an RPC or a manifest, with plain explanations', async () => {
     const pub = generateSession();
     void pub;
@@ -241,11 +247,12 @@ describe('Scan and receive', () => {
       invoiceDigest,
       chainId: 84532,
       txHash,
-      stealthAddress: mine.stealthAddress.toLowerCase(),
       asset: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
       amountMinorUnits: '2500000',
       signerPublicKey: pub.signerPublicKey,
     });
+    // TM9: the one-time address is omitted unless the seller opts in.
+    expect(decoded).not.toHaveProperty('stealthAddress');
     expect(screen.getByText(/does not establish seller identity/)).toBeTruthy();
 
     await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));

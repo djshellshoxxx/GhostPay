@@ -86,7 +86,7 @@ describe('range source', () => {
     expect(await codeOf(() => src.fetch({ chainId: 84532, fromBlock: 0n, toBlock: 1n }))).toBe('INVALID_ARGUMENT');
   });
   it('rejects bad options', async () => {
-    for (const bad of [{ windowBlocks: 0 }, { maxRequests: 0 }, { maxLogs: 0 }, { align: 0 }, { minSpan: 0 }]) {
+    for (const bad of [{ windowBlocks: 0 }, { maxRequests: 0 }, { maxLogs: 0 }, { align: 0 }, { minSpan: 0 }, { padBlocks: -1 }, { padBlocks: 1.5 }]) {
       expect(await codeOf(() => createRangeSource({ chainId: 31337, backend: fakeBackend(), ...bad }))).toBe('INVALID_ARGUMENT');
     }
   });
@@ -96,5 +96,13 @@ describe('range source', () => {
     expect(r.coverage).toEqual({ fromBlock: 0n, toBlock: 1999n });
     expect(be.calls.length).toBe(4);
     expect(r.announcements.length).toBe(RAW.filter((x) => BigInt(x['blockNumber'] as string) <= 1999n).length);
+  });
+  it('padBlocks widens the requested range before the grid is applied, so the exact range stays hidden', async () => {
+    const be = fakeBackend();
+    const r = await createRangeSource({ chainId: 31337, backend: be, padBlocks: 20 }).fetch({ chainId: 31337, fromBlock: 1990n, toBlock: 1995n });
+    expect(r.coverage).toEqual({ fromBlock: 1000n, toBlock: 2999n });
+    for (const c of be.calls) { expect(c.fromBlock % 1000n).toBe(0n); expect((c.toBlock + 1n) % 1000n).toBe(0n); }
+    const plain = await createRangeSource({ chainId: 31337, backend: fakeBackend() }).fetch({ chainId: 31337, fromBlock: 1990n, toBlock: 1995n });
+    expect(plain.coverage).toEqual({ fromBlock: 1000n, toBlock: 1999n });
   });
 });

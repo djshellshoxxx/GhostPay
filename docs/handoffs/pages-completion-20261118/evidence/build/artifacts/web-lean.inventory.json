@@ -1,0 +1,25 @@
+{
+  "profile": "lean",
+  "commit": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "artifact": "/workspace/scratch/4fa14be12559/analysis-build/artifacts/web-lean",
+  "files": 17,
+  "sha256": {
+    "_headers": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08",
+    "assets/ar-BMomRXgm.js": "e55d9ef97c1d673903caedbf85ff0bc718a3e838eeae5ff29ea1572e17e9ed82",
+    "assets/es-CgPPMZqP.js": "b211aad7c0bc33dd5bd4d1b34e9ad192cb16dda0bd308487cf21f36138f2081e",
+    "assets/index-BewoRMZ0.js": "03c997f2edde997bb07ae6b864f41c4de2a2a2a26e316f4d4ac94b9dc1d84b06",
+    "assets/ja-BW1i_TO0.js": "0a92052f678e1d684507f2ce1994a1d86fded698e18e2f735cffa4e0fcc8621b",
+    "assets/jsQR-DMfxOdIb.js": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869",
+    "assets/rolldown-runtime-XKyaHtl9.js": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7",
+    "assets/scanner.worker-DKkGvTTt.js": "5649f2a7e434e9133ea7cba51819b2e15bccf2d6d821e62a76901f2a2a9eb345",
+    "assets/style-sbKVpGL7.css": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c",
+    "build-info.json": "2256840b493eab359956613bdf05f587764667c54420bd20021988fc434a2bdd",
+    "deployments/README.md": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d",
+    "favicon.svg": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab",
+    "ghostpay-lean-build.json": "8e2933bbf1c0932501e9d5a86eb761b2197a47dabae44d10d681a2ca800a820b",
+    "help.css": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0",
+    "help.html": "e7f425cb10df85d9508b67017cc63dadf05e006df4f4ca4f022a6ba0bdbc80a1",
+    "index.html": "ea842978e060155a382c8abee751319d2bd3dba5f6791481839092b955c235a6",
+    "privacy.html": "e3259ed2a3146e392d30e03b15d74ff4e2b8cf969f44862379b891d5b933c017"
+  }
+}

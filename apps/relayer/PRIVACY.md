@@ -42,6 +42,46 @@ tokens, amounts and IP addresses cannot appear in logs. `requestId` is a random 
 Transaction hashes are also excluded from logs. Recovery uses only the protected state journal described above.
 A test in `src/api.test.ts` scans the log output for these values.
 
+### Zero-log mode (`"privacy": { "zeroLog": true }`, default off)
+
+IP addresses, owners and destinations are never logged in either mode (see above). Zero-log mode also removes the
+remaining per-request trail: the `request` access line (route, status, error class, request id) is not emitted, and
+`requestId` is stripped from every other line (for example `sweep_sent`). What remains are operational events with
+chain id and error class only (startup, shutdown, breaker, state journal, receipt outcomes). Tested in
+`src/privacy.test.ts`. It does not change what any proxy, CDN or RPC provider in front of or behind the relayer logs:
+configure those separately (for nginx, `access_log off;`).
+
+## Request body padding (MH-REL-3) and the transition
+
+Clients may add a `pad` member of random lowercase hex so a request body has a fixed size (the web client pads to 1, 2
+or 4 KiB). The relayer checks it is bounded hex, discards it unread before validation, and refuses a malformed one with
+`400 invalid_pad`. **Transition:** unpadded bodies stay accepted (`"privacy": { "bodyPadding": "optional" }`, the
+default). An operator may set `"required"` once all clients pad; unpadded bodies then get `400 invalid_pad`. A relayer
+older than this change refuses `pad` with `400 invalid_request`; the web client then resends the same request once
+unpadded. Padding hides only the body length; responses are not padded, and IP, timing and content still reach the
+relayer.
+
+## Quote and sweep: the tuple is sent twice (assessed, not changed)
+
+`/v1/quote` carries chain, token, owner, destination and amount; `/v1/sweep` carries them again with the signature.
+Folding the quote into the sweep is not safe: the fee is part of the EIP-712 order the owner signs, so it must be known
+before the sweep exists. Dropping owner or destination from the quote would unbind the quote token (an HMAC over the
+whole tuple, fee and expiry) and would gain nothing against this relayer, which receives the same fields seconds later in
+the sweep. Quote reuse is already short: `quoteTtlSeconds` is capped at 60 s (10..60), the token is bound to one exact
+order, and replay is stopped by the on-chain nonce. What remains is that a quote without a later sweep still tells the
+relayer about an intended sweep.
+
+## Ingress: direct, trusted proxy or onion (`"privacy": { "ingress": ... }`)
+
+- `direct`: clients connect to the listener; `trustedProxies` must be empty.
+- `trusted-proxy`: a reverse proxy listed in `trustedProxies` sets `X-Forwarded-For` (the default when the list is not
+  empty, so existing configs keep their meaning). The proxy sees and may log everything; its own policy applies.
+- `onion`: a local Tor onion service forwards to a loopback listener (`listen.host` must be `127.0.0.1`, `::1` or
+  `localhost`). `trustedProxies` must be empty, because a Tor client controls every header it sends. All onion clients
+  arrive from loopback, so the per-IP and per-network limits become one shared onion budget; the global quote budget
+  still applies. The relayer learns no client IP in this mode; the Tor process is a trust point. **Not tested against
+  a real Tor network** (see `deploy/TOR.md`).
+
 ## What is NOT retained
 
 No database, no files other than the state journal above, no cookies, no analytics, and no third-party calls other than the configured JSON-RPC endpoints

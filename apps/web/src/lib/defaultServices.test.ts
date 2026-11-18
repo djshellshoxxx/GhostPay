@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { canonicalManifestJson, loadDeployment, manifestDigest } from '@ghostpay/chain-adapters';
 import { keccak256, toBytes } from 'viem/utils';
 import { fakeManifestJson } from '../test/fakeManifest';
-import { loadDefaultManifest } from './defaultServices';
+import { createSelectedRpc, loadDefaultManifest, loadNetworkSelection } from './defaultServices';
 
 const hex = (bytes: Uint8Array): string => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 
@@ -43,5 +43,39 @@ describe('default manifest trust policy', () => {
     const foreignKey = hex(secp256k1.getPublicKey(secp256k1.utils.randomSecretKey(), true));
     const rejected = await loadDefaultManifest(84532, { '84532': signed }, [foreignKey]);
     expect(rejected.status).toBe('invalid');
+  });
+});
+
+describe('TM14 network selection (default unchanged)', () => {
+  const chain = { chainId: 84532 } as import('@ghostpay/chain-adapters').ChainConfig;
+  const store = (v: string | null): Storage => ({ getItem: () => v } as unknown as Storage);
+  const own = JSON.stringify({ rpcProfile: 'direct', relayerProfile: 'tor-browser', rpcMode: 'own-node', noticeAcknowledged: true });
+
+  it('falls back to the default for missing, broken, invalid or unacknowledged selections', () => {
+    const def = { rpcProfile: 'direct', relayerProfile: 'direct', rpcMode: 'single', noticeAcknowledged: false };
+    expect(loadNetworkSelection(undefined)).toEqual(def);
+    expect(loadNetworkSelection(store(null))).toEqual(def);
+    expect(loadNetworkSelection(store('{not json'))).toEqual(def);
+    expect(loadNetworkSelection(store(JSON.stringify({ rpcProfile: 'tor-socks' })))).toEqual(def);
+    expect(loadNetworkSelection(store(JSON.stringify({ rpcMode: 'own-node' })))).toEqual(def);
+    expect(loadNetworkSelection({ getItem: () => { throw new Error('blocked'); } } as unknown as Storage)).toEqual(def);
+    expect(loadNetworkSelection(store(own)).rpcMode).toBe('own-node');
+  });
+
+  it('default mode passes the URL through exactly as before', async () => {
+    const seen: unknown[] = [];
+    const rpc = createSelectedRpc(() => loadNetworkSelection(undefined), (_c, url, opts) => { seen.push([url, opts.allowInsecureLocalhost, typeof opts.transport.send]); return Promise.resolve({} as never); });
+    await rpc(chain, 'https://rpc.example.org');
+    expect(seen).toEqual([['https://rpc.example.org', false, 'function']]);
+  });
+
+  it('own-node refuses a third-party RPC without contacting it and allows loopback http', async () => {
+    const seen: string[] = [];
+    const rpc = createSelectedRpc(() => loadNetworkSelection(store(own)), (_c, url) => { seen.push(url); return Promise.resolve({} as never); });
+    await expect(rpc(chain, 'https://rpc.example.org')).rejects.toThrow(/on this computer/);
+    expect(seen).toEqual([]);
+    await rpc(chain, 'http://127.0.0.1:8545');
+    expect(seen).toHaveLength(1);
+    expect(seen[0]).toMatch(/^http:\/\/127\.0\.0\.1:8545/);
   });
 });

@@ -64,7 +64,7 @@ const noPrefix = keccak_256(canonicalInvoiceBytes(signed.invoice));
 console.log('signature verifies over keccak(canonical) WITHOUT the domain prefix (expect false):',
   secp256k1.verify(hexToBytes(signed.signature), noPrefix, hexToBytes(signed.invoice.signer), { prehash: false, lowS: true }));
 // Display-spoofing text accepted by the schema (bidi override, zero-width, confusables)
-for (const [n2, d] of [['RLO U+202E', 'Invoice ‮txt.exe'], ['ZWSP U+200B', 'Pay​ Alice'], ['bidi isolate U+2066', '⁦Total: 1⁩'], ['Cyrillic homoglyph', 'USDС'], ['tag chars U+E0041', 'a\u{E0041}']]) {
+for (const [n2, d] of [['RLO U+202E', 'Invoice \u202etxt.exe'], ['ZWSP U+200B', 'Pay​ Alice'], ['bidi isolate U+2066', '\u2066Total: 1\u2069'], ['Cyrillic homoglyph', 'USDС'], ['tag chars U+E0041', 'a\u{E0041}']]) {
   try { const i2 = base({ memo: d }); signInvoice(i2, signKey); console.log(`SPOOF-ACCEPTED ${n2}`); } catch (e) { console.log(`blocked ${n2}: ${e.constructor.name}`); }
 }
 // Fiat total vs token amount mismatch accepted (fixed_token): USD 10.00 invoice demanding 1000 ETH

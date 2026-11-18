@@ -1,0 +1,20 @@
+{
+  "name": "resolved-toolchain-check",
+  "cwd": "/workspace/scratch/4fa14be12559/analysis-build/source",
+  "command": [
+    "python",
+    "-c",
+    "import shutil, subprocess, json; result={}; names=[\"node\", \"npm\", \"npx\"]; [(result.update({name:{\"path\":shutil.which(name),\"version\":subprocess.run([name,\"--version\"],capture_output=True,text=True,check=True).stdout.strip()}})) for name in names]; print(json.dumps(result,indent=2))"
+  ],
+  "started": "2026-11-18T15:06:58.209150+00:00",
+  "node_bin": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin",
+  "npm_bin": "/workspace/scratch/4fa14be12559/toolchain-probe/npm-bin",
+  "heap_mib": 384,
+  "pages_node_cap": false,
+  "overrides": {},
+  "removed_ambient_build_variable_names": [],
+  "exit_code": 0,
+  "seconds": 0.224,
+  "finished": "2026-11-18T15:06:58.433061+00:00",
+  "log": "/workspace/scratch/4fa14be12559/analysis-build/logs/resolved-toolchain-check.log"
+}

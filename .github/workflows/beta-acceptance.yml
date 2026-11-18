@@ -67,5 +67,6 @@ jobs:
         with:
           name: beta-acceptance-log
           path: scripts/beta/.state/*.log
+          include-hidden-files: true
           if-no-files-found: warn
           retention-days: 7

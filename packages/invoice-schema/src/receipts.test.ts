@@ -65,6 +65,33 @@ describe('shared seller receipt protocol', () => {
   });
 });
 
+describe('minimal receipts (no one-time address)', () => {
+  const { stealthAddress: _omit, ...MINIMAL_FIELDS } = FIELDS;
+  void _omit;
+  it('signs, verifies and round-trips without a stealthAddress key, and legacy receipts still verify', () => {
+    const minimal = signReceipt(MINIMAL_FIELDS, KEY);
+    expect('stealthAddress' in minimal).toBe(false);
+    const { signature: _sig, ...payloadOnly } = minimal;
+    void _sig;
+    expect(canonicalReceiptPayload(payloadOnly)).not.toContain('stealthAddress');
+    expect(verifyReceipt(minimal)).toBe(true);
+    expect(parseVerifiedReceipt(receiptJson(minimal))).toEqual(minimal);
+    expect(verifyReceipt(SIGNED)).toBe(true);
+    expect(minimal.signature).not.toBe(SIGNATURE);
+  });
+  it('rejects a present-but-invalid address and a tampered minimal receipt', () => {
+    const minimal = signReceipt(MINIMAL_FIELDS, KEY);
+    expect(verifyReceipt({ ...minimal, stealthAddress: undefined })).toBe(false);
+    expect(verifyReceipt({ ...minimal, stealthAddress: FIELDS.stealthAddress })).toBe(false);
+    expect(verifyReceipt({ ...minimal, amountMinorUnits: '1001' })).toBe(false);
+  });
+  it('does not assert a recipient binding the receipt does not carry', () => {
+    const minimal = signReceipt(MINIMAL_FIELDS, KEY);
+    const binding: ReceiptInvoiceBinding = { invoiceDigest: FIELDS.invoiceDigest, chainId: FIELDS.chainId, asset: 'native', amountMinorUnits: '1000', invoiceSignerPublicKey: PUB, invoiceSignatureValid: true, stealthAddress: FIELDS.stealthAddress };
+    expect(bindReceiptToInvoice(minimal, binding).receipt).toEqual(minimal);
+  });
+});
+
 describe('receipt field binding is not payment evidence', () => {
   const binding: ReceiptInvoiceBinding = { invoiceDigest: FIELDS.invoiceDigest, chainId: FIELDS.chainId, asset: 'native', amountMinorUnits: '1000', invoiceSignerPublicKey: PUB, invoiceSignatureValid: true };
 

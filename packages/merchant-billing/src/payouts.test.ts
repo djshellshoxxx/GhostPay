@@ -57,7 +57,7 @@ describe('adversarial rows', () => {
     for (const row of rows) expect(issues(H + row)).not.toHaveLength(0);
   });
   it('formula and character-class labels', () => {
-    for (const label of ['=1+1', '+x', '-x', '@x', ' =x', 'a<b>', 'a‮b'.replace('‮', ' '), 'x'.repeat(65)])
+    for (const label of ['=1+1', '+x', '-x', '@x', ' =x', 'a<b>', 'a\u202eb'.replace('\u202e', ' '), 'x'.repeat(65)])
       expect(issues(`${H}${A},5,${label}`).some((i) => i.field === 'label')).toBe(true);
     expect(ok(`${H}${A},5,Zoë O'Neil & Co.`).items[0]?.label).toBe("Zoë O'Neil & Co.");
   });

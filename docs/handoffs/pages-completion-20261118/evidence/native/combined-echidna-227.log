@@ -1,0 +1,1156 @@
+[2026-11-18 06:33:32.60] Compiling `test/echidna/EchidnaRouter.sol`... Done! (0.547200633s)
+Analyzing contract: /workspace/scratch/4fa14be12559/GhostPay/packages/contracts/test/echidna/EchidnaRouter.sol:EchidnaRouter
+[2026-11-18 06:33:33.22] Running slither on `test/echidna/EchidnaRouter.sol`... WARNING: Running slither failed. Echidna will continue, however fuzzing will likely be less effective.
+
+Done! (0.204668902s)
+Loaded 0 transaction sequences from echidna-corpus-EchidnaRouter/reproducers
+Loaded 0 transaction sequences from echidna-corpus-EchidnaRouter/coverage
+[2026-11-18 06:33:33.43] INFO: Performing RPC: <EVM.Query: fetch contract 0x00000000000000000000000000000000000A0003EmptyBase>
+[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000A0003EmptyBase>
+[2026-11-18 06:33:33.43] INFO: Performing RPC: <EVM.Query: fetch contract 0x00000000000000000000000000000000000A0002EmptyBase>
+[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000A0002EmptyBase>
+[2026-11-18 06:33:33.43] INFO: Performing RPC: <EVM.Query: fetch contract 0x00000000000000000000000000000000000a0001EmptyBase>
+[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000a0001EmptyBase>
+[2026-11-18 06:33:33.43] INFO: Performing RPC: <EVM.Query: fetch contract 0x00000000000000000000000000000000000a0000EmptyBase>
+[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000a0000EmptyBase>
+[2026-11-18 06:33:33.43] INFO: Performing RPC: <EVM.Query: fetch contract 0x000000000000000000000000000000000FEe0000EmptyBase>
+[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x000000000000000000000000000000000FEe0000EmptyBase>
+[2026-11-18 06:33:33.48] [Worker 0] New coverage: 7680 instr, 7 contracts, 1 seqs in corpus
+[2026-11-18 06:33:33.51]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/1164957446251633297.txt
+[2026-11-18 06:33:33.61] [Worker 0] Test echidna_canary_native_success falsified!
+  Call sequence:
+EchidnaRouter.payNative(255,4370000,"\229") from: 0x0000000000000000000000000000000000020000 Time delay: 50417 seconds Block delay: 23885
+EchidnaRouter.directTokenTransfer(66945955425834108273542125276993190691049054980642407674052643431378816658001) from: 0x0000000000000000000000000000000000010000 Time delay: 275394 seconds Block delay: 34272
+EchidnaRouter.payNative(255,53753950575254508952258771319254691819692570434922779828390619284787913526677,"\CAN") from: 0x0000000000000000000000000000000000020000 Time delay: 444463 seconds Block delay: 4223
+EchidnaRouter.directTokenTransfer(794695114460) from: 0x0000000000000000000000000000000000020000 Time delay: 150273 seconds Block delay: 59982
+EchidnaRouter.payWithBuffer(16,115792089237316195423570985008687907853269984665640564039457584007913129639932,5172090809196512865182976283981895809419472420933642171508425285249881581293) from: 0x0000000000000000000000000000000000030000 Time delay: 332369 seconds Block delay: 800
+EchidnaRouter.payNative(255,4370000,"\229") from: 0x0000000000000000000000000000000000010000 Time delay: 289103 seconds Block delay: 32737
+EchidnaRouter.payErc20(255,4369999,"\255") from: 0x0000000000000000000000000000000000010000 Time delay: 198598 seconds Block delay: 20707
+EchidnaRouter.payWithBuffer(101,13263246867202977214655825891082142413494052506751923930670088491845306777168,102890100058297033497563769683369822079018486685255770468423657708464969345017) from: 0x0000000000000000000000000000000000010000 Time delay: 270925 seconds Block delay: 59981
+EchidnaRouter.directTokenTransfer(1524785992) from: 0x0000000000000000000000000000000000030000 Time delay: 358061 seconds Block delay: 7394
+EchidnaRouter.directTokenTransfer(1524785992) from: 0x0000000000000000000000000000000000030000 Time delay: 360624 seconds Block delay: 53678
+EchidnaRouter.payFotToken(142,1524785991) from: 0x0000000000000000000000000000000000020000 Time delay: 405856 seconds Block delay: 47075
+EchidnaRouter.payNative(255,1524785992,"\180") from: 0x0000000000000000000000000000000000010000 Time delay: 407328 seconds Block delay: 12155
+EchidnaRouter.payNative(13,54173688577375883105439875213409550104714687243302233073754292659945108379122,"\v") from: 0x0000000000000000000000000000000000030000 Time delay: 67960 seconds Block delay: 1984
+
+[2026-11-18 06:33:33.65]  Saved reproducer to echidna-corpus-EchidnaRouter/reproducers-unshrunk/6502414458031923031.txt
+[2026-11-18 06:33:36.46] [status] tests: 1/8, fuzzing: 105/300000, values: [], cov: 7680, corpus: 1, gas/s: 3950611
+[2026-11-18 06:33:39.48] [status] tests: 1/8, fuzzing: 105/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:33:42.50] [status] tests: 1/8, fuzzing: 105/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:33:45.52] [status] tests: 1/8, fuzzing: 126/300000, values: [], cov: 7680, corpus: 1, gas/s: 809227
+[2026-11-18 06:33:45.67] [Worker 0] Test echidna_canary_erc20_success falsified!
+  Call sequence:
+EchidnaRouter.payNative(255,4370000,"\229") from: 0x0000000000000000000000000000000000020000 Time delay: 50417 seconds Block delay: 23885
+EchidnaRouter.payWithBuffer(54,4370001,4370000) from: 0x0000000000000000000000000000000000010000 Time delay: 112444 seconds Block delay: 30011
+EchidnaRouter.payErc20(174,1524785993,"\232") from: 0x0000000000000000000000000000000000010000 Time delay: 110965 seconds Block delay: 23275
+EchidnaRouter.payWithBuffer(54,4370001,4370000) from: 0x0000000000000000000000000000000000030000 Time delay: 390247 seconds Block delay: 55538
+EchidnaRouter.payErc20(44,1524785992,"\194") from: 0x0000000000000000000000000000000000030000 Time delay: 303345 seconds Block delay: 23885
+EchidnaRouter.sendEthDirect(1524785992) from: 0x0000000000000000000000000000000000010000 Time delay: 511822 seconds Block delay: 15367
+EchidnaRouter.payErc20(174,1524785993,"\240") from: 0x0000000000000000000000000000000000010000 Time delay: 116188 seconds Block delay: 23978
+EchidnaRouter.sendEthDirect(0) from: 0x0000000000000000000000000000000000010000 Time delay: 209930 seconds Block delay: 2065
+EchidnaRouter.payFotToken(142,1524785991) from: 0x0000000000000000000000000000000000030000 Time delay: 415353 seconds Block delay: 1123
+EchidnaRouter.payFotToken(142,1524785991) from: 0x0000000000000000000000000000000000020000 Time delay: 66543 seconds Block delay: 30011
+EchidnaRouter.payFotToken(255,75811756683549949204992106682224095434727646682366198986169183682517118802319) from: 0x0000000000000000000000000000000000020000 Time delay: 66543 seconds Block delay: 22699
+EchidnaRouter.payNative(120,2224950184740374131639867422550645214947351704,"\SOH") from: 0x0000000000000000000000000000000000030000 Time delay: 547623 seconds Block delay: 32737
+EchidnaRouter.directTokenTransfer(851) from: 0x0000000000000000000000000000000000010000 Time delay: 19029 seconds Block delay: 60054
+EchidnaRouter.sendEthDirect(4369999) from: 0x0000000000000000000000000000000000030000 Time delay: 297507 seconds Block delay: 32147
+EchidnaRouter.payErc20(88,110501265314054753413566194075397980199327622146284860966346681424222493285213,"\238") from: 0x0000000000000000000000000000000000010000 Time delay: 405856 seconds Block delay: 1362
+EchidnaRouter.payErc20(174,1524785993,"\240") from: 0x0000000000000000000000000000000000030000 Time delay: 106929 seconds Block delay: 18429
+
+[2026-11-18 06:33:45.67] [Worker 0] Test echidna_canary_nonzero_fee falsified!
+  Call sequence:
+EchidnaRouter.payNative(255,4370000,"\229") from: 0x0000000000000000000000000000000000020000 Time delay: 50417 seconds Block delay: 23885
+EchidnaRouter.payWithBuffer(54,4370001,4370000) from: 0x0000000000000000000000000000000000010000 Time delay: 112444 seconds Block delay: 30011
+EchidnaRouter.payErc20(174,1524785993,"\232") from: 0x0000000000000000000000000000000000010000 Time delay: 110965 seconds Block delay: 23275
+EchidnaRouter.payWithBuffer(54,4370001,4370000) from: 0x0000000000000000000000000000000000030000 Time delay: 390247 seconds Block delay: 55538
+EchidnaRouter.payErc20(44,1524785992,"\194") from: 0x0000000000000000000000000000000000030000 Time delay: 303345 seconds Block delay: 23885
+EchidnaRouter.sendEthDirect(1524785992) from: 0x0000000000000000000000000000000000010000 Time delay: 511822 seconds Block delay: 15367
+EchidnaRouter.payErc20(174,1524785993,"\240") from: 0x0000000000000000000000000000000000010000 Time delay: 116188 seconds Block delay: 23978
+EchidnaRouter.sendEthDirect(0) from: 0x0000000000000000000000000000000000010000 Time delay: 209930 seconds Block delay: 2065
+EchidnaRouter.payFotToken(142,1524785991) from: 0x0000000000000000000000000000000000030000 Time delay: 415353 seconds Block delay: 1123
+EchidnaRouter.payFotToken(142,1524785991) from: 0x0000000000000000000000000000000000020000 Time delay: 66543 seconds Block delay: 30011
+EchidnaRouter.payFotToken(255,75811756683549949204992106682224095434727646682366198986169183682517118802319) from: 0x0000000000000000000000000000000000020000 Time delay: 66543 seconds Block delay: 22699
+EchidnaRouter.payNative(120,2224950184740374131639867422550645214947351704,"\SOH") from: 0x0000000000000000000000000000000000030000 Time delay: 547623 seconds Block delay: 32737
+EchidnaRouter.directTokenTransfer(851) from: 0x0000000000000000000000000000000000010000 Time delay: 19029 seconds Block delay: 60054
+EchidnaRouter.sendEthDirect(4369999) from: 0x0000000000000000000000000000000000030000 Time delay: 297507 seconds Block delay: 32147
+EchidnaRouter.payErc20(88,110501265314054753413566194075397980199327622146284860966346681424222493285213,"\238") from: 0x0000000000000000000000000000000000010000 Time delay: 405856 seconds Block delay: 1362
+EchidnaRouter.payErc20(174,1524785993,"\240") from: 0x0000000000000000000000000000000000030000 Time delay: 106929 seconds Block delay: 18429
+
+[2026-11-18 06:33:45.72]  Saved reproducer to echidna-corpus-EchidnaRouter/reproducers-unshrunk/4702652316267260152.txt
+[2026-11-18 06:33:45.74]  Saved reproducer to echidna-corpus-EchidnaRouter/reproducers-unshrunk/4702652316267260152.txt
+[2026-11-18 06:33:48.54] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 3248786
+[2026-11-18 06:33:51.56] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:33:54.58] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:33:57.60] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:00.62] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:03.64] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:06.66] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:09.68] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:12.70] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:15.72] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:18.74] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:21.76] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:24.78] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:27.80] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:30.81] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:33.82] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:36.82] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:39.83] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:42.83] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:45.84] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:48.84] [status] tests: 3/8, fuzzing: 210/300000, values: [], cov: 7680, corpus: 1, gas/s: 0
+[2026-11-18 06:34:51.24] [Worker 0] New coverage: 7696 instr, 7 contracts, 2 seqs in corpus
+[2026-11-18 06:34:51.28]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/367389575492516924.txt
+[2026-11-18 06:34:51.29] [Worker 0] New coverage: 7752 instr, 7 contracts, 3 seqs in corpus
+[2026-11-18 06:34:51.35]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/7849255845513764918.txt
+[2026-11-18 06:34:51.63] [Worker 0] Test echidna_canary_buffer_success falsified!
+  Call sequence:
+EchidnaRouter.payNative(255,4370000,"\229") from: 0x0000000000000000000000000000000000020000 Time delay: 50417 seconds Block delay: 23885
+EchidnaRouter.directTokenTransfer(1524785992) from: 0x0000000000000000000000000000000000010000 Time delay: 379552 seconds Block delay: 53011
+EchidnaRouter.payWithBuffer(156,28776663081721159815906306181230950457594746961879961511044344030371070262942,56966039109625800887354809069311391327556225677109297174109222392038780114421) from: 0x0000000000000000000000000000000000020000 Time delay: 440097 seconds Block delay: 5675
+EchidnaRouter.payNative(255,4370000,"\229") from: 0x0000000000000000000000000000000000030000 Time delay: 361136 seconds Block delay: 23885
+EchidnaRouter.payFotToken(142,1524785991) from: 0x0000000000000000000000000000000000020000 Time delay: 437838 seconds Block delay: 57086
+EchidnaRouter.payErc20(154,112744100150130318506191620929213695593875124542811157992324782149877187154998,"`") from: 0x0000000000000000000000000000000000010000 Time delay: 569114 seconds Block delay: 60267
+EchidnaRouter.payWithBuffer(255,26156229178536255259206312230622373072009046698976638064240846715233183514058,4369999) from: 0x0000000000000000000000000000000000030000 Time delay: 82670 seconds Block delay: 60364
+EchidnaRouter.payErc20(138,1524785992,"\192") from: 0x0000000000000000000000000000000000030000 Time delay: 490448 seconds Block delay: 60267
+EchidnaRouter.sendEthDirect(73773192411474871947502943103374970760803187589780716949147592400360924598660) from: 0x0000000000000000000000000000000000030000 Time delay: 275394 seconds Block delay: 30042
+EchidnaRouter.payNative(255,115792089237316195423570985008687907853269984665640564039457584007913129639935,"\ACK") from: 0x0000000000000000000000000000000000010000 Time delay: 332369 seconds Block delay: 42595
+EchidnaRouter.sendEthDirect(105430532875864743603754678277527146916749981341683469364719134974898910170667) from: 0x0000000000000000000000000000000000010000 Time delay: 297507 seconds Block delay: 255
+EchidnaRouter.payFotToken(255,115792089237316195423570985008687907853269984665640564039457584007913129639932) from: 0x0000000000000000000000000000000000030000 Time delay: 444463 seconds Block delay: 36859
+EchidnaRouter.directTokenTransfer(1524785992) from: 0x0000000000000000000000000000000000010000 Time delay: 82671 seconds Block delay: 20243
+EchidnaRouter.directTokenTransfer(19267646314572509846389140687243817449345101848148352917105120001086256224956) from: 0x0000000000000000000000000000000000010000 Time delay: 522178 seconds Block delay: 16089
+EchidnaRouter.payWithBuffer(255,115792089237316195423570985008687907853269984665640564039457584007913129639935,18488775963720541445770202755652394661549693212166786761424886192610384481464) from: 0x0000000000000000000000000000000000020000 Time delay: 33605 seconds Block delay: 53451
+EchidnaRouter.payWithBuffer(255,1524785992,65212313255402631364023032299028501887045554288008662461653808033457078013287) from: 0x0000000000000000000000000000000000030000 Time delay: 490446 seconds Block delay: 42101
+EchidnaRouter.payNative(255,240808,"\229") from: 0x0000000000000000000000000000000000030000 Time delay: 195123 seconds Block delay: 22909
+EchidnaRouter.payNative(255,4370000,"\229") from: 0x0000000000000000000000000000000000020000 Time delay: 414579 seconds Block delay: 42101
+EchidnaRouter.payWithBuffer(195,4369999,115792089237316195423570985008687907853269984665640564039457584007913129639935) from: 0x0000000000000000000000000000000000010000 Time delay: 415353 seconds Block delay: 23403
+
+[2026-11-18 06:34:51.68]  Saved reproducer to echidna-corpus-EchidnaRouter/reproducers-unshrunk/3115638384225286133.txt
+[2026-11-18 06:34:51.84] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 10986097
+[2026-11-18 06:34:54.86] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:34:57.88] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:35:00.90] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:35:03.92] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:35:06.94] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:35:09.96] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:35:12.96] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:35:15.98] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:35:18.99] [status] tests: 4/8, fuzzing: 486/300000, values: [], cov: 7752, corpus: 3, gas/s: 0
+[2026-11-18 06:35:21.99] [status] tests: 4/8, fuzzing: 652/300000, values: [], cov: 7752, corpus: 3, gas/s: 6687408
+[2026-11-18 06:35:24.64] [Worker 0] New coverage: 7755 instr, 7 contracts, 4 seqs in corpus
+[2026-11-18 06:35:24.66]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/81355455475436158.txt
+[2026-11-18 06:35:25.00] [status] tests: 4/8, fuzzing: 2281/300000, values: [], cov: 7755, corpus: 4, gas/s: 65007993
+[2026-11-18 06:35:27.57] [Worker 0] New coverage: 7771 instr, 7 contracts, 5 seqs in corpus
+[2026-11-18 06:35:27.63]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/6570512939159649159.txt
+[2026-11-18 06:35:28.02] [status] tests: 4/8, fuzzing: 3919/300000, values: [], cov: 7771, corpus: 5, gas/s: 64740713
+[2026-11-18 06:35:31.04] [status] tests: 4/8, fuzzing: 5579/300000, values: [], cov: 7771, corpus: 5, gas/s: 64941926
+[2026-11-18 06:35:34.06] [status] tests: 4/8, fuzzing: 7204/300000, values: [], cov: 7771, corpus: 5, gas/s: 63636785
+[2026-11-18 06:35:37.08] [status] tests: 4/8, fuzzing: 8790/300000, values: [], cov: 7771, corpus: 5, gas/s: 61755666
+[2026-11-18 06:35:40.10] [status] tests: 4/8, fuzzing: 10374/300000, values: [], cov: 7771, corpus: 5, gas/s: 63555039
+[2026-11-18 06:35:43.12] [status] tests: 4/8, fuzzing: 11944/300000, values: [], cov: 7771, corpus: 5, gas/s: 61368483
+[2026-11-18 06:35:46.14] [status] tests: 4/8, fuzzing: 13571/300000, values: [], cov: 7771, corpus: 5, gas/s: 64050644
+[2026-11-18 06:35:49.16] [status] tests: 4/8, fuzzing: 15225/300000, values: [], cov: 7771, corpus: 5, gas/s: 64484109
+[2026-11-18 06:35:52.18] [status] tests: 4/8, fuzzing: 16863/300000, values: [], cov: 7771, corpus: 5, gas/s: 64914617
+[2026-11-18 06:35:55.20] [status] tests: 4/8, fuzzing: 18414/300000, values: [], cov: 7771, corpus: 5, gas/s: 61827406
+[2026-11-18 06:35:58.16] [Worker 0] New coverage: 7774 instr, 7 contracts, 6 seqs in corpus
+[2026-11-18 06:35:58.21]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/5445275876768480186.txt
+[2026-11-18 06:35:58.22] [status] tests: 4/8, fuzzing: 19885/300000, values: [], cov: 7774, corpus: 6, gas/s: 58299890
+[2026-11-18 06:36:01.24] [status] tests: 4/8, fuzzing: 21597/300000, values: [], cov: 7774, corpus: 6, gas/s: 61727867
+[2026-11-18 06:36:04.26] [status] tests: 4/8, fuzzing: 23359/300000, values: [], cov: 7774, corpus: 6, gas/s: 66713757
+[2026-11-18 06:36:04.38] [Worker 0] New coverage: 7777 instr, 7 contracts, 7 seqs in corpus
+[2026-11-18 06:36:04.43]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/1020354637256597686.txt
+[2026-11-18 06:36:06.36] [Worker 0] New coverage: 7780 instr, 7 contracts, 8 seqs in corpus
+[2026-11-18 06:36:06.41]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/7988128112592334578.txt
+[2026-11-18 06:36:07.28] [status] tests: 4/8, fuzzing: 25124/300000, values: [], cov: 7780, corpus: 8, gas/s: 66866540
+[2026-11-18 06:36:10.30] [status] tests: 4/8, fuzzing: 26856/300000, values: [], cov: 7780, corpus: 8, gas/s: 67564004
+[2026-11-18 06:36:13.32] [status] tests: 4/8, fuzzing: 28557/300000, values: [], cov: 7780, corpus: 8, gas/s: 66673219
+[2026-11-18 06:36:15.13] [Worker 0] New coverage: 7783 instr, 7 contracts, 9 seqs in corpus
+[2026-11-18 06:36:15.21]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/8820353235586202184.txt
+[2026-11-18 06:36:16.34] [status] tests: 4/8, fuzzing: 30219/300000, values: [], cov: 7783, corpus: 9, gas/s: 64021000
+[2026-11-18 06:36:19.36] [status] tests: 4/8, fuzzing: 31944/300000, values: [], cov: 7783, corpus: 9, gas/s: 67479351
+[2026-11-18 06:36:22.38] [status] tests: 4/8, fuzzing: 33516/300000, values: [], cov: 7783, corpus: 9, gas/s: 60792457
+[2026-11-18 06:36:25.40] [status] tests: 4/8, fuzzing: 35273/300000, values: [], cov: 7783, corpus: 9, gas/s: 68226738
+[2026-11-18 06:36:28.42] [status] tests: 4/8, fuzzing: 37035/300000, values: [], cov: 7783, corpus: 9, gas/s: 67557744
+[2026-11-18 06:36:31.44] [status] tests: 4/8, fuzzing: 38812/300000, values: [], cov: 7783, corpus: 9, gas/s: 68777897
+[2026-11-18 06:36:34.46] [status] tests: 4/8, fuzzing: 40452/300000, values: [], cov: 7783, corpus: 9, gas/s: 62389097
+[2026-11-18 06:36:37.48] [status] tests: 4/8, fuzzing: 42240/300000, values: [], cov: 7783, corpus: 9, gas/s: 67082552
+[2026-11-18 06:36:40.50] [status] tests: 4/8, fuzzing: 44010/300000, values: [], cov: 7783, corpus: 9, gas/s: 66199412
+[2026-11-18 06:36:43.52] [status] tests: 4/8, fuzzing: 45403/300000, values: [], cov: 7783, corpus: 9, gas/s: 55262549
+[2026-11-18 06:36:46.54] [status] tests: 4/8, fuzzing: 47011/300000, values: [], cov: 7783, corpus: 9, gas/s: 62353440
+[2026-11-18 06:36:49.56] [status] tests: 4/8, fuzzing: 48639/300000, values: [], cov: 7783, corpus: 9, gas/s: 62857157
+[2026-11-18 06:36:52.58] [status] tests: 4/8, fuzzing: 50330/300000, values: [], cov: 7783, corpus: 9, gas/s: 65191955
+[2026-11-18 06:36:55.60] [status] tests: 4/8, fuzzing: 52072/300000, values: [], cov: 7783, corpus: 9, gas/s: 66821056
+[2026-11-18 06:36:58.62] [status] tests: 4/8, fuzzing: 53770/300000, values: [], cov: 7783, corpus: 9, gas/s: 66631415
+[2026-11-18 06:37:01.64] [status] tests: 4/8, fuzzing: 55494/300000, values: [], cov: 7783, corpus: 9, gas/s: 66239541
+[2026-11-18 06:37:04.66] [status] tests: 4/8, fuzzing: 57272/300000, values: [], cov: 7783, corpus: 9, gas/s: 67023889
+[2026-11-18 06:37:07.68] [status] tests: 4/8, fuzzing: 58892/300000, values: [], cov: 7783, corpus: 9, gas/s: 61346193
+[2026-11-18 06:37:10.70] [status] tests: 4/8, fuzzing: 60613/300000, values: [], cov: 7783, corpus: 9, gas/s: 66729818
+[2026-11-18 06:37:12.51] [Worker 0] New coverage: 7786 instr, 7 contracts, 10 seqs in corpus
+[2026-11-18 06:37:12.57]  Saved reproducer to echidna-corpus-EchidnaRouter/coverage/1061539816100322302.txt
+[2026-11-18 06:37:13.72] [status] tests: 4/8, fuzzing: 62303/300000, values: [], cov: 7786, corpus: 10, gas/s: 64990693
+[2026-11-18 06:37:16.74] [status] tests: 4/8, fuzzing: 63911/300000, values: [], cov: 7786, corpus: 10, gas/s: 61407614
+[2026-11-18 06:37:19.76] [status] tests: 4/8, fuzzing: 65688/300000, values: [], cov: 7786, corpus: 10, gas/s: 66767502
+[2026-11-18 06:37:22.78] [status] tests: 4/8, fuzzing: 67444/300000, values: [], cov: 7786, corpus: 10, gas/s: 68260662
+[2026-11-18 06:37:25.80] [status] tests: 4/8, fuzzing: 69108/300000, values: [], cov: 7786, corpus: 10, gas/s: 62886223
+[2026-11-18 06:37:28.82] [status] tests: 4/8, fuzzing: 70891/300000, values: [], cov: 7786, corpus: 10, gas/s: 68339856
+[2026-11-18 06:37:31.85] [status] tests: 4/8, fuzzing: 72675/300000, values: [], cov: 7786, corpus: 10, gas/s: 68973655
+[2026-11-18 06:37:34.86] [status] tests: 4/8, fuzzing: 74470/300000, values: [], cov: 7786, corpus: 10, gas/s: 68791116
+[2026-11-18 06:37:37.88] [status] tests: 4/8, fuzzing: 76149/300000, values: [], cov: 7786, corpus: 10, gas/s: 64175830
+[2026-11-18 06:37:40.90] [status] tests: 4/8, fuzzing: 77744/300000, values: [], cov: 7786, corpus: 10, gas/s: 61616781
+[2026-11-18 06:37:43.92] [status] tests: 4/8, fuzzing: 79409/300000, values: [], cov: 7786, corpus: 10, gas/s: 64046888
+[2026-11-18 06:37:46.94] [status] tests: 4/8, fuzzing: 81264/300000, values: [], cov: 7786, corpus: 10, gas/s: 70007264
+[2026-11-18 06:37:49.96] [status] tests: 4/8, fuzzing: 82940/300000, values: [], cov: 7786, corpus: 10, gas/s: 64654707
+[2026-11-18 06:37:52.98] [status] tests: 4/8, fuzzing: 84547/300000, values: [], cov: 7786, corpus: 10, gas/s: 59873131
+[2026-11-18 06:37:56.00] [status] tests: 4/8, fuzzing: 86189/300000, values: [], cov: 7786, corpus: 10, gas/s: 63511053
+[2026-11-18 06:37:59.02] [status] tests: 4/8, fuzzing: 87925/300000, values: [], cov: 7786, corpus: 10, gas/s: 66277173
+[2026-11-18 06:38:02.04] [status] tests: 4/8, fuzzing: 89628/300000, values: [], cov: 7786, corpus: 10, gas/s: 64116032
+[2026-11-18 06:38:05.06] [status] tests: 4/8, fuzzing: 91314/300000, values: [], cov: 7786, corpus: 10, gas/s: 64785652
+[2026-11-18 06:38:08.08] [status] tests: 4/8, fuzzing: 93067/300000, values: [], cov: 7786, corpus: 10, gas/s: 66120385
+[2026-11-18 06:38:11.10] [status] tests: 4/8, fuzzing: 94761/300000, values: [], cov: 7786, corpus: 10, gas/s: 63536839
+[2026-11-18 06:38:14.12] [status] tests: 4/8, fuzzing: 96522/300000, values: [], cov: 7786, corpus: 10, gas/s: 68528988
+[2026-11-18 06:38:17.14] [status] tests: 4/8, fuzzing: 98198/300000, values: [], cov: 7786, corpus: 10, gas/s: 66120292
+[2026-11-18 06:38:20.16] [status] tests: 4/8, fuzzing: 99944/300000, values: [], cov: 7786, corpus: 10, gas/s: 66830682
+[2026-11-18 06:38:23.18] [status] tests: 4/8, fuzzing: 101556/300000, values: [], cov: 7786, corpus: 10, gas/s: 61287496
+[2026-11-18 06:38:26.20] [status] tests: 4/8, fuzzing: 103208/300000, values: [], cov: 7786, corpus: 10, gas/s: 62763644
+[2026-11-18 06:38:29.22] [status] tests: 4/8, fuzzing: 104826/300000, values: [], cov: 7786, corpus: 10, gas/s: 61062288
+[2026-11-18 06:38:32.24] [status] tests: 4/8, fuzzing: 106545/300000, values: [], cov: 7786, corpus: 10, gas/s: 65459662
+[2026-11-18 06:38:35.26] [status] tests: 4/8, fuzzing: 108310/300000, values: [], cov: 7786, corpus: 10, gas/s: 66671686
+[2026-11-18 06:38:38.28] [status] tests: 4/8, fuzzing: 109990/300000, values: [], cov: 7786, corpus: 10, gas/s: 66057406
+[2026-11-18 06:38:41.29] [status] tests: 4/8, fuzzing: 111681/300000, values: [], cov: 7786, corpus: 10, gas/s: 65347401
+[2026-11-18 06:38:44.30] [status] tests: 4/8, fuzzing: 113260/300000, values: [], cov: 7786, corpus: 10, gas/s: 59850937
+[2026-11-18 06:38:47.32] [status] tests: 4/8, fuzzing: 114789/300000, values: [], cov: 7786, corpus: 10, gas/s: 58853499
+[2026-11-18 06:38:50.34] [status] tests: 4/8, fuzzing: 116309/300000, values: [], cov: 7786, corpus: 10, gas/s: 58430331
+[2026-11-18 06:38:53.36] [status] tests: 4/8, fuzzing: 117914/300000, values: [], cov: 7786, corpus: 10, gas/s: 62333811
+[2026-11-18 06:38:56.38] [status] tests: 4/8, fuzzing: 119505/300000, values: [], cov: 7786, corpus: 10, gas/s: 61302306
+[2026-11-18 06:38:59.39] [status] tests: 4/8, fuzzing: 121019/300000, values: [], cov: 7786, corpus: 10, gas/s: 57560247
+[2026-11-18 06:39:02.39] [status] tests: 4/8, fuzzing: 122707/300000, values: [], cov: 7786, corpus: 10, gas/s: 64935553
+[2026-11-18 06:39:05.40] [status] tests: 4/8, fuzzing: 124175/300000, values: [], cov: 7786, corpus: 10, gas/s: 56961088
+[2026-11-18 06:39:08.40] [status] tests: 4/8, fuzzing: 125714/300000, values: [], cov: 7786, corpus: 10, gas/s: 59092977
+[2026-11-18 06:39:11.41] [status] tests: 4/8, fuzzing: 127225/300000, values: [], cov: 7786, corpus: 10, gas/s: 58364253
+[2026-11-18 06:39:14.41] [status] tests: 4/8, fuzzing: 128839/300000, values: [], cov: 7786, corpus: 10, gas/s: 61428944
+[2026-11-18 06:39:17.41] [status] tests: 4/8, fuzzing: 130544/300000, values: [], cov: 7786, corpus: 10, gas/s: 65572259
+[2026-11-18 06:39:20.42] [status] tests: 4/8, fuzzing: 132186/300000, values: [], cov: 7786, corpus: 10, gas/s: 63148944
+[2026-11-18 06:39:23.42] [status] tests: 4/8, fuzzing: 133678/300000, values: [], cov: 7786, corpus: 10, gas/s: 56283029
+[2026-11-18 06:39:26.44] [status] tests: 4/8, fuzzing: 135314/300000, values: [], cov: 7786, corpus: 10, gas/s: 63273290
+[2026-11-18 06:39:29.46] [status] tests: 4/8, fuzzing: 137000/300000, values: [], cov: 7786, corpus: 10, gas/s: 63874116
+[2026-11-18 06:39:32.48] [status] tests: 4/8, fuzzing: 138484/300000, values: [], cov: 7786, corpus: 10, gas/s: 57935200
+[2026-11-18 06:39:35.50] [status] tests: 4/8, fuzzing: 140078/300000, values: [], cov: 7786, corpus: 10, gas/s: 61747205
+[2026-11-18 06:39:38.52] [status] tests: 4/8, fuzzing: 141729/300000, values: [], cov: 7786, corpus: 10, gas/s: 63028871
+[2026-11-18 06:39:41.55] [status] tests: 4/8, fuzzing: 143358/300000, values: [], cov: 7786, corpus: 10, gas/s: 61360358
+[2026-11-18 06:39:44.56] [status] tests: 4/8, fuzzing: 144995/300000, values: [], cov: 7786, corpus: 10, gas/s: 62860404
+[2026-11-18 06:39:47.58] [status] tests: 4/8, fuzzing: 146507/300000, values: [], cov: 7786, corpus: 10, gas/s: 58986456
+[2026-11-18 06:39:50.60] [status] tests: 4/8, fuzzing: 148164/300000, values: [], cov: 7786, corpus: 10, gas/s: 63512296
+[2026-11-18 06:39:53.62] [status] tests: 4/8, fuzzing: 149770/300000, values: [], cov: 7786, corpus: 10, gas/s: 60909706
+[2026-11-18 06:39:56.64] [status] tests: 4/8, fuzzing: 151392/300000, values: [], cov: 7786, corpus: 10, gas/s: 63059266
+[2026-11-18 06:39:59.66] [status] tests: 4/8, fuzzing: 153057/300000, values: [], cov: 7786, corpus: 10, gas/s: 63446732
+[2026-11-18 06:40:02.68] [status] tests: 4/8, fuzzing: 154714/300000, values: [], cov: 7786, corpus: 10, gas/s: 64053862
+[2026-11-18 06:40:05.70] [status] tests: 4/8, fuzzing: 156306/300000, values: [], cov: 7786, corpus: 10, gas/s: 61647509
+[2026-11-18 06:40:08.72] [status] tests: 4/8, fuzzing: 157994/300000, values: [], cov: 7786, corpus: 10, gas/s: 64124942
+[2026-11-18 06:40:11.74] [status] tests: 4/8, fuzzing: 159676/300000, values: [], cov: 7786, corpus: 10, gas/s: 63725728
+[2026-11-18 06:40:14.77] [status] tests: 4/8, fuzzing: 161244/300000, values: [], cov: 7786, corpus: 10, gas/s: 59929305
+[2026-11-18 06:40:17.78] [status] tests: 4/8, fuzzing: 162850/300000, values: [], cov: 7786, corpus: 10, gas/s: 62177001
+[2026-11-18 06:40:20.80] [status] tests: 4/8, fuzzing: 164400/300000, values: [], cov: 7786, corpus: 10, gas/s: 60390652
+[2026-11-18 06:40:23.82] [status] tests: 4/8, fuzzing: 166072/300000, values: [], cov: 7786, corpus: 10, gas/s: 63552229
+[2026-11-18 06:40:26.84] [status] tests: 4/8, fuzzing: 167608/300000, values: [], cov: 7786, corpus: 10, gas/s: 58442965
+[2026-11-18 06:40:29.85] [status] tests: 4/8, fuzzing: 169122/300000, values: [], cov: 7786, corpus: 10, gas/s: 58349195
+[2026-11-18 06:40:32.85] [status] tests: 4/8, fuzzing: 170696/300000, values: [], cov: 7786, corpus: 10, gas/s: 58686744
+[2026-11-18 06:40:35.87] [status] tests: 4/8, fuzzing: 172354/300000, values: [], cov: 7786, corpus: 10, gas/s: 63494111
+[2026-11-18 06:40:38.89] [status] tests: 4/8, fuzzing: 173894/300000, values: [], cov: 7786, corpus: 10, gas/s: 58629255
+[2026-11-18 06:40:41.89] [status] tests: 4/8, fuzzing: 175507/300000, values: [], cov: 7786, corpus: 10, gas/s: 62636903
+[2026-11-18 06:40:44.92] [status] tests: 4/8, fuzzing: 177256/300000, values: [], cov: 7786, corpus: 10, gas/s: 66192760
+[2026-11-18 06:40:47.93] [status] tests: 4/8, fuzzing: 178953/300000, values: [], cov: 7786, corpus: 10, gas/s: 63310970
+[2026-11-18 06:40:50.95] [status] tests: 4/8, fuzzing: 180762/300000, values: [], cov: 7786, corpus: 10, gas/s: 68673297
+[2026-11-18 06:40:53.98] [status] tests: 4/8, fuzzing: 182448/300000, values: [], cov: 7786, corpus: 10, gas/s: 64762788
+[2026-11-18 06:40:56.99] [status] tests: 4/8, fuzzing: 184137/300000, values: [], cov: 7786, corpus: 10, gas/s: 65489787
+[2026-11-18 06:41:00.01] [status] tests: 4/8, fuzzing: 185855/300000, values: [], cov: 7786, corpus: 10, gas/s: 66247937
+[2026-11-18 06:41:03.03] [status] tests: 4/8, fuzzing: 187464/300000, values: [], cov: 7786, corpus: 10, gas/s: 64226875
+[2026-11-18 06:41:06.05] [status] tests: 4/8, fuzzing: 189190/300000, values: [], cov: 7786, corpus: 10, gas/s: 67056303
+[2026-11-18 06:41:09.07] [status] tests: 4/8, fuzzing: 190806/300000, values: [], cov: 7786, corpus: 10, gas/s: 61472964
+[2026-11-18 06:41:12.09] [status] tests: 4/8, fuzzing: 192303/300000, values: [], cov: 7786, corpus: 10, gas/s: 57638807
+[2026-11-18 06:41:15.11] [status] tests: 4/8, fuzzing: 193738/300000, values: [], cov: 7786, corpus: 10, gas/s: 56220768
+[2026-11-18 06:41:18.13] [status] tests: 4/8, fuzzing: 195417/300000, values: [], cov: 7786, corpus: 10, gas/s: 65530033
+[2026-11-18 06:41:21.15] [status] tests: 4/8, fuzzing: 197152/300000, values: [], cov: 7786, corpus: 10, gas/s: 66296773
+[2026-11-18 06:41:24.17] [status] tests: 4/8, fuzzing: 198841/300000, values: [], cov: 7786, corpus: 10, gas/s: 65270752
+[2026-11-18 06:41:27.19] [status] tests: 4/8, fuzzing: 200573/300000, values: [], cov: 7786, corpus: 10, gas/s: 66357865
+[2026-11-18 06:41:30.21] [status] tests: 4/8, fuzzing: 202281/300000, values: [], cov: 7786, corpus: 10, gas/s: 64714436
+[2026-11-18 06:41:33.23] [status] tests: 4/8, fuzzing: 204047/300000, values: [], cov: 7786, corpus: 10, gas/s: 67836549
+[2026-11-18 06:41:36.25] [status] tests: 4/8, fuzzing: 205681/300000, values: [], cov: 7786, corpus: 10, gas/s: 62113465
+[2026-11-18 06:41:39.27] [status] tests: 4/8, fuzzing: 207397/300000, values: [], cov: 7786, corpus: 10, gas/s: 64303463
+[2026-11-18 06:41:42.29] [status] tests: 4/8, fuzzing: 209149/300000, values: [], cov: 7786, corpus: 10, gas/s: 67768554
+[2026-11-18 06:41:45.31] [status] tests: 4/8, fuzzing: 210729/300000, values: [], cov: 7786, corpus: 10, gas/s: 61595836
+[2026-11-18 06:41:48.33] [status] tests: 4/8, fuzzing: 212456/300000, values: [], cov: 7786, corpus: 10, gas/s: 66236264
+[2026-11-18 06:41:51.35] [status] tests: 4/8, fuzzing: 214143/300000, values: [], cov: 7786, corpus: 10, gas/s: 62445684
+[2026-11-18 06:41:54.37] [status] tests: 4/8, fuzzing: 215784/300000, values: [], cov: 7786, corpus: 10, gas/s: 62964187
+[2026-11-18 06:41:57.39] [status] tests: 4/8, fuzzing: 217474/300000, values: [], cov: 7786, corpus: 10, gas/s: 64381641
+[2026-11-18 06:42:00.41] [status] tests: 4/8, fuzzing: 219186/300000, values: [], cov: 7786, corpus: 10, gas/s: 65647884
+[2026-11-18 06:42:03.42] [status] tests: 4/8, fuzzing: 220823/300000, values: [], cov: 7786, corpus: 10, gas/s: 64061030
+[2026-11-18 06:42:06.44] [status] tests: 4/8, fuzzing: 222539/300000, values: [], cov: 7786, corpus: 10, gas/s: 65970521
+[2026-11-18 06:42:09.46] [status] tests: 4/8, fuzzing: 224267/300000, values: [], cov: 7786, corpus: 10, gas/s: 66173328
+[2026-11-18 06:42:12.48] [status] tests: 4/8, fuzzing: 225932/300000, values: [], cov: 7786, corpus: 10, gas/s: 62688825
+[2026-11-18 06:42:15.50] [status] tests: 4/8, fuzzing: 227516/300000, values: [], cov: 7786, corpus: 10, gas/s: 60191291
+[2026-11-18 06:42:18.52] [status] tests: 4/8, fuzzing: 229182/300000, values: [], cov: 7786, corpus: 10, gas/s: 63244225
+[2026-11-18 06:42:21.54] [status] tests: 4/8, fuzzing: 230897/300000, values: [], cov: 7786, corpus: 10, gas/s: 65929197
+[2026-11-18 06:42:24.56] [status] tests: 4/8, fuzzing: 232502/300000, values: [], cov: 7786, corpus: 10, gas/s: 60901402
+[2026-11-18 06:42:27.58] [status] tests: 4/8, fuzzing: 233975/300000, values: [], cov: 7786, corpus: 10, gas/s: 57488512
+[2026-11-18 06:42:30.60] [status] tests: 4/8, fuzzing: 235668/300000, values: [], cov: 7786, corpus: 10, gas/s: 66728877
+[2026-11-18 06:42:33.62] [status] tests: 4/8, fuzzing: 237410/300000, values: [], cov: 7786, corpus: 10, gas/s: 66815413
+[2026-11-18 06:42:36.64] [status] tests: 4/8, fuzzing: 239170/300000, values: [], cov: 7786, corpus: 10, gas/s: 66912170
+[2026-11-18 06:42:39.66] [status] tests: 4/8, fuzzing: 240849/300000, values: [], cov: 7786, corpus: 10, gas/s: 66054444
+[2026-11-18 06:42:42.68] [status] tests: 4/8, fuzzing: 242525/300000, values: [], cov: 7786, corpus: 10, gas/s: 63271098
+[2026-11-18 06:42:45.70] [status] tests: 4/8, fuzzing: 244197/300000, values: [], cov: 7786, corpus: 10, gas/s: 62739628
+[2026-11-18 06:42:48.72] [status] tests: 4/8, fuzzing: 245709/300000, values: [], cov: 7786, corpus: 10, gas/s: 59557208
+[2026-11-18 06:42:51.74] [status] tests: 4/8, fuzzing: 247381/300000, values: [], cov: 7786, corpus: 10, gas/s: 64378847
+[2026-11-18 06:42:54.76] [status] tests: 4/8, fuzzing: 249063/300000, values: [], cov: 7786, corpus: 10, gas/s: 63816522
+[2026-11-18 06:42:57.78] [status] tests: 4/8, fuzzing: 250751/300000, values: [], cov: 7786, corpus: 10, gas/s: 64521125
+[2026-11-18 06:43:00.80] [status] tests: 4/8, fuzzing: 252533/300000, values: [], cov: 7786, corpus: 10, gas/s: 68744240
+[2026-11-18 06:43:03.82] [status] tests: 4/8, fuzzing: 254378/300000, values: [], cov: 7786, corpus: 10, gas/s: 70374742
+[2026-11-18 06:43:06.84] [status] tests: 4/8, fuzzing: 256090/300000, values: [], cov: 7786, corpus: 10, gas/s: 65768361
+[2026-11-18 06:43:09.86] [status] tests: 4/8, fuzzing: 257633/300000, values: [], cov: 7786, corpus: 10, gas/s: 60668677
+[2026-11-18 06:43:12.88] [status] tests: 4/8, fuzzing: 259291/300000, values: [], cov: 7786, corpus: 10, gas/s: 64747432
+[2026-11-18 06:43:15.90] [status] tests: 4/8, fuzzing: 260953/300000, values: [], cov: 7786, corpus: 10, gas/s: 62931301
+[2026-11-18 06:43:18.92] [status] tests: 4/8, fuzzing: 262672/300000, values: [], cov: 7786, corpus: 10, gas/s: 65074043
+[2026-11-18 06:43:21.94] [status] tests: 4/8, fuzzing: 264445/300000, values: [], cov: 7786, corpus: 10, gas/s: 68254660
+[2026-11-18 06:43:24.96] [status] tests: 4/8, fuzzing: 266146/300000, values: [], cov: 7786, corpus: 10, gas/s: 64393285
+[2026-11-18 06:43:27.98] [status] tests: 4/8, fuzzing: 267839/300000, values: [], cov: 7786, corpus: 10, gas/s: 64616859
+[2026-11-18 06:43:31.00] [status] tests: 4/8, fuzzing: 269601/300000, values: [], cov: 7786, corpus: 10, gas/s: 66162171
+[2026-11-18 06:43:34.02] [status] tests: 4/8, fuzzing: 271245/300000, values: [], cov: 7786, corpus: 10, gas/s: 63290950
+[2026-11-18 06:43:37.04] [status] tests: 4/8, fuzzing: 272946/300000, values: [], cov: 7786, corpus: 10, gas/s: 64789594
+[2026-11-18 06:43:40.06] [status] tests: 4/8, fuzzing: 274633/300000, values: [], cov: 7786, corpus: 10, gas/s: 64520021
+[2026-11-18 06:43:43.08] [status] tests: 4/8, fuzzing: 276374/300000, values: [], cov: 7786, corpus: 10, gas/s: 67051366
+[2026-11-18 06:43:46.10] [status] tests: 4/8, fuzzing: 278225/300000, values: [], cov: 7786, corpus: 10, gas/s: 69858326
+[2026-11-18 06:43:49.12] [status] tests: 4/8, fuzzing: 280031/300000, values: [], cov: 7786, corpus: 10, gas/s: 67532079
+[2026-11-18 06:43:52.14] [status] tests: 4/8, fuzzing: 281796/300000, values: [], cov: 7786, corpus: 10, gas/s: 67255496
+[2026-11-18 06:43:55.15] [status] tests: 4/8, fuzzing: 283477/300000, values: [], cov: 7786, corpus: 10, gas/s: 64704116
+[2026-11-18 06:43:58.16] [status] tests: 4/8, fuzzing: 285291/300000, values: [], cov: 7786, corpus: 10, gas/s: 69622252
+[2026-11-18 06:44:01.18] [status] tests: 4/8, fuzzing: 287095/300000, values: [], cov: 7786, corpus: 10, gas/s: 68242963
+[2026-11-18 06:44:04.20] [status] tests: 4/8, fuzzing: 288838/300000, values: [], cov: 7786, corpus: 10, gas/s: 66655918
+[2026-11-18 06:44:07.22] [status] tests: 4/8, fuzzing: 290544/300000, values: [], cov: 7786, corpus: 10, gas/s: 65026073
+[2026-11-18 06:44:10.24] [status] tests: 4/8, fuzzing: 292215/300000, values: [], cov: 7786, corpus: 10, gas/s: 64332484
+[2026-11-18 06:44:13.25] [status] tests: 4/8, fuzzing: 293961/300000, values: [], cov: 7786, corpus: 10, gas/s: 65863161
+[2026-11-18 06:44:16.27] [status] tests: 4/8, fuzzing: 295635/300000, values: [], cov: 7786, corpus: 10, gas/s: 66690761
+[2026-11-18 06:44:19.29] [status] tests: 4/8, fuzzing: 297462/300000, values: [], cov: 7786, corpus: 10, gas/s: 71666800
+[2026-11-18 06:44:22.31] [status] tests: 4/8, fuzzing: 299189/300000, values: [], cov: 7786, corpus: 10, gas/s: 65661053
+[2026-11-18 06:44:23.77] [Worker 0] Test limit reached. Stopping.
+[2026-11-18 06:44:23.78] [status] tests: 4/8, fuzzing: 300000/300000, values: [], cov: 7786, corpus: 10, gas/s: 95302187
+echidna_router_never_holds_tokens: passing
+echidna_canary_buffer_success: failed!💥  
+  Call sequence:
+    EchidnaRouter.payWithBuffer(0,25838052,3760024280138716688657)
+    EchidnaRouter.payWithBuffer(0,691527314188854851446935072242,1)
+    EchidnaRouter.payWithBuffer(0,395329055512994071677281,488194941321609315)
+    EchidnaRouter.payWithBuffer(0,1,6011235111951105535078839116981614)
+    EchidnaRouter.payWithBuffer(0,1,10142400749154007260577491614891026647)
+
+Traces: 
+
+echidna_fee_recipient_only_gets_bps: passing
+echidna_canary_erc20_success: failed!💥  
+  Call sequence:
+    EchidnaRouter.payErc20(0,1,"\NUL")
+    EchidnaRouter.payErc20(0,1,"\NUL")
+    EchidnaRouter.payErc20(0,1,"\NUL")
+    EchidnaRouter.payErc20(0,2923,"\NUL")
+    EchidnaRouter.payErc20(0,1,"\NUL")
+
+Traces: 
+
+echidna_canary_nonzero_fee: failed!💥  
+  Call sequence:
+    EchidnaRouter.payErc20(0,400,"\NUL")
+    EchidnaRouter.payErc20(0,402,"\NUL")
+    EchidnaRouter.payErc20(0,406,"\NUL")
+    EchidnaRouter.payErc20(0,60387653211867285627542571749916,"\NUL")
+    EchidnaRouter.payErc20(0,403,"\NUL")
+
+Traces: 
+
+echidna_native_fee_plus_net_eq_gross: passing
+echidna_fee_plus_net_eq_gross: passing
+echidna_canary_native_success: failed!💥  
+  Call sequence:
+    EchidnaRouter.payNative(0,1,"\NUL")
+    EchidnaRouter.payNative(0,143970,"\NUL")
+    EchidnaRouter.payNative(0,1,"\NUL")
+    EchidnaRouter.payNative(0,1,"\NUL")
+    EchidnaRouter.payNative(0,9909106248,"\NUL")
+
+Traces: 
+
+
+
+Unique instructions: 7786
+Unique codehashes: 7
+Corpus size: 10
+Seed: 20261021
+Total calls: 300000
+
+[2026-11-18 06:44:23.78] Saving test reproducers... Done! (0.00199888s)
+[2026-11-18 06:44:23.78] Saving corpus... Done! (0.016245134s)
+[2026-11-18 06:44:23.80] Saving coverage... Done! (0.065519454s)
+[2026-11-18 06:44:23.90] Compiling `test/echidna/EchidnaSweep.sol`... Done! (0.83368963s)
+Analyzing contract: /workspace/scratch/4fa14be12559/GhostPay/packages/contracts/test/echidna/EchidnaSweep.sol:EchidnaSweep
+[2026-11-18 06:44:25.11] Running slither on `test/echidna/EchidnaSweep.sol`... WARNING: Running slither failed. Echidna will continue, however fuzzing will likely be less effective.
+
+Done! (0.26844206s)
+Loaded 0 transaction sequences from echidna-corpus-EchidnaSweep/reproducers
+Loaded 0 transaction sequences from echidna-corpus-EchidnaSweep/coverage
+[2026-11-18 06:44:25.39] INFO: Performing RPC: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001EmptyBase>
+[2026-11-18 06:44:25.39] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001EmptyBase>
+[2026-11-18 06:44:25.45] [Worker 0] New coverage: 7228 instr, 5 contracts, 1 seqs in corpus
+[2026-11-18 06:44:25.47] [Worker 0] Test echidna_canary_replay_blocked falsified!
+  Call sequence:
+EchidnaSweep.approveRelayer() from: 0x0000000000000000000000000000000000020000 Time delay: 73040 seconds Block delay: 60054
+EchidnaSweep.approveRelayer() from: 0x0000000000000000000000000000000000020000 Time delay: 82670 seconds Block delay: 30011
+EchidnaSweep.reuseNonceNewParams(22,1524785991) from: 0x0000000000000000000000000000000000020000 Time delay: 127 seconds Block delay: 24987
+EchidnaSweep.approveRelayer() from: 0x0000000000000000000000000000000000030000 Time delay: 526194 seconds Block delay: 34720
+EchidnaSweep.reuseNonceNewParams(239,81447602929757545108582580086839856682917286590948778050496542877294071103831) from: 0x0000000000000000000000000000000000020000 Time delay: 136393 seconds Block delay: 14200
+EchidnaSweep.approveRelayer() from: 0x0000000000000000000000000000000000030000 Time delay: 463588 seconds Block delay: 39435
+EchidnaSweep.replayLast() from: 0x0000000000000000000000000000000000010000 Time delay: 284483 seconds Block delay: 42595
+EchidnaSweep.approveRelayer() from: 0x0000000000000000000000000000000000030000 Time delay: 135921 seconds Block delay: 35248
+EchidnaSweep.sweep(32,15186688950595603988126235426702002046906795071963143603498545078800400289819,103870839138610200459123182340613997286968611591428082429244819444703419291503,222) from: 0x0000000000000000000000000000000000010000 Time delay: 150273 seconds Block delay: 47
+EchidnaSweep.reuseNonceNewParams(112,0) from: 0x0000000000000000000000000000000000010000 Time delay: 112444 seconds Block delay: 59552
+EchidnaSweep.replayLast() from: 0x0000000000000000000000000000000000010000 Time delay: 136392 seconds Block delay: 38350
+EchidnaSweep.approveRelayer() from: 0x0000000000000000000000000000000000010000 Time delay: 437838 seconds Block delay: 32737
+EchidnaSweep.replayLast() from: 0x0000000000000000000000000000000000010000 Time delay: 82670 seconds Block delay: 50499
+EchidnaSweep.replayLast() from: 0x0000000000000000000000000000000000010000 Time delay: 198598 seconds Block delay: 30256
+
+[2026-11-18 06:44:25.51]  Saved reproducer to echidna-corpus-EchidnaSweep/coverage/4972605592921615193.txt
+[2026-11-18 06:44:25.53]  Saved reproducer to echidna-corpus-EchidnaSweep/reproducers-unshrunk/1816792303630657294.txt
+[2026-11-18 06:44:28.39] [status] tests: 1/6, fuzzing: 42/300000, values: [], cov: 7228, corpus: 1, gas/s: 105016618
+[2026-11-18 06:44:31.41] [status] tests: 1/6, fuzzing: 42/300000, values: [], cov: 7228, corpus: 1, gas/s: 0
+[2026-11-18 06:44:34.43] [status] tests: 1/6, fuzzing: 42/300000, values: [], cov: 7228, corpus: 1, gas/s: 0
+[2026-11-18 06:44:37.45] [status] tests: 1/6, fuzzing: 42/300000, values: [], cov: 7228, corpus: 1, gas/s: 0
+[2026-11-18 06:44:40.24] [Worker 0] New coverage: 7231 instr, 5 contracts, 2 seqs in corpus
+[2026-11-18 06:44:40.31]  Saved reproducer to echidna-corpus-EchidnaSweep/coverage/1242784793481374048.txt
+[2026-11-18 06:44:40.45] [status] tests: 1/6, fuzzing: 256/300000, values: [], cov: 7231, corpus: 2, gas/s: 613208936
+[2026-11-18 06:44:40.78] [Worker 0] New coverage: 7234 instr, 5 contracts, 3 seqs in corpus
+[2026-11-18 06:44:40.83]  Saved reproducer to echidna-corpus-EchidnaSweep/coverage/5007838344573555538.txt
+[2026-11-18 06:44:41.18] [Worker 0] New coverage: 7250 instr, 5 contracts, 4 seqs in corpus
+[2026-11-18 06:44:41.24]  Saved reproducer to echidna-corpus-EchidnaSweep/coverage/4647963362230230173.txt
+[2026-11-18 06:44:43.17] [Worker 0] Test echidna_canary_sweep_success falsified!
+  Call sequence:
+EchidnaSweep.reuseNonceNewParams(255,74794545359233550350651748243416920763807615325258189006523284655589720524624) from: 0x0000000000000000000000000000000000010000 Time delay: 512439 seconds Block delay: 42229
+EchidnaSweep.sweep(32,15186688950595603988126235426702002046906795071963143603498545078800400289819,103870839138610200459123182340613997286968611591428082429244819444703419291503,222) from: 0x0000000000000000000000000000000000020000 Time delay: 82671 seconds Block delay: 11905
+EchidnaSweep.sweep(255,4370000,62278649103323634330729611432455122446599020153171175836974630667692791052453,255) from: 0x0000000000000000000000000000000000030000 Time delay: 82671 seconds Block delay: 12493
+EchidnaSweep.replayLast() from: 0x0000000000000000000000000000000000020000 Time delay: 379552 seconds Block delay: 2889
+EchidnaSweep.replayLast() from: 0x0000000000000000000000000000000000020000 Time delay: 414736 seconds Block delay: 47075
+EchidnaSweep.reuseNonceNewParams(22,1524785991) from: 0x0000000000000000000000000000000000020000 Time delay: 437838 seconds Block delay: 5401
+EchidnaSweep.reuseNonceNewParams(175,112806369604877800974493933152726366873682395733694611421635250756438739621631) from: 0x0000000000000000000000000000000000010000 Time delay: 322247 seconds Block delay: 30256
+EchidnaSweep.approveRelayer() from: 0x0000000000000000000000000000000000030000 Time delay: 66543 seconds Block delay: 5952
+EchidnaSweep.reuseNonceNewParams(10,67848318707165485626076925341041912421544108653770151855976986910773576868444) from: 0x0000000000000000000000000000000000030000 Time delay: 440097 seconds Block delay: 12155
+EchidnaSweep.reuseNonceNewParams(22,1524785991) from: 0x0000000000000000000000000000000000030000 Time delay: 344203 seconds Block delay: 15367
+EchidnaSweep.replayLast() from: 0x0000000000000000000000000000000000030000 Time delay: 360624 seconds Block delay: 12338
+EchidnaSweep.approveRelayer() from: 0x0000000000000000000000000000000000020000 Time delay: 297507 seconds Block delay: 22436
+EchidnaSweep.sweep(43,79092956363669927340767436152884581918358817663566930767410391285192855030415,115792089237316195423570985008687907853269984665640564039457584007913129639935,255) from: 0x0000000000000000000000000000000000010000 Time delay: 519847 seconds Block delay: 45261
+EchidnaSweep.sweep(88,4369999,82789091543162594700315392400920663911584157709746079874864567340290194064277,252) from: 0x0000000000000000000000000000000000030000 Time delay: 33271 seconds Block delay: 4462
+EchidnaSweep.reuseNonceNewParams(22,1524785991) from: 0x0000000000000000000000000000000000020000 Time delay: 206186 seconds Block delay: 49281
+EchidnaSweep.sweep(166,4370000,36578767114056195755242334776303482166870779348221608510141789903974095763575,109) from: 0x0000000000000000000000000000000000010000 Time delay: 303345 seconds Block delay: 22909
+EchidnaSweep.sweep(81,4370000,85934062871611657371461087193472142007984068262473048693759440057529178467115,49) from: 0x0000000000000000000000000000000000020000 Time delay: 519847 seconds Block delay: 42595
+
+[2026-11-18 06:44:43.17]  Saved reproducer to echidna-corpus-EchidnaSweep/reproducers-unshrunk/6423957158946491027.txt
+[2026-11-18 06:44:43.47] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 4724556507
+[2026-11-18 06:44:46.49] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:44:49.51] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:44:52.53] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:44:55.55] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:44:58.57] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:45:01.59] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:45:04.61] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:45:07.63] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:45:10.65] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:45:13.67] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:45:16.68] [status] tests: 2/6, fuzzing: 1905/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:45:19.69] [status] tests: 2/6, fuzzing: 2414/300000, values: [], cov: 7250, corpus: 4, gas/s: 1549065475
+[2026-11-18 06:45:22.69] [status] tests: 2/6, fuzzing: 4261/300000, values: [], cov: 7250, corpus: 4, gas/s: 5363012989
+[2026-11-18 06:45:25.70] [status] tests: 2/6, fuzzing: 6289/300000, values: [], cov: 7250, corpus: 4, gas/s: 5837287135
+[2026-11-18 06:45:28.70] [status] tests: 2/6, fuzzing: 8160/300000, values: [], cov: 7250, corpus: 4, gas/s: 5492597670
+[2026-11-18 06:45:31.71] [status] tests: 2/6, fuzzing: 10056/300000, values: [], cov: 7250, corpus: 4, gas/s: 5501236561
+[2026-11-18 06:45:34.71] [status] tests: 2/6, fuzzing: 11900/300000, values: [], cov: 7250, corpus: 4, gas/s: 5375172058
+[2026-11-18 06:45:37.72] [status] tests: 2/6, fuzzing: 13793/300000, values: [], cov: 7250, corpus: 4, gas/s: 5329302581
+[2026-11-18 06:45:40.72] [status] tests: 2/6, fuzzing: 15562/300000, values: [], cov: 7250, corpus: 4, gas/s: 5289636275
+[2026-11-18 06:45:43.72] [status] tests: 2/6, fuzzing: 17280/300000, values: [], cov: 7250, corpus: 4, gas/s: 5118182767
+[2026-11-18 06:45:46.73] [status] tests: 2/6, fuzzing: 19298/300000, values: [], cov: 7250, corpus: 4, gas/s: 5824429112
+[2026-11-18 06:45:49.73] [status] tests: 2/6, fuzzing: 21104/300000, values: [], cov: 7250, corpus: 4, gas/s: 5211923030
+[2026-11-18 06:45:52.75] [status] tests: 2/6, fuzzing: 22915/300000, values: [], cov: 7250, corpus: 4, gas/s: 5254750959
+[2026-11-18 06:45:55.77] [status] tests: 2/6, fuzzing: 24712/300000, values: [], cov: 7250, corpus: 4, gas/s: 5223076639
+[2026-11-18 06:45:58.79] [status] tests: 2/6, fuzzing: 26594/300000, values: [], cov: 7250, corpus: 4, gas/s: 5383983973
+[2026-11-18 06:46:01.81] [status] tests: 2/6, fuzzing: 28396/300000, values: [], cov: 7250, corpus: 4, gas/s: 5344627950
+[2026-11-18 06:46:04.83] [status] tests: 2/6, fuzzing: 30073/300000, values: [], cov: 7250, corpus: 4, gas/s: 4916970943
+[2026-11-18 06:46:07.85] [status] tests: 2/6, fuzzing: 32007/300000, values: [], cov: 7250, corpus: 4, gas/s: 5418153975
+[2026-11-18 06:46:10.86] [status] tests: 2/6, fuzzing: 33944/300000, values: [], cov: 7250, corpus: 4, gas/s: 5531471733
+[2026-11-18 06:46:13.87] [status] tests: 2/6, fuzzing: 35710/300000, values: [], cov: 7250, corpus: 4, gas/s: 5054991901
+[2026-11-18 06:46:16.89] [status] tests: 2/6, fuzzing: 37524/300000, values: [], cov: 7250, corpus: 4, gas/s: 5270995699
+[2026-11-18 06:46:19.91] [status] tests: 2/6, fuzzing: 39364/300000, values: [], cov: 7250, corpus: 4, gas/s: 5258407964
+[2026-11-18 06:46:22.93] [status] tests: 2/6, fuzzing: 41168/300000, values: [], cov: 7250, corpus: 4, gas/s: 5198871706
+[2026-11-18 06:46:25.95] [status] tests: 2/6, fuzzing: 42949/300000, values: [], cov: 7250, corpus: 4, gas/s: 5182607377
+[2026-11-18 06:46:28.97] [status] tests: 2/6, fuzzing: 44751/300000, values: [], cov: 7250, corpus: 4, gas/s: 5157067653
+[2026-11-18 06:46:31.99] [status] tests: 2/6, fuzzing: 46694/300000, values: [], cov: 7250, corpus: 4, gas/s: 5476003335
+[2026-11-18 06:46:35.01] [status] tests: 2/6, fuzzing: 48404/300000, values: [], cov: 7250, corpus: 4, gas/s: 4896723310
+[2026-11-18 06:46:38.03] [status] tests: 2/6, fuzzing: 50402/300000, values: [], cov: 7250, corpus: 4, gas/s: 5664388675
+[2026-11-18 06:46:41.05] [status] tests: 2/6, fuzzing: 52386/300000, values: [], cov: 7250, corpus: 4, gas/s: 5623505019
+[2026-11-18 06:46:44.07] [status] tests: 2/6, fuzzing: 54285/300000, values: [], cov: 7250, corpus: 4, gas/s: 5534648688
+[2026-11-18 06:46:47.09] [status] tests: 2/6, fuzzing: 56225/300000, values: [], cov: 7250, corpus: 4, gas/s: 5535283978
+[2026-11-18 06:46:50.11] [status] tests: 2/6, fuzzing: 58127/300000, values: [], cov: 7250, corpus: 4, gas/s: 5542591264
+[2026-11-18 06:46:53.13] [status] tests: 2/6, fuzzing: 60101/300000, values: [], cov: 7250, corpus: 4, gas/s: 5648714101
+[2026-11-18 06:46:56.15] [status] tests: 2/6, fuzzing: 61946/300000, values: [], cov: 7250, corpus: 4, gas/s: 5249014485
+[2026-11-18 06:46:59.17] [status] tests: 2/6, fuzzing: 63771/300000, values: [], cov: 7250, corpus: 4, gas/s: 5244806578
+[2026-11-18 06:47:02.17] [status] tests: 2/6, fuzzing: 65635/300000, values: [], cov: 7250, corpus: 4, gas/s: 5354176857
+[2026-11-18 06:47:05.18] [status] tests: 2/6, fuzzing: 67578/300000, values: [], cov: 7250, corpus: 4, gas/s: 5560480609
+[2026-11-18 06:47:08.19] [status] tests: 2/6, fuzzing: 69418/300000, values: [], cov: 7250, corpus: 4, gas/s: 5346456743
+[2026-11-18 06:47:11.19] [status] tests: 2/6, fuzzing: 71384/300000, values: [], cov: 7250, corpus: 4, gas/s: 5752758072
+[2026-11-18 06:47:14.20] [status] tests: 2/6, fuzzing: 73333/300000, values: [], cov: 7250, corpus: 4, gas/s: 5610116083
+[2026-11-18 06:47:17.20] [status] tests: 2/6, fuzzing: 75186/300000, values: [], cov: 7250, corpus: 4, gas/s: 5262438148
+[2026-11-18 06:47:20.20] [status] tests: 2/6, fuzzing: 77139/300000, values: [], cov: 7250, corpus: 4, gas/s: 5681694055
+[2026-11-18 06:47:23.21] [status] tests: 2/6, fuzzing: 79110/300000, values: [], cov: 7250, corpus: 4, gas/s: 5648917042
+[2026-11-18 06:47:26.21] [status] tests: 2/6, fuzzing: 81000/300000, values: [], cov: 7250, corpus: 4, gas/s: 5484745328
+[2026-11-18 06:47:29.22] [status] tests: 2/6, fuzzing: 82926/300000, values: [], cov: 7250, corpus: 4, gas/s: 5651995351
+[2026-11-18 06:47:32.23] [status] tests: 2/6, fuzzing: 84721/300000, values: [], cov: 7250, corpus: 4, gas/s: 5253694883
+[2026-11-18 06:47:35.25] [status] tests: 2/6, fuzzing: 86460/300000, values: [], cov: 7250, corpus: 4, gas/s: 5068141909
+[2026-11-18 06:47:38.27] [status] tests: 2/6, fuzzing: 88432/300000, values: [], cov: 7250, corpus: 4, gas/s: 5585940983
+[2026-11-18 06:47:41.29] [status] tests: 2/6, fuzzing: 90160/300000, values: [], cov: 7250, corpus: 4, gas/s: 5055115628
+[2026-11-18 06:47:44.31] [status] tests: 2/6, fuzzing: 91982/300000, values: [], cov: 7250, corpus: 4, gas/s: 5298576980
+[2026-11-18 06:47:47.33] [status] tests: 2/6, fuzzing: 93918/300000, values: [], cov: 7250, corpus: 4, gas/s: 5514237727
+[2026-11-18 06:47:50.35] [status] tests: 2/6, fuzzing: 95768/300000, values: [], cov: 7250, corpus: 4, gas/s: 5174156305
+[2026-11-18 06:47:53.37] [status] tests: 2/6, fuzzing: 97615/300000, values: [], cov: 7250, corpus: 4, gas/s: 5317291775
+[2026-11-18 06:47:56.39] [status] tests: 2/6, fuzzing: 99442/300000, values: [], cov: 7250, corpus: 4, gas/s: 5265857924
+[2026-11-18 06:47:59.41] [status] tests: 2/6, fuzzing: 101276/300000, values: [], cov: 7250, corpus: 4, gas/s: 5307970975
+[2026-11-18 06:48:02.43] [status] tests: 2/6, fuzzing: 103057/300000, values: [], cov: 7250, corpus: 4, gas/s: 5252854478
+[2026-11-18 06:48:05.45] [status] tests: 2/6, fuzzing: 104935/300000, values: [], cov: 7250, corpus: 4, gas/s: 5363028583
+[2026-11-18 06:48:08.46] [status] tests: 2/6, fuzzing: 106777/300000, values: [], cov: 7250, corpus: 4, gas/s: 5428433016
+[2026-11-18 06:48:11.48] [status] tests: 2/6, fuzzing: 108596/300000, values: [], cov: 7250, corpus: 4, gas/s: 5207102076
+[2026-11-18 06:48:14.49] [status] tests: 2/6, fuzzing: 110463/300000, values: [], cov: 7250, corpus: 4, gas/s: 5445611656
+[2026-11-18 06:48:17.51] [status] tests: 2/6, fuzzing: 112124/300000, values: [], cov: 7250, corpus: 4, gas/s: 4854095720
+[2026-11-18 06:48:20.53] [status] tests: 2/6, fuzzing: 113939/300000, values: [], cov: 7250, corpus: 4, gas/s: 5290825922
+[2026-11-18 06:48:23.55] [status] tests: 2/6, fuzzing: 115752/300000, values: [], cov: 7250, corpus: 4, gas/s: 5278284820
+[2026-11-18 06:48:26.57] [status] tests: 2/6, fuzzing: 117669/300000, values: [], cov: 7250, corpus: 4, gas/s: 5501681615
+[2026-11-18 06:48:29.57] [status] tests: 2/6, fuzzing: 119580/300000, values: [], cov: 7250, corpus: 4, gas/s: 5392311468
+[2026-11-18 06:48:32.59] [status] tests: 2/6, fuzzing: 121437/300000, values: [], cov: 7250, corpus: 4, gas/s: 5458661810
+[2026-11-18 06:48:35.61] [status] tests: 2/6, fuzzing: 123360/300000, values: [], cov: 7250, corpus: 4, gas/s: 5480823499
+[2026-11-18 06:48:38.63] [status] tests: 2/6, fuzzing: 125218/300000, values: [], cov: 7250, corpus: 4, gas/s: 5354504146
+[2026-11-18 06:48:41.65] [status] tests: 2/6, fuzzing: 127156/300000, values: [], cov: 7250, corpus: 4, gas/s: 5576931842
+[2026-11-18 06:48:44.67] [status] tests: 2/6, fuzzing: 128983/300000, values: [], cov: 7250, corpus: 4, gas/s: 5337162549
+[2026-11-18 06:48:47.68] [status] tests: 2/6, fuzzing: 130968/300000, values: [], cov: 7250, corpus: 4, gas/s: 5706278737
+[2026-11-18 06:48:50.69] [status] tests: 2/6, fuzzing: 132811/300000, values: [], cov: 7250, corpus: 4, gas/s: 5320370350
+[2026-11-18 06:48:53.71] [status] tests: 2/6, fuzzing: 134704/300000, values: [], cov: 7250, corpus: 4, gas/s: 5472539174
+[2026-11-18 06:48:56.73] [status] tests: 2/6, fuzzing: 136579/300000, values: [], cov: 7250, corpus: 4, gas/s: 5410019966
+[2026-11-18 06:48:59.74] [status] tests: 2/6, fuzzing: 138523/300000, values: [], cov: 7250, corpus: 4, gas/s: 5515005911
+[2026-11-18 06:49:02.75] [status] tests: 2/6, fuzzing: 140335/300000, values: [], cov: 7250, corpus: 4, gas/s: 5086839886
+[2026-11-18 06:49:05.75] [status] tests: 2/6, fuzzing: 142266/300000, values: [], cov: 7250, corpus: 4, gas/s: 5693531973
+[2026-11-18 06:49:08.77] [status] tests: 2/6, fuzzing: 144167/300000, values: [], cov: 7250, corpus: 4, gas/s: 5571377017
+[2026-11-18 06:49:11.79] [status] tests: 2/6, fuzzing: 146107/300000, values: [], cov: 7250, corpus: 4, gas/s: 5735087665
+[2026-11-18 06:49:14.79] [status] tests: 2/6, fuzzing: 147980/300000, values: [], cov: 7250, corpus: 4, gas/s: 5454116912
+[2026-11-18 06:49:17.80] [status] tests: 2/6, fuzzing: 149839/300000, values: [], cov: 7250, corpus: 4, gas/s: 5483566526
+[2026-11-18 06:49:20.80] [status] tests: 2/6, fuzzing: 151643/300000, values: [], cov: 7250, corpus: 4, gas/s: 5173923129
+[2026-11-18 06:49:23.81] [status] tests: 2/6, fuzzing: 153490/300000, values: [], cov: 7250, corpus: 4, gas/s: 5421231698
+[2026-11-18 06:49:26.83] [status] tests: 2/6, fuzzing: 155256/300000, values: [], cov: 7250, corpus: 4, gas/s: 5132380109
+[2026-11-18 06:49:29.85] [status] tests: 2/6, fuzzing: 157273/300000, values: [], cov: 7250, corpus: 4, gas/s: 5768855495
+[2026-11-18 06:49:32.85] [status] tests: 2/6, fuzzing: 159148/300000, values: [], cov: 7250, corpus: 4, gas/s: 5400265846
+[2026-11-18 06:49:35.87] [status] tests: 2/6, fuzzing: 161001/300000, values: [], cov: 7250, corpus: 4, gas/s: 5320847956
+[2026-11-18 06:49:38.87] [status] tests: 2/6, fuzzing: 162880/300000, values: [], cov: 7250, corpus: 4, gas/s: 5363149249
+[2026-11-18 06:49:41.88] [status] tests: 2/6, fuzzing: 164794/300000, values: [], cov: 7250, corpus: 4, gas/s: 5614205019
+[2026-11-18 06:49:44.88] [status] tests: 2/6, fuzzing: 166581/300000, values: [], cov: 7250, corpus: 4, gas/s: 5119524524
+[2026-11-18 06:49:47.89] [status] tests: 2/6, fuzzing: 168292/300000, values: [], cov: 7250, corpus: 4, gas/s: 5010063224
+[2026-11-18 06:49:50.91] [status] tests: 2/6, fuzzing: 170239/300000, values: [], cov: 7250, corpus: 4, gas/s: 5542885692
+[2026-11-18 06:49:53.93] [status] tests: 2/6, fuzzing: 172029/300000, values: [], cov: 7250, corpus: 4, gas/s: 5240097101
+[2026-11-18 06:49:56.93] [status] tests: 2/6, fuzzing: 173856/300000, values: [], cov: 7250, corpus: 4, gas/s: 5320911798
+[2026-11-18 06:49:59.95] [status] tests: 2/6, fuzzing: 175766/300000, values: [], cov: 7250, corpus: 4, gas/s: 5534263711
+[2026-11-18 06:50:02.97] [status] tests: 2/6, fuzzing: 177678/300000, values: [], cov: 7250, corpus: 4, gas/s: 5566942403
+[2026-11-18 06:50:05.99] [status] tests: 2/6, fuzzing: 179632/300000, values: [], cov: 7250, corpus: 4, gas/s: 5527029774
+[2026-11-18 06:50:09.01] [status] tests: 2/6, fuzzing: 181540/300000, values: [], cov: 7250, corpus: 4, gas/s: 5509826795
+[2026-11-18 06:50:12.03] [status] tests: 2/6, fuzzing: 183418/300000, values: [], cov: 7250, corpus: 4, gas/s: 5471766056
+[2026-11-18 06:50:15.05] [status] tests: 2/6, fuzzing: 185292/300000, values: [], cov: 7250, corpus: 4, gas/s: 5362028073
+[2026-11-18 06:50:18.07] [status] tests: 2/6, fuzzing: 187235/300000, values: [], cov: 7250, corpus: 4, gas/s: 5422400309
+[2026-11-18 06:50:21.08] [status] tests: 2/6, fuzzing: 189174/300000, values: [], cov: 7250, corpus: 4, gas/s: 5643354146
+[2026-11-18 06:50:24.11] [status] tests: 2/6, fuzzing: 191005/300000, values: [], cov: 7250, corpus: 4, gas/s: 5383646981
+[2026-11-18 06:50:27.13] [status] tests: 2/6, fuzzing: 192823/300000, values: [], cov: 7250, corpus: 4, gas/s: 5224453454
+[2026-11-18 06:50:30.15] [status] tests: 2/6, fuzzing: 194719/300000, values: [], cov: 7250, corpus: 4, gas/s: 5409645046
+[2026-11-18 06:50:33.17] [status] tests: 2/6, fuzzing: 196504/300000, values: [], cov: 7250, corpus: 4, gas/s: 5057664936
+[2026-11-18 06:50:36.18] [status] tests: 2/6, fuzzing: 198220/300000, values: [], cov: 7250, corpus: 4, gas/s: 4984630745
+[2026-11-18 06:50:39.19] [status] tests: 2/6, fuzzing: 199833/300000, values: [], cov: 7250, corpus: 4, gas/s: 4657067105
+[2026-11-18 06:50:42.20] [status] tests: 2/6, fuzzing: 201703/300000, values: [], cov: 7250, corpus: 4, gas/s: 5279024779
+[2026-11-18 06:50:45.21] [status] tests: 2/6, fuzzing: 203550/300000, values: [], cov: 7250, corpus: 4, gas/s: 5203283485
+[2026-11-18 06:50:48.23] [status] tests: 2/6, fuzzing: 205304/300000, values: [], cov: 7250, corpus: 4, gas/s: 5143829368
+[2026-11-18 06:50:51.25] [status] tests: 2/6, fuzzing: 207271/300000, values: [], cov: 7250, corpus: 4, gas/s: 5652075607
+[2026-11-18 06:50:54.27] [status] tests: 2/6, fuzzing: 209145/300000, values: [], cov: 7250, corpus: 4, gas/s: 5421288161
+[2026-11-18 06:50:57.28] [status] tests: 2/6, fuzzing: 211189/300000, values: [], cov: 7250, corpus: 4, gas/s: 5928615115
+[2026-11-18 06:51:00.31] [status] tests: 2/6, fuzzing: 212837/300000, values: [], cov: 7250, corpus: 4, gas/s: 4854074763
+[2026-11-18 06:51:03.38] [status] tests: 2/6, fuzzing: 213721/300000, values: [], cov: 7250, corpus: 4, gas/s: 2403643596
+[2026-11-18 06:51:11.91] [status] tests: 2/6, fuzzing: 213721/300000, values: [], cov: 7250, corpus: 4, gas/s: 0
+[2026-11-18 06:51:14.92] [status] tests: 2/6, fuzzing: 215413/300000, values: [], cov: 7250, corpus: 4, gas/s: 4946673187
+[2026-11-18 06:51:17.93] [status] tests: 2/6, fuzzing: 217250/300000, values: [], cov: 7250, corpus: 4, gas/s: 5265743120
+[2026-11-18 06:51:20.95] [status] tests: 2/6, fuzzing: 219107/300000, values: [], cov: 7250, corpus: 4, gas/s: 5329275498
+[2026-11-18 06:51:23.97] [status] tests: 2/6, fuzzing: 220882/300000, values: [], cov: 7250, corpus: 4, gas/s: 5189317118
+[2026-11-18 06:51:26.99] [status] tests: 2/6, fuzzing: 222639/300000, values: [], cov: 7250, corpus: 4, gas/s: 5072784341
+[2026-11-18 06:51:30.00] [status] tests: 2/6, fuzzing: 224501/300000, values: [], cov: 7250, corpus: 4, gas/s: 5346349283
+[2026-11-18 06:51:33.00] [status] tests: 2/6, fuzzing: 226281/300000, values: [], cov: 7250, corpus: 4, gas/s: 5298641727
+[2026-11-18 06:51:36.01] [status] tests: 2/6, fuzzing: 228066/300000, values: [], cov: 7250, corpus: 4, gas/s: 5169081555
+[2026-11-18 06:51:39.03] [status] tests: 2/6, fuzzing: 229924/300000, values: [], cov: 7250, corpus: 4, gas/s: 5430461823
+[2026-11-18 06:51:42.05] [status] tests: 2/6, fuzzing: 231809/300000, values: [], cov: 7250, corpus: 4, gas/s: 5320574951
+[2026-11-18 06:51:45.07] [status] tests: 2/6, fuzzing: 233492/300000, values: [], cov: 7250, corpus: 4, gas/s: 4883857043
+[2026-11-18 06:51:48.09] [status] tests: 2/6, fuzzing: 235489/300000, values: [], cov: 7250, corpus: 4, gas/s: 5785758122
+[2026-11-18 06:51:51.11] [status] tests: 2/6, fuzzing: 237508/300000, values: [], cov: 7250, corpus: 4, gas/s: 5786584162
+[2026-11-18 06:51:54.12] [status] tests: 2/6, fuzzing: 239389/300000, values: [], cov: 7250, corpus: 4, gas/s: 5479421865
+[2026-11-18 06:51:57.13] [status] tests: 2/6, fuzzing: 241239/300000, values: [], cov: 7250, corpus: 4, gas/s: 5333963305
+[2026-11-18 06:52:00.15] [status] tests: 2/6, fuzzing: 243155/300000, values: [], cov: 7250, corpus: 4, gas/s: 5497108711
+[2026-11-18 06:52:03.17] [status] tests: 2/6, fuzzing: 244825/300000, values: [], cov: 7250, corpus: 4, gas/s: 4788086935
+[2026-11-18 06:52:06.19] [status] tests: 2/6, fuzzing: 246667/300000, values: [], cov: 7250, corpus: 4, gas/s: 5282837392
+[2026-11-18 06:52:09.21] [status] tests: 2/6, fuzzing: 248639/300000, values: [], cov: 7250, corpus: 4, gas/s: 5644214701
+[2026-11-18 06:52:12.23] [status] tests: 2/6, fuzzing: 250630/300000, values: [], cov: 7250, corpus: 4, gas/s: 5769190723
+[2026-11-18 06:52:15.25] [status] tests: 2/6, fuzzing: 252360/300000, values: [], cov: 7250, corpus: 4, gas/s: 5072628367
+[2026-11-18 06:52:18.27] [status] tests: 2/6, fuzzing: 254292/300000, values: [], cov: 7250, corpus: 4, gas/s: 5535006802
+[2026-11-18 06:52:21.29] [status] tests: 2/6, fuzzing: 256013/300000, values: [], cov: 7250, corpus: 4, gas/s: 4826092001
+[2026-11-18 06:52:24.31] [status] tests: 2/6, fuzzing: 257697/300000, values: [], cov: 7250, corpus: 4, gas/s: 4934027494
+[2026-11-18 06:52:27.33] [status] tests: 2/6, fuzzing: 259542/300000, values: [], cov: 7250, corpus: 4, gas/s: 5377939892
+[2026-11-18 06:52:30.35] [status] tests: 2/6, fuzzing: 261371/300000, values: [], cov: 7250, corpus: 4, gas/s: 5270517887
+[2026-11-18 06:52:33.37] [status] tests: 2/6, fuzzing: 263262/300000, values: [], cov: 7250, corpus: 4, gas/s: 5463574210
+[2026-11-18 06:52:36.39] [status] tests: 2/6, fuzzing: 265091/300000, values: [], cov: 7250, corpus: 4, gas/s: 5278923549
+[2026-11-18 06:52:39.41] [status] tests: 2/6, fuzzing: 266771/300000, values: [], cov: 7250, corpus: 4, gas/s: 4883287582
+[2026-11-18 06:52:42.43] [status] tests: 2/6, fuzzing: 268766/300000, values: [], cov: 7250, corpus: 4, gas/s: 5664910955
+[2026-11-18 06:52:45.45] [status] tests: 2/6, fuzzing: 270694/300000, values: [], cov: 7250, corpus: 4, gas/s: 5647116537
+[2026-11-18 06:52:48.47] [status] tests: 2/6, fuzzing: 272631/300000, values: [], cov: 7250, corpus: 4, gas/s: 5562932381
+[2026-11-18 06:52:51.49] [status] tests: 2/6, fuzzing: 274439/300000, values: [], cov: 7250, corpus: 4, gas/s: 5161953233
+[2026-11-18 06:52:54.51] [status] tests: 2/6, fuzzing: 276212/300000, values: [], cov: 7250, corpus: 4, gas/s: 5061519814
+[2026-11-18 06:52:57.53] [status] tests: 2/6, fuzzing: 277957/300000, values: [], cov: 7250, corpus: 4, gas/s: 5132631508
+[2026-11-18 06:53:00.55] [status] tests: 2/6, fuzzing: 279858/300000, values: [], cov: 7250, corpus: 4, gas/s: 5404810927
+[2026-11-18 06:53:03.56] [status] tests: 2/6, fuzzing: 281606/300000, values: [], cov: 7250, corpus: 4, gas/s: 5026221756
+[2026-11-18 06:53:06.61] [status] tests: 2/6, fuzzing: 283217/300000, values: [], cov: 7250, corpus: 4, gas/s: 4631944552
+[2026-11-18 06:53:09.63] [status] tests: 2/6, fuzzing: 285059/300000, values: [], cov: 7250, corpus: 4, gas/s: 5470566400
+[2026-11-18 06:53:12.65] [status] tests: 2/6, fuzzing: 286976/300000, values: [], cov: 7250, corpus: 4, gas/s: 5392221402
+[2026-11-18 06:53:15.67] [status] tests: 2/6, fuzzing: 288734/300000, values: [], cov: 7250, corpus: 4, gas/s: 5031309619
+[2026-11-18 06:53:18.69] [status] tests: 2/6, fuzzing: 290548/300000, values: [], cov: 7250, corpus: 4, gas/s: 5182771690
+[2026-11-18 06:53:21.71] [status] tests: 2/6, fuzzing: 292320/300000, values: [], cov: 7250, corpus: 4, gas/s: 5111276819
+[2026-11-18 06:53:24.73] [status] tests: 2/6, fuzzing: 294227/300000, values: [], cov: 7250, corpus: 4, gas/s: 5559329300
+[2026-11-18 06:53:27.75] [status] tests: 2/6, fuzzing: 296197/300000, values: [], cov: 7250, corpus: 4, gas/s: 5664987113
+[2026-11-18 06:53:30.77] [status] tests: 2/6, fuzzing: 298140/300000, values: [], cov: 7250, corpus: 4, gas/s: 5593463865
+[2026-11-18 06:53:33.68] [Worker 0] Test limit reached. Stopping.
+[2026-11-18 06:53:33.68] [status] tests: 2/6, fuzzing: 300005/300000, values: [], cov: 7250, corpus: 4, gas/s: 5366874691
+echidna_used_nonces_marked: passing
+echidna_sweep_nonce_single_use: passing
+echidna_canary_sweep_success: failed!💥  
+  Call sequence:
+    EchidnaSweep.sweep(4,0,4726442000726319665921341796134137869181885497536376397212770822,0)
+    EchidnaSweep.sweep(2,13993372040546410464389577580085298365065179609599418,3313411855926539507480616281671530975283174480087626,0)
+    EchidnaSweep.sweep(0,0,40780146559787387648455355889238365043018472037985062,0)
+    EchidnaSweep.sweep(3,0,11237382183159110637473833039569729063507747327606936822615398,0)
+    EchidnaSweep.sweep(1,0,73284528998006513129692189716543959626292673729670360005870250,0)
+
+Traces: 
+
+echidna_token_conservation: passing
+echidna_relayer_never_holds_tokens: passing
+echidna_canary_replay_blocked: failed!💥  
+  Call sequence:
+    EchidnaSweep.sweep(0,0,0,0)
+    EchidnaSweep.replayLast()
+    EchidnaSweep.replayLast()
+    EchidnaSweep.replayLast()
+
+Traces: 
+
+
+
+Unique instructions: 7250
+Unique codehashes: 5
+Corpus size: 4
+Seed: 20261021
+Total calls: 300005
+
+[2026-11-18 06:53:33.68] Saving test reproducers... Done! (0.003312466s)
+[2026-11-18 06:53:33.69] Saving corpus... Done! (0.008708018s)
+[2026-11-18 06:53:33.69] Saving coverage... Done! (0.125633221s)
+[2026-11-18 06:53:33.87] Compiling `test/echidna/EchidnaPolicy.sol`... Done! (1.541729962s)
+Analyzing contract: /workspace/scratch/4fa14be12559/GhostPay/packages/contracts/test/echidna/EchidnaPolicy.sol:EchidnaPolicy
+[2026-11-18 06:53:35.69] Running slither on `test/echidna/EchidnaPolicy.sol`... WARNING: Running slither failed. Echidna will continue, however fuzzing will likely be less effective.
+
+Done! (0.353786175s)
+Loaded 0 transaction sequences from echidna-corpus-EchidnaPolicy/reproducers
+Loaded 0 transaction sequences from echidna-corpus-EchidnaPolicy/coverage
+[2026-11-18 06:53:36.05] INFO: Performing RPC: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0003EmptyBase>
+[2026-11-18 06:53:36.05] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0003EmptyBase>
+[2026-11-18 06:53:36.05] INFO: Performing RPC: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0002EmptyBase>
+[2026-11-18 06:53:36.05] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0002EmptyBase>
+[2026-11-18 06:53:36.05] INFO: Performing RPC: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0001EmptyBase>
+[2026-11-18 06:53:36.05] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0001EmptyBase>
+[2026-11-18 06:53:36.05] INFO: Performing RPC: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001EmptyBase>
+[2026-11-18 06:53:36.05] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001EmptyBase>
+[2026-11-18 06:53:36.08] [Worker 0] Test echidna_canary_request_ok falsified!
+  Call sequence:
+EchidnaPolicy.requestWrongKey(true,1524785992,255) from: 0x0000000000000000000000000000000000020000 Time delay: 49735 seconds Block delay: 38350
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000020000 Time delay: 225906 seconds Block delay: 30304
+EchidnaPolicy.requestNative(115792089237316195423570985008687907853269984665640564039457584007913129639931,39) from: 0x0000000000000000000000000000000000010000 Time delay: 271957 seconds Block delay: 36859
+EchidnaPolicy.requestWrongKey(false,4989819090483500871515455052643571035,193) from: 0x0000000000000000000000000000000000030000 Time delay: 363179 seconds Block delay: 32737
+EchidnaPolicy.cancelWithdraw(53) from: 0x0000000000000000000000000000000000020000 Time delay: 376096 seconds Block delay: 11349
+EchidnaPolicy.requestNative(49602280139861603920505313073165131201899458528495670540763619471035169645778,92) from: 0x0000000000000000000000000000000000010000 Time delay: 66543 seconds Block delay: 5237
+EchidnaPolicy.propose(255,43,true) from: 0x0000000000000000000000000000000000020000 Time delay: 414579 seconds Block delay: 34698
+EchidnaPolicy.requestNative(68395741638144206313301234176927140089969302366189941892859371981311748436621,255) from: 0x0000000000000000000000000000000000010000 Time delay: 327348 seconds Block delay: 15368
+EchidnaPolicy.reExecute(255) from: 0x0000000000000000000000000000000000030000 Time delay: 511822 seconds Block delay: 53562
+EchidnaPolicy.requestWrongKey(true,1524785993,162) from: 0x0000000000000000000000000000000000030000 Time delay: 111322 seconds Block delay: 49666
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000030000 Time delay: 386267 seconds Block delay: 6234
+EchidnaPolicy.request(true,4370000,0,false) from: 0x0000000000000000000000000000000000010000 Time delay: 547623 seconds Block delay: 59552
+
+[2026-11-18 06:53:36.11] [Worker 0] Test echidna_canary_exec_native falsified!
+  Call sequence:
+EchidnaPolicy.requestWrongKey(true,1524785992,255) from: 0x0000000000000000000000000000000000020000 Time delay: 49735 seconds Block delay: 38350
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000020000 Time delay: 225906 seconds Block delay: 30304
+EchidnaPolicy.requestNative(115792089237316195423570985008687907853269984665640564039457584007913129639931,39) from: 0x0000000000000000000000000000000000010000 Time delay: 271957 seconds Block delay: 36859
+EchidnaPolicy.requestWrongKey(false,4989819090483500871515455052643571035,193) from: 0x0000000000000000000000000000000000030000 Time delay: 363179 seconds Block delay: 32737
+EchidnaPolicy.cancelWithdraw(53) from: 0x0000000000000000000000000000000000020000 Time delay: 376096 seconds Block delay: 11349
+EchidnaPolicy.requestNative(49602280139861603920505313073165131201899458528495670540763619471035169645778,92) from: 0x0000000000000000000000000000000000010000 Time delay: 66543 seconds Block delay: 5237
+EchidnaPolicy.propose(255,43,true) from: 0x0000000000000000000000000000000000020000 Time delay: 414579 seconds Block delay: 34698
+EchidnaPolicy.requestNative(68395741638144206313301234176927140089969302366189941892859371981311748436621,255) from: 0x0000000000000000000000000000000000010000 Time delay: 327348 seconds Block delay: 15368
+EchidnaPolicy.reExecute(255) from: 0x0000000000000000000000000000000000030000 Time delay: 511822 seconds Block delay: 53562
+EchidnaPolicy.requestWrongKey(true,1524785993,162) from: 0x0000000000000000000000000000000000030000 Time delay: 111322 seconds Block delay: 49666
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000030000 Time delay: 386267 seconds Block delay: 6234
+EchidnaPolicy.request(true,4370000,0,false) from: 0x0000000000000000000000000000000000010000 Time delay: 547623 seconds Block delay: 59552
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000020000 Time delay: 463588 seconds Block delay: 1362
+EchidnaPolicy.request(true,115792089237316195423570985008687907853269984665640564039457584007913129639935,70,false) from: 0x0000000000000000000000000000000000030000 Time delay: 412373 seconds Block delay: 22699
+EchidnaPolicy.propose(141,255,false) from: 0x0000000000000000000000000000000000030000 Time delay: 338252 seconds Block delay: 36859
+EchidnaPolicy.execute(149) from: 0x0000000000000000000000000000000000030000 Time delay: 322374 seconds Block delay: 36859
+EchidnaPolicy.executePending(3) from: 0x0000000000000000000000000000000000030000 Time delay: 547623 seconds Block delay: 53349
+EchidnaPolicy.requestNative(1524785993,212) from: 0x0000000000000000000000000000000000010000 Value: 0x15707a8fd3be3cf51 Time delay: 156190 seconds Block delay: 23653
+EchidnaPolicy.executePending(98) from: 0x0000000000000000000000000000000000010000 Time delay: 404997 seconds Block delay: 59983
+
+[2026-11-18 06:53:36.11]  Saved reproducer to echidna-corpus-EchidnaPolicy/reproducers-unshrunk/660482863374579147.txt
+[2026-11-18 06:53:36.11] [Worker 0] New coverage: 8992 instr, 7 contracts, 1 seqs in corpus
+[2026-11-18 06:53:36.15]  Saved reproducer to echidna-corpus-EchidnaPolicy/reproducers-unshrunk/6058022568756464690.txt
+[2026-11-18 06:53:36.19]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/7384987658223448306.txt
+[2026-11-18 06:53:39.07] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 63535697
+[2026-11-18 06:53:42.09] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:53:45.10] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:53:48.12] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:53:51.13] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:53:54.16] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:53:57.17] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:54:00.19] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:54:03.21] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:54:06.22] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:54:09.23] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:54:12.25] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:54:15.27] [status] tests: 2/10, fuzzing: 21/300000, values: [], cov: 8992, corpus: 1, gas/s: 0
+[2026-11-18 06:54:17.31] [Worker 0] New coverage: 9642 instr, 7 contracts, 2 seqs in corpus
+[2026-11-18 06:54:17.34]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/5737941478640232275.txt
+[2026-11-18 06:54:17.38] [Worker 0] New coverage: 10727 instr, 7 contracts, 3 seqs in corpus
+[2026-11-18 06:54:17.43]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/5761490162409961253.txt
+[2026-11-18 06:54:17.51] [Worker 0] New coverage: 10743 instr, 7 contracts, 4 seqs in corpus
+[2026-11-18 06:54:17.57]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/1482318576657851908.txt
+[2026-11-18 06:54:17.70] [Worker 0] New coverage: 10745 instr, 7 contracts, 5 seqs in corpus
+[2026-11-18 06:54:17.76]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/8025055728643832930.txt
+[2026-11-18 06:54:17.76] [Worker 0] New coverage: 10748 instr, 7 contracts, 6 seqs in corpus
+[2026-11-18 06:54:17.83]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/8464468261484278475.txt
+[2026-11-18 06:54:18.01] [Worker 0] New coverage: 11141 instr, 7 contracts, 7 seqs in corpus
+[2026-11-18 06:54:18.05]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/3194936110155981927.txt
+[2026-11-18 06:54:18.11] [Worker 0] Test echidna_canary_cancel falsified!
+  Call sequence:
+EchidnaPolicy.requestNative(90010935432937826258969741039707505890837164414131963109717795215523723302861,255) from: 0x0000000000000000000000000000000000030000 Time delay: 207289 seconds Block delay: 35200
+EchidnaPolicy.reExecute(255) from: 0x0000000000000000000000000000000000020000 Time delay: 360624 seconds Block delay: 1362
+EchidnaPolicy.request(true,4370000,0,false) from: 0x0000000000000000000000000000000000020000 Time delay: 206186 seconds Block delay: 26782
+EchidnaPolicy.requestWrongKey(true,14365063006412303252597682160179843907861880735595063521875691172477987145551,255) from: 0x0000000000000000000000000000000000020000 Time delay: 365860 seconds Block delay: 59982
+EchidnaPolicy.requestToken(437275498002565524145,56) from: 0x0000000000000000000000000000000000020000 Time delay: 360624 seconds Block delay: 32767
+EchidnaPolicy.executeDest() from: 0x0000000000000000000000000000000000030000 Time delay: 414579 seconds Block delay: 1362
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000010000 Time delay: 206186 seconds Block delay: 12338
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000010000 Time delay: 136392 seconds Block delay: 53678
+EchidnaPolicy.cancelWithdraw(0) from: 0x0000000000000000000000000000000000010000 Time delay: 225906 seconds Block delay: 53349
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000020000 Time delay: 456120 seconds Block delay: 12493
+EchidnaPolicy.reinit(0x1fffffffe,0x1fffffffe,87870740471055955723005868157769235955472945083222179844965710527374889230122,"\a\162\194^\183\v\DC1 lS\158DHf]\SO\209\226.\178a\v\243\240\ACKp\165\228\160\\\RS\STX") from: 0x0000000000000000000000000000000000010000 Time delay: 303345 seconds Block delay: 3661
+EchidnaPolicy.request(true,4370000,186,true) from: 0x0000000000000000000000000000000000030000 Time delay: 554465 seconds Block delay: 11942
+EchidnaPolicy.reExecute(255) from: 0x0000000000000000000000000000000000010000 Time delay: 100835 seconds Block delay: 11905
+EchidnaPolicy.request(true,4370000,0,false) from: 0x0000000000000000000000000000000000030000 Time delay: 440097 seconds Block delay: 4896
+EchidnaPolicy.cancelDest() from: 0x0000000000000000000000000000000000020000 Time delay: 33271 seconds Block delay: 23978
+EchidnaPolicy.requestWrongKey(true,1524785992,255) from: 0x0000000000000000000000000000000000020000 Time delay: 271957 seconds Block delay: 5140
+EchidnaPolicy.requestToken(184,28) from: 0x0000000000000000000000000000000000010000 Time delay: 45142 seconds Block delay: 34720
+EchidnaPolicy.request(true,21216886532263991182148658220236613259995368776014447276761564805541511532332,147,false) from: 0x0000000000000000000000000000000000030000 Time delay: 152224 seconds Block delay: 12155
+EchidnaPolicy.requestNative(115792089237316195423570985008687907853269984665640564039457584007913129639931,39) from: 0x0000000000000000000000000000000000020000 Time delay: 198598 seconds Block delay: 35200
+EchidnaPolicy.cancelWithdraw(106) from: 0x0000000000000000000000000000000000030000 Time delay: 82670 seconds Block delay: 800
+
+[2026-11-18 06:54:18.16]  Saved reproducer to echidna-corpus-EchidnaPolicy/reproducers-unshrunk/458644897509636967.txt
+[2026-11-18 06:54:18.29] [status] tests: 3/10, fuzzing: 332/300000, values: [], cov: 11141, corpus: 7, gas/s: 820126323
+[2026-11-18 06:54:21.31] [status] tests: 3/10, fuzzing: 332/300000, values: [], cov: 11141, corpus: 7, gas/s: 0
+[2026-11-18 06:54:24.33] [status] tests: 3/10, fuzzing: 332/300000, values: [], cov: 11141, corpus: 7, gas/s: 0
+[2026-11-18 06:54:27.35] [status] tests: 3/10, fuzzing: 332/300000, values: [], cov: 11141, corpus: 7, gas/s: 0
+[2026-11-18 06:54:30.37] [status] tests: 3/10, fuzzing: 332/300000, values: [], cov: 11141, corpus: 7, gas/s: 0
+[2026-11-18 06:54:33.39] [status] tests: 3/10, fuzzing: 332/300000, values: [], cov: 11141, corpus: 7, gas/s: 0
+[2026-11-18 06:54:34.44] [Worker 0] New coverage: 11229 instr, 7 contracts, 8 seqs in corpus
+[2026-11-18 06:54:34.49]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/3348803732082587959.txt
+[2026-11-18 06:54:34.72] [Worker 0] New coverage: 11245 instr, 7 contracts, 9 seqs in corpus
+[2026-11-18 06:54:34.77]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/5312309484064862363.txt
+[2026-11-18 06:54:34.82] [Worker 0] New coverage: 11248 instr, 7 contracts, 10 seqs in corpus
+[2026-11-18 06:54:34.87]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/1767885129984874338.txt
+[2026-11-18 06:54:34.99] [Worker 0] New coverage: 11282 instr, 7 contracts, 11 seqs in corpus
+[2026-11-18 06:54:35.05]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/1299758515841849135.txt
+[2026-11-18 06:54:35.73] [Worker 0] New coverage: 11284 instr, 7 contracts, 12 seqs in corpus
+[2026-11-18 06:54:35.77]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/2016817746772720607.txt
+[2026-11-18 06:54:36.18] [Worker 0] New coverage: 11300 instr, 7 contracts, 13 seqs in corpus
+[2026-11-18 06:54:36.24]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/8691011615613425575.txt
+[2026-11-18 06:54:36.41] [status] tests: 3/10, fuzzing: 1157/300000, values: [], cov: 11302, corpus: 13, gas/s: 1903507004
+[2026-11-18 06:54:36.42] [Worker 0] New coverage: 11302 instr, 7 contracts, 14 seqs in corpus
+[2026-11-18 06:54:36.47]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/1832314794601346353.txt
+[2026-11-18 06:54:37.32] [Worker 0] Test echidna_canary_dest_change falsified!
+  Call sequence:
+EchidnaPolicy.reinit(0x2fffffffd,0x10000,51338352645671311387916535005961275256916485041420385953439357718813680957370,"/*z\159\193AD\197d\153\253\221\133\149\ENQB\NUL\EOT\171\147%\179\NUL<\251\146v\236\203\DEL\220_") from: 0x0000000000000000000000000000000000020000 Time delay: 289103 seconds Block delay: 30042
+EchidnaPolicy.propose(204,61,false) from: 0x0000000000000000000000000000000000020000 Time delay: 19029 seconds Block delay: 19933
+EchidnaPolicy.executeDest() from: 0x0000000000000000000000000000000000010000 Time delay: 360624 seconds Block delay: 32147
+EchidnaPolicy.executePending(255) from: 0x0000000000000000000000000000000000020000 Time delay: 152457 seconds Block delay: 54155
+EchidnaPolicy.request(true,4370000,0,false) from: 0x0000000000000000000000000000000000030000 Time delay: 404997 seconds Block delay: 11826
+EchidnaPolicy.execute(149) from: 0x0000000000000000000000000000000000010000 Time delay: 424163 seconds Block delay: 1123
+EchidnaPolicy.executePending(255) from: 0x0000000000000000000000000000000000020000 Time delay: 526194 seconds Block delay: 31232
+EchidnaPolicy.executeDest() from: 0x0000000000000000000000000000000000010000 Time delay: 519847 seconds Block delay: 12046
+EchidnaPolicy.cancelWithdraw(255) from: 0x0000000000000000000000000000000000010000 Time delay: 512439 seconds Block delay: 1123
+EchidnaPolicy.requestNative(99503121734137251298833157999064147732792426591752082933705998798978089459191,252) from: 0x0000000000000000000000000000000000030000 Time delay: 447588 seconds Block delay: 45852
+EchidnaPolicy.request(true,4370000,0,false) from: 0x0000000000000000000000000000000000020000 Time delay: 404809 seconds Block delay: 9340
+EchidnaPolicy.reExecute(249) from: 0x0000000000000000000000000000000000010000 Time delay: 172101 seconds Block delay: 53011
+EchidnaPolicy.propose(53,40,false) from: 0x0000000000000000000000000000000000010000 Time delay: 305572 seconds Block delay: 19933
+EchidnaPolicy.executePending(181) from: 0x0000000000000000000000000000000000010000 Time delay: 305572 seconds Block delay: 33357
+EchidnaPolicy.requestNative(115792089237316195423570985008687907853269984665640564039457584007913129639931,39) from: 0x0000000000000000000000000000000000010000 Time delay: 437838 seconds Block delay: 5952
+EchidnaPolicy.executePending(4) from: 0x0000000000000000000000000000000000010000 Time delay: 487078 seconds Block delay: 31232
+EchidnaPolicy.requestWrongKey(true,1524785992,255) from: 0x0000000000000000000000000000000000030000 Time delay: 65535 seconds Block delay: 59982
+EchidnaPolicy.request(false,4712779729837276929979571917349068546483177373467785209460729655251362092688,255,true) from: 0x0000000000000000000000000000000000020000 Time delay: 436727 seconds Block delay: 38100
+EchidnaPolicy.reinit(0x0,0x2fffffffd,4370000,"\217\176\239G\244\171OH\209[\178\154Y\210\155\137\175\175\179P\140\FS\206\211\158\GS\254?4,\185\165") from: 0x0000000000000000000000000000000000020000 Time delay: 511822 seconds Block delay: 3449
+EchidnaPolicy.executeDest() from: 0x0000000000000000000000000000000000030000 Time delay: 50417 seconds Block delay: 55538
+
+[2026-11-18 06:54:37.37]  Saved reproducer to echidna-corpus-EchidnaPolicy/reproducers-unshrunk/122602815297493925.txt
+[2026-11-18 06:54:39.43] [status] tests: 4/10, fuzzing: 1596/300000, values: [], cov: 11302, corpus: 14, gas/s: 981691670
+[2026-11-18 06:54:42.45] [status] tests: 4/10, fuzzing: 1596/300000, values: [], cov: 11302, corpus: 14, gas/s: 0
+[2026-11-18 06:54:45.47] [status] tests: 4/10, fuzzing: 1596/300000, values: [], cov: 11302, corpus: 14, gas/s: 0
+[2026-11-18 06:54:48.49] [status] tests: 4/10, fuzzing: 2597/300000, values: [], cov: 11302, corpus: 14, gas/s: 2430971137
+[2026-11-18 06:54:48.63] [Worker 0] New coverage: 11307 instr, 7 contracts, 15 seqs in corpus
+[2026-11-18 06:54:48.71]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/4263157578421942207.txt
+[2026-11-18 06:54:48.84] [Worker 0] New coverage: 11310 instr, 7 contracts, 16 seqs in corpus
+[2026-11-18 06:54:48.86]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/7710814111982018850.txt
+[2026-11-18 06:54:51.51] [status] tests: 4/10, fuzzing: 3920/300000, values: [], cov: 11310, corpus: 16, gas/s: 3017163841
+[2026-11-18 06:54:52.66] [Worker 0] New coverage: 11332 instr, 7 contracts, 17 seqs in corpus
+[2026-11-18 06:54:52.75]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/7993810388043709355.txt
+[2026-11-18 06:54:53.86] [Worker 0] New coverage: 11335 instr, 7 contracts, 18 seqs in corpus
+[2026-11-18 06:54:53.92]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/1103473329836875816.txt
+[2026-11-18 06:54:54.53] [status] tests: 4/10, fuzzing: 4993/300000, values: [], cov: 11335, corpus: 18, gas/s: 2479008319
+[2026-11-18 06:54:54.85] [Worker 0] Test echidna_canary_exec_token falsified!
+  Call sequence:
+EchidnaPolicy.requestWrongKey(true,4370000,255) from: 0x0000000000000000000000000000000000010000 Time delay: 23292 seconds Block delay: 127
+EchidnaPolicy.execute(251) from: 0x0000000000000000000000000000000000030000 Time delay: 271957 seconds Block delay: 36859
+EchidnaPolicy.reinit(0x2fffffffd,0xffffffff,23402807428690201608685,"\ETX\254\190,V\234\EM\250\179NE_\129<\160\DELG 3\186#rTQ!\255\129\220\243U\190\207") from: 0x0000000000000000000000000000000000010000 Value: 0x660ceb753c15d43f Time delay: 127 seconds Block delay: 45819
+EchidnaPolicy.requestToken(106307805496251500017620431610729452042767064203794727116653720561216549055692,159) from: 0x0000000000000000000000000000000000030000 Time delay: 156190 seconds Block delay: 23275
+EchidnaPolicy.reinit(0x2fffffffd,0x0,20799175814890731385734334475665334205307397045143796968467822468522821706495,"\216Z\ETB\220\DLE\195\201\SI\251\EOTV\"@2\228\157o\204\SO^h\195\SOH\237\a\242\206\RS\139\"\170\202") from: 0x0000000000000000000000000000000000020000 Time delay: 554465 seconds Block delay: 16149
+EchidnaPolicy.executePending(255) from: 0x0000000000000000000000000000000000010000 Time delay: 390247 seconds Block delay: 6721
+EchidnaPolicy.executePending(3) from: 0x0000000000000000000000000000000000030000 Time delay: 420078 seconds Block delay: 2511
+EchidnaPolicy.propose(255,43,true) from: 0x0000000000000000000000000000000000030000 Time delay: 512439 seconds Block delay: 59784
+EchidnaPolicy.request(false,9728655514357560285331017112232105922517463700430039322431099327626914065465,255,false) from: 0x0000000000000000000000000000000000030000 Time delay: 82671 seconds Block delay: 5952
+EchidnaPolicy.executePending(3) from: 0x0000000000000000000000000000000000010000 Time delay: 305572 seconds Block delay: 42229
+EchidnaPolicy.reExecute(255) from: 0x0000000000000000000000000000000000030000 Time delay: 379552 seconds Block delay: 30304
+EchidnaPolicy.requestToken(4370001,0) from: 0x0000000000000000000000000000000000020000 Time delay: 547623 seconds Block delay: 4223
+EchidnaPolicy.requestToken(204,5) from: 0x0000000000000000000000000000000000010000 Time delay: 289103 seconds Block delay: 1362
+EchidnaPolicy.executePending(228) from: 0x0000000000000000000000000000000000030000 Time delay: 554465 seconds Block delay: 57086
+EchidnaPolicy.requestNative(115792089237316195423570985008687907853269984665640564039457584007913129639931,39) from: 0x0000000000000000000000000000000000010000 Time delay: 78598 seconds Block delay: 9920
+EchidnaPolicy.propose(184,232,true) from: 0x0000000000000000000000000000000000030000 Time delay: 439556 seconds Block delay: 2511
+EchidnaPolicy.request(true,115792089237316195423570985008687907853269984665640564039457584007913129639934,182,true) from: 0x0000000000000000000000000000000000030000 Time delay: 390247 seconds Block delay: 42229
+EchidnaPolicy.executePending(93) from: 0x0000000000000000000000000000000000020000 Time delay: 254414 seconds Block delay: 20243
+
+[2026-11-18 06:54:54.93]  Saved reproducer to echidna-corpus-EchidnaPolicy/reproducers-unshrunk/5374916884069127497.txt
+[2026-11-18 06:54:57.55] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 398187722
+[2026-11-18 06:55:00.57] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:03.59] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:06.61] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:09.63] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:12.65] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:15.67] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:18.69] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:21.71] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:24.73] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:27.75] [status] tests: 5/10, fuzzing: 5161/300000, values: [], cov: 11335, corpus: 18, gas/s: 0
+[2026-11-18 06:55:30.77] [status] tests: 5/10, fuzzing: 5530/300000, values: [], cov: 11335, corpus: 18, gas/s: 855350740
+[2026-11-18 06:55:31.84] [Worker 0] New coverage: 11369 instr, 7 contracts, 19 seqs in corpus
+[2026-11-18 06:55:31.89]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/6398089928174447148.txt
+[2026-11-18 06:55:33.79] [status] tests: 5/10, fuzzing: 7128/300000, values: [], cov: 11369, corpus: 19, gas/s: 3603882120
+[2026-11-18 06:55:36.80] [status] tests: 5/10, fuzzing: 8649/300000, values: [], cov: 11369, corpus: 19, gas/s: 3406718601
+[2026-11-18 06:55:39.81] [status] tests: 5/10, fuzzing: 10144/300000, values: [], cov: 11369, corpus: 19, gas/s: 3363942833
+[2026-11-18 06:55:42.83] [status] tests: 5/10, fuzzing: 11603/300000, values: [], cov: 11369, corpus: 19, gas/s: 3305372291
+[2026-11-18 06:55:44.61] [Worker 0] New coverage: 11372 instr, 7 contracts, 20 seqs in corpus
+[2026-11-18 06:55:44.65]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/1900988535706160987.txt
+[2026-11-18 06:55:45.85] [status] tests: 5/10, fuzzing: 13027/300000, values: [], cov: 11372, corpus: 20, gas/s: 3266287225
+[2026-11-18 06:55:46.52] [Worker 0] New coverage: 11375 instr, 7 contracts, 21 seqs in corpus
+[2026-11-18 06:55:46.57]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/5650896707143907736.txt
+[2026-11-18 06:55:48.86] [status] tests: 5/10, fuzzing: 14507/300000, values: [], cov: 11375, corpus: 21, gas/s: 3481366561
+[2026-11-18 06:55:48.96] [Worker 0] New coverage: 11391 instr, 7 contracts, 22 seqs in corpus
+[2026-11-18 06:55:49.00]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/2677092136354965980.txt
+[2026-11-18 06:55:51.88] [status] tests: 5/10, fuzzing: 15927/300000, values: [], cov: 11391, corpus: 22, gas/s: 3249596347
+[2026-11-18 06:55:54.14] [Worker 0] New coverage: 11394 instr, 7 contracts, 23 seqs in corpus
+[2026-11-18 06:55:54.19]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/5963226384745158167.txt
+[2026-11-18 06:55:54.90] [status] tests: 5/10, fuzzing: 17384/300000, values: [], cov: 11394, corpus: 23, gas/s: 3222505779
+[2026-11-18 06:55:57.92] [status] tests: 5/10, fuzzing: 18817/300000, values: [], cov: 11394, corpus: 23, gas/s: 3285364322
+[2026-11-18 06:56:00.94] [status] tests: 5/10, fuzzing: 19973/300000, values: [], cov: 11394, corpus: 23, gas/s: 2633371515
+[2026-11-18 06:56:03.18] [Worker 0] New coverage: 11397 instr, 7 contracts, 24 seqs in corpus
+[2026-11-18 06:56:03.25]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/3683285249884041571.txt
+[2026-11-18 06:56:03.96] [status] tests: 5/10, fuzzing: 21253/300000, values: [], cov: 11397, corpus: 24, gas/s: 2901715509
+[2026-11-18 06:56:06.98] [status] tests: 5/10, fuzzing: 22715/300000, values: [], cov: 11397, corpus: 24, gas/s: 3237623223
+[2026-11-18 06:56:10.00] [status] tests: 5/10, fuzzing: 24299/300000, values: [], cov: 11397, corpus: 24, gas/s: 3520386389
+[2026-11-18 06:56:13.02] [status] tests: 5/10, fuzzing: 25831/300000, values: [], cov: 11397, corpus: 24, gas/s: 3427088983
+[2026-11-18 06:56:16.04] [status] tests: 5/10, fuzzing: 27130/300000, values: [], cov: 11397, corpus: 24, gas/s: 2875238048
+[2026-11-18 06:56:18.05] [Worker 0] New coverage: 11400 instr, 7 contracts, 25 seqs in corpus
+[2026-11-18 06:56:18.10]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/2573493577771549363.txt
+[2026-11-18 06:56:19.06] [status] tests: 5/10, fuzzing: 28434/300000, values: [], cov: 11400, corpus: 25, gas/s: 2977505028
+[2026-11-18 06:56:22.08] [status] tests: 5/10, fuzzing: 29937/300000, values: [], cov: 11400, corpus: 25, gas/s: 3773113699
+[2026-11-18 06:56:25.10] [status] tests: 5/10, fuzzing: 31577/300000, values: [], cov: 11400, corpus: 25, gas/s: 3711949468
+[2026-11-18 06:56:28.01] [Worker 0] New coverage: 11403 instr, 7 contracts, 26 seqs in corpus
+[2026-11-18 06:56:28.07]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/4972628443495790325.txt
+[2026-11-18 06:56:28.12] [status] tests: 5/10, fuzzing: 33131/300000, values: [], cov: 11403, corpus: 26, gas/s: 3690074993
+[2026-11-18 06:56:31.14] [status] tests: 5/10, fuzzing: 34512/300000, values: [], cov: 11403, corpus: 26, gas/s: 3207032153
+[2026-11-18 06:56:34.16] [status] tests: 5/10, fuzzing: 35858/300000, values: [], cov: 11403, corpus: 26, gas/s: 3048777607
+[2026-11-18 06:56:37.18] [status] tests: 5/10, fuzzing: 37259/300000, values: [], cov: 11406, corpus: 26, gas/s: 3106420051
+[2026-11-18 06:56:37.20] [Worker 0] New coverage: 11406 instr, 7 contracts, 27 seqs in corpus
+[2026-11-18 06:56:37.27]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/6525520590263135512.txt
+[2026-11-18 06:56:37.59] [Worker 0] New coverage: 11409 instr, 7 contracts, 28 seqs in corpus
+[2026-11-18 06:56:37.64]  Saved reproducer to echidna-corpus-EchidnaPolicy/coverage/7591779856449254342.txt
+[2026-11-18 06:56:40.20] [status] tests: 5/10, fuzzing: 38711/300000, values: [], cov: 11409, corpus: 28, gas/s: 3342967312
+[2026-11-18 06:56:43.22] [status] tests: 5/10, fuzzing: 40130/300000, values: [], cov: 11409, corpus: 28, gas/s: 3365727859
+[2026-11-18 06:56:46.24] [status] tests: 5/10, fuzzing: 41557/300000, values: [], cov: 11409, corpus: 28, gas/s: 3320693953
+[2026-11-18 06:56:49.26] [status] tests: 5/10, fuzzing: 43054/300000, values: [], cov: 11409, corpus: 28, gas/s: 3350197259
+[2026-11-18 06:56:52.28] [status] tests: 5/10, fuzzing: 44446/300000, values: [], cov: 11409, corpus: 28, gas/s: 3449768331
+[2026-11-18 06:56:55.28] [status] tests: 5/10, fuzzing: 45854/300000, values: [], cov: 11409, corpus: 28, gas/s: 3367342168
+[2026-11-18 06:56:58.29] [status] tests: 5/10, fuzzing: 47316/300000, values: [], cov: 11409, corpus: 28, gas/s: 3388728229
+[2026-11-18 06:57:01.30] [status] tests: 5/10, fuzzing: 48800/300000, values: [], cov: 11409, corpus: 28, gas/s: 3350211647
+[2026-11-18 06:57:04.32] [status] tests: 5/10, fuzzing: 50265/300000, values: [], cov: 11409, corpus: 28, gas/s: 3275226981
+[2026-11-18 06:57:07.34] [status] tests: 5/10, fuzzing: 51750/300000, values: [], cov: 11409, corpus: 28, gas/s: 3429270787
+[2026-11-18 06:57:10.36] [status] tests: 5/10, fuzzing: 53135/300000, values: [], cov: 11409, corpus: 28, gas/s: 3202762025
+[2026-11-18 06:57:13.38] [status] tests: 5/10, fuzzing: 54571/300000, values: [], cov: 11409, corpus: 28, gas/s: 3423652645
+[2026-11-18 06:57:16.39] [status] tests: 5/10, fuzzing: 55961/300000, values: [], cov: 11409, corpus: 28, gas/s: 3320406836
+[2026-11-18 06:57:19.40] [status] tests: 5/10, fuzzing: 57406/300000, values: [], cov: 11409, corpus: 28, gas/s: 3371533892
+[2026-11-18 06:57:22.42] [status] tests: 5/10, fuzzing: 58753/300000, values: [], cov: 11409, corpus: 28, gas/s: 3128832960
+[2026-11-18 06:57:25.44] [status] tests: 5/10, fuzzing: 60292/300000, values: [], cov: 11409, corpus: 28, gas/s: 3594872624
+[2026-11-18 06:57:28.46] [status] tests: 5/10, fuzzing: 61691/300000, values: [], cov: 11409, corpus: 28, gas/s: 3232036095
+[2026-11-18 06:57:31.48] [status] tests: 5/10, fuzzing: 63105/300000, values: [], cov: 11409, corpus: 28, gas/s: 3248296253
+[2026-11-18 06:57:34.50] [status] tests: 5/10, fuzzing: 64581/300000, values: [], cov: 11409, corpus: 28, gas/s: 3433945793
+[2026-11-18 06:57:37.52] [status] tests: 5/10, fuzzing: 66038/300000, values: [], cov: 11409, corpus: 28, gas/s: 3337431061
+[2026-11-18 06:57:40.54] [status] tests: 5/10, fuzzing: 67448/300000, values: [], cov: 11409, corpus: 28, gas/s: 3283186054
+[2026-11-18 06:57:43.56] [status] tests: 5/10, fuzzing: 68916/300000, values: [], cov: 11409, corpus: 28, gas/s: 3480723231
+[2026-11-18 06:57:46.58] [status] tests: 5/10, fuzzing: 70298/300000, values: [], cov: 11409, corpus: 28, gas/s: 3355192743
+[2026-11-18 06:57:49.60] [status] tests: 5/10, fuzzing: 71789/300000, values: [], cov: 11409, corpus: 28, gas/s: 3421776854
+[2026-11-18 06:57:52.62] [status] tests: 5/10, fuzzing: 73262/300000, values: [], cov: 11409, corpus: 28, gas/s: 3453430027
+[2026-11-18 06:57:55.64] [status] tests: 5/10, fuzzing: 74801/300000, values: [], cov: 11409, corpus: 28, gas/s: 3572245843
+[2026-11-18 06:57:58.66] [status] tests: 5/10, fuzzing: 76184/300000, values: [], cov: 11409, corpus: 28, gas/s: 3118187423
+[2026-11-18 06:58:01.66] [status] tests: 5/10, fuzzing: 77641/300000, values: [], cov: 11409, corpus: 28, gas/s: 3400800540
+[2026-11-18 06:58:04.68] [status] tests: 5/10, fuzzing: 79083/300000, values: [], cov: 11409, corpus: 28, gas/s: 3427151883
+[2026-11-18 06:58:07.70] [status] tests: 5/10, fuzzing: 80595/300000, values: [], cov: 11409, corpus: 28, gas/s: 3450778847
+[2026-11-18 06:58:10.73] [status] tests: 5/10, fuzzing: 82022/300000, values: [], cov: 11409, corpus: 28, gas/s: 3348369970
+[2026-11-18 06:58:13.74] [status] tests: 5/10, fuzzing: 83480/300000, values: [], cov: 11409, corpus: 28, gas/s: 3523843632
+[2026-11-18 06:58:16.76] [status] tests: 5/10, fuzzing: 84970/300000, values: [], cov: 11409, corpus: 28, gas/s: 3520511546
+[2026-11-18 06:58:19.78] [status] tests: 5/10, fuzzing: 86468/300000, values: [], cov: 11409, corpus: 28, gas/s: 3609884391
+[2026-11-18 06:58:22.80] [status] tests: 5/10, fuzzing: 87896/300000, values: [], cov: 11409, corpus: 28, gas/s: 3243517666
+[2026-11-18 06:58:25.82] [status] tests: 5/10, fuzzing: 89438/300000, values: [], cov: 11409, corpus: 28, gas/s: 3607849802
+[2026-11-18 06:58:28.84] [status] tests: 5/10, fuzzing: 90949/300000, values: [], cov: 11409, corpus: 28, gas/s: 3499067978
+[2026-11-18 06:58:31.86] [status] tests: 5/10, fuzzing: 92461/300000, values: [], cov: 11409, corpus: 28, gas/s: 3479560693
+[2026-11-18 06:58:34.86] [status] tests: 5/10, fuzzing: 93817/300000, values: [], cov: 11409, corpus: 28, gas/s: 3144606287
+[2026-11-18 06:58:37.87] [status] tests: 5/10, fuzzing: 95310/300000, values: [], cov: 11409, corpus: 28, gas/s: 3359053592
+[2026-11-18 06:58:40.88] [status] tests: 5/10, fuzzing: 96786/300000, values: [], cov: 11409, corpus: 28, gas/s: 3500678260
+[2026-11-18 06:58:43.90] [status] tests: 5/10, fuzzing: 98186/300000, values: [], cov: 11409, corpus: 28, gas/s: 3274377098
+[2026-11-18 06:58:46.92] [status] tests: 5/10, fuzzing: 99716/300000, values: [], cov: 11409, corpus: 28, gas/s: 3465290539
+[2026-11-18 06:58:49.94] [status] tests: 5/10, fuzzing: 101191/300000, values: [], cov: 11409, corpus: 28, gas/s: 3485999184
+[2026-11-18 06:58:52.96] [status] tests: 5/10, fuzzing: 102581/300000, values: [], cov: 11409, corpus: 28, gas/s: 3148525051
+[2026-11-18 06:58:55.98] [status] tests: 5/10, fuzzing: 103990/300000, values: [], cov: 11409, corpus: 28, gas/s: 3291369141
+[2026-11-18 06:58:58.99] [status] tests: 5/10, fuzzing: 105338/300000, values: [], cov: 11409, corpus: 28, gas/s: 3198701073
+[2026-11-18 06:59:02.00] [status] tests: 5/10, fuzzing: 106818/300000, values: [], cov: 11409, corpus: 28, gas/s: 3468534655
+[2026-11-18 06:59:05.02] [status] tests: 5/10, fuzzing: 108301/300000, values: [], cov: 11409, corpus: 28, gas/s: 3443279019
+[2026-11-18 06:59:08.04] [status] tests: 5/10, fuzzing: 109793/300000, values: [], cov: 11409, corpus: 28, gas/s: 3448739354
+[2026-11-18 06:59:11.06] [status] tests: 5/10, fuzzing: 111190/300000, values: [], cov: 11409, corpus: 28, gas/s: 3337685319
+[2026-11-18 06:59:14.08] [status] tests: 5/10, fuzzing: 112683/300000, values: [], cov: 11409, corpus: 28, gas/s: 3479388343
+[2026-11-18 06:59:17.10] [status] tests: 5/10, fuzzing: 114064/300000, values: [], cov: 11409, corpus: 28, gas/s: 3157616162
+[2026-11-18 06:59:20.12] [status] tests: 5/10, fuzzing: 115522/300000, values: [], cov: 11409, corpus: 28, gas/s: 3434922788
+[2026-11-18 06:59:23.14] [status] tests: 5/10, fuzzing: 117030/300000, values: [], cov: 11409, corpus: 28, gas/s: 3429057469
+[2026-11-18 06:59:26.16] [status] tests: 5/10, fuzzing: 118441/300000, values: [], cov: 11409, corpus: 28, gas/s: 3299655273
+[2026-11-18 06:59:29.16] [status] tests: 5/10, fuzzing: 119989/300000, values: [], cov: 11409, corpus: 28, gas/s: 3608859043
+[2026-11-18 06:59:32.18] [status] tests: 5/10, fuzzing: 121603/300000, values: [], cov: 11409, corpus: 28, gas/s: 3602213175
+[2026-11-18 06:59:35.20] [status] tests: 5/10, fuzzing: 123107/300000, values: [], cov: 11409, corpus: 28, gas/s: 3519548907
+[2026-11-18 06:59:38.22] [status] tests: 5/10, fuzzing: 124649/300000, values: [], cov: 11409, corpus: 28, gas/s: 3611655768
+[2026-11-18 06:59:41.24] [status] tests: 5/10, fuzzing: 126159/300000, values: [], cov: 11409, corpus: 28, gas/s: 3480845022
+[2026-11-18 06:59:44.26] [status] tests: 5/10, fuzzing: 127467/300000, values: [], cov: 11409, corpus: 28, gas/s: 3013320351
+[2026-11-18 06:59:47.28] [status] tests: 5/10, fuzzing: 128832/300000, values: [], cov: 11409, corpus: 28, gas/s: 3215984868
+[2026-11-18 06:59:50.30] [status] tests: 5/10, fuzzing: 130289/300000, values: [], cov: 11409, corpus: 28, gas/s: 3362857538
+[2026-11-18 06:59:53.32] [status] tests: 5/10, fuzzing: 131625/300000, values: [], cov: 11409, corpus: 28, gas/s: 3058203264
+[2026-11-18 06:59:56.34] [status] tests: 5/10, fuzzing: 132990/300000, values: [], cov: 11409, corpus: 28, gas/s: 3205068428
+[2026-11-18 06:59:59.36] [status] tests: 5/10, fuzzing: 134281/300000, values: [], cov: 11409, corpus: 28, gas/s: 3078466241
+[2026-11-18 07:00:02.38] [status] tests: 5/10, fuzzing: 135679/300000, values: [], cov: 11409, corpus: 28, gas/s: 3205340147
+[2026-11-18 07:00:05.40] [status] tests: 5/10, fuzzing: 137041/300000, values: [], cov: 11409, corpus: 28, gas/s: 3119226394
+[2026-11-18 07:00:08.40] [status] tests: 5/10, fuzzing: 138490/300000, values: [], cov: 11409, corpus: 28, gas/s: 3410837873
+[2026-11-18 07:00:11.42] [status] tests: 5/10, fuzzing: 140002/300000, values: [], cov: 11409, corpus: 28, gas/s: 3410702177
+[2026-11-18 07:00:14.44] [status] tests: 5/10, fuzzing: 141488/300000, values: [], cov: 11409, corpus: 28, gas/s: 3497267687
+[2026-11-18 07:00:17.46] [status] tests: 5/10, fuzzing: 142917/300000, values: [], cov: 11409, corpus: 28, gas/s: 3313475489
+[2026-11-18 07:00:20.48] [status] tests: 5/10, fuzzing: 144335/300000, values: [], cov: 11409, corpus: 28, gas/s: 3348713140
+[2026-11-18 07:00:23.50] [status] tests: 5/10, fuzzing: 145721/300000, values: [], cov: 11409, corpus: 28, gas/s: 3292749019
+[2026-11-18 07:00:26.52] [status] tests: 5/10, fuzzing: 147218/300000, values: [], cov: 11409, corpus: 28, gas/s: 3487150029
+[2026-11-18 07:00:29.54] [status] tests: 5/10, fuzzing: 148740/300000, values: [], cov: 11409, corpus: 28, gas/s: 3576352590
+[2026-11-18 07:00:32.56] [status] tests: 5/10, fuzzing: 150165/300000, values: [], cov: 11409, corpus: 28, gas/s: 3396373704
+[2026-11-18 07:00:35.58] [status] tests: 5/10, fuzzing: 151665/300000, values: [], cov: 11409, corpus: 28, gas/s: 3534691870
+[2026-11-18 07:00:38.60] [status] tests: 5/10, fuzzing: 153116/300000, values: [], cov: 11409, corpus: 28, gas/s: 3528448385
+[2026-11-18 07:00:41.62] [status] tests: 5/10, fuzzing: 154488/300000, values: [], cov: 11409, corpus: 28, gas/s: 3179548462
+[2026-11-18 07:00:44.62] [status] tests: 5/10, fuzzing: 155830/300000, values: [], cov: 11409, corpus: 28, gas/s: 3114532234
+[2026-11-18 07:00:47.64] [status] tests: 5/10, fuzzing: 157349/300000, values: [], cov: 11409, corpus: 28, gas/s: 3478004236
+[2026-11-18 07:00:50.66] [status] tests: 5/10, fuzzing: 158759/300000, values: [], cov: 11409, corpus: 28, gas/s: 3287714543
+[2026-11-18 07:00:53.68] [status] tests: 5/10, fuzzing: 160200/300000, values: [], cov: 11409, corpus: 28, gas/s: 3418484475
+[2026-11-18 07:00:56.68] [status] tests: 5/10, fuzzing: 161557/300000, values: [], cov: 11409, corpus: 28, gas/s: 3074502493
+[2026-11-18 07:00:59.70] [status] tests: 5/10, fuzzing: 162961/300000, values: [], cov: 11409, corpus: 28, gas/s: 3363772681
+[2026-11-18 07:01:02.72] [status] tests: 5/10, fuzzing: 164436/300000, values: [], cov: 11409, corpus: 28, gas/s: 3473341485
+[2026-11-18 07:01:05.74] [status] tests: 5/10, fuzzing: 165958/300000, values: [], cov: 11409, corpus: 28, gas/s: 3503677229
+[2026-11-18 07:01:08.76] [status] tests: 5/10, fuzzing: 167514/300000, values: [], cov: 11409, corpus: 28, gas/s: 3673847047
+[2026-11-18 07:01:11.78] [status] tests: 5/10, fuzzing: 169062/300000, values: [], cov: 11409, corpus: 28, gas/s: 3607912860
+[2026-11-18 07:01:14.80] [status] tests: 5/10, fuzzing: 170522/300000, values: [], cov: 11409, corpus: 28, gas/s: 3234969232
+[2026-11-18 07:01:17.82] [status] tests: 5/10, fuzzing: 171960/300000, values: [], cov: 11409, corpus: 28, gas/s: 3312640386
+[2026-11-18 07:01:20.84] [status] tests: 5/10, fuzzing: 173357/300000, values: [], cov: 11409, corpus: 28, gas/s: 3305129916
+[2026-11-18 07:01:23.86] [status] tests: 5/10, fuzzing: 174670/300000, values: [], cov: 11409, corpus: 28, gas/s: 2956987599
+[2026-11-18 07:01:26.88] [status] tests: 5/10, fuzzing: 175859/300000, values: [], cov: 11409, corpus: 28, gas/s: 2812165249
+[2026-11-18 07:01:29.90] [status] tests: 5/10, fuzzing: 177308/300000, values: [], cov: 11409, corpus: 28, gas/s: 3231988757
+[2026-11-18 07:01:32.92] [status] tests: 5/10, fuzzing: 178604/300000, values: [], cov: 11409, corpus: 28, gas/s: 2994167552
+[2026-11-18 07:01:35.97] [status] tests: 5/10, fuzzing: 179672/300000, values: [], cov: 11409, corpus: 28, gas/s: 2575590819
+[2026-11-18 07:01:38.99] [status] tests: 5/10, fuzzing: 179767/300000, values: [], cov: 11409, corpus: 28, gas/s: 187220810
+[2026-11-18 07:01:42.09] [status] tests: 5/10, fuzzing: 179788/300000, values: [], cov: 11409, corpus: 28, gas/s: 59183634
+[2026-11-18 07:01:45.31] [status] tests: 5/10, fuzzing: 179788/300000, values: [], cov: 11409, corpus: 28, gas/s: 0
+[2026-11-18 07:01:48.76] [status] tests: 5/10, fuzzing: 179977/300000, values: [], cov: 11409, corpus: 28, gas/s: 428527148
+[2026-11-18 07:01:51.76] [status] tests: 5/10, fuzzing: 181231/300000, values: [], cov: 11409, corpus: 28, gas/s: 2770396922
+[2026-11-18 07:01:54.78] [status] tests: 5/10, fuzzing: 182637/300000, values: [], cov: 11409, corpus: 28, gas/s: 3371800972
+[2026-11-18 07:01:57.80] [status] tests: 5/10, fuzzing: 184053/300000, values: [], cov: 11409, corpus: 28, gas/s: 3293911925
+[2026-11-18 07:02:00.82] [status] tests: 5/10, fuzzing: 185453/300000, values: [], cov: 11409, corpus: 28, gas/s: 3200161241
+[2026-11-18 07:02:03.84] [status] tests: 5/10, fuzzing: 186883/300000, values: [], cov: 11409, corpus: 28, gas/s: 3243704563
+[2026-11-18 07:02:06.86] [status] tests: 5/10, fuzzing: 188229/300000, values: [], cov: 11409, corpus: 28, gas/s: 3150498310
+[2026-11-18 07:02:09.88] [status] tests: 5/10, fuzzing: 189732/300000, values: [], cov: 11409, corpus: 28, gas/s: 3579845321
+[2026-11-18 07:02:12.90] [status] tests: 5/10, fuzzing: 191138/300000, values: [], cov: 11409, corpus: 28, gas/s: 3276052196
+[2026-11-18 07:02:15.92] [status] tests: 5/10, fuzzing: 192581/300000, values: [], cov: 11409, corpus: 28, gas/s: 3435867359
+[2026-11-18 07:02:18.94] [status] tests: 5/10, fuzzing: 194025/300000, values: [], cov: 11409, corpus: 28, gas/s: 3486717075
+[2026-11-18 07:02:21.96] [status] tests: 5/10, fuzzing: 195404/300000, values: [], cov: 11409, corpus: 28, gas/s: 3207539151
+[2026-11-18 07:02:24.98] [status] tests: 5/10, fuzzing: 196790/300000, values: [], cov: 11409, corpus: 28, gas/s: 3310287876
+[2026-11-18 07:02:28.00] [status] tests: 5/10, fuzzing: 198288/300000, values: [], cov: 11409, corpus: 28, gas/s: 3513736392
+[2026-11-18 07:02:31.00] [status] tests: 5/10, fuzzing: 199799/300000, values: [], cov: 11409, corpus: 28, gas/s: 3495981397
+[2026-11-18 07:02:34.01] [status] tests: 5/10, fuzzing: 201204/300000, values: [], cov: 11409, corpus: 28, gas/s: 3287925718
+[2026-11-18 07:02:37.01] [status] tests: 5/10, fuzzing: 202592/300000, values: [], cov: 11409, corpus: 28, gas/s: 3315227265
+[2026-11-18 07:02:40.01] [status] tests: 5/10, fuzzing: 204041/300000, values: [], cov: 11409, corpus: 28, gas/s: 3398672939
+[2026-11-18 07:02:43.02] [status] tests: 5/10, fuzzing: 205509/300000, values: [], cov: 11409, corpus: 28, gas/s: 3313348561
+[2026-11-18 07:02:46.04] [status] tests: 5/10, fuzzing: 206936/300000, values: [], cov: 11409, corpus: 28, gas/s: 3320294684
+[2026-11-18 07:02:49.06] [status] tests: 5/10, fuzzing: 208386/300000, values: [], cov: 11409, corpus: 28, gas/s: 3372625163
+[2026-11-18 07:02:52.06] [status] tests: 5/10, fuzzing: 209848/300000, values: [], cov: 11409, corpus: 28, gas/s: 3441934242
+[2026-11-18 07:02:55.06] [status] tests: 5/10, fuzzing: 211359/300000, values: [], cov: 11409, corpus: 28, gas/s: 3504169162
+[2026-11-18 07:02:58.08] [status] tests: 5/10, fuzzing: 212662/300000, values: [], cov: 11409, corpus: 28, gas/s: 3158123714
+[2026-11-18 07:03:01.10] [status] tests: 5/10, fuzzing: 214019/300000, values: [], cov: 11409, corpus: 28, gas/s: 3223965789
+[2026-11-18 07:03:04.12] [status] tests: 5/10, fuzzing: 215349/300000, values: [], cov: 11409, corpus: 28, gas/s: 3079462865
+[2026-11-18 07:03:07.14] [status] tests: 5/10, fuzzing: 216752/300000, values: [], cov: 11409, corpus: 28, gas/s: 3262890284
+[2026-11-18 07:03:10.16] [status] tests: 5/10, fuzzing: 218185/300000, values: [], cov: 11409, corpus: 28, gas/s: 3401302006
+[2026-11-18 07:03:13.18] [status] tests: 5/10, fuzzing: 219625/300000, values: [], cov: 11409, corpus: 28, gas/s: 3371850849
+[2026-11-18 07:03:16.20] [status] tests: 5/10, fuzzing: 221072/300000, values: [], cov: 11409, corpus: 28, gas/s: 3400672328
+[2026-11-18 07:03:19.22] [status] tests: 5/10, fuzzing: 222519/300000, values: [], cov: 11409, corpus: 28, gas/s: 3482992932
+[2026-11-18 07:03:22.24] [status] tests: 5/10, fuzzing: 223887/300000, values: [], cov: 11409, corpus: 28, gas/s: 3241777213
+[2026-11-18 07:03:25.26] [status] tests: 5/10, fuzzing: 225315/300000, values: [], cov: 11409, corpus: 28, gas/s: 3341147120
+[2026-11-18 07:03:28.28] [status] tests: 5/10, fuzzing: 226772/300000, values: [], cov: 11409, corpus: 28, gas/s: 3404178453
+[2026-11-18 07:03:31.30] [status] tests: 5/10, fuzzing: 228213/300000, values: [], cov: 11409, corpus: 28, gas/s: 3290729965
+[2026-11-18 07:03:34.32] [status] tests: 5/10, fuzzing: 229646/300000, values: [], cov: 11409, corpus: 28, gas/s: 3349911751
+[2026-11-18 07:03:37.34] [status] tests: 5/10, fuzzing: 231086/300000, values: [], cov: 11409, corpus: 28, gas/s: 3405968725
+[2026-11-18 07:03:40.36] [status] tests: 5/10, fuzzing: 232535/300000, values: [], cov: 11409, corpus: 28, gas/s: 3414347039
+[2026-11-18 07:03:43.38] [status] tests: 5/10, fuzzing: 233868/300000, values: [], cov: 11409, corpus: 28, gas/s: 3103377350
+[2026-11-18 07:03:46.40] [status] tests: 5/10, fuzzing: 235252/300000, values: [], cov: 11409, corpus: 28, gas/s: 3173648395
+[2026-11-18 07:03:49.42] [status] tests: 5/10, fuzzing: 236626/300000, values: [], cov: 11409, corpus: 28, gas/s: 3177100015
+[2026-11-18 07:03:52.44] [status] tests: 5/10, fuzzing: 238036/300000, values: [], cov: 11409, corpus: 28, gas/s: 3309775467
+[2026-11-18 07:03:55.46] [status] tests: 5/10, fuzzing: 239522/300000, values: [], cov: 11409, corpus: 28, gas/s: 3502154844
+[2026-11-18 07:03:58.48] [status] tests: 5/10, fuzzing: 240910/300000, values: [], cov: 11409, corpus: 28, gas/s: 3259125035
+[2026-11-18 07:04:01.50] [status] tests: 5/10, fuzzing: 242384/300000, values: [], cov: 11409, corpus: 28, gas/s: 3311005558
+[2026-11-18 07:04:04.52] [status] tests: 5/10, fuzzing: 243761/300000, values: [], cov: 11409, corpus: 28, gas/s: 3150315414
+[2026-11-18 07:04:07.54] [status] tests: 5/10, fuzzing: 245225/300000, values: [], cov: 11409, corpus: 28, gas/s: 3347973906
+[2026-11-18 07:04:10.56] [status] tests: 5/10, fuzzing: 246739/300000, values: [], cov: 11409, corpus: 28, gas/s: 3457669634
+[2026-11-18 07:04:13.57] [status] tests: 5/10, fuzzing: 248244/300000, values: [], cov: 11409, corpus: 28, gas/s: 3403486728
+[2026-11-18 07:04:16.58] [status] tests: 5/10, fuzzing: 249571/300000, values: [], cov: 11409, corpus: 28, gas/s: 3186112825
+[2026-11-18 07:04:19.60] [status] tests: 5/10, fuzzing: 250971/300000, values: [], cov: 11409, corpus: 28, gas/s: 3242300705
+[2026-11-18 07:04:22.62] [status] tests: 5/10, fuzzing: 252418/300000, values: [], cov: 11409, corpus: 28, gas/s: 3444269914
+[2026-11-18 07:04:25.64] [status] tests: 5/10, fuzzing: 253881/300000, values: [], cov: 11409, corpus: 28, gas/s: 3368169096
+[2026-11-18 07:04:28.66] [status] tests: 5/10, fuzzing: 255425/300000, values: [], cov: 11409, corpus: 28, gas/s: 3549948526
+[2026-11-18 07:04:31.68] [status] tests: 5/10, fuzzing: 256909/300000, values: [], cov: 11409, corpus: 28, gas/s: 3533771883
+[2026-11-18 07:04:34.70] [status] tests: 5/10, fuzzing: 258406/300000, values: [], cov: 11409, corpus: 28, gas/s: 3400801535
+[2026-11-18 07:04:37.72] [status] tests: 5/10, fuzzing: 259863/300000, values: [], cov: 11409, corpus: 28, gas/s: 3395290335
+[2026-11-18 07:04:40.74] [status] tests: 5/10, fuzzing: 261266/300000, values: [], cov: 11409, corpus: 28, gas/s: 3332035552
+[2026-11-18 07:04:43.76] [status] tests: 5/10, fuzzing: 262742/300000, values: [], cov: 11409, corpus: 28, gas/s: 3335152708
+[2026-11-18 07:04:46.78] [status] tests: 5/10, fuzzing: 264237/300000, values: [], cov: 11409, corpus: 28, gas/s: 3558144929
+[2026-11-18 07:04:49.80] [status] tests: 5/10, fuzzing: 265771/300000, values: [], cov: 11409, corpus: 28, gas/s: 3604084659
+[2026-11-18 07:04:52.82] [status] tests: 5/10, fuzzing: 267270/300000, values: [], cov: 11409, corpus: 28, gas/s: 3407190670
+[2026-11-18 07:04:55.84] [status] tests: 5/10, fuzzing: 268678/300000, values: [], cov: 11409, corpus: 28, gas/s: 3203098806
+[2026-11-18 07:04:58.86] [status] tests: 5/10, fuzzing: 270146/300000, values: [], cov: 11409, corpus: 28, gas/s: 3424220334
+[2026-11-18 07:05:01.88] [status] tests: 5/10, fuzzing: 271518/300000, values: [], cov: 11409, corpus: 28, gas/s: 3116940997
+[2026-11-18 07:05:04.90] [status] tests: 5/10, fuzzing: 272989/300000, values: [], cov: 11409, corpus: 28, gas/s: 3476304029
+[2026-11-18 07:05:07.92] [status] tests: 5/10, fuzzing: 274553/300000, values: [], cov: 11409, corpus: 28, gas/s: 3728203174
+[2026-11-18 07:05:10.94] [status] tests: 5/10, fuzzing: 276079/300000, values: [], cov: 11409, corpus: 28, gas/s: 3407118029
+[2026-11-18 07:05:13.96] [status] tests: 5/10, fuzzing: 277448/300000, values: [], cov: 11409, corpus: 28, gas/s: 3141540507
+[2026-11-18 07:05:16.97] [status] tests: 5/10, fuzzing: 278850/300000, values: [], cov: 11409, corpus: 28, gas/s: 3271719347
+[2026-11-18 07:05:19.99] [status] tests: 5/10, fuzzing: 280119/300000, values: [], cov: 11409, corpus: 28, gas/s: 3004996953
+[2026-11-18 07:05:23.01] [status] tests: 5/10, fuzzing: 281447/300000, values: [], cov: 11409, corpus: 28, gas/s: 2947179242
+[2026-11-18 07:05:26.03] [status] tests: 5/10, fuzzing: 282864/300000, values: [], cov: 11409, corpus: 28, gas/s: 3259472179
+[2026-11-18 07:05:29.05] [status] tests: 5/10, fuzzing: 284247/300000, values: [], cov: 11409, corpus: 28, gas/s: 3182750027
+[2026-11-18 07:05:32.07] [status] tests: 5/10, fuzzing: 285665/300000, values: [], cov: 11409, corpus: 28, gas/s: 3330492958
+[2026-11-18 07:05:35.09] [status] tests: 5/10, fuzzing: 287119/300000, values: [], cov: 11409, corpus: 28, gas/s: 3405266949
+[2026-11-18 07:05:38.11] [status] tests: 5/10, fuzzing: 288558/300000, values: [], cov: 11409, corpus: 28, gas/s: 3300925082
+[2026-11-18 07:05:41.13] [status] tests: 5/10, fuzzing: 290088/300000, values: [], cov: 11409, corpus: 28, gas/s: 3584074778
+[2026-11-18 07:05:44.15] [status] tests: 5/10, fuzzing: 291609/300000, values: [], cov: 11409, corpus: 28, gas/s: 3487605579
+[2026-11-18 07:05:47.17] [status] tests: 5/10, fuzzing: 293101/300000, values: [], cov: 11409, corpus: 28, gas/s: 3477514020
+[2026-11-18 07:05:50.19] [status] tests: 5/10, fuzzing: 294605/300000, values: [], cov: 11409, corpus: 28, gas/s: 3417818593
+[2026-11-18 07:05:53.21] [status] tests: 5/10, fuzzing: 296076/300000, values: [], cov: 11409, corpus: 28, gas/s: 3453092677
+[2026-11-18 07:05:56.23] [status] tests: 5/10, fuzzing: 297423/300000, values: [], cov: 11409, corpus: 28, gas/s: 3248230527
+[2026-11-18 07:05:59.25] [status] tests: 5/10, fuzzing: 298904/300000, values: [], cov: 11409, corpus: 28, gas/s: 3420981474
+[2026-11-18 07:06:01.48] [Worker 0] Test limit reached. Stopping.
+[2026-11-18 07:06:01.48] [status] tests: 5/10, fuzzing: 300020/300000, values: [], cov: 11409, corpus: 28, gas/s: 3682814987
+echidna_policy_immutable: passing
+echidna_canary_request_ok: failed!💥  
+  Call sequence:
+    EchidnaPolicy.requestNative(189447152930249277457631938843,1)
+    EchidnaPolicy.requestNative(16288411619639442120288409410111432,2)
+    EchidnaPolicy.request(false,0,0,false)
+
+Traces: 
+
+echidna_canary_exec_token: failed!💥  
+  Call sequence:
+    EchidnaPolicy.requestToken(4175673924747949139915012726258872043609617126751211705024107680,2)
+    *wait* Time delay: 87385 seconds Block delay: 1
+    EchidnaPolicy.request(false,1377070478060553299792764474380957880280284067827459412738828,1,false)
+    EchidnaPolicy.executePending(0)
+    EchidnaPolicy.requestToken(0,0) Time delay: 86673 seconds Block delay: 1
+    EchidnaPolicy.executePending(0)
+    *wait* Time delay: 86906 seconds Block delay: 1
+    EchidnaPolicy.executePending(0)
+
+Traces: 
+
+echidna_canary_cancel: failed!💥  
+  Call sequence:
+    EchidnaPolicy.request(false,0,0,false)
+    EchidnaPolicy.cancelWithdraw(0)
+    EchidnaPolicy.request(false,0,1,false)
+    EchidnaPolicy.cancelWithdraw(1)
+
+Traces: 
+
+echidna_canary_exec_native: failed!💥  
+  Call sequence:
+    EchidnaPolicy.requestNative(22619504216040322624788603963343092833905171928989842673118,1)
+    EchidnaPolicy.request(true,0,0,false)
+    EchidnaPolicy.request(true,106164781008756871506662764322159160060581829448158509033616541848743398,2,false)
+    *wait* Time delay: 86567 seconds Block delay: 1
+    EchidnaPolicy.execute(0)
+    EchidnaPolicy.executePending(0)
+    EchidnaPolicy.executePending(0)
+
+Traces: 
+
+echidna_timelocks_never_shortened: passing
+echidna_destination_only_changes_via_timelock: passing
+echidna_rolling_window_cap: passing
+echidna_funds_only_to_destination: passing
+echidna_canary_dest_change: failed!💥  
+  Call sequence:
+    EchidnaPolicy.propose(0,1,false)
+    EchidnaPolicy.executeDest() Time delay: 181563 seconds Block delay: 1
+    EchidnaPolicy.propose(0,0,false)
+    *wait* Time delay: 173794 seconds Block delay: 1
+    EchidnaPolicy.executeDest()
+
+Traces: 
+
+
+
+Unique instructions: 11409
+Unique codehashes: 7
+Corpus size: 28
+Seed: 20261021
+Total calls: 300020
+
+[2026-11-18 07:06:01.48] Saving test reproducers... Done! (0.005642704s)
+[2026-11-18 07:06:01.49] Saving corpus... Done! (0.055551887s)
+[2026-11-18 07:06:01.54] Saving coverage... Done! (0.219528992s)

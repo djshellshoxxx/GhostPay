@@ -1,4 +1,5 @@
 import type { Address } from '@ghostpay/chain-adapters';
+import { padBody } from '@ghostpay/metadata-hardening';
 import { getAddress, isAddress } from 'viem/utils';
 import { UserFacingError } from './errors';
 
@@ -112,7 +113,48 @@ async function readBoundedResponse(res: Response): Promise<string> {
   }
 }
 
-async function post(base: string, path: string, body: unknown, fetchFn: FetchFn): Promise<unknown> {
+/** Per-call options. */
+export interface RelayerCallOptions {
+  /**
+   * MH-REL-3 (TM11): pad the JSON body with a random hex `pad` member to a fixed size bucket (1, 2 or 4 KiB) so the
+   * body length says less about the request. Default true. Hides nothing else: IP, timing and the content itself still
+   * reach the relayer.
+   */
+  readonly pad?: boolean;
+}
+
+const toWire = (body: unknown): string => JSON.stringify(body, (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v));
+
+/** Padded wire body, or the plain one when padding is off or the body exceeds the largest bucket. */
+function encodeBody(body: unknown, pad: boolean): string {
+  const plain = toWire(body);
+  if (!pad) return plain;
+  try {
+    return padBody(JSON.parse(plain) as Record<string, unknown>);
+  } catch {
+    return plain;
+  }
+}
+
+/**
+ * Transition (apps/relayer/PRIVACY.md): a relayer older than MH-REL-3 refuses the unknown `pad` member with
+ * `400 invalid_request` while parsing, before anything else happens. Only then is the same request sent once unpadded.
+ */
+function isOldRelayerPadRefusal(e: unknown): boolean {
+  return e instanceof RelayerRefusedError && e.status === 400 && e.code === 'invalid_request';
+}
+
+async function postPadded(base: string, path: string, body: unknown, fetchFn: FetchFn, opts: RelayerCallOptions): Promise<unknown> {
+  if (opts.pad === false) return post(base, path, encodeBody(body, false), fetchFn);
+  try {
+    return await post(base, path, encodeBody(body, true), fetchFn);
+  } catch (e) {
+    if (!isOldRelayerPadRefusal(e)) throw e;
+    return post(base, path, encodeBody(body, false), fetchFn);
+  }
+}
+
+async function post(base: string, path: string, wireBody: string, fetchFn: FetchFn): Promise<unknown> {
   const ctl = new AbortController();
   const timer = setTimeout(() => {
     ctl.abort();
@@ -121,7 +163,7 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
     const res = await fetchFn(`${base}${path}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
-      body: JSON.stringify(body, (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v)),
+      body: wireBody,
       credentials: 'omit',
       redirect: 'error',
       referrerPolicy: 'no-referrer',
@@ -153,8 +195,8 @@ function obj(v: unknown): Record<string, unknown> {
 }
 
 /** POST /v1/quote. The caller must still check the fee against the published cap before signing. */
-export async function requestQuote(base: string, q: QuoteRequest, fetchFn: FetchFn = (u, i) => fetch(u, i)): Promise<RelayerQuote> {
-  const o = obj(await post(base, '/v1/quote', { chainId: q.chainId, token: q.token, owner: q.owner, destination: q.destination, amount: q.amount.toString() }, fetchFn));
+export async function requestQuote(base: string, q: QuoteRequest, fetchFn: FetchFn = (u, i) => fetch(u, i), opts: RelayerCallOptions = {}): Promise<RelayerQuote> {
+  const o = obj(await postPadded(base, '/v1/quote', { chainId: q.chainId, token: q.token, owner: q.owner, destination: q.destination, amount: q.amount.toString() }, fetchFn, opts));
   const fee = o['fee'];
   const feeTo = o['feeTo'];
   const expiresAt = o['expiresAt'];
@@ -188,8 +230,8 @@ export interface SweepSubmission {
 }
 
 /** POST /v1/sweep. Returns the transaction hash the relayer reports (verify it on your own RPC). */
-export async function submitSweep(base: string, s: SweepSubmission, fetchFn: FetchFn = (u, i) => fetch(u, i)): Promise<string> {
-  const o = obj(await post(base, '/v1/sweep', s, fetchFn));
+export async function submitSweep(base: string, s: SweepSubmission, fetchFn: FetchFn = (u, i) => fetch(u, i), opts: RelayerCallOptions = {}): Promise<string> {
+  const o = obj(await postPadded(base, '/v1/sweep', s, fetchFn, opts));
   const h = o['txHash'];
   if (typeof h !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(h)) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidTransactionHash' });
   return h.toLowerCase();

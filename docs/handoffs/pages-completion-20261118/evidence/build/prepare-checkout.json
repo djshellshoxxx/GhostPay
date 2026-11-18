@@ -1,0 +1,62 @@
+[
+  {
+    "command": [
+      "git",
+      "clone",
+      "--shared",
+      "--no-checkout",
+      "/workspace/scratch/4fa14be12559/GhostPay",
+      "/workspace/scratch/4fa14be12559/analysis-build/source"
+    ],
+    "exit": 0,
+    "seconds": 0.012
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "/workspace/scratch/4fa14be12559/analysis-build/source",
+      "fetch",
+      "--no-tags",
+      "https://github.com/djshellshoxxx/GhostPay.git",
+      "refs/heads/integration/ghostpay-pages-completion-20261118"
+    ],
+    "exit": 0,
+    "seconds": 11.998
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "/workspace/scratch/4fa14be12559/analysis-build/source",
+      "checkout",
+      "--detach",
+      "9bad95e5cc0ee73f5adb8d2c587161074b21e080"
+    ],
+    "exit": 0,
+    "seconds": 0.183
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "/workspace/scratch/4fa14be12559/analysis-build/source",
+      "rev-parse",
+      "HEAD",
+      "HEAD^{tree}"
+    ],
+    "exit": 0,
+    "seconds": 0.002
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "/workspace/scratch/4fa14be12559/analysis-build/source",
+      "status",
+      "--short"
+    ],
+    "exit": 0,
+    "seconds": 0.098
+  }
+]

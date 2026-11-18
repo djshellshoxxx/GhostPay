@@ -1,5 +1,7 @@
 # Completion gates
 
+> **Historical source record.** The [Pages completion report — 2026-11-18](../handoffs/pages-completion-20261118/COMPLETION_REPORT.md) records the current consolidation, actual source-pinned execution and outstanding gates. Branch states, percentages and green results below remain tied to their original dates and commits; they do not qualify the later combined candidate.
+
 ## Current product snapshot — 2026-11-09
 
 The current review stack is **#84 → #88 → #89 → #90**. `main` remains

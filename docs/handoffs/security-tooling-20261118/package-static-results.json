@@ -1,0 +1,12 @@
+[
+  {
+    "command": "npm run typecheck --workspace @ghostpay/chain-adapters --workspace @ghostpay/core-crypto --workspace @ghostpay/i18n",
+    "exit_code": 0,
+    "seconds": 8.89
+  },
+  {
+    "command": "npm run lint --workspace @ghostpay/chain-adapters --workspace @ghostpay/core-crypto --workspace @ghostpay/i18n",
+    "exit_code": 0,
+    "seconds": 13.5
+  }
+]

@@ -1,5 +1,7 @@
 # GhostPay product completion ledger
 
+> **Historical source record.** The [Pages completion report — 2026-11-18](pages-completion-20261118/COMPLETION_REPORT.md) records the current consolidation, actual source-pinned execution and outstanding gates. Branch states, percentages and green results below remain tied to their original dates and commits; they do not qualify the later combined candidate.
+
 Date: 2026-11-09 (America/Vancouver). Coordinator: this product-completion workstream.
 
 This ledger covers the product brief supplied for this assignment. It distinguishes implemented code,

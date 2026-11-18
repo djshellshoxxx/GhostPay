@@ -10,6 +10,7 @@ import {
   monotonicNow,
   resolveClientIp,
 } from '@ghostpay/relayer-guard';
+import { stripPad } from '@ghostpay/metadata-hardening';
 import { nullAlerts, type AlertSink } from './alerts.js';
 import type { RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
@@ -109,6 +110,27 @@ function parseJson(buf: Buffer): unknown {
     return JSON.parse(text) as unknown;
   } catch {
     throw invalid('json');
+  }
+}
+
+/**
+ * MH-REL-3: removes the optional `pad` member (bounded lowercase hex, discarded unread) before strict validation.
+ * Transition: unpadded bodies stay accepted unless `privacy.bodyPadding` is `required`. A non-object body passes
+ * through unchanged so the strict parser reports it as before.
+ *
+ * @throws {RelayerError} 400 `invalid_pad` for a malformed pad, or a missing one when padding is required.
+ */
+export function unpadBody(body: unknown, required: boolean): unknown {
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) return body;
+  const rec = body as Record<string, unknown>;
+  if (!Object.hasOwn(rec, 'pad')) {
+    if (required) throw invalid('pad');
+    return body;
+  }
+  try {
+    return stripPad(rec);
+  } catch {
+    throw invalid('pad');
   }
 }
 
@@ -306,7 +328,7 @@ export class RelayerHttpServer {
         }
         const ct = req.headers['content-type'];
         if (ct === undefined || !JSON_TYPE.test(ct)) throw new RelayerError(415, 'unsupported_media_type');
-        const body = parseJson(await readBody(req, MAX_BODY_BYTES));
+        const body = unpadBody(parseJson(await readBody(req, MAX_BODY_BYTES)), this.d.config.privacy?.bodyPadding === 'required');
         if (path === '/v1/quote') {
           const quote = parseQuoteRequest(body);
           c.chainId = quote.chainId;

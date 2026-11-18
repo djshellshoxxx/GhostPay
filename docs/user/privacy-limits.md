@@ -62,7 +62,7 @@ Do these in roughly this order; each helps with one named risk and none gives an
 2. **Do not fund a one-time address with gas from a wallet you use elsewhere.** Use the relayer path or the payer's buffer, knowing the relayer sees the sweep.
 3. **Use your own RPC node** if you can run one (the app accepts `https://` or `wss://` addresses only, so a local node needs TLS in front). Otherwise use a provider you trust, and a different one for sweeping than for scanning if you can.
 4. **Do not put an API key in an RPC address** you are not willing to leave unencrypted in your browser.
-5. **Use Tor Browser or a trusted VPN** if you want to hide your internet address from the RPC provider and the website host. The page cannot make you use it, and it does not hide what you send. The optional onion service in `deploy/TOR.md` covers only the app files, not your RPC calls, and has not been tested.
+5. **Use Tor Browser or a trusted VPN** if you want to hide your internet address from the RPC provider and the website host. The page cannot make you use it or check that you did, and it does not hide what you send. The setup that actually helps is **Tor Browser plus your own node or an `https://` RPC you trust**: through Tor Browser the RPC sees a Tor exit instead of your address, but it still sees every query. The optional onion service in [`deploy/TOR.md`](../../deploy/TOR.md) covers **only the app files** (and the relayer behind the same host), not your RPC calls or your wallet's traffic. It is **untested** until a smoke test on the real Tor network has been run and recorded there. GhostPay's Tor, I2P, Nym and OHTTP options are all marked unverified.
 6. **Self-host** the app if you do not want the host to see you open it.
 7. **Treat invoice links and receipts as secrets.** Paste links into the Pay page or use a private window; do not post them publicly. A passphrase-protected invoice is much safer than the default; the "encrypt" checkbox keeps the key inside the same link and only deters casual viewers.
 8. **Use a private window** or clear site data on a shared computer.
@@ -75,9 +75,10 @@ Scan privacy in the web app is **opt-in and off by default**: fixed, grid-aligne
 jitter, an optional announcement indexer (block hashes are still checked against your RPC), and a "local proxy" or
 "Tor Browser" mode. A web page cannot open SOCKS or prove it runs in Tor Browser: "Tor Browser" means you say you
 opened the page there, and "local proxy" means a JSON-RPC forwarder you run on loopback. These reduce what one
-provider learns per query; they do not make you anonymous. Decoy-batched reads, per-invoice keys, request padding and
-amount rounding exist as libraries but are **not switched on in the web app or the relayer**, so do not assume they
-protect you. See the [threat model](../threat-model/PRIVACY_THREAT_MODEL.md#8-mitigations-available-today-honestly-rated)
+provider learns per query; they do not make you anonymous. Requests to a relayer are padded to a fixed size (1, 2 or
+4 KiB), which only hides the exact body length: the relayer still reads every field, your address and the timing.
+Decoy-batched reads, per-invoice keys and amount rounding exist as libraries but are **not switched on in the web app
+or the relayer**, so do not assume they protect you. See the [threat model](../threat-model/PRIVACY_THREAT_MODEL.md#8-mitigations-available-today-honestly-rated)
 and [seller privacy](seller-privacy.md).
 
 ## Specific limits to remember

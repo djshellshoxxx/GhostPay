@@ -29,7 +29,7 @@ async function importKeys(user: User) {
 async function scan(user: User) {
   await user.type(screen.getByLabelText(/First block/), '0');
   await user.click(screen.getByRole('button', { name: 'Scan' }));
-  await screen.findByText(/1 funded payment/);
+  await screen.findByText(/1 payment\(s\) found/);
 }
 
 async function review(user: User) {
@@ -110,11 +110,17 @@ describe('TronView', () => {
     const { chain, user } = await setup();
     await importKeys(user);
     await scan(user);
-    expect(screen.getByText('5 TRX')).toBeTruthy();
+    // The scan reads no balance or memo: none is shown until a sweep is reviewed.
+    expect(chain.calls).not.toContain('/wallet/getaccount');
+    expect(chain.calls).not.toContain('/wallet/gettransactionbyid');
+    expect(screen.queryByText('5 TRX')).toBeNull();
+    expect(screen.getByText(/What the node can see/)).toBeTruthy();
     expect(screen.getByText(/single-provider check, not independent verification/i)).toBeTruthy();
     expect(screen.getByRole('radio', { name: new RegExp(`Sweep ${chain.payment.stealthAddress}`) })).toBeTruthy();
 
     await review(user);
+    expect(chain.calls.filter((path) => path === '/wallet/getaccount').length).toBeGreaterThan(0);
+    expect(screen.getByText('5 TRX')).toBeTruthy();
     expect(screen.getAllByText(DEST).length).toBeGreaterThan(0);
     const sign = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign with software key' });
     expect(sign.disabled).toBe(true);
@@ -214,7 +220,7 @@ describe('TronView', () => {
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
     release();
     await new Promise((r) => setTimeout(r, 50));
-    expect(screen.queryByText(/funded payment/)).toBeNull();
+    expect(screen.queryByText(/payment\(s\) found/)).toBeNull();
     expect(screen.queryByText(/Scanned blocks/)).toBeNull();
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();

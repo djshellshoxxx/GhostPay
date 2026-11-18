@@ -1,0 +1,80 @@
+{
+  "scope": "Existing-output review and read-only CI observation; no source/workflow/ref mutation",
+  "files": [
+    {
+      "path": "analysis-ci/HOSTED_MYTHRIL_REVIEW_20261118.md",
+      "bytes": 17341,
+      "sha256": "034379a2fc4950a3aa8830540eb62d4ea4e1c27768399a5434a556aadd7b708e"
+    },
+    {
+      "path": "analysis-ci/HOSTED_MYTHRIL_REVIEW_20261118.json",
+      "bytes": 31075,
+      "sha256": "db3af78d3a39870c4ac4ffac2e398853b4cc0c4b16d8d64b886c3e1378709ff1"
+    },
+    {
+      "path": "analysis-ci/inspect-retained-mythril.py",
+      "bytes": 9908,
+      "sha256": "63bc0baf34704b0deb370d4e584ecfa829e545283dac0934e5fe39c8e3cbac2c"
+    },
+    {
+      "path": "analysis-ci/READINESS_SNAPSHOT_20261118_153234.md",
+      "bytes": 8050,
+      "sha256": "43fdc5e395c7c4300d04e3dbc9ec084003ac96bb04baa3f8f96114ea5e299c5d"
+    },
+    {
+      "path": "analysis-ci/READINESS_SNAPSHOT_20261118_153234.json",
+      "bytes": 45087,
+      "sha256": "bd23e9cb10e3a451d9a1e38d9a4a75dfae6c3f184ab919f06e654512e04ed0d8"
+    },
+    {
+      "path": "analysis-ci/main-mythril-dfc75ef2-134778851902-job.log",
+      "bytes": 34046,
+      "sha256": "d208a760b34939ecb0d69314937c409dd1d43b22d02915902824a2d9bcf99525"
+    },
+    {
+      "path": "analysis-ci/pr238-cli-ubuntu-134882135309.log",
+      "bytes": 63084,
+      "sha256": "fa5302ee0dd81740c36be4a82541859ec8c8144a922611d5fdf1dbba4675eb21"
+    },
+    {
+      "path": "analysis-ci/pr238-cli-windows-134882135056.log",
+      "bytes": 63455,
+      "sha256": "6db1d129354aefd1ce28da88a8c249c55e1248d3053c1a0bf7e9d4a21bcf992e"
+    },
+    {
+      "path": "analysis-ci/main-mythril-dfc75ef2-14437897350.zip",
+      "bytes": 17233,
+      "sha256": "e998907946a170b95509e51f94013daf34377b6b02195c21c763605f2f4a3130"
+    },
+    {
+      "path": "analysis-ci/main-mythril-dfc75ef2-14437897350/metadata.json",
+      "bytes": 532,
+      "sha256": "71b5294a4c113b56f1d24151d108c19ee21849af76c2fc6fd3d696be22542089"
+    },
+    {
+      "path": "analysis-ci/main-mythril-dfc75ef2-14437897350/report.log",
+      "bytes": 283205,
+      "sha256": "40e9faf6e54b4e5f1e683cb07d6522eea55f5bff50fcf46eeb5395d615c932f7"
+    },
+    {
+      "path": "analysis-ci/main-mythril-dfc75ef2-14437897350/parsed-reports.json",
+      "bytes": 291196,
+      "sha256": "20aa019ffe9380dd793133dce900094e3620af3314139036cb7f4dcbf2736b41"
+    },
+    {
+      "path": "analysis-branches/INDEPENDENT_MYTHRIL_TRACE_COUNTEREVIDENCE_20261118.json",
+      "bytes": 7738,
+      "sha256": "f60b9c31a80393c1a57bfa3ec19dc6bcd7a6d99a0ee9ec20c88f4cb00a479717"
+    },
+    {
+      "path": "analysis-branches/HOSTED_MYTHRIL_DISPOSITION_COMPARISON_20261118.md",
+      "bytes": 4281,
+      "sha256": "7d2139ae57ae3dfcf13aa846d22fc4e5d288bd635025a61d451a480d46d25e6a"
+    },
+    {
+      "path": "analysis-branches/HOSTED_MYTHRIL_DISPOSITION_COMPARISON_20261118.json",
+      "bytes": 8895,
+      "sha256": "3e07de9fcd82036306188986e9cca8d787705db32e041cbf7fd73c49920765b4"
+    }
+  ]
+}

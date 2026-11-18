@@ -1,0 +1,12 @@
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/recovery/apps/web
+
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Start at  06:04:33
+   Duration  7.17s (tests 70%, import 13%, environment 10%, transform 6%)
+
+    Isolate  2 workers spawned · ~484ms startup each (spawn + environment, per file)
+             at least ~484ms faster with isolate: false — reuses workers across files instead of one per file
+

@@ -1,0 +1,18 @@
+{
+  "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+  "command": "npm test",
+  "node": "22.23.5",
+  "npm": "11.21.2",
+  "env": {
+    "NODE_OPTIONS": "--max-old-space-size=1536",
+    "VITEST_MAX_WORKERS": "1",
+    "RAYON_NUM_THREADS": "1",
+    "ANVIL_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/anvil",
+    "CAST_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/cast",
+    "SOLC_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/solc",
+    "FOUNDRY_SOLC": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/solc"
+  },
+  "exitCode": 0,
+  "seconds": 2204.93,
+  "log": "package-tests.log"
+}

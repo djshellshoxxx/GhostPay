@@ -196,6 +196,27 @@ export function paymentTx(i: number, recipient: BtcWallet, senderSeedHex: string
   });
 }
 
+/** A transaction (not a silent payment) spending the given outpoints with a Taproot key-path witness. */
+export function spendTx(i: number, outpoints: readonly { readonly txid: string; readonly vout: number }[]): EsploraTxJson {
+  return withTxid({
+    version: 2,
+    locktime: 0,
+    vin: outpoints.map((o) => ({ txid: o.txid, vout: o.vout, sequence: 0xfffffffd, prevout: { scriptpubkey: `5120${hex(64, '8')}` }, scriptsig: '', witness: [hex(128, '4')], is_coinbase: false })),
+    vout: [{ scriptpubkey: `0014${hex(40, `${(i % 9) + 1}`)}`, value: 1_000 }],
+  });
+}
+
+/**
+ * Re-mines the chain's last block as a coinbase plus `txs` (e.g. a spend of an earlier payment). Only the tip may be
+ * replaced: no block above it links to the old hash.
+ */
+export function replaceTip(chain: { readonly blocks: MockBlock[] }, txs: readonly EsploraTxJson[]): void {
+  const height = chain.blocks.length - 1;
+  const body = withWitnessCommitment([coinbase(height), ...txs]);
+  const header = mineHeader(chain.blocks[height - 1]!.hash, body, 0x207fffff, blockTime(height));
+  chain.blocks[height] = { hash: parseHeader(header).hash, header, txs: body };
+}
+
 export interface MockChain {
   readonly blocks: MockBlock[];
   readonly spent: Set<string>;

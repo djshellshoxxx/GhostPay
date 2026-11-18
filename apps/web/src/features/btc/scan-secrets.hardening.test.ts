@@ -1,7 +1,7 @@
 import { parseHeader } from '@ghostpay/btc-silent-payments';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EsploraClient } from './esplora';
-import { coinbase, mineHeader, mockChain, walletA, withTxid, withWitnessCommitment } from './fixtures.testutil';
+import { coinbase, mineHeader, mockChain, replaceTip, spendTx, walletA, withTxid, withWitnessCommitment } from './fixtures.testutil';
 import { scanForPayments } from './scan';
 
 const observed = vi.hoisted(() => ({ tweaks: [] as Uint8Array[] }));
@@ -31,7 +31,7 @@ describe('Bitcoin scan spend-tweak cleanup', () => {
     const w = walletA();
     const chain = mockChain('regtest', w, { payments: 2 });
     const spentTx = chain.blocks[3]!.txs[2]!.txid;
-    chain.spent.add(`${spentTx}:1`);
+    replaceTip(chain, [spendTx(1, [{ txid: spentTx, vout: 1 }])]); // spent in block 4, read by the scan
     const res = await scanForPayments({ client: new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), wallet: w, fromHeight: 0 });
     expect(res.spentCount).toBe(1);
     expect(res.found).toHaveLength(1);
@@ -45,7 +45,8 @@ describe('Bitcoin scan spend-tweak cleanup', () => {
     const w = walletA();
     const chain = mockChain('regtest', w);
     chain.failPath = `/tx/${chain.blocks[3]!.txs[2]!.txid}/outspend/1`;
-    await expect(scanForPayments({ client: new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), wallet: w, fromHeight: 0 }))
+    // Stopping below the tip leaves the spend state to the server, whose failure must not leak the tweak.
+    await expect(scanForPayments({ client: new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), wallet: w, fromHeight: 0, toHeight: 3 }))
       .rejects.toMatchObject({ code: 'TRANSPORT_FAILURE' });
     expect(observed.tweaks).toHaveLength(1);
     expect(observed.tweaks.every(wiped)).toBe(true);

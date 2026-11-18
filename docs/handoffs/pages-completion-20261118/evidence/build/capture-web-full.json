@@ -1,0 +1,23 @@
+{
+  "name": "capture-web-full",
+  "cwd": "/workspace/scratch/4fa14be12559/analysis-build/source",
+  "command": [
+    "python",
+    "/workspace/scratch/4fa14be12559/analysis-build/capture-web-artifact.py",
+    "/workspace/scratch/4fa14be12559/analysis-build/source/apps/web/dist",
+    "/workspace/scratch/4fa14be12559/analysis-build/artifacts/web-full",
+    "full",
+    "9bad95e5cc0ee73f5adb8d2c587161074b21e080"
+  ],
+  "started": "2026-11-18T15:11:51.573018+00:00",
+  "node_bin": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin",
+  "npm_bin": "/workspace/scratch/4fa14be12559/toolchain-probe/npm-bin",
+  "heap_mib": 384,
+  "pages_node_cap": false,
+  "overrides": {},
+  "removed_ambient_build_variable_names": [],
+  "exit_code": 0,
+  "seconds": 0.037,
+  "finished": "2026-11-18T15:11:51.610409+00:00",
+  "log": "/workspace/scratch/4fa14be12559/analysis-build/logs/capture-web-full.log"
+}

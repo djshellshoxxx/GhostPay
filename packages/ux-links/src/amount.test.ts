@@ -87,7 +87,7 @@ describe('text', () => {
       ' a',
       'a ',
       'a\nb',
-      'a‮b',
+      'a\u202eb',
       'a​b',
       'a\u0000b',
       '\uD800',

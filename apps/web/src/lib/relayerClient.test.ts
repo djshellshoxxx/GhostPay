@@ -25,7 +25,53 @@ describe('requestQuote', () => {
     expect(q).toEqual({ fee: 5000n, feeTo: FEE_TO, expiresAt: 1_800_000_100, quoteToken: 'abc.DEF-123_=' });
     expect(seen?.url).toBe('https://relay.test/v1/quote');
     expect(seen?.init).toMatchObject({ method: 'POST', credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer', cache: 'no-store' });
-    expect(JSON.parse(bodyText(seen?.init.body))).toEqual({ chainId: 84532, token: TOKEN, owner: OWNER, destination: DEST, amount: '1000000' });
+    const sent = bodyText(seen?.init.body);
+    // MH-REL-3: padded to a fixed bucket with a random hex `pad` the relayer discards.
+    expect([1024, 2048, 4096]).toContain(new TextEncoder().encode(sent).length);
+    const { pad, ...rest } = JSON.parse(sent) as Record<string, unknown>;
+    expect(pad).toMatch(/^[0-9a-f]+$/);
+    expect(rest).toEqual({ chainId: 84532, token: TOKEN, owner: OWNER, destination: DEST, amount: '1000000' });
+  });
+  it('sends the exact unpadded body when padding is off', async () => {
+    let sent = '';
+    await requestQuote('https://relay.test', Q, (_u, init) => {
+      sent = bodyText(init.body);
+      return Promise.resolve(json(goodQuote));
+    }, { pad: false });
+    expect(JSON.parse(sent)).toEqual({ chainId: 84532, token: TOKEN, owner: OWNER, destination: DEST, amount: '1000000' });
+  });
+  it('retries once unpadded only when an older relayer refuses the pad member while parsing', async () => {
+    const bodies: string[] = [];
+    const q = await requestQuote('https://relay.test', Q, (_u, init) => {
+      bodies.push(bodyText(init.body));
+      return Promise.resolve(bodies.length === 1 ? json({ error: { code: 'invalid_request' } }, 400) : json(goodQuote));
+    });
+    expect(q.fee).toBe(5000n);
+    expect(bodies).toHaveLength(2);
+    expect(JSON.parse(bodies[0] ?? '')).toHaveProperty('pad');
+    expect(JSON.parse(bodies[1] ?? '')).not.toHaveProperty('pad');
+  });
+  it('does not retry any other refusal', async () => {
+    let calls = 0;
+    await expect(requestQuote('https://relay.test', Q, () => {
+      calls += 1;
+      return Promise.resolve(json({ error: { code: 'invalid_pad' } }, 400));
+    })).rejects.toBeInstanceOf(RelayerRefusedError);
+    expect(calls).toBe(1);
+  });
+  it('sends an oversized body unpadded instead of failing', async () => {
+    let sent = '';
+    const big = { ...goodQuote };
+    await submitSweep('https://relay.test', {
+      chainId: 84532,
+      sweep: { token: TOKEN, owner: OWNER, destination: DEST, feeTo: FEE_TO, amount: 1n, fee: 1n, deadline: 1n, nonce: 1n },
+      sweepSig: `0x${'a'.repeat(5000)}`,
+      quoteToken: big.quoteToken,
+    }, (_u, init) => {
+      sent = bodyText(init.body);
+      return Promise.resolve(json({ txHash: `0x${'ab'.repeat(32)}` }));
+    });
+    expect(JSON.parse(sent)).not.toHaveProperty('pad');
   });
   it.each([
     ['fee', { ...goodQuote, fee: '1e3' }, /invalid fee\./],

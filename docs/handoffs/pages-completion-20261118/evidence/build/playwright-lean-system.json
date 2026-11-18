@@ -1,0 +1,31 @@
+{
+  "name": "playwright-lean-system",
+  "cwd": "/workspace/scratch/4fa14be12559/analysis-build/source",
+  "command": [
+    "npm",
+    "run",
+    "test:e2e",
+    "--workspace",
+    "@ghostpay/web",
+    "--",
+    "--max-failures=1",
+    "--workers=1",
+    "--output",
+    "/workspace/scratch/4fa14be12559/analysis-build/artifacts/playwright-lean-system-results"
+  ],
+  "started": "2026-11-18T15:16:05.876645+00:00",
+  "node_bin": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin",
+  "npm_bin": "/workspace/scratch/4fa14be12559/toolchain-probe/npm-bin",
+  "heap_mib": 1536,
+  "pages_node_cap": false,
+  "overrides": {
+    "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean",
+    "GHOSTPAY_CHROMIUM": "/usr/bin/chromium",
+    "TMPDIR": "/workspace/scratch/4fa14be12559/analysis-build/tmp"
+  },
+  "removed_ambient_build_variable_names": [],
+  "exit_code": 1,
+  "seconds": 16.887,
+  "finished": "2026-11-18T15:16:22.763897+00:00",
+  "log": "/workspace/scratch/4fa14be12559/analysis-build/logs/playwright-lean-system.log"
+}

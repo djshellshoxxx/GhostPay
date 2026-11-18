@@ -55,17 +55,31 @@ describe('ReceiptPanel', () => {
       invoiceDigest: digest,
       chainId: 84532,
       txHash: `0x${'c'.repeat(64)}`,
-      stealthAddress: `0x${'a'.repeat(40)}`,
       asset: `0x${'b'.repeat(40)}`,
       amountMinorUnits: '123456',
       signerPublicKey: seller.signerPublicKey,
     });
+    // TM9: the one-time address is omitted unless the seller opts in.
+    expect(receipt).not.toHaveProperty('stealthAddress');
     expect(screen.getAllByText(/not matched/).length).toBeGreaterThan(0);
     expect(screen.queryByRole('img', { name: 'Signed seller receipt JSON' })).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Show receipt QR' }));
     expect(screen.getByRole('img', { name: 'Signed seller receipt JSON' })).toBeTruthy();
     expect(document.querySelector('[data-qr-kind="proof"]')).toBeTruthy();
     expect(screen.getByText(/This QR contains the transaction, recipient, amount and invoice digest/)).toBeTruthy();
+  });
+
+  it('includes the one-time address only when the seller opts in (TM9)', async () => {
+    const seller = generateSession();
+    const user = userEvent.setup();
+    render(<ReceiptPanel match={verifiedMatch(`0x${'c'.repeat(64)}`)} sellerSignerPublicKey={seller.signerPublicKey} />);
+    await user.type(screen.getByLabelText('Invoice digest (entered manually)'), `0x${'d'.repeat(64)}`);
+    await user.click(screen.getByLabelText(/Include the one-time payment address/));
+    await user.click(screen.getByRole('button', { name: 'Sign receipt' }));
+    await waitFor(() => { expect(screen.getByLabelText('Signed receipt JSON')).toBeTruthy(); });
+    const receipt = JSON.parse(screen.getByLabelText<HTMLTextAreaElement>('Signed receipt JSON').value) as Record<string, unknown>;
+    expect(verifyReceipt(receipt)).toBe(true);
+    expect(receipt).toMatchObject({ stealthAddress: `0x${'a'.repeat(40)}` });
   });
 
   it('rejects an invalid manually supplied invoice digest without producing a receipt', async () => {

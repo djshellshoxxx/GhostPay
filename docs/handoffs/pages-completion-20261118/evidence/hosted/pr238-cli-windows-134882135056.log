@@ -1,0 +1,676 @@
+﻿2026-11-18T14:44:42.4026633Z Current runner version: '2.338.2'
+2026-11-18T14:44:42.4051539Z ##[group]Runner Image Provisioner
+2026-11-18T14:44:42.4052186Z Hosted Compute Agent
+2026-11-18T14:44:42.4052646Z Version: 20261103.629
+2026-11-18T14:44:42.4053168Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T14:44:42.4054073Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T14:44:42.4054653Z Worker ID: {db5e0860-51a5-4377-a446-72b76766a4a0}
+2026-11-18T14:44:42.4055159Z Region: westus3
+2026-11-18T14:44:42.4055639Z Cloud: Azure
+2026-11-18T14:44:42.4056024Z ##[endgroup]
+2026-11-18T14:44:42.4057102Z ##[group]Operating System
+2026-11-18T14:44:42.4057622Z Microsoft Windows Server 2025
+2026-11-18T14:44:42.4058067Z 10.0.26100
+2026-11-18T14:44:42.4058444Z Datacenter
+2026-11-18T14:44:42.4058821Z ##[endgroup]
+2026-11-18T14:44:42.4059197Z ##[group]Runner Image
+2026-11-18T14:44:42.4059646Z Image: windows-2025-vs2026
+2026-11-18T14:44:42.4060086Z Version: 20261103.298.1
+2026-11-18T14:44:42.4061272Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261103.298/images/windows/Windows2025-VS2026-Readme.md
+2026-11-18T14:44:42.4062514Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261103.298
+2026-11-18T14:44:42.4063279Z ##[endgroup]
+2026-11-18T14:44:42.4064125Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T14:44:42.4065614Z Contents: read
+2026-11-18T14:44:42.4066044Z Metadata: read
+2026-11-18T14:44:42.4066452Z ##[endgroup]
+2026-11-18T14:44:42.4068323Z Secret source: Actions
+2026-11-18T14:44:42.4068988Z Cache mode: write
+2026-11-18T14:44:42.4069538Z Prepare workflow directory
+2026-11-18T14:44:42.4383153Z Prepare all required actions
+2026-11-18T14:44:42.4437280Z Getting action download info
+2026-11-18T14:44:42.7178600Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T14:44:43.0162556Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-18T14:44:43.3013744Z Complete job name: CLI (windows-latest)
+2026-11-18T14:44:43.5848203Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T14:44:43.5849436Z with:
+2026-11-18T14:44:43.5849762Z   persist-credentials: false
+2026-11-18T14:44:43.5850143Z   repository: djshellshoxxx/GhostPay
+2026-11-18T14:44:43.5853320Z   token: ***
+2026-11-18T14:44:43.5853624Z   ssh-strict: true
+2026-11-18T14:44:43.5853937Z   ssh-user: git
+2026-11-18T14:44:43.5854226Z   clean: true
+2026-11-18T14:44:43.5854538Z   sparse-checkout-cone-mode: true
+2026-11-18T14:44:43.5854908Z   fetch-depth: 1
+2026-11-18T14:44:43.5855205Z   fetch-tags: false
+2026-11-18T14:44:43.5855514Z   show-progress: true
+2026-11-18T14:44:43.5855817Z   lfs: false
+2026-11-18T14:44:43.5856101Z   submodules: false
+2026-11-18T14:44:43.5856409Z   set-safe-directory: true
+2026-11-18T14:44:43.5856777Z   allow-unsafe-pr-checkout: false
+2026-11-18T14:44:43.5857336Z ##[endgroup]
+2026-11-18T14:44:43.7181285Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T14:44:43.7183006Z ##[group]Getting Git version info
+2026-11-18T14:44:43.7183488Z Working directory is 'D:\a\GhostPay\GhostPay'
+2026-11-18T14:44:43.7904091Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-18T14:44:44.2943389Z git version 2.56.0.windows.4
+2026-11-18T14:44:44.2986719Z ##[endgroup]
+2026-11-18T14:44:44.3000031Z Temporarily overriding HOME='D:\a\_temp\6956403e-f5d9-4fa9-a861-3ea559eeab17' before making global git config changes
+2026-11-18T14:44:44.3001163Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T14:44:44.3007711Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\GhostPay\GhostPay
+2026-11-18T14:44:44.4051362Z Deleting the contents of 'D:\a\GhostPay\GhostPay'
+2026-11-18T14:44:44.4054072Z ##[group]Determining repository object format
+2026-11-18T14:44:44.4057852Z ##[endgroup]
+2026-11-18T14:44:44.4061862Z ##[group]Initializing the repository
+2026-11-18T14:44:44.4066418Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\GhostPay\GhostPay
+2026-11-18T14:44:44.5808866Z Initialized empty Git repository in D:/a/GhostPay/GhostPay/.git/
+2026-11-18T14:44:44.5858769Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T14:44:44.6593994Z ##[endgroup]
+2026-11-18T14:44:44.6594802Z ##[group]Disabling automatic garbage collection
+2026-11-18T14:44:44.6595566Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-11-18T14:44:44.6910251Z ##[endgroup]
+2026-11-18T14:44:44.6911128Z ##[group]Setting up auth
+2026-11-18T14:44:44.6911697Z Removing SSH command configuration
+2026-11-18T14:44:44.6919140Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T14:44:44.7234493Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-18T14:44:46.5378120Z Removing HTTP extra header
+2026-11-18T14:44:46.5384727Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T14:44:46.5698167Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-18T14:44:47.0371042Z Removing includeIf entries pointing to credentials config files
+2026-11-18T14:44:47.0379566Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T14:44:47.0690282Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-18T14:44:47.5300567Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-11-18T14:44:47.5623811Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/GhostPay/GhostPay/.git.path D:\a\_temp\git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config
+2026-11-18T14:44:47.5922347Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/GhostPay/GhostPay/.git/worktrees/*.path D:\a\_temp\git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config
+2026-11-18T14:44:47.6293751Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config
+2026-11-18T14:44:47.6606379Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config
+2026-11-18T14:44:47.6907092Z ##[endgroup]
+2026-11-18T14:44:47.6907568Z ##[group]Fetching the repository
+2026-11-18T14:44:47.6916617Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f8cf77781311635e281d3c9e3d692ed17ee778b3:refs/remotes/pull/238/merge
+2026-11-18T14:44:50.7266126Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T14:44:50.7267452Z  * [new ref]         f8cf77781311635e281d3c9e3d692ed17ee778b3 -> pull/238/merge
+2026-11-18T14:44:50.7308728Z ##[endgroup]
+2026-11-18T14:44:50.7309122Z ##[group]Determining the checkout info
+2026-11-18T14:44:50.7310049Z ##[endgroup]
+2026-11-18T14:44:50.7319704Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-11-18T14:44:50.7804108Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-11-18T14:44:50.8123639Z ##[group]Checking out the ref
+2026-11-18T14:44:50.8132055Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force refs/remotes/pull/238/merge
+2026-11-18T14:44:51.8597624Z Note: switching to 'refs/remotes/pull/238/merge'.
+2026-11-18T14:44:51.8597989Z 
+2026-11-18T14:44:51.8598222Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T14:44:51.8598957Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T14:44:51.8599690Z state without impacting any branches by switching back to a branch.
+2026-11-18T14:44:51.8599918Z 
+2026-11-18T14:44:51.8600071Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T14:44:51.8600401Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T14:44:51.8600619Z 
+2026-11-18T14:44:51.8600808Z   git switch -c <new-branch-name>
+2026-11-18T14:44:51.8601024Z 
+2026-11-18T14:44:51.8601129Z Or undo this operation with:
+2026-11-18T14:44:51.8601327Z 
+2026-11-18T14:44:51.8601395Z   git switch -
+2026-11-18T14:44:51.8602106Z 
+2026-11-18T14:44:51.8602281Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T14:44:51.8602504Z 
+2026-11-18T14:44:51.8602852Z HEAD is now at f8cf777 Merge 9bad95e5cc0ee73f5adb8d2c587161074b21e080 into dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T14:44:51.8770611Z ##[endgroup]
+2026-11-18T14:44:51.9238003Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-11-18T14:44:51.9527916Z f8cf77781311635e281d3c9e3d692ed17ee778b3
+2026-11-18T14:44:51.9564598Z ##[group]Removing auth
+2026-11-18T14:44:51.9564852Z Removing SSH command configuration
+2026-11-18T14:44:51.9571204Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T14:44:51.9876124Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-18T14:44:52.4538140Z Removing HTTP extra header
+2026-11-18T14:44:52.4546826Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T14:44:52.4872146Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-18T14:44:52.9568088Z Removing includeIf entries pointing to credentials config files
+2026-11-18T14:44:52.9575540Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T14:44:52.9852810Z includeif.gitdir:D:/a/GhostPay/GhostPay/.git.path
+2026-11-18T14:44:52.9853954Z includeif.gitdir:D:/a/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T14:44:52.9854437Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T14:44:52.9854841Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T14:44:52.9900271Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/GhostPay/GhostPay/.git.path
+2026-11-18T14:44:53.0185945Z D:\a\_temp\git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config
+2026-11-18T14:44:53.0226550Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/GhostPay/GhostPay/.git.path D\:\\a\\_temp\\git\-credentials\-578daa22\-1db7\-4d8d\-b389\-99015a502a49\.config
+2026-11-18T14:44:53.0540571Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T14:44:53.0808546Z D:\a\_temp\git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config
+2026-11-18T14:44:53.0845149Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/GhostPay/GhostPay/.git/worktrees/*.path D\:\\a\\_temp\\git\-credentials\-578daa22\-1db7\-4d8d\-b389\-99015a502a49\.config
+2026-11-18T14:44:53.1165584Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T14:44:53.1443952Z /github/runner_temp/git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config
+2026-11-18T14:44:53.1483447Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-578daa22\-1db7\-4d8d\-b389\-99015a502a49\.config
+2026-11-18T14:44:53.1815065Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T14:44:53.2092096Z /github/runner_temp/git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config
+2026-11-18T14:44:53.2130837Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-578daa22\-1db7\-4d8d\-b389\-99015a502a49\.config
+2026-11-18T14:44:53.2445853Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-18T14:44:53.7320410Z Removing credentials config 'D:\a\_temp\git-credentials-578daa22-1db7-4d8d-b389-99015a502a49.config'
+2026-11-18T14:44:53.7331146Z ##[endgroup]
+2026-11-18T14:44:53.7762676Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-18T14:44:53.7763029Z with:
+2026-11-18T14:44:53.7763179Z   node-version: 22
+2026-11-18T14:44:53.7763336Z   cache: npm
+2026-11-18T14:44:53.7763479Z   check-latest: false
+2026-11-18T14:44:53.7765551Z   token: ***
+2026-11-18T14:44:53.7765715Z   package-manager-cache: true
+2026-11-18T14:44:53.7765901Z ##[endgroup]
+2026-11-18T14:44:53.9177006Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.4\x64
+2026-11-18T14:44:54.8743906Z ##[group]Environment details
+2026-11-18T14:44:59.9879476Z node: v22.23.4
+2026-11-18T14:44:59.9879684Z npm: 10.9.9
+2026-11-18T14:44:59.9879821Z yarn: 1.22.22
+2026-11-18T14:44:59.9880230Z ##[endgroup]
+2026-11-18T14:45:00.0279253Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\22.23.4\x64\npm.cmd config get cache"
+2026-11-18T14:45:00.7536764Z C:\npm\cache
+2026-11-18T14:45:01.1761438Z npm cache is not found
+2026-11-18T14:45:01.2065110Z ##[group]Run npm ci --ignore-scripts --no-audit --no-fund
+2026-11-18T14:45:01.2065585Z [36;1mnpm ci --ignore-scripts --no-audit --no-fund[0m
+2026-11-18T14:45:01.2745164Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-18T14:45:01.2745466Z ##[endgroup]
+2026-11-18T14:45:08.3638906Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-18T14:45:27.4763292Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-18T14:45:40.5150151Z 
+2026-11-18T14:45:40.5150737Z added 719 packages in 39s
+2026-11-18T14:45:42.9064269Z ##[group]Run npm run test:cli-build
+2026-11-18T14:45:42.9064603Z [36;1mnpm run test:cli-build[0m
+2026-11-18T14:45:42.9121302Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-18T14:45:42.9121580Z ##[endgroup]
+2026-11-18T14:45:43.5441919Z 
+2026-11-18T14:45:43.5442804Z > ghostpay@0.1.0 test:cli-build
+2026-11-18T14:45:43.5443527Z > node --test scripts/tests/build-cli.test.mjs
+2026-11-18T14:45:43.5443808Z 
+2026-11-18T14:45:43.6180336Z TAP version 13
+2026-11-18T14:45:44.1943412Z # Subtest: targeted workspace build includes dependencies and omits unrelated applications
+2026-11-18T14:45:44.1953537Z ok 1 - targeted workspace build includes dependencies and omits unrelated applications
+2026-11-18T14:45:44.1954219Z   ---
+2026-11-18T14:45:44.1954561Z   duration_ms: 533.6949
+2026-11-18T14:45:44.1955016Z   type: 'test'
+2026-11-18T14:45:44.1958838Z   ...
+2026-11-18T14:45:44.2043501Z 1..1
+2026-11-18T14:45:44.2045320Z # tests 1
+2026-11-18T14:45:44.2046141Z # suites 0
+2026-11-18T14:45:44.2046501Z # pass 1
+2026-11-18T14:45:44.2048103Z # fail 0
+2026-11-18T14:45:44.2049411Z # cancelled 0
+2026-11-18T14:45:44.2049952Z # skipped 0
+2026-11-18T14:45:44.2050847Z # todo 0
+2026-11-18T14:45:44.2051642Z # duration_ms 600.4192
+2026-11-18T14:45:44.2781506Z ##[group]Run npm run build:cli
+2026-11-18T14:45:44.2781772Z [36;1mnpm run build:cli[0m
+2026-11-18T14:45:44.2835643Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-18T14:45:44.2835917Z ##[endgroup]
+2026-11-18T14:45:44.8378589Z 
+2026-11-18T14:45:44.8379253Z > ghostpay@0.1.0 build:cli
+2026-11-18T14:45:44.8379637Z > node scripts/build-workspaces.mjs --workspace @ghostpay/cli
+2026-11-18T14:45:44.8379851Z 
+2026-11-18T14:45:45.0808054Z 
+2026-11-18T14:45:45.0808576Z > @ghostpay/btc-silent-payments@0.1.0 build
+2026-11-18T14:45:45.0808916Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:45.0809051Z 
+2026-11-18T14:45:47.0972894Z 
+2026-11-18T14:45:47.0973565Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T14:45:47.0974004Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:47.0974222Z 
+2026-11-18T14:45:48.5554971Z 
+2026-11-18T14:45:48.5555642Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T14:45:48.5555979Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:48.5556367Z 
+2026-11-18T14:45:49.7417306Z 
+2026-11-18T14:45:49.7418130Z > @ghostpay/chain-adapters@0.1.0 build
+2026-11-18T14:45:49.7419124Z > npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T14:45:49.7419695Z 
+2026-11-18T14:45:50.1010961Z 
+2026-11-18T14:45:50.1011488Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T14:45:50.1011980Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:50.1012168Z 
+2026-11-18T14:45:51.4078349Z 
+2026-11-18T14:45:51.4078901Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T14:45:51.4079259Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:51.4079390Z 
+2026-11-18T14:45:55.0134890Z 
+2026-11-18T14:45:55.0135507Z > @ghostpay/chain-solana@0.1.0 build
+2026-11-18T14:45:55.0135944Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:55.0136173Z 
+2026-11-18T14:45:56.0547222Z 
+2026-11-18T14:45:56.0547782Z > @ghostpay/chain-tron@0.1.0 build
+2026-11-18T14:45:56.0548110Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:56.0548272Z 
+2026-11-18T14:45:57.0298812Z 
+2026-11-18T14:45:57.0299436Z > @ghostpay/i18n@0.1.0 build
+2026-11-18T14:45:57.0299872Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:57.0300073Z 
+2026-11-18T14:45:58.2092252Z 
+2026-11-18T14:45:58.2093015Z > @ghostpay/merchant-hooks@0.1.0 build
+2026-11-18T14:45:58.2093728Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T14:45:58.2094052Z 
+2026-11-18T14:45:58.5683557Z 
+2026-11-18T14:45:58.5684099Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T14:45:58.5684447Z > tsc -p tsconfig.build.json
+2026-11-18T14:45:58.5684592Z 
+2026-11-18T14:46:00.6029046Z 
+2026-11-18T14:46:00.6029644Z > @ghostpay/merchant-billing@0.1.0 build
+2026-11-18T14:46:00.6029983Z > tsc -p tsconfig.build.json
+2026-11-18T14:46:00.6030142Z 
+2026-11-18T14:46:01.7716474Z 
+2026-11-18T14:46:01.7717257Z > @ghostpay/merchant-ledger@0.1.0 build
+2026-11-18T14:46:01.7718342Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T14:46:01.7718788Z 
+2026-11-18T14:46:02.1344199Z 
+2026-11-18T14:46:02.1344843Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T14:46:02.1345275Z > tsc -p tsconfig.build.json
+2026-11-18T14:46:02.1345417Z 
+2026-11-18T14:46:04.0236121Z 
+2026-11-18T14:46:04.0236742Z > @ghostpay/merchant-multisig@0.1.0 build
+2026-11-18T14:46:04.0237083Z > tsc -p tsconfig.build.json
+2026-11-18T14:46:04.0237224Z 
+2026-11-18T14:46:05.1435981Z 
+2026-11-18T14:46:05.1436741Z > @ghostpay/qr-exchange@0.1.0 build
+2026-11-18T14:46:05.1437236Z > tsc -p tsconfig.build.json
+2026-11-18T14:46:05.1437567Z 
+2026-11-18T14:46:06.2958702Z 
+2026-11-18T14:46:06.2959319Z > @ghostpay/sandbox@0.1.0 build
+2026-11-18T14:46:06.2959847Z > tsc -p tsconfig.build.json
+2026-11-18T14:46:06.2960031Z 
+2026-11-18T14:46:07.2932328Z 
+2026-11-18T14:46:07.2933011Z > @ghostpay/ux-vault@0.1.0 build
+2026-11-18T14:46:07.2933461Z > tsc -p tsconfig.build.json
+2026-11-18T14:46:07.2933674Z 
+2026-11-18T14:46:08.9251834Z 
+2026-11-18T14:46:08.9254949Z > @ghostpay/cli@0.1.0 build
+2026-11-18T14:46:08.9255862Z > tsc -p tsconfig.build.json && node stamp-build.mjs
+2026-11-18T14:46:08.9256189Z 
+2026-11-18T14:46:12.1229278Z ##[group]Run npm run typecheck -w @ghostpay/cli
+2026-11-18T14:46:12.1229793Z [36;1mnpm run typecheck -w @ghostpay/cli[0m
+2026-11-18T14:46:12.1301003Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-18T14:46:12.1301292Z ##[endgroup]
+2026-11-18T14:46:12.7273628Z 
+2026-11-18T14:46:12.7275211Z > @ghostpay/cli@0.1.0 typecheck
+2026-11-18T14:46:12.7275893Z > tsc -p tsconfig.json --noEmit
+2026-11-18T14:46:12.7276260Z 
+2026-11-18T14:46:17.9077763Z ##[group]Run npm test -w @ghostpay/cli -- --maxWorkers=2
+2026-11-18T14:46:17.9078170Z [36;1mnpm test -w @ghostpay/cli -- --maxWorkers=2[0m
+2026-11-18T14:46:17.9131451Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-18T14:46:17.9131731Z ##[endgroup]
+2026-11-18T14:46:18.5076154Z 
+2026-11-18T14:46:18.5076505Z > @ghostpay/cli@0.1.0 test
+2026-11-18T14:46:18.5076832Z > vitest run --coverage --maxWorkers=2
+2026-11-18T14:46:18.5076990Z 
+2026-11-18T14:46:18.9330630Z 
+2026-11-18T14:46:18.9333445Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90mD:/a/GhostPay/GhostPay/packages/cli[39m
+2026-11-18T14:46:18.9334516Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-18T14:46:18.9334686Z 
+2026-11-18T14:46:21.4250713Z  [32m✓[39m src/cli.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 281[2mms[22m[39m
+2026-11-18T14:46:22.5557229Z  [32m✓[39m src/payment-commands.test.ts [2m([22m[2m67 tests[22m[2m)[22m[32m 263[2mms[22m[39m
+2026-11-18T14:48:04.1019556Z  [32m✓[39m src/receipt-create.test.ts [2m([22m[2m48 tests[22m[2m)[22m[33m 100639[2mms[22m[39m
+2026-11-18T14:48:04.1020609Z    [32m✓[39m receipt creation from current owned canonical payment evidence [2m(48)[22m
+2026-11-18T14:48:04.1021846Z      [33m[2m✓[22m[39m creates the full-GUI manual-digest attestation without claiming an invoice binding[33m 2636[2mms[22m[39m
+2026-11-18T14:48:04.1023167Z      [33m[2m✓[22m[39m rejects missing receipt mode inputs before reading files, credentials or RPC[33m 1380[2mms[22m[39m
+2026-11-18T14:48:04.1024424Z      [33m[2m✓[22m[39m rejects both receipt mode inputs before reading files, credentials or RPC[33m 1317[2mms[22m[39m
+2026-11-18T14:48:04.1025694Z      [33m[2m✓[22m[39m rejects malformed receipt mode inputs before reading files, credentials or RPC[33m 1337[2mms[22m[39m
+2026-11-18T14:48:04.1027210Z      [33m[2m✓[22m[39m rejects uppercase receipt mode inputs before reading files, credentials or RPC[33m 1317[2mms[22m[39m
+2026-11-18T14:48:04.1028535Z      [33m[2m✓[22m[39m rejects invoice-passphrase-file receipt mode inputs before reading files, credentials or RPC[33m 1336[2mms[22m[39m
+2026-11-18T14:48:04.1029994Z      [33m[2m✓[22m[39m rejects invoice-passphrase-env receipt mode inputs before reading files, credentials or RPC[33m 1289[2mms[22m[39m
+2026-11-18T14:48:04.1031405Z      [33m[2m✓[22m[39m rejects invoice-passphrase-stdin receipt mode inputs before reading files, credentials or RPC[33m 1323[2mms[22m[39m
+2026-11-18T14:48:04.1033426Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for unapproved evidence[33m 1302[2mms[22m[39m
+2026-11-18T14:48:04.1034509Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for offline evidence[33m 1326[2mms[22m[39m
+2026-11-18T14:48:04.1035603Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for wrong-owner evidence[33m 2601[2mms[22m[39m
+2026-11-18T14:48:04.1036745Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for missing-expected evidence[33m 1267[2mms[22m[39m
+2026-11-18T14:48:04.1037888Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for pending evidence[33m 2620[2mms[22m[39m
+2026-11-18T14:48:04.1039288Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for reorganized evidence[33m 2670[2mms[22m[39m
+2026-11-18T14:48:04.1040504Z      [33m[2m✓[22m[39m labels the human manual digest as unmatched and preserves immutable publication[33m 3913[2mms[22m[39m
+2026-11-18T14:48:04.1041808Z      [33m[2m✓[22m[39m creates the exact GUI signed format after live verification and ownership binding[33m 2675[2mms[22m[39m
+2026-11-18T14:48:04.1043016Z      [33m[2m✓[22m[39m requires explicit --approve before publishing a signature[33m 1330[2mms[22m[39m
+2026-11-18T14:48:04.1044092Z      [33m[2m✓[22m[39m requires explicit --online before publishing a signature[33m 1284[2mms[22m[39m
+2026-11-18T14:48:04.1047238Z      [33m[2m✓[22m[39m requires explicit --out before publishing a signature[33m 1298[2mms[22m[39m
+2026-11-18T14:48:04.1048642Z      [33m[2m✓[22m[39m supports a passphrase-protected signed invoice with a separate keystore credential[33m 7976[2mms[22m[39m
+2026-11-18T14:48:04.1050068Z      [33m[2m✓[22m[39m signs an owned ERC20 transfer with a mismatching scan hint and matching secondary provider[33m 2638[2mms[22m[39m
+2026-11-18T14:48:04.1051273Z      [33m[2m✓[22m[39m rejects invalid creation clock 0 before live verification[33m 1320[2mms[22m[39m
+2026-11-18T14:48:04.1052373Z      [33m[2m✓[22m[39m rejects invalid creation clock NaN before live verification[33m 1317[2mms[22m[39m
+2026-11-18T14:48:04.1053539Z      [33m[2m✓[22m[39m rejects invalid creation clock Infinity before live verification[33m 1381[2mms[22m[39m
+2026-11-18T14:48:04.1054632Z      [33m[2m✓[22m[39m refuses unsigned invoices before signing or network access[33m 1319[2mms[22m[39m
+2026-11-18T14:48:04.1055779Z      [33m[2m✓[22m[39m refuses invalid-signature invoices before signing or network access[33m 1312[2mms[22m[39m
+2026-11-18T14:48:04.1056891Z      [33m[2m✓[22m[39m refuses expired invoices before signing or network access[33m 1384[2mms[22m[39m
+2026-11-18T14:48:04.1057953Z      [33m[2m✓[22m[39m refuses fiat invoices before signing or network access[33m 1311[2mms[22m[39m
+2026-11-18T14:48:04.1059023Z      [33m[2m✓[22m[39m refuses other-signer invoices before signing or network access[33m 2597[2mms[22m[39m
+2026-11-18T14:48:04.1060133Z      [33m[2m✓[22m[39m refuses other-recipient invoices before signing or network access[33m 2643[2mms[22m[39m
+2026-11-18T14:48:04.1061254Z      [33m[2m✓[22m[39m refuses other-chain invoices before signing or network access[33m 1260[2mms[22m[39m
+2026-11-18T14:48:04.1062676Z      [33m[2m✓[22m[39m refuses other-asset invoices before signing or network access[33m 1232[2mms[22m[39m
+2026-11-18T14:48:04.1063837Z      [33m[2m✓[22m[39m refuses other-amount invoices before signing or network access[33m 1318[2mms[22m[39m
+2026-11-18T14:48:04.1065040Z      [33m[2m✓[22m[39m refuses a canonical payment to a recipient not owned by the authenticated seller[33m 2567[2mms[22m[39m
+2026-11-18T14:48:04.1066216Z      [33m[2m✓[22m[39m refuses pending evidence without publishing a receipt[33m 2399[2mms[22m[39m
+2026-11-18T14:48:04.1067501Z      [33m[2m✓[22m[39m refuses reorganized evidence without publishing a receipt[33m 2510[2mms[22m[39m
+2026-11-18T14:48:04.1068573Z      [33m[2m✓[22m[39m refuses failed-provider evidence without publishing a receipt[33m 2542[2mms[22m[39m
+2026-11-18T14:48:04.1069605Z      [33m[2m✓[22m[39m refuses late-reorg evidence without publishing a receipt[33m 2485[2mms[22m[39m
+2026-11-18T14:48:04.1070633Z      [33m[2m✓[22m[39m refuses secondary evidence without publishing a receipt[33m 2470[2mms[22m[39m
+2026-11-18T14:48:04.1071735Z      [33m[2m✓[22m[39m refuses a invoice.json source changed during live verification[33m 2531[2mms[22m[39m
+2026-11-18T14:48:04.1072849Z      [33m[2m✓[22m[39m refuses a claim.json source changed during live verification[33m 2490[2mms[22m[39m
+2026-11-18T14:48:04.1074118Z      [33m[2m✓[22m[39m refuses a seller.json source changed during live verification[33m 2498[2mms[22m[39m
+2026-11-18T14:48:04.1075268Z      [33m[2m✓[22m[39m refuses a reorganization first visible during the final source reread[33m 2503[2mms[22m[39m
+2026-11-18T14:48:04.1076568Z      [33m[2m✓[22m[39m binds decryption to the captured keystore even if its contents change and change back[33m 1229[2mms[22m[39m
+2026-11-18T14:48:04.1077804Z      [33m[2m✓[22m[39m validates expected payment facts before contacting the provider[33m 1222[2mms[22m[39m
+2026-11-18T14:48:04.1079014Z      [33m[2m✓[22m[39m classifies a transaction lookup failure as a network error, without signing[33m 2463[2mms[22m[39m
+2026-11-18T14:48:04.1080841Z      [33m[2m✓[22m[39m rechecks invoice expiry after the live review and requires repeatable inputs[33m 2534[2mms[22m[39m
+2026-11-18T14:48:04.1082159Z      [33m[2m✓[22m[39m rejects wrong keystore credentials and preserves existing or failed outputs[33m 4956[2mms[22m[39m
+2026-11-18T14:48:06.3700638Z  [32m✓[39m src/scan-commands.test.ts [2m([22m[2m55 tests[22m[2m)[22m[33m 1364[2mms[22m[39m
+2026-11-18T14:48:17.7002571Z  [32m✓[39m src/reconcile-command.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 116530[2mms[22m[39m
+2026-11-18T14:48:17.7003949Z    [33m[2m✓[22m[39m creates and registers the same signed fixed-amount invoice format as the GUI[33m 4181[2mms[22m[39m
+2026-11-18T14:48:17.7005061Z    [33m[2m✓[22m[39m rejects a modified invoice signature before registration[33m 2696[2mms[22m[39m
+2026-11-18T14:48:17.7005917Z    [33m[2m✓[22m[39m proposes without changing state and confirms only the reviewed current seller-owned payment[33m 4085[2mms[22m[39m
+2026-11-18T14:48:17.7007007Z    [33m[2m✓[22m[39m requires explicit approval before any live confirmation request[33m 2681[2mms[22m[39m
+2026-11-18T14:48:17.7007764Z    [33m[2m✓[22m[39m rejects expired and modified proposal context without publishing state[33m 10838[2mms[22m[39m
+2026-11-18T14:48:17.7008601Z    [33m[2m✓[22m[39m binds confirmation to the reviewed deployment manifest and secondary-provider requirement[33m 8230[2mms[22m[39m
+2026-11-18T14:48:17.7009668Z    [33m[2m✓[22m[39m rejects a current observation unrelated to the seller despite valid canonical payment evidence[33m 2642[2mms[22m[39m
+2026-11-18T14:48:17.7010522Z    [33m[2m✓[22m[39m accepts fully derived deep-scan ownership when only the public view-tag hint is wrong[33m 2668[2mms[22m[39m
+2026-11-18T14:48:17.7011365Z    [33m[2m✓[22m[39m classifies provider failure during authenticated context construction as a network error[33m 2719[2mms[22m[39m
+2026-11-18T14:48:17.7012221Z    [33m[2m✓[22m[39m rejects duplicate current observations and refuses an unbounded context[33m 5418[2mms[22m[39m
+2026-11-18T14:48:17.7013064Z    [33m[2m✓[22m[39m does not publish confirmations after provider failure or canonical reorganization[33m 12250[2mms[22m[39m
+2026-11-18T14:48:17.7014012Z    [33m[2m✓[22m[39m rejects a mixed-fork context when a reorg happens between two individually verified payments at one height[33m 2650[2mms[22m[39m
+2026-11-18T14:48:17.7014849Z    [33m[2m✓[22m[39m rejects an implausible chain head first reported by the final review guard[33m 2611[2mms[22m[39m
+2026-11-18T14:48:17.7015594Z    [33m[2m✓[22m[39m detects a source changed while current evidence is being read[33m 3918[2mms[22m[39m
+2026-11-18T14:48:17.7016333Z    [33m[2m✓[22m[39m keeps the original state and does not leave a partial successor on failed writes[33m 3924[2mms[22m[39m
+2026-11-18T14:48:17.7017142Z    [33m[2m✓[22m[39m reimports identical history idempotently while retaining imported-history provenance[33m 4026[2mms[22m[39m
+2026-11-18T14:48:17.7017982Z    [33m[2m✓[22m[39m archives and exports seller receipts without making them payment evidence[33m 2690[2mms[22m[39m
+2026-11-18T14:48:17.7018983Z    [33m[2m✓[22m[39m rejects a valid invoice and a signed receipt from another seller signer[33m 3915[2mms[22m[39m
+2026-11-18T14:48:17.7019738Z    [33m[2m✓[22m[39m lists proposals offline without turning stored evidence into current verification[33m 5263[2mms[22m[39m
+2026-11-18T14:48:17.7020531Z    [33m[2m✓[22m[39m requires exact live matching context before exporting a confirmable proposal[33m 3917[2mms[22m[39m
+2026-11-18T14:48:17.7021348Z    [33m[2m✓[22m[39m requires repeatable source and observation files and refuses cross-chain evidence[33m 5235[2mms[22m[39m
+2026-11-18T14:48:17.7022276Z    [33m[2m✓[22m[39m rejects a reviewed record absent from current evidence and a changed provider endpoint[33m 7857[2mms[22m[39m
+2026-11-18T14:48:17.7023097Z    [33m[2m✓[22m[39m fails final review if observations change or canonical finality disappears during work[33m 8131[2mms[22m[39m
+2026-11-18T14:48:17.7023894Z    [33m[2m✓[22m[39m rejects wrong archive formats and seller scopes before changing any local state[33m 2614[2mms[22m[39m
+2026-11-18T14:48:17.7024775Z    [33m[2m✓[22m[39m dry-runs imports without publication and rejects missing approval, wrong formats and scope changes[33m 1350[2mms[22m[39m
+2026-11-18T14:48:24.2538765Z  [32m✓[39m src/exchange-security.test.ts [2m([22m[2m59 tests[22m[2m)[22m[33m 5624[2mms[22m[39m
+2026-11-18T14:48:24.2539717Z    [32m✓[39m QR parsing and format boundaries [2m(18)[22m
+2026-11-18T14:48:24.2540843Z      [33m[2m✓[22m[39m retains an encrypted invoice envelope through decode and never inserts a passphrase into output[33m 4943[2mms[22m[39m
+2026-11-18T14:49:15.5045987Z  [32m✓[39m src/reconcile-local.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 50121[2mms[22m[39m
+2026-11-18T14:49:15.5047423Z    [33m[2m✓[22m[39m records a fresh seller-owned payment without requiring or confirming an invoice match[33m 2624[2mms[22m[39m
+2026-11-18T14:49:15.5052180Z    [33m[2m✓[22m[39m does not promote a signed receipt when canonical RPC evidence is unavailable[33m 3866[2mms[22m[39m
+2026-11-18T14:49:15.5053923Z    [33m[2m✓[22m[39m clears observations while retaining invoice registrations and archived receipts[33m 2632[2mms[22m[39m
+2026-11-18T14:49:15.5055447Z    [33m[2m✓[22m[39m removes only the selected invoice registration from a new encrypted successor[33m 1249[2mms[22m[39m
+2026-11-18T14:49:15.5060553Z    [33m[2m✓[22m[39m removes only the selected archived receipt without treating it as payment evidence[33m 1266[2mms[22m[39m
+2026-11-18T14:49:15.5062229Z    [33m[2m✓[22m[39m keeps manual annotations explicitly unverified and rejects conflicting annotations on repeated records[33m 5144[2mms[22m[39m
+2026-11-18T14:49:15.5064546Z    [33m[2m✓[22m[39m requires explicit approval and an exact current record for any manual annotation[33m 2546[2mms[22m[39m
+2026-11-18T14:49:15.5065763Z    [33m[2m✓[22m[39m does not record duplicate evidence or publish after a late canonical reorganization[33m 5081[2mms[22m[39m
+2026-11-18T14:49:15.5067163Z    [33m[2m✓[22m[39m never promotes restored observations without fresh live evidence[33m 5178[2mms[22m[39m
+2026-11-18T14:49:15.5068578Z    [33m[2m✓[22m[39m classifies transaction-provider failures as network errors without persisting an observation[33m 2476[2mms[22m[39m
+2026-11-18T14:49:15.5069999Z    [33m[2m✓[22m[39m preserves reorg tombstones through clearing and old-backup imports and refuses resurrection by record[33m 4432[2mms[22m[39m
+2026-11-18T14:49:15.5071477Z    [33m[2m✓[22m[39m retains saturated read-only state even after every observation is cleared[33m 4740[2mms[22m[39m
+2026-11-18T14:49:15.5072941Z    [33m[2m✓[22m[39m supports approved all-invoice and all-receipt cleanup without affecting observations or the other collection[33m 4053[2mms[22m[39m
+2026-11-18T14:49:15.5075115Z    [33m[2m✓[22m[39m requires approved exact cleanup selectors and does not overwrite existing output files[33m 1036[2mms[22m[39m
+2026-11-18T14:49:15.5075941Z    [33m[2m✓[22m[39m rejects nonrepeatable or concurrently changed cleanup sources and interrupted writes[33m 3792[2mms[22m[39m
+2026-11-18T14:49:17.3866395Z  [32m✓[39m src/cli2.test.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 535[2mms[22m[39m
+2026-11-18T14:49:19.0339670Z  [32m✓[39m src/chain-commands.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 272[2mms[22m[39m
+2026-11-18T14:49:20.4220720Z  [32m✓[39m src/receipt-parity.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 427[2mms[22m[39m
+2026-11-18T14:49:21.3747771Z  [32m✓[39m src/node-io-faults.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 117[2mms[22m[39m
+2026-11-18T14:49:22.9184456Z  [32m✓[39m src/qr-parity.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 613[2mms[22m[39m
+2026-11-18T14:49:23.8695445Z  [32m✓[39m src/binary-io.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 90[2mms[22m[39m
+2026-11-18T14:49:39.4574053Z  [32m✓[39m src/backup-command.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 91994[2mms[22m[39m
+2026-11-18T14:49:39.4575167Z    [33m[2m✓[22m[39m authenticates a GUI keystore and shows only counts[33m 1275[2mms[22m[39m
+2026-11-18T14:49:39.4576338Z    [33m[2m✓[22m[39m detects wrong credentials and ciphertext modification with the same safe authentication error[33m 2543[2mms[22m[39m
+2026-11-18T14:49:39.4577409Z    [33m[2m✓[22m[39m dry-runs restoration without writing and requires explicit approval before a new encrypted copy[33m 2638[2mms[22m[39m
+2026-11-18T14:49:39.4578120Z    [33m[2m✓[22m[39m preserves existing files and refuses forced restoration[33m 1301[2mms[22m[39m
+2026-11-18T14:49:39.4578756Z    [33m[2m✓[22m[39m does not leave partial outputs when publication fails[33m 1312[2mms[22m[39m
+2026-11-18T14:49:39.4579397Z    [33m[2m✓[22m[39m creates a GUI-compatible keystore from protected independent keys[33m 20796[2mms[22m[39m
+2026-11-18T14:49:39.4580002Z    [33m[2m✓[22m[39m rekeys a valid backup without changing any seller key[33m 31567[2mms[22m[39m
+2026-11-18T14:49:39.4580638Z    [33m[2m✓[22m[39m authenticates and restores GPA archives without printing labels or opaque history[33m 1984[2mms[22m[39m
+2026-11-18T14:49:39.4581376Z    [33m[2m✓[22m[39m restores and rekeys binary address books without exposing contacts or accepting wrong credentials[33m 629[2mms[22m[39m
+2026-11-18T14:49:39.4582105Z    [33m[2m✓[22m[39m rekeys GPA archives while retaining duplicate tags and opaque encrypted history[33m 25136[2mms[22m[39m
+2026-11-18T14:49:39.4582838Z    [33m[2m✓[22m[39m rejects a weak replacement passphrase and ambiguous secret sources before publishing any backup[33m 1236[2mms[22m[39m
+2026-11-18T14:49:41.1810066Z  [32m✓[39m src/merchant-refund.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 617[2mms[22m[39m
+2026-11-18T14:49:46.4488609Z  [32m✓[39m src/qr-local-config.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 4192[2mms[22m[39m
+2026-11-18T14:49:46.4489444Z    [32m✓[39m encrypted keystore and safe settings QR parity [2m(7)[22m
+2026-11-18T14:49:46.4490772Z      [33m[2m✓[22m[39m transfers the GUI encrypted envelope through actual SVG decoding without decrypting or authenticating it[33m 1734[2mms[22m[39m
+2026-11-18T14:49:46.4492776Z      [33m[2m✓[22m[39m requires backup verify for ciphertext authentication and rejects passphrase flags on a transfer[33m 1231[2mms[22m[39m
+2026-11-18T14:49:47.5391347Z  [32m✓[39m src/merchant.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-11-18T14:49:48.6172284Z  [32m✓[39m src/registry-command.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+2026-11-18T14:49:55.3638173Z  [32m✓[39m src/invoice-parity.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 30624[2mms[22m[39m
+2026-11-18T14:49:55.3639830Z    [32m✓[39m protected invoice envelopes and caller expectations [2m(7)[22m
+2026-11-18T14:49:55.3640756Z      [33m[2m✓[22m[39m creates a passphrase-protected link from a private input and verifies it without exposing the passphrase[33m 30481[2mms[22m[39m
+2026-11-18T14:50:01.3264732Z  [32m✓[39m src/reconcile-time.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 11621[2mms[22m[39m
+2026-11-18T14:50:01.3265504Z    [33m[2m✓[22m[39m binds a late scan to the canonical payment time and persists that time after confirmation[33m 3421[2mms[22m[39m
+2026-11-18T14:50:01.3266266Z    [33m[2m✓[22m[39m never exports a confirmable proposal from missing or late canonical time (undefined)[33m 2030[2mms[22m[39m
+2026-11-18T14:50:01.3268605Z    [33m[2m✓[22m[39m never exports a confirmable proposal from missing or late canonical time (1800003600)[33m 2023[2mms[22m[39m
+2026-11-18T14:50:01.3270270Z    [33m[2m✓[22m[39m refuses an independent provider with missing or conflicting canonical time (undefined)[33m 2109[2mms[22m[39m
+2026-11-18T14:50:01.3271881Z    [33m[2m✓[22m[39m refuses an independent provider with missing or conflicting canonical time (1800000001)[33m 2031[2mms[22m[39m
+2026-11-18T14:50:01.7792881Z  [32m✓[39m src/reconcile-frontrun.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 5286[2mms[22m[39m
+2026-11-18T14:50:01.7794391Z    [33m[2m✓[22m[39m F1: accepts a front-run and the genuine router observation for one (S, E); the genuine payment keeps its exact proposal[33m 2684[2mms[22m[39m
+2026-11-18T14:50:01.7795749Z    [33m[2m✓[22m[39m F1: still refuses the exact same router observation supplied twice[33m 2600[2mms[22m[39m
+2026-11-18T14:50:02.5290394Z  [32m✓[39m src/history-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+2026-11-18T14:50:03.2260036Z  [32m✓[39m src/operator-commands.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 287[2mms[22m[39m
+2026-11-18T14:50:07.9640848Z  [32m✓[39m src/b0-receipt-recovery.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 3567[2mms[22m[39m
+2026-11-18T14:50:07.9642584Z    [33m[2m✓[22m[39m retains a live-verified signed receipt through encrypted offline recovery without promoting historical proof[33m 3565[2mms[22m[39m
+2026-11-18T14:50:09.1942518Z  [32m✓[39m src/node-io.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+2026-11-18T14:50:12.8545948Z  [32m✓[39m src/recovery-auth-negative.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 2550[2mms[22m[39m
+2026-11-18T14:50:12.8547265Z    [33m[2m✓[22m[39m fails closed on a wrong viewing key or tampered encrypted receipt archive without publishing recovery[33m 2548[2mms[22m[39m
+2026-11-18T14:50:13.1506291Z  [32m✓[39m src/passphrase.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-11-18T14:50:14.2581232Z  [32m✓[39m src/merchant-subscription.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-11-18T14:50:15.4567617Z  [32m✓[39m src/node-io-regression.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+2026-11-18T14:50:16.5725861Z  [32m✓[39m src/settings-command.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-11-18T14:50:17.4408696Z  [32m✓[39m src/rpc-concurrent-budget.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-11-18T14:50:18.5105998Z  [32m✓[39m src/operator-io.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 10[2mms[22m[39m
+2026-11-18T14:50:19.3898432Z  [32m✓[39m src/seller-parity.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+2026-11-18T14:50:20.4727153Z  [32m✓[39m src/secret-errors.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-11-18T14:50:20.6575522Z  [32m✓[39m src/args.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-11-18T14:50:21.8190729Z  [32m✓[39m src/build-info-command.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 74[2mms[22m[39m
+2026-11-18T14:50:40.9434671Z  [32m✓[39m src/backup-generate.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 37218[2mms[22m[39m
+2026-11-18T14:50:40.9435465Z    [32m✓[39m encrypted seller key generation [2m(5)[22m
+2026-11-18T14:50:40.9436759Z      [33m[2m✓[22m[39m generates three independent keys using the GUI-compatible encrypted keystore without disclosing secrets[33m 28063[2mms[22m[39m
+2026-11-18T14:50:40.9438417Z      [33m[2m✓[22m[39m requires a new explicit encrypted output and preserves existing files[33m 9137[2mms[22m[39m
+2026-11-18T14:50:41.3548027Z 
+2026-11-18T14:50:41.3553408Z [2m Test Files [22m [1m[32m37 passed[39m[22m[90m (37)[39m
+2026-11-18T14:50:41.3555888Z [2m      Tests [22m [1m[32m568 passed[39m[22m[2m | [22m[33m2 skipped[39m[90m (570)[39m
+2026-11-18T14:50:41.3556891Z [2m   Start at [22m 14:46:18
+2026-11-18T14:50:41.3561664Z [2m   Duration [22m 262.41s[2m (tests 93%, import 6%)[22m
+2026-11-18T14:50:41.3576367Z 
+2026-11-18T14:50:41.3605023Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-18T14:50:41.3645877Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-18T14:50:41.3646606Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-18T14:50:41.3647266Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-18T14:50:41.3652884Z All files          |    98.4 |    97.28 |   99.07 |   99.33 |                   
+2026-11-18T14:50:41.3654326Z  src               |   98.46 |    97.01 |   99.15 |   99.26 |                   
+2026-11-18T14:50:41.3655795Z   args.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3656793Z   backup-data.ts   |   98.18 |    98.36 |   94.44 |     100 | 98                
+2026-11-18T14:50:41.3657369Z   build-info.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3657967Z   ctx.ts           |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3659444Z   hex.ts           |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3659867Z   io.ts            |     100 |       50 |     100 |     100 | 72                
+2026-11-18T14:50:41.3661320Z   node-io.ts       |   93.16 |    87.77 |     100 |   95.69 | 35,85-86,113      
+2026-11-18T14:50:41.3662486Z   ...nt-context.ts |     100 |    99.02 |     100 |     100 | 25                
+2026-11-18T14:50:41.3663171Z   payment-input.ts |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3664026Z   ...le-session.ts |      98 |    97.14 |     100 |     100 | 62-76             
+2026-11-18T14:50:41.3664657Z   run.ts           |   98.78 |    94.73 |     100 |   98.48 | 104               
+2026-11-18T14:50:41.3665239Z   scan-report.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3665799Z   secrets.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3666318Z   version.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3666793Z  src/commands      |   98.37 |    97.44 |   99.03 |   99.37 |                   
+2026-11-18T14:50:41.3667334Z   backup.ts        |   99.16 |    97.72 |     100 |     100 | 92                
+2026-11-18T14:50:41.3667964Z   batch.ts         |   95.65 |    88.88 |     100 |    97.5 | 128               
+2026-11-18T14:50:41.3668790Z   chain.ts         |   99.06 |    98.63 |     100 |     100 | 65                
+2026-11-18T14:50:41.3669603Z   doctor.ts        |   90.74 |    82.14 |     100 |     100 | 81-101            
+2026-11-18T14:50:41.3670368Z   export.ts        |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3670797Z   history.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3671171Z   i18n.ts          |   96.42 |    96.87 |     100 |      96 | 52                
+2026-11-18T14:50:41.3672412Z   invoice.ts       |     100 |    99.34 |     100 |     100 | 200               
+2026-11-18T14:50:41.3672870Z   ...ant-refund.ts |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3673747Z   merchant.ts      |   97.72 |    98.24 |   93.75 |   96.87 | 21,114            
+2026-11-18T14:50:41.3674174Z   operator.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3675088Z   payment.ts       |    97.1 |       93 |     100 |     100 | 22,33,36,51-55,84 
+2026-11-18T14:50:41.3676006Z   qr.ts            |   98.81 |    99.28 |     100 |   99.23 | 138               
+2026-11-18T14:50:41.3676879Z   receipt.ts       |    98.6 |    98.65 |     100 |   99.17 | 174               
+2026-11-18T14:50:41.3678056Z   reconcile.ts     |   99.54 |      100 |   97.14 |     100 |                   
+2026-11-18T14:50:41.3678507Z   registry.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3678972Z   sandbox.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3679562Z   scan.ts          |   93.54 |     88.4 |     100 |   97.46 | 72,100            
+2026-11-18T14:50:41.3680056Z   seller.ts        |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3680549Z   split.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3680973Z   sub.ts           |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3681560Z   types.ts         |       0 |        0 |       0 |       0 |                   
+2026-11-18T14:50:41.3682067Z   webhook.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T14:50:41.3682971Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-18T14:50:41.4997959Z ##[group]Run npm run test:compiled -w @ghostpay/cli
+2026-11-18T14:50:41.4998320Z [36;1mnpm run test:compiled -w @ghostpay/cli[0m
+2026-11-18T14:50:41.5053158Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-18T14:50:41.5053524Z ##[endgroup]
+2026-11-18T14:50:42.1022632Z 
+2026-11-18T14:50:42.1023220Z > @ghostpay/cli@0.1.0 test:compiled
+2026-11-18T14:50:42.1023974Z > node --test test/compiled.test.mjs test/operators.test.mjs test/build-info.test.mjs
+2026-11-18T14:50:42.1024260Z 
+2026-11-18T14:50:42.1768745Z TAP version 13
+2026-11-18T14:50:43.0735361Z # Subtest: build stamping records a real clean Git revision and produces identical bytes on repeat
+2026-11-18T14:50:43.0742012Z ok 1 - build stamping records a real clean Git revision and produces identical bytes on repeat
+2026-11-18T14:50:43.0743390Z   ---
+2026-11-18T14:50:43.0743808Z   duration_ms: 843.3711
+2026-11-18T14:50:43.0744146Z   type: 'test'
+2026-11-18T14:50:43.0744438Z   ...
+2026-11-18T14:50:43.8792057Z # Subtest: build stamping identifies tracked changes and untracked source files
+2026-11-18T14:50:43.8793577Z ok 2 - build stamping identifies tracked changes and untracked source files
+2026-11-18T14:50:43.8794257Z   ---
+2026-11-18T14:50:43.8795464Z   duration_ms: 805.6493
+2026-11-18T14:50:43.8795904Z   type: 'test'
+2026-11-18T14:50:43.8796261Z   ...
+2026-11-18T14:50:44.5271357Z # Subtest: build stamping replaces prior metadata with explicit nulls when Git is unavailable
+2026-11-18T14:50:44.5272480Z ok 3 - build stamping replaces prior metadata with explicit nulls when Git is unavailable
+2026-11-18T14:50:44.5273281Z   ---
+2026-11-18T14:50:44.5273864Z   duration_ms: 647.903
+2026-11-18T14:50:44.5274290Z   type: 'test'
+2026-11-18T14:50:44.5274629Z   ...
+2026-11-18T14:50:44.6911720Z # Subtest: build stamping uses explicit nulls for a source archive without Git metadata
+2026-11-18T14:50:44.6912893Z ok 4 - build stamping uses explicit nulls for a source archive without Git metadata
+2026-11-18T14:50:44.6913797Z   ---
+2026-11-18T14:50:44.6914220Z   duration_ms: 163.8599
+2026-11-18T14:50:44.6914611Z   type: 'test'
+2026-11-18T14:50:44.6915932Z   ...
+2026-11-18T14:50:46.9381684Z # Subtest: build stamping ignores unrelated checkout routing in ambient Git variables
+2026-11-18T14:50:46.9382895Z ok 5 - build stamping ignores unrelated checkout routing in ambient Git variables
+2026-11-18T14:50:46.9383566Z   ---
+2026-11-18T14:50:46.9383934Z   duration_ms: 1019.3005
+2026-11-18T14:50:46.9384306Z   type: 'test'
+2026-11-18T14:50:46.9384636Z   ...
+2026-11-18T14:50:46.9385301Z # Subtest: compiled diagnostics exposes the stamped module without invoking Git at runtime
+2026-11-18T14:50:46.9386282Z ok 6 - compiled diagnostics exposes the stamped module without invoking Git at runtime
+2026-11-18T14:50:46.9386950Z   ---
+2026-11-18T14:50:46.9387289Z   duration_ms: 1227.1515
+2026-11-18T14:50:46.9387668Z   type: 'test'
+2026-11-18T14:50:46.9388006Z   ...
+2026-11-18T14:50:52.9650277Z # Subtest: compiled doctor and create → sign → verify → links → verify from a directory with spaces
+2026-11-18T14:50:52.9652651Z ok 7 - compiled doctor and create → sign → verify → links → verify from a directory with spaces
+2026-11-18T14:50:52.9653253Z   ---
+2026-11-18T14:50:52.9653497Z   duration_ms: 10675.8166
+2026-11-18T14:50:52.9653777Z   type: 'test'
+2026-11-18T14:50:52.9653996Z   ...
+2026-11-18T14:50:58.6464552Z # Subtest: compiled webhook authenticates Unicode bytes but reports stateless replay checking
+2026-11-18T14:50:58.6466241Z ok 8 - compiled webhook authenticates Unicode bytes but reports stateless replay checking
+2026-11-18T14:50:58.6467829Z   ---
+2026-11-18T14:50:58.6468150Z   duration_ms: 4724.5141
+2026-11-18T14:50:58.6468489Z   type: 'test'
+2026-11-18T14:50:58.6468777Z   ...
+2026-11-18T14:51:05.1217119Z # Subtest: compiled subscription, immutable batch confirmation, export and simulator journeys
+2026-11-18T14:51:05.1220926Z ok 9 - compiled subscription, immutable batch confirmation, export and simulator journeys
+2026-11-18T14:51:05.1221598Z   ---
+2026-11-18T14:51:05.1221849Z   duration_ms: 6517.2181
+2026-11-18T14:51:05.1222138Z   type: 'test'
+2026-11-18T14:51:05.1222361Z   ...
+2026-11-18T14:51:09.7293107Z # Subtest: compiled errors stay machine-readable and secret sources are explicit
+2026-11-18T14:51:09.7293916Z ok 10 - compiled errors stay machine-readable and secret sources are explicit
+2026-11-18T14:51:09.7294368Z   ---
+2026-11-18T14:51:09.7294587Z   duration_ms: 5521.2265
+2026-11-18T14:51:09.7294860Z   type: 'test'
+2026-11-18T14:51:09.7295081Z   ...
+2026-11-18T14:51:10.7038104Z # Subtest: compiled executable handles a closed stdout pipe without an uncaught stack
+2026-11-18T14:51:10.7039532Z ok 11 - compiled executable handles a closed stdout pipe without an uncaught stack
+2026-11-18T14:51:10.7039864Z   ---
+2026-11-18T14:51:10.7040018Z   duration_ms: 978.4072
+2026-11-18T14:51:10.7040190Z   type: 'test'
+2026-11-18T14:51:10.7040334Z   ...
+2026-11-18T14:51:11.6391492Z # Subtest: SIGTERM before output publication preserves the existing file and private staging
+2026-11-18T14:51:11.6392780Z ok 12 - SIGTERM before output publication preserves the existing file and private staging
+2026-11-18T14:51:11.6393365Z   ---
+2026-11-18T14:51:11.6393601Z   duration_ms: 935.3977
+2026-11-18T14:51:11.6393860Z   type: 'test'
+2026-11-18T14:51:11.6394108Z   ...
+2026-11-18T14:51:18.8278547Z # Subtest: compiled invoice, signed receipt, SVG and multipart public exchange are interoperable
+2026-11-18T14:51:18.8279492Z ok 13 - compiled invoice, signed receipt, SVG and multipart public exchange are interoperable
+2026-11-18T14:51:18.8280207Z   ---
+2026-11-18T14:51:18.8280661Z   duration_ms: 18147.1331
+2026-11-18T14:51:18.8281045Z   type: 'test'
+2026-11-18T14:51:18.8281370Z   ...
+2026-11-18T14:51:18.8284367Z # Subtest: compiled credential, authenticated recovery and immutable output boundaries hold across formats
+2026-11-18T14:51:18.8285860Z ok 14 - compiled credential, authenticated recovery and immutable output boundaries hold across formats
+2026-11-18T14:51:18.8286423Z   ---
+2026-11-18T14:51:18.8286642Z   duration_ms: 17564.4764
+2026-11-18T14:51:18.8287125Z   type: 'test'
+2026-11-18T14:51:18.8287268Z   ...
+2026-11-18T14:51:23.4052572Z # Subtest: compiled seller key generation publishes only a new encrypted keystore and public metadata
+2026-11-18T14:51:23.4053620Z ok 15 - compiled seller key generation publishes only a new encrypted keystore and public metadata
+2026-11-18T14:51:23.4054016Z   ---
+2026-11-18T14:51:23.4054173Z   duration_ms: 4577.2295
+2026-11-18T14:51:23.4054348Z   type: 'test'
+2026-11-18T14:51:23.4054491Z   ...
+2026-11-18T14:51:28.6522457Z # Subtest: compiled real verifier distinguishes offline, canonical, pending and reorganized controlled RPC evidence
+2026-11-18T14:51:28.6523350Z ok 16 - compiled real verifier distinguishes offline, canonical, pending and reorganized controlled RPC evidence
+2026-11-18T14:51:28.6523732Z   ---
+2026-11-18T14:51:28.6523911Z   duration_ms: 5246.8859
+2026-11-18T14:51:28.6524084Z   type: 'test'
+2026-11-18T14:51:28.6524219Z   ...
+2026-11-18T14:51:33.5190996Z # Subtest: compiled receipt creation signs only after explicit approval and fresh owned-payment verification
+2026-11-18T14:51:33.5192072Z ok 17 - compiled receipt creation signs only after explicit approval and fresh owned-payment verification
+2026-11-18T14:51:33.5192645Z   ---
+2026-11-18T14:51:33.5192805Z   duration_ms: 4866.2034
+2026-11-18T14:51:33.5192984Z   type: 'test'
+2026-11-18T14:51:33.5193131Z   ...
+2026-11-18T14:51:39.9127661Z # Subtest: compiled manual-digest receipt creation verifies payment without inventing invoice binding
+2026-11-18T14:51:39.9128778Z ok 18 - compiled manual-digest receipt creation verifies payment without inventing invoice binding
+2026-11-18T14:51:39.9129409Z   ---
+2026-11-18T14:51:39.9130769Z   duration_ms: 6393.6861
+2026-11-18T14:51:39.9131105Z   type: 'test'
+2026-11-18T14:51:39.9131336Z   ...
+2026-11-18T14:51:57.5783750Z # Subtest: compiled reconciliation requires reviewed live context and approval while imported history remains untrusted
+2026-11-18T14:51:57.5784670Z ok 19 - compiled reconciliation requires reviewed live context and approval while imported history remains untrusted
+2026-11-18T14:51:57.5785327Z   ---
+2026-11-18T14:51:57.5785590Z   duration_ms: 17665.3542
+2026-11-18T14:51:57.5785857Z   type: 'test'
+2026-11-18T14:51:57.5786047Z   ...
+2026-11-18T14:52:00.3065175Z # Subtest: compiled private scans authenticate their cursor and keep matches out of terminal output
+2026-11-18T14:52:00.3066312Z ok 20 - compiled private scans authenticate their cursor and keep matches out of terminal output
+2026-11-18T14:52:00.3066922Z   ---
+2026-11-18T14:52:00.3067183Z   duration_ms: 2730.7551
+2026-11-18T14:52:00.3067500Z   type: 'test'
+2026-11-18T14:52:00.3067771Z   ...
+2026-11-18T14:52:06.0528759Z # Subtest: compiled merchant planning and diagnostics never imply payment or refund execution
+2026-11-18T14:52:06.0530301Z ok 21 - compiled merchant planning and diagnostics never imply payment or refund execution
+2026-11-18T14:52:06.0530709Z   ---
+2026-11-18T14:52:06.0530930Z   duration_ms: 5745.7818
+2026-11-18T14:52:06.0531176Z   type: 'test'
+2026-11-18T14:52:06.0531370Z   ...
+2026-11-18T14:52:06.0731260Z 1..21
+2026-11-18T14:52:06.0731702Z # tests 21
+2026-11-18T14:52:06.0732560Z # suites 0
+2026-11-18T14:52:06.0732880Z # pass 21
+2026-11-18T14:52:06.0733171Z # fail 0
+2026-11-18T14:52:06.0733460Z # cancelled 0
+2026-11-18T14:52:06.0733806Z # skipped 0
+2026-11-18T14:52:06.0734094Z # todo 0
+2026-11-18T14:52:06.0734345Z # duration_ms 83917.0731
+2026-11-18T14:52:06.1337980Z Post job cleanup.
+2026-11-18T14:52:06.3275411Z [command]"C:\Program Files\Git\usr\bin\tar.exe" --posix -cf cache.tzst --exclude cache.tzst -P -C D:/a/GhostPay/GhostPay --files-from manifest.txt --force-local --use-compress-program "zstd -T0"
+2026-11-18T14:52:08.6247035Z Sent 0 of 242429629 (0.0%), 0.0 MBs/sec
+2026-11-18T14:52:09.6331719Z Sent 41103037 of 242429629 (17.0%), 19.4 MBs/sec
+2026-11-18T14:52:10.6352314Z Sent 175320765 of 242429629 (72.3%), 55.3 MBs/sec
+2026-11-18T14:52:11.6395242Z Sent 175320765 of 242429629 (72.3%), 41.5 MBs/sec
+2026-11-18T14:52:12.6522251Z Sent 175320765 of 242429629 (72.3%), 33.2 MBs/sec
+2026-11-18T14:52:12.7198810Z Sent 242429629 of 242429629 (100.0%), 45.3 MBs/sec
+2026-11-18T14:52:12.9678243Z Cache saved with the key: node-cache-Windows-x64-npm-2714ff2b58acb20f930d71e84d1d0612beeae6018bf2e6bdd6748b651ffac2e4
+2026-11-18T14:52:12.9940462Z Post job cleanup.
+2026-11-18T14:52:13.1326530Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-18T14:52:13.1613770Z git version 2.56.0.windows.4
+2026-11-18T14:52:13.1668439Z Temporarily overriding HOME='D:\a\_temp\7bfeac9d-86c0-444c-88f8-7a2726f3b94a' before making global git config changes
+2026-11-18T14:52:13.1669488Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T14:52:13.1677057Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\GhostPay\GhostPay
+2026-11-18T14:52:13.2008047Z Removing SSH command configuration
+2026-11-18T14:52:13.2018960Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T14:52:13.2344575Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-18T14:52:13.6918304Z Removing HTTP extra header
+2026-11-18T14:52:13.6927819Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T14:52:13.7222083Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-18T14:52:14.1804721Z Removing includeIf entries pointing to credentials config files
+2026-11-18T14:52:14.1814021Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T14:52:14.2112407Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-18T14:52:14.6733354Z Cleaning up orphan processes
+
