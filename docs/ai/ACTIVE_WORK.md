@@ -345,35 +345,24 @@ Acceptance: independently review new delegated registry signing, isolated escrow
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
 
 
-## Shared invoice signer-policy extraction — 2026-11-18
+## Beta acceptance log artifact capture — 2026-11-18
 
-Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-invoice-validation-20261118`.
-Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (main). Source reviewed:
-PR #218 `b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, #209
-`b5e2ea3e5030b56c79063eb1f91c8a634ee5d740`, and #211
-`a92658b1ef6b95ff0145b2e1933d0047d51289d5`.
+Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (main).
+Owned paths: `.github/workflows/beta-acceptance.yml`; this claim;
+`docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
 
-Owned paths: `packages/invoice-schema/src/{envelope.ts,errors.ts,pinnedSigner.test.ts}`;
-`packages/invoice-schema/{README.md,DEVIATIONS.md}`; `packages/ux-core/src/{errors.ts,errors.test.ts}`;
-this claim; `docs/handoffs/agents/INVOICE_VALIDATION_20261118.md`.
+Acceptance: trace the observed missing artifact in run `44279444368`, job `134715943959`, to the retained
+log paths and the exact pinned upload action behavior; enable hidden-file inclusion only for the existing
+`scripts/beta/.state/*.log` upload. Preserve the path, artifact name, retention, permissions, failure behavior,
+acceptance commands and every existing gate. Run existing relevant workflow/action checks and inspect the
+exact diff; add no setting-mirroring test. No product/dependency change, new infrastructure, deployment,
+workflow rerun, publication or upload of state JSON/private fixture material.
 
-Acceptance: reproduce the missing opt-in `requirePinnedSigner` contract on main before implementation;
-restore only the shared parser guard and fixed typed error/catalog entries; verify real signatures,
-plaintext/encrypted/passphrase paths, invalid-signature precedence, default compatibility and
-unchanged format/schema/decryption failures. Run affected package tests/typecheck/lint/build and
-existing browser-consumer regressions with matching compiled packages. Document that no current
-browser caller opts into this policy and that default unpinned-seller review remains unchanged.
-No CLI, relayer, backend, experimental, dependency, cryptographic-format or browser trust-policy
-changes. Independent source review and exact-head hosted CI remain integration gates; no publication
-or browser-execution claim from this worker.
-
-Status: additive API implementation and local review complete at product/test source
-`079222115f494d966f1f25be31ffca4d66346461`; regression commit `e3a34d4081aa63d05f36c2e82961299fadaf3f76`
-reproduces 10 signer-policy failures and 1 catalog failure against main. Full invoice-schema 728/728 and
-ux-core 119/119 pass with original coverage thresholds; affected package typecheck/lint/build pass.
-Existing Pay/Receipt tests pass 153/153 at `964b60d6`, before the sole final catalog identity-wording
-correction. Privacy reviewer independently passes 13 signer + 15 catalog tests at final source;
-coordinator independently passes the same 13 signer cases. Both source reviews find no blocker.
-These independent counts overlap author coverage. No browser/default enforcement, cryptographic format,
-optional backend or experimental changes. Exact-head hosted CI and browser acceptance remain separate.
-Evidence and integration limits: `docs/handoffs/agents/INVOICE_VALIDATION_20261118.md`.
+Status: workflow source `05a3b45bda60d18a6922c0897d48bd8984bad377` adds only the requested boolean
+input. Existing workflow checks pass 6/6 with no skips; action-pin check passes all 111 references;
+`git diff --check` passes. Coordinator and privacy reviewer independently cleared that exact workflow
+source after checking the pinned upstream filter, retained logs and unchanged upload scope. No new test,
+dependency, build, upload or rerun. Hosted artifact existence remains unverified; early failures can still
+precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
+limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
