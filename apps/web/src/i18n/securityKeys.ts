@@ -1322,6 +1322,13 @@ export const SECURITY_KEY_GROUPS = {
     'btc.headers.uncheckedNone',
   ],
   policyConsentFeesAndRecovery: [
+    'policy.create.delayHint',
+    'policy.create.withdrawableAny',
+    'policy.create.withdrawableOnly',
+    'policy.pay.coverageUnknownTitle',
+    'policy.pay.coverageUnknown',
+    'policy.pay.coverageChecked',
+    'policy.pay.tokenNotWithdrawable',
     'policy.title',
     'policy.warning.title',
     'policy.intro',
