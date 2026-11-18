@@ -656,6 +656,23 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
   });
 });
 
+// Diagnostic control for the separate stale-session mid-sweep failure in #201: this covers the
+// identical verified-keystore wipe/reimport path without an RPC intentionally left pending.
+// It is NOT evidence that a pending RPC caused the other failure; both tests must pass.
+test('verified keystore reimports the same keys after a manual wipe without a pending sweep', async ({ browser }) => {
+  await withChain(browser, async (_sim, open) => {
+    const s = await openSeller(open);
+    const identity = await identityOf(s);
+    const keystore = await exportKeystore(s, { stepUp: false });
+    await verifyBackup(s, keystore);
+    await nav(s).getByRole('button', { name: 'Seller keys' }).click();
+    await keysView(s).getByRole('button', { name: 'Wipe keys from memory' }).click();
+    await expect(keysView(s).getByText('Keys wiped from memory.', { exact: true })).toBeVisible();
+    await importKeystore(s, keystore);
+    expect(await identityOf(s)).toEqual(identity);
+  });
+});
+
 test('reorg: the payment block is replaced mid-scan, the scan withdraws the match, invalidates the saved observation and offers no receipt', async ({ browser }) => {
   await withChain(browser, async (sim, open) => {
     sim.head = 50_050;
