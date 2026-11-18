@@ -23,6 +23,8 @@ import { ConfigError, type Env } from './secrets.js';
 export const DEV_CHAIN_ID = 31337;
 /** Spec ceiling for the sweep deadline window. */
 export const MAX_DEADLINE_WINDOW_SECONDS = 1800;
+/** Server-wide concurrent connection cap (`server.maxConnections`); also the upper bound of `server.maxConnectionsPerIp`. */
+export const MAX_CONNECTIONS = 1024;
 
 /** Resolved per-chain settings. */
 export interface ChainRuntimeConfig {
@@ -101,7 +103,16 @@ export interface RelayerConfig {
   readonly alertWebhookAllowedHosts?: readonly string[];
   /** HMAC secret for signed alert payloads. */
   readonly alertWebhookSecret?: string;
-  readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
+  /**
+   * TCP front end. `maxConnectionsPerIp` caps the concurrent connections of one peer (IPv4 address, IPv6 /64) under the
+   * server-wide {@link MAX_CONNECTIONS}; peers in `trustedProxies` are exempt (S3-18).
+   */
+  readonly server: { readonly maxConnectionsPerIp: number };
+  /**
+   * `maxPending`: sweeps queued or in flight per chain. `maxPerClient`: of those (plus the ones still in admission), how
+   * many one client network bucket may hold at once (RL-02, `429 client_queue_full`).
+   */
+  readonly queue: { readonly maxPending: number; readonly maxPerClient: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
   /**
    * Absolute path of the restart-safe state journal (`state.file`); `undefined` for `state.ephemeral`, where a restart
@@ -120,6 +131,14 @@ export interface ConfigContext {
   readonly readManifest: (chainId: number) => string | undefined;
   /** Compressed secp256k1 release public keys; manifests fail closed without a matching key. */
   readonly releaseKeys?: readonly string[] | undefined;
+}
+
+/**
+ * Default `queue.maxPerClient`: a quarter of the queue, at least 2 (an honest client may retry while one sweep is in
+ * flight), never above the queue itself.
+ */
+export function defaultMaxPerClient(maxPending: number): number {
+  return Math.min(maxPending, Math.max(2, Math.ceil(maxPending / 4)));
 }
 
 function bad(path: string, why: string): never {
@@ -280,6 +299,10 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   if (feeTo === ctx.hotKeyAddress && !allowFeeToHotKey) return bad(`${path}.feeTo`, 'must differ from the hot key unless allowFeeToHotKey is enabled');
   const feeToNumber = BigInt(feeTo);
   if (feeToNumber === 0n || (feeToNumber >= 1n && feeToNumber <= 10n)) return bad(`${path}.feeTo`, 'must not be the zero or a precompile address');
+  // R07-2: the web client refuses every quote whose feeTo is not the signed manifest's fee recipient, so a relayer with
+  // another feeTo would start cleanly and serve nothing. Refuse at load instead.
+  if (manifest !== undefined && manifest.feeRecipient.toLowerCase() !== feeTo.toLowerCase())
+    return bad(`${path}.feeTo`, 'differs from the deployment manifest feeRecipient (clients refuse such quotes)');
 
   if ((c['rpcUrl'] === undefined) === (c['rpcUrlEnv'] === undefined)) return bad(path, 'set exactly one of rpcUrl and rpcUrlEnv');
   const envName = c['rpcUrlEnv'];
@@ -436,7 +459,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     raw,
     '$',
     ['allowedOrigins', 'chains'],
-    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state'],
+    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'server', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state'],
   );
   const stateFile = parseState(o['state'], ctx);
   const listen = sub(o, 'listen', '$', ['host', 'port']);
@@ -450,7 +473,9 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'probeTimeoutSeconds']);
   const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
   const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds', 'griefReserveBps']);
-  const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
+  const sv = sub(o, 'server', '$', ['maxConnectionsPerIp']);
+  const q = sub(o, 'queue', '$', ['maxPending', 'maxPerClient', 'receiptTimeoutSeconds']);
+  const maxPending = numberOr(q, 'maxPending', 'queue', 16, 1, 1024);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
   const allowFeeToHotKey = boolOr(o, 'allowFeeToHotKey', '$', false);
@@ -504,8 +529,10 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       maxKeys: numberOr(lb, 'maxKeys', 'lossBudget', 10_000, 16, 1_000_000),
     },
     ...optionalSecrets(o, ctx),
+    server: { maxConnectionsPerIp: numberOr(sv, 'maxConnectionsPerIp', 'server', 64, 1, MAX_CONNECTIONS) },
     queue: {
-      maxPending: numberOr(q, 'maxPending', 'queue', 16, 1, 1024),
+      maxPending,
+      maxPerClient: numberOr(q, 'maxPerClient', 'queue', defaultMaxPerClient(maxPending), 1, maxPending),
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),
     },
     shutdownGraceSeconds: numberOr(o, 'shutdownGraceSeconds', '$', 15, 1, 300),
