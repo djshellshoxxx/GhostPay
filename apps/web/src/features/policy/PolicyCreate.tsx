@@ -14,7 +14,7 @@ import { UserFacingError, userMessage } from '../../lib/errors';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { getAddress, isAddress } from 'viem/utils';
-import { createPolicyMetaAddress, DELAY_PRESETS, type LimitRow } from './create';
+import { createPolicyMetaAddress, DELAY_PRESETS, withdrawableAssets, type LimitRow } from './create';
 import type { PolicyCtx } from './PolicyView';
 import { BackupGate } from '../../views/SellerKeys';
 
@@ -134,14 +134,21 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
             {t('policy.create.keepBody')}
           </Notice>
           <ul className="plain">
-            {records.map((r) => (
-              <li key={r.policyHash}>
-                <p><Mono>{r.metaAddress}</Mono></p>
-                <p>{t('policy.create.recordDestination')} <Mono>{r.policy.destination}</Mono>{t('policy.create.recordTerms', { seconds: r.policy.delaySeconds.toString(), limits: r.limits.length === 0 ? t('policy.create.noLimits') : t('policy.create.tokenLimits', { count: String(r.limits.length) }) })}</p>
-                <CopyButton text={r.metaAddress} label={t('policy.create.copyMeta')} />
-                <button type="button" onClick={() => { downloadText(`ghostpay-policy-${r.policyHash.slice(2, 10)}.json`, serializePolicyRecord(r), 'application/json'); }}>{t('policy.create.download')}</button>
-              </li>
-            ))}
+            {records.map((r) => {
+              const assets = withdrawableAssets(r);
+              return (
+                <li key={r.policyHash}>
+                  <p><Mono>{r.metaAddress}</Mono></p>
+                  <p>{t('policy.create.recordDestination')} <Mono>{r.policy.destination}</Mono>{t('policy.create.recordTerms', { seconds: r.policy.delaySeconds.toString(), limits: r.limits.length === 0 ? t('policy.create.noLimits') : t('policy.create.tokenLimits', { count: String(r.limits.length) }) })}</p>
+                  {/* SEC-11: payers see only the policy hash, so the seller must tell them which assets can be withdrawn. */}
+                  {assets === 'any'
+                    ? <p>{t('policy.create.withdrawableAny')}</p>
+                    : <Notice kind="warn">{t('policy.create.withdrawableOnly', { tokens: assets.join(', ') })}</Notice>}
+                  <CopyButton text={r.metaAddress} label={t('policy.create.copyMeta')} />
+                  <button type="button" onClick={() => { downloadText(`ghostpay-policy-${r.policyHash.slice(2, 10)}.json`, serializePolicyRecord(r), 'application/json'); }}>{t('policy.create.download')}</button>
+                </li>
+              );
+            })}
           </ul>
         </>
       )}
