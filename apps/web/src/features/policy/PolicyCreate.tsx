@@ -103,9 +103,10 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
           <Field label={t('policy.create.destinationLabel')} hint={t('policy.create.destinationHint')}>
             {(id, hint) => <input id={id} aria-describedby={hint} value={destination} onChange={(e) => { setDestination(e.target.value); }} spellCheck={false} />}
           </Field>
-          <Field label={t('policy.create.delayLabel')}>
-            {(id) => (
-              <select id={id} value={delay.toString()} onChange={(e) => { setDelay(BigInt(e.target.value)); }}>
+          {/* SEC-12 / OD-11: per-network L2 minimums are an owner decision; no unverified number is enforced here. */}
+          <Field label={t('policy.create.delayLabel')} hint={t('policy.create.delayHint')}>
+            {(id, hint) => (
+              <select id={id} aria-describedby={hint} value={delay.toString()} onChange={(e) => { setDelay(BigInt(e.target.value)); }}>
                 {DELAY_PRESETS.map((p) => <option key={p.label} value={p.seconds.toString()}>{p.label}</option>)}
               </select>
             )}

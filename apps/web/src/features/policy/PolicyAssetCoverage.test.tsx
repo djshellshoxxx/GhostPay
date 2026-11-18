@@ -135,3 +135,15 @@ describe('SEC-11: assets a scheme-2 policy can withdraw', () => {
     expect(w.sent).toBeUndefined();
   });
 });
+
+describe('SEC-12 / OD-11: withdrawal delay on rollups (owner-gated, no unverified numbers)', () => {
+  it('notes the unverified L2 bound next to the delay and keeps every factory-accepted preset', async () => {
+    act(() => { importSession({ spendingKeyHex: a2.spendingPrivateKey, viewingKeyHex: a2.viewingPrivateKey, signingKeyHex: SIGNING_KEY }); });
+    await open();
+    const delay = screen.getByLabelText('Withdrawal delay');
+    expect(screen.getByText(/this app has not verified that bound for any network/)).toBeTruthy();
+    expect(delay.getAttribute('aria-describedby')).not.toBeNull();
+    const options = within(delay).getAllByRole('option').map((o) => o.getAttribute('value'));
+    expect(options).toEqual(['3600', '86400', '259200', '604800', '2592000']);
+  });
+});
