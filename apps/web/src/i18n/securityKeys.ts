@@ -1864,6 +1864,22 @@ export const SECURITY_KEY_GROUPS = {
   // Spec 18 web export, re-authentication and recovery copy: secret-export consent, plaintext-key warnings, ownership versus
   // payment confirmation, key replacement and cancellation outcomes stay reviewed-only.
   stealthKeyExportUi: [
+    'error.paymentKeyExport.publicRecordIsNotBackup',
+    'stealthExport.open.verify',
+    'stealthExport.verify.success',
+    'stealthExport.verify.masterScope',
+    'stealthExport.open.replace.savedTitle',
+    'stealthExport.open.replace.savedBody',
+    'stealthExport.verify.heading',
+    'stealthExport.verify.downloadStarted',
+    'stealthExport.verify.retained',
+    'stealthExport.verify.savedSuccess',
+    'stealthExport.verify.scope',
+    'stealthExport.verify.keep',
+    'stealthExport.verify.file',
+    'stealthExport.verify.passphrase',
+    'stealthExport.verify.submit',
+    'stealthExport.verify.differentFile',
     'error.session.theSecretExportWasCancelled',
     'error.keyVault.secretExportNeedsVaultPassphrase',
     'error.keyVault.secretExportNeedsKeystorePassphrase',

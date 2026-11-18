@@ -87,7 +87,7 @@ describe('Payment details (spec 18 flow 1)', () => {
     expect(JSON.parse(text)).toMatchObject({ format: 'ghostpay-stealth-public-v1', stealthAddress: A1.announcement.stealthAddress });
     expect(text).not.toContain(PRIVATE_HEX);
     expect(rpc.calls).toEqual([]);
-    expect(announce).toHaveBeenCalledWith('Public record downloaded.');
+    expect(announce).toHaveBeenCalledWith('Public record generated; download initiated. This file contains no private keys.');
   });
 
   it('exports the encrypted keypair after the vault step-up and the address check, then clears every passphrase', async () => {
@@ -106,7 +106,7 @@ describe('Payment details (spec 18 flow 1)', () => {
     expect(rpc.calls).toEqual([{ method: 'eth_getCode', params: [A1.announcement.stealthAddress, 'latest'] }]);
     const opened = await decryptPaymentKeys(await downloads.files[0]!.blob.text(), FILE_PASS);
     expect(Buffer.from(opened.payments[0]!.secret).toString('hex')).toBe(PRIVATE_HEX);
-    expect(screen.getByText('Encrypted keypair downloaded.')).toBeTruthy();
+    expect(screen.getByText('Encrypted keypair generated; download initiated. Keep and verify the saved file.')).toBeTruthy();
     expect(passwordValues().every((v) => v === '')).toBe(true);
   });
 
@@ -164,7 +164,7 @@ describe('Payment details (spec 18 flow 1)', () => {
     expect(downloads.files[0]?.filename).toBe('ghostpay-stealth-private-key.txt');
     expect(await downloads.files[0]!.blob.text()).toBe(VECTORS.files.rawPrivateKey.text);
     expect(document.body.textContent).not.toContain(PRIVATE_HEX);
-    expect(screen.getByText(/Private key file downloaded/)).toBeTruthy();
+    expect(screen.getByText(/Private key file generated/)).toBeTruthy();
   });
 
   it('a blocked download reports it, re-enables the form and clears the passphrases', async () => {
@@ -271,7 +271,7 @@ describe('Export all payment keys (spec 18 flow 2)', () => {
     expect(opened.header).toMatchObject({ scope: 'all-discovered', count: 2, chainId: VECTOR_CHAIN });
     expect(rpc.calls).toHaveLength(2);
     expect(passwordValues().every((v) => v === '')).toBe(true);
-    expect(announce).toHaveBeenCalledWith('Encrypted payment key archive downloaded.');
+    expect(announce).toHaveBeenCalledWith('Encrypted payment key archive generated; download initiated. Keep and verify the saved file.');
   });
 
   it('shows a conflict instead of a form, closes on a chain switch and accepts a keystore file as the credential', async () => {

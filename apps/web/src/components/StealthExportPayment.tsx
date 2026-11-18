@@ -5,12 +5,14 @@ import type { SecretExportCredential } from '../lib/keyVault';
 import { exportEncryptedPayment, exportPublicRecord, exportRawPrivateKey, type ExportRpc, type StealthExportFile } from '../lib/paymentKeyExport';
 import type { ScanMatch } from '../lib/scanClient';
 import { Mono, Notice, downloadText } from './Common';
+import { StealthExportVerification } from './StealthExportVerification';
 import {
   CredentialFields,
   EMPTY_CREDENTIAL,
   EMPTY_PASSPHRASE,
   NewPassphraseFields,
   credentialReady,
+  exportSelectionIdentity,
   newPassphraseProblem,
   readCredential,
   useExportOperation,
@@ -52,6 +54,7 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
   const latestT = useLatestExportT(t);
   const panelId = useId();
   const [open, setOpen] = useState(false);
+  const [downloaded, setDownloaded] = useState<StealthExportFile | undefined>(undefined);
   const [message, setMessage] = useState<ExportMessage | undefined>(undefined);
   const [busy, setBusy] = useState<'encrypted' | 'raw' | undefined>(undefined);
   const [credential, setCredential] = useState<CredentialInput>(EMPTY_CREDENTIAL);
@@ -61,16 +64,18 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
   const clearTyped = (): void => {
     setCredential(withoutPassphrase); setNewPass(EMPTY_PASSPHRASE); setRawStep(false);
   };
-  const reset = (): void => { clearTyped(); setBusy(undefined); };
-  const op = useExportOperation(reset);
+  const reset = (): void => { setDownloaded(undefined); clearTyped(); setBusy(undefined); };
+  const identity = exportSelectionIdentity([props.match]);
+  const op = useExportOperation(reset, [props.chainId, identity, props.rpc]);
 
-  // A chain switch cancels the export: it is bound to the chain of the scan match (formats section 7).
-  const shownChain = useRef(props.chainId);
+  // Consent and pending results belong to this exact payment and the RPC selected for it.
+  const shownInput = useRef({ chainId: props.chainId, identity, rpc: props.rpc });
   useEffect(() => {
-    if (shownChain.current === props.chainId) return;
-    shownChain.current = props.chainId;
+    const previous = shownInput.current;
+    if (previous.chainId === props.chainId && previous.identity === identity && previous.rpc === props.rpc) return;
+    shownInput.current = { chainId: props.chainId, identity, rpc: props.rpc };
     op.stop(); reset(); setMessage(undefined);
-  }, [props.chainId]);
+  }, [props.chainId, identity, props.rpc]);
   useEffect(() => { if (rawStep) confirmRef.current?.focus(); }, [rawStep]);
 
   const fail = (text: DisplayMessage): void => { setMessage({ kind: 'error', text }); };
@@ -92,6 +97,7 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
   const run = (kind: 'encrypted' | 'raw', exportFile: (credential: SecretExportCredential, signal: AbortSignal) => Promise<StealthExportFile>, success: DisplayMessage): void => {
     const controller = op.start();
     const input = credential;
+    if (kind === 'encrypted') setDownloaded(undefined);
     setBusy(kind);
     setMessage({ kind: 'ok', text: { key: 'stealthExport.status.working' } });
     void (async () => {
@@ -101,7 +107,10 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
         const file = await exportFile(proof, controller.signal);
         if (!op.current(controller)) return;
         clearTyped(); setBusy(undefined);
-        if (startDownload(file, fail)) done(success);
+        if (startDownload(file, fail)) {
+          if (kind === 'encrypted') setDownloaded(file);
+          done(success);
+        }
       } catch (error) {
         if (!op.current(controller)) return;
         clearTyped(); setBusy(undefined);
@@ -153,9 +162,11 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
           <h4>{t('stealthExport.details.encrypted.heading')}</h4>
           <p className="hint">{t('stealthExport.details.encrypted.hint')}</p>
           <form onSubmit={onEncrypted} className="stack" autoComplete="off">
-            <NewPassphraseFields value={newPass} onChange={setNewPass} />
+            <NewPassphraseFields value={newPass} onChange={setNewPass} disabled={busy !== undefined} />
             <button type="submit" className="btn" data-testid="stealth-export-encrypted" disabled={busy !== undefined || !credentialReady(credential)}>{t('stealthExport.details.encrypted.download')}</button>
           </form>
+
+          {downloaded !== undefined && <StealthExportVerification file={downloaded} announce={props.announce} />}
 
           <h4>{t('stealthExport.details.raw.heading')}</h4>
           <p className="hint">{t('stealthExport.details.raw.hint')}</p>

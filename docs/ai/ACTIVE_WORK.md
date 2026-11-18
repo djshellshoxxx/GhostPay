@@ -1,3 +1,30 @@
+# Spec 18 portable recovery completion — 2026-11-18
+
+Coordinator: ChatGPT root. Branch: `chatgpt/spec18-recovery-completion-20261118`.
+Base: PR #238, `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. The existing #213/#229 implementation
+is already present. This task is stacked on #238; it does not merge that consolidation.
+
+Exclusive lanes on this task branch:
+
+- Coordinator: export lifecycle panels other than `StealthExportRecovery`, shared export helpers,
+  seller-session/backup integration if required, locale catalogs/security-key declarations, browser
+  acceptance tests, this registry, and completion/security reports.
+- Recovery UI worker: `apps/web/src/components/StealthExportRecovery.tsx`,
+  `apps/web/src/lib/paymentKeyExport.ts`, and their focused tests.
+- Crypto/recovery worker: `packages/ux-vault/src/stealth-export-portable*`, `scripts/recovery/**`,
+  deterministic recovery vectors if needed, the format reference, and independent recovery guide.
+  Follow-up: `apps/web/src/AppShell.tsx` and `AppShell.beforeUnload.test.tsx` for the confirmed
+  cross-tab vault-deletion/sole-copy exit risk; preserve imported complete-backup exceptions.
+- Reconnaissance/reviewer: read-only branch/source review and final independent security review.
+
+Acceptance: export/retention/verification states remain distinct; saved files can be verified without
+installing keys; imports preserve existing keys until fresh bound consent; cancellation and locking
+discard stale results; offline recovery reproduces addresses and spending authority; malicious inputs
+fail safely. Every confirmed defect gets a regression test. Execute applicable original gates and
+real browser checks; record unavailable or failing gates explicitly. No deployment, release,
+main merge, force-push, branch deletion, custody service, or unrelated feature work.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:
