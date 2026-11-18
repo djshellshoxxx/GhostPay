@@ -349,3 +349,36 @@ Owned paths: `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md` and this claim
 Acceptance: independently review new delegated registry signing, isolated escrow supporting harness, corrected worker fetch injection/CI setup, browser regression repairs, and oracle critical-message integration. Preserve prior reviewed-source evidence and separate execution, external acceptance, and final-candidate gates. Record findings at exact source pins and execute bounded focused regressions when available.
 
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
+
+## Shared invoice signer-policy extraction — 2026-11-18
+
+Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-invoice-validation-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (main). Source reviewed:
+PR #218 `b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, #209
+`b5e2ea3e5030b56c79063eb1f91c8a634ee5d740`, and #211
+`a92658b1ef6b95ff0145b2e1933d0047d51289d5`.
+
+Owned paths: `packages/invoice-schema/src/{envelope.ts,errors.ts,pinnedSigner.test.ts}`;
+`packages/invoice-schema/{README.md,DEVIATIONS.md}`; `packages/ux-core/src/{errors.ts,errors.test.ts}`;
+this claim; `docs/handoffs/agents/INVOICE_VALIDATION_20261118.md`.
+
+Acceptance: reproduce the missing opt-in `requirePinnedSigner` contract on main before implementation;
+restore only the shared parser guard and fixed typed error/catalog entries; verify real signatures,
+plaintext/encrypted/passphrase paths, invalid-signature precedence, default compatibility and
+unchanged format/schema/decryption failures. Run affected package tests/typecheck/lint/build and
+existing browser-consumer regressions with matching compiled packages. Document that no current
+browser caller opts into this policy and that default unpinned-seller review remains unchanged.
+No CLI, relayer, backend, experimental, dependency, cryptographic-format or browser trust-policy
+changes. Independent source review and exact-head hosted CI remain integration gates; no publication
+or browser-execution claim from this worker.
+
+Status: additive API implementation and local review complete at product/test source
+`079222115f494d966f1f25be31ffca4d66346461`; regression commit `e3a34d4081aa63d05f36c2e82961299fadaf3f76`
+reproduces 10 signer-policy failures and 1 catalog failure against main. Full invoice-schema 728/728 and
+ux-core 119/119 pass with original coverage thresholds; affected package typecheck/lint/build pass.
+Existing Pay/Receipt tests pass 153/153 at `964b60d6`, before the sole final catalog identity-wording
+correction. Privacy reviewer independently passes 13 signer + 15 catalog tests at final source;
+coordinator independently passes the same 13 signer cases. Both source reviews find no blocker.
+These independent counts overlap author coverage. No browser/default enforcement, cryptographic format,
+optional backend or experimental changes. Exact-head hosted CI and browser acceptance remain separate.
+Evidence and integration limits: `docs/handoffs/agents/INVOICE_VALIDATION_20261118.md`.
