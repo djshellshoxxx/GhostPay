@@ -47,13 +47,17 @@ final CI/release gate remained unmet.
 
 ### What is in the local candidate
 
-The local delta contains **78 commits**, including existing source-branch history; **36** lie on the integration's
+The runtime snapshot's local delta contains **78 commits**, including existing source-branch history; **36** lie on the integration's
 first-parent chain. There are **15 merge commits overall and 13 first-parent merges**. Eleven reviewed source PR
 heads are present by ancestry. Eight other source PRs contributed bounded extractions. Exact local commit identities,
 parents, trees, authors, timestamps, messages and changed paths are retained in
 [LOCAL_COMMIT_LEDGER.json](LOCAL_COMMIT_LEDGER.json), with the coordinator sequence in
 [LOCAL_COMMIT_LEDGER.md](LOCAL_COMMIT_LEDGER.md). The 339 changed tracked paths have source hashes in
 [SOURCE_FILES_SHA256.json](SOURCE_FILES_SHA256.json).
+Later documentation/evidence work is recorded separately: the reviewed documentation head `63592da4` was
+integrated by `e033855b02736f28d6ac583582b984f1d973d4be`. The merge changed documentation only. Independent
+Git-object comparison confirmed that application, package, test, script, workflow and dependency inputs still
+match the runtime snapshot and published `9bad95e5`.
 
 | Work | Local result | Material integration choice |
 |---|---|---|
@@ -107,11 +111,11 @@ suite totals. Every criterion and point is visible in the
 
 | Feature | Implemented estimate | Verified estimate | Remaining work | Blocker |
 |---|---:|---:|---|---|
-| A — Stealth keypair export and recovery | 100% (6/6) | 75% (4.5/6) | Final combined coverage/browser/profile validation, interrupted/fresh-browser recovery acceptance and external wallets/devices. E10 supplies later pinned Foundry interoperability evidence; later source still needs its own qualification. | Browser execution environment and external acceptance; pinned native tooling now has the bounded E10 result. |
+| A — Stealth keypair export and recovery | 100% (6/6) | 75% (4.5/6) | Actual browser/profile validation, interrupted/fresh-browser recovery acceptance and external wallets/devices. Combined unit/coverage and pinned Foundry interoperability now pass within their recorded scopes. | Browser execution environment and external acceptance. |
 | B — Privacy and threat model | 73% (11/15) | 53% (8/15) | Per-invoice signer design, quote correlation, complete bounded-evidence traffic evaluation, real Tor and final browser acceptance; keep exposed headers/journals explicit. | External network/browser qualification and specific protocol/product decisions. |
 | C — Invoice and payment flow | 100% (12/12) | 46% (5.5/12) | Final combined Pay/wallet/browser tests, same-nonce replacement and pending-reload journeys, approved signed testnet manifest and real wallet/network acceptance. | Exact-head hosted/full-browser qualification and approved external deployment inputs. Optional two-provider manifest readback remains Scan-only; do not silently add another observer to Pay/Sweep. |
-| D — Scan, sweep and reconciliation | 95% (9.5/10) | 70% (7/10) | Combined restart/reorg/storage-denial/concurrent-scan tests, real browser/replacement/retry journeys and provider/public-network acceptance. Preserve the existing uncertain-send journals. | Full combined qualification and external provider/browser acceptance. |
-| E — Backup, idle lock and device sleep | 100% (9/9) | 83% (7.5/9) | Actual process restart, OS suspension/wake, browser navigation and fresh-profile restore at the intended serving origin; final combined lint/coverage. | Device/browser lifecycle acceptance and complete candidate qualification. |
+| D — Scan, sweep and reconciliation | 95% (9.5/10) | 70% (7/10) | Actual browser restart/reorg/storage-denial/concurrent-scan, replacement/retry journeys and provider/public-network acceptance. Existing unit coverage passes; preserve the uncertain-send journals. | External provider/browser acceptance and final hosted qualification. |
+| E — Backup, idle lock and device sleep | 100% (9/9) | 83% (7.5/9) | Actual process restart, OS suspension/wake, browser navigation and fresh-profile restore at the intended serving origin; final lint and hosted qualification. | Device/browser lifecycle acceptance and complete candidate qualification. |
 | F — Application quality, accessibility and localization | 86% (9.5/11) | 41% (4.5/11) | Qualify the integrated smoke regression in actual browsers; run full/lean browser journeys, project-subpath and dedicated-origin builds, keyboard/screen-reader/mobile checks and native translation review. | Browser launch environment, real devices and human native-language/accessibility acceptance. |
 
 ### Feature boundaries
@@ -225,9 +229,9 @@ of silently adding another observer.
 ## D. Testing and execution evidence
 
 [EXECUTION_STATUS.json](EXECUTION_STATUS.json) is the editable status register for final closeout. The
-[artifact manifest](ARTIFACT_MANIFEST.json) identifies 78 copied stable artifacts by source and SHA-256, preserving
-the original 62 unchanged and appending publication/light-check/source evidence. Active npm
-output was deliberately not copied as a completed result. Source-specific commands and environments are retained
+[artifact manifest](ARTIFACT_MANIFEST.json) identifies copied stable artifacts by source and SHA-256, preserving
+the original 62 unchanged and appending completed execution, publication and source evidence. The completed full npm
+log and its collected exit metadata are now included. Source-specific commands and environments are retained
 in the recovery, dependency, tooling and native records. Most early worker selections used Node 24.22.1/Vitest
 5.0.5; the dependency-aligned qualification uses Node 22.23.5/npm 11.21.2/Vitest 5.1.0 where its logs identify them.
 Do not describe the earlier Node 24 runs as a pinned Node 22 execution.
@@ -240,16 +244,49 @@ Do not describe the earlier Node 24 runs as a pinned Node 22 execution.
 | Typecheck | Full `npm run typecheck` at `e85db1ef` exited 134 when web exhausted 768 MiB; other workspaces passed. Web-only retry at `ea8f8d65`, 1536 MiB, exited 0; subsequent vault change has scoped checks | All workspace types covered across the successful scopes; original failed aggregate remains recorded |
 | Typed lint | Full run/retry killed with 137 in web; narrower earlier probe demonstrated heap exhaustion | **Blocked**, no whole-candidate lint pass |
 | Secret scan and action pins | At local `e8c77e7e`, `npm run ci:scan-secrets` and `npm run ci:check-actions` both exited 0; all 113 inspected action references are pinned | **Passed within shipped scanner scopes**; no full supply-chain/audit claim |
-| `npm test` | Running at `e8c77e7e`; expands to workspace tests with their configured coverage | **Running; no completed aggregate exit or total** |
+| `npm test` | At `e8c77e7e`, exit 0 in 2,204.93 seconds: **12,402 passed, 0 failed, 79 skipped**, across all 68 test-bearing workspaces | **Passed with explicit skips**; original coverage thresholds retained |
 | Final web build, release build and reproducibility | Separate build lane is pinned to published `9bad95e5`; its first clean install ended in SIGKILL (-9), before build qualification | **Pending**; no completed final build, artifact or browser result |
 | Final hosted checks, CodeQL and SonarCloud | Draft #238 and exact tree mapping are verified. Initial 14:43:53 snapshot: 18 checks, 17 queued/1 skipped. Worker 14:49:58 observation: 15 queued/2 CLI jobs running/1 skipped; no executed success/failure in either snapshot | **Not qualified**; snapshots do not establish current final gates |
 | Local actual Playwright/browser journeys | Chromium fails a required socket operation, exit 134 | **Blocked by executor**; collection/jsdom is not a replacement |
+
+### Completed full workspace run
+
+The full command used Node **22.23.5**, npm **11.21.2**, one Vitest worker and a 1,536 MiB Node heap at
+`e8c77e7e8699dd16b86b7a1ff90b834594d07105`. It completed with **exit 0** in **2,204.93 seconds**.
+The [per-workspace report](evidence/qualification/package-tests-final.md),
+[machine-readable phases and coverage](evidence/qualification/package-tests-final.json),
+[raw log](evidence/qualification/package-tests.log) and
+[execution metadata](evidence/qualification/package-tests-result.json) retain the complete outcome.
+An independent reviewer reconciled all 68 test-bearing workspaces against the source inventory and found no missing
+or extra workspace, incomplete phase, failure marker or arithmetic mismatch.
+
+| Selected scope within this one run | Passed | Skipped | Qualification boundary |
+|---|---:|---:|---|
+| All 68 workspace test scripts | **12,402** | **79** | Zero failed; configured per-workspace coverage gates preserved |
+| Web coverage phase | 2,959 | 1 | 217 files passed, one file skipped; 93.30% statements, 89.52% branches, 95.04% functions, 97.04% lines |
+| Web separate nocov phase | 3 | 0 | Three files passed; these tests add no coverage evidence |
+| Portable vault | 352 | 0 | 96.99% statements, 94.24% branches, 99.50% functions, 98.89% lines |
+| Invoice schema | 731 | 0 | Shared signature, encrypted invoice and parser tests |
+| Chain adapters | 584 | 0 | Includes the cancellation regression source |
+| Relayer | 484 | 1 | Separate workspace, outside Pages release scope |
+| Confidential contracts | 46 | 0 | Actual Hardhat/Mocha execution; coverage was not reported by that runner |
+
+The 79 skipped cases are attributed by workspace: pool-circuits 59, pool-relayer 9, external-pools-privacypools 4,
+payer-sponsor 4, external-pools-railgun 1, relayer 1 and web 1. The minimal reporter does not name every skipped
+case, so the report does not invent their individual reasons. In the relayer, source inspection identifies a
+single conditional prerequisite assertion and four native integration cases; the aggregate one-skip result is
+consistent with the prerequisite being skipped and the four integration cases running. This is a source-plus-count
+inference, not separate per-case logging. Skipped cases remain unexecuted evidence. These totals describe this npm
+invocation only; earlier focused reruns and the separate Forge execution are not added as unique project coverage.
 
 ### Native execution
 
 The native worker verified official Foundry **1.8.5**, solc **0.8.28**, Slither **0.11.6**, Echidna **2.2.7** and
 Mythril **0.24.8**. Installation/probe success alone is not analyzer success. The complete commands, tool hashes,
 source boundary and filters are in [NATIVE_QUALIFICATION_20261118.md](NATIVE_QUALIFICATION_20261118.md).
+The historical native record is preserved unchanged; the
+[Echidna completion addendum](evidence/native/ECHIDNA_COMPLETION_20261118.md) records its later exit, property
+inventory, diagnostics and pinned-source interpretation, with a [JSON companion](evidence/native/ECHIDNA_COMPLETION_20261118.json).
 
 - **Forge:** exit 0, **490 passed, 0 failed, 0 skipped**, 34 suites. The default profile retained 10,000 fuzz runs,
   256 invariant runs/depth 50, optimizer 200 and Cancun. Concurrency was reduced without reducing the budgets.
@@ -258,12 +295,13 @@ source boundary and filters are in [NATIVE_QUALIFICATION_20261118.md](NATIVE_QUA
 - **Slither:** exit 0, **34 contracts / 64 detectors / 0 retained results**, with unchanged CI path/severity/source
   filters, including exclusion of informational/low findings and `--fail-medium`. This does not claim every possible
   detector/configuration produces zero findings.
-- **Echidna:** existing output remains under observation. The worker reports Router reached 300,000 calls, with
-  four safety properties passing and all four required canaries falsified; Sweep later reached 300,005 calls and
-  Policy remains active. No final overall exit or all-three-harness result has been supplied. Completed harnesses
-  warn that auxiliary Slither failed and fuzzing may be less effective, and report unconfigured synthetic
-  `EmptyBase` RPC diagnostics; the separate standalone Slither pass does not clear those warnings.
-  No claim of a diagnostic-free campaign is made. The required three harnesses/canaries and budgets remain intact.
+- **Echidna:** the existing full runner completed with **exit 0**, observed at 15:09:10 UTC. Router executed
+  300,000 calls, Sweep 300,005 and Policy 300,020: **900,025 calls**, all **13 safety properties passing**, and
+  all **11 required reachability canaries falsified**. The canaries deliberately fail when intended success paths
+  are reached; the repository runner requires those failures. All three auxiliary Slither preprocessing steps
+  failed and warned that fuzzing may be less effective; the log also contains ten unconfigured synthetic
+  `EmptyBase` RPC diagnostics. These limitations remain visible despite the configured runner's successful exit.
+  The separate standalone Slither pass does not clear them. Budgets, property inventory and canaries were retained.
 - **Mythril:** installed and executable; **the full five-target campaign was never started**. The coordinator reported
   an automatic possible-cybersecurity-risk interruption and narrowed this worker to existing-output observation.
   This was a coordinator report; retained tool logs do not identify the exact interrupted action. This is neither
@@ -316,7 +354,7 @@ smoke pass. No funded public-network, real Tor, external-wallet or physical-devi
 | Level | Current status | Required next evidence |
 |---|---|---|
 | Code implementation complete | Broad in-scope implementation plus the six repairs above; several compound TM recommendations and compatibility obligations remain partial | Keep explicit scope/defer decisions and unfinished obligations visible |
-| Locally verified | Many focused lanes and native scopes passed; full npm run is active and typed web lint remains blocked | Final aggregate exit/coverage, successful lint or equivalent qualified hosted execution, final builds/reproducibility |
+| Locally verified | Full npm test and coverage gates passed; focused/native results have explicit limits; typed web lint remains blocked | Successful lint or equivalent qualified hosted execution, final build/reproducibility evidence and actual browser acceptance |
 | CI qualified | **No final combined candidate qualification**; initial draft/source mapping verified | Final documentation append and fresh required checks on the intended candidate/merge result |
 | Security reviewed | Separate AI-assisted source reviews exist; no professional final release audit | Exact final source review, analyzer outcomes, current CodeQL/Sonar clearance and disposition of unresolved high findings |
 | Public-testnet qualified | **No** | Approved signed deployment data and authorized external wallet/provider recovery/payment acceptance |
@@ -340,8 +378,8 @@ new owner approvals.
 | Future quote-free relayer protocol (TM11) | The signed fee and bound quote tuple require a coherent protocol design | Preserve current signing/fee checks and optional-service scope |
 | Experimental non-EVM/policy/guardian/escrow expansion | These have separate compatibility, protocol, authority or custody prerequisites outside the active Pages target | Preserve disabled/experimental scope and valuable branches; no implicit production enablement |
 
-The final closeout still needs the completed npm per-workspace results, analyzer campaign outcomes, final build and
-reproducibility evidence, the final documentation append to draft #238, refreshed main/check state, and the
+The full npm results and completed, diagnostically limited Echidna campaign are recorded above. Final closeout still
+needs build/reproducibility evidence, the final documentation append to draft #238, refreshed main/check state, and the
 coordinator's final independent review. The initial published mapping is verified and preserved. The coordinator will update this report and `EXECUTION_STATUS.json` with those concrete
 results. Native translation, real accessibility/device/Tor and public-testnet acceptance remain external gates even
 if local/hosted automated checks subsequently pass.

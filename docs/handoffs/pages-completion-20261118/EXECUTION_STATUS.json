@@ -78,12 +78,28 @@
       "command": "npm test",
       "expanded_command": "npm run test --workspaces --if-present",
       "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
-      "status": "RUNNING",
-      "exit_code": null,
-      "pass": null,
-      "fail": null,
-      "skip": null,
-      "result": "No completed aggregate outcome at packet snapshot. Active log is not copied as a finished artifact; coordinator must append actual totals and exit."
+      "status": "PASS_WITH_EXPLICIT_SKIPS",
+      "exit_code": 0,
+      "pass": 12402,
+      "fail": 0,
+      "skip": 79,
+      "result": "Full npm test command exited 0; all 68 test-bearing workspaces completed. 12,402 passed / 0 failed / 79 skipped are counts within this invocation, not unique behaviors. Web coverage phase: 2,959 passed / 1 skipped; separate nocov phase: 3 passed. No coverage thresholds were reduced.",
+      "seconds": 2204.93,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "VITEST_MAX_WORKERS": "1",
+        "RAYON_NUM_THREADS": "1",
+        "ANVIL_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/anvil",
+        "CAST_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/cast",
+        "SOLC_BIN": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/solc",
+        "FOUNDRY_SOLC": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/solc"
+      },
+      "artifact": "evidence/qualification/package-tests.log",
+      "execution_metadata": "evidence/qualification/package-tests-result.json",
+      "workspace_report": "evidence/qualification/package-tests-final.json",
+      "workspace_count": 68
     },
     {
       "name": "Core Foundry",
@@ -130,12 +146,35 @@
     },
     {
       "name": "Echidna repository campaigns",
-      "status": "INCOMPLETE_CAMPAIGN_EXISTING_OUTPUT_UNDER_OBSERVATION",
+      "status": "CONFIGURED_RUNNER_PASS_WITH_PREPROCESSING_DIAGNOSTICS",
       "version": "2.2.7",
-      "exit_code": null,
-      "result": "Worker reports Router completed 300000 calls, four safety properties passed and four required canaries falsified; Sweep later reached 300005 calls and Policy remains active. No final overall exit or all-three-harness result has been supplied.",
-      "observation_basis": "Worker report; no completed full-campaign result copied.",
-      "diagnostics": "Both completed harnesses warn auxiliary Slither failed and fuzzing may be less effective, with unconfigured synthetic EmptyBase RPC diagnostics. These are under read-only inspection; standalone Slither passing separately does not clear Echidna diagnostics. No diagnostic-free or completed campaign pass is asserted."
+      "exit_code": 0,
+      "result": "Three complete campaigns: 900,025 calls, 13 safety properties passing and 11 required canaries falsified. Existing budgets, property inventory and canary requirements were preserved.",
+      "observation_basis": "Completed existing exec session 48839 exited 0, with complete raw output. No new campaign was launched after the worker interruption.",
+      "diagnostics": "All three auxiliary Slither preprocessing calls failed with reduced-effectiveness warnings; ten unconfigured synthetic EmptyBase RPC diagnostics were retained. The separate standalone Slither pass does not resolve these warnings.",
+      "observed_completed_utc": "2026-11-18 15:09:10 UTC",
+      "harnesses": [
+        {
+          "name": "Router",
+          "calls": 300000,
+          "safety_passed": 4,
+          "canaries_falsified": 4
+        },
+        {
+          "name": "Sweep",
+          "calls": 300005,
+          "safety_passed": 4,
+          "canaries_falsified": 2
+        },
+        {
+          "name": "Policy",
+          "calls": 300020,
+          "safety_passed": 5,
+          "canaries_falsified": 5
+        }
+      ],
+      "artifact": "evidence/native/combined-echidna-227.log",
+      "addendum": "evidence/native/ECHIDNA_COMPLETION_20261118.md"
     },
     {
       "name": "Mythril repository campaigns",

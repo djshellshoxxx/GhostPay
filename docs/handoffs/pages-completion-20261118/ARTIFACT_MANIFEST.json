@@ -568,6 +568,69 @@
       "bytes": 565,
       "copy_mode": "byte-identical stable artifact",
       "appended_utc": "2026-11-18 15:01:41 UTC"
+    },
+    {
+      "packet_path": "evidence/qualification/package-tests.log",
+      "original_path": "qualification/package-tests.log",
+      "sha256": "df758e1fd7d1a95be14c27d74370a5e8af406707db41d8eb95d6dc89f7660e17",
+      "bytes": 260844,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/package-tests-result.json",
+      "original_path": "qualification/package-tests-result.json",
+      "sha256": "99f8f301c8cb14357931a895e717db7e5db7f30954d451b37ca9abf3120ff903",
+      "bytes": 629,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/package-tests-source.txt",
+      "original_path": "qualification/package-tests-source.txt",
+      "sha256": "77040abe07597e2014b009248fa182ced6e2f7bf69ffe2a5e160e2185fd7d921",
+      "bytes": 41,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/package-tests-final.json",
+      "original_path": "analysis-ci/package-tests-final.json",
+      "sha256": "420503aa9d810e490413b44bc7112f4c9229da598d892af209128d5247ddddee",
+      "bytes": 131988,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/package-tests-final.md",
+      "original_path": "analysis-ci/package-tests-final.md",
+      "sha256": "c4438c2b43c8ed02f54aa05624f48b0f2fbd947c2a94bdc34e0a2634ebbbf230",
+      "bytes": 8859,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/parse-package-tests.py",
+      "original_path": "analysis-ci/parse-package-tests.py",
+      "sha256": "8adf443a5e64c25e1639c19333ee1e8455928b102e9d6ff47598ce6a47c06081",
+      "bytes": 15816,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/native/combined-echidna-227.log",
+      "original_path": "analysis-ci/combined-echidna-227.log",
+      "sha256": "f3b4192d3295747cc0973adaa6df6e70f349e33cd90387c3875c2e0aefb16be7",
+      "bytes": 128135,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/native/ECHIDNA_COMPLETION_20261118.json",
+      "original_path": "analysis-ci/ECHIDNA_COMPLETION_20261118.json",
+      "sha256": "6c22136f6e6425e1c5edbae399f098d8399e587f872a07b6cf85296b12c4690e",
+      "bytes": 11680,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/native/ECHIDNA_COMPLETION_20261118.md",
+      "original_path": "analysis-ci/ECHIDNA_COMPLETION_20261118.md",
+      "sha256": "3e014fbaa53f327a1d47790e04747e376fcb948980ed3ddf514e6e359197f6b7",
+      "bytes": 7362,
+      "copy_mode": "byte-identical completed execution artifact"
     }
   ],
   "running_outputs_not_copied": [
@@ -579,5 +642,6 @@
     "Referenced workspace-local paths identify original execution locations; packet_path identifies the durable copy.",
     "Post-publication additions preserve the original 62 artifacts and their hashes. Initial CI counts, build interruption and prior analyzer states remain timestamped observations, not current success claims."
   ],
-  "updated_utc": "2026-11-18 15:01:41 UTC"
+  "updated_utc": "2026-11-18 15:01:41 UTC",
+  "last_extended_utc": "2026-11-18 15:18:46 UTC"
 }

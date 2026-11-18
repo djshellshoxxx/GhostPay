@@ -33,6 +33,11 @@ Acceptance: preserve non-custodial client-side key handling and testnet restrict
 execute focused and combined tests; obtain independent review; record source and evidence before any main merge.
 No deployment, release, branch deletion, force-push, or paid agent workflow activation is authorized.
 This restores the coordinator claim first committed in `b828b44e`, dropped during registry reconciliation.
+Qualification update: the full `npm test` command completed at `e8c77e7e8699dd16b86b7a1ff90b834594d07105`
+with exit 0 on Node 22.23.5/npm 11.21.2. The identical runtime tree was published as draft PR #238 at
+`9bad95e5cc0ee73f5adb8d2c587161074b21e080`. Documentation integration `e033855b` changes no runtime/test input.
+The coordinator owns final result/diagnostic reconciliation in the completion packet and the Pages README's
+HTTP/CSP reachability clarification. Final builds and exact-candidate hosted qualification remain separate gates.
 
 # Pages privacy consolidation — 2026-11-18
 
