@@ -1,6 +1,8 @@
 # Mythril artifact 14290880802: PolicyAccountFactory record dispositions
 
-Status: author disposition, awaiting independent review. Do not treat as a suppression approval.
+Status: author disposition, independently reviewed 2026-11-18 (see the final section; conditions applied).
+Do not treat as a suppression approval; residual (a) needs an owner decision before any production scheme-2
+deployment.
 
 ## Scope and provenance
 

@@ -1,7 +1,8 @@
 # Mythril artifact 14290880802: dispositions of the three expiry (SWC-116) records
 
-Status: author disposition, awaiting independent review. Nothing here suppresses or allowlists a
-finding, changes the runner, or changes production code.
+Status: author disposition, independently reviewed 2026-11-18 (see the final section; conditions applied).
+Nothing here suppresses or allowlists a finding, changes the runner, or changes production code. Accepting these
+dispositions as a Mythril gate exception still requires an owner-approved, finding-specific mechanism.
 
 ## Provenance
 
