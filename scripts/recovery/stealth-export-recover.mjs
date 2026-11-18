@@ -596,7 +596,9 @@ const USAGE = `usage: node scripts/recovery/stealth-export-recover.mjs <file> [o
                              ({"ephemeralPublicKey","stealthAddress"[,"metadata"]}) or @<path>; repeatable
   --reveal-private-keys      also print one-time payment private keys (never the master keys) to stdout
 The passphrase is read from standard input, or from a no-echo prompt on a terminal. It is never accepted as an
-argument or environment variable.`;
+argument or environment variable.
+Keep payment private keys away from a holder of your private viewing key: together with the public announcement,
+they allow reconstruction of the master spending key and spending of your other discoverable scheme-1 payments.`;
 
 class UsageError extends Error {}
 

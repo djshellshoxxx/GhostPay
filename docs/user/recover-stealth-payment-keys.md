@@ -21,14 +21,36 @@ All names are fixed and never contain an address, key, chain or date.
 | File | What it holds | Encrypted? |
 |---|---|---|
 | `ghostpay-stealth-public.json` | One payment's public record: address, public key, announcement location. **No secret.** | No (and not authenticated) |
-| `ghostpay-stealth-keypair.json` | One payment's one-time private key | Yes (passphrase) |
-| `ghostpay-stealth-keypairs.json` | Several payments' one-time private keys (selected or all discovered on one chain) | Yes (passphrase) |
-| `ghostpay-stealth-master.json` | Your master **spending and viewing** keys | Yes (passphrase) |
+| `ghostpay-stealth-keypair.json` | One payment's one-time private key | Private-key body only (passphrase); header public |
+| `ghostpay-stealth-keypairs.json` | Several payments' one-time private keys (selected or all discovered on one chain) | Private-key body only (passphrase); header public |
+| `ghostpay-stealth-master.json` | Your master **spending and viewing** keys | Private-key body only (passphrase); header public |
 | `ghostpay-stealth-private-key.txt` | One payment's private key as plain text | **No: anyone with the file can spend** |
 
 The master backup is separate from the older encrypted seller keystore (the file *Back up (encrypted)* downloads, see
 [Set up a stealth meta-address](set-up-stealth-meta-address.md)). The master backup never contains the
 invoice-signing key; payment-key files never contain master keys.
+
+### Encryption does not hide the public header
+
+Payment-key files encrypt their private-key body. Their public header is authenticated against tampering, but it is
+not encrypted: anyone who obtains the file can read the chain, payment count, every included stealth address and
+public key, and announcement locators without knowing the passphrase. An archive therefore links all its included
+payments to the same collection. The master-backup header likewise exposes its meta-address and public spending
+and viewing keys. Keep these files private even when their private keys are encrypted; share a smaller export when
+you do not want to reveal the other entries. Authentication protects integrity, not confidentiality.
+
+### Keep viewing keys separate from exported payment keys
+
+In scheme 1, someone who obtains your private viewing key, one of your one-time payment private keys, and that
+payment's public announcement can reconstruct your master spending key. The private viewing key lets them compute
+the announcement's shared-secret tweak; subtracting that tweak from the one-time private key yields the master
+spending key modulo the secp256k1 curve order. They can then derive spending keys for your other discoverable
+scheme-1 payments.
+
+Do not give a watch-only service, scanner, or device that holds your private viewing key an exported payment private
+key. The same restriction applies to an encrypted payment-key file once that service or device can decrypt it.
+A payment private key by itself controls its one-time address; combining it with the private viewing key crosses
+that boundary. Encrypting the private-key body protects its stored key material but does not change this cryptographic relationship.
 
 ## Before you start
 
