@@ -8,11 +8,14 @@
 //   1. build-info.json is served and names the expected commit (retried until --timeout-s: Pages propagates slowly);
 //   2. index.html is text/html, carries the meta CSP with script-src 'self', and its entry script is served as JavaScript;
 //   3. in Chromium: the app renders its main navigation, offers only the lean EVM views, shows no page errors, and makes
-//      no request outside the site's project subpath while idle on the home view (no analytics, no default RPC).
-// Read-only: it never connects a wallet, creates keys or contacts an RPC.
+//      no request outside the site's project subpath (no analytics, no default RPC) while idle on the home view, while
+//      it visits every lean view, and while it opens the committed fixture invoice in Pay (SEC-46,
+//      scripts/pages/smoke-walk.mjs).
+// Read-only: it clicks only the main navigation; it never connects a wallet, creates keys or contacts an RPC.
 import { chromium } from '@playwright/test';
 import { existsSync } from 'node:fs';
 import { deployedOriginProblem, requestWithinPublishedSite } from './smoke-url.mjs';
+import { openFixtureInvoice, unvisitedViews, walkLeanViews } from './smoke-walk.mjs';
 
 const args = process.argv.slice(2);
 const url = args[0];
@@ -111,7 +114,16 @@ try {
   await page.waitForTimeout(3000);
   if (errors.length > 0) fail(`page errors: ${errors.join(' | ')}`);
   if (foreign.length > 0) fail(`requests outside the published Pages project while idle: ${foreign.join(', ')}`);
-  console.log(`browser ok: navigation [${labels.join(', ')}], no page errors, no third-party requests`);
+  // Every lean view, then the fixture invoice (SEC-46): still no request outside the published project.
+  const visited = await walkLeanViews(page);
+  const missing = unvisitedViews(visited);
+  if (missing.length > 0) fail(`lean views not reachable from the navigation: ${missing.join(', ')}`);
+  if (errors.length > 0) fail(`page errors while visiting the views: ${errors.join(' | ')}`);
+  if (foreign.length > 0) fail(`requests outside the published Pages project while visiting the views: ${foreign.join(', ')}`);
+  await openFixtureInvoice(page, url);
+  if (errors.length > 0) fail(`page errors while opening the fixture invoice: ${errors.join(' | ')}`);
+  if (foreign.length > 0) fail(`requests outside the published Pages project while opening the fixture invoice: ${foreign.join(', ')}`);
+  console.log(`browser ok: navigation [${labels.join(', ')}], visited ${String(visited.length)} views and the fixture invoice, no page errors, no third-party requests`);
 } finally {
   await browser.close();
 }
