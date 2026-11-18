@@ -59,7 +59,7 @@ Two previous Lows now have committed PoCs. Audit 05's PoCs lived in a scratch wo
 |---|---|---|
 | 02 M-01 immutable fee recipient SPOF | Open by design | `GhostPayRouter.sol:57,122,185`; `Router.audit.t.sol::test_EXPLOIT_feeRecipient*` still assert it |
 | 02 M-02 router cannot announce scheme 2 | **Closed** | `GhostPayPolicyRouter.sol:46` `SCHEME_ID = 0x47500002`; announcements at `:105,:133,:157,:177` |
-| 02 M-03 / C-04 fee-token failure freezes counterfactual accounts | **Closed** (residual AUD24-02) | Waiver at `PolicyAccountFactory.sol:113-164`; `Policy.audit.t.sol::test_feeTokenBlacklistDoesNotFreezeCounterfactualAccounts`, `PolicyAccountFactory.t.sol::test_deploy_gasStarvationCannotTriggerFeeWaiver` pass |
+| 02 M-03 / C-04 fee-token failure freezes counterfactual accounts | **Partially closed** (residual AUD24-02; failing fee-token views or an unexpected transfer delta still freeze counterfactual funds, see `mythril-14290880802-factory-dispositions.md` R7/R8, 2026-11-18) | Waiver at `PolicyAccountFactory.sol:113-164`; `Policy.audit.t.sol::test_feeTokenBlacklistDoesNotFreezeCounterfactualAccounts`, `PolicyAccountFactory.t.sol::test_deploy_gasStarvationCannotTriggerFeeWaiver` pass |
 | 02 L-01 return-data bomb | **Closed** | Assembly `call(..., 0, 0, 0, 0)` at `GhostPayRouter.sol:245-247`, `GhostPayPolicyRouter.sol:293-295`, `PolicyAccount.sol:223-225`; bounded-gas tests pass |
 | 02 L-02 unauthenticated announcement content | Open by design (client mitigation) | `_checkMetadata` binds marker/asset/net only; view tag and key prefix-only |
 | 02 L-03 sweep fee dodge / hostile token gas | Open (service level) | `Sweep.audit.t.sol` EXPLOIT tests pass |

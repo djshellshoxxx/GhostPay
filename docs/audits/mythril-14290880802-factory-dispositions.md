@@ -165,6 +165,15 @@ Residual risk (accepted by design, for the reviewer to confirm):
   upgradeable-token upgrade, every fee-charging `deploy` reverts. Counterfactual funds at undeployed
   addresses of that immutable factory would stay locked until the token works again.
 - The fee waiver covers transfer failures only (`:22-27`). It does not cover failing views.
+- The same freeze follows from a transfer that **succeeds with an unexpected balance delta**
+  (`UnexpectedFeeDelta`, `:140-146`), for example a USDT-style transfer-fee switch turned on or a lossy
+  token upgrade: every fee-charging `deploy` reverts. There is no recovery path through another factory
+  or a direct clone, because the deployer is part of the CREATE2 address and the factory has no admin;
+  only the token issuer reversing the change recovers those funds (independent review N1; scratch probe
+  `test_probe_feeSwitchFreezesCounterfactualFunds`). Exposure today is none: scheme 2 is not deployed on
+  any public chain. Before any production scheme-2 deployment the owner must choose between a zero-fee
+  factory for upgradeable or fee-switch tokens and a specified change making `_collectFee` fail open on
+  view failures and wrong deltas (a public-behaviour change requiring a spec update).
 - The constructor does not check `FEE_TOKEN` for code. `DeployPolicy.s.sol:61` does.
 
 ### R9 (SWC-107, Medium): CREATE2 after an external call (Clones.sol:104)
@@ -221,12 +230,19 @@ Counterevidence:
   call gas at which `deploy` still succeeds through the waiver is 7,879,539. That implies about 123k gas
   remaining after the fee call (1/64, EIP-150).
 - Starving the fee call into a waiver therefore needs a `transferFrom` that costs more than about
-  63 x 123k, roughly 7.7M gas.
+  63 x 123k, roughly 7.7M gas, **for a token without a proxy and `limitsRoot = 0`**. The independent
+  review measured 7,854,789 (root 0) and 9,128,389 (root non-zero) call gas without a proxy; behind one
+  delegatecall proxy (USDC-style) the reverting proxy returns its unspent 1/64, so the minimum call gas
+  drops to 3,992,584 (root 0) or 4,634,376 (root non-zero) and the inner `transferFrom` need only burn
+  about 3.9M gas. This remains unreachable for standard stablecoins (about 50k gas for `transferFrom`).
 - `test_R11_residual_gasHungryFeeTokenCanBeStarvedIntoWaiver` demonstrates that boundary with a
   test-only 20M-gas token.
 
 Residual risk: by design, any `FEE_TOKEN` that refuses transfers while the payer has funds yields fee-free
 deployments. Gas starvation is reachable only for such pathological tokens, not for standard stablecoins.
+The waiver is caller-controllable for a fee token with sender hooks (AUD24-02,
+`docs/audits/26-contract-security-review-2026-11.md:46`), so `FEE_TOKEN` must not have sender hooks; harm is
+limited to fee revenue because the factory holds no assets or approvals.
 
 ## Regression sensitivity (mutation check, scratch copy only)
 
@@ -284,6 +300,21 @@ change.
 4. Decide whether the R7/R8 residual (permanently failing fee-token views block all fee-charging
    deployments of an immutable factory) is acceptable for the chosen fee token on each chain.
 5. Confirm the R11 waiver bound is acceptable: a fee-token `transferFrom` must cost more than about 7.7M
-   gas before gas starvation can force a waiver. Re-measure if `deploy` or `initialize` change cost.
+   gas (no proxy, root 0) or about 3.9M gas (behind one delegatecall proxy) before gas starvation can force
+   a waiver. Re-measure if `deploy` or `initialize` change cost.
 6. Confirm that `nonReentrant` on `deploy` and the absence of external calls in `PolicyAccount.initialize`
    remain invariants for future changes.
+
+## Independent review (2026-11-18)
+
+Reviewed read-only by a separate agent that did not author this record, at `2d54ab60` (contracts `src`, `lib`
+and `script` unchanged from `beb525dd`). It re-verified the report hash and record completeness (exactly eight
+factory records, PCs decoded), checked bytecode identity independently (forge runtime equals the analysed runtime
+bytes `[0:3296]`), reran the 32 tests and the `nonReentrant` mutant, and probed fee-switch and proxy-gas cases.
+Verdicts: R4, R6, R9 and R10 **agree**; R5, R7/R8 and R11 **agree with conditions**, applied in this revision:
+residual (a) widened to the wrong-delta case (N1, Medium, conditional, not exposed while scheme 2 is
+undeployed); a test now proves `initialize` issues no external call below the clone
+(`test_R5_initializeIssuesNoExternalCallBelowTheClone`, which fails on the reviewer's `destination_.call("")`
+mutant while the other 32 tests pass); the gas bound is corrected for proxied tokens (N3); and AUD24-02 is
+cross-referenced (N4). The residual-(a) decision belongs to the owner before any production scheme-2 deployment.
+No analyzer suppression is adopted; the Mythril gate remains red.

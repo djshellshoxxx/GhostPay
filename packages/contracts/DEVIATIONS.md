@@ -101,7 +101,10 @@ The lead should confirm or reject each.
   transfer. A successful transfer requires `feeRecipient` to rise and the payer's balance to fall by exactly `flatFee` (`UnexpectedFeeDelta`; a payer that is the recipient therefore cannot deploy
   with a non-zero fee). If `trySafeTransferFrom` fails, the fee is waived only when caller balance and allowance both cover it and the failed call did not change
   caller balance, recipient balance, or allowance. Otherwise it reverts `FeeTransferFailed` or `UnexpectedFeeDelta`. A waived deployment emits `FeeWaived(account)`;
-  this prevents a fee-token pause/blacklist or recipient refusal from freezing counterfactual funds. `deploy` is `nonReentrant`.
+  this prevents a fee-token pause/blacklist or recipient refusal from freezing counterfactual funds. It does not cover failing
+  `balanceOf`/`allowance` views or a transfer that succeeds with an unexpected delta (for example a token fee switch): those
+  still revert every fee-charging `deploy` of that immutable factory (see `docs/audits/mythril-14290880802-factory-dispositions.md`).
+  `deploy` is `nonReentrant`.
 - **P8. Account-level argument validation duplicates the factory's** (zero owner/destination, `destination == address(this)`, delay in `[1, 30 days]`) so that
   a foreign deployer cannot create a weaker account from the same implementation. `owner == destination` is **allowed** (it only defeats the product, and rejecting
   it would make an already published counterfactual address undeployable and its funds unreachable); client software must validate it before publishing a

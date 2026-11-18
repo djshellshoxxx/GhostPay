@@ -680,6 +680,38 @@ contract MythrilFactoryDispositionsTest is Test {
         assertEq(writes, 2, "exactly ENTERED then NOT_ENTERED");
     }
 
+    /// @dev R5 depends on initialize making no external call: the only message call or create recorded
+    /// below the factory's initialize call is the clone's single DELEGATECALL to the fixed implementation.
+    /// (Independent review: adding `destination_.call("")` to initialize left every other test passing.)
+    function test_R5_initializeIssuesNoExternalCallBelowTheClone() public {
+        address predicted = _predict(factory, owner, destination, DELAY, ROOT);
+        vm.startStateDiffRecording();
+        vm.prank(payer);
+        factory.deploy(owner, destination, DELAY, ROOT);
+        VmSafe.AccountAccess[] memory acc = vm.stopAndReturnStateDiff();
+
+        uint256 k = type(uint256).max;
+        for (uint256 i; i < acc.length; i++) {
+            if (acc[i].account == predicted && acc[i].kind == VmSafe.AccountAccessKind.Call) {
+                k = i;
+                break;
+            }
+        }
+        assertTrue(k != type(uint256).max, "initialize call recorded");
+        uint256 nested;
+        for (uint256 i = k + 1; i < acc.length; i++) {
+            if (acc[i].depth <= acc[k].depth || !_isCallKind(acc[i].kind)) continue;
+            nested++;
+            assertEq(
+                uint8(acc[i].kind),
+                uint8(VmSafe.AccountAccessKind.DelegateCall),
+                "only DELEGATECALL"
+            );
+            assertEq(acc[i].account, address(impl), "only to the fixed implementation");
+        }
+        assertEq(nested, 1, "initialize makes no external call");
+    }
+
     function _expectAccess(
         VmSafe.AccountAccess memory a,
         VmSafe.AccountAccessKind kind,
