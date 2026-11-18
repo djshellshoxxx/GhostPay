@@ -12,8 +12,9 @@ deployment, signing, publication, Wiki publication or branch deletion was perfor
 |---|---|
 | PR | [djshellshoxxx/GhostPay#203](https://github.com/djshellshoxxx/GhostPay/pull/203) (draft), head branch `nodata/wizardly-allen-qwol6u`, base `main` |
 | Last product-source commit | `cfb482f9340e74a479f27adbb2f5074d9b532494`, tree `45815e10af739c48475107d5d6b0620aede1c31a` |
-| Qualified head (CI below) | `d91ae16a9bcdfc13341e39e4c83e194af7ac8ab7`, tree `1bc755739acb9ba481a5764bf9cca969e1162805`; differs from `cfb482f9` only under `docs/` |
-| Later commits | Documentation only (this packet); verify with `git diff --name-only d91ae16a <PR head>` |
+| Qualified head (CI below) | `7a620ff19ecf4e43ec568896c34188f5b2dcd3fc`, tree `594c9f6a206ad28ba97a9f7ef2f955769cf31898`; differs from `cfb482f9` only under `docs/` and in `apps/web/src/views/SellerKeys.test.tsx` (test isolation fix, R-18) |
+| Later commits | Documentation only (this packet); verify with `git diff --name-only 7a620ff1 <PR head>` |
+| Previous qualified head | `d91ae16a` (same product source; CI 44231986652 24/24, Echidna success, Mythril 10 records); its docs-only successor `ceea9fdd` exposed the R-18 test race in `ts-test (web)` |
 | Base | `main` `cfaebeeae22f292cb0bb3074619b2603cb738367`, an ancestor of the candidate (1,482 commits ahead; fast-forwardable) |
 | Foundation | unified #187 `beb525dddcca103de9eda447b55cddf7ee2f428c`, tree `36177d29c0ec7a44504cc248837f70c4ddf3cb52` |
 
@@ -22,16 +23,16 @@ deployment, signing, publication, Wiki publication or branch deletion was perfor
 There are no required checks configured on `main` (no branch protection or rulesets; see blockers). The checks the
 repository's own workflows run on the PR, which a protected promotion should require:
 
-| Workflow (run) | Jobs | Outcome on `d91ae16a` |
+| Workflow (run) | Jobs | Outcome on `7a620ff1` |
 |---|---|---|
-| CI (44231986652) | 24 | **success, 24/24**, including typecheck, lint, all `ts-test` shards, relayer, contracts (fmt, build, test, snapshot, coverage, NatSpec, Slither, static, extra packages), secrets-and-egress, lean candidate, e2e (full) **78 passed / 1 skipped** and e2e (lean) **66 passed / 3 skipped** |
-| Pages (44231986644) | 5 | success (build/verify site and Pages artifact on anvil; 3 deploy/smoke/release jobs skipped by design on PRs) |
-| Beta acceptance (44231986665) | 1 | success (lib + CLI + browser on anvil) |
-| Integration (44231986622) | 1 | success (anvil + bitcoind regtest + solana-test-validator) |
-| Hosting kit (44231986619) | 2 | success |
-| CLI operator qualification (44231986608) | 3 | success |
-| Contract analysis (44231986631) | 2 | **Echidna success; Mythril failure (expected, see below)** |
-| CodeQL (PR #203 check suite 44231983061) | — | success |
+| CI (44242366118) | 24 | **success, 24/24**, including typecheck, lint, all `ts-test` shards (web 2,749 passed / 1 skipped), relayer, contracts (fmt, build, test, snapshot, coverage, NatSpec, Slither, static, extra packages), secrets-and-egress, lean candidate, e2e (full) **78 passed / 1 skipped** and e2e (lean) **66 passed / 3 skipped** |
+| Pages (44242366052) | 5 | success (build/verify site and Pages artifact on anvil; deploy/smoke/release jobs skipped by design on PRs) |
+| Beta acceptance (44242366040) | 1 | success (lib + CLI + browser on anvil) |
+| Integration (44242366032) | 1 | success (anvil + bitcoind regtest + solana-test-validator) |
+| Hosting kit (44242366075) | 2 | success |
+| CLI operator qualification (44242366236) | 3 | success |
+| Contract analysis (44242366379) | 2 | **Echidna success; Mythril failure (expected, see below)** |
+| CodeQL (PR #203 check suite 44242362437) | — | success |
 
 Earlier candidate evidence: [VALIDATION_MATRIX.md](VALIDATION_MATRIX.md).
 
@@ -39,9 +40,9 @@ Earlier candidate evidence: [VALIDATION_MATRIX.md](VALIDATION_MATRIX.md).
 
 | Analyzer | Source | Run / artifact | Outcome |
 |---|---|---|---|
-| Echidna 2.2.7 (Router, Sweep, Policy; 4 workers, 300k calls each) | qualified head `d91ae16a` | Contract analysis 44231986631, artifact 14396468280, report sha256 `e9d5acf5351d678a262e6c4a547f630fc4e2346496ffb47e72bae7ad0a26971b` | **success**, runner exit 0, requested commit `d91ae16a`; 13 safety properties passing; all 11 canaries reached (Router 300,062, Sweep 300,034, Policy 300,044 calls). Also green on `08ef4eb1` (run 44228685328, report `f9153ed5…`) |
-| Mythril 0.24.8 | `beb525dd` (contract source unchanged since) | Contract analysis 43981233671, artifact 14290880802, report sha256 `f5a03aea77cff52a996e67202893f6dd51f8b85bce2f9ad8e41a05ebc7f158f8` | **failure by design**: 11 records (3 Medium, 8 Low). Each is dispositioned with focused tests and an independent review: three SWC-116 intended signed-deadline checks; eight PolicyAccountFactory false positives or intended fail-closed paths. No suppression. On the qualified head (run 44231986631, artifact 14398747387, report sha256 `475b27ec3adae0ccdc2d7fbcd8c30c4a1b819616f65b80f2863de5d7c307cdcb`) Mythril reported 10 of those same records (identical contract, function, SWC and PC); R8 (SWC-113 at PC 1781) was not reported, as in the local rerun, so it remains dispositioned but timeout-dependent. No new record |
-| Slither, Foundry tests, coverage, static checks | qualified head | CI 44231986652 contract jobs | success |
+| Echidna 2.2.7 (Router, Sweep, Policy; 4 workers, 300k calls each) | qualified head `7a620ff1` | Contract analysis 44242366379, artifact 14400678451, report sha256 `a0db0d0661f65db6aef37e9c8bfe6987ed32c9ee0bce83113141cbf66f9d975e` | **success**, runner exit 0, requested commit `7a620ff1`; 13 safety properties passing; all 11 canaries reached (Router 300,062, Sweep 300,034, Policy 300,046 calls). Also green on `08ef4eb1` (run 44228685328, report `f9153ed5…`) and `d91ae16a` (run 44231986631, report `e9d5acf5…`) |
+| Mythril 0.24.8 | `beb525dd` (contract source unchanged since) | Contract analysis 43981233671, artifact 14290880802, report sha256 `f5a03aea77cff52a996e67202893f6dd51f8b85bce2f9ad8e41a05ebc7f158f8` | **failure by design**: 11 records (3 Medium, 8 Low). Each is dispositioned with focused tests and an independent review: three SWC-116 intended signed-deadline checks; eight PolicyAccountFactory false positives or intended fail-closed paths. No suppression. On the qualified head (run 44242366379, artifact 14401394561, report sha256 `4f6cc97b9c17d6ac60510d8545e8af8d4e63a0f1bcb70067f6ae00af62b07736`) Mythril reported exactly the same 11 records (identical contract, SWC, severity and PC). On `d91ae16a` it reported 10 of them (R8, SWC-113 at PC 1781, absent), so R8 is timeout-dependent. No new record |
+| Slither, Foundry tests, coverage, static checks | qualified head | CI 44242366118 contract jobs | success |
 | CodeQL | PR #203 | check runs on the PR | Two pattern alerts on the bundle scanner and its test, resolved in `b441cc64`/`5ddb042a` |
 
 Records: [expiry](../../audits/mythril-14290880802-expiry-dispositions.md),

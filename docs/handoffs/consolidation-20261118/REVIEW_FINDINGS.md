@@ -24,6 +24,7 @@ the evidence named; "Open" means it remains a gate, owner decision or backlog it
 | R-15 | Spec 18 wording | Info | Clipboard and telemetry phrasing narrower than product rules; flow 1 provider unnamed; lean boundary unstated; in-memory seller step-up undefined (`authorizeKeyExport` returns `undefined` without a vault). | Listed in [NEXT_PHASE_QUEUE.md](NEXT_PHASE_QUEUE.md) for decision before K03. | Open (next phase) |
 | R-16 | Private security inventories | Gate (access) | CodeQL and Dependabot alert APIs return 403 for this integration; secret-scanning API blocked by the proxy; no Sonar configuration in the repository. | Inventory not obtained; passing scanner jobs are not issue closure. | Open (owner access) |
 | R-17 | Concurrent PR #204 | Info | Another session's open draft #204 (agent tooling, base `main`) conflicts with this candidate in `.github/workflows/ci.yml` and `CLAUDE.md`. | Not integrated (out of scope); merge-order note in the promotion packet. | Open (coordination) |
+| R-18 | Test isolation (CI) | Low (test defect, introduced in `cfb482f9`) | The blocked-download test waited for any revocation of `blob:test`; earlier tests' delayed revocations could satisfy it before the download ran, then a slow export exceeded the one-second re-enable wait (CI 44239860965 on `ceea9fdd`). | Test-unique URL counted alone (`7a620ff1`); old version reproduced the CI error under an injected stray revocation and a 1.5 s export, the new version passes; CI 24/24 on `7a620ff1`. | Resolved |
 
 ## Final independent combined review (candidate `1e1121b3`)
 
