@@ -1,7 +1,8 @@
 import { EventEmitter } from 'node:events';
 import { readFileSync } from 'node:fs';
+import { connect, type Socket } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
-import { CHAIN_ID, FakeChain, NOW_MS, testConfig, type Harness } from './harness.testutil.js';
+import { CHAIN_ID, FakeChain, NOW_MS, startHarness, testConfig, type Harness } from './harness.testutil.js';
 import { createLogger, createStdoutSink } from './log.js';
 import { buildRelayer } from './runtime.js';
 
@@ -15,6 +16,12 @@ afterEach(async () => {
   await h?.stop();
   h = undefined;
 });
+
+async function start(o: Parameters<typeof startHarness>[0] = {}): Promise<Harness> {
+  h = await startHarness(o);
+  return h;
+}
+const settle = (ms = 20): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 describe('R07-3 / LF-074edb61e-8: a failing log sink never takes the process down', () => {
   it('createLogger swallows a sink that throws (ENOSPC, destroyed stream)', () => {
@@ -102,5 +109,63 @@ describe('R07-3 / LF-074edb61e-8: a failing log sink never takes the process dow
       for (const l of previous) process.on('unhandledRejection', l as (...a: unknown[]) => void);
     }
     expect(rejections.map((e) => String(e))).toEqual([]);
+  });
+});
+
+describe('LF-6f25385ce-1: per-peer TCP connection cap (server.maxConnectionsPerIp)', () => {
+  const opened: Socket[] = [];
+  afterEach(() => {
+    for (const x of opened.splice(0)) x.destroy();
+  });
+  const port = (s: Harness): number => Number(new URL(s.url).port);
+  const open = async (s: Harness): Promise<Socket> => {
+    const sock = connect(port(s), '127.0.0.1');
+    opened.push(sock);
+    sock.once('error', () => undefined);
+    await new Promise<void>((r) => sock.once('connect', () => r()));
+    return sock;
+  };
+  /** Opens one more connection and reports whether the server closed it without a request. */
+  const closedByServer = (s: Harness): Promise<boolean> => {
+    const c = connect(port(s), '127.0.0.1');
+    opened.push(c);
+    c.once('error', () => undefined);
+    return new Promise<boolean>((resolve) => {
+      c.once('close', () => resolve(true));
+      setTimeout(() => resolve(false), 1500);
+    });
+  };
+  const healthzOver = (sock: Socket): Promise<string> => {
+    sock.write('GET /healthz HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n');
+    return new Promise<string>((resolve) => {
+      let t = '';
+      sock.on('data', (x: Buffer) => {
+        t += x.toString();
+      });
+      sock.on('close', () => resolve(t));
+    });
+  };
+
+  it('by default one peer cannot hold more than 64 concurrent connections', async () => {
+    const s = await start();
+    for (let i = 0; i < 64; i++) await open(s);
+    expect(await closedByServer(s)).toBe(true);
+  }, 30_000);
+
+  it('caps concurrent connections per peer, counts the refusal and frees the slot on close', async () => {
+    const s = await start({ config: { server: { maxConnectionsPerIp: 2 } } });
+    const a = await open(s);
+    await open(s);
+    expect(await closedByServer(s)).toBe(true);
+    expect(s.relayer.metrics.render()).toMatch(/relayer_connections_refused_total 1/);
+    a.destroy();
+    await settle(50);
+    expect(await healthzOver(await open(s))).toContain('200 OK');
+  });
+
+  it('exempts trusted proxies from the per-peer cap', async () => {
+    const s = await start({ config: { trustedProxies: ['127.0.0.0/8'], server: { maxConnectionsPerIp: 1 } } });
+    const socks = [await open(s), await open(s), await open(s)];
+    expect(await healthzOver(socks[2] as Socket)).toContain('200 OK');
   });
 });

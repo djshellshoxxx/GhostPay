@@ -73,3 +73,8 @@ Contract code wins over docs. Items for the lead to confirm or reject.
   errors. A failing log destination therefore loses lines instead of exiting the process. Lost lines are not counted
   or retried. An exit would keep only what the state journal persists (daily budget, unsettled transactions); the
   rate-limit buckets, loss budget, owner failure counter and breaker window are memory-only by design (PRIVACY.md).
+- Per-peer connection cap (LF-6f25385ce-1, S3-18): `server.maxConnectionsPerIp` (default 64, 1..1024) bounds the open
+  connections of one peer (IPv4 address, IPv6 /64) under the server-wide 1024. A connection over the cap is destroyed
+  on accept, before any request is read, and counted as `relayer_connections_refused_total` (no log line, no address).
+  Trusted proxies are exempt, so behind a proxy the per-client connection limit belongs to the proxy. The counter is
+  keyed by an HMAC under a random per-process key and holds an entry only while that peer has an open connection.

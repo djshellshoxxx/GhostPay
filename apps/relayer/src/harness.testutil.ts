@@ -168,6 +168,7 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000, quoteGroupPerMinute: 6000, quoteGroupBurst: 1000 },
     breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 },
     lossBudget: { windowSeconds: 3600, perKeyWei: 10n ** 16n, globalWei: 10n ** 17n, maxKeys: 100 },
+    server: { maxConnectionsPerIp: 64 },
     queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
     shutdownGraceSeconds: 2,
     metricsEnabled: false,

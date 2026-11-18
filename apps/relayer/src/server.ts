@@ -1,17 +1,18 @@
 import { RejectSpikeDetector } from './rejectSpike.js';
-import { randomUUID } from 'node:crypto';
+import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
-import type { AddressInfo } from 'node:net';
+import type { AddressInfo, Socket } from 'node:net';
 import {
   TokenBucketLimiter,
   TrustedProxies,
   bucketKey,
   groupKey,
   monotonicNow,
+  parseIp,
   resolveClientIp,
 } from '@ghostpay/relayer-guard';
 import { nullAlerts, type AlertSink } from './alerts.js';
-import type { RelayerConfig } from './config.js';
+import { MAX_CONNECTIONS, type RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
 import type { Metrics } from './metrics.js';
 import type { RateLimiter } from './limiter.js';
@@ -124,6 +125,13 @@ export class RelayerHttpServer {
   private readonly quoteBudget: TokenBucketLimiter;
   private draining = false;
   private readonly rejects: RejectSpikeDetector;
+  /**
+   * Open connections per peer bucket (IPv4 address, IPv6 /64), keyed by a truncated HMAC under a random per-process key
+   * so no raw address is held. An entry exists only while that peer has an open connection, so the map never holds more
+   * than {@link MAX_CONNECTIONS} entries.
+   */
+  private readonly connections = new Map<string, number>();
+  private readonly connectionKey = randomBytes(32);
 
   public constructor(private readonly d: HttpDeps) {
     this.origins = new Set(d.config.allowedOrigins);
@@ -141,7 +149,36 @@ export class RelayerHttpServer {
     this.server.headersTimeout = 10_000;
     this.server.requestTimeout = 15_000;
     this.server.keepAliveTimeout = 5_000;
-    this.server.maxConnections = 1024;
+    this.server.maxConnections = MAX_CONNECTIONS;
+    this.server.on('connection', (sock: Socket) => {
+      this.admitConnection(sock);
+    });
+  }
+
+  /**
+   * Per-peer connection cap (S3-18): without it one peer can hold every one of the server-wide slots. Trusted proxies
+   * are exempt because they carry many clients; behind one, the per-client limit belongs to the proxy.
+   */
+  private admitConnection(sock: Socket): void {
+    const peer = parseIp(sock.remoteAddress ?? '');
+    if (peer === null) {
+      sock.destroy();
+      return;
+    }
+    if (this.proxies.has(peer)) return;
+    const key = createHmac('sha256', this.connectionKey).update(bucketKey(peer)).digest('base64url').slice(0, 22);
+    const n = (this.connections.get(key) ?? 0) + 1;
+    if (n > this.d.config.server.maxConnectionsPerIp) {
+      this.d.metrics?.inc('relayer_connections_refused_total');
+      sock.destroy();
+      return;
+    }
+    this.connections.set(key, n);
+    sock.once('close', () => {
+      const left = (this.connections.get(key) ?? 1) - 1;
+      if (left <= 0) this.connections.delete(key);
+      else this.connections.set(key, left);
+    });
   }
 
   /**

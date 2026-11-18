@@ -152,6 +152,18 @@ describe('parseConfig', () => {
     expect(() => parse(good(), { env: { METRICS_PORT: '65536' } })).toThrow(/METRICS_PORT/);
   });
 
+  // Regression (LF-6f25385ce-1, dropped by 84c2c185): per-peer TCP connection cap.
+  it('caps connections per peer (server.maxConnectionsPerIp, default 64, at most the global 1024)', () => {
+    expect(parse(good()).server).toEqual({ maxConnectionsPerIp: 64 });
+    expect(parse(good({ server: { maxConnectionsPerIp: 8 } })).server.maxConnectionsPerIp).toBe(8);
+    expect(parse(good({ server: { maxConnectionsPerIp: 1024 } })).server.maxConnectionsPerIp).toBe(1024);
+    for (const bad of [0, 1025, 1.5, '8', -1]) {
+      expect(() => parse(good({ server: { maxConnectionsPerIp: bad } }))).toThrow(/server\.maxConnectionsPerIp/);
+    }
+    expect(() => parse(good({ server: { maxConnections: 5 } }))).toThrow(/^config \$\.server\.maxConnections: unknown key$/);
+    expect(() => parse(good({ server: [] }))).toThrow(/server/);
+  });
+
   it('requires explicit opt-in before using the hot key as fee recipient', () => {
     const hotRecipient = chain({ feeTo: undefined });
     expect(() => parse(good({ chains: [hotRecipient] }))).toThrow(/feeTo.*required/);

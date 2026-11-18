@@ -71,7 +71,8 @@ immediately before signing.
 JSON file (`RELAYER_CONFIG`, default `./relayer.config.json`; example `relayer.config.example.json`) plus environment.
 Strict validation: unknown keys, wildcard or non-https origins, plain-http or credentialed RPC URLs and non-stable tokens
 stop startup, with an error naming the unknown key. Top-level keys in the example: `listen`, `allowedOrigins`, `trustedProxies`, `quoteTtlSeconds`,
-`deadline { minSeconds, maxSeconds }`, `rateLimit`, `breaker`, `queue`, `shutdownGraceSeconds`, `chains[]` with
+`deadline { minSeconds, maxSeconds }`, `rateLimit`, `breaker`, `server { maxConnectionsPerIp }` (default 64 concurrent
+connections per peer, 1..1024, trusted proxies exempt), `queue`, `shutdownGraceSeconds`, `chains[]` with
 `chainId`, `rpcUrl` or `rpcUrlEnv`, `feeTo`, `tokens[] { address, usdStable: true }`, `nativeUsdPrice`, `gasUnits
 { sweep, sweepWithPermit }`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Operator numbers have no
 defaults on purpose; the example values are placeholders, not measurements.

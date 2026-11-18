@@ -23,6 +23,8 @@ import { ConfigError, type Env } from './secrets.js';
 export const DEV_CHAIN_ID = 31337;
 /** Spec ceiling for the sweep deadline window. */
 export const MAX_DEADLINE_WINDOW_SECONDS = 1800;
+/** Server-wide concurrent connection cap (`server.maxConnections`); also the upper bound of `server.maxConnectionsPerIp`. */
+export const MAX_CONNECTIONS = 1024;
 
 /** Resolved per-chain settings. */
 export interface ChainRuntimeConfig {
@@ -101,6 +103,11 @@ export interface RelayerConfig {
   readonly alertWebhookAllowedHosts?: readonly string[];
   /** HMAC secret for signed alert payloads. */
   readonly alertWebhookSecret?: string;
+  /**
+   * TCP front end. `maxConnectionsPerIp` caps the concurrent connections of one peer (IPv4 address, IPv6 /64) under the
+   * server-wide {@link MAX_CONNECTIONS}; peers in `trustedProxies` are exempt (S3-18).
+   */
+  readonly server: { readonly maxConnectionsPerIp: number };
   readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
   /**
@@ -436,7 +443,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     raw,
     '$',
     ['allowedOrigins', 'chains'],
-    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state'],
+    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'server', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state'],
   );
   const stateFile = parseState(o['state'], ctx);
   const listen = sub(o, 'listen', '$', ['host', 'port']);
@@ -450,6 +457,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'probeTimeoutSeconds']);
   const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
   const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds', 'griefReserveBps']);
+  const sv = sub(o, 'server', '$', ['maxConnectionsPerIp']);
   const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
@@ -504,6 +512,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       maxKeys: numberOr(lb, 'maxKeys', 'lossBudget', 10_000, 16, 1_000_000),
     },
     ...optionalSecrets(o, ctx),
+    server: { maxConnectionsPerIp: numberOr(sv, 'maxConnectionsPerIp', 'server', 64, 1, MAX_CONNECTIONS) },
     queue: {
       maxPending: numberOr(q, 'maxPending', 'queue', 16, 1, 1024),
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),
