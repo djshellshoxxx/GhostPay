@@ -63,6 +63,18 @@ limited leaf with zero window, and **duplicate tokens** are refused. With a non-
 never be withdrawn: add an `UNLIMITED` leaf (`limit = MAX_UINT256`, `windowSeconds = 0n`) for every token the account may
 receive, including the native coin (`ZERO_ADDRESS`).
 
+```ts
+function policyCoversToken(record: Pick<PolicyRecord, 'policy' | 'tree'>, token: Address | 'native'): boolean   // record.ts
+```
+
+`policyCoversToken` answers "can this policy ever withdraw `token`?" from a verified `PolicyRecord`: `true` for a zero
+`limitsRoot`, otherwise only for tokens with a leaf (`'native'` is `ZERO_ADDRESS`, addresses compared ignoring case); it
+returns `false` when the record has no tree or its root is not `limitsRoot`. The router accepts any token or native
+payment, and a meta-address carries only the spending key, viewing key and `policyHash`, so a payer without the
+recipient's record cannot run this check (audit SEC-11). The web app uses it to list, on the seller's side, the only
+assets a policy can withdraw, and on the payer's side to refuse an uncovered asset when the payee's record is loaded and
+to warn otherwise.
+
 ### Meta-address (`meta.ts`)
 
 ```ts
@@ -229,8 +241,16 @@ catch (e) { e instanceof PolicySchemeError; /* code 'INVALID_DELAY', message 'in
 - A policy the factory rejects (delay outside `[1 h, 30 d]`, zero destination) makes payments to its account
   unrecoverable. Always `validatePolicy` before publishing a meta-address.
 - `PolicyAccountFactory.deploy` publishes the full policy pre-image in calldata, so the first deployment of any of a
-  seller's accounts reveals the `policyHash` and destination of that meta-address and links every deployed account
-  (contracts `DEVIATIONS.md` R10). Undeployed, router-paid accounts stay unlinkable.
+  seller's accounts reveals the `policyHash` and destination of that meta-address and links every deployed account.
+  Undeployed accounts are not linked by a factory deployment, but they are **not unlinkable**: the current router takes
+  `PolicyRef{owner, policyHash}` in calldata (`IGhostPayPolicyRouter.sol:18-21`, contracts `DEVIATIONS.md` R3), so
+  every router payment to one meta-address carries the same public `policyHash`, and the unsalted hash lets anyone who
+  can guess the destination, delay and limits root confirm them (PRIVACY-E2E-05, open). Anyone who holds the meta-address (every payer it was
+  shared with) can read that `policyHash` from it and find every router payment to it. The salt-only router (round-3
+  N-01) that the calldata section above describes is not what the code ships (audit 24 F3, open).
+- `MIN_DELAY` (1 h) is the factory floor, not a safe value on a rollup: a censoring or stalled sequencer can hold back
+  the owner's `cancel` beyond a short delay. Per-chain minimum delays are an open owner decision (OD-11); neither this
+  package nor the app verifies or enforces any per-chain bound.
 - The factory may waive the flat fee (`FeeWaived`) when the fee token refuses a caller who can pay (R11); do not assume a
   fee was collected from the presence of a deployment.
 - Key theft is delayed and made visible, not prevented: the thief holds the same key and can request withdrawals to the
