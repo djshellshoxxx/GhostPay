@@ -11,7 +11,8 @@
 #   GHOSTPAY_RELEASE_PUBKEYS        release public keys that verify those manifests (required when any is present).
 #   GP_COMMIT                       commit recorded in build-info.json (default: git HEAD; must match HEAD in CI).
 #   GHOSTPAY_PAGES_ORIGIN           the origin the site is served from (https://host[:port], no path), recorded in the
-#                                   evidence and the banner. Required when manifests are bundled. A *.github.io origin is
+#                                   evidence and the banner, and compiled in: served from any other origin, the app
+#                                   trusts no manifest and says so (SEC-09). Required when manifests are bundled. A *.github.io origin is
 #                                   SHARED by every GitHub Pages site of that account (GP-PAGES-01): any of them can read
 #                                   this site's browser storage and script its pages.
 #   GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet
@@ -92,6 +93,13 @@ console.log(chainIds.length === 0 ? 'manifests: none (payments disabled on every
 NODE
 if ls "$deployments"/*.json >/dev/null 2>&1; then
   [ -n "${GHOSTPAY_RELEASE_PUBKEYS:-}" ] || die "manifests supplied without GHOSTPAY_RELEASE_PUBKEYS"
+  # A release build never trusts a key whose secret is public (SEC-44): the Playwright/devnet manifest key and the
+  # other published test keys verify only development builds (GHOSTPAY_PAGES_DEV=1).
+  GP_DEV="$dev" node --input-type=module - <<'NODE' || die "GHOSTPAY_RELEASE_PUBKEYS rejected"
+import { parseReleaseKeys } from './apps/web/scripts/validate-deployments.mjs';
+try { parseReleaseKeys(process.env.GHOSTPAY_RELEASE_PUBKEYS, { production: process.env.GP_DEV !== '1' }); }
+catch (e) { console.error(`build-pages: ${e instanceof Error ? e.message : String(e)}`); process.exit(1); }
+NODE
   [ -n "$origin" ] || die "manifests supplied without GHOSTPAY_PAGES_ORIGIN (the origin decides who else can script this site)"
   if [ "$shared" = 1 ] && [ "${GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN:-}" != testnet ]; then
     die "refusing to enable payments on the shared origin $origin: every GitHub Pages site of that account can read this
@@ -103,12 +111,15 @@ fi
 
 log="$work/build.log"
 echo "== build apps/web (lean profile, relative base) at $commit"
-# Clean environment: no inherited VITE_* switches, release keys only as supplied, reproducible timestamps.
+# Clean environment: no inherited VITE_* switches, release keys only as supplied, reproducible timestamps. The one VITE_*
+# value set here is the declared origin: the app refuses manifest trust when served from any other origin (SEC-09).
 if ! (
   cd "$ROOT/apps/web"
   env -i PATH="$PATH" HOME="$HOME" TMPDIR="${TMPDIR:-/tmp}" CI="${CI:-}" TZ=UTC LC_ALL=C \
     GHOSTPAY_LOCAL_BUILD_PROFILE=lean \
     GHOSTPAY_RELEASE_PUBKEYS="${GHOSTPAY_RELEASE_PUBKEYS:-}" \
+    GHOSTPAY_PAGES_DEV="$dev" \
+    VITE_GHOSTPAY_PAGES_ORIGIN="$origin" \
     GHOSTPAY_DEPLOYMENTS_DIR="$deployments" \
     GP_COMMIT="$commit" SOURCE_DATE_EPOCH="$epoch" \
     bash -c 'npx tsc -p tsconfig.json --noEmit && npx vite build --outDir "$0" --emptyOutDir && node e2e/devnet/scan-dist.mjs "$0"' "$work/dist"
@@ -145,7 +156,7 @@ const devNote = dev === '1' ? '<strong>Development build</strong> (not a release
 const sharedNote = shared === '1'
   ? ' This web address is shared with every other GitHub Pages site of the same account, which can read this site\'s browser storage and control its pages: use it only for testing and never load keys that hold real funds.'
   : '';
-const banner = `<p class="gp-pages-mirror" role="note" id="gp-pages-mirror"><strong>GitHub Pages mirror.</strong> ${devNote}${state}${sharedNote} This host cannot send security headers (no clickjacking protection). Before trusting it, compare the served files with the published SHA256SUMS: <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/docs/pages/README.md" rel="noopener noreferrer">how to verify</a>.</p>`;
+const banner = `<p class="gp-pages-mirror" role="note" id="gp-pages-mirror"><strong>GitHub Pages mirror.</strong> ${devNote}${state}${sharedNote} This host cannot send security headers (no clickjacking protection). Before trusting it, compare the served files with the published SHA256SUMS: <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/docs/pages/README.md" target="_blank" rel="noopener noreferrer">how to verify (opens in a new tab)</a>.</p>`;
 let html = readFileSync(indexPath, 'utf8');
 if (!/<body[^>]*>/.test(html) || !html.includes('</head>')) throw new Error('index.html has no <head>/<body> to label');
 html = html.replace('</head>', '    <link rel="stylesheet" href="./pages-mirror.css" />\n  </head>').replace(/<body([^>]*)>/, (m) => `${m}\n    ${banner}`);
