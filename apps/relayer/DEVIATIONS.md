@@ -103,3 +103,19 @@ Contract code wins over docs. Items for the lead to confirm or reject.
   client refuses quotes whose `feeTo` differs, so such a relayer could only ever refuse. Without a manifest (testnet,
   dev chain) `feeTo` is the operator's choice. `deploy/config/relayer.config.example.json` (outside this directory)
   carries a placeholder `feeTo`; an operator with a manifest must set it to the manifest's recipient.
+- OP Stack L1 data fee not accounted (R07-4, evaluated, not implemented). On OP Stack chains (chain-adapters
+  `opStack: true`: Base Sepolia 84532, OP Sepolia 11155420, Base 8453, OP Mainnet 10) every transaction also pays an
+  L1 data fee and, since Isthmus, an operator fee outside `gasUsed x gasPrice`. The relayer can tell the family
+  (`findChain(chainId).opStack`, already used to build chain clients in `runtime.ts`) but never reads it: the quote's
+  gas term (`gasUnits x eth_gasPrice`), the send-time `fee_below_gas_cost` check, the daily-budget and loss-budget
+  reservations (`gasLimit x gasPrice`) and the settlement (`gasUsed x gasPrice`, `chain.ts` receipt summaries drop
+  `l1Fee`) all count execution gas only. Exposure: the hot key pays more than the daily budget, the loss budget and
+  `relayer_gas_spent_wei_total` show, and a sweep near `amount_too_small` can be sponsored below cost; the 50 bps fee
+  floor covers this for ordinary amounts while L2 and blob fees stay low, and the `minBalanceWei` floor still trips
+  the breaker on the real balance. A contained fix is not small: (1) a quote-path and in-lane read of the
+  GasPriceOracle predeploy (`getL1Fee(serialized tx)`, `getOperatorFee(gas)`) on the configured RPC, cached like the
+  gas price, on `opStack` chains only; (2) add it, with a reserve multiplier like the web's direct sweep
+  (`apps/web/src/lib/opStackFee.ts`), to the quote's gas term, `coversGas` and both reservations; (3) carry `l1Fee` and
+  the operator fee in `ReceiptSummary`/`MinedReceipt` and charge them in `settleReceipt`; (4) tests against a fake OP
+  RPC, since anvil is not an OP Stack node. That changes the `ChainClient` interface, adds RPC calls on the quote path
+  and needs a reserve parameter, so it is left for a separate change.
