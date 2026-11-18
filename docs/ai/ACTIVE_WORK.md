@@ -501,3 +501,12 @@ typecheck at a 1536 MiB cap and scoped lint. Independent review reports no block
 three pure tamper-helper tests. Playwright discovery lists 14 tests in three mocked suites without execution.
 The prior hosted result remains 11 passed, 2 failed and 3 not run until fresh exact-source CI executes.
 Handoff: `docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md`.
+
+## Pages beta dependency qualification — 2026-11-18
+
+Worker: ci_qualification, Caveman investigate-first, lean-build and verify-and-stop workflows.
+Branch: `integration/ghostpay-dependency-qualification-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: root/workspace package manifests, package-lock.json, dependency tooling regressions if a defect is reproduced, and a source-pinned dependency handoff. No application source, workflows, coverage configuration, contracts or deployment changes.
+Acceptance: integrate the exact paired #210 and #236 dependency revisions; clean installation; library and web builds; relevant original coverage-enabled suites, typechecks and lints; full and production dependency audits; preserve pending browser and hosted qualification honestly. No forced peers, casts, blanket overrides or weakened gates.
+Source candidates: #210 `4d19655a2e5d93ad9378803cd4163245168aca24`; #236 `defdaa308a2d05ab407af7e42f8dc457cf52d103`.
