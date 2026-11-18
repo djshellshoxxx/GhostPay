@@ -33,7 +33,7 @@ Evidence index: [PR decisions](PR_INVENTORY.md), [exact PR heads, bases, files a
 | Closed as superseded | #127, #42 and #49 |
 | Pre-existing PRs inventoried/dispositioned | 32; the initial connector listing of 28 omitted four pre-existing Dependabot PRs |
 | New repair/completion PRs | #225–#231 and #233–#237, twelve separate reviewed changes |
-| Product repairs merged | None yet; required checks remain incomplete, and #225's AI review failed on service quota |
+| Product repairs merged | None yet; required checks remain incomplete. #225's AI review failed on service quota; a later #230 beta job failed on the inherited receipt fixture |
 | Pre-existing PRs still open | 27; per-PR preserve, repair, extract and retarget decisions are in PR_INVENTORY.md |
 | Inventory and open totals | 44 inventoried PRs; 39 open excluding this report #232, or 40 including it |
 | Branches | All retained: 243 actual remote heads; 164 are ancestors of/equal to main and 79 are not. The symbolic origin/HEAD alias is excluded |
@@ -297,6 +297,12 @@ A second original #222 job, [beta acceptance 134715943959](https://github.com/dj
 
 That second job's upload step warned that no files matched scripts/beta/.state/*.log, because the pinned upload action excludes hidden directories by default. #237 adds include-hidden-files: true beneath that same narrow log-only path. Acceptance/build logs survive cleanup, while devnet JSON and private fixture paths do not match the glob. Retention, permissions, test commands, gates and missing-file behavior are unchanged. Six existing workflow tests and static/pin/secret review pass; actual hosted upload remains to be verified. Both the original failure and later source repair are retained in [LATE_BETA_ACCEPTANCE_REVIEW.json](LATE_BETA_ACCEPTANCE_REVIEW.json).
 
+### Bounded follow-up after report publication
+
+At **05:51:37 America/Los_Angeles (13:51:37 UTC)**, a final check of main, the report branch and all twelve repair check-run sets confirmed main was unchanged and every repair still had queued checks. This narrower follow-up is retained in [POST_PUBLICATION_CHECKS.json](POST_PUBLICATION_CHECKS.json); it supplements the complete 44-PR snapshot rather than changing that snapshot's cutoff.
+
+One new completed failure appeared: #230 beta acceptance [job 134773650635](https://github.com/djshellshoxxx/GhostPay/actions/runs/44296171884/job/134773650635), exact PR head 0b2609c2c83143741ad343bfb08234a2d1182aa5 and checked-out synthetic merge c827d641c1bd4c50353d486e9df9a207bb4bb0d5. Its library and CLI stages passed (CLI 124/124, including 11 expected unsupported-chain assertions); browser acceptance was **2 passed, 1 failed**. The same devnet-journey.spec.ts:176 address assertion failed after receipt signature verification passed. This is the inherited minimized-receipt fixture already addressed by sibling #233, which is not part of #230's tree. The first journey again stopped before payer receipt import, direct sweep and dust-resweep assertions. No passing rerun, new product defect or clearance of #230 is inferred. The exact log/source review is in [POST_PUBLICATION_230_BETA_REVIEW.json](POST_PUBLICATION_230_BETA_REVIEW.json).
+
 ### Unavailable or incomplete checks
 
 System Chromium 156.0.8078.79 fails before test execution with socket Operation not permitted. Managed Playwright downloads were empty/truncated. Browser suites were adapted but did not execute. No Tor, physical mobile, camera, real wallet, screen-reader or native-language pass is claimed.
@@ -315,7 +321,7 @@ Some default-heap checks ended 137; a 768 MiB attempt exhausted V8. Capping at 1
 | Privacy qualification | Source-level boundaries and defaults reviewed; consent/history/v4 checkpoint fixes tested | Combined-source egress evidence, legacy-rescan acceptance, real Tor/own-node/provider acceptance; plaintext RPC URL tokens and malformed-setting fallback remain |
 | Browser compatibility | Unit/jsdom and build evidence | Actual Chromium/Firefox/Tor and device acceptance; local launch unavailable |
 | Key recovery | Independent EVM crypto and raw private-key spending demonstrated | Merge #213+#229; final source clean-profile/browser/independent-device acceptance; other schemes not certified |
-| CI qualification | #206 exact head green before merge; #236 locally repairs #210; #233 addresses original browser fixture failures; #237 fixes log-capture input | Main push/new heads incomplete; #225 quota failure, #222 browser and CodeQL findings checks still red; #217/#220/#207 Mythril red; original #210 and #87 failures not relabeled green |
+| CI qualification | #206 exact head green before merge; #236 locally repairs #210; #233 addresses original browser fixture failures; #237 fixes log-capture input | Main push/new heads incomplete; #225 quota failure, #222 browser/CodeQL and later #230 inherited-fixture checks still red; #217/#220/#207 Mythril red; original #210 and #87 failures not relabeled green |
 | Static build | Two matching clean #227 demo artifacts; recovery demo artifact verified | One combined source, authenticated testnet manifests, signed trust root, accepted hosting origin |
 | Production/release | Not qualified and not authorized for deployment in this task | Separate owner approval, external audit, operational/security/hosting gates |
 

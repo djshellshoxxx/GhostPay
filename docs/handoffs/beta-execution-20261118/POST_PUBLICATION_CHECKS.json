@@ -1,0 +1,151 @@
+{
+  "current_time": "2026-11-18 13:51:37 UTC",
+  "results": [
+    {
+      "kind": "main",
+      "head": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    {
+      "kind": "report",
+      "head": "437704da28fc5d9dbf6abea3fd2c50014319ecf4",
+      "state": "open",
+      "draft": true
+    },
+    {
+      "pr": 225,
+      "head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "counts": {
+        "queued": 20,
+        "failure": 1,
+        "success": 2
+      },
+      "failures": [
+        {
+          "id": 134765434776,
+          "name": "github-advanced-security",
+          "conclusion": "failure",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44293784707/job/134765434776"
+        }
+      ]
+    },
+    {
+      "pr": 226,
+      "head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "counts": {
+        "skipped": 12,
+        "queued": 2,
+        "success": 2
+      },
+      "failures": []
+    },
+    {
+      "pr": 227,
+      "head": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "counts": {
+        "skipped": 3,
+        "neutral": 1,
+        "queued": 21,
+        "success": 9
+      },
+      "failures": []
+    },
+    {
+      "pr": 228,
+      "head": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "counts": {
+        "queued": 21,
+        "skipped": 1,
+        "in_progress": 3,
+        "success": 6
+      },
+      "failures": []
+    },
+    {
+      "pr": 229,
+      "head": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "counts": {
+        "skipped": 3,
+        "success": 6,
+        "queued": 1
+      },
+      "failures": []
+    },
+    {
+      "pr": 230,
+      "head": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "counts": {
+        "skipped": 1,
+        "queued": 7,
+        "success": 2,
+        "failure": 1
+      },
+      "failures": [
+        {
+          "id": 134773650635,
+          "name": "beta acceptance (lib + cli + browser on anvil)",
+          "conclusion": "failure",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44296171884/job/134773650635"
+        }
+      ]
+    },
+    {
+      "pr": 231,
+      "head": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "counts": {
+        "skipped": 1,
+        "queued": 8,
+        "in_progress": 1,
+        "success": 1
+      },
+      "failures": []
+    },
+    {
+      "pr": 233,
+      "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "counts": {
+        "skipped": 1,
+        "queued": 7
+      },
+      "failures": []
+    },
+    {
+      "pr": 234,
+      "head": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "counts": {
+        "skipped": 1,
+        "queued": 12,
+        "success": 1
+      },
+      "failures": []
+    },
+    {
+      "pr": 235,
+      "head": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "counts": {
+        "skipped": 1,
+        "queued": 13
+      },
+      "failures": []
+    },
+    {
+      "pr": 236,
+      "head": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "counts": {
+        "skipped": 1,
+        "queued": 9,
+        "success": 1
+      },
+      "failures": []
+    },
+    {
+      "pr": 237,
+      "head": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "counts": {
+        "queued": 6
+      },
+      "failures": []
+    }
+  ],
+  "note": "Bounded follow-up after publishing the main report update: main/report heads and the twelve repair check-run sets were re-read. This supplements the complete 13:30:27 UTC 44-PR snapshot. All twelve repair heads still have queued checks. The newly completed #230 beta failure was subsequently identified as the inherited minimized-receipt fixture already addressed by sibling #233; that sibling is not in #230, and the failed run remains red.",
+  "new_failure_triage": "POST_PUBLICATION_230_BETA_REVIEW.json"
+}
