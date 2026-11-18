@@ -182,6 +182,8 @@ function deferred(): { promise: Promise<void>; resolve: () => void } {
 }
 const queueOf = (maxPending: number, maxPerClient: number): Partial<RelayerConfig> => ({ queue: { maxPending, maxPerClient, receiptTimeoutSeconds: 30 } });
 /** Sweeps from distinct client addresses: the harness peer 127.0.0.1 is a trusted proxy in these tests. */
+/** The error class of a reply, or `ok` for a 2xx. */
+const codeOf = (r: Reply): string => (r.status < 300 ? 'ok' : errCode(r));
 const asClient = (ip: string): Record<string, string> => ({ 'x-forwarded-for': ip });
 
 describe('LF-074edb61e-4 / LF-2789f780b-2 / LF-29de09c05-1: per-client cap on lane slots (queue.maxPerClient)', () => {
@@ -297,5 +299,60 @@ describe('LF-29de09c05-4: a malformed request target answers 400 invalid_url, no
   it('a well-formed path with an odd escape is still routed normally', async () => {
     const s = await start();
     expect((await raw(s, '/%zz')).status).toBe(404);
+  });
+});
+
+describe('LF-074edb61e-7: non-canonical sweep signatures are refused before any RPC call', () => {
+  const N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
+  const parts = (sig: string): { r: string; s: bigint; v: number } => ({
+    r: sig.slice(2, 66),
+    s: BigInt(`0x${sig.slice(66, 130)}`),
+    v: Number.parseInt(sig.slice(130, 132), 16),
+  });
+  const join = (r: string, s: bigint, v: number): string => `0x${r}${s.toString(16).padStart(64, '0')}${v.toString(16).padStart(2, '0')}`;
+  const noChainWork = (s: Harness): { simulations: number; sent: number; gasReads: number } => ({
+    simulations: s.fake.simulations,
+    sent: s.fake.sent.length,
+    gasReads: gasReads,
+  });
+  let gasReads = 0;
+
+  it('rejects the malleable high-S twin (same owner recovers) as 422 invalid_signature with no chain work', async () => {
+    const s = await start();
+    const p = await prepare(s); // quotes, which reads the gas price once
+    gasReads = 0;
+    const original = s.fake.getGasPrice.bind(s.fake);
+    s.fake.getGasPrice = () => {
+      gasReads += 1;
+      return original();
+    };
+    const { r, s: low, v } = parts(p.body['sweepSig'] as string);
+    const twin = join(r, N - low, v === 27 ? 28 : 27);
+    const reply = await call(s, 'POST', '/v1/sweep', { ...p.body, sweepSig: twin });
+    expect({ status: reply.status, code: codeOf(reply), ...noChainWork(s) }).toEqual({ status: 422, code: 'invalid_signature', simulations: 0, sent: 0, gasReads: 0 });
+    // The canonical original still goes through.
+    expect((await call(s, 'POST', '/v1/sweep', p.body)).status).toBe(200);
+  });
+
+  it.each([
+    ['the 0/1 encoding of the same recovery id (viem still recovers the owner)', (v: number) => v - 27],
+    ['v = 29', () => 29],
+  ])('rejects %s with no chain work', async (_name, toV) => {
+    const s = await start();
+    const p = await prepare(s);
+    const { r, s: low, v } = parts(p.body['sweepSig'] as string);
+    const reply = await call(s, 'POST', '/v1/sweep', { ...p.body, sweepSig: join(r, low, toV(v)) });
+    expect({ status: reply.status, code: codeOf(reply), simulations: s.fake.simulations, sent: s.fake.sent.length }).toEqual({ status: 422, code: 'invalid_signature', simulations: 0, sent: 0 });
+  });
+
+  it('a refused non-canonical signature is not an owner strike', async () => {
+    const s = await start();
+    const p = await prepare(s);
+    const { r, s: low, v } = parts(p.body['sweepSig'] as string);
+    for (let i = 0; i < 4; i++) {
+      const reply = await call(s, 'POST', '/v1/sweep', { ...p.body, sweepSig: join(r, N - low, v === 27 ? 28 : 27) });
+      expect(codeOf(reply)).toBe('invalid_signature');
+    }
+    expect((await call(s, 'POST', '/v1/sweep', p.body)).status).toBe(200);
   });
 });

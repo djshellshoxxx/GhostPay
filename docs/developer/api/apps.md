@@ -49,7 +49,8 @@ lower-cased), compared in constant time. Single use is enforced by the contract 
 Sweep checks, in order (`README`): chain and token allowlist (`chain_not_supported`, `token_not_supported`, 422) ->
 permit flag and value -> `feeTo` equals the relayer's -> quote authentic (`invalid_quote` 400), unexpired
 (`quote_expired` 410), `fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) -> deadline in
-`(now + min, now + max]`, max 1800 s -> contract static rules (`invalid_order`) -> **client lane ticket** (taken
+`(now + min, now + max]`, max 1800 s -> contract static rules (`invalid_order`) -> canonical signature form (low `s`,
+`v` 27/28, else `invalid_signature`) -> **client lane ticket** (taken
 synchronously before the first await and held until the sweep's lane job settles; a client network bucket, IPv4 address
 or IPv6 /64, may hold at most `queue.maxPerClient`, else `429 client_queue_full`) -> signature recovers to `owner` ->
 per-owner rate limit and failure counter -> `PolicyGate` -> breaker -> loss budget probe -> serial per-chain lane: receipt

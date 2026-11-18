@@ -40,7 +40,8 @@ chain and token allowlist (`chain_not_supported`, `token_not_supported` 422) -> 
 `permit_value_too_low`) -> `feeTo` equals the relayer's (`fee_to_mismatch`) -> quote token authentic (`invalid_quote` 400),
 unexpired (`quote_expired` 410), `sweep.fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) ->
 deadline in `(now+min, now+max]`, max 1800 s (`deadline_too_soon/far`) -> contract static rules (`invalid_order`) ->
-client lane ticket (`client_queue_full` 429 + `Retry-After: 5`: a client network bucket, IPv4 address or IPv6 /64, holds at
+signature form as OpenZeppelin `ECDSA.recover` requires it: low `s`, `v` 27 or 28 (`invalid_signature` 422, no RPC call
+and no owner strike) -> client lane ticket (`client_queue_full` 429 + `Retry-After: 5`: a client network bucket, IPv4 address or IPv6 /64, holds at
 most `queue.maxPerClient` sweeps between this point and the settlement of their lane jobs; taken before the first await) ->
 signature recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
 proven owner) -> per-owner failure counter (`owner_failure_limit` 429 + `Retry-After`: 3 costly user-attributable

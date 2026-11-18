@@ -30,7 +30,7 @@ import type { Metrics } from './metrics.js';
 import { nullLogger, type Logger } from './log.js';
 import type { AllowedToken, GasPriceSource, TokenPriceSource } from './pricing.js';
 import { makeKeyring, signQuote, verifyQuote, type QuoteKeyring } from './quoteToken.js';
-import type { QuoteRequest, SweepRequest } from './validate.js';
+import { isCanonicalSignature, type QuoteRequest, type SweepRequest } from './validate.js';
 import { RevertRate } from './revertRate.js';
 import { MemoryStateBackend, StateError, StateJournal } from './stateStore.js';
 import type { SourceChecks } from './sourceChecks.js';
@@ -573,6 +573,9 @@ export class RelayerService {
       if (e instanceof ChainAdapterError) throw new RelayerError(422, 'invalid_order');
       throw e;
     }
+    // Same rule as the contract's OpenZeppelin `ECDSA.recover`: a malleated twin (high s, or v 0/1) would recover the
+    // owner below and only fail in the simulation, costing RPC work and an owner strike for a third party's copy.
+    if (!isCanonicalSignature(req.sweepSig)) throw new RelayerError(422, 'invalid_signature');
     // RL-02 / NC-04: the client's lane slot is taken here, synchronously and before the first await, and held until
     // its job settles, so concurrent requests cannot all pass a check that is only counted later. Salted key only.
     const ticket = rt.lane.reserve(ctx.clientKey === undefined ? undefined : this.hasher.hash(ctx.clientKey));
