@@ -76,21 +76,21 @@ and passes after it, on this branch.
 
 | Id | Sev | Area / location | Finding | Status | Evidence |
 |---|---|---|---|---|---|
-| F-1 | M | `.github/workflows/ghostpay-codex-cloud.yml` agent path policy (3 copies) | An agent PR could edit build/bundle-gate/analyzer configuration that judges the shipped artifact (`apps/web/vite.config.ts` CSP/SRI/deployment plugins, `index.html`, `_headers`, `scripts/pages/*`, web e2e/scripts, `echidna.yaml`, `hardhat.config.*`, `.npmrc`) | **Fixed** `18b0302` | hardening test fails on old policy (19/20), passes after (20/20) |
-| F-2 | M | `ghostpay-parallel-review.yml` preflight; codex-cloud prompt | Fork-PR titles and branch names (attacker free text) were written into a file the agent was told to read: indirect prompt injection | **Fixed** `18b0302` | new test in `ghostpay-parallel-review-workflow.test.mjs` |
+| F-1 | M | `.github/workflows/ghostpay-codex-cloud.yml` agent path policy (3 copies) | An agent PR could edit build/bundle-gate/analyzer configuration and trust roots that judge the shipped artifact (`vite.config.ts` CSP/SRI/deployment plugins, `index.html`, `_headers`, `scripts/pages/*`, web e2e/scripts, `echidna.yaml`, `hardhat.config.*`, `.npmrc`; after review G also infix `vitest.*config`/`playwright.*config`, `postcss` config, `remappings.txt`, `scripts/i18n/*`, `scripts/lib/*`, `packages/contracts/scripts/*` (Mythril/Echidna runners), vendored `packages/*/lib/*`, pool-circuit `SHA256SUMS`/`vkeys`) | **Fixed** `18b0302` + follow-up | hardening test fails on old policy, passes after; review G's full-tree verdict list was the input for the follow-up. Still a path allowlist: the human approval at the exact head remains the real gate |
+| F-2 | M | `ghostpay-parallel-review.yml` preflight; codex-cloud and research prompts | Fork-PR titles and branch names (attacker free text) were written into a file the agent was told to read: indirect prompt injection | **Fixed** `18b0302` + follow-up (untrusted-data clause in the research prompt) | new test in `ghostpay-parallel-review-workflow.test.mjs`. Residual: prompt clauses are mitigations, not guarantees |
 | F-3 | L | `.github/actions/setup-forge/action.yml` | Restored `~/.svm` solc not integrity-checked; analyzer evidence for release could use a tampered compiler | **Fixed** `18b0302` | step passes on official binary, fails closed on a tampered one (local run) |
-| F-4 | I | release/pages/integration jobs | Floating `ubuntu-latest` image | **Fixed** `18b0302` | YAML parses; image pinned `ubuntu-24.04` |
+| F-4 | I | all workflows | Floating `ubuntu-latest` runner image | **Fixed** `18b0302` + follow-up (all `runs-on: ubuntu-latest` → `ubuntu-24.04`) | every workflow YAML parses; 185/185 workflow tests pass |
 | C-1 | I/L | `packages/chain-adapters/src/rpc.ts` `fetchTransport` | RPC fetch lacked `credentials:'omit'`, `referrerPolicy:'no-referrer'`, `cache:'no-store'` used by every other egress point | **Fixed** `fbda6b1` | `rpc.test.ts` new case failed, now passes (87/87) |
-| D-1 | M (latent) | `packages/ux-flow/src/reconcile.ts` `confirm` | Unsigned payer proof `{nonce, chainId, txHash}`: anyone could attach another payer's public same-amount tx to their own invoice and lock out the real payer | **Fixed** `87d1b31` (returns `AMBIGUOUS`; seller resolves) | 2 new tests failed, now pass (93/93); no Pages importer today |
-| B-1 | M | docs (user guide, threat model, spec 06); spec-18 WIP in #213 | Docs said the viewing key cannot spend. In scheme 1, viewing key + the private key of **any one** one-time address recovers the master spending key | **Fixed on main docs** `e800d14`; **open for #213** (export UI text and spec 18 §4/§6 must say this) | `core-crypto/src/viewing-key-boundary.test.ts` recovers the key and spends a second payment |
+| D-1 | M (latent) | `packages/ux-flow/src/reconcile.ts` `confirm` | Unsigned payer proof `{nonce, chainId, txHash}`: anyone can claim another payer's public observed tx for their own invoice and lock out the real payer (`DUPLICATE_TX`) | **Open** (design). An ambiguity check (`87d1b31`) was reverted after review G showed it bypassable with partial/over amounts and that a second same-amount invoice blocked every honest confirmation (liveness DoS). `confirm()` now carries an explicit `@security OPEN` warning | review G PoC; no importer in `apps/web` or any shipped bundle. Fix needs payer binding (sender signature or nonce in calldata/metadata): owner/spec decision |
+| B-1 | M | docs (user guide, threat model, spec 06); spec-18 WIP in #213 | Docs said the viewing key cannot spend. In scheme 1, viewing key + the private key of **any one** one-time address recovers the master spending key (BTC silent payments: scan key + one output key → spend key) | **Fixed on main docs** `e800d14`; **open for #213** (export UI text and spec 18 §4/§6 must say this) | `core-crypto/src/viewing-key-boundary.test.ts` recovers the key and spends a second payment |
 | A-3 | I | `GhostPayConfidentialRouter.payConfidential` | ETH buffer forward copied unbounded return data (return-data bomb; 02 L-01 pattern missed here) | **Fixed** `cd54452` | ReturnBombStealth test: +116k gas before, < 20k after; 47/47 hardhat tests |
 | A-1 | L/I | `PolicyAccount` `Withdraw` typehash | An **unsubmitted** Withdraw signature carries no destination and pays a destination that completed a change after signing; NatSpec overstates the protection | **Documented** (`DEVIATIONS.md` P3); contract fix is breaking (typehash) | PoC by auditor (scratch); no new power beyond the owner key |
 | A-2 | I | `PolicyAccount.executeWithdraw` | Rotating A→B→A revives blocked accepted requests | **Documented** with A-1 (client must cancel on rotation) | PoC by auditor (scratch) |
 | A-4 | I | `GhostPayShieldedPool` `SCHEME_ID = 1` | Withdrawal to a scheme-2 account would be announced under scheme 1 | Latent, no scheme-2 pool path exists; residual | source review |
 | C-2 | I | `apps/web/src/lib/settings.ts` | `wss:` RPC accepted by Settings but rejected by the only (HTTP) transport: fails at first use | Residual (availability only) | source review |
-| D-2 | — | `merchant-ledger` zero-amount invoice reports `paid` | Not a defect: nothing is owed, and an existing test pins the behaviour | Rejected | `ledger.test.ts` |
-| D-3 | L | `apps/web/src/lib/pay.ts` fiat quotes | Oracle answer may be as old as the quote TTL (≤ 24 h); `maxSlippageBps` displayed, not enforced; no L2 sequencer feed | Residual (testnet only); needs a design decision | source review |
-| D-4 | L | `apps/web/src/lib/receipts.ts` | Receipt expiry checked against wall clock, not block time; one tx can be receipted for several same-amount invoices | Residual (seller-side attestation, no theft); needs block-time plumbing | source review |
+| D-2 | L | `packages/merchant-ledger/src/reconcile.ts` (CLI only) | Zero-amount invoice reports `paid`: kept (nothing is owed). Review G found the real defect next to it: with a tolerance ≥ the amount due, an invoice with **no payments** reported `paid` | **Fixed** (status `paid` now needs a counted payment unless nothing is due) | new `ledger.test.ts` case failed, passes after (28/28); CLI 570/570 |
+| D-3 | L | `apps/web/src/lib/pay.ts` fiat quotes | Oracle answer may be as old as the quote TTL (≤ 24 h); `maxSlippageBps` displayed as if enforced, but not enforced; no L2 sequencer feed | Residual (testnet only); the slippage wording must change or be enforced before mainnet | source review |
+| D-4 | L | `apps/web/src/lib/receipts.ts` | Receipt expiry checked against wall clock, not block time; one tx can be receipted for several same-amount invoices (same class as D-1, in the shipped app) | Residual (the seller initiates it; no theft); needs block-time plumbing and a "tx already receipted" warning | source review; review G concurs |
 | D-5 | I | `packages/sdk/src/verify.ts` | `quote-expired` is a warning only (web app blocks it) | Residual (library) | source review |
 
 No critical or high finding was identified. Areas reviewed with no new finding (details in the agents' notes): contract
@@ -110,9 +110,10 @@ integrity (`npm audit --omit=dev`: 0 vulnerabilities).
 3. **A-1/A-2** (owner): binding `destination` in `Withdraw` needs a new PolicyAccount implementation and factory
    (breaking; existing and counterfactual accounts keep the old behaviour). Until then, client rules in DEVIATIONS P3.
 4. **N1 / R7-R8 fee-token freeze** (owner, PR #217) before any production scheme-2 deployment.
-5. **D-3, D-4, C-2, A-4, D-5**: design follow-ups, none exploitable for theft on the Pages beta.
-6. Producer-timestamp latitude on L2s against the 1 h / 2 h policy timelocks (expiry record, open documentation item).
-7. `main` has no branch protection or required reviews (repository setting, owner).
+5. **D-1** (owner/spec): payer-bound proofs before `ux-flow` `confirm()` is used anywhere.
+6. **D-3, D-4, C-2, A-4, D-5**: design follow-ups, none exploitable for theft on the Pages beta.
+7. Producer-timestamp latitude on L2s against the 1 h / 2 h policy timelocks (expiry record, open documentation item).
+8. `main` has no branch protection or required reviews (repository setting, owner).
 
 ## 5. Regression test inventory (added on this branch)
 
@@ -121,7 +122,7 @@ integrity (`npm audit --omit=dev`: 0 vulnerabilities).
 | `scripts/tests/ghostpay-automation-hardening.test.mjs` (REJECT list additions) | F-1: agents cannot edit gate/build config |
 | `scripts/tests/ghostpay-parallel-review-workflow.test.mjs` "PR ownership preflight passes no fork-controlled free text" | F-2: no fork PR title/ref/body reaches the agent |
 | `packages/chain-adapters/src/rpc.test.ts` "sends no cookies, no referrer and bypasses the HTTP cache" | C-1 privacy invariant on RPC egress |
-| `packages/ux-flow/src/reconcile.test.ts` two "audit D-1" cases | D-1: payment integrity, a public tx hash cannot be claimed for another invoice |
+| `packages/merchant-ledger/src/ledger.test.ts` "a tolerance at least the amount due never turns zero payments into paid" | D-2: reconciliation integrity |
 | `packages/core-crypto/src/viewing-key-boundary.test.ts` | B-1: documented key-isolation boundary |
 | `packages/confidential-contracts/test/router.test.ts` "does not copy the stealth address's return data" + `contracts/mocks/ReturnBombStealth.sol` | A-3: gas-griefing via return data |
 
