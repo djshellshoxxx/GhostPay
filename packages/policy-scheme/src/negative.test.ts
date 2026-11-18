@@ -1,6 +1,6 @@
 import { GhostPayCryptoError, parseCompressedPoint, secretScalarFromBytes } from '@ghostpay/core-crypto';
 import { decodeFunctionData, hashTypedData } from 'viem/utils';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   PolicySchemeError,
   ZERO_ADDRESS,
@@ -366,5 +366,33 @@ describe('getLimitProof recomputes the stored leaf of a restored tree', () => {
     expect(code(() => getLimitProof(edit({ limit: 0n }), USDC))).toBe('INVALID_PROOF');
     const other: Address = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
     expect(code(() => getLimitProof(edit({ token: other }), other))).toBe('INVALID_PROOF');
+  });
+});
+
+// Repro from the PR #218 dropped-fix triage (T-b85e0b59-7): check of b85e0b59 lost in merge 84c2c185.
+describe('checkScheme2Announcement leaves no live viewing-secret copy', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('validates policy hashes and deployment before it copies the viewing secret', () => {
+    const view = secretScalarFromBytes(hexBytes(A.viewingPrivateKey));
+    const spend = parseCompressedPoint(hexBytes(A.spendingPublicKey));
+    const ann = { stealthAddress: A.accountAddress, ephemeralPublicKey: A.ephemeralPublicKey, metadata: A.viewTag };
+    // Records every 32-byte SecretBytes core-crypto fills (secretScalarFromBytes copies through `set`).
+    const copies: Uint8Array[] = [];
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const realSet = Uint8Array.prototype.set;
+    vi.spyOn(Uint8Array.prototype, 'set').mockImplementation(function (this: Uint8Array, ...a: Parameters<typeof realSet>) {
+      if (this.length === 32 && this.constructor.name === 'SecretBytes') copies.push(this);
+      return realSet.apply(this, a);
+    });
+    const live = (): number => copies.filter((c) => c.some((b) => b !== 0)).length;
+    expect(code(() => checkScheme2Announcement(ann, view, spend, ['0xzz'], dep))).toBe('INVALID_HEX');
+    expect(code(() => checkScheme2Announcement(ann, view, spend, [A.policyHash], { ...dep, factory: ZERO_ADDRESS }))).toBe('INVALID_ADDRESS');
+    expect(code(() => checkScheme2Announcement(ann, view, spend, [A.policyHash], { ...dep, implementation: ZERO_ADDRESS }))).toBe('INVALID_ADDRESS');
+    expect(live()).toBe(0);
+    // The spy does see the copy of a valid call, and `finally` wipes it.
+    expect(checkScheme2Announcement(ann, view, spend, [A.policyHash], dep).matches).toBe(true);
+    expect(copies.length).toBeGreaterThan(0);
+    expect(live()).toBe(0);
   });
 });
