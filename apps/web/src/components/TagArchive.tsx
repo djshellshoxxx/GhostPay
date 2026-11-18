@@ -11,7 +11,7 @@ import { useServices } from '../lib/services';
 import { captureSessionVersionGuard, getSessionPublic, revealViewingKey } from '../lib/session';
 import { MAX_ARCHIVE_BYTES, exportArchive, previewArchiveImport, type ArchiveImportPreview } from '../lib/tagArchive';
 import { useApp } from '../state';
-import { Field, Notice, SafeText } from './Common';
+import { Field, Notice, SafeText, downloadBlob } from './Common';
 import { ContextHelp } from './ContextHelp';
 
 interface Staged {
@@ -52,14 +52,6 @@ export function displayArchiveNote(note: ArchiveNote, translator: Translator): s
   return note.chainIds === undefined ? displayMessage(note, translator.t) : translator.t(note.key, {
     chains: translator.list(note.chainIds.map((id) => chainLabel(id, translator.t))),
   });
-}
-
-function downloadBytes(filename: string, bytes: Uint8Array<ArrayBuffer>): void {
-  const url = URL.createObjectURL(new Blob([bytes], { type: 'application/octet-stream' }));
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.rel = 'noopener';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => { URL.revokeObjectURL(url); }, 1000);
 }
 
 /**
@@ -253,7 +245,8 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         const out = await exportArchive(vault, revealViewingKey(), pass, { history });
         if (!current(c)) return;
         unchanged();
-        downloadBytes(out.filename, out.bytes);
+        // A blocked download throws here, before anything reports success (the catch below reports the failure).
+        downloadBlob(out.filename, new Blob([out.bytes], { type: 'application/octet-stream' }));
         setPass(''); setPass2(''); setBusy(false);
         const missing: ArchiveNote[] = [];
         if (skipped > 0) missing.push({ key: 'tagArchive.missing.skipped', values: { count: String(skipped) } });

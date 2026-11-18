@@ -2,7 +2,7 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from './Common';
+import { CopyButton, Field, Mono, Notice, SafeText, downloadBlob, downloadText } from './Common';
 
 afterEach(() => {
   cleanup();
@@ -93,6 +93,37 @@ describe('shared presentation helpers', () => {
     expect(click).not.toHaveBeenCalled();
     expect(document.querySelector('a[download="detached.json"]')).toBeNull();
     expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:detached');
+  });
+
+  it('downloads a caller-built binary Blob unchanged and revokes its URL only after the delay', () => {
+    const bytes = new Blob([new Uint8Array([0, 255, 7])], { type: 'application/octet-stream' });
+    const blob = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:bytes');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    vi.useFakeTimers();
+    downloadBlob('archive.gpa', bytes);
+    expect(blob).toHaveBeenCalledExactlyOnceWith(bytes);
+    expect(click).toHaveBeenCalledOnce();
+    expect(document.querySelector('a[download="archive.gpa"]')).toBeNull();
+    vi.advanceTimersByTime(999);
+    expect(revoke).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:bytes');
+  });
+
+  it('removes the anchor and revokes a binary Blob URL at once when the browser click throws', () => {
+    const bytes = new Blob([new Uint8Array([1, 2, 3])], { type: 'application/octet-stream' });
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:blocked-bytes');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const blocked = new Error('download blocked');
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw blocked; });
+    vi.useFakeTimers();
+
+    expect(() => downloadBlob('blocked.gpa', bytes)).toThrow(blocked);
+    expect(document.querySelector('a[download="blocked.gpa"]')).toBeNull();
+    expect(revoke).toHaveBeenCalledExactlyOnceWith('blob:blocked-bytes');
+    vi.runAllTimers();
+    expect(revoke).toHaveBeenCalledOnce();
   });
 
   it('renders sanitized text notices only when markers or mixed scripts need explanation', () => {
