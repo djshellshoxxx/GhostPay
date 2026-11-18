@@ -1,15 +1,9 @@
 {
-  "captured_at": "2026-11-18T11:54:39.164426+00:00",
+  "captured_at": "2026-11-18T12:31:48.098790+00:00",
+  "note": "Actual remote branch heads only; symbolic refs are excluded. Captured before the report branch update; report self-head reflects its prior published version.",
   "main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
-  "remote_branches": 238,
+  "remote_branches": 239,
   "branches": [
-    {
-      "branch": "origin",
-      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee",
-      "main_only_commits": 948,
-      "branch_only_commits": 0,
-      "head_in_main": true
-    },
     {
       "branch": "ai/agent-harness-20261113",
       "sha": "15dc9c192c6086f2e51bcce68ca18ea483968b57",
@@ -72,6 +66,13 @@
       "main_only_commits": 1493,
       "branch_only_commits": 0,
       "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "sha": "75419384f51ce8c9a02d14ca50fd90a4928a48e0",
+      "main_only_commits": 0,
+      "branch_only_commits": 1,
+      "head_in_main": false
     },
     {
       "branch": "chatgpt/ghostpay-beta-qualification-20261112",
@@ -163,6 +164,13 @@
       "main_only_commits": 572,
       "branch_only_commits": 0,
       "head_in_main": true
+    },
+    {
+      "branch": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "main_only_commits": 4,
+      "branch_only_commits": 3,
+      "head_in_main": false
     },
     {
       "branch": "chatgpt/ghostpay-recovery-review-20261118",
@@ -1669,5 +1677,14 @@
       "branch_only_commits": 0,
       "head_in_main": true
     }
-  ]
+  ],
+  "excluded_symbolic_refs": [
+    {
+      "ref": "refs/remotes/origin/HEAD",
+      "target": "refs/remotes/origin/gpt/ghostpay-product-completion-20261109",
+      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee"
+    }
+  ],
+  "heads_in_main": 164,
+  "heads_not_in_main": 75
 }

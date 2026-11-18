@@ -1,0 +1,48 @@
+{
+  "observed_at_utc": "2026-11-18 12:15:44 UTC",
+  "pr": 222,
+  "head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+  "workflow_run_id": 44279444265,
+  "job_id": 134715947261,
+  "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44279444265/job/134715947261",
+  "checked_out_merge_sha": "644a43ee6366298f418a0aca5a40ecf974871748",
+  "outcome": {
+    "passed": 11,
+    "failed": 2,
+    "did_not_run": 3
+  },
+  "failures": [
+    {
+      "test": "Pages seller scan/receipt/ledger/sweep journey",
+      "file": "apps/web/e2e/pages-devnet.spec.ts",
+      "line": 486,
+      "assertion": "toMatchObject includes stealthAddress",
+      "actual": "verified minimized receipt omits stealthAddress",
+      "note": "Receipt signature verification preceding this assertion passed. Dependent restart/clean-profile/egress journey tests did not run."
+    },
+    {
+      "test": "Tampered invoice amount refused before wallet",
+      "file": "apps/web/e2e/pages-devnet.spec.ts",
+      "line": 135,
+      "assertion": "tamperInvoiceLink helper expects envelope.alg === none",
+      "actual": "A256GCM",
+      "note": "Fixture failed before exercising the tampered invoice rejection."
+    }
+  ],
+  "additional_scope_notes": [
+    "Hosted run used a local Anvil devnet and a development Pages artifact with chainId84532; this is not an actual public testnet deployment.",
+    "The native payment path executed; the ERC-20 case explicitly notes unavailable canonical test tokens and is not evidence of an actual token payment.",
+    "These are retrieved hosted logs; no local browser run occurred.",
+    "A subsequent preview-balance click adaptation is required before the original sweep assertions can execute against #222's explicit consent behavior."
+  ],
+  "repair_status": "Source-correct harness repair published as #233; local49/49 and independent3/3 pass. Prior hosted result stays red; repaired-head browser CI queued.",
+  "repair_pr": 233,
+  "repair_head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+  "fixture_test_source": "6dc3ae7c419c8f706c11fc3d96de66e055ad165d",
+  "final_local_source": "cf13b9be093ae8deae17d5e17d8ef756b4c4eb28",
+  "common_tree": "d2344cba3807580c3314fe38b91a1a58de1a1d4a",
+  "checkout_parents": [
+    "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "2bc2098298d90928eb1acafad969f28316bb05fc"
+  ]
+}
