@@ -60,7 +60,8 @@ const passwordValues = (): string[] => Array.from(document.querySelectorAll<HTML
 
 describe('Payment details (spec 18 flow 1)', () => {
   it('derives, downloads and reveals nothing until asked, and labels ownership apart from payment status', async () => {
-    const { user } = renderPanel();
+    const rpc = codeRpc();
+    const { user } = renderPanel(rpc);
     expect(downloads.files).toEqual([]);
     expect(screen.getByRole('button', { name: 'Payment details' }).getAttribute('aria-expanded')).toBe('false');
     expect(screen.queryByText(/Your keys control this address/)).toBeNull();
@@ -70,6 +71,8 @@ describe('Payment details (spec 18 flow 1)', () => {
     expect(screen.getByText('Ethereum Sepolia (chain ID 11155111)')).toBeTruthy();
     expect(screen.getByText(A1.announcement.stealthAddress)).toBeTruthy();
     expect(screen.getByText(/including any future deposits to it/)).toBeTruthy();
+    expect(screen.getByText(/Secret exports check this payment address for contract code through the RPC used by this scan/).textContent).toContain('That provider can associate the address, the request time and your connecting IP.');
+    expect(rpc.calls).toEqual([]);
     expect(downloads.files).toEqual([]);
     expect(document.body.textContent).not.toContain(PRIVATE_HEX);
   });
