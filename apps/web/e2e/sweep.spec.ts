@@ -45,6 +45,7 @@ async function scanToSweep(page: Page, owner: string, rescanFromStart = false): 
   await expect(page.getByText(/Claimed, not confirmed/)).toHaveCount(0);
   await auditAccessibility(page, rescanFromStart ? 'sweep-worker-rescan-verified-payment' : 'sweep-worker-scan-verified-payment');
   await page.getByRole('button', { name: 'Sweep this payment' }).click();
+  await sweep(page).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
   await expect(sweep(page).getByText('5 USDC', { exact: true })).toBeVisible();
   await sweep(page).getByLabel(/Directly/).check();
 }
