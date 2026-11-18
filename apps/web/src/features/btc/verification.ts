@@ -15,7 +15,7 @@ export const SCAN_CHECKS: readonly string[] = [
 export const SCAN_LIMITS: readonly string[] = [
   'This is header-chain validation against the chain the server claims is best, with most-work selection among the headers it sent. It is not SPV and not full validation: no transaction or script is validated beyond the checks above. A server can hide a heavier chain or show you only its own (an eclipse), and proof of work on test networks is cheap, so a server can mine a heavier fork itself.',
   'The scripts and amounts of the outputs being spent come from the server (they live in earlier blocks). A lying server can hide a payment, and with a fork it mined itself (cheap on test networks) it can also invent one. Confirm a payment with a source you trust before relying on it.',
-  'Spent status comes from the server.',
+  'Spent status is derived on this device from the inputs of the scanned blocks (a spend still in the mempool, or one in a block scanned before spend tracking, is not visible); only the optional provider check asks the server per outpoint and reveals this wallet\'s outputs.',
   'The server learns your IP address, which block heights you scan and which header ranges you download. It never receives your keys.',
 ];
 

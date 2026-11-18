@@ -43,3 +43,15 @@ describe('full-block oracle agreement', () => {
     }
   });
 });
+
+describe('block spends through the cross-checked source', () => {
+  const spends = { height: 9, blockHash: HASH, spends: [{ txid: 'cd'.repeat(32), vout: 0, spentBy: 'ef'.repeat(32) }] };
+  it('is absent when the local source serves no spends, and forwards them bound to the agreed block otherwise', async () => {
+    expect(new CrossCheckedTweakSource(full(), () => Promise.resolve({ tweaks, outputs })).getSpends).toBeUndefined();
+    const local = { ...full(), getSpends: vi.fn(() => Promise.resolve(spends)) };
+    const source = new CrossCheckedTweakSource(local, () => Promise.resolve({ tweaks, outputs }));
+    expect(await source.getSpends!(9)).toEqual(spends);
+    const lying = { ...full(), getSpends: () => Promise.resolve({ ...spends, blockHash: 'ff'.repeat(32) }) };
+    await expect(new CrossCheckedTweakSource(lying, () => Promise.resolve({ tweaks, outputs })).getSpends!(9)).rejects.toMatchObject({ code: 'REORG_DETECTED' });
+  });
+});
