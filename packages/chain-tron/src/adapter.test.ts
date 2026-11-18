@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { evmToTronAddress, tronAddressToHex } from './address.js';
 import { createTronAdapter, TRON_FEES, type TronAnnouncementSource } from './adapter.js';
 import { TronError } from './errors.js';
+import { encodeTronMetaAddress } from './meta.js';
 import { deriveTronStealthPayment, type TronAnnouncement } from './stealth.js';
 import { seededRng } from './testutil.testutil.js';
 
@@ -12,7 +13,7 @@ const TOKEN = evmToTronAddress(`0x${'bb'.repeat(20)}`);
 
 function fixture() {
   const keys = generateKeySet(seededRng(11));
-  const meta = encodeMetaAddress(keys);
+  const meta = encodeTronMetaAddress(keys);
   return { keys, meta };
 }
 
@@ -36,7 +37,12 @@ describe('Tron adapter skeleton', () => {
     expect(r.family).toBe('tron');
     expect(r.canonical).toBe(meta);
     expect(r.spendingPublicKey).toEqual(keys.spendingPublicKey);
-    expect(() => createTronAdapter('x', empty).parseRecipient('garbage')).toThrow();
+    expect(() => createTronAdapter('x', empty).parseRecipient('garbage')).toThrow(
+      expect.objectContaining({ code: 'INVALID_META_ADDRESS' }),
+    );
+    expect(() => createTronAdapter('x', empty).parseRecipient(encodeMetaAddress(keys))).toThrow(
+      expect.objectContaining({ code: 'LEGACY_META_ADDRESS' }),
+    );
   });
   it('builds payment request and transfer to a stealth address', () => {
     const { meta } = fixture();
@@ -56,6 +62,9 @@ describe('Tron adapter skeleton', () => {
     const a = createTronAdapter('tron-nile', empty);
     const ok = { metaAddress: meta, owner: OWNER, tokenContract: TOKEN, amount: 1n, feeLimit: 1n };
     expect(() => a.buildPaymentRequest({ ...ok, metaAddress: 'bad' })).toThrow();
+    expect(() => a.buildPaymentRequest({ ...ok, metaAddress: `st:eth:0x${meta.slice(9)}` })).toThrow(
+      expect.objectContaining({ code: 'LEGACY_META_ADDRESS' }),
+    );
     expect(() => a.buildPaymentRequest({ ...ok, owner: 'bad' })).toThrow();
     expect(() => a.buildPaymentRequest({ ...ok, tokenContract: 'bad' })).toThrow();
     expect(() => a.buildPaymentRequest({ ...ok, amount: 0n }).build()).toThrow();
@@ -63,7 +72,7 @@ describe('Tron adapter skeleton', () => {
   it('scan yields only matching announcements and honours abort', async () => {
     const { keys, meta } = fixture();
     const mine = deriveTronStealthPayment(meta, seededRng(21));
-    const other = deriveTronStealthPayment(encodeMetaAddress(generateKeySet(seededRng(12))), seededRng(22));
+    const other = deriveTronStealthPayment(encodeTronMetaAddress(generateKeySet(seededRng(12))), seededRng(22));
     const ann = (p: typeof mine): TronAnnouncement => ({
       stealthAddress: p.stealthAddress,
       ephemeralPublicKey: `0x${bytesToHex(p.ephemeralPublicKey)}`,
