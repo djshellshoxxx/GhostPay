@@ -65,3 +65,11 @@ Contract code wins over docs. Items for the lead to confirm or reject.
 - `gas.griefReserveBps` defaults to 0 (UNVERIFIED, to be tuned per chain); it raises the gas term only and stays bounded by the 300 bps cap.
 - `quoteTtlSeconds` is now capped at 60 (was default 120, max 600); configs above 60 are refused at startup. `relayer.config.example.json` updated.
 - Option C (`PermitSkipped` event) needs a contract change and is not done. The anvil owner-drains-first / front-run e2e was not run here.
+
+## Hardening restored after the 84c2c185 merge (R07, lost-fix scan)
+
+- Logging is best effort (R07-3): `createLogger` drops a line whose sink throws, and `main.ts` writes through
+  `createStdoutSink(process.stdout)`, which swallows stream `'error'` events (EPIPE, ENOSPC) and synchronous write
+  errors. A failing log destination therefore loses lines instead of exiting the process. Lost lines are not counted
+  or retried. An exit would keep only what the state journal persists (daily budget, unsettled transactions); the
+  rate-limit buckets, loss budget, owner failure counter and breaker window are memory-only by design (PRIVACY.md).

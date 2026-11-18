@@ -73,8 +73,39 @@ export function createLogger(sink: (line: string) => void, now: () => number = D
     log(level, event, fields = {}) {
       if (LEVEL_RANK[level] < LEVEL_RANK[minimumLevel]) return;
       const name = EVENT.test(event) ? event : 'invalid_event';
-      sink(JSON.stringify({ ts: new Date(now()).toISOString(), level, event: name, ...sanitizeFields(fields) }));
+      // Logging is best effort: a full disk or a closed pipe must never take the relayer down (R07-3). A request's
+      // log line is written after its handler's try/catch, so a throw here would reject the voided handler promise.
+      try {
+        sink(JSON.stringify({ ts: new Date(now()).toISOString(), level, event: name, ...sanitizeFields(fields) }));
+      } catch {
+        // dropped
+      }
     },
+  };
+}
+
+/** The part of a writable stream the stdout sink needs. */
+export interface LineStream {
+  write(chunk: string): unknown;
+  on(event: 'error', listener: () => void): unknown;
+}
+
+/**
+ * Sink that writes lines to a stream and survives its failures (ENOSPC, EPIPE, destroyed stream): the stream's
+ * `'error'` events are swallowed (an unhandled one is an uncaught exception, which exits the process) and so are
+ * synchronous write errors. Lost lines are not retried.
+ *
+ * @param stream Usually `process.stdout`.
+ * @returns Line sink for {@link createLogger}.
+ */
+export function createStdoutSink(stream: LineStream): (line: string) => void {
+  stream.on('error', () => undefined);
+  return (line) => {
+    try {
+      stream.write(`${line}\n`);
+    } catch {
+      // dropped
+    }
   };
 }
 
