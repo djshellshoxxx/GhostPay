@@ -84,6 +84,35 @@ describe('Open a stealth key export (spec 18 flow 4)', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/larger than the stealth key export limit/);
   });
 
+  it.each(['Open export', 'Verify backup without importing'] as const)('rejects actual UTF-8 BOM bytes before %s can certify a normalized file', async (action) => {
+    const user = userEvent.setup();
+    generateSession();
+    const before = getSessionPublic();
+    const custody = getSessionBackup();
+    const original = VECTORS.files.master.text;
+    const file = new File([new Uint8Array([0xef, 0xbb, 0xbf]), original], 'bom-backup.json', { type: 'application/json' });
+    // The real File decoder removes the BOM. The raw file still violates the portable format's ASCII byte contract.
+    expect(file.size).toBe(original.length + 3);
+    expect(await file.text()).toBe(original);
+    render(<StealthExportRecovery announce={announce} />);
+    await user.upload(screen.getByLabelText('Stealth key export file'), file);
+    await user.type(screen.getByLabelText('Export file passphrase'), VECTOR_PASS);
+    await user.click(screen.getByRole('button', { name: action }));
+    await waitFor(() => {
+      const finished = screen.queryByRole('alert') !== null || screen.queryByTestId('stealth-export-open-master') !== null || screen.queryByTestId('stealth-export-verified') !== null;
+      expect(finished).toBe(true);
+    }, { timeout: 30_000 });
+    expect(screen.queryByRole('alert')?.textContent ?? '').toMatch(/not a valid GhostPay stealth key export/);
+    expect(screen.queryByTestId('stealth-export-open-master')).toBeNull();
+    expect(screen.queryByTestId('stealth-export-verified')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Load these spending and viewing keys' })).toBeNull();
+    expect(announce).not.toHaveBeenCalled();
+    expect(getSessionPublic()).toBe(before);
+    expect(getSessionBackup()).toEqual(custody);
+    expect(passwordValues().every((value) => value === '')).toBe(true);
+    expect(downloads.files).toEqual([]);
+  });
+
   it('shows a public record as unauthenticated and holding no key', async () => {
     const user = userEvent.setup();
     render(<StealthExportRecovery announce={announce} />);

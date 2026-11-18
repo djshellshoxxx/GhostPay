@@ -100,7 +100,7 @@ describe('Seller keys: spec 18 master backup and recovery', () => {
     const confirmation = await within(panel).findByRole('group', { name: 'Replace the currently loaded keys?' });
     expect(getSessionPublic()).toBe(before);
     expect(screen.queryByText('The keys loaded now have no verified backup')).toBeNull();
-    await user.click(within(confirmation).getByRole('button', { name: 'Cancel', exact: true }));
+    await user.click(within(confirmation).getByRole('button', { name: 'Cancel' }));
     expect(getSessionPublic()).toBe(before);
     expect(within(panel).queryByRole('group', { name: 'Replace the currently loaded keys?' })).toBeNull();
     await user.click(within(panel).getByRole('button', { name: 'Load these spending and viewing keys' }));

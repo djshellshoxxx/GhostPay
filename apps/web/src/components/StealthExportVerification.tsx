@@ -48,8 +48,9 @@ export function StealthExportVerification(props: { readonly file: StealthExportF
         if (file.size > STEALTH_EXPORT_LIMITS.keypairFileBytes) throw new UserFacingError({ key: 'error.stealthExport.tooLarge' });
         const text = await file.text();
         if (!op.current(controller)) return;
+        // These exports are ASCII. File.text() strips a UTF-8 BOM, so compare byte length as well as decoded text.
         // A different valid backup cannot verify this download. Filenames and parsed public headers are insufficient.
-        if (text !== generated.text) throw new UserFacingError({ key: 'stealthExport.verify.differentFile' });
+        if (file.size !== generated.text.length || text !== generated.text) throw new UserFacingError({ key: 'stealthExport.verify.differentFile' });
         const result = await verifyStealthExport(text, pass, { signal: controller.signal });
         if (!op.current(controller) || expected.current !== generated) return;
         setVerified(result);
