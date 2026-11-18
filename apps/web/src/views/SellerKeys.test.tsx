@@ -399,6 +399,24 @@ describe('Seller keys', () => {
     expect(getSessionBackup()?.backedUp).toBe(true);
   });
 
+  it('reports a blocked keystore download as a failure, re-enables the form and leaves the backup unverified', async () => {
+    cheapKeystoreExport();
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    const field = screen.getByLabelText<HTMLInputElement>('Passphrase (at least 14 characters)');
+    const revoked: string[] = [];
+    URL.createObjectURL = (): string => 'blob:test';
+    URL.revokeObjectURL = (url: string): void => { revoked.push(url); };
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw new Error('download blocked'); });
+    await user.type(screen.getByLabelText('Repeat passphrase'), field.value);
+    const download = screen.getByRole('button', { name: 'Download encrypted keystore' });
+    await user.click(download);
+    await waitFor(() => { expect(revoked).toEqual(['blob:test']); }, { timeout: 30_000 });
+    await waitFor(() => { expect((download as HTMLButtonElement).disabled).toBe(false); });
+    expect(screen.queryByText(/Encrypted keystore downloaded\./)).toBeNull();
+    expect(getSessionBackup()?.backedUp).not.toBe(true);
+  });
+
   it('L1-01: asks before unlocking a saved vault over keys that have no backup', async () => {
     const saved = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
     await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });

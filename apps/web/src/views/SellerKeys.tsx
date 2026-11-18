@@ -226,7 +226,15 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
       (text) => {
         if (!currentOperation(controller)) return;
         try { unchanged(); } catch (error) { setBusy(false); fail(error); return; }
-        downloadText('ghostpay-keystore.json', text, 'application/json');
+        try {
+          downloadText('ghostpay-keystore.json', text, 'application/json');
+        } catch (error) {
+          // A blocked download produced no file: report it, re-enable the form and leave the backup unrecorded.
+          setExportStepUp('');
+          setBusy(false);
+          fail(error);
+          return;
+        }
         // A download remains unverified until the file is reopened; by itself it cannot permit an idle-lock wipe.
         markKeystoreDownloaded(unchanged);
         setBackupQr(text);
