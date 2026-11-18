@@ -317,3 +317,32 @@ describe('signPolicyTypedData signs only policy-account structs', () => {
     for (const t of tds) expect(await acode(() => signPolicyTypedData(t, owner(), A.ownerAddress))).toBe('no error');
   });
 });
+
+// Repro from the PR #218 dropped-fix triage (T-b85e0b59-5): check of b85e0b59 lost in merge 84c2c185.
+describe('buildWithdrawTypedData binds the proof leaf to (token, limit, window)', () => {
+  const tree = buildLimitsTree([
+    { token: ZERO_ADDRESS, limit: 100n, windowSeconds: 60n },
+    { token: USDC, limit: 10n, windowSeconds: 60n },
+  ]);
+  const lp = getLimitProof(tree, USDC);
+  const wbase = { chainId: 1, account: A.accountAddress, token: USDC, amount: 5n, deadline: 10n, nonce: 1n, limit: { limitsRoot: tree.root, proof: lp } };
+
+  it('accepts the genuine proof', () => {
+    expect(buildWithdrawTypedData(wbase).message.limitLeafHash).toBe(lp.leaf);
+    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { ...lp, leaf: lp.leaf.toUpperCase().replace('0X', '0x') as Hex } } }))).toBe('no error');
+  });
+
+  it('rejects an inflated limit or window on a genuine leaf', () => {
+    expect(code(() => buildWithdrawTypedData({ ...wbase, amount: 10n ** 20n, limit: { limitsRoot: tree.root, proof: { ...lp, limit: 10n ** 30n } } }))).toBe('INVALID_PROOF');
+    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { ...lp, windowSeconds: 1n } } }))).toBe('INVALID_PROOF');
+    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { ...lp, windowSeconds: 0n } } }))).toBe('INVALID_PROOF');
+  });
+
+  it("rejects another token's leaf", () => {
+    expect(code(() => buildWithdrawTypedData({ ...wbase, token: ZERO_ADDRESS }))).toBe('INVALID_PROOF');
+  });
+
+  it('rejects the root (an inner node) as a leaf', () => {
+    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { leaf: tree.root, proof: [], limit: 10n ** 30n, windowSeconds: 1n } } }))).toBe('INVALID_PROOF');
+  });
+});

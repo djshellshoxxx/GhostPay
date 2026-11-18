@@ -79,6 +79,18 @@ export function limitLeafHash(l: TokenLimit): Hex {
   return keccak256(inner);
 }
 
+/**
+ * @internal True when `leaf` is exactly the leaf of `(token, limit, windowSeconds)`. False, never a
+ * throw, for values that no leaf can have (a zero limit, a limited zero window, malformed input).
+ */
+export function isLimitLeaf(l: TokenLimit, leaf: unknown): boolean {
+  try {
+    return limitLeafHash(l) === bytes32(leaf, 'leaf');
+  } catch {
+    return false;
+  }
+}
+
 /** @internal OpenZeppelin `Hashes.commutativeKeccak256`. */
 function hashPair(a: Hex, b: Hex): Hex {
   return a < b ? keccak256(concatHex([a, b])) : keccak256(concatHex([b, a]));

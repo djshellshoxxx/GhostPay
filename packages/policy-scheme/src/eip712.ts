@@ -13,7 +13,7 @@ import {
   toHex,
 } from 'viem/utils';
 import { fail } from './errors.js';
-import { verifyLimitProof, type TokenLimitProof } from './limits.js';
+import { isLimitLeaf, verifyLimitProof, type TokenLimitProof } from './limits.js';
 import {
   MAX_UINT256,
   ZERO_HASH,
@@ -203,8 +203,9 @@ export interface WithdrawParams {
  *
  * @remarks Mirrors `requestWithdraw`'s static checks so an order that would revert is never signed:
  * `amount > 0`, `token != account`, and with limits: the proof verifies against `limitsRoot`, its
- * leaf becomes `limitLeafHash` (audit L-04 binding), `amount <= limit`. Without limits
- * `limitLeafHash` is zero. `structHash` equals the on-chain request id.
+ * leaf equals the leaf recomputed from `(token, limit, windowSeconds)` as the contract does, the leaf
+ * becomes `limitLeafHash` (audit L-04 binding), `amount <= limit`. Without limits `limitLeafHash` is
+ * zero. `structHash` equals the on-chain request id.
  *
  * @param p Order parameters.
  * @returns Typed data, struct hash (request id) and digest.
@@ -227,6 +228,11 @@ export function buildWithdrawTypedData(p: WithdrawParams): WithdrawTypedData {
     if (root === ZERO_HASH) return fail('INVALID_INPUT', 'limitsRoot is zero; pass limit: null');
     const lp = p.limit.proof;
     if (!verifyLimitProof(root, lp.leaf, lp.proof)) return fail('INVALID_PROOF');
+    // Never trust caller-supplied limit data: recompute the leaf from (token, limit, window). This binds
+    // the proof to the token being withdrawn and refuses an inner node passed as a leaf.
+    if (!isLimitLeaf({ token, limit: lp.limit, windowSeconds: lp.windowSeconds }, lp.leaf)) {
+      return fail('INVALID_PROOF', 'leaf does not match token, limit and window');
+    }
     if (amount > lp.limit) return fail('INVALID_LIMIT', 'amount exceeds limit');
     limitLeafHash = bytes32(lp.leaf, 'leaf');
   }
