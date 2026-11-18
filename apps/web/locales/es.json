@@ -187,7 +187,7 @@
     "sweep.balanceRead.button": "Leer el saldo desde el RPC de Ajustes",
     "sweep.balanceRead.warning": "Tus ajustes de escaneo exigen la ruta privada, así que el saldo de esta dirección de un solo uso no se lee automáticamente. Leerlo va directamente al RPC de Ajustes, no por tu ruta de escaneo privada, y revela esta dirección, junto con tu dirección IP, a ese proveedor.",
     "sweep.destination.knownWallet": "Este destino coincide con una billetera que ya usas. Barrer hacia él vincula públicamente esos fondos con esa billetera. Es mejor un destino nuevo. Aun así puedes continuar.",
-    "sweep.destination.used": "Este destino ya está en la lista de destinos de barrido de este navegador. Volver a barrer hacia él vincula públicamente esos fondos. Es mejor un destino nuevo. Aun así puedes continuar.",
+    "sweep.destination.used": "Este destino ya se usó en esta sesión. Volver a enviar fondos a él los vincula públicamente. Es mejor usar un destino nuevo. El historial se guarda en memoria y se borra al bloquear la aplicación, cambiar las claves del vendedor o recargar la página. No se comprueban las sesiones anteriores ni otros dispositivos. Aun así puedes continuar.",
     "sweep.balanceRead.note": "El saldo de esta dirección de un solo uso solo se lee cuando pulsas el botón de abajo. Al pulsarlo, esta dirección y tu dirección IP se envían al proveedor RPC de Ajustes, que así la conoce.",
     "sellerKeys.loaded": "Claves cargadas en la memoria.",
     "sellerKeys.passphrasesDiffer": "Las dos frases de contraseña son distintas.",

@@ -27,7 +27,8 @@ import { TransactionOutcomeError } from './transactionOutcome';
 import { buildPermit } from './pay';
 import type { MessageKey } from '../i18n/catalog';
 import { RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
-import { captureSessionGuard, withSessionSecrets } from './session';
+import { captureSessionGuard, getSessionPublic, subscribeSession, withSessionSecrets } from './session';
+import { subscribeAppLock } from './appLock';
 import { DIRECT_MAX_FEE_SHARE_BPS, guardTx, guardTypedData, reportsRevert, reviewPolicy, simulateCall, type Simulation } from './txGuard';
 
 export interface SweepTarget {
@@ -90,37 +91,89 @@ export const DEST_LEDGER_KEY = 'ghostpay.sweepDestinations.v1';
 interface LedgerStorage {
   getItem(k: string): string | null;
   setItem(k: string, v: string): void;
+  /** Older storage wrappers expose only get/set. Neither method is used by this ledger. */
+  removeItem?(k: string): void;
 }
 
-/** Loads the local used-destination ledger; a missing, blocked or corrupt store yields an empty ledger. */
-export function loadDestLedger(storage: LedgerStorage | undefined): DestLedger {
+let destinationLedger = new DestLedger();
+let destinationLedgerSession = getSessionPublic();
+let destinationLedgerEpoch = 0;
+
+/** Delete only the old plaintext key; never read it or import its address links into the active session. */
+function discardLegacyDestinationLedger(storage: LedgerStorage | undefined): void {
   try {
-    const text = storage?.getItem(DEST_LEDGER_KEY);
-    return text === null || text === undefined ? new DestLedger() : DestLedger.from(JSON.parse(text));
+    storage?.removeItem?.(DEST_LEDGER_KEY);
   } catch {
-    return new DestLedger();
+    // Cleanup is best effort when browser storage is denied; the app never reads or writes the legacy record.
   }
 }
 
-/** Records a submitted sweep in the local ledger. Best effort: storage failures never affect the sweep. */
-export function recordSweepDestination(storage: LedgerStorage | undefined, chainId: number, destination: Address, source: Address): void {
+function discardBrowserLegacyDestinationLedger(): void {
   try {
-    const ledger = loadDestLedger(storage);
-    try {
-      ledger.record(chainId, destination, source);
-    } catch {
-      ledger.recordAcknowledgedReuse(chainId, destination, source);
-    }
-    storage?.setItem(DEST_LEDGER_KEY, JSON.stringify(ledger.toJSON()));
+    if (typeof window !== 'undefined') discardLegacyDestinationLedger(window.localStorage);
   } catch {
-    // Storage unavailable or full: the warning is advisory, so the sweep is not affected.
+    // Accessing localStorage itself can be denied.
+  }
+}
+
+function resetDestinationLedger(): void {
+  destinationLedger = new DestLedger();
+  destinationLedgerSession = getSessionPublic();
+  destinationLedgerEpoch++;
+  discardBrowserLegacyDestinationLedger();
+}
+
+function synchronizeDestinationLedger(): void {
+  // Also detect an intentionally silent clearSession(false), which sends no subscription notification.
+  if (destinationLedgerSession !== getSessionPublic()) resetDestinationLedger();
+}
+
+// Module-lifetime subscriptions: address links must not survive a lock or a change of seller keys.
+subscribeSession(resetDestinationLedger);
+subscribeAppLock(resetDestinationLedger);
+discardBrowserLegacyDestinationLedger();
+
+/** Capture before starting an asynchronous sweep so a late completion cannot repopulate a cleared ledger. */
+export function captureDestinationLedgerGuard(): () => boolean {
+  synchronizeDestinationLedger();
+  const epoch = destinationLedgerEpoch;
+  const session = getSessionPublic();
+  return () => session !== undefined && session === getSessionPublic() && epoch === destinationLedgerEpoch;
+}
+
+/** Snapshot of current-session history only. No persistent record is read; storage is used solely for legacy removal. */
+export function loadDestLedger(storage: LedgerStorage | undefined): DestLedger {
+  discardLegacyDestinationLedger(storage);
+  synchronizeDestinationLedger();
+  return DestLedger.from(destinationLedger.toJSON());
+}
+
+/** Records a submitted sweep in memory only. The advisory history must never make a completed sweep fail. */
+export function recordSweepDestination(
+  storage: LedgerStorage | undefined,
+  chainId: number,
+  destination: Address,
+  source: Address,
+  unchanged: () => boolean = captureDestinationLedgerGuard(),
+): void {
+  discardLegacyDestinationLedger(storage);
+  synchronizeDestinationLedger();
+  try {
+    if (getSessionPublic() === undefined || !unchanged()) return;
+    try {
+      destinationLedger.record(chainId, destination, source);
+    } catch {
+      destinationLedger.recordAcknowledgedReuse(chainId, destination, source);
+    }
+  } catch {
+    // Invalid advisory input or stale operation: transaction outcome handling is independent of this history.
   }
 }
 
 export type DestinationWarning = 'used' | 'known-wallet';
 
 /**
- * Advisory only (never blocks): does the destination already appear in the local ledger of swept-to addresses, or is it a known wallet?
+ * Advisory only (never blocks): does the destination appear in this session's swept-to history, or is it a known wallet?
  * @returns `undefined` for an unknown or unparsable destination and for an empty ledger.
  */
 export function destinationWarning(
