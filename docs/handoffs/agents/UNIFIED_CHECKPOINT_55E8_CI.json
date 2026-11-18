@@ -1,0 +1,197 @@
+{
+  "source": "55e8bf49feb854d37a55d36492b0710d1226b64c",
+  "tree": "348e269e2f25999586dc81a395e893f6051d608e",
+  "recorded": "2026-11-16",
+  "ci_run": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891",
+  "jobs": [
+    {
+      "id": 133645727926,
+      "name": "secrets-and-egress",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133645727926"
+    },
+    {
+      "id": 133645728439,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133645728439"
+    },
+    {
+      "id": 133648133903,
+      "name": "ts-typecheck",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648133903"
+    },
+    {
+      "id": 133648133938,
+      "name": "e2e (lean)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648133938"
+    },
+    {
+      "id": 133648134004,
+      "name": "ts-test-relayer",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134004"
+    },
+    {
+      "id": 133648134065,
+      "name": "e2e (full)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134065"
+    },
+    {
+      "id": 133648134116,
+      "name": "ts-lint",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134116"
+    },
+    {
+      "id": 133648134144,
+      "name": "contracts-test",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134144"
+    },
+    {
+      "id": 133648134147,
+      "name": "contracts-slither",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134147"
+    },
+    {
+      "id": 133648134199,
+      "name": "contracts-static",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134199"
+    },
+    {
+      "id": 133648134201,
+      "name": "ts-check",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134201"
+    },
+    {
+      "id": 133648134205,
+      "name": "contracts-coverage",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134205"
+    },
+    {
+      "id": 133648134325,
+      "name": "lean-candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134325"
+    },
+    {
+      "id": 133648134329,
+      "name": "ts-test (web)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134329"
+    },
+    {
+      "id": 133648134356,
+      "name": "ts-test (btc-silent-payments)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134356"
+    },
+    {
+      "id": 133648134373,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134373"
+    },
+    {
+      "id": 133648134439,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134439"
+    },
+    {
+      "id": 133648134441,
+      "name": "ts-test (rest-0)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134441"
+    },
+    {
+      "id": 133648134504,
+      "name": "ts-test (confidential-contracts)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134504"
+    },
+    {
+      "id": 133648134616,
+      "name": "ts-test (core-crypto)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134616"
+    },
+    {
+      "id": 133648134670,
+      "name": "ts-test (rest-1)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648134670"
+    },
+    {
+      "id": 133648135510,
+      "name": "ts-test (rest-2)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133648135510"
+    },
+    {
+      "id": 133651087110,
+      "name": "contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133651087110"
+    },
+    {
+      "id": 133657059825,
+      "name": "typescript",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966070891/job/133657059825"
+    }
+  ],
+  "cli_os": [
+    {
+      "id": 133645728157,
+      "name": "CLI (ubuntu-24.04)",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966071024/job/133645728157"
+    },
+    {
+      "id": 133645728718,
+      "name": "CLI (macos-latest)",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966071024/job/133645728718"
+    },
+    {
+      "id": 133645728777,
+      "name": "CLI (windows-latest)",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/43966071024/job/133645728777"
+    }
+  ],
+  "limits": "Checkpoint evidence only. Known web/transport/fixture and compiler-provisioning failures corrected in later source. Final candidate requires fresh CI."
+}

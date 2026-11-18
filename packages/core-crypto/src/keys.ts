@@ -64,7 +64,7 @@ export function generateKeySet(rng?: RandomSource): StealthKeySet {
  * re-validated as on-curve compressed points.
  *
  * @param keys Public keys only.
- * @returns 140-character meta-address URI.
+ * @returns 141-character meta-address URI (`st:eth:0x` plus 132 hex digits).
  * @throws {GhostPayCryptoError} `INVALID_POINT`, `KEY_REUSE`.
  * @security Public data; contains no secrets.
  * @see https://eips.ethereum.org/EIPS/eip-5564

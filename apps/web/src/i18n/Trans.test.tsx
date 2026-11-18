@@ -2,6 +2,7 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Trans } from './Trans';
+import { RichText } from '../components/RichText';
 import { I18nProvider } from './context';
 import type { Catalog } from './catalog';
 
@@ -26,6 +27,22 @@ describe('<Trans>', () => {
     expect(strong.tagName).toBe('STRONG');
     expect(document.querySelector('img')).toBeNull();
     expect(document.body.textContent).toContain('Idioma:');
+  });
+
+  it.each([
+    ['Trans', () => <Trans id="i18n.picker.current" tags={{}} />],
+    ['RichText', () => <RichText id="i18n.picker.current" tags={{}} />],
+  ])('%s treats inherited Object prototype names as unrendered text tags', async (_name, makeElement) => {
+    const catalog: Catalog = {
+      _meta: { locale: 'es', status: 'test' },
+      messages: { 'i18n.picker.current': 'Idioma: {#__proto__}uno{/__proto__} + {#toString}dos{/toString}.' },
+    };
+    render(
+      <I18nProvider initialPreference="es" loader={(locale) => Promise.resolve(locale === 'es' ? catalog : undefined)} target={null}>
+        {makeElement()}
+      </I18nProvider>,
+    );
+    expect(await screen.findByText('Idioma: uno + dos.')).toBeTruthy();
   });
 
   it('leaves an unknown tag wrapper off while keeping its translated text', () => {

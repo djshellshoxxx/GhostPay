@@ -119,5 +119,7 @@ if [ "$fail" -ne 0 ]; then echo "RELEASE VERIFICATION FAILED"; exit 1; fi
 cat <<'NOTE'
 Hashes and manifest are consistent. This does NOT prove authenticity. Still required (docs/operators/release-and-verify.md):
   - the expected-commit input came from a verified signed tag, obtained independently of these artifacts
-  - build attestation: set verify-attestation: 'true' or run `gh attestation verify <file> --repo <owner>/<repo>`
+  - build attestation: set verify-attestation: 'true' with tag: <release tag>, or run `gh attestation verify <file>
+    --repo <owner>/<repo> --signer-workflow <owner>/<repo>/.github/workflows/release.yml --source-ref refs/tags/<tag>
+    --source-digest <expected-commit> --deny-self-hosted-runners`
 NOTE

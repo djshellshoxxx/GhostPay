@@ -1,6 +1,16 @@
 # 02 Scanner robustness and expected-payment verification
 
+> **Implementation status (2026-11-11, commit 364b1f18):** `apps/web/src/lib/scannerCore.ts` exports `ScanSession`/`ScanProtocol` and returns `WireMatch` objects; there is no `ScanVerdict` type anywhere in `apps/` or `packages/` source. Payment verification statuses live in `packages/chain-adapters/src/payments.ts` (`received`, `unverified-announcement`, `unverified-claim`). Invoice reconciliation (`packages/ux-vault/src/reconciliation-portable.ts`, `candidate`) matches on exact chain, asset and expected net amount; no underpay/overpay/double-pay reporting was found there.
+
 Priority P0 | Effort M (4-6 d) | Owner: web scanner + chain-adapters | Deps: 01 (for trusted announcer/router addresses)
+
+**2026-11-16 continuation:** `packages/ux-vault/src/reconciliation-amounts.ts` now provides exact amount comparisons
+for explicit seller-linked, live, final-at-scan observations. The invoice registry displays below/equal/above totals,
+distinct observation counts and a multiple-observation review prompt. Scope-wide conflict checks precede invoice/asset
+aggregation, so contradictory copies cannot produce reassuring totals for separate invoices. This implements local
+amount reporting; it does not add an on-chain invoice identifier, automatic mismatched-amount association or current
+settlement proof. Existing exact-amount matching and observation-time semantics remain unchanged. The original
+acceptance items below still require their own evidence and are not checked off by this addition.
 Sources: research DOC-1, ERC-5564 pitfalls 1.2 (1,3,5); gap-analysis s2 item 2, item 7; audit S3-02, G-04; ADR-0013 item 1.
 
 ## 1. Problem

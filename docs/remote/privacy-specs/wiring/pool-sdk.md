@@ -46,7 +46,7 @@ Contracts of record: `packages/pool-contracts` (pool ABI = spec 6.1), circuits o
 
 ## 4. Operating the relayer (testnet)
 
-`node packages/pool-relayer/dist/main.js` with `POOL_RELAYER_KEY` (testnet-only hot key), `POOL_RELAYER_FEE_TO`,
+`node packages/pool-relayer/dist/main.js` with `POOL_RELAYER_KEY_FILE` (path to a mode-600 file holding the testnet-only hot key; `POOL_RELAYER_KEY` still works outside production), `POOL_RELAYER_FEE_TO`,
 `POOL_RELAYER_POOLS` (JSON with rpcUrl and fee-asset rate), `POOL_RELAYER_VKEY` (`packages/pool-circuits/vkeys/withdraw32.vkey.json`),
 optional host/port/origins/proxies (full list in `src/main.ts`). Binds `127.0.0.1:8788` by default. No hosting is configured or
 suggested here (README "Hosting" stays true). `PRIVACY.md` in the package is the operator disclosure.

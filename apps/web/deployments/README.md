@@ -18,7 +18,7 @@ shows "payments disabled on this chain" and never builds a payment transaction.
    announcer constant. Pay, Scan and Sweep are disabled until this passes, and the router and fee recipient the UI shows are
    the values **read from the chain**.
 3. **Release authenticity.** `signature` is a detached secp256k1 ECDSA signature (64-byte compact `r || s`, low-s)
-   over `keccak256(canonical manifest JSON)`; see `canonicalManifestJson` / `manifestDigest` in `@ghostpay/chain-adapters`.
+   over Keccak-256 of the UTF-8 `GhostPay/structured-deployment-manifest/v1\n` domain (one newline byte) followed by canonical manifest JSON; see `STRUCTURED_MANIFEST_SIGNING_DOMAIN`, `canonicalManifestJson` and `manifestDigest` in `@ghostpay/chain-adapters`. Old unprefixed signatures must be signed again; no fallback accepts them.
    Release public keys are a **build-time constant array** (`GHOSTPAY_RELEASE_PUBKEYS=<66-hex>,<66-hex>`). If no key is
    configured, any manifest file makes the build fail; the default app also refuses to load a manifest. With keys, a
    manifest without a valid signature fails the build and is refused again at runtime. The keys travel in the same bundle

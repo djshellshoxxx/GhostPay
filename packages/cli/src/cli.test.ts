@@ -188,7 +188,8 @@ describe('secret sources', () => {
     expect(allOutput(io)).not.toContain(KEY_HEX);
     io = makeIo(files);
     expect(await cli(io, 'invoice', 'sign', '--in', 'inv.json', '--key-env', 'NOPE')).toBe(3);
-    expect(io.err.join('')).toContain('NOPE is not set');
+    expect(io.err.join('')).toContain('environment variable is not set');
+    expect(io.err.join('')).not.toContain('NOPE');
     io = makeIo(files);
     io.stdinText = files['inv.json'];
     expect(await cli(io, 'invoice', 'sign', '--in', '-', '--key-stdin')).toBe(2);

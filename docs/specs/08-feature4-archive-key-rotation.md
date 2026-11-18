@@ -1,5 +1,7 @@
 # 08 Feature 4: encrypted archive export/import and key rotation
 
+> **Implementation status (2026-11-11, commit 364b1f18):** key rotation has no `rotationState` journal store. `apps/web/src/lib/tags.ts` applies import and rotation through `TagStore.applyBatch`, one atomic transaction in which all puts, deletes and the profile-meta replacement commit or none do; the crash-resume wording in section 2 is not implemented as written.
+
 Priority P1 | Effort M (5-7 d) | Owner: apps/web | Deps: none
 Sources: Roadmap Feature 4 (4A/4B); keystore (scrypt 2^17 + AES-GCM); gap-analysis item 8 (G-18).
 

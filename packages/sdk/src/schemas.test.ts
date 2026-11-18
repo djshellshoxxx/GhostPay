@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
+import type { NewInvoice } from '@ghostpay/invoice-schema';
 import { describe, expect, it } from 'vitest';
 import { buildInvoice } from './builder.js';
+import { SdkInvoiceError } from './errors.js';
 import { NOW, input, testRng } from './fixtures.testutil.js';
 import { invoiceJsonSchema, schemaFiles, webhookEventJsonSchema, WEBHOOK_EVENT_TYPES } from './schemas.js';
 
@@ -32,6 +34,17 @@ function valid(schema: S, v: unknown): boolean {
     default:
       return false;
   }
+}
+
+/** Schema path of the `SdkInvoiceError` that `fn` throws. */
+function invoicePath(fn: () => unknown): string | undefined {
+  try {
+    fn();
+  } catch (e) {
+    if (e instanceof SdkInvoiceError) return e.path;
+    throw e;
+  }
+  return 'did not throw';
 }
 
 describe('JSON Schemas', () => {
@@ -81,6 +94,28 @@ describe('JSON Schemas', () => {
     expect(valid(s, 'string')).toBe(false);
     expect(valid(s, null)).toBe(false);
     expect(valid(s, [])).toBe(false);
+  });
+  it('invoice and quote times stop where validateInvoice stops them: 9999-12-31T23:59:59Z (B2-R1)', () => {
+    const s = invoiceJsonSchema;
+    const cap = 253_402_300_799;
+    const quote = { source: 'chainlink:eth-usd', timestamp: cap, expiresAt: cap, maxSlippageBps: 50 };
+    const atCap = input({ quote, expiresAt: cap });
+    const inv = buildInvoice(atCap, testRng());
+    expect(valid(s, inv)).toBe(true);
+    for (const t of [cap + 1, Number.MAX_SAFE_INTEGER]) {
+      const over: [string, Partial<NewInvoice>][] = [
+        ['expiresAt', { expiresAt: t }],
+        ['quote.timestamp', { quote: { ...quote, timestamp: t } }],
+        ['quote.expiresAt', { quote: { ...quote, expiresAt: t } }],
+      ];
+      for (const [path, patch] of over) {
+        expect(valid(s, { ...inv, ...patch })).toBe(false);
+        expect(invoicePath(() => buildInvoice({ ...atCap, ...patch }))).toBe(path);
+      }
+    }
+    // A webhook createdAt feeds no Date here, and merchant-hooks' parseWebhookEvent takes any safe integer.
+    const event = { id: 'evt_0123456789', type: 'invoice.paid', createdAt: Number.MAX_SAFE_INTEGER, data: { invoiceId: 'ab'.repeat(16), currency: 'USD', amountMinor: '1' } };
+    expect(valid(webhookEventJsonSchema, event)).toBe(true);
   });
   it('webhook events: every type validates; negatives fail', () => {
     const s = webhookEventJsonSchema;

@@ -59,33 +59,105 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 		return $ok;
 	}
 
+	/** Move the order to the state stored under $state_key. */
+	private function set_state( Order $order, string $state_key ): bool {
+		$history = new OrderHistory();
+		$history->id_order = (int) $order->id;
+		// changeIdOrderState() returns nothing (it dies or throws on failure); addWithemail() saves the history row.
+		$history->changeIdOrderState( (int) Configuration::get( $state_key ), $order );
+		return (bool) $history->addWithemail( true );
+	}
+
+	/**
+	 * Private note for the merchant where the PrestaShop 8 order page lists messages (the order's customer threads, not
+	 * the legacy ps_message table): a CustomerMessage in the order's CustomerThread, found or created as PrestaShop's
+	 * AddOrderCustomerMessageHandler does. It has no employee (a webhook has none), so PrestaShop shows it in the
+	 * customer's style; private keeps it out of the customer's order history. One transaction: a thread without its
+	 * message would break the order page.
+	 *
+	 * A deleted customer (Customer::delete() deletes their threads, not their orders) gets no thread: the order page
+	 * cannot list one without its customer's name, and AddOrderCustomerMessageHandler refuses such an order too. The
+	 * note goes to PrestaShop's log instead (Advanced Parameters > Logs), against the order.
+	 */
+	private function add_note( Order $order, string $text ): bool {
+		$db        = Db::getInstance();
+		$customer  = new Customer( (int) $order->id_customer );
+		if ( ! Validate::isLoadedObject( $customer ) ) {
+			// Duplicates allowed, so the same event processed again is logged again (as a thread note is added again) rather
+			// than refused with false, which would be a 503 every time. False is then a failed write: retried.
+			return (bool) PrestaShopLogger::addLog( $text, PrestaShopLogger::LOG_SEVERITY_LEVEL_WARNING, null, 'Order', (int) $order->id, true );
+		}
+		$thread_id = (int) CustomerThread::getIdCustomerThreadByEmailAndIdOrder( (string) $customer->email, (int) $order->id );
+		if ( ! $db->execute( 'START TRANSACTION' ) ) {
+			return false;
+		}
+		if ( 0 === $thread_id ) {
+			$thread = new CustomerThread();
+			$thread->id_contact = 0;
+			$thread->id_customer = (int) $order->id_customer;
+			$thread->id_shop = (int) $this->context->shop->id;
+			$thread->id_order = (int) $order->id;
+			$thread->id_lang = (int) $order->id_lang;
+			$thread->email = (string) $customer->email;
+			$thread->status = 'open';
+			$thread->token = Tools::passwdGen( 12 );
+			$thread_id = $thread->add() ? (int) $thread->id : 0;
+		}
+		$message = new CustomerMessage();
+		$message->id_customer_thread = $thread_id;
+		$message->id_employee = 0;
+		$message->message = $text;
+		$message->private = 1;
+		if ( 0 === $thread_id || ! $message->add() || ! $db->execute( 'COMMIT' ) ) {
+			$db->execute( 'ROLLBACK' );
+			return false;
+		}
+		return true;
+	}
+
 	public function postProcess() {
 		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
 			$this->out( 405, array( 'ok' => false ) );
 		}
 		$secret = $this->module->secret( 'webhook' );
+		if ( null === $secret ) {
+			// No valid secret configured (e.g. upgraded, the constant or environment not set yet): a server
+			// misconfiguration, not a bad request, answered the same for every request. 503 keeps the sender retrying.
+			$this->out( 503, array( 'ok' => false, 'retry' => true ) );
+		}
 		$header = (string) ( $_SERVER['HTTP_GHOSTPAY_SIGNATURE'] ?? '' );
 		$body   = (string) file_get_contents( 'php://input', false, null, 0, 65537 );
-		if ( null === $secret || strlen( $body ) > 65536 ) {
+		if ( strlen( $body ) > 65536 ) {
 			$this->out( 400, array( 'ok' => false ) );
 		}
-		$db  = Db::getInstance();
-		$res = GhostPay_Signature::verify(
+		$db       = Db::getInstance();
+		$db_error = false;
+		$res      = GhostPay_Signature::verify(
 			$secret,
 			$body,
 			$header,
 			time(),
-			static function ( string $nonce, int $expires ) use ( $db ): bool {
-				$db->execute( 'DELETE FROM `' . _DB_PREFIX_ . 'ghostpay_nonce` WHERE `expires` < ' . (int) time() );
-				// Duplicate primary key => insert fails => replay. Fails closed on DB error.
-				return (bool) @$db->insert( 'ghostpay_nonce', array( 'nonce' => pSQL( $nonce ), 'expires' => (int) $expires ), false, false );
+			static function ( string $nonce, int $expires ) use ( $db, &$db_error ): bool {
+				// Duplicate primary key => insert fails => replay, also when PDO throws it (PHP 8 default; PrestaShop
+				// rethrows it as PrestaShopException). Any other database error (deadlock, server gone away) is not a
+				// replay: the claim fails closed and the request is answered 503 below so the sender retries.
+				try {
+					$db->execute( 'DELETE FROM `' . _DB_PREFIX_ . 'ghostpay_nonce` WHERE `expires` < ' . (int) time() );
+					return (bool) @$db->insert( 'ghostpay_nonce', array( 'nonce' => pSQL( $nonce ), 'expires' => (int) $expires ), false, false );
+				} catch ( Exception $e ) {
+					$db_error = ! Ghostpay::isDuplicateKey( $e );
+					return false;
+				}
 			}
 		);
+		if ( $db_error ) {
+			$this->out( 503, array( 'ok' => false, 'retry' => true ) ); // reached only with a valid signature
+		}
 		$event = 'ok' === $res ? GhostPay_Event::parse( $body ) : null;
 		if ( null === $event ) {
 			$this->out( 400, array( 'ok' => false ) );
 		}
-		$row = $db->getRow( 'SELECT `id_order`, `event_ids` FROM `' . _DB_PREFIX_ . 'ghostpay_invoice` WHERE `invoice_id` = \'' . pSQL( $event['data']['invoiceId'] ) . '\'' );
+		$row = $db->getRow( 'SELECT `id_order` FROM `' . _DB_PREFIX_ . 'ghostpay_invoice` WHERE `invoice_id` = \'' . pSQL( $event['data']['invoiceId'] ) . '\'' );
 		if ( ! $row ) {
 			$this->out( 200, array( 'ok' => true ) ); // unknown invoice: acknowledge.
 		}
@@ -102,29 +174,54 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 			$this->out( 200, array( 'ok' => true ) );
 		}
 		$currency = new Currency( (int) $order->id_currency );
-		$exact_total = $this->module->exactOrderTotal( (int) $order->id );
-		$due         = null === $exact_total ? null : GhostPay_Money::to_minor( $exact_total, (int) $currency->precision );
+		$due      = $this->module->orderTotalMinor( (int) $order->id, (string) $currency->iso_code ); // same units as the invoice
 		$cmp      = null === $due ? null : GhostPay_Money::compare( $event['data']['amountMinor'], $due );
-		$is_awaiting = (int) $order->current_state === (int) Configuration::get( 'GHOSTPAY_OS_AWAITING' );
-		$action = $event['data']['currency'] === $currency->iso_code
-			? GhostPay_Event::order_action( $event['type'], $cmp, $is_awaiting )
-			: 'ignore';
+		$state_id  = (int) $order->current_state;
+		$backorder = $state_id === (int) Configuration::get( 'PS_OS_OUTOFSTOCK_UNPAID' );
+		if ( $state_id === (int) Configuration::get( 'GHOSTPAY_OS_AWAITING' ) ) {
+			$state = 'awaiting';
+		} elseif ( $backorder || in_array( $state_id, array( (int) Configuration::get( 'PS_OS_ERROR' ), (int) Configuration::get( 'PS_OS_CANCELED' ) ), true ) ) {
+			$state = 'unpaid';
+		} else {
+			$state = 'closed'; // paid, shipped, refunded, ...: never changed by a webhook.
+		}
+		// Another currency never changes the order. A payment (paid, over) gets the manual check / refund note; any other
+		// event only a neutral one.
+		if ( $event['data']['currency'] === $currency->iso_code ) {
+			$action = GhostPay_Event::order_action( $event['type'], $cmp, $state );
+		} else {
+			$action = in_array( $event['type'], array( 'invoice.paid', 'invoice.over' ), true ) ? 'note' : 'mismatch';
+		}
 		$side_effect_ok = true;
 		switch ( $action ) {
 			case 'paid':
-				$history = new OrderHistory();
-				$history->id_order = (int) $order->id;
-				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_PAYMENT' ), $order ) && $history->addWithemail( true );
+				$side_effect_ok = $this->set_state( $order, $backorder ? 'PS_OS_OUTOFSTOCK_PAID' : 'PS_OS_PAYMENT' );
 				break;
 			case 'hold':
-				$history = new OrderHistory();
-				$history->id_order = (int) $order->id;
-				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_ERROR' ), $order ) && $history->addWithemail( true );
+				$side_effect_ok = $this->set_state( $order, 'PS_OS_ERROR' );
 				break;
 			case 'cancel':
-				$history = new OrderHistory();
-				$history->id_order = (int) $order->id;
-				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_CANCELED' ), $order ) && $history->addWithemail( true );
+				$side_effect_ok = $this->set_state( $order, 'PS_OS_CANCELED' );
+				break;
+			case 'note':
+				$side_effect_ok = $this->add_note(
+					$order,
+					$this->trans(
+						'GhostPay %type% event %event% (%amount% %currency% minor units) did not change this order. Check it manually and refund a double payment if needed.',
+						array( '%type%' => $event['type'], '%event%' => $event['id'], '%amount%' => $event['data']['amountMinor'], '%currency%' => $event['data']['currency'] ),
+						'Modules.Ghostpay.Admin'
+					)
+				);
+				break;
+			case 'mismatch':
+				$side_effect_ok = $this->add_note(
+					$order,
+					$this->trans(
+						'GhostPay %type% event %event% (%amount% %currency% minor units) ignored: currency mismatch.',
+						array( '%type%' => $event['type'], '%event%' => $event['id'], '%amount%' => $event['data']['amountMinor'], '%currency%' => $event['data']['currency'] ),
+						'Modules.Ghostpay.Admin'
+					)
+				);
 				break;
 			case 'partial':
 				// A partial payment remains unpaid and awaiting; later paid events may complete it.

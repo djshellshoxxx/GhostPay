@@ -1,0 +1,1149 @@
+From b439fafd4237c5709e714a8cf045b7c529c64c0f Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 4 Nov 2026 08:12:07 +0000
+Subject: [PATCH 2/4] fix(web-scan): re-check RPC-failed router claims once
+ from a capped list; flag large head drops
+
+Review of 2642db3 on #70: the rewind rule (hold the checkpoint at a recheck
+claim strictly after the run start) lost a payment whenever the run start
+itself landed on the claim block (pending rule, replay tail, budget stop,
+typed Start block), and k always-failing spam claims slowed the cursor to
+one block per run.
+
+- persistable(): the rewind rule is removed; the cursor advances as before
+  round 1 (pending rule, floor and corroboration unchanged).
+- ScanCursor gains recheck?: readonly bigint[] (sorted, unique, < nextBlock,
+  at most RECHECK_MAX = 8): blocks of this run's main-scan claims marked
+  recheck, capped to the 8 lowest. More than that returns recheckOverflow
+  { count, fromBlock }, shown in the Scan view through the new critical key
+  scan.recheck.overflow (en source, es/ja/ar machine drafts).
+- runScan first re-reads each owed block alone (same announcer/router
+  filters, second-provider reconciliation, worker matching and
+  verifyClaimedPayment path) and merges the results by announcement id.
+  Abortable, bounded by RECHECK_MAX single-block reads, errors drop the
+  block, and a retried block is never carried forward again.
+- localCheckpointStore persists recheck as decimal strings; old checkpoints
+  load unchanged and a malformed list is dropped on load while the rest of
+  the checkpoint is kept.
+- verifyClaimedPayment marks head skew retryable: both providers received
+  with the same evidenceId, binding and evidence, differing only in final.
+- Head telemetry also tracks the highest page head; a later page head more
+  than finalityDepth below it marks the privacy set partial.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01KtKj8jKCxc3mPzqqbW35tq
+---
+ apps/web/locales/ar.json                     |   3 +-
+ apps/web/locales/en.json                     |   3 +-
+ apps/web/locales/es.json                     |   3 +-
+ apps/web/locales/ja.json                     |   3 +-
+ apps/web/src/i18n/securityKeys.ts            |   3 +
+ apps/web/src/lib/scanClient.test.ts          | 236 ++++++++++--
+ apps/web/src/lib/scanClient.ts               | 363 +++++++++++++------
+ apps/web/src/views/Scan.test.tsx             |  26 +-
+ apps/web/src/views/Scan.tsx                  |   9 +
+ packages/chain-adapters/src/logs.ts          |  11 +
+ packages/chain-adapters/src/payments.test.ts |  19 +
+ packages/chain-adapters/src/payments.ts      |  21 +-
+ 12 files changed, 547 insertions(+), 153 deletions(-)
+
+diff --git a/apps/web/locales/ar.json b/apps/web/locales/ar.json
+index 7e83b49..dd5f3a7 100644
+--- a/apps/web/locales/ar.json
++++ b/apps/web/locales/ar.json
+@@ -567,6 +567,7 @@
+     "policy.receive.continue": "متابعة المسح",
+     "policy.receive.result": "قُرئ {count} إعلان سياسة، منها {fresh} جديد لمفاتيحك.",
+     "policy.receive.capped": "توقّف عند الحد: امسح مجددًا للمتابعة.",
+-    "ledger.import.invalidated": "{count, plural, =0 {لن يؤدي التفعيل إلى اعتبار أي ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} zero {لن يؤدي التفعيل إلى اعتبار أي ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} one {سيؤدي التفعيل إلى اعتبار ملاحظة واحدة غير صالحة بسبب سجل إعادة تنظيم السلسلة.} two {سيؤدي التفعيل إلى اعتبار ملاحظتين غير صالحتين بسبب سجل إعادة تنظيم السلسلة.} few {سيؤدي التفعيل إلى اعتبار # ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} many {سيؤدي التفعيل إلى اعتبار # ملاحظة غير صالحة بسبب سجل إعادة تنظيم السلسلة.} other {سيؤدي التفعيل إلى اعتبار # ملاحظة غير صالحة بسبب سجل إعادة تنظيم السلسلة.}}"
++    "ledger.import.invalidated": "{count, plural, =0 {لن يؤدي التفعيل إلى اعتبار أي ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} zero {لن يؤدي التفعيل إلى اعتبار أي ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} one {سيؤدي التفعيل إلى اعتبار ملاحظة واحدة غير صالحة بسبب سجل إعادة تنظيم السلسلة.} two {سيؤدي التفعيل إلى اعتبار ملاحظتين غير صالحتين بسبب سجل إعادة تنظيم السلسلة.} few {سيؤدي التفعيل إلى اعتبار # ملاحظات غير صالحة بسبب سجل إعادة تنظيم السلسلة.} many {سيؤدي التفعيل إلى اعتبار # ملاحظة غير صالحة بسبب سجل إعادة تنظيم السلسلة.} other {سيؤدي التفعيل إلى اعتبار # ملاحظة غير صالحة بسبب سجل إعادة تنظيم السلسلة.}}",
++    "scan.recheck.overflow": "{count, plural, zero {لا توجد دفعات تعذّر على RPC الخاص بك تأكيدها. أعد الفحص بدءًا من الكتلة {block} إذا لزم الأمر.} one {تعذّر على RPC الخاص بك تأكيد دفعة واحدة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} two {تعذّر على RPC الخاص بك تأكيد دفعتين، ولن يُعاد التحقق منهما تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منهما.} few {تعذّر على RPC الخاص بك تأكيد # دفعات، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} many {تعذّر على RPC الخاص بك تأكيد # دفعة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.} other {تعذّر على RPC الخاص بك تأكيد # دفعة، ولن يُعاد التحقق منها تلقائيًا. أعد الفحص بدءًا من الكتلة {block} للتحقق منها.}}"
+   }
+ }
+diff --git a/apps/web/locales/en.json b/apps/web/locales/en.json
+index acef36c..3502a62 100644
+--- a/apps/web/locales/en.json
++++ b/apps/web/locales/en.json
+@@ -567,6 +567,7 @@
+     "policy.receive.continue": "Continue scan",
+     "policy.receive.result": "{count} policy announcement(s) read, {fresh} new for your keys.",
+     "policy.receive.capped": "Stopped at a cap: scan again to continue.",
+-    "ledger.import.invalidated": "{count, plural, =0 {Activating would mark no observations invalid because of reorg history.} one {Activating would mark # observation invalid because of reorg history.} other {Activating would mark # observations invalid because of reorg history.}}"
++    "ledger.import.invalidated": "{count, plural, =0 {Activating would mark no observations invalid because of reorg history.} one {Activating would mark # observation invalid because of reorg history.} other {Activating would mark # observations invalid because of reorg history.}}",
++    "scan.recheck.overflow": "{count, plural, one {# payment could not be confirmed by your RPC and will not be checked again automatically. Rescan from block {block} to check it.} other {# payments could not be confirmed by your RPC and will not be checked again automatically. Rescan from block {block} to check them.}}"
+   }
+ }
+diff --git a/apps/web/locales/es.json b/apps/web/locales/es.json
+index 95f1302..9219cd7 100644
+--- a/apps/web/locales/es.json
++++ b/apps/web/locales/es.json
+@@ -567,6 +567,7 @@
+     "policy.receive.continue": "Continuar análisis",
+     "policy.receive.result": "Se leyeron {count} anuncios de política; {fresh} son nuevos para tus claves.",
+     "policy.receive.capped": "Se detuvo por un límite: vuelve a analizar para continuar.",
+-    "ledger.import.invalidated": "{count, plural, =0 {La activación no marcaría ninguna observación como inválida por el historial de reorganizaciones.} one {La activación marcaría # observación como inválida por el historial de reorganizaciones.} many {La activación marcaría # de observaciones como inválidas por el historial de reorganizaciones.} other {La activación marcaría # observaciones como inválidas por el historial de reorganizaciones.}}"
++    "ledger.import.invalidated": "{count, plural, =0 {La activación no marcaría ninguna observación como inválida por el historial de reorganizaciones.} one {La activación marcaría # observación como inválida por el historial de reorganizaciones.} many {La activación marcaría # de observaciones como inválidas por el historial de reorganizaciones.} other {La activación marcaría # observaciones como inválidas por el historial de reorganizaciones.}}",
++    "scan.recheck.overflow": "{count, plural, one {Tu RPC no pudo confirmar # pago y no se volverá a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlo.} many {Tu RPC no pudo confirmar # de pagos y no se volverán a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlos.} other {Tu RPC no pudo confirmar # pagos y no se volverán a comprobar automáticamente. Vuelve a escanear desde el bloque {block} para comprobarlos.}}"
+   }
+ }
+diff --git a/apps/web/locales/ja.json b/apps/web/locales/ja.json
+index 439d660..8967580 100644
+--- a/apps/web/locales/ja.json
++++ b/apps/web/locales/ja.json
+@@ -567,6 +567,7 @@
+     "policy.receive.continue": "スキャンを続ける",
+     "policy.receive.result": "ポリシーのアナウンスを{count}件読み取り、そのうち自分の鍵に対応する新規分は{fresh}件です。",
+     "policy.receive.capped": "上限に達して停止しました。続けるには再度スキャンしてください。",
+-    "ledger.import.invalidated": "{count, plural, =0 {有効化しても、再編成の履歴を理由に無効とされる観測記録はありません。} other {有効化すると、再編成の履歴を理由に#件の観測記録が無効とされます。}}"
++    "ledger.import.invalidated": "{count, plural, =0 {有効化しても、再編成の履歴を理由に無効とされる観測記録はありません。} other {有効化すると、再編成の履歴を理由に#件の観測記録が無効とされます。}}",
++    "scan.recheck.overflow": "{count, plural, other {#件の支払いをRPCで確認できませんでした。今後は自動では再確認されません。確認するには、ブロック{block}から再スキャンしてください。}}"
+   }
+ }
+diff --git a/apps/web/src/i18n/securityKeys.ts b/apps/web/src/i18n/securityKeys.ts
+index 692b75f..23cc01b 100644
+--- a/apps/web/src/i18n/securityKeys.ts
++++ b/apps/web/src/i18n/securityKeys.ts
+@@ -321,6 +321,9 @@ export const SECURITY_KEY_GROUPS = {
+     'policy.account.cancel',
+     'policy.account.execution',
+   ],
++  scanCompleteness: [
++    'scan.recheck.overflow',
++  ],
+ } as const satisfies Readonly<Record<string, readonly MessageKey[]>>;
+ 
+ export const SECURITY_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(Object.values(SECURITY_KEY_GROUPS).flat());
+diff --git a/apps/web/src/lib/scanClient.test.ts b/apps/web/src/lib/scanClient.test.ts
+index 3f49254..b120c0d 100644
+--- a/apps/web/src/lib/scanClient.test.ts
++++ b/apps/web/src/lib/scanClient.test.ts
+@@ -6,7 +6,7 @@ import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest'
+ import { InlineWorker } from '../test/inlineWorker';
+ import { makeLog } from '../test/announcements';
+ import { mockRpc } from '../test/mockRpc';
+-import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
++import { checkpointKeyId, localCheckpointStore, RECHECK_MAX, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+ import { ReconciliationVault } from './reconciliationVault';
+ import type { ToWorker } from './scannerCore';
+ 
+@@ -770,6 +770,51 @@ describe('localCheckpointStore', () => {
+     expect(() => { throwing.save(1, KEY, { nextBlock: 1n }); throwing.clear(1, KEY); }).not.toThrow();
+     void vi;
+   });
++  it('round-trips the recheck list as decimal strings, and omits an empty one', () => {
++    const st = mem();
++    const cp = localCheckpointStore(st);
++    const last = { number: 999n, hash: `0x${'a'.repeat(64)}` } as const;
++    cp.save(1, KEY, { nextBlock: 1000n, last, recheck: [5n, 120n, 999n] });
++    expect(JSON.parse(st.getItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`)!)).toEqual({ nextBlock: '1000', last: { number: '999', hash: last.hash }, recheck: ['5', '120', '999'] });
++    expect(cp.load(1, KEY)).toEqual({ nextBlock: 1000n, last, recheck: [5n, 120n, 999n] });
++    cp.save(2, KEY, { nextBlock: 1000n, recheck: [] });
++    expect(st.getItem(`ghostpay.scan.checkpoint.v2.2.${KEY}`)).toBe(JSON.stringify({ nextBlock: '1000' }));
++    expect(cp.load(2, KEY)).toEqual({ nextBlock: 1000n });
++    expect(cp.load(2, KEY)).not.toHaveProperty('recheck');
++  });
++  it('loads a checkpoint written before the recheck field unchanged', () => {
++    const st = mem();
++    const hash = `0x${'b'.repeat(64)}`;
++    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, JSON.stringify({ nextBlock: '500', last: { number: '499', hash } }));
++    const loaded = localCheckpointStore(st).load(1, KEY);
++    expect(loaded).toEqual({ nextBlock: 500n, last: { number: 499n, hash } });
++    expect(loaded).not.toHaveProperty('recheck');
++  });
++  it('drops a malformed recheck list on load and keeps the rest of the checkpoint', () => {
++    const hash = `0x${'c'.repeat(64)}`;
++    const malformed: readonly unknown[] = [
++      '120', // not an array
++      { 0: '120' },
++      null,
++      ['1', '2', '3', '4', '5', '6', '7', '8', '9'], // more than RECHECK_MAX
++      ['12a'], ['-1'], [''], ['0x10'], [120], ['1.5'], ['123456789012345678901'], // not a decimal string
++      ['200', '120'], // unsorted
++      ['120', '120'], // duplicate
++      ['500'], ['120', '600'], // at or after nextBlock
++    ];
++    for (const recheck of malformed) {
++      const st = mem();
++      st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, JSON.stringify({ nextBlock: '500', last: { number: '499', hash }, recheck }));
++      const loaded = localCheckpointStore(st).load(1, KEY);
++      expect(loaded, JSON.stringify(recheck)).toEqual({ nextBlock: 500n, last: { number: 499n, hash } });
++      expect(loaded, JSON.stringify(recheck)).not.toHaveProperty('recheck');
++    }
++    // The cap itself is valid.
++    const st = mem();
++    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, JSON.stringify({ nextBlock: '500', recheck: ['1', '2', '3', '4', '5', '6', '7', '499'] }));
++    expect(localCheckpointStore(st).load(1, KEY)).toEqual({ nextBlock: 500n, recheck: [1n, 2n, 3n, 4n, 5n, 6n, 7n, 499n] });
++    expect(RECHECK_MAX).toBe(8);
++  });
+ 
+   describe('receipt verification and second provider', () => {
+     const run = async (s: ReturnType<typeof setup>, client: ReturnType<typeof chainWith>, extra: Partial<Parameters<typeof runScan>[0]> = {}) => {
+@@ -1081,17 +1126,38 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
+   it('ends the privacy windows at the latest page head when the provider head falls between pages, so a scan that reaches it is complete (A5)', async () => {
+     const keys = generateKeySet();
+     const stranger = encodeMetaAddress(generateKeySet());
+-    // 7 days at 2 s is 302,400 blocks: block 377,601 opens the window ending at head 680,000, and lies 20,000 blocks
+-    // before the window that would end at the obsolete head 700,000.
++    // 7 days at 2 s is 302,400 blocks: block 377,601 opens the window ending at head 680,000, and lies 60 blocks
++    // before the window that would end at the obsolete head 680,060.
++    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 377_601, index: 0, caller: FAKE_ROUTER });
++    const base = chainWith(680_060, [routed.log]);
++    // The first page sees head 680,060; every later page sees 680,000 (a load-balanced backend that was ahead by less
++    // than finalityDepth (100): normal lag between backends).
++    let reads = 0;
++    const client = { ...base, blockNumber: () => Promise.resolve(reads++ === 0 ? 680_060n : 680_000n) };
++    const res = await runScan({ chain, manifest, client, cursor: { nextBlock: 0n }, ...keyArgs(keys) });
++    expect(reads).toBeGreaterThan(1);
++    expect(res.cursor.nextBlock).toBe(680_001n);
++    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: false });
++  });
++
++  it('marks the privacy set partial when the provider head drops by more than finalityDepth between pages (fail closed)', async () => {
++    const keys = generateKeySet();
++    const stranger = encodeMetaAddress(generateKeySet());
+     const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 377_601, index: 0, caller: FAKE_ROUTER });
+     const base = chainWith(700_000, [routed.log]);
+-    // The first page sees head 700,000; every later page sees 680,000 (a load-balanced backend that was ahead).
++    // The first page sees head 700,000; every later page sees 680,000: 20,000 blocks lower, far more than finalityDepth.
++    // A provider that far behind another answer is not trustworthy for placing the privacy windows.
+     let reads = 0;
+     const client = { ...base, blockNumber: () => Promise.resolve(reads++ === 0 ? 700_000n : 680_000n) };
+     const res = await runScan({ chain, manifest, client, cursor: { nextBlock: 0n }, ...keyArgs(keys) });
+     expect(reads).toBeGreaterThan(1);
+     expect(res.cursor.nextBlock).toBe(680_001n);
+-    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: false });
++    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: true });
++    // Exactly finalityDepth lower is still normal lag.
++    let again = 0;
++    const atDepth = { ...chainWith(680_100, [routed.log]), blockNumber: () => Promise.resolve(again++ === 0 ? 680_100n : 680_000n) };
++    const edge = await runScan({ chain, manifest, client: atDepth, cursor: { nextBlock: 0n }, ...keyArgs(generateKeySet()) });
++    expect(edge.telemetry?.anonymity).toMatchObject({ count7d: 1, partial: false });
+   });
+ 
+   it('counts a router announcement once in the privacy set when a mid-run reorg replays its block (A5)', async () => {
+@@ -1278,54 +1344,110 @@ describe('two-provider replay-tail checkpoint anchor', () => {
+     });
+   });
+ 
+-  describe('router claim whose check failed in transit on a final page (one bounded retry)', () => {
++  describe('router claim whose check failed in transit on a final page (one retry from a capped list)', () => {
+     const HEAD = 120_000;
+     const SETTLED = BigInt(HEAD) + 1n - 100n; // the replay-tail checkpoint of a run that reaches the head
+-    /** chainWith, but eth_getTransactionReceipt throws (a transport failure) while `failing()` says so. */
+-    const flaky = (logs: RpcLog[], failing: () => boolean): ReturnType<typeof chainWith> => {
++    const TAIL_ANCHOR = { number: SETTLED - 1n, hash: blockHash(Number(SETTLED) - 1) as Hex };
++    /**
++     * chainWith, but eth_getTransactionReceipt throws (a transport failure) while `failing(tx)` says so. `receipts`
++     * counts the receipt requests per transaction hash, failed or not.
++     */
++    const flaky = (logs: RpcLog[], failing: (tx: string) => boolean) => {
+       const base = chainWith(HEAD, logs);
+-      return { ...base, request: (method, params) => (method === 'eth_getTransactionReceipt' && failing()
+-        ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'timeout'))
+-        : base.request(method, params)) };
++      const receipts = new Map<string, number>();
++      const client: ReturnType<typeof chainWith> = { ...base, request: (method, params) => {
++        if (method !== 'eth_getTransactionReceipt') return base.request(method, params);
++        const tx = String(params[0]).toLowerCase();
++        receipts.set(tx, (receipts.get(tx) ?? 0) + 1);
++        return failing(tx) ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'timeout')) : base.request(method, params);
++      } };
++      return { client, receipts };
+     };
++    const txOf = (log: RpcLog): string => log.transactionHash!.toLowerCase();
++    const resumeWith = (s: ReturnType<typeof setup>, cp: ReturnType<typeof memStore>, extra: Partial<Params> & Pick<Params, 'client'>) =>
++      scan(s, KEY, { cursor: cp.store.load(chain.chainId, KEY) ?? { nextBlock: 0n }, checkpoints: cp.store, ...extra });
+ 
+-    it('saves the checkpoint at the claim, so a resume with a working RPC reports the payment verified', async () => {
++    it('T1: advances past a claim whose check failed in transit, owes it one recheck, and the next run verifies it', async () => {
+       const s = setup(); const cp = memStore();
+       let failures = 1;
+-      const client = flaky([s.mine.log], () => failures-- > 0);
++      const { client } = flaky([s.mine.log], () => failures-- > 0);
+       const first = await scan(s, KEY, { client, checkpoints: cp.store });
+       expect(first.cursor.nextBlock).toBe(BigInt(HEAD) + 1n);
+       expect(first.matches.map((m) => [m.stealthAddress, m.receipt, m.recheck])).toEqual([[s.mine.stealthAddress, 'claimed', true]]);
+-      // Not 119,901 (the head's replay tail): block 120 is final, but its payment was never actually checked.
++      // No rewind: the head's replay tail, as without the failure, and block 120 is owed one more check.
+       const saved = cp.store.load(chain.chainId, KEY);
+-      expect(saved).toEqual({ nextBlock: 120n, last: { number: 119n, hash: blockHash(119) } });
++      expect(saved).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR, recheck: [120n] });
++      expect(first).not.toHaveProperty('recheckOverflow');
+       const second = await scan(s, KEY, { client, cursor: saved!, checkpoints: cp.store });
+       expect(second.matches.map((m) => [m.stealthAddress, m.receipt, m.recheck])).toEqual([[s.mine.stealthAddress, 'verified', undefined]]);
+-      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(SETTLED);
++      expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR });
++      expect(cp.store.load(chain.chainId, KEY)).not.toHaveProperty('recheck');
+     });
+ 
+-    it('gives each claim whose check always throws exactly one retry, then saves past it: the checkpoint is never pinned', async () => {
++    it('T1b: a run that starts exactly at the claim block and fails there still owes it a recheck, which verifies it', async () => {
++      const s = setup(); const cp = memStore();
++      let failures = 1;
++      const { client } = flaky([s.mine.log], () => failures-- > 0);
++      // The run start lands on the claim block (as a pending-rule, replay-tail, budget-stop or typed start would).
++      const first = await scan(s, KEY, { client, cursor: { nextBlock: 120n }, checkpoints: cp.store });
++      expect(first.matches.map((m) => [m.announcement.blockNumber, m.receipt, m.recheck])).toEqual([[120n, 'claimed', true]]);
++      expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR, recheck: [120n] });
++      const second = await resumeWith(s, cp, { client });
++      expect(second.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[120n, 'verified']]);
++      expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR });
++    });
++
++    it('T2: retries a claim whose check always throws exactly once on the next run, then drops it; the cursor is never held back', async () => {
+       const s = setup(); const cp = memStore();
+       const later = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 30_000, index: 2, caller: FAKE_ROUTER });
+-      const client = flaky([s.mine.log, later.log], () => true);
+-      const resume = () => scan(s, KEY, { client, cursor: cp.store.load(chain.chainId, KEY) ?? { nextBlock: 0n }, checkpoints: cp.store });
+-      const first = await resume();
+-      expect(first.matches.map((m) => [m.receipt, m.recheck])).toEqual([['claimed', true], ['claimed', true]]);
+-      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(120n);
+-      // Run 2 starts AT block 120 and fails there again: that was its retry, so only the later claim is still owed one.
+-      const second = await resume();
+-      expect(second.matches.map((m) => m.announcement.blockNumber)).toEqual([120n, 30_000n]);
+-      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(30_000n);
+-      // Run 3 starts at 30,000, fails once more and moves on to the head's replay tail.
+-      const third = await resume();
+-      expect(third.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[30_000n, 'claimed']]);
+-      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(SETTLED);
+-      const fourth = await resume();
+-      expect(fourth.matches).toEqual([]);
+-      expect(cp.store.load(chain.chainId, KEY)?.nextBlock).toBe(SETTLED);
++      const { client, receipts } = flaky([s.mine.log, later.log], () => true);
++      const first = await resumeWith(s, cp, { client });
++      expect(first.matches.map((m) => [m.announcement.blockNumber, m.receipt, m.recheck])).toEqual([[120n, 'claimed', true], [30_000n, 'claimed', true]]);
++      expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR, recheck: [120n, 30_000n] });
++      // Run 2 re-checks both once, fails again and owes nothing more.
++      const second = await resumeWith(s, cp, { client });
++      expect(second.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[120n, 'claimed'], [30_000n, 'claimed']]);
++      expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR });
++      const third = await resumeWith(s, cp, { client });
++      expect(third.matches).toEqual([]);
++      expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR });
++      // One check in the run that found them, one retry, never a third.
++      expect(receipts.get(txOf(s.mine.log))).toBe(2);
++      expect(receipts.get(txOf(later.log))).toBe(2);
++    });
++
++    it('T2b: 20 always-failing spam claims cost no runs; the list is capped at RECHECK_MAX and the overflow is reported', async () => {
++      const s = setup();
++      const meta = encodeMetaAddress(s.keys);
++      // Distinct blocks, all inside page 1 (0..49,999); every one of their checks throws.
++      const spam = Array.from({ length: 20 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1000 + 2000 * i, index: 0, caller: FAKE_ROUTER }));
++      const blocks = spam.map((_, i) => BigInt(1000 + 2000 * i));
++      const runsToHead = async (logs: RpcLog[]) => {
++        const cp = memStore(); const { client } = flaky(logs, () => true);
++        const results: Awaited<ReturnType<typeof runScan>>[] = [];
++        const positions: bigint[] = [];
++        while (results.length < 10 && cp.store.load(chain.chainId, KEY)?.nextBlock !== SETTLED) {
++          results.push(await resumeWith(s, cp, { client, maxPages: 1 }));
++          positions.push(cp.store.load(chain.chainId, KEY)!.nextBlock);
++        }
++        return { cp, results, positions };
++      };
++      const clean = await runsToHead([]);
++      const spammed = await runsToHead(spam.map((x) => x.log));
++      expect(clean.positions).toEqual([50_000n, 100_000n, SETTLED]);
++      expect(spammed.positions).toEqual(clean.positions);
++      const [run1, run2, run3] = spammed.results;
++      expect(run1?.matches.length).toBe(20);
++      expect(spammed.cp.saves[0]).toEqual({ nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) }, recheck: blocks.slice(0, RECHECK_MAX) });
++      expect(run1?.recheckOverflow).toEqual({ count: 12, fromBlock: blocks[RECHECK_MAX] });
++      // Run 2 re-checks the 8 owed blocks once, and nothing is carried again.
++      expect(run2?.matches.map((m) => m.announcement.blockNumber)).toEqual(blocks.slice(0, RECHECK_MAX));
++      expect(spammed.cp.saves[1]).not.toHaveProperty('recheck');
++      expect(run2).not.toHaveProperty('recheckOverflow');
++      expect(run3?.matches).toEqual([]);
+     });
+ 
+-    it('does not rewind for claims their evidence refutes (no matching transfer, or not router-posted): A5 progress holds', async () => {
++    it('T3: never owes a recheck for claims their evidence refutes (no matching transfer, or not router-posted)', async () => {
+       const s = setup(); const cp = memStore();
+       const base = chainWith(HEAD, s.logs);
+       // The receipt is readable but carries no token Transfer: a definitive "not this payment", not a transient failure.
+@@ -1341,6 +1463,52 @@ describe('two-provider replay-tail checkpoint anchor', () => {
+         [s.mine2.stealthAddress, 'claimed', undefined],
+       ].sort());
+       expect(cp.saves).toEqual([{ nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) } }]);
++      expect(cp.saves[0]).not.toHaveProperty('recheck');
++      expect(res).not.toHaveProperty('recheckOverflow');
++    });
++
++    it('a recheck read that fails, or that the second provider contradicts, does not fail the run and is not retried again', async () => {
++      for (const mode of ['error', 'discrepancy'] as const) {
++        const s = setup(); const cp = memStore();
++        let failures = 1;
++        const { client } = flaky([s.mine.log], () => failures-- > 0);
++        await scan(s, KEY, { client, checkpoints: cp.store });
++        expect(cp.store.load(chain.chainId, KEY)?.recheck, mode).toEqual([120n]);
++        const single = (f: LogFilter) => f.fromBlock === 120n && f.toBlock === 120n;
++        const res = await resumeWith(s, cp, mode === 'error'
++          ? { client: { ...client, getLogs: (f) => (single(f) ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'down')) : client.getLogs(f)) } }
++          // The second provider has no announcement at block 120: the recheck page is not reconciled, so not exposed.
++          : { client, secondaryClient: chainWith(HEAD, []) });
++        expect(res.matches, mode).toEqual([]);
++        expect(res.discrepancies, mode).toEqual([]);
++        expect(cp.store.load(chain.chainId, KEY), mode).toEqual({ nextBlock: SETTLED, last: TAIL_ANCHOR });
++      }
++    });
++
++    it('re-checks only valid owed blocks of a cursor passed in directly (below nextBlock, unique, at most RECHECK_MAX)', async () => {
++      const s = setup(); const cp = memStore();
++      const { client, receipts } = flaky([s.mine.log], () => false);
++      const res = await scan(s, KEY, { client, checkpoints: cp.store, cursor: { nextBlock: SETTLED, last: TAIL_ANCHOR, recheck: [120n, 120n, SETTLED, BigInt(HEAD)] } });
++      expect(res.matches.map((m) => [m.announcement.blockNumber, m.receipt])).toEqual([[120n, 'verified']]);
++      expect(receipts.get(txOf(s.mine.log))).toBe(1);
++      const singleBlockReads = client.calls.filter((c) => c.method === 'eth_getLogs' && (c.params[0] as LogFilter).fromBlock === (c.params[0] as LogFilter).toBlock);
++      expect(singleBlockReads.map((c) => (c.params[0] as LogFilter).fromBlock)).toEqual([120n]);
++    });
++
++    it('stops the recheck pass on Cancel, saving nothing and wiping the key', async () => {
++      const s = setup(); const cp = memStore();
++      const ctl = new AbortController(); const key = unsafeRevealSecret(s.keys.viewingSecret);
++      let waiting = false;
++      const { client } = flaky([s.mine.log], () => false);
++      const gated: ReturnType<typeof chainWith> = { ...client, getLogs: async (f) => {
++        if (f.fromBlock === 120n && f.toBlock === 120n) { waiting = true; ctl.abort(); }
++        return client.getLogs(f);
++      } };
++      const res = await scan(s, KEY, { client: gated, checkpoints: cp.store, signal: ctl.signal, viewingKey: key, cursor: { nextBlock: SETTLED, last: TAIL_ANCHOR, recheck: [120n] } });
++      expect(waiting).toBe(true);
++      expect(res.matches).toEqual([]);
++      expect(cp.saves).toEqual([]);
++      expect(key.every((b) => b === 0)).toBe(true);
+     });
+   });
+ 
+diff --git a/apps/web/src/lib/scanClient.ts b/apps/web/src/lib/scanClient.ts
+index ac02796..5844f40 100644
+--- a/apps/web/src/lib/scanClient.ts
++++ b/apps/web/src/lib/scanClient.ts
+@@ -3,6 +3,7 @@ import {
+   compareProviders,
+   dedupeClaims,
+   fetchAnnouncements,
++  RECHECK_MAX,
+   verifyClaimedPayment,
+   type Address,
+   type ChainConfig,
+@@ -21,6 +22,8 @@ import { UserFacingError } from './errors';
+ import { anonymitySet, splitLanes, type AnonymitySet } from './scanSpam';
+ import type { FromWorker, ToWorker, WireLog } from './scannerCore';
+ 
++export { RECHECK_MAX };
++
+ export interface ScanWorkerLike {
+   onmessage: ((e: { readonly data: FromWorker }) => void) | null;
+   onerror: ((e: unknown) => void) | null;
+@@ -44,9 +47,10 @@ export interface ScanMatch {
+    */
+   readonly receipt: ReceiptStatus;
+   /**
+-   * Set on a `claimed` router match whose check could not be completed (an RPC failure or a reorg race, see
+-   * `PaymentVerification.retryable`), as opposed to one its evidence refuted. The saved checkpoint is held at its block
+-   * so the next run checks it again, once (see `persistable`). Absent otherwise.
++   * Set on a `claimed` router match whose check could not be completed (an RPC failure, a reorg race or head skew
++   * between two providers, see `PaymentVerification.retryable`), as opposed to one its evidence refuted. The saved
++   * checkpoint lists its block in `ScanCursor.recheck`, so the next run checks it once more, unless this match was
++   * itself that one retry. Absent otherwise.
+    */
+   readonly recheck?: true;
+ }
+@@ -76,6 +80,16 @@ export interface SecondaryLag {
+   readonly head: bigint;
+ }
+ 
++/**
++ * More blocks were owed a recheck than a checkpoint carries ({@link RECHECK_MAX}): the lowest ones were kept, `count`
++ * were dropped, the lowest of them at `fromBlock`. Those payments are not checked again unless the seller rescans from
++ * `fromBlock`.
++ */
++export interface RecheckOverflow {
++  readonly count: number;
++  readonly fromBlock: bigint;
++}
++
+ /** Spec 05 local telemetry for one run. Computed on this device and never sent. */
+ export interface ScanTelemetry {
+   /** Router-posted announcements processed. */
+@@ -140,6 +154,9 @@ export interface ScanParams {
+   readonly openLaneBudget?: number;
+ }
+ 
++type Claim = { readonly stealthAddress: Address; readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean };
++type WorkerMatches = Extract<FromWorker, { type: 'matches' }>['matches'];
++
+ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
+   return { id: a.id, schemeId: a.schemeId, stealthAddress: a.stealthAddress, ephemeralPublicKey: a.ephemeralPublicKey, metadata: a.metadata, ...(skipTag ? { skipTag: true } : {}) };
+ }
+@@ -147,8 +164,14 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
+ /**
+  * Network access happens here (via chain-adapters), never in the worker. The worker receives public logs and, once,
+  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
++ *
++ * Before the main scan, each block in `p.cursor.recheck` (below `p.cursor.nextBlock`, at most {@link RECHECK_MAX}) is
++ * read again on its own, with the same announcer and router filters, and its router-posted announcements go through
++ * the same worker matching and payment verification; with a second provider that block's logs must reconcile first.
++ * The results join this run's matches (deduplicated by announcement id), but a block retried here is never owed again,
++ * whatever its outcome: one retry per claim. A read or check in this pass that fails drops that block, never the run.
+  */
+-export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag }> {
++export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag; readonly recheckOverflow?: RecheckOverflow }> {
+   let worker: ScanWorkerLike | undefined;
+   let stopped = false;
+   const stopWorker = (): void => {
+@@ -196,7 +219,6 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+     });
+ 
+   const all: ScanMatch[] = [];
+-  const byId = new Map<string, ScannedAnnouncement>();
+   let cursor = p.cursor;
+   let scanned = 0;
+   let skipped = 0;
+@@ -212,6 +234,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+   let secondaryLag: SecondaryLag | undefined;
+   // The highest block this run could scan to (the lower of the two heads): the privacy-set window ends here.
+   let reachableHead: bigint | undefined;
++  // The highest page head seen this run. A later page head more than finalityDepth below it is not normal lag between
++  // load-balanced backends: such a provider cannot be trusted to place the privacy windows, so the set is partial.
++  let maxHead = 0n;
++  // Announcement ids matched by the recheck pass: they are never owed a recheck again.
++  const retried = new Set<string>();
++  let recheckOverflow: RecheckOverflow | undefined;
+   // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
+   // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
+   const claimLedger = new Map<string, number>();
+@@ -244,6 +272,132 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+     const maxAnnouncements = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.maxAnnouncementsPerScan) ? p.maxAnnouncementsPerScan! : 100_000));
+     const maxMatches = Math.max(1, Math.min(10_000, Number.isSafeInteger(p.maxMatchesPerScan) ? p.maxMatchesPerScan! : 10_000));
+     const openBudget = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.openLaneBudget) ? p.openLaneBudget! : 20_000));
++    const router = p.manifest.router.toLowerCase();
++    /** One worker round trip for a batch of public logs. */
++    const scanBatch = async (logs: readonly ScannedAnnouncement[]): Promise<FromWorker> => {
++      const id = ++batchId;
++      try {
++        return await wait((resolve) => {
++          pending.set(id, resolve);
++          w.postMessage({ type: 'batch', batchId: id, logs: logs.map((a) => toWire(a, p.deep === true && a.caller.toLowerCase() === router)) });
++        });
++      } finally {
++        pending.delete(id);
++      }
++    };
++    /** The worker's matches as claims, in chain order, without replays of one payment. */
++    const claimsOf = (announcements: readonly ScannedAnnouncement[], matches: WorkerMatches): readonly Claim[] => {
++      const position = new Map(announcements.map((a, i) => [a.id, i] as const));
++      const byId = new Map(announcements.map((a) => [a.id, a] as const));
++      const claims: Claim[] = [];
++      // Back to chain order, so lane ordering never changes which duplicate or match comes first.
++      const ordered = [...matches].sort((x, y) => (position.get(x.id) ?? 0) - (position.get(y.id) ?? 0));
++      for (const m of ordered) {
++        const announcement = byId.get(m.id);
++        if (announcement === undefined) continue;
++        let metadata: ParsedMetadata | undefined;
++        try {
++          metadata = parseMetadata(announcement.metadata);
++        } catch {
++          metadata = undefined;
++        }
++        const viaRouter = announcement.caller.toLowerCase() === router;
++        claims.push({ stealthAddress: m.stealthAddress as Address, announcement, metadata, viaRouter });
++      }
++      // Drop replay announcements before any payment verification. The helper prefers the verified
++      // router caller for a one-time address/ephemeral-key pair, then the earliest log.
++      return dedupeClaims(claims).items;
++    };
++    /** Verifies each claim not already in this run's matches; undefined if cancelled part-way. */
++    const verifyClaims = async (claims: readonly Claim[], matches: WorkerMatches): Promise<{ readonly matches: readonly ScanMatch[]; readonly evidence: Set<string> } | undefined> => {
++      const pageMatches: ScanMatch[] = [];
++      const pageEvidence = new Set(evidenceLedger.keys());
++      const workerMatches = new Map(matches.map((m) => [m.id, m] as const));
++      for (const claim of claims) {
++        if (p.signal.aborted) return undefined;
++        if (all.some((x) => x.announcement.id === claim.announcement.id)) continue;
++        const verification = claim.metadata === undefined
++          ? undefined
++          : await verifyClaimedPayment({
++              chain: p.chain,
++              client: p.client,
++              router: p.manifest.router,
++              announcer: p.manifest.announcer,
++              claim,
++              ...(p.secondaryClient === undefined ? {} : { secondaryClient: p.secondaryClient }),
++              consumedTransfers: pageEvidence,
++            });
++        // A router-attributed announcement alone is still just a claim. Only independent transfer
++        // evidence can be shown as received; pending applies only to evidence-backed, non-final funds.
++        const receipt: ReceiptStatus = verification?.status === 'received'
++          ? verification.final ? 'verified' : 'pending'
++          : 'claimed';
++        const workerMatch = workerMatches.get(claim.announcement.id);
++        const recheck = receipt === 'claimed' && verification?.retryable === true;
++        const match: ScanMatch = { chainId: p.chain.chainId, announcement: claim.announcement, stealthAddress: claim.stealthAddress, metadata: claim.metadata, viaRouter: claim.viaRouter, tagMatches: workerMatch?.tagMatches ?? true, receipt, ...(recheck ? { recheck } : {}) };
++        pageMatches.push(match);
++      }
++      // Don't commit evidence from a partially processed/cancelled page.
++      return p.signal.aborted ? undefined : { matches: pageMatches, evidence: pageEvidence };
++    };
++    /** Adds reconciled matches and their evidence to this run's results. */
++    const commit = (pageMatches: readonly ScanMatch[], pageEvidence: ReadonlySet<string>): void => {
++      for (const id of pageEvidence) if (!evidenceLedger.has(id)) {
++        const blockText = id.startsWith('native:') ? id.split(':')[1] : id.split(':')[2];
++        if (blockText !== undefined && /^\d+$/.test(blockText)) evidenceLedger.set(id, BigInt(blockText));
++      }
++      for (const match of pageMatches) {
++        if (all.some((x) => x.announcement.id === match.announcement.id)) continue;
++        const paymentKey = `${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`;
++        const previous = claimLedger.get(paymentKey);
++        if (previous !== undefined) {
++          const old = all[previous];
++          // A later genuine router record outranks an earlier public replay. Equal-trust records
++          // stay first/earliest. The view's onMatch handler upserts by this same payment key.
++          if (old !== undefined && match.viaRouter && !old.viaRouter) {
++            all[previous] = match;
++            p.onMatch?.(match);
++          }
++          continue;
++        }
++        claimLedger.set(paymentKey, all.length);
++        all.push(match);
++        p.onMatch?.(match);
++      }
++    };
++    // The one retry owed to each block of the checkpoint's recheck list, before the main scan (see the JSDoc).
++    for (const block of owedRechecks(p.cursor)) {
++      if (p.signal.aborted) break;
++      try {
++        const res = await fetchAnnouncements({ chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor: { nextBlock: block }, toBlock: block });
++        if (p.signal.aborted) break;
++        const routed = res.announcements.filter((a) => a.blockNumber === block && a.caller.toLowerCase() === router);
++        const last = res.cursor.last;
++        if (routed.length === 0 || last === undefined) continue;
++        if (p.secondaryClient !== undefined) {
++          // As on a main page: nothing from a block is exposed until its logs reconcile with the independent provider.
++          const cmp = await compareProviders({
++            chain: p.chain, secondary: p.secondaryClient, announcer: p.manifest.announcer, fromBlock: block, toBlock: block,
++            primaryAnnouncements: res.announcements, primarySkipped: res.skipped, primaryBlockHash: last.hash,
++            router: p.manifest.router, primaryRouterOnlyBlocks: res.routerOnlyBlocks ?? [],
++          });
++          if (p.signal.aborted) break;
++          if (cmp.discrepancies.length > 0) continue;
++        }
++        const reply = await scanBatch(routed);
++        if (p.signal.aborted) break;
++        if (reply.type !== 'matches') continue;
++        const claims = claimsOf(routed, reply.matches);
++        if (all.length + claims.length > maxMatches) continue;
++        const verified = await verifyClaims(claims, reply.matches);
++        if (verified === undefined) break;
++        for (const match of verified.matches) retried.add(match.announcement.id);
++        commit(verified.matches, verified.evidence);
++      } catch (e) {
++        if (e === ABORTED) throw e;
++        // This block's one retry could not be completed: it is not owed again.
++      }
++    }
+     for (let page = 0; page < maxPages; page++) {
+       if (p.signal.aborted) break;
+       // With a second provider, end the page at the lower of the two heads: a second RPC a few blocks behind the
+@@ -274,6 +428,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+       // The latest page's head, not the highest seen: a provider head that falls between pages (a load-balanced backend
+       // that was ahead) must not leave the privacy windows ending at blocks the completed scan was never offered.
+       reachableHead = pageHead;
++      if (pageHead > maxHead) maxHead = pageHead;
+       skipped += res.skipped;
+       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
+       if (res.reorg !== undefined) {
+@@ -336,39 +491,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+       // otherwise stay before that page on every run. Per-run work is then at most the budget plus one page.
+       const deferred = openSeen > 0 && openSeen + lanes.open.length > openBudget ? lanes.open.length : 0;
+       const toScan = deferred > 0 ? lanes.trusted : [...lanes.trusted, ...lanes.open];
+-      const position = new Map(res.announcements.map((a, i) => [a.id, i] as const));
+-      for (const a of res.announcements) byId.set(a.id, a);
+-      const id = ++batchId;
+-      const reply = await wait((resolve) => {
+-        pending.set(id, resolve);
+-        w.postMessage({ type: 'batch', batchId: id, logs: toScan.map((a) => toWire(a, p.deep === true && a.caller.toLowerCase() === p.manifest.router.toLowerCase())) });
+-      });
+-      pending.delete(id);
++      const reply = await scanBatch(toScan);
+       if (p.signal.aborted) break;
+       if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
+       scanned += toScan.length;
+       trustedSeen += lanes.trusted.length;
+       if (deferred === 0) openSeen += lanes.open.length;
+       for (const a of lanes.trusted) if (routerBlocks.length < 200_000) routerBlocks.push(a.blockNumber);
+-      const claims: { readonly stealthAddress: Address; readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }[] = [];
+-      // Back to chain order, so lane ordering never changes which duplicate or match comes first.
+-      const ordered = [...reply.matches].sort((x, y) => (position.get(x.id) ?? 0) - (position.get(y.id) ?? 0));
+-      for (const m of ordered) {
+-        const announcement = byId.get(m.id);
+-        if (announcement === undefined) continue;
+-        let metadata: ParsedMetadata | undefined;
+-        try {
+-          metadata = parseMetadata(announcement.metadata);
+-        } catch {
+-          metadata = undefined;
+-        }
+-        const viaRouter = announcement.caller.toLowerCase() === p.manifest.router.toLowerCase();
+-        claims.push({ stealthAddress: m.stealthAddress as Address, announcement, metadata, viaRouter });
+-      }
+-      // Drop replay announcements before any payment verification. The helper prefers the verified
+-      // router caller for a one-time address/ephemeral-key pair, then the earliest log.
+-      const uniqueClaims = dedupeClaims(claims);
+-      if (all.length + uniqueClaims.items.length > maxMatches) {
++      const uniqueClaims = claimsOf(res.announcements, reply.matches);
++      if (all.length + uniqueClaims.length > maxMatches) {
+         limitReached = true;
+         if (res.reorg !== undefined) {
+           cursor = { nextBlock: res.reorg.rolledBackTo };
+@@ -377,36 +508,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
+         break;
+       }
+-      const pageMatches: ScanMatch[] = [];
+-      const pageEvidence = new Set(evidenceLedger.keys());
+-      const workerMatches = new Map(reply.matches.map((m) => [m.id, m] as const));
+-      for (const claim of uniqueClaims.items) {
+-        if (p.signal.aborted) break;
+-        if (all.some((x) => x.announcement.id === claim.announcement.id)) continue;
+-        const verification = claim.metadata === undefined
+-          ? undefined
+-          : await verifyClaimedPayment({
+-              chain: p.chain,
+-              client: p.client,
+-              router: p.manifest.router,
+-              announcer: p.manifest.announcer,
+-              claim,
+-              ...(p.secondaryClient === undefined ? {} : { secondaryClient: p.secondaryClient }),
+-              consumedTransfers: pageEvidence,
+-            });
+-        // A router-attributed announcement alone is still just a claim. Only independent transfer
+-        // evidence can be shown as received; pending applies only to evidence-backed, non-final funds.
+-        const receipt: ReceiptStatus = verification?.status === 'received'
+-          ? verification.final ? 'verified' : 'pending'
+-          : 'claimed';
+-        const workerMatch = workerMatches.get(claim.announcement.id);
+-        const recheck = receipt === 'claimed' && verification?.retryable === true;
+-        const match: ScanMatch = { chainId: p.chain.chainId, announcement: claim.announcement, stealthAddress: claim.stealthAddress, metadata: claim.metadata, viaRouter: claim.viaRouter, tagMatches: workerMatch?.tagMatches ?? true, receipt, ...(recheck ? { recheck } : {}) };
+-        pageMatches.push(match);
+-      }
+-      // Don't commit evidence from a partially processed/cancelled page.
+-      if (p.signal.aborted) break;
+-      byId.clear();
++      const verified = await verifyClaims(uniqueClaims, reply.matches);
++      if (verified === undefined) break;
+       let disagree = false;
+       if (p.secondaryClient !== undefined && res.cursor.last !== undefined) {
+         const cmp = await compareProviders({
+@@ -430,30 +533,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+       }
+       // A primary-only router log can look cryptographically attested. Do not expose any matches from a page
+       // until its logs and checkpoint block have reconciled with the independent provider.
+-      if (!disagree) {
+-        for (const id of pageEvidence) if (!evidenceLedger.has(id)) {
+-          const blockText = id.startsWith('native:') ? id.split(':')[1] : id.split(':')[2];
+-          if (blockText !== undefined && /^\d+$/.test(blockText)) evidenceLedger.set(id, BigInt(blockText));
+-        }
+-        for (const match of pageMatches) {
+-          if (all.some((x) => x.announcement.id === match.announcement.id)) continue;
+-          const paymentKey = `${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`;
+-          const previous = claimLedger.get(paymentKey);
+-          if (previous !== undefined) {
+-            const old = all[previous];
+-            // A later genuine router record outranks an earlier public replay. Equal-trust records
+-            // stay first/earliest. The view's onMatch handler upserts by this same payment key.
+-            if (old !== undefined && match.viaRouter && !old.viaRouter) {
+-              all[previous] = match;
+-              p.onMatch?.(match);
+-            }
+-            continue;
+-          }
+-          claimLedger.set(paymentKey, all.length);
+-          all.push(match);
+-          p.onMatch?.(match);
+-        }
+-      }
++      if (!disagree) commit(verified.matches, verified.evidence);
+       // A page the providers disagree on must be re-scanned. Do not advance the in-memory cursor
+       // or continue into later pages, since a later successful page could otherwise checkpoint
+       // past these withheld logs and permanently skip them on resume.
+@@ -488,7 +568,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+           p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
+           break;
+         }
+-        if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor);
++        if (saved !== undefined) {
++          const owed = withOwedRechecks(saved as ScanCursor, all, retried);
++          recheckOverflow = owed.overflow;
++          p.checkpoints.save(p.chain.chainId, p.keyId, owed.cursor);
++        }
+       }
+       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length, ...narrowed() });
+       if (!res.truncated) break;
+@@ -504,8 +588,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
+   // A run stopped by a budget, a discrepancy or Cancel before the head: the "last 7 days" still end at the chain head,
+   // and the blocks it did not reach make the count a lower bound.
+   const windowHead = reachableHead !== undefined && reachableHead > scanHead ? reachableHead : scanHead;
+-  const anonymity = trustedSeen + openSeen === 0 && scanned === 0 ? undefined : anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead });
+-  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
++  const counted = trustedSeen + openSeen === 0 && scanned === 0 ? undefined : anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead });
++  // A page head more than finalityDepth below an earlier one this run: fail closed for privacy advice.
++  const headDropped = reachableHead !== undefined && maxHead - reachableHead > BigInt(p.chain.finalityDepth);
++  const anonymity = counted !== undefined && headDropped ? { ...counted, partial: true } : counted;
++  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), ...(recheckOverflow === undefined ? {} : { recheckOverflow }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
+ }
+ 
+ /**
+@@ -565,12 +652,10 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
+  * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
+  * earliest `pending` match, and never moves behind where this run started.
+  *
+- * A `claimed` match marked `recheck` (its check failed on an RPC error or a reorg race, not on the evidence) holds the
+- * checkpoint at its block too, so a final block is never passed with a payment nobody actually checked. That retry is
+- * given exactly once: only a match strictly after this run's start (`p.cursor.nextBlock`) holds the checkpoint. A claim
+- * at the start itself was already the retry (this run began there, and its check failed again), so it is passed. A
+- * claim crafted to fail its check every time (a receipt over the response cap, say) therefore costs one extra run and
+- * cannot pin the checkpoint: every run still saves a position after the one it started from.
++ * A `claimed` match marked `recheck` (its check failed on an RPC error, a reorg race or head skew, not on the evidence)
++ * never holds the checkpoint back: a claim crafted to fail its check every time (a receipt over the response cap, say)
++ * must not slow the scan. Its block is owed one more check instead, through the saved cursor's `recheck` list (see
++ * {@link withOwedRechecks}), which the next run re-reads before its main scan.
+  *
+  * With a second provider, whichever anchor is saved (the replay-tail block, or the page end when the cursor itself is saved)
+  * must hold the ba0fd59 invariant: its hash is read from both providers plus a second primary read after the secondary
+@@ -585,11 +670,6 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
+   if (settled > next) next = settled;
+   // A payment check that saw a lower head than the log fetch can leave a match pending below either edge: re-scan it.
+   for (const m of matches) if (m.receipt === 'pending' && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
+-  // One retry per check that could not be completed; strictly after the run start, so the scan always moves forward.
+-  for (const m of matches) {
+-    const block = m.announcement.blockNumber;
+-    if (m.recheck === true && block > p.cursor.nextBlock && block < next) next = block;
+-  }
+   if (next < floor) next = floor;
+   if (next >= cursor.nextBlock) {
+     if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;
+@@ -613,6 +693,38 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
+   return ref === null ? { nextBlock: next } : { nextBlock: next, last: { number: height, hash: ref.hash } };
+ }
+ 
++const ascending = (a: bigint, b: bigint): number => (a < b ? -1 : a > b ? 1 : 0);
++
++/** The valid blocks of `cursor.recheck`: below `nextBlock`, unique, ascending, at most {@link RECHECK_MAX}. */
++function owedRechecks(cursor: ScanCursor): readonly bigint[] {
++  const owed = new Set<bigint>();
++  for (const block of Array.isArray(cursor.recheck) ? cursor.recheck : []) if (typeof block === 'bigint' && block >= 0n && block < cursor.nextBlock) owed.add(block);
++  return [...owed].sort(ascending).slice(0, RECHECK_MAX);
++}
++
++/**
++ * The checkpoint to save, carrying `recheck`: the blocks below its `nextBlock` of this run's main-scan matches marked
++ * `recheck`, unique and ascending, capped to the {@link RECHECK_MAX} lowest. Blocks at or after `nextBlock` are re-scanned
++ * anyway. A match from the recheck pass (`retried`) is never owed again, whatever its outcome: one retry per claim, so a
++ * claim built to fail every check costs one bounded read on the next run and nothing after. What does not fit the cap is
++ * reported as `overflow` (the count and the lowest dropped block), never silently lost.
++ */
++function withOwedRechecks(saved: ScanCursor, matches: readonly ScanMatch[], retried: ReadonlySet<string>): { readonly cursor: ScanCursor; readonly overflow?: RecheckOverflow } {
++  const { recheck: _previous, ...base } = saved;
++  void _previous;
++  const owed = new Set<bigint>();
++  for (const m of matches) {
++    if (m.recheck === true && !retried.has(m.announcement.id) && m.announcement.blockNumber < saved.nextBlock) owed.add(m.announcement.blockNumber);
++  }
++  const sorted = [...owed].sort(ascending);
++  const kept = sorted.slice(0, RECHECK_MAX);
++  const dropped = sorted.slice(RECHECK_MAX);
++  return {
++    cursor: kept.length === 0 ? base : { ...base, recheck: kept },
++    ...(dropped[0] === undefined ? {} : { overflow: { count: dropped.length, fromBlock: dropped[0] } }),
++  };
++}
++
+ /** Fresh primary, secondary and primary re-read of one block; returns the agreed hash or the discrepancy. */
+ async function corroborateAnchor(p: ScanParams, secondary: RpcClient, height: bigint): Promise<string | readonly ProviderDiscrepancy[]> {
+   const ref = height.toString();
+@@ -640,6 +752,8 @@ function zeroizeBytes(b: Uint8Array): void {
+ }
+ 
+ // v2: bound to the key set. v1 entries (chain only) are ignored: they cannot be attributed to a key.
++// v2 + recheck (additive, same slot): an optional `recheck` array of decimal block strings. A v2 entry written before it
++// loads unchanged, and an older reader ignores the field.
+ const CP_PREFIX = 'ghostpay.scan.checkpoint.v2.';
+ const KEY_ID = /^[0-9a-f]{64}$/;
+ const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_PREFIX}${String(chainId)}.${keyId}` : undefined);
+@@ -650,7 +764,35 @@ interface StorageLike {
+   removeItem(k: string): void;
+ }
+ 
+-/** Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures. */
++const DECIMAL = /^\d{1,20}$/;
++
++/**
++ * `ScanCursor.recheck` from storage when it holds every invariant (an array of at most {@link RECHECK_MAX} decimal
++ * strings, strictly ascending, each below `nextBlock`); otherwise undefined, so a malformed list is dropped while the
++ * rest of the checkpoint stays usable.
++ */
++function loadRecheck(raw: unknown, nextBlock: bigint): readonly bigint[] | undefined {
++  if (!Array.isArray(raw) || raw.length === 0 || raw.length > RECHECK_MAX) return undefined;
++  const out: bigint[] = [];
++  for (const item of raw as unknown[]) {
++    if (typeof item !== 'string' || !DECIMAL.test(item)) return undefined;
++    const block = BigInt(item);
++    const previous = out[out.length - 1];
++    if (block >= nextBlock || (previous !== undefined && block <= previous)) return undefined;
++    out.push(block);
++  }
++  return out;
++}
++
++/**
++ * Public scan cursor persistence (block numbers and a hash only; no keys, no matches). Tolerates storage failures.
++ *
++ * Format v2 (`ghostpay.scan.checkpoint.v2.<chainId>.<keyId>`): `{ nextBlock, last?: { number, hash }, recheck? }` with
++ * block numbers as decimal strings. `recheck` (added with the one-retry list, see `ScanCursor.recheck`) is optional and
++ * written only when non-empty; entries without it load as before. A malformed `recheck` (not an array, more than
++ * {@link RECHECK_MAX} entries, a non-decimal string, unsorted, duplicated, or an entry at or after `nextBlock`) is dropped
++ * on load and the rest of the checkpoint is kept.
++ */
+ export function localCheckpointStore(storage: StorageLike | undefined): CheckpointStore {
+   return {
+     load(chainId, keyId) {
+@@ -658,13 +800,16 @@ export function localCheckpointStore(storage: StorageLike | undefined): Checkpoi
+         const k = slot(chainId, keyId);
+         const text = k === undefined ? undefined : storage?.getItem(k);
+         if (text === null || text === undefined) return undefined;
+-        const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
+-        if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
++        const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown }; recheck?: unknown };
++        if (typeof o.nextBlock !== 'string' || !DECIMAL.test(o.nextBlock)) return undefined;
++        const nextBlock = BigInt(o.nextBlock);
++        const recheck = loadRecheck(o.recheck, nextBlock);
++        const owed = recheck === undefined ? {} : { recheck };
+         const last = o.last;
+-        if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
+-          return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
++        if (last !== undefined && typeof last.number === 'string' && DECIMAL.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
++          return { nextBlock, last: { number: BigInt(last.number), hash: last.hash as `0x${string}` }, ...owed };
+         }
+-        return { nextBlock: BigInt(o.nextBlock) };
++        return { nextBlock, ...owed };
+       } catch {
+         return undefined;
+       }
+@@ -673,7 +818,11 @@ export function localCheckpointStore(storage: StorageLike | undefined): Checkpoi
+       try {
+         const k = slot(chainId, keyId);
+         if (k === undefined) return;
+-        const body = { nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) };
++        const body = {
++          nextBlock: cursor.nextBlock.toString(),
++          ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }),
++          ...(cursor.recheck === undefined || cursor.recheck.length === 0 ? {} : { recheck: cursor.recheck.map((block) => block.toString()) }),
++        };
+         storage?.setItem(k, JSON.stringify(body));
+       } catch {
+         /* checkpoints are an optimisation */
+diff --git a/apps/web/src/views/Scan.test.tsx b/apps/web/src/views/Scan.test.tsx
+index c2909fc..c27bf5e 100644
+--- a/apps/web/src/views/Scan.test.tsx
++++ b/apps/web/src/views/Scan.test.tsx
+@@ -110,7 +110,7 @@ describe('Scan and receive', () => {
+     const { encodeMetaAddress, generateKeySet } = await import('@ghostpay/core-crypto');
+     const other = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 121, index: 1, caller: FAKE_ROUTER });
+     // The RPC answers that it does not know the transaction: a settled "unverified", not a check to retry, so the
+-    // checkpoint is the plain finality tail (an RPC error here would hold it at block 120 for one retry instead).
++    // checkpoint is the plain finality tail (an RPC error here would save the same tail, owing block 120 one recheck).
+     const unknownTx = (method: string): unknown => (method === 'eth_getTransactionReceipt' || method === 'eth_getTransactionByHash' ? null : undefined);
+     const rpc = chainWithLogs(84532, 500, [mine.log, other.log], unknownTx);
+     const checkpoints = memoryCheckpoints();
+@@ -469,6 +469,30 @@ describe('Scan and receive', () => {
+     } finally { runner.mockRestore(); }
+   });
+ 
++  it('says how many unconfirmed payments the checkpoint could not carry for a recheck, and where to rescan from', async () => {
++    generateSession();
++    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
++    const overflows = [{ count: 12, fromBlock: 17_000n }, { count: 1, fromBlock: 1_234_567n }, undefined];
++    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => {
++      p.viewingKey.fill(0);
++      const recheckOverflow = overflows.shift();
++      return Promise.resolve({ matches: [], cursor: { nextBlock: 50_000n }, scanned: 0, discrepancies: [], limitReached: false, routerOnlyBlocks: [], ...(recheckOverflow === undefined ? {} : { recheckOverflow }) });
++    });
++    try {
++      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 4000, []))) }));
++      await user.type(screen.getByLabelText('Start block'), '1000');
++      await user.click(screen.getByRole('button', { name: 'Start scan' }));
++      expect(await screen.findByText('12 payments could not be confirmed by your RPC and will not be checked again automatically. Rescan from block 17000 to check them.')).toBeTruthy();
++      await user.click(screen.getByRole('button', { name: 'Start scan' }));
++      // The block is written without digit grouping, so it can be typed into Start block as shown.
++      expect(await screen.findByText('1 payment could not be confirmed by your RPC and will not be checked again automatically. Rescan from block 1234567 to check it.')).toBeTruthy();
++      expect(screen.queryByText(/12 payments could not be confirmed/)).toBeNull();
++      await user.click(screen.getByRole('button', { name: 'Start scan' }));
++      await waitFor(() => { expect(runner).toHaveBeenCalledTimes(3); });
++      await waitFor(() => { expect(screen.queryByText(/could not be confirmed by your RPC/)).toBeNull(); });
++    } finally { runner.mockRestore(); }
++  });
++
+   it('opens only the viewing key for scanning and tags, never the full key set (L1-07)', async () => {
+     const pub = generateSession();
+     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+diff --git a/apps/web/src/views/Scan.tsx b/apps/web/src/views/Scan.tsx
+index ca1fd67..5470d60 100644
+--- a/apps/web/src/views/Scan.tsx
++++ b/apps/web/src/views/Scan.tsx
+@@ -16,10 +16,13 @@ import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
+ import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
+ import type { TagPayload } from '../lib/tags';
+ import { useApp } from '../state';
++import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+ 
+ export function Scan(): ReactNode {
+   const app = useApp();
+   const services = useServices();
++  const i18n = useI18nOptional();
++  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+   const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
+   const [start, setStart] = useState('');
+   const [resume, setResume] = useState(true);
+@@ -31,6 +34,7 @@ export function Scan(): ReactNode {
+   const [privacyNote, setPrivacyNote] = useState<string | undefined>(undefined);
+   const [routerOnlyNote, setRouterOnlyNote] = useState<string | undefined>(undefined);
+   const [lagNote, setLagNote] = useState<string | undefined>(undefined);
++  const [recheckNote, setRecheckNote] = useState<string | undefined>(undefined);
+   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+   const abort = useRef<AbortController | undefined>(undefined);
+   const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+@@ -98,6 +102,7 @@ export function Scan(): ReactNode {
+     setPrivacyNote(undefined);
+     setRouterOnlyNote(undefined);
+     setLagNote(undefined);
++    setRecheckNote(undefined);
+     setScanOwner(undefined);
+     app.setMatches([]);
+     const scopeKeysAreCurrent = (): boolean => {
+@@ -227,6 +232,9 @@ export function Scan(): ReactNode {
+         setPrivacyNote(res.telemetry?.anonymity === undefined ? undefined : describeAnonymitySet(res.telemetry.anonymity));
+         if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyNote(describeRouterOnly(res.routerOnlyBlocks ?? []));
+         if (res.secondaryLag !== undefined) setLagNote(`The second RPC reports block ${res.secondaryLag.secondaryHead.toString()}, ${(res.secondaryLag.head - res.secondaryLag.secondaryHead).toString()} blocks behind the scan RPC (block ${res.secondaryLag.head.toString()}). Each scan stops at the last block both providers have, so later payments appear only once the second RPC catches up. Check it in Settings if this persists.`);
++        // Unconfirmed router claims beyond the checkpoint's recheck list are not retried: say so, and where to rescan from.
++        // The block is passed as text so it is shown without digit grouping, exactly as Start block accepts it.
++        if (res.recheckOverflow !== undefined) setRecheckNote(t('scan.recheck.overflow', { count: res.recheckOverflow.count, block: res.recheckOverflow.fromBlock.toString() }));
+         if (res.limitReached) setError(`This scan reached its safety limit. It stopped before processing the next page; resume from block ${res.cursor.nextBlock.toString()} to continue.`);
+         const note = ` Started at block ${cursor.nextBlock.toString()}${resume && checkpoint !== undefined ? ' (from checkpoint)' : ''}.${rpc2 === undefined ? ' Only one RPC was used: add a second RPC in Settings to cross-check it.' : ''}`;
+         setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : res.limitReached ? `Stopped at the safety limit. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
+@@ -309,6 +317,7 @@ export function Scan(): ReactNode {
+       {privacyNote !== undefined && <Notice kind="info" title="Privacy set (local estimate)">{privacyNote}</Notice>}
+       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
+       {lagNote !== undefined && <Notice kind="warn">{lagNote}</Notice>}
++      {recheckNote !== undefined && <Notice kind="warn">{recheckNote}</Notice>}
+       {error !== undefined && <Notice kind="error">{error}</Notice>}
+ 
+       <Matches
+diff --git a/packages/chain-adapters/src/logs.ts b/packages/chain-adapters/src/logs.ts
+index 4a5eea0..e4665b3 100644
+--- a/packages/chain-adapters/src/logs.ts
++++ b/packages/chain-adapters/src/logs.ts
+@@ -23,12 +23,23 @@ export interface ScannedAnnouncement extends PublicAnnouncement {
+   readonly id: string;
+ }
+ 
++/** Most entries a {@link ScanCursor.recheck} list may hold. */
++export const RECHECK_MAX = 8;
++
+ /** Persistable scan position. */
+ export interface ScanCursor {
+   /** First block that has not yet been fetched. */
+   readonly nextBlock: bigint;
+   /** Last fully processed block and its hash, used to detect reorgs. */
+   readonly last?: { readonly number: bigint; readonly hash: Hex };
++  /**
++   * Announcement blocks owed exactly one more verification attempt: a router claim there matched the scanned keys but
++   * its check could not be completed (`PaymentVerification.retryable`: an RPC failure, a reorg race, or head skew between
++   * two providers) on a block the cursor has already passed. Sorted ascending, unique, every entry `< nextBlock`, at most
++   * {@link RECHECK_MAX} entries. {@link fetchAnnouncements} ignores it; the web scanner re-reads these blocks once at the
++   * start of the next run and never carries a retried block forward again. Absent (or empty) when nothing is owed.
++   */
++  readonly recheck?: readonly bigint[];
+ }
+ 
+ /** Options for {@link fetchAnnouncements}. */
+diff --git a/packages/chain-adapters/src/payments.test.ts b/packages/chain-adapters/src/payments.test.ts
+index 28c6870..9b60737 100644
+--- a/packages/chain-adapters/src/payments.test.ts
++++ b/packages/chain-adapters/src/payments.test.ts
+@@ -289,6 +289,25 @@ describe('verifyClaimedPayment', () => {
+       await verifyClaimedPayment(base(await good(), claim)),
+     ]) expect(settled).not.toHaveProperty('retryable');
+   });
++  it('marks head skew retryable: both providers show the same evidence and binding, and differ only in finality', async () => {
++    // Block 100 with finalityDepth 64: final at head 200 (101 confirmations), not yet final at head 150 (51).
++    const { claim } = make();
++    const at = (head: bigint) => node({ claim, head, transferLogs: [transferLog(claim)] });
++    for (const [primaryHead, secondaryHead] of [[200n, 150n], [150n, 200n]] as const) {
++      const skewed = await verifyClaimedPayment({ ...base(await at(primaryHead), claim), secondaryClient: await at(secondaryHead) });
++      expect(skewed, `${String(primaryHead)}/${String(secondaryHead)}`).toMatchObject({ status: 'unverified-claim', retryable: true });
++      expect(skewed.reason).toMatch(/did not agree/);
++      expect(skewed).not.toHaveProperty('evidenceId');
++    }
++    // Agreement at the same head is not skew; differing evidence is refutation, not skew, even when finality differs too.
++    expect(await verifyClaimedPayment({ ...base(await at(200n), claim), secondaryClient: await at(200n) })).toMatchObject({ status: 'received', final: true });
++    const otherAmount = await node({ claim, head: 150n, transferLogs: [transferLog(claim, { data: word(NET + 1n) })] });
++    expect(await verifyClaimedPayment({ ...base(await at(200n), claim), secondaryClient: otherAmount })).not.toHaveProperty('retryable');
++    // A provider that answers "no such transaction" (null receipt) gave a verdict: never retryable.
++    const unknownTx = await node({ claim, head: 200n, receipt: null, tx: null });
++    expect(await verifyClaimedPayment(base(unknownTx, claim))).not.toHaveProperty('retryable');
++    expect(await verifyClaimedPayment({ ...base(await at(200n), claim), secondaryClient: unknownTx })).not.toHaveProperty('retryable');
++  });
+   it('requires chain-bound allowlisted metadata and reconciled exact evidence', async () => {
+     const evil = '0x00000000000000000000000000000000deadbeef' as Address;
+     const { claim: unknownToken } = make({ token: evil });
+diff --git a/packages/chain-adapters/src/payments.ts b/packages/chain-adapters/src/payments.ts
+index 42fc14f..7aef158 100644
+--- a/packages/chain-adapters/src/payments.ts
++++ b/packages/chain-adapters/src/payments.ts
+@@ -46,9 +46,13 @@ export interface PaymentVerification {
+   /**
+    * Set only on an `unverified-claim` whose evidence could not be READ, not one the evidence refuted: an RPC exception
+    * ("Your RPC could not confirm this payment.", also from the second provider), or a reorg race ("The payment block
+-   * changed while its evidence was being checked"). The same check may succeed later, so a scanner should re-run it
+-   * before moving its checkpoint past the claim. Absent on every verdict reached from evidence. A hostile claim can make
+-   * its own check throw every time, so callers must bound the retries (the web scanner allows exactly one).
++   * changed while its evidence was being checked"), or head skew: both providers return `received` with the same
++   * `evidenceId`, `evidenceBinding` and evidence, and differ only in `final` (one provider's head is behind the other's,
++   * so the block is final on one and not yet on the other). That is two providers at different heights agreeing on the
++   * payment, not evidence against it. The same check may succeed later, so a scanner should re-run it before relying on
++   * the claim. Absent on every verdict reached from evidence, including a provider that answers with no receipt or
++   * transaction (null). A hostile claim can make its own check throw every time, so callers must bound the retries (the
++   * web scanner allows exactly one, see `ScanCursor.recheck`).
+    */
+   readonly retryable?: true;
+ }
+@@ -122,7 +126,8 @@ export interface VerifyClaimInput {
+  * canonical receipt and transaction show the exact announcement and a router call carrying at least that value.
+  * A balance alone is never evidence of this payment. A lying RPC can fake all of it; configure a second provider to
+  * compare evidence. Reads never throw: RPC
+- * failures degrade to `unverified-claim`, marked `retryable` (as is a reorg race during the check).
++ * failures degrade to `unverified-claim`, marked `retryable` (as are a reorg race during the check and head skew
++ * between two providers).
+  *
+  * @param i Input.
+  * @returns Verification result with confirmation depth against `chain.finalityDepth`.
+@@ -132,9 +137,11 @@ export async function verifyClaimedPayment(i: VerifyClaimInput): Promise<Payment
+   if (primary.status !== 'received') return primary;
+   if (i.secondaryClient !== undefined) {
+     const secondary = await verifyClaimedPaymentOnClient({ chain: i.chain, client: i.secondaryClient, router: i.router, announcer: i.announcer, claim: i.claim });
+-    if (secondary.status !== 'received' || secondary.evidenceId !== primary.evidenceId || secondary.evidenceBinding !== primary.evidenceBinding || secondary.final !== primary.final || secondary.evidence.join('|') !== primary.evidence.join('|')) {
+-      // A second provider that could not answer leaves the claim as uncertain as a primary that could not.
+-      return withoutEvidenceId(primary, 'The two RPC providers did not agree on the payment evidence.', secondary.retryable);
++    const sameEvidence = secondary.status === 'received' && secondary.evidenceId === primary.evidenceId && secondary.evidenceBinding === primary.evidenceBinding && secondary.evidence.join('|') === primary.evidence.join('|');
++    if (!sameEvidence || secondary.final !== primary.final) {
++      // A second provider that could not answer leaves the claim as uncertain as a primary that could not. The same
++      // evidence with a different `final` is head skew (one provider is a few blocks behind), not refuting evidence.
++      return withoutEvidenceId(primary, 'The two RPC providers did not agree on the payment evidence.', sameEvidence ? true : secondary.retryable);
+     }
+   }
+   if (primary.evidenceId !== undefined && i.consumedTransfers?.has(primary.evidenceId) === true) {
+-- 
+2.43.0
+

@@ -4,8 +4,10 @@ Move data between computer and phone with QR codes. Pre-audit, not audited, no r
 
 ## What is in it
 
-- `encodeMultipart(bytes, {chunkChars?})` -> `string[]` chunk texts; `Assembler.add(text)` -> `{progress, received, total, complete, payload?}`.
-- `startCamera(video, navigator.mediaDevices)` (call only from a user gesture) and `scanFromVideo(video, onText, {signal})`.
+- `encodeMultipart(bytes, {chunkChars?})` -> `string[]` chunk texts; `new Assembler({now?, maxAgeMs?})`, `add(text)` -> `{progress, received, total, complete, payload?}`, `missing()` (zero-based indices still needed), `session`, `reset()`. An incomplete transfer idle for more than `maxAgeMs` (default 10 min) throws `SESSION_EXPIRED` and is discarded.
+- `startCamera(video, navigator.mediaDevices, {signal, deviceId?, secureContext?})` (call only from a user gesture) and `scanFromVideo(video, onText, {signal})`. `listVideoInputs` / `activeDeviceId` return device ids only (never labels). Errors: `CAMERA_DENIED`, `CAMERA_NOT_FOUND`, `CAMERA_IN_USE`, `CAMERA_INSECURE`, `CAMERA_UNAVAILABLE`.
+- `decodeQrImage(file, {signal})`: local decode of a picked image (raster only, <= 10 MiB, <= 40 MP, downscaled to 1600 px; BarcodeDetector then jsQR). The pixel cap applies after the browser decodes the image.
+- Settings exchange: v1 `exportSettingsExchange` / `parseSettingsExchange` (5 preferences) and v2 `exportDeviceSettingsExchange` / `parseDeviceSettingsExchange` (optional preferences, RPC maps, relayer, pinned signers; <= 2900 bytes; injected URL validators plus a package minimum). Public seller pairing: `exportSellerPairing` / `parseSellerPairing`; public meta-address: `parsePublicMetaQr`.
 - Readers: platform `BarcodeDetector` when it supports `qr_code`, else canvas + jsQR 1.4.0 (loaded on demand). Both sit behind `FrameReader` / `QrFrameDecoder`.
 - `qrMatrix(text, 'L'|'M')` and `qrSvgPath(matrix)`: local generation with `qrcode-generator` (same library and byte mode as `apps/web/src/lib/qr.ts`).
 
@@ -40,8 +42,10 @@ Defaults stay at version <= 14 (L) so a phone can read it off a laptop screen. T
 
 Pinned `jsqr@1.4.0`: Apache-2.0 (package.json and LICENSE), no dependencies, no install scripts, published 2021-04-24, tarball integrity matches the lockfile. Read `dist/jsQR.js` (10k lines, webpack UMD): pure computation on `Uint8ClampedArray`, no `eval`/`Function`/network/DOM. Unmaintained since 2021: weaker than native detectors on blurry or small codes; it is only the fallback. Update path: swap `loadJsQrDecoder` implementation behind `QrFrameDecoder`.
 
-## Using it from the web app (not wired here)
+## Using it from the web app
 
-`apps/web` is not edited by this package. A view needs: `<video playsinline muted>`, a button calling `startCamera` then `scanFromVideo` with an `AbortController`, and `Assembler`; for display, cycle `qrMatrix(chunk)` + `qrSvgPath` every ~500 ms.
+Wired through `apps/web/src/components/CameraImporter.tsx` (the only scanner: camera, paste, image file, and GPQ1
+assembly with `multipart`) and `apps/web/src/components/QrFrame.tsx` (display, `chunks` for multi-part). Display-side
+splitting lives in `apps/web/src/lib/qrMultipart.ts`. See `docs/qr/DEVELOPER_REFERENCE.md`.
 
 Commands: `npm run build|test|lint|typecheck -w @ghostpay/qr-exchange`.

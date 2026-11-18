@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Post-build scan of apps/web/dist (npm run build -> postbuild). Fails the build on dynamic code, HTML injection,
-// unexpected origins/hostnames, source maps, inline script/style, or network APIs inside the scanner worker.
+// unexpected origins/hostnames, source maps, inline script/style, network APIs inside the scanner worker, or markers
+// of preserved code that the lean beta does not ship.
 // React DOM's own internals contain a few innerHTML / dangerouslySetInnerHTML strings; those are matched by explicit
 // fingerprints below (and the application source is separately forbidden from using them, enforced by ESLint and by
 // the source scan here). Anything else fails.
@@ -42,6 +43,20 @@ const FORBIDDEN_JS = [
 
 const WORKER_FORBIDDEN = ['fetch(', 'XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon', 'importScripts', 'navigator.serviceWorker'];
 
+/**
+ * Release boundary of the lean beta (audit L8-04): fixed strings from preserved code that is not shipped. One import of a
+ * preserved factory (ESLint also forbids those in apps/web) would pull its module, and with it the marker, into the bundle.
+ */
+const PRESERVED_CODE_MARKERS = [
+  { marker: 'PIR server request failed', reason: '@ghostpay/pir-two-server client' },
+  { marker: 'window outside the PIR shard', reason: '@ghostpay/scan-source createPir2Source / createScanSource' },
+  { marker: 'light client could not confirm a block hash', reason: '@ghostpay/scan-source createLightSource' },
+  { marker: 'sources disagree on the announcement set', reason: '@ghostpay/scan-source createQuorumSource' },
+  { marker: 'Two-server PIR scanning (research PoC', reason: '@ghostpay/scan-source SCAN_MODE_CLAIMS / describeScanMode' },
+  { marker: 'groth16', reason: 'zero-knowledge pool prover' },
+  { marker: 'privacy-pools', reason: '@ghostpay/external-pools exit route' },
+];
+
 function walk(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
@@ -72,6 +87,36 @@ function scanHosts(text, label, problems) {
 }
 
 /** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
+/**
+ * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
+ * literal (e.g. "https://x") cannot swallow same-line code. Conservative: an unterminated literal
+ * is kept verbatim to the end of its line (template literals to end of file), never dropped.
+ */
+export function stripComments(src) {
+  let out = '';
+  let i = 0;
+  const n = src.length;
+  while (i < n) {
+    const c = src[i];
+    const d = src[i + 1];
+    if (c === '/' && d === '/') {
+      while (i < n && src[i] !== '\n') i++;
+    } else if (c === '/' && d === '*') {
+      const end = src.indexOf('*/', i + 2);
+      i = end === -1 ? n : end + 2;
+    } else if (c === '"' || c === "'" || c === '`') {
+      let j = i + 1;
+      while (j < n && src[j] !== c && (c === '`' || src[j] !== '\n')) j += src[j] === '\\' ? 2 : 1;
+      out += src.slice(i, Math.min(j + 1, n));
+      i = j + 1;
+    } else {
+      out += c;
+      i++;
+    }
+  }
+  return out;
+}
+
 export function scanBundle(distDir, srcDir, viteConfigPath) {
   const problems = [];
   if (!existsSync(distDir)) return [`dist directory not found: ${distDir}`];
@@ -95,6 +140,9 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
           if (n > 0) problems.push(`${r}: ${name} (${String(n)} occurrence${n === 1 ? '' : 's'})`);
         }
         scanInnerHtml(text, r, problems);
+        for (const { marker, reason } of PRESERVED_CODE_MARKERS) {
+          if (text.includes(marker)) problems.push(`${r}: preserved-code marker "${marker}" (${reason}) is not part of the lean beta`);
+        }
         if (/worker/i.test(r)) {
           for (const w of WORKER_FORBIDDEN) if (text.includes(w)) problems.push(`${r}: scanner worker contains network API "${w}"`);
         }
@@ -106,10 +154,22 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
   if (!existsSync(indexPath)) problems.push('index.html missing');
   else {
     const html = readFileSync(indexPath, 'utf8');
-    for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
-      if (!/\bsrc\s*=/.test(m[1])) problems.push('index.html: inline <script>');
-      else if (m[2].trim() !== '') problems.push('index.html: script with both src and inline body');
-      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(m[1])) problems.push('index.html: remote script');
+    // Visit every script start tag. An HTML parser ends a script element at `</script` followed by whitespace, `/`
+    // or `>` (any case), so the end tag may carry whitespace or junk attributes; an element with no end tag runs to
+    // the end of the document. Neither form may escape the inline-code checks.
+    const scriptStart = /<script\b([^>]*)>/gi;
+    const scriptEnd = /<\/script(?=[\s/>])[^>]*>/gi;
+    for (let start = scriptStart.exec(html); start !== null; start = scriptStart.exec(html)) {
+      const attrs = start[1];
+      scriptEnd.lastIndex = scriptStart.lastIndex;
+      const end = scriptEnd.exec(html);
+      const body = html.slice(scriptStart.lastIndex, end === null ? html.length : end.index);
+      if (end === null) problems.push('index.html: unterminated <script>');
+      if (!/\bsrc\s*=/.test(attrs)) problems.push('index.html: inline <script>');
+      else if (body.trim() !== '') problems.push('index.html: script with both src and inline body');
+      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(attrs)) problems.push('index.html: remote script');
+      if (end === null) break;
+      scriptStart.lastIndex = scriptEnd.lastIndex;
     }
     if (/<style\b/i.test(html)) problems.push('index.html: inline <style>');
     if (/\sstyle\s*=/i.test(html)) problems.push('index.html: inline style attribute');
@@ -147,7 +207,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     for (const f of walk(srcDir)) {
       const r = relative(srcDir, f).split(sep).join('/');
       if (!/\.(ts|tsx)$/.test(r) || /\.test\.|\/test\//.test(r)) continue;
-      const text = readFileSync(f, 'utf8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+      const text = stripComments(readFileSync(f, 'utf8'));
       if (/dangerouslySetInnerHTML/.test(text)) problems.push(`src/${r}: dangerouslySetInnerHTML`);
       if (/\.innerHTML\s*=(?!=)|\.outerHTML\s*=(?!=)/.test(text)) problems.push(`src/${r}: innerHTML/outerHTML assignment`);
       if (/(?<![.\w$])eval\s*\(|new\s+Function\s*\(/.test(text)) problems.push(`src/${r}: eval/new Function`);

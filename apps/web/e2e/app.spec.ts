@@ -208,6 +208,7 @@ test('no secrets reach localStorage, sessionStorage, IndexedDB or cookies after 
 
 test('keyboard: skip link and navigation are reachable, focus moves to the new view', async ({ page }) => {
   await page.goto('/');
+  await expect(page.getByRole('link', { name: 'Skip to content', exact: true })).toBeAttached();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
   await page.keyboard.press('Tab');

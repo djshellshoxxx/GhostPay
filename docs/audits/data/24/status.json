@@ -1,0 +1,1829 @@
+{
+ "L7-M3": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "openVerified format-checks --expect-sha256/--expect-digest like verify and passes both to extractArchive; a mismatch is an explicit E_VERIFY 'archive sha256 X does not match --expect-sha256 Y' (exit 1) in preview and profile. Hardening: every command refuses options it does not use (exit 2).",
+  "tests": "cli-hardening.test.mjs: profile/preview with a wrong --expect-sha256 or --expect-digest exit 1 (nothing generated or served), malformed exit 2, matching exit 0; unused options refused.",
+  "fail_before": "profile a.zip --expect-sha256 fff...: '0 !== 1' (exit 0, profiles generated); package --expect-sha256 <hex>: '0 !== 2' (option silently ignored)"
+ },
+ "L7-L5": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "Directory inputs are copied (walkSite + readInventoried: O_NOFOLLOW, inode/time/parent re-checks) into a private mkdtemp dir; only that verified copy is previewed or exported, then removed. The input stays a forbidden root for Tor/I2P key paths.",
+  "tests": "cli-hardening: copy lies outside the input and ignores a later write; preview serves verified bytes after a swap; profile from a dir; symlink and dir --expect-sha256 still refused.",
+  "fail_before": "'the site is read from a private copy': true !== false (siteDir was <input>/site, re-read after verification)"
+ },
+ "L7-L2": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "package --git-dir refuses (E_UNSUPPORTED, exit 1) when git config --get-regexp finds any filter.<name>.clean/smudge/process (same env and -C), and git status adds --ignore-submodules=all. The finding-4 bypass test now expects the refusal; the filter still never runs.",
+  "tests": "cli-hardening: a filter set via $GIT_DIR/info/attributes is refused and its marker never written; a submodule with its own filter: no marker, exit 0.",
+  "fail_before": "'clean filter must not run': true !== false (marker written via info/attributes); the submodule case wrote its marker too (scratch repro confirmed both)"
+ },
+ "L7-M1": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "Kit README row and PROFILE-README say static/www omits _headers (it is the nginx/container document root) and _headers hosts need the site dir/dist; profile --with static prints that warning; docs/operators/mirror-hosting.md says upload dist/, not static/www.",
+  "tests": "cli-hardening: profile --with static prints the warning and PROFILE-README carries it; static/www has no _headers; no warning for --with nginx.",
+  "fail_before": "profile --with static output did not match /warn static.www omits _headers/ (no warning printed)"
+ },
+ "L7-M2": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "selfhost.sh: --tarball needs --manifest and --expect-sha256 or --attest-repo/--tag (gh attestation verify, release.yml signer, tag ref); all checks run on one private copy before web-dist changes; stops after install until 'start'. verify-release.sh: manifest required; uncompared commit FAILs.",
+  "tests": "deploy/selftest.sh: 9 gate cases with fake docker/gh (now in CI secrets-and-egress); scripts/tests/verify-release.test.mjs: 3-arg call, wrong/empty commit, no node/python3.",
+  "fail_before": "Repro: old selfhost.sh --yes with any --commit installed 'attacker bundle' and ran compose up -d; selftest: 13 failures; verify-release 3-arg and empty-commit runs exited 0"
+ },
+ "L7-M4": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "pages.yml: setup-node-libs replaced by the same pinned actions/setup-node (npm download cache only), npm ci --ignore-scripts, then rm -rf packages/*/dist && npm run build:libs before the web build; no Actions libs-cache restore.",
+  "tests": "scripts/tests/workflows.test.mjs: no setup-node-libs or actions/cache uses in pages.yml, same setup-node pin, and install, clean, build:libs, web build in that order.",
+  "fail_before": "AssertionError 'the composite action restores packages/*/dist from the libs cache' (pages.yml used ./.github/actions/setup-node-libs)"
+ },
+ "L7-L1": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "Access-Control-Allow-Origin: * on the v1 and v2 embed routes in _headers, deploy/nginx, infra/proxy Caddyfile + nginx.conf, infra/web/Caddyfile.static. v2 header comment: compute SRI from the exact file; a changed file fails closed. S3-10/S3-11 recorded open in DEVIATIONS and README.",
+  "tests": "embedHeaders.test.ts: ACAO * and CORP cross-origin for v1/v2 in all five header sources; existing regexes still hold.",
+  "fail_before": "_headers did not match the v1 block regex (CORP cross-origin followed by Access-Control-Allow-Origin: *); no source sent ACAO"
+ },
+ "L7-L4": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "ci.yml changes filter also reads changed_files (gh api pulls/$PR --jq .changed_files) and the listed count (--paginate --jq length) and sets code=true when the count is unknown, >= 3000 or above the listed count. Inputs stay in env; the rest-0 shard runs scripts/tests.",
+  "tests": "workflows.test.mjs runs the real filter step against a gh stub (per-page --jq via jq): truncated, at-cap, short and unknown counts, plus the previous classifications.",
+  "fail_before": "PR with 3500 changed files, first 3000 listed all docs: 'false' !== 'true' (code=false, heavy jobs skipped)"
+ },
+ "L7-I1": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "infra Caddyfile, ghostpay-headers.conf and Caddyfile.static use camera=(self); infra gains v2 embed routes with ACAO/CORP and a dotfile deny (nginx regex location; Caddy file_server hide .*); check-headers.sh checks all of it, passes, and runs in secrets-and-egress.",
+  "tests": "infra/proxy/check-headers.sh extended (Caddyfile.static parity, v1/v2 embed CORS+CORP, dotfile deny); passes; added to the CI secrets-and-egress job.",
+  "fail_before": "check-headers.sh exit 1 with 12 errors, e.g. 'Permissions-Policy differs from _headers: infra/proxy/Caddyfile', 'embed v2 route missing'"
+ },
+ "L8-04": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "eslint.config.js: apps/web-scoped (absolute basePath) no-restricted-imports for the six scan-source names (all verified exports). scan-bundle.mjs fails dist JS on 7 preserved-code markers (PIR client and sources, claims, groth16, privacy-pools); the real bundle has none.",
+  "tests": "scanBundle.test.ts: 8 marker cases; buildScripts.test.ts: rule active for apps/web from both cwds, absent for packages, names exported. A probe import in src is flagged.",
+  "fail_before": "scanBundle marker cases: expected '' to match /preserved-code marker .../; ESLint config test: expected undefined to be defined (no rule)"
+ },
+ "L3-F7": {
+  "cluster": "E",
+  "outcome": "fixed",
+  "change": "Docs only: security-headers-embed.conf, DEVIATIONS.md item 6 and the v2 header comment now say frame-ancestors is the only gate; the profile is verified only against its own embedded key and authorizes nothing until it is bound to the invoice signer.",
+  "tests": "None (comment/docs only); embedHeaders and embedV2 suites still pass.",
+  "fail_before": "n/a: docs-only correction, no automated check fits"
+ },
+ "_clusters": {
+  "E": {
+   "branch": "fix-E-hosting",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "259934c",
+    "c4e3aea",
+    "378ec6b",
+    "80ac097",
+    "111b19e",
+    "76e4441"
+   ],
+   "commands": "Kit: npm test 283 tests, 271 pass, 0 fail, 12 skip (real apps/web/dist qualification ran); lint, typecheck clean. check-actions-pinned OK (65), scan-secrets OK. bash -n OK on selfhost.sh, selftest.sh, verify-release.sh, check-headers.sh; shellcheck not installed. yaml.safe_load OK on ci.yml, pages.yml. apps/web: vitest embedHeaders+buildScripts 17/17, scanBundle+embedV2 60/60; eslint src scripts e2e clean; tsc clean; build + postbuild scan OK. check-headers.sh OK; deploy/selftest.sh ok; node --test scripts/tests 7/7. Full web npm test: 1336 pass, 3 timing fails on a loaded shared 4-CPU box (2 pass alone; 1M-log fuzz times out; no src touched).",
+   "review_summary": "All 11 findings are fixed at the root cause, in owned files. Each new test fails on the base and passes on the branch (kit 271/0 plus nginx tests with real nginx, web vitest 59/0, scripts/tests 7/0, selftest, check-headers). Lint, tsc, eslint, pinned, secrets, bash -n, shellcheck, yaml and actionlint are all clean. Live nginx 1.24 and Caddy 2.6.2 confirm ACAO/CORP and denied dotfiles. Minor: lost --out-inside-input guard, attestation not bound to --commit, a weak attest command in BUILD-WEB. Pre-existing: http2 on needs nginx 1.25.1+; trusted_proxies fails on Caddy 2.6.2. Worktree clean.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "tools/portable-hosting-kit/src/cli.mjs generateProfiles/openVerified (directory input)",
+     "problem": "Exporting from the tmp copy bypasses exportStatic's siteDir/outDir containment check for the real input: `profile <dir> --out <dir>/site/out` now exits 0 and writes profiles into the operator's input tree (base: E_USAGE, exit 2); verify <dir> then reports unexpected files.",
+     "suggestion": "In generateProfiles refuse an outDir inside or containing opened.inputDir (the same within() test static-export uses) and add a cli-hardening case for it."
+    },
+    {
+     "severity": "minor",
+     "where": "deploy/selfhost.sh:266 (gh attestation verify)",
+     "problem": "With only --attest-repo/--tag, nothing authenticated ties the tarball to --commit: SHA256SUMS and the manifest are unauthenticated, and --source-ref matches whatever commit the tag pointed to when release.yml ran (a re-pointed tag).",
+     "suggestion": "Add --source-digest \"$commit\" (supported by gh attestation verify) and optionally --deny-self-hosted-runners; assert the flags in selftest.sh's logged gh call."
+    },
+    {
+     "severity": "minor",
+     "where": "deploy/BUILD-WEB.md:9",
+     "problem": "The new separate-machine step is `gh attestation verify <tar> --repo <owner>/<repo>`, which accepts attestations from any workflow/ref in the repo (SUPPLY-CHAIN-CI-08), yet the --expect-sha256 path's authenticity rests entirely on that check.",
+     "suggestion": "Show the bound form selfhost.sh itself runs: --signer-workflow <owner>/<repo>/.github/workflows/release.yml --source-ref refs/tags/<tag> (and --source-digest <commit>)."
+    },
+    {
+     "severity": "nit",
+     "where": "deploy/selfhost.sh:276-286 (rerun hint)",
+     "problem": "The rerun hint is only `deploy/selfhost.sh [--onion]`. After --env-file FILE, the suggested command reads deploy/.env instead, so it runs a different config or fails prerequisites.",
+     "suggestion": "Append --env-file (quoted with printf %q) to the rerun hint when envfile is not the default."
+    },
+    {
+     "severity": "nit",
+     "where": "scripts/verify-release.sh:48,58",
+     "problem": "A missing manifest is caught only after steps 1-2 have printed PASS lines (then exit 2). An empty manifest commit is reported as 'could not be read (needs node or python3)' even when node is present.",
+     "suggestion": "Check -f \"$manifest\" with the other input checks at the top, and use separate FAIL texts for 'no JSON reader' and 'manifest records no commit'."
+    },
+    {
+     "severity": "nit",
+     "where": ".github/workflows/ci.yml:41-45 (changes filter)",
+     "problem": "The filter pages through pulls/$PR/files twice (names, then lengths) at the default 30 per page. That is about 200 API calls on a 3000-file PR, exactly the case this targets.",
+     "suggestion": "Get the entry count from the first call (e.g. emit one marker line per entry) and request per_page=100."
+    },
+    {
+     "severity": "nit",
+     "where": "infra/proxy/nginx.conf:88 (same rule in deploy/nginx)",
+     "problem": "`location ~ /\\.` also denies /.well-known/. ACME HTTP-01 after the :80->https redirect and security.txt both get 403, so certbot webroot renewal would fail.",
+     "suggestion": "Use `location ~ /\\.(?!well-known/)` or an explicit `location ^~ /.well-known/acme-challenge/`, or document that ACME must not use the webroot."
+    },
+    {
+     "severity": "nit",
+     "where": "eslint.config.js:51-71",
+     "problem": "no-restricted-imports does not catch dynamic import('@ghostpay/scan-source') (checked with eslint --stdin). Only the dist marker scan would catch it.",
+     "suggestion": "Optionally ban ImportExpression[source.value='@ghostpay/scan-source'] via no-restricted-syntax for apps/web. Repeat the root no-restricted-syntax entries there, because a scoped entry replaces the whole list."
+    }
+   ],
+   "open_questions": "1) No nginx, caddy or docker daemon here: deploy/infra nginx and Caddy edits are checked statically only. 2) Outside ownership: docs/audits/05/supply-chain-ci.md still lists SUPPLY-CHAIN-CI-02 open; docs/remote/usability/specs/self-host-one-command.md shows the old --tarball flags. 3) L3-F7's real fix (bind the profile to the invoice signer) is app code. 4) THREAT_MODEL browser-profile row: no finding needed it. 5) New CI steps not yet observed on GitHub."
+  },
+  "D": {
+   "branch": "fix-D-relayer",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "6399a5611d83185bd221f7908eeed6b6fd557f8d",
+    "61c0ae41b26a1a3a03b493da63c3b2636dc00ec1",
+    "ef3700d046168273ed07439f3249befd54c59bff",
+    "a6bd2da60fcab19bf8e933463660e117313fa8ef",
+    "2ded69ecda52612006f4d7d503b18b0afa49baca",
+    "5894f642ea1ce92269c3422e59fc29f68bca7607",
+    "b9f1e5dfdeed35f04e55ba1535efdafe548ab519",
+    "49c123cf96f98fb469783ee395ed7c1ba914082a",
+    "2a071d8421ca0b1e431380cb3e9107dd4de82704",
+    "52a294a6a6cf5ef77072fcfc9c2e5a57360ae803"
+   ],
+   "commands": "In wt-D: npm run build -w @ghostpay/relayer-guard && npm run typecheck -w relayer-guard -w relayer && npm run lint -w both && npm test -w relayer-guard && npm test -w relayer: exit 0. Guard: 153 passed, coverage 98.67/94.08/99.23/99.31. Relayer: 277 passed, 2 skipped (anvil), coverage 97.38/92.33/96.99/98.43. bash -n selfhost.sh ok. docker compose config -q ok (CLI only, no daemon). yaml.safe_load ok. scan-secrets OK. Also passing: pool-relayer, payer-sponsor, web relayerClient.test. selftest.sh ok on a scratch copy. Repros now: quote-drain honest 200, timebomb 422, lossgroup 200.",
+   "review_summary": "Approve. All 9 findings are fixed as recommended. Every check passes (guard and relayer suites with coverage, the pool-relayer LossBudget consumer, bash -n, compose config, scan-secrets). Each new test fails on base sources for its intended reason, and the audit repros now show fixed behavior. A real nginx 1.24 run on a scratch copy confirmed the route allowlist, 404s, real_ip and header scrubbing. Left over: receipt timeouts never open the breaker when failureRatio > 0.5, a pre-existing sweep-deadline variant of L5-01 (out of scope), and nits. Worktree left clean.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "apps/relayer/src/service.ts:744-754 (receiptTimedOut)",
+     "problem": "Each timeout adds one failure on top of the success recorded at broadcast, so a total timeout outage reaches only 50% failures. Scratch test in production order: failureRatio 0.6 left 16/16 timeouts with the breaker closed and /healthz ok. A half-open probe also closes on broadcast.",
+     "suggestion": "Make a timeout outweigh the broadcast success (e.g. settle the job permit neutral at broadcast and success/failure at the receipt). Otherwise document that timeouts open the breaker only when failureRatio <= 0.5, and test with receiptGate."
+    },
+    {
+     "severity": "minor",
+     "where": "apps/relayer/src/service.ts:590-718 (runSettled)",
+     "problem": "Sibling of L5-01, pre-existing and out of scope: nothing in-lane re-checks sweep.deadline. Scratch test: a sweep admitted with deadline now+31 was broadcast with 2 s left after a 29 s queue wait, so it can lapse before inclusion and become a mined revert the relayer pays for.",
+     "suggestion": "Follow-up: before the final simulation or broadcast, refuse (neutral, e.g. deadline_too_soon) when sweep.deadline <= now + margin (minDeadlineSeconds or a few block times). Honest clients use now+20 min, so none are refused."
+    },
+    {
+     "severity": "nit",
+     "where": "deploy/selfhost.sh:168-196",
+     "problem": "The check passes any non-loopback entry (e.g. [\"10.0.0.0/8\"]). The recipe's real failure mode, nginx's 172.30.10.x not listed so every client shares one bucket, still passes silently.",
+     "suggestion": "Warn unless some entry contains the pinned backend subnet 172.30.10.0/24 (ipaddress subnet_of/overlaps); keep the empty/loopback-only wording."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/relayer/src/api.test.ts:997 (receipt timeout breaker test)",
+     "problem": "FakeChain resolves the receipt instantly, so the timeout failure lands before the broadcast success ([F,S,F]), while the comment describes the production order (2 of 4). The test passes either way at ratio 0.5, so it cannot catch the ratio issue above.",
+     "suggestion": "Set fake.receiptGate to resolve after the HTTP reply so outcomes arrive in production order, and assert the breaker state under that order."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/relayer/README.md:164 / service.ts lossCleanReserve",
+     "problem": "The clean slice stops only sources that already lost. Each fresh /24 or /48 is clean for its first loss, so a handful of groups (cleanReserve / per-sweep loss) still use it up. The README's 'cannot refuse everyone' reads stronger than that.",
+     "suggestion": "Say in the README that distinct network groups, one loss each, can still exhaust the slice (as with the RELAYER-01 open item), so operators size globalWei with that in mind."
+    },
+    {
+     "severity": "nit",
+     "where": "packages/relayer-guard/src/limiter.ts:392, apps/relayer/src/revertRate.ts:40",
+     "problem": "limiter.ts was prettier-clean at base and now fails prettier --check (line 392 is 119 cols, printWidth 110); the new revertRate.ts fails too. CI runs prettier only for Solidity (forge fmt), so this is cosmetic.",
+     "suggestion": "Run npx prettier --write on both files."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/relayer/src/config.test.ts:379",
+     "problem": "The test asserts exactly one proxy_pass in the whole nginx.conf, which another cluster edits (embed rules). An unrelated future proxy_pass would fail the relayer unit tests.",
+     "suggestion": "Scope the assertion to the /api/ locations: no proxy_pass in `location /api/` and exactly one in the allowlist block."
+    }
+   ],
+   "open_questions": "No new 4xx classes (reused permit_expired, rate_limited_ip, loss_budget_exhausted). deploy/README.md line 7 (not mine) still says to copy apps/relayer's config example; it should point to deploy/config/relayer.config.example.json. Untuned owner-policy defaults: quote group 60/min burst 20, clean reserve 25%. /healthz now returns 503 on sustained mined reverts, so don't use it as a liveness probe. Deferred: sweep-time pricing (RELAYER-01), fee bump/cancel. nginx and compose not run (no daemon, no nginx)."
+  },
+  "H": {
+   "branch": "fix-H-merchant",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "7df1cd1",
+    "4021887",
+    "fc5acc2",
+    "70cd56f",
+    "eddb39a",
+    "cc2714f",
+    "c92b61b",
+    "e4e79f3"
+   ],
+   "commands": "php integrations/woocommerce/tests/run.php: ok; php integrations/prestashop/tests/run.php: ok (both also from /); php -l on 15 changed .php: clean; npm run build, typecheck, lint -w @ghostpay/merchant-hooks: ok; npm test -w @ghostpay/merchant-hooks: 29 passed, coverage 100/99.55/100/100; node --test examples/*/*.test.mjs: 8/8 pass; node examples/webhook-receiver/selftest.mjs: ok; checkout.mjs --demo USD and JPY ok, KWD 12.345 refused; subscription-cron init-demo/run x2/mark-paid ok (merchant-billing compiled into scratch, unchanged); bash scripts/scan-secrets.sh: OK. Fail-before runs: scratch copies with one finding reverted, outputs in fix-H/fb/*.out.",
+   "review_summary": "All six fixes reach the root cause. Each test fails without its fix (WC per-finding reverts in scratch, PS base webhook gives 'no such column: event_ids', void changeIdOrderState&&, receiver 200!==503, JPY 150000, purge order). Checks pass: both PHP suites (repo and /), php -l, merchant-hooks build/typecheck/lint/test (29), examples 8/8, selftest, checkout and subscription-cron demos, scan-secrets. Worktree clean. No blocker or major. Minor: PS note likely invisible in PS 8, 400 when secret missing after purge, ledger exponent drift (out of scope).",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "integrations/prestashop/ghostpay/controllers/front/webhook.php:71-80 (add_note) and integrations/prestashop/README.md",
+     "problem": "The 'note' (double payment, currency mismatch, closed order) is a legacy Message row in ps_message. The PS 8 order page reads only customer_thread/customer_message (GetOrderForViewingHandler -> CustomerDataProvider::getCustomerMessages), so merchants probably never see it. The shim cannot catch this.",
+     "suggestion": "Store the note where the PS 8 order page shows it, e.g. a private CustomerMessage in the order's CustomerThread (as AddOrderCustomerMessageHandler does). Until that is verified, say in the README that the note goes to ps_message only."
+    },
+    {
+     "severity": "minor",
+     "where": "integrations/woocommerce/ghostpay-for-woocommerce/includes/class-ghostpay-gateway.php:243 (handle_webhook)",
+     "problem": "After the G3-01 purge, a shop that has not set the constants yet answers every webhook 400, the same answer as a bad signature. A sender may treat 4xx as final, so payments made in the upgrade window are never applied. Base also answered 400, but the purge makes this state likely.",
+     "suggestion": "Answer 503 {ok:false,retry:true} when no valid webhook secret is configured. It is a server misconfiguration and reveals nothing about the request. Mention it in the README upgrade note."
+    },
+    {
+     "severity": "minor",
+     "where": "packages/merchant-ledger/src/decimal.ts:7-17, used by packages/cli `ghostpay export` (outside cluster ownership)",
+     "problem": "The same G3-02 root cause in another consumer: the export reads GhostPay invoice fiat.minorUnits with KWD/BHD/JOD/OMR/TND=3 and ISK/UGX/XAF/XOF=2. This differs from apps/web fiatDecimals and the plugins, so accounting amounts come out 10x or 100x wrong.",
+     "suggestion": "Add to open_questions and route to the owning cluster: align currencyExponent with apps/web fiatDecimals (or derive both from one table) and add the same drift test."
+    },
+    {
+     "severity": "nit",
+     "where": "integrations/prestashop/ghostpay/controllers/front/webhook.php:102-106",
+     "problem": "catch (Exception) turns every DB exception at the nonce insert (deadlock, server gone away) into 'replay' and a 400. On PHP 8 the base code answered 500, which senders retry. Only a duplicate key is a replay.",
+     "suggestion": "Return false only for PDOException SQLSTATE 23000. Let other errors propagate (500) or map them to a 503 retry."
+    },
+    {
+     "severity": "nit",
+     "where": "integrations/prestashop/ghostpay/ghostpay.php:126-129 (recordInvoice)",
+     "problem": "The docblock says it returns false if not stored, but with PHP 8 PDO a duplicate invoice_id throws. validation.php then never reaches cancel_order(): uncaught 500, order left awaiting. This is the same PDO behaviour the nonce fix handles.",
+     "suggestion": "Wrap the insert in try/catch and return false. Add a duplicate-invoice case to tests/run.php."
+    },
+    {
+     "severity": "nit",
+     "where": "integrations/prestashop/ghostpay/controllers/front/webhook.php:141-143,155-164",
+     "problem": "Any event in another currency maps to 'note', so a mismatched invoice.expired or invoice.partial adds 'refund a double payment if needed', which is misleading.",
+     "suggestion": "Use the refund wording only for payment event types, or a neutral mismatch text like WooCommerce's 'ignored: currency mismatch'."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/remote/usability/specs/webhooks.md:8 (outside ownership)",
+     "problem": "R6 still specifies the removed boolean IdempotencyGuard.claim(id). The API is now begin/complete/release.",
+     "suggestion": "Route to the docs owner (already in open_questions): R6 should describe claimed/processing/done and the retryable 503 for redeliveries that arrive while the first delivery is still being handled."
+    }
+   ],
+   "open_questions": "CI (ci.yml, owned elsewhere) runs neither PHP suite nor the examples' tests. docs/remote/usability/specs/webhooks.md R6 still documents the boolean claim(id); the API is now begin/complete/release (breaking for any outside caller). PrestaShop still keeps both secrets in Configuration (backups, PS webservice): same class as G3-01, outside this finding. pos-terminal parseMinor still assumes 2 decimals (display-only demo)."
+  },
+  "B": {
+   "branch": "fix-B-guards",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "0eec2f7e838b7dcb3f69377df3e2b2bc80ffe763",
+    "d809dfdd43be5c9cb3636434892437f9c8f2e4d3",
+    "8d4532e13f5db70d2e71a58c8574e65246d3ab3d"
+   ],
+   "commands": "Build core-crypto + chain-adapters: ok. Typecheck x3: ok. Lint x3: ok after removing one unneeded `!` in a test. npm test core-crypto: 56 passed, coverage ok. chain-adapters: 361 passed, 18 skipped, coverage ok. The 6 targeted web files: 195 passed. Full web suite with coverage (2 runs; other clusters' suites ran at the same time, load avg 12 on 4 CPUs): 1373 passed, 5 failed: fuzz timeout and ReconciliationLedger 'saturated backup' (both known), plus SellerKeys keystore export (30 s waitFor) and TagArchive findBy timeouts. Rerunning those files without coverage: 53/53 passed. Coverage via reportOnFailure: 91.2 / 86.94 / 92.93 / 95.1, all above the 90/85/90/90 thresholds.",
+   "review_summary": "Root causes fixed: rpc.ts sets a sanitized `reverted` flag that simulateCall/estimateGas refuse on; native sweeps estimate gas, keep back 2x the oracle L1+operator fee on opStack chains and dry-run with the signed gas; same-nonce re-sign is a CAS persisted before handoff; sweep key derivation skips only the tag compare. All new tests fail on base. Build/typecheck/lint/package/targeted tests pass; full web 1373 passed, 5 load-related failures (all but fuzz pass on rerun), coverage 91.18/86.93/92.93/95.09. Minor gaps only.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "apps/web/src/lib/sweep.ts:437 (reconcileSweepLock)",
+     "problem": "'replaced' is concluded when the final receipt look finds no matching receipt, but reconcileDirectSweep also returns unchanged on an RPC error or malformed answer. Probe: receipt reads failing (429) + finalized nonce 4>3 gave a terminal 'replaced' for a tx that may be the included one.",
+     "suggestion": "Make the final look strict: on an RPC error or malformed receipt leave the lock unchanged (or throw 'check again'), and conclude 'replaced' only on an explicit null receipt. Add a test with a failing receipt read."
+    },
+    {
+     "severity": "minor",
+     "where": "packages/chain-adapters/src/rpc.ts:340 (reportsRevert)",
+     "problem": "The dry run now carries the signed gas limit, yet a node's -32000 'out of gas' or 'invalid opcode' answer (execution failure) is not flagged, so simulateCall returns 'unavailable' and the sweep is sent with a 'could not dry-run' warning. Confirmed via createClient.",
+     "suggestion": "Also flag -32000/-32015 messages matching /out of gas|invalid opcode/ (REVERT_TEXT already does this for EIP-1193 errors), still keeping no node text. Add rpc.test and txGuard.test cases for both."
+    },
+    {
+     "severity": "minor",
+     "where": "apps/web/src/lib/sweep.ts:563 (ERC-20 branch)",
+     "problem": "On OP Stack the ERC-20 native-gas check ignores the L1/operator fee. Probe: native balance gas*maxFee+1 with a 5e12 L1 fee was signed and handed off; op-geth refuses it, so the lock jams until a top-up plus re-sign, and relayed signing for the address stays disarmed in the tab.",
+     "suggestion": "Reuse opStackFeeReserve for the ERC-20 transfer (price its unsigned serialization) and refuse before signing when nativeBalance < gas*maxFee + reserve (the implementer's open question 1)."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/Sweep.tsx:58 (re-sign offer)",
+     "problem": "Re-sign is offered for 'submitted' locks without a fee bump. If the first tx is pending in a mempool the replacement is usually refused as underpriced; the lock then tracks the new hash, so the mined tx shows 'Outcome unknown' until finality, then 'replaced', never 'included'.",
+     "suggestion": "Bump maxFeePerGas and tip by at least 10 % over the replaced tx (this needs its fees stored in the lock), or offer re-sign only for unknown-after-handoff and say so in the hint."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/Sweep.tsx:244",
+     "problem": "The 'could not dry-run' warning is set only after a confirmed send. When the send ends in DirectSweepOutcomeUnknownError the tx may still be on the network, but the skipped-dry-run notice is not shown.",
+     "suggestion": "Carry the simulation result on DirectSweepOutcomeUnknownError (or report it through a callback before handoff) and show the warning in that case too."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/developer/api/chain-adapters.md:28,37",
+     "problem": "The API doc still lists ChainAdapterError with only `code` and ChainConfig without `opStack`. THREAT_MODEL D4 and receive-and-scan.md:24 still say deep scan is not built. All are outside this cluster's ownership; the implementer flagged them.",
+     "suggestion": "The doc owner should follow up by documenting `reverted`, `opStack` and the deep-scan sweep path."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/locales/en.json:110",
+     "problem": "sweep.attempt.unknownDirect says 'signing a new one is disabled' directly above the new 'Sign a replacement with the same nonce' button, so the two read as contradictory. en.json was add-only for this cluster.",
+     "suggestion": "Reword in a follow-up, for example: '...so a new sweep is disabled; only a replacement with the same nonce is allowed.'"
+    }
+   ],
+   "open_questions": "1) ERC-20 direct sweeps on OP Stack still leave the L1 fee out of the native-gas check. A marginal gas balance gets a node refusal, which a same-nonce re-sign can clear after a top-up. 2) A re-sign does not bump fees. If the earlier tx is still pending, the node may reject the replacement; the lock then resolves as 'replaced' once the nonce is final. 3) Base Sepolia operator-fee values unverified (no network); a failed oracle read refuses the sweep. 4) Outside my ownership: docs/developer/api/chain-adapters.md (opStack), THREAT_MODEL D4 and receive-and-scan.md:24 (deep scan described as not built)."
+  },
+  "A": {
+   "branch": "fix-A-scanner",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "8c6dadb",
+    "eaeacc5",
+    "fe9a267",
+    "c6127dd",
+    "8969cf2",
+    "63b48da",
+    "d0f8d38",
+    "f6a9659",
+    "ace3c65"
+   ],
+   "commands": "build chain-adapters OK; typecheck chain-adapters+web OK; lint both OK; npm test chain-adapters 363 pass/18 skip. Targeted 9 web files 186/186 (one combined run hit the known ledger 'saturated backup' timeout; the file alone passes 5/5, that test 1.75-2.4s vs 1.5-1.8s on base). Full web suite --coverage --maxWorkers=2 at load avg 9-12 (other clusters running): coverage 91.19/86.78/92.94/95.13, thresholds hold; only load timeouts failed: fuzz, ledger saturated, TagArchive/SellerKeys KDF tests (files unchanged here; 38/38 pass alone). Fuzz alone: 225.8s and 249.5s (>180s); its code is identical to e8cdb31 (0 diff lines), cluster E's run 331s. Fail-before (new tests on e8cdb31 sources): chain-adapters 25 fail, web 29 fail.",
+   "review_summary": "All 10 findings fixed at the root; new tests fail on base (25 chain-adapters, 22 web). Build/typecheck/lint OK; chain-adapters 363 pass; targeted web 185/186 (ledger saturated test passes alone 3/3, same speed as base). Full suite x2: only load timeouts (fuzz 215s alone vs 233s base, same code; TagArchive/SellerKeys/Pay QR pass alone); coverage 91.22/86.77/92.94/95.22. Scratch e2e with real 2 MiB clients + windowed RPCs passes. Minor: -32005 rate limit can narrow a normal block; window never regrows after narrowing.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "packages/chain-adapters/src/logs.ts:93,320 (SIZE_LIMIT -32005 -> router-lane fallback)",
+     "problem": "-32005 is also Infura's rate-limit code. Scratch repro: 30 straight -32005 getLogs failures (10 halvings x 3 attempts) then recovery narrows an ordinary block to its router lane; its direct announcement is skipped for good as the cursor moves past (only the spam warning shows).",
+     "suggestion": "Before marking a block router-only, retry the unfiltered one-block query once (e.g. right after the router-lane read) and narrow only if it fails again with a size error; or count -32005 as a size limit only after a backoff retry."
+    },
+    {
+     "severity": "minor",
+     "where": "packages/chain-adapters/src/logs.ts:324-327,398-401 (window after halving/narrowing)",
+     "problem": "After a halving or a narrowed block the window stays at 1 block for the rest of the fetch (compareProviders grows back; this does not). Measured: a spam block every 100 blocks needs 201 fetches and ~28k RPC calls per 20k blocks (1.4/block): slow progress, not a stall.",
+     "suggestion": "Double the window after each completed window (capped at cap), as compareProviders now does, so a fetch past a spam block returns to full-size windows."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/lib/reconciliationVault.ts:697 (invalidateFrom height loop)",
+     "problem": "canonicalHash is awaited once per distinct stored height, sequentially, inside onReorg. A checkpoint mismatch always rolls back to 0, so a full vault means up to 2,000 sequential reads (x2 RPCs) before the scan continues; one failed read repeats the whole pass next run.",
+     "suggestion": "Read the heights with small bounded concurrency (e.g. 8 at a time) and keep the all-or-nothing write."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/components/ReconciliationLedger.tsx:595 (import preview copy)",
+     "problem": "'N would be marked invalid after a reorg' reads like a future event; N is the net number of records activation would mark invalid (it can include local imported history), printed right after the backup's own record count.",
+     "suggestion": "Word it e.g. 'activation would mark N observation(s) invalid because of reorg history'."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/specs/05-announcer-spam-anonymity-set.md:13; docs/user/receive-and-scan.md:42",
+     "problem": "'Fetch limits never stop the scanner' / 'only make a scan take more steps' overstate it: a one-block refusal coded -32600/-32614/-32000 gets no router-lane fallback and still stops the scan at that block; only router-lane overflow (and the indexer) are listed as remaining limits.",
+     "suggestion": "Add the one-block non-size-code case to the remaining limits, or state that those codes are treated as range limits only."
+    }
+   ],
+   "open_questions": "1) isLogLimitError relies on rpc.ts's 'RPC_FAILURE: json-rpc error <code>' text (no longer anchored at the end); recheck when the rpc.ts error-classification cluster merges. 2) The indexer source (scan-source, not owned) cannot get past a spam window; documented. 3) Vault document is now v3, so older builds cannot read new vaults or backups. 4) The import cutoff compares device clocks with recordedAt (save time). 5) A single-RPC checkpoint hash mismatch still rescans from genesis (by design)."
+  },
+  "G": {
+   "branch": "fix-G-chains",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "7dbc34b8e1ebe2558758e00293498a0eafccdd7b",
+    "cad187d0d1576d2f2a77535c56b92d59623ae6e9",
+    "49a3a4491a83ad973d206feb24048710a4c0039c",
+    "447a5bdae66b5cedfdf5b7dfc6d6a1626bf4355e",
+    "d199f0f142558f7ef5f39fb8610873fd10fa02ea",
+    "e0861bce3cf6e1ca5ec5cb0fc98719602d1b0c24",
+    "1acb7d66395345d039d043038f56c2c86c6211ab",
+    "9470177552e396ea4108ff97244cfc9928bb9a17",
+    "1c1f5d0f1fa42c351718e26b001f21c9c85a635b"
+   ],
+   "commands": "Final tree: build solana-stealth+tron-adapter OK; typecheck and lint (solana-stealth, tron-adapter, web) OK; npm test solana-stealth 108 passed, tron-adapter 65; vitest src/features (no cov) 218 passed, 4 skipped. Full web --coverage --maxWorkers=2: 1360 passed, 3 failed: scannerCore.fuzz (180 s) and ReconciliationLedger saturated backup (known) plus Pay.invoiceQr passphrase (60 s timeout, untouched); alone without coverage Ledger 15/15, Pay.invoiceQr 54/54. Rerun with --coverage.reportOnFailure: All files 91.37/86.72/93.02/95.28, thresholds met; its extra load timeouts (TagArchive x2, session) pass alone 35/35. Failing-before via fix-G/before.sh (e8cdb31 sources). Branch rebuilt by cherry-pick to fix 7e1e118's L4-03 severity label; old draft SHAs superseded, trees identical.",
+   "review_summary": "All seven findings are fixed at the root, within ownership. Build, typecheck and lint pass; solana-stealth 108, tron-adapter 65 and web features 218 tests pass. Fail-before confirmed: 32 web tests and both package RPC tests fail on e8cdb31 sources for the expected reasons; worktree restored clean. Full web run with coverage: 6 failures, all in untouched files (scannerCore.fuzz is known); the other 4 files pass alone, 93/93. Open: clipboard mark, per-block memory cap, regtest shim route, nits. App.tsx still has to call notifyAppLock('idle').",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "apps/web/src/features/btc/SecretBackup.tsx:15-19 (clearCopiedBackup)",
+     "problem": "The copied mark is reset before writeText('') settles, and a rejection is swallowed. Without user activation (the G2-02 idle lock; Firefox/Safari, or unfocused Chrome) the clear fails, the seed stays on the clipboard, and later Lock/Hide never retry. A scratch probe confirmed this.",
+     "suggestion": "Reset backupOnClipboard only after the clear resolves (writeText('').then(() => { backupOnClipboard = false; })) and keep it set on rejection. Add a SecretBackup test where the first clear rejects and a later Lock clears."
+    },
+    {
+     "severity": "minor",
+     "where": "apps/web/src/features/btc/esplora.ts:311-323 (blockTxs)",
+     "problem": "The server picks tx_count (up to 16,666), so a hostile server can stream 667 pages x 16 MiB. All of it is parsed and kept before verifyBlockData can refuse. The per-response cap does not bound memory per block (the old limit was 400 pages), so the L4-05 tab-exhaustion path remains.",
+     "suggestion": "Keep a running total of serialized tx bytes per block and refuse once it passes the consensus bound (4,000,000 bytes), before fetching more pages. Test with a lying tx_count."
+    },
+    {
+     "severity": "minor",
+     "where": "scripts/regtest/esplora-shim-lib.mjs:60-68 (not owned); apps/web/src/features/btc/regtest.e2e.test.ts",
+     "problem": "blockTxs now needs GET /block/:hash, which the regtest shim answers with 404. The documented manual e2e (scripts/regtest/e2e.mjs, then regtest.e2e.test.ts) now fails with TRANSPORT_FAILURE. Only a commit body mentions it; CI does not gate it.",
+     "suggestion": "List it in open_questions for the integrator: add a shim route returning {id, tx_count: nTx} (getblock verbosity 1) and a 400 for start >= nTx, then rerun the regtest e2e."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/user/bitcoin-silent-payments.md:21,32; docs/user/solana-payments.md:10; docs/user/tron-payments.md:21 (not owned)",
+     "problem": "The user docs still say the backup is 'shown once' and that heights 'link back to the pinned genesis', which contradicts G2-03 and L4-04. The en.json key btc.seed.title ('shown once') is now unused.",
+     "suggestion": "Hand to the docs owner at integration: describe the backup as hidden until Show, auto-hidden after 60 s or when the tab is hidden, and the scanned range as unanchored. Remove btc.seed.title once removing keys is allowed."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/features/btc/sweep.ts:125",
+     "problem": "signSweep's SoftwareSilentPaymentSigner copies b_spend (wrapSecret) into a private field that is never wiped. Each signing leaves an unwiped spend-secret copy until GC, even though Lock wipes the wallet's own buffers. This predates the branch; the package has no dispose().",
+     "suggestion": "Record it as a G2-04 residual. Follow up in btc-silent-payments with a signer dispose()/wipe that signSweep calls in a finally block."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/features/btc/BtcView.secrets.test.tsx:162",
+     "problem": "'drops and wipes a scan that finishes after Lock' actually exercises scanForPayments' ABORTED path. The late-success wipe at BtcView.tsx:163-166 is never run (coverage confirms), and the test relies on a fixed 50 ms sleep.",
+     "suggestion": "Rename the test, or add a case where a mocked scanForPayments ignores the signal and resolves after Lock. Assert the wipe with waitFor instead of a fixed sleep."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/features/solana/SolanaView.tsx:10; apps/web/src/features/tron/TronView.tsx:9",
+     "problem": "The Solana and TRON views now import SecretBackup and its module-level clipboard mark from features/btc. This is the first dependency between chain feature folders.",
+     "suggestion": "Move SecretBackup to components/ at integration (outside this cluster's ownership) and leave Common.tsx's CopyButton unchanged."
+    }
+   ],
+   "open_questions": "1) App.tsx idle timer must call notifyAppLock('idle') next to clearSession(); G2-02 is inert until then. 2) scripts/regtest/esplora-shim-lib.mjs (+README) needs GET /block/:hash -> {id,height,tx_count} and 400 for start>=tx_count, else the Integration regtest e2e fails (L4-03). 3) Stale docs outside my paths: docs/user/bitcoin-silent-payments.md:32, docs/chains/bitcoin.md:16, docs/user/solana-payments.md:10, docs/user/tron-payments.md:21. 4) SecretBackup could move to components/."
+  },
+  "C": {
+   "branch": "fix-C-keys",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "9799f9e",
+    "6986d66",
+    "20b824d",
+    "a2ba169",
+    "e765934",
+    "5fb88f1",
+    "953fcea",
+    "f690464",
+    "6fc1b1b",
+    "4d58712",
+    "72e6d1a",
+    "7389dea",
+    "2c13938"
+   ],
+   "commands": "apps/web: tsc --noEmit OK; eslint src e2e OK; cluster vitest (12 files, no coverage) 186/186. Full suite --coverage --maxWorkers=2 (+--coverage.reportOnFailure): 1357 passed, 2 known fails (scannerCore.fuzz 1M timeout, ReconciliationLedger saturated); coverage 91.39/87.1/92.91/95.31, thresholds hold; ReconciliationLedger rerun --coverage.enabled=false 15/15. An earlier full run under load from other agents also timed out 9 scrypt-heavy UI tests; all passed in isolation, and my two new SellerKeys export tests now run scrypt at N=2^14. Base-source run (fix-C/before-evidence.sh): all 50 new/changed tests fail. Playwright (GHOSTPAY_CHROMIUM=chromium-1243): app, passphrase-vault, flows 20/20; the draft step-up label caused a strict-mode violation.",
+   "review_summary": "All 8 findings fixed at the root; every regression test fails on base. Idle lock keeps unbacked keys under a visible banner; invoices/meta-address gated; vault step-up bound to the session's record (survives deletion) and required for export, re-save and own-vault delete; tag keys bound to the session; estimator rejects the 4 examples; signing wipes its scalars. tsc/eslint OK; cluster 186/186. Full suite: coverage 91.4/87.1/92.9/95.3; failures: fuzz + borderline N=2^17 SellerKeys export test; run 1 also ReconciliationLedger (passes without coverage) and session S3-08 (passes alone).",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "apps/web/src/features/registry/RegistryView.tsx:242-275 (outside ownership); apps/web/DEVIATIONS.md item 11",
+     "problem": "L1-01's fix list includes registering the meta-address, but RegistryView still shows and publishes an unbacked meta-address to ERC-6538 with no BackupGate (DEVIATIONS 11: 'does not apply this gate yet'). The flag-off policy create flow also derives shareable addresses ungated.",
+     "suggestion": "Track as a required follow-up for the integrator/owning cluster: gate RegistryView's publish section (or onReview('publish')) with BackupGate, likewise policy create; then drop 'yet' from DEVIATIONS 11."
+    },
+    {
+     "severity": "minor",
+     "where": "apps/web/src/lib/keyVault.ts:194-199 and :220 (readEncryptedVault, authorizeKeyExport)",
+     "problem": "After another tab deletes (or site data clears) the vault the keys were unlocked from/saved to, readEncryptedVault and authorizeKeyExport see it gone but keep vaultStored=true (probe confirmed); banner and BackupGate stay off until the idle lock runs loadedKeysRecoverable.",
+     "suggestion": "When sessionVaultRecord() is set and the store returns another record or none, call forgetSessionVaultCopy() in readEncryptedVault/authorizeKeyExport; add a test that Seller keys shows the no-backup banner after an external delete."
+    },
+    {
+     "severity": "minor",
+     "where": "apps/web/src/views/SellerKeys.test.tsx:176-201 (also src/lib/session.test.ts:171)",
+     "problem": "Full suite here, 2 runs: this modified test failed both (waitFor 30 s on a production N=2^17 export, ~32.4 s) yet passes alone (~21 s). Borderline in base too (32.1 s pass vs 32.7 s fail in the same 2-file run). Run 1 also timed out session.test S3-08 (60 s).",
+     "suggestion": "Use cheapKeystoreExport() here as 7389dea did for the new download tests (and N=2^14 for the S3-08 round-trip) so the coverage suite is green on slow runners; assertions unchanged."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/locales/ar.json, es.json, ja.json:27-28",
+     "problem": "The replaced settings.lock.label/hint keys remain in ar/es/ja, now orphaned and still saying keys stay in memory until wiped or the tab closes; scripts/i18n/extract.mjs only checks en.json, so nothing flags them.",
+     "suggestion": "Have the catalog owner delete the orphaned keys and translate settings.lock.idleLabel/keysHint, app.* and backupGate.* later."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/components/TagArchive.tsx:27-28",
+     "problem": "storedHistoryChains hard-codes 'ghostpay-reconciliation-encrypted'/'vaults' copied from reconciliationVault.ts; a rename there makes the DB look absent and silently drops the I-2 warning, and no test ties the two.",
+     "suggestion": "Export the DB/store names from reconciliationVault.ts and import them here (follow-up, outside ownership), or add a test asserting both modules use the same names."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/lib/session.ts:248-257 (importSession)",
+     "problem": "Hex import without a signing key generates a fresh signer that exists nowhere else, yet install marks the set external; the idle lock may wipe it and re-import yields a different signer, breaking payers' pinned-signer checks (funds unaffected).",
+     "suggestion": "Count a generated signer as unsaved until a keystore download or vault save, or say in the hex-import hint that the new signing key needs a keystore backup."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/CreateInvoice.tsx:143-297",
+     "problem": "Wrapping the form in BackupGate re-indents ~150 unchanged JSX lines (291-line diff), raising merge-conflict risk with other clusters touching CreateInvoice.",
+     "suggestion": "Wrap at the call site (App ViewSwitch 'create': <BackupGate><CreateInvoice/></BackupGate>; the gate passes through without keys) to keep the diff to a few lines."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/SellerKeys.tsx:452",
+     "problem": "'Wipe keys from memory' still destroys keys with no backup in one click, now the only one-step way to lose them; unlock-over-unsaved got a confirmation but wipe did not.",
+     "suggestion": "When getSessionBackup()?.backedUp === false, show a confirm notice (like sellerKeys.unlockReplaces) before clearSession()."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/lib/keyVault.ts:302-308; docs/user/troubleshooting.md",
+     "problem": "Deleting a vault naming the loaded meta-address now needs its passphrase, so a seller who imported the keystore file but forgot the vault passphrase can neither delete it nor sweep while keys are loaded; the way out (wipe, delete, re-import) is undocumented.",
+     "suggestion": "Add a troubleshooting row: forgot the browser-vault passphrase but have the keystore file: wipe keys, delete the vault (no passphrase while no keys are loaded), import the keystore again."
+    }
+   ],
+   "open_questions": "Outside my files: (1) RegistryView still shows/publishes unsaved keys' meta-address; wrap its publish branch in BackupGate (exported from views/SellerKeys.tsx). (2) pay.test.ts and sweep.test.ts still call requireSession (@deprecated). (3) ar/es/ja.json keep stale settings.lock.label/hint (now unused). (4) Stale key-lifetime text: docs/user/set-up-stealth-meta-address.md, receive-and-scan.md, docs/guides/troubleshooting-by-symptom.md. Kept prior e2e/helpers.ts edit (test helper)."
+  },
+  "BR": {
+   "branch": "fix-B-guards",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "714919e",
+    "1139b54",
+    "e7d1b20",
+    "33fd075",
+    "d53c32e",
+    "0546e15",
+    "954acf5",
+    "8f65749",
+    "83c5669",
+    "f679424",
+    "c561f9a"
+   ],
+   "commands": "All passed. Build core-crypto+chain-adapters, typecheck and lint (chain-adapters+web): OK. npm test -w chain-adapters: 21 files, 365 passed, 18 skipped, coverage 96.5/95.2/98.2/98.4. Targeted 6 web files: 228 passed. Full web suite (vitest --coverage --maxWorkers=2): 102 files passed, 1 skipped; 1411 passed, 4 skipped; coverage 91.3/86.97/92.91/95.22, thresholds met; 9 min, no timeouts, no reruns. Fail-before: 8d4532e sources under the new tests (chain-adapters rebuilt): rpc.test 3 failed, targeted web 22 failed. The journal-cap test failed on the draft's cap of 8. Logs in (scratch)",
+   "review_summary": "All 7 findings are fixed at the root cause. Every new test fails on the 8d4532e sources, checked one file at a time: sweep.ts 9 unit and 3 UI tests, state.tsx 3, journal 2, Sweep.tsx 3, en.json 2, rpc.ts 3+2 after a rebuild. Build, typecheck, lint, chain-adapters (365) and the 6 targeted web files (228) pass. Full web run: 1409 passed, 2 failed, both known flakes that pass alone. No coverage table printed (vitest omits it on failure); changed modules 94/90/97/98. Ownership kept, no security regression. 1 minor, 4 nits.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "packages/chain-adapters/src/rpc.ts:335-352 (REVERT_WITH_TEXT_CODES, FAILED_EXECUTION_TEXT)",
+     "problem": "reth/op-reth report eth_call halts as -32003 ('out of gas: gas required exceeds: N', 'EVM error: ...'). Nethermind calls a bad opcode 'invalid instruction'. Neither is flagged, so on those RPCs the B-R2 case still dry-runs as 'unavailable' and the sweep is sent with only a warning.",
+     "suggestion": "Follow-up: also flag -32003 when its text says out of gas or EVM error, and match 'invalid instruction'. Keep the text filter so other -32003 rejections (insufficient funds) stay unflagged. Add rpc.test and txGuard.test cases."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/Sweep.tsx:290-291; apps/web/src/lib/sweep.ts:465",
+     "problem": "When the final look is inconclusive (a receipt read failed or was malformed), the lock comes back unchanged and the UI shows sweep.note.pendingDirect: 'No receipt found for this hash yet'. That misdescribes a failed read. A failed first look already behaved this way.",
+     "suggestion": "Have reconcileSweepLock report an inconclusive read, or throw the existing check-failed UserFacingError (B-R1 allowed either), so the UI shows sweep.note.checkFailed instead."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/Sweep.tsx:59,412-419; apps/web/src/state.tsx:107-110",
+     "problem": "Once a lock records MAX_OTHER_HASHES (3) other hashes, the hint, the button and the unknownDirect copy still offer a same-nonce replacement. beginSweepAttempt refuses it ('replaced too many times') only after vault unlock, RPC reads and signing.",
+     "suggestion": "Gate resignNonce and resignableLock on (otherHashes?.length ?? 0) < MAX_OTHER_HASHES. Show a short note instead of the button, so the limit applies before anything is signed."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/Sweep.tsx:59; apps/web/src/state.tsx:149-151 (B-R5 trade-off)",
+     "problem": "A 'submitted' tx that the node later drops (evicted or never propagated) never uses its nonce. The tab's lock then stays 'submitted' with no in-app re-sign, and only a new tab recovers. B-R5 intends this, but the user is not told.",
+     "suggestion": "Accept as designed. Optionally mention the new-tab way out in the submitted notice, or later allow a re-sign when eth_getTransactionByHash returns null for every recorded hash."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/developer/api/chain-adapters.md:56-65; packages/chain-adapters/src/config/chains.ts:25-31",
+     "problem": "The new opStack paragraph names OP Sepolia. The older line just after it ('Today: enabled = Ethereum Sepolia and Base Sepolia') is out of date: chains.ts enables 7 testnets. The chains.ts opStack comment still says only native sweeps read the oracle.",
+     "suggestion": "Both are outside this cluster's ownership. Fix them in a docs follow-up (the implementer already flagged chains.ts)."
+    }
+   ],
+   "open_questions": "1) packages/chain-adapters/src/config/chains.ts (outside my ownership): its opStack comment still says only native sweeps read the oracle; ERC-20 sweeps do now. 2) en.json: besides unknownDirect, I kept the draft's rewording of sweep.resign.hint (B-R5 asks to say so in the hint) and sweep.attempt.replacedBody (it named an earlier attempt, which now resolves as included). 3) Re-sign cap is now 3 (4 txs per nonce); raising MAX_BYTES is the alternative. 4) An inconclusive final look shows the existing pending note."
+  },
+  "B2": {
+   "branch": "fix-B2-pay",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "fe9f12074ffabcf301cdd1c0f9b7a4781c0c7776",
+    "f59b51eb5b76cfb6f9c917954936f86d0488c896",
+    "c8ee18cefb31b13dc7e02d3cd0adc6e73c997389",
+    "cf5e57ca21403fc273f0e5a3ad117759b66be1c3",
+    "28de7d7638e5200bd35535759ed3ce5fa8cbbbcc",
+    "5f4f64605a55e06f4baa05269d46e99caa475f47"
+   ],
+   "commands": "build/typecheck/lint -w core-crypto,invoice-schema,payment-uri,chain-adapters (+web): exit 0. npm test: core-crypto 57, invoice-schema 656, payment-uri 199, chain-adapters 350 (+18 skip) pass. Web targeted (Pay, payExec, wallet, format, src/components; no cov): 19 files/259 pass. Full `vitest run --coverage --maxWorkers=2`: 101 files pass, 2 fail = known flakes (scannerCore.fuzz 205 s timeout; ReconciliationLedger 'saturated backup'); alone: fuzz 1/1, Ledger 15/15 pass. No cov report on failure, so reran with --coverage.reportOnFailure (fuzz excluded): 91.24/86.76/92.86/95.19 >= 90/85/90/90, only the Ledger flake failed. Failing-before via scratch fb.sh (915d710 sources, schema dist rebuilt). sdk 53, cli 53, merchant-ledger 24 pass; i18n 0 missing.",
+   "review_summary": "Approve. All six findings are fixed at the root. Each new test fails on 915d710 sources for the right reason and no other test does (G1-03 8, L4-I3 1+1, G1-01 4 schema + 2 format/Pay, payExec 5, wallet key 2, L2-F4/Pay 9). Build, typecheck, lint, package tests (57/656/199/350+18 skipped), 19 targeted web files (259 tests), full web suite (103 files, 1362 tests, coverage 91.22/86.71/92.81/95.18) and sdk/cli/merchant-ledger pass. G1-03 matched WHATWG URL on ~400k hosts. Leaving toHex unblocked was verified as necessary. Ownership respected, tree clean. One minor SDK schema drift, three nits.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "packages/sdk/src/schemas.ts:7 (and the emitted packages/sdk/schema/invoice.v1.schema.json)",
+     "problem": "The SDK publishes an invoice JSON Schema that still allows expiresAt, quote.timestamp and quote.expiresAt up to 9007199254740991, but validateInvoice now rejects anything above 253402300799. The G1-01 commit says the SDK is covered, and open_questions does not flag the drift for the SDK owner.",
+     "suggestion": "Add an open question for the SDK owner: cap the invoice and quote times at 253402300799 in schemas.ts (keep webhook createdAt separate), re-emit schema/*.json, and list the cap under Validation highlights in docs/developer/api/invoice-schema.md."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/lib/payExec.ts:170 and :189 (grantApproval, revokeApproval)",
+     "problem": "res.verification is ignored. An approval that was mined but is unverified (receipt present, tx never returned) silently continues to the payment, and a swapped, larger approve to the same spender passes the after >= need readback. Base behaves the same, and the wallet cannot force this state.",
+     "suggestion": "Treat an unverified approval like an unconfirmed one (throw PostBroadcastError), or show the same unverified notice before the payment step. Add a payExec test for it."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/Pay.tsx:855-858",
+     "problem": "fixedAmount falls back to 18 decimals and an empty symbol. For a non-allowlisted ERC-20 (a blocked invoice), the bold Invoice total and the printed bill\u2019s Amount due now show a mis-scaled amount with no unit. Before, it appeared only in the Pricing row.",
+     "suggestion": "When review.token is undefined, show the raw base-unit amount with the token address (no assumed decimals) in the headline and on the bill."
+    },
+    {
+     "severity": "nit",
+     "where": "packages/chain-adapters/src/registry.ts:118",
+     "problem": "Strict isAddress also refuses an all-uppercase address. Such an address has no EIP-55 checksum, and viem getAddress (used elsewhere in the app) and ethers accept it. The error then says the checksum does not match, which misdescribes the input.",
+     "suggestion": "Accept all-uppercase like all-lowercase and require a matching checksum only for mixed case, or reword the error to say the address is neither all-lowercase nor a valid EIP-55 checksum address."
+    }
+   ],
+   "open_questions": "1) App.tsx (C) must wrap <ViewSwitch view={view}/> in <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>. 2) CreateInvoice (C), fixed mode: hint that the payer pays exactly the token amount and line items/fiat total are informational (a USDC/EURC amount >1 % off is flagged). 3) features/policy (not owned): PolicyPay says '(confirmed)' without verification==='verified', and send.ts approvals are unscoped (L2-I3)."
+  },
+  "H2": {
+   "branch": "fix-H-merchant",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "c37c33f3a13f6cb8cc012a65439476bcb9aafa1f",
+    "7f59a1f96be223f8e0d5df635ddd903b95c90ae5",
+    "e7d7fb773d530d71ff32ce0e4db675293f339bf6",
+    "ae93e8b0a7f5a000315e3a181a04df0d55afd9e8",
+    "1ab6b2a2ae6ceb551138fe33869636882393d0ce",
+    "1331fbc64f2236cd8bcea8bc80dd709a5c47bf05",
+    "196f20c970c415220a28532f611450bb024bd992",
+    "5f10167ab529533ca3fe2689d9ee80df43bfcb50"
+   ],
+   "commands": "In wt-H, all pass at HEAD 5f10167: php integrations/woocommerce/tests/run.php (ok); php integrations/prestashop/tests/run.php (ok); php -l on all 9 changed PHP files (clean); npm run build -w merchant-hooks -w merchant-ledger (ok); typecheck + lint hooks/ledger/cli (clean); npm test: hooks 30/30, ledger 26/26, cli 53/53, coverage thresholds met; node --test examples/*/*.test.mjs (8 pass); webhook-receiver selftest ok; scripts/scan-secrets.sh OK. Each fix's test was run red first (outputs in scratchpad/fix-H2/*-before.txt). A mutation (delete before record) fails the H-R4 interruption test. git status is clean.",
+   "review_summary": "Approved: all 8 findings are fixed at the root, and every cluster check passes at 5f10167: WC and PS PHP suites, php -l, build, typecheck, lint, hooks 30/30, ledger 26/26, cli 53/53, examples, selftest and the secret scan. Each new test fails without its fix (base sources and mutations). The PS claims hold in the 8.1.7 and 8.0.0 sources. Two minor issues remain: a note for an order whose customer was deleted breaks that order's PS 8 page, and GhostPay stays listed at checkout without secrets. The worktree is clean.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "integrations/prestashop/ghostpay/controllers/front/webhook.php:78-96 (add_note)",
+     "problem": "add_note() never checks that the order's customer exists. PS 8.1.7 Customer::delete() keeps the orders but deletes their threads. A later note creates a thread whose order-page row has cfirstname NULL, which OrderMessageForViewing(string) rejects, so that order's BO page errors. Reproduced with PS's query.",
+     "suggestion": "Do what PS's AddOrderCustomerMessageHandler does: create no thread when !Validate::isLoadedObject($customer). Keep the note elsewhere (e.g. PrestaShopLogger::addLog with object 'Order' and its id) and return true. Add a shim test with a deleted customer."
+    },
+    {
+     "severity": "minor",
+     "where": "integrations/prestashop/ghostpay/ghostpay.php:118-121 (hookPaymentOptions)",
+     "problem": "After the H-R4 purge, an upgraded shop without the new constants still lists GhostPay at checkout, and every attempt fails with 'temporarily unavailable'. WooCommerce hides the gateway in that state (is_available() needs the service secret). The README documents this, but it can be avoided.",
+     "suggestion": "Return array() from hookPaymentOptions when null === $this->secret('service') or the pay host is empty, as is_available() does in WooCommerce. Add a run.php check and remove the README caveat."
+    },
+    {
+     "severity": "nit",
+     "where": "integrations/prestashop/tests/run.php (H-R5 block, ~line 332)",
+     "problem": "The expired-nonce DELETE moved inside the try, so a DB error there is now a 503 (the commit message says so). Only the INSERT failure is tested; the DELETE path has no test.",
+     "suggestion": "Let the shim also fail a DELETE on ghostpay_nonce, then assert a 503 and an unchanged order."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/remote/usability/specs/accounting-export.md:5 (R2)",
+     "problem": "R2 still gives BHD/KWD/JOD 3 decimals, which now contradicts currencyExponent() (2, from the app table). The file is outside this cluster's ownership, and the implementer flagged it only in the commit message.",
+     "suggestion": "Send a follow-up to the spec owner: R2 should cite the GhostPay app table (0 for JPY, KRW, VND, CLP, ISK, UGX, XAF, XOF; 2 otherwise; overrides allowed)."
+    },
+    {
+     "severity": "nit",
+     "where": "packages/merchant-ledger/src/decimal.ts:13",
+     "problem": "The new ZERO_DECIMAL_CURRENCIES line is 124 chars, over the .prettierrc printWidth of 110. The base file was prettier-clean (prettier is not enforced in CI).",
+     "suggestion": "Run prettier on decimal.ts; it wraps the array."
+    }
+   ],
+   "open_questions": "1) docs/remote/usability/specs/accounting-export.md R2 still says BHD/KWD/JOD = 3 decimals, which now contradicts the ledger (file not mine). 2) The PrestaShop purge runs one SELECT on every module load, like WooCommerce's init purge; an upgrade script would avoid this but only runs when the merchant upgrades. 3) PrestaShop still lists GhostPay at checkout with no service secret (validation refuses it); WooCommerce hides it. Left unchanged. 4) Notes have no employee, so PS8 shows them in the customer's style (in README). 5) CI does not run the PHP suites."
+  },
+  "AR": {
+   "branch": "fix-A-scanner",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "0dcb4bb",
+    "abf84a0",
+    "c6d7253",
+    "9fbf0cf",
+    "610263c",
+    "bfd158e"
+   ],
+   "commands": "build chain-adapters: ok. typecheck chain-adapters+web: ok. lint chain-adapters+web: ok. npm test -w chain-adapters: 21 files, 375 passed / 18 skipped (final code). Eight web files: 186 passed / 1 failed. The failure is ReconciliationLedger 'saturated backup' at :355; it fails the same way with the ace3c65 web files in the same run and passes alone 2/2. Full web suite --coverage --maxWorkers=2: 1355 passed, 2 failed (scannerCore.fuzz timeout, SellerKeys waitFor; both pass alone). Final rerun on bfd158e with --coverage.reportOnFailure: 1354 passed, 3 failed (ledger saturated, TagArchive waitFor, fuzz; TagArchive passes alone 3/3). Coverage 91.28/86.86/92.95/95.22 meets 90/85/90/90.",
+   "review_summary": "Approve. All five findings are fixed with tests that fail on ace3c65 (verified: 8 chain-adapters, 3 web vault/ledger, 1 scanClient via a base dist build). Build, typecheck, lint, chain-adapters (375 pass) and the 8 web cluster files (187/187) pass; full web suite 1356 pass, only the fuzz timeout (passes alone); reportOnFailure rerun: coverage 91.28/86.81/92.95/95.22, flaky ledger/TagArchive pass alone. Ownership respected, no churn. Minor gaps: A-R2 skips provider-coded halvings, compareProviders keeps -32005 narrowing, acknowledged rate-limit residual.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "packages/chain-adapters/src/logs.ts:343-347 (A-R2 regrow rule)",
+     "problem": "Regrowth follows only a narrowed block or a 2 MiB-cap overflow. A provider-coded halving keeps its size, even 1 block: after a 27-attempt -32005 burst the fetch stops at block 41; -32602 dense pairs every 100 blocks still take 118 fetches/5,863 getLogs per 20k blocks, identical to base.",
+     "suggestion": "Also set regrowAfter = to when a fixed range limit cannot explain the refusal: refused size <= a window that already succeeded this fetch, or the halving reached 1 block. Scratch: all 74 logs/scanHardening/scanVerify tests pass, range-limit cost unchanged, dense pairs 118 -> 51 fetches."
+    },
+    {
+     "severity": "minor",
+     "where": "packages/chain-adapters/src/scanVerify.ts:111-114",
+     "problem": "Same A-R1 root cause in an owned file: compareProviders narrows a block on one -32005 refusal (isLogSizeError; comment says 'as the scanner does'). Probe: secondary refused 30 attempts, primary hid block 7's direct announcement -> no discrepancy; its non-router logs and skipped count go unchecked.",
+     "suggestion": "Mirror logs.ts: after the router lane, re-ask the whole block once and narrow only on a repeated size refusal, else report secondary_error. Add a -32005 burst test like the scanHardening A-R1 ones."
+    },
+    {
+     "severity": "minor",
+     "where": "packages/chain-adapters/src/logs.ts:372-388; docs/user/receive-and-scan.md:42",
+     "problem": "Acknowledged residual: a 200-OK -32005 rate limit that lets the router-lane read pass but refuses the recheck's 3 attempts still narrows an ordinary block (probe: block 7's direct announcement dropped, cursor to 1001, as on base). User doc's 'a rate limit that persists stops the scan' overstates.",
+     "suggestion": "Track a follow-up (e.g. keep the provider error message in rpc.ts so rate limits can be told from result limits). Reword the doc: a block refused again after its router lane is narrowed; only a failed router-lane read stops the scan."
+    }
+   ],
+   "open_questions": "A-R2 deviates from 'always double like compareProviders'. In simulation, always-doubling took 2x the requests behind a fixed range limit and 86 vs 67 fetches for spam every 100 blocks; reasoning is in the commits. A-R1 residual: a rate limit that also refuses the recheck still narrows the block. Telling the two apart needs the provider message, which rpc.ts drops. Outside my files: the windowed client splits grid windows on -32005 rate limits; TagArchive.tsx:284 calls the same count 'N invalidated'."
+  },
+  "CR": {
+   "branch": "fix-C-keys",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "c627d49",
+    "e31454a",
+    "ecbf7c4",
+    "1083fe9",
+    "0f74acd",
+    "32c5882",
+    "fce01ae",
+    "a6b6d90",
+    "a20141c",
+    "6c42663",
+    "18b6beb",
+    "c3453eb"
+   ],
+   "commands": "apps/web: tsc --noEmit OK; eslint src e2e OK; cluster vitest list 13 files 203 passed/3 skipped; other touched tests (policy, registry route, register, Settings, i18n, TagArchive.history) 17 files 135 passed; i18n extract 0 missing, check extra-key 6->0 (1440 left = untranslated, pre-existing). Full vitest --coverage --maxWorkers=2: 101 files pass, 2 fail = known fuzz + ReconciliationLedger timeouts (Ledger alone 15/15). No coverage report on failure, so rerun with reportOnFailure: 91.83/87.19/93.56/95.71; fuzz again + TagArchive 'drops a staged preview' (60 s findByRole under load 11 on 4 cores; alone 5/5, 2.2 s). Playwright chromium-1243 app+flows+passphrase-vault 20/20.",
+   "review_summary": "All ten items fixed as recommended; new tests fail on base (sources reverted per item) and mutations confirm the C-R2 race guard and C-R5 name tie. tsc, eslint, targeted vitest (259 pass) and Playwright app/vault/flows (20/20) pass. Full suite: only known fuzz + saturated-backup failures (and once a load timeout in TagArchive, passes alone); coverage 91.85/87.24/93.61/95.72. Minor: Wipe trusts stale backup state after a cross-tab vault delete; C-R6 copy overstates loss. Nits: TagArchive passphrases, DEVIATIONS wording.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "apps/web/src/views/SellerKeys.tsx:280-284 (onWipe); apps/web/src/lib/keyVault.ts:198-206 (readEncryptedVault)",
+     "problem": "onWipe reads the cached getSessionBackup(); C-R2 only refreshes it on a storage read. With Seller keys open, a vault deleted in another tab leaves backedUp=true, so Wipe destroys keys whose only copy is gone without the C-R4 confirmation (confirmed with a temporary probe test).",
+     "suggestion": "In onWipe, when !sessionHasExternalCopy(), await loadedKeysRecoverable() (reads the store, forgets a missing copy) under a session guard and confirm unless it returns true; add a test that deletes the vault after mount, then clicks Wipe."
+    },
+    {
+     "severity": "minor",
+     "where": "apps/web/src/lib/session.ts:276-279 (importSession 'generated' origin); apps/web/locales/en.json app.backup.body, backupGate.body, sellerKeys.wipeUnsaved.body",
+     "problem": "For a hex import without a signing key, the banner, BackupGate and new wipe confirmation say no copy exists and every payment to the meta-address is lost (probe-confirmed). The user holds the spend/view hex; only the invoice signer is lost. The idle lock also now keeps these keys in memory.",
+     "suggestion": "Record that only the signer is unsaved (custody flag) and show accurate copy for it (signer continuity; payments stay sweepable from the hex); consider letting the idle lock wipe such keys with a notice rather than holding spend/view keys indefinitely."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/components/TagArchive.tsx:84-122; apps/web/DEVIATIONS.md item 11",
+     "problem": "TagArchive's archive passphrase fields (pass/pass2/importPass, on the Seller keys page) are not cleared by the new idle-lock signal, yet DEVIATIONS 11 says the lock clears passphrases typed into Seller keys; it also says the vault is re-checked on every read, but save/unlock/sweep reads are not.",
+     "suggestion": "Subscribe TagArchive to subscribeIdleLock (clear pass2/importPass, re-suggest pass) with a test, or narrow DEVIATIONS 11 to the fields actually cleared and to readEncryptedVault/authorizeKeyExport reads."
+    }
+   ],
+   "open_questions": "1) lib/appLock.ts (cluster G) is not in this branch, so session.ts has subscribeIdleLock/notifyIdleLock, sent at the top of App's lock(). On integration SellerKeys/Sweep can use subscribeAppLock, and notifyAppLock('idle') should also run there, not only next to clearSession. 2) C-R6 reuses the 'no backup' copy, which overstates loss when only the signer is unsaved. 3) Keystore/archive export fields keep new-password (KL-14); TagArchive's first 3 tests still use production scrypt."
+  },
+  "D2": {
+   "branch": "fix-D-relayer",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "cc2a56c71b7148aaf182d2a4bd933488baaba44a",
+    "72693d82d2136e36f3523c4e87baf41829f7dac4",
+    "4a6c2ba20523b9c76cba384b42fa44dfc0b582bb",
+    "e2a8b40d6fb48bb5ec28dfa91400c3b0fbaf3b57",
+    "54122818e4e344baf26dbb552a0aba936a167dad",
+    "589674baffb963d758ac17a7abdd3abaa6fd84b9",
+    "9d5e2cfd041eb0811f3b4b955141ac5f6820e607"
+   ],
+   "commands": "All run in wt-D after the last commit:\n- relayer-guard: build ok; 153 tests pass.\n- relayer-guard and relayer: typecheck and lint ok.\n- relayer: 282 passed, 2 skipped (no anvil). Coverage 97.39/92.36/97/98.43, thresholds met; repeated 3x.\n- pool-relayer: 29 passed, 9 skipped.\n- web relayerClient.test: 28 passed.\n- bash -n selfhost.sh ok; selftest.sh ok; scan-secrets OK.\n- prettier --check: limiter.ts, limiter.test.ts, revertRate.ts clean. service.ts, api.test.ts, config.test.ts fail, as at e8cdb31/1d314e4; prettier-diff lines 42->42, 226->221, 374->374 (nothing new).\n- Each new test failed before its fix (stash) and passes after.",
+   "review_summary": "All six findings are fixed at the root. The permit now settles once at the receipt: timeouts alone open the breaker at ratio 0.5 and 0.6, and probes stay half-open until their receipt. The lane refuses with deadline_too_soon 422 before the final simulation. The selfhost check needs the compose backend subnet to be covered; docs, the nginx test and prettier on limiter/revertRate are done. All cluster checks pass. prettier --check fails only on service.ts, api.test.ts and config.test.ts, which were unformatted at e8cdb31; no new unformatted code. Every new test fails on base, and the worktree is clean. Left: a minor probe/receipt timeout default mismatch and three nits.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "apps/relayer/src/service.ts:257 (GuardedBreaker probeTimeoutMs) with defaults probeTimeoutSeconds 60 / receiptTimeoutSeconds 120 (config.ts, example config)",
+     "problem": "A broadcast probe now holds its permit until the receipt. It still expires after probeTimeoutSeconds (default 60 s, which includes pre-broadcast time), while normal sweeps get 120 s. A probe mined at 60-120 s re-opens the breaker and its success is ignored. Base closed it at broadcast.",
+     "suggestion": "Let the receipt decide. Either build the breaker with probeTimeoutMs >= receiptTimeoutSeconds plus a pre-broadcast allowance, or reject/warn in config when probeTimeoutSeconds <= receiptTimeoutSeconds. Then align the example config and the README guidance."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/relayer/src/service.ts:686-689 (in-lane deadline re-check)",
+     "problem": "The check runs before the final eth_call, the nonce read and the send. Each can take ~20 s on the viem transport (timeout 10 s, retryCount 1), so a slow RPC can still use up the 30 s margin. The result is a mined Expired revert charged to the sources and counted as an owner strike.",
+     "suggestion": "Re-check, or move the check, right after the final simulation and fee check and before the loss/daily reservations. Nothing is reserved at that point, so it stays pre-broadcast and breaker-neutral, and the margin is measured next to the send."
+    },
+    {
+     "severity": "nit",
+     "where": "deploy/selfhost.sh:189 (backend subnet parse from docker-compose.yml)",
+     "problem": "The regex allows nothing after the CIDR. A moved subnet with a trailing YAML comment ('- subnet: 10.89.10.0/24  # moved') is skipped and 172.30.10.0/24 is assumed without notice. A correct list then gets a false warning, and a list naming the old default passes as ok.",
+     "suggestion": "Match only the CIDR token so a trailing comment or quotes are allowed, e.g. subnet:\\s*['\"]?([0-9A-Fa-f:.]+/\\d+). Also say in the output when the default 172.30.10.0/24 was assumed because no subnet was read."
+    },
+    {
+     "severity": "nit",
+     "where": "deploy/selfhost.sh:206-210 (ok message)",
+     "problem": "Any overlap prints 'covers the compose backend subnet', e.g. [\"172.30.10.200\"] or [\"172.30.10.0/25\"]. nginx's backend address is assigned dynamically (no ipv4_address in compose) and can fall outside the listed part, so every client shares one bucket with an ok shown.",
+     "suggestion": "Keep the 'covers' wording for entries that contain the subnet. For a partial overlap, print distinct wording (e.g. 'lists part of <subnet>; make sure nginx's address is in it'). The review allowed overlap, but the message should not claim coverage."
+    }
+   ],
+   "open_questions": "1) D-R1: a half-open probe now waits for its receipt. If no receipt within breaker.probeTimeoutSeconds (default 60 s, below receiptTimeoutSeconds 120 s), it re-opens; README tells operators to keep it above confirmation time. 2) Mined reverts are now neutral (documented S3-06), not the success the broadcast used to record. 3) prettier --check fails on 3 files already off-style before the branch; left as is per D-R5. 4) apps.md check-order and healthz text was already stale."
+  },
+  "B2R": {
+   "branch": "fix-B2-pay",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "52517dc981f810af16c7671c36a796ab64ba54d8",
+    "9347fbe855d21ed63a6ce9de614a0ea42aac6ec2",
+    "bdc29de688d11dd670f02a86385c1eaa927cdacf",
+    "a3b825f0682dece910c57cc7e578add40fcaae5f",
+    "aa2a4499bfdd8d6a81b26e11e8ef8481cc67eb4b",
+    "97c86abafeddc0cf16ee55d26bda79755bbdd41d"
+   ],
+   "commands": "Build core-crypto, invoice-schema, chain-adapters OK; build sdk OK; typecheck sdk/chain-adapters/web OK; lint sdk/chain-adapters/web OK; npm test sdk 54/54 (cov 99.6/97.8/100/100); npm test chain-adapters 373 pass, 18 anvil-skipped; targeted web (Pay, payExec, txGuard, PrintableBill) 132/132. Full web vitest --coverage --maxWorkers=2 (978 s): 100 files pass, 3 fail: scannerCore.fuzz (180 s timeout), ReconciliationLedger 'saturated backup', ReconciliationLedger.invoices 'lists, exports...' (waitFor 1 s). Vitest emits no coverage on failure, so thresholds were not evaluated. Each alone, no coverage: fuzz 1/1, Ledger 15/15, .invoices 11/11 pass. Targeted coverage: every new statement and branch arm covered.",
+   "review_summary": "All 5 items fixed at the root. Every new test fails on pre-fix code (B2-R1 schema, B2-R2 2 payExec, B2-R3 Pay, B2-R4 registry, B-R8 4 rpc + 3 txGuard). Merge aa2a449 is a clean auto-merge of 5e94954; schema re-emit is byte-identical. Build/typecheck/lint OK; sdk 54/54; chain-adapters 373 pass, 18 skipped; targeted web 132/132. Full web: 1439 pass, 2 known flakes failed (fuzz timeout, Ledger saturated backup), both pass alone. Coverage not reported on failure; new lines' branches fully covered. Only out-of-scope nits; worktree clean.",
+   "review_issues": [
+    {
+     "severity": "nit",
+     "where": "apps/web/src/features/policy/send.ts:31-37 (sendPolicyPayment)",
+     "problem": "Same root cause as B2-R2 remains in the experimental policy flow: after the approval it checks receipt and allowance readback but ignores res.verification, so an unverified, larger swapped approve still continues to the payment. Behind a build flag (VITE_GHOSTPAY_EXPERIMENTAL_POLICY), outside this cluster's paths.",
+     "suggestion": "Follow-up: refuse res.verification !== 'verified' inside the existing PostBroadcastError try block (ideally a helper shared with grantApproval) and add a send.test case with a receipt-only RPC."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/developer/api/chain-adapters.md:29-31",
+     "problem": "The documented `reverted` contract still says code 3 or -32000/-32015 with a revert, out-of-gas or invalid-opcode text; after B-R8 it also covers -32003 and the 'invalid instruction' / 'EVM error' halt texts. Outside owned paths (implementer flagged it).",
+     "suggestion": "Follow-up doc edit mirroring the new createClient remarks (-32000/-32003/-32015; reverted, out of gas, invalid opcode/instruction or other halt); optionally the same wording in errors.ts."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/developer/api/README.md:29-30",
+     "problem": "Repo-wide address rule says chain-adapters accepts all-lowercase or valid EIP-55 mixed case; buildLookupCall now also accepts all-uppercase while deployments/router/sweep/quote stay strict, so the rule is no longer exact. Outside owned paths.",
+     "suggestion": "Follow-up: note the registrant-lookup exception (all-uppercase accepted; checksum required only for mixed case)."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/lib/sweep.ts:520-529 (readOperatorFee)",
+     "problem": "readOperatorFee treats any `reverted` as 'no getOperatorFee'. B-R8 widens `reverted` to -32003 out-of-gas/EVM halts, so on op-reth such an answer now yields 0 operator fee, not the propagation its comment promises. No practical or new security impact (an RPC can already answer code 3).",
+     "suggestion": "Optional, outside this cluster: reword the comment to say a halt also counts as no operator fee, or distinguish an explicit revert if a second flag is ever added."
+    }
+   ],
+   "open_questions": "Outside my paths: docs/developer/api/chain-adapters.md:30-31 and errors.ts `reverted` doc still say -32000/-32015 and 'reverted, ran out of gas or hit an invalid opcode' (add -32003, EVM halt); txGuard.ts REVERT_TEXT (wallet-text path) lacks 'invalid instruction'/'EVM error'. The 3rd full-run failure (ReconciliationLedger.invoices) is not on the known list but passes alone. SDK registerInvoice still takes expiresAt up to 2^53-1 (no Date use)."
+  },
+  "D3": {
+   "branch": "fix-D-relayer",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "8ab62b6",
+    "8a6adc3",
+    "c800dc5",
+    "fb1f8ec"
+   ],
+   "commands": "All run in wt-D. npm run build -w @ghostpay/relayer-guard: ok. npm run typecheck -w @ghostpay/relayer-guard -w @ghostpay/relayer: ok. npm run lint (same two): ok. npm test -w @ghostpay/relayer-guard: 153 passed. npm test -w @ghostpay/relayer: 284 passed, 2 skipped; coverage 97.4/92.38/97.02/98.44, thresholds 95/90/95/95 met. npm test -w @ghostpay/pool-relayer: 29 passed, 9 skipped. apps/web: npx vitest run src/lib/relayerClient.test.ts --coverage.enabled=false: 28 passed. bash -n deploy/selfhost.sh: ok. bash deploy/selftest.sh: ok. bash scripts/scan-secrets.sh: OK. Each new test was run before its fix and failed (output saved in scratchpad/fix-D3/dr*-before.txt). Also ran selfhost --dry-run as uid nobody on a temp copy: same trustedProxies output.",
+   "review_summary": "All four findings are fixed at the root cause. D-R7: probe timeout is now probe + receipt timeout, so the receipt decides. D-R8: second deadline check after the final simulation and fee check, before reservations (neutral, no strike). D-R9: subnet regex reads only the CIDR, with an 'assumed' notice. D-R10: 'covers' only via subnet_of, with a separate partial warning. I re-ran every cluster check and all pass (coverage 97.4/92.38/97.02/98.44). Each new test fails on base and the selfhost edge cases behave. Only nits and one minor pre-existing issue remain. Worktree is clean.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "apps/relayer/src/service.ts runSettled (order-state read, permit ladder and first simulation all run before the in-lane deadline checks)",
+     "problem": "Pre-existing (implementer's open question 1). A deadline that lapses during the queue wait is refused as permit_expired, or as 'expired' by the first simulation. Both count as owner strikes. Verified: permit sweep, 45 s left, 50 s queue wait -> 422 permit_expired and relayer_owner_failures_total 1.",
+     "suggestion": "Follow-up outside this cluster: also run the deadline_too_soon check at the start of the lane job, before reconcilePending and readOrderState, and keep the two later checks. A deadline that lapsed in the queue is then neutral and costs no simulation."
+    },
+    {
+     "severity": "nit",
+     "where": "deploy/selfhost.sh:213-216 (subnet_of check)",
+     "problem": "Only one entry on its own can 'cover' the subnet. [\"172.30.10.0/25\",\"172.30.10.128/25\"] together hold the whole subnet but get the 'lists only part of' warning (verified). This is a false warning only, never a false ok.",
+     "suggestion": "Check against the merged list, e.g. any(backend.subnet_of(n) for n in ipaddress.collapse_addresses(same)), and add this case to config.test.ts."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/operators/relayer-runbook.md:95 (half_open row)",
+     "problem": "The row now says one probe can hold half_open for up to 180 s by default. The same cell still says to restart if half_open lasts beyond two cooldowns (120 s by default), which on this build can cut off a probe that is still validly waiting for its receipt.",
+     "suggestion": "Say that the restart advice applies only to builds without the S3-05 fix, or raise the threshold to probeTimeoutSeconds + receiptTimeoutSeconds + cooldownSeconds."
+    },
+    {
+     "severity": "nit",
+     "where": "deploy/selfhost.sh:188-189 (lines.index of 'networks:' and '  backend:')",
+     "problem": "Header lines still need an exact match. A trailing comment on 'networks:' or '  backend:' (the same YAML-comment case as D-R9) falls back to 172.30.10.0/24. The new notice prints, so it is not silent, but a stale old-default list still gets 'ok ... assumed backend subnet'.",
+     "suggestion": "Optionally match the headers with a regex that allows a trailing comment (e.g. r'^  backend:\\s*(#.*)?$'), or turn the result line into a warn when the subnet was assumed."
+    },
+    {
+     "severity": "nit",
+     "where": "deploy/selfhost.sh:214 (backend.subnet_of)",
+     "problem": "ipaddress subnet_of needs Python 3.7 or later. On 3.6 the AttributeError is not caught, Python exits 1, and the script prints the misleading 'empty or loopback-only' warning. deploy/README.md only says 'Python 3'.",
+     "suggestion": "Use a test that works on any version (n.network_address <= backend.network_address and backend.broadcast_address <= n.broadcast_address), or require Python >= 3.7 in the README. Consider mapping unexpected exceptions to rc 2."
+    }
+   ],
+   "open_questions": "1) Pre-existing, outside D-R8 (found by reading the code, not tested): a sweep whose deadline fully lapses during the queue wait is refused by the permit ladder (permit_expired) or the first in-lane simulation (expired). Both are owner strikes, because both deadline checks come later; checking the deadline at the start of the lane job would avoid that. 2) D-R7: a probe stuck before its broadcast now holds half_open for up to probe+receipt timeout (180 s by default, was 60 s)."
+  },
+  "GR": {
+   "branch": "fix-G-chains",
+   "approved": true,
+   "rounds": 2,
+   "commits": [
+    "e794883",
+    "7d4a737",
+    "c7dc826",
+    "7df6cb9",
+    "99acdf8",
+    "9c69620",
+    "661ebdf",
+    "f05f58a",
+    "0feb1d7",
+    "0f9b987"
+   ],
+   "commands": "All run in (scratch) (branch fix-G-chains; 3 new commits on 661ebdf; the worktree is clean).\n\n1. npm run build -w @ghostpay/btc-silent-payments -w @ghostpay/solana-stealth -w @ghostpay/tron-adapter: OK.\n2. npm run typecheck -w @ghostpay/btc-silent-payments -w @ghostpay/web: OK.\n3. npm run lint -w @ghostpay/btc-silent-payments -w @ghostpay/web: OK.\n4. npm test -w @ghostpay/btc-silent-payments: 27 files, 432/432 pass.\n5. node --test scripts/regtest/*.test.mjs: 5/5 pass.\n6. cd apps/web && npx vitest run src/features src/components --coverage.enabled=false: 357 pass, 4 skipped, 1 fail. The failure is the known ReconciliationLedger 'saturated backup' flake; that file alone passes 15/15.\n7. Full suite, npx vitest run --coverage --maxWorkers=2, at load average about 10.5 with other worktrees' suites running: 1379 pass, 6 fail, 19m. All 6 are known load failures, none in touched files: the scannerCore.fuzz 180 s timeout, the ReconciliationLedger saturated-backup test, and 'Apply import' waitFor misses in TagArchive.atomicity (x3) and TagArchive (x1). Alone with --coverage.enabled=false, ReconciliationLedger + TagArchive.atomicity + TagArchive pass 32/32, and scannerCore.fuzz passes 1/1 in 2m37s.\n8. Because failing tests suppress the coverage report, I repeated the suite once with --coverage.reportOnFailure, excluding only the fuzz test (this can only lower the totals): 1383 pass, 1 fail (the RL flake again). All files 91.52/86.84/93.15/95.39, above the 90/85/90/90 thresholds. SecretBackup.tsx 100/93.75/100/100; esplora.ts 93.77/92.03/96.22/97.79.\n9. Fail-before checks: swapped in the previous esplora.ts and SecretBackup.tsx, plus three variants (budget checked only after each whole page; no waiting-retry exception; no app-lock subscription). Results are in the items. Files were restored and their content verified.\n10. Process note: during the first full run I briefly ran git stash and git stash pop in wt-G (refs/stash is shared across worktrees). The stash list is empty afterwards and the tree was verified identical. That run was stopped with TaskStop on my own task (a pkill was refused and not retried) and the full run was redone from scratch.\n\nScratch files are in (scratch)",
+   "review_summary": "All 7 findings are fixed at the root cause: blockTxs now has a weight cap, a 64 MiB page budget per block and the MAX_SCRIPT_SIZE limit; the copied mark stays set until a clear works, with retries; the shim serves /block/:hash; the signer has dispose() in a finally block; new test for a scan result after Lock; SecretBackup is moved; docs are fixed. Every new test fails without its fix (checked against base, against c7dc826, and by a mutation for G-R6). Build, typecheck, lint, package (432), regtest (5) and web features/components (358) pass. Full web suite: coverage 91.53/86.86/93.15/95.39; 3 known load failures pass when run alone. Only nits remain.",
+   "review_issues": [
+    {
+     "severity": "nit",
+     "where": "apps/web/src/components/SecretBackup.tsx:22-28 (retryAtActivation)",
+     "problem": "A refused clear is retried only on click or keydown. Chrome lets a focused page write without user activation, so after an idle-lock clear is refused in an unfocused tab, the seed stays on the clipboard after the user comes back, until their first click or key press.",
+     "suggestion": "While the retry is armed, also try again on window 'focus' (and on visibilitychange to visible). Browsers that refuse simply keep the retry armed. Add a component test for it."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/user/bitcoin-silent-payments.md:22-24, solana/tron guides, en.json btc.seed.copyWarning, SecretBackup.tsx:59-63",
+     "problem": "These texts promise that the app lock empties the clipboard and wipes keys. On this branch nothing in production calls notifyAppLock; the App.tsx wiring is still pending (CONSOLIDATION_2026-10-28.md, item 3).",
+     "suggestion": "At integration, call notifyAppLock('idle') next to clearSession() and add an App-level test, so these texts are true when they ship."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/components/SecretBackup.tsx:10",
+     "problem": "The comment says 'Only a clear that worked unmarks it', but the path with no clipboard API (writeText throws synchronously, then settle(true)) also unmarks the copy.",
+     "suggestion": "Reword it, e.g. 'Unmarked only by a clear that worked, or when the page has no clipboard API to clear.'"
+    }
+   ],
+   "open_questions": "1. apps/web/src/App.tsx (not owned here) still does not call notifyAppLock('idle') on this branch (the G2-02 note). The views' app-lock handling and the new module-level SecretBackup subscription act only once integration wires App's idle timer to notifyAppLock. Leaving the view (the unmount clear) works without it.\n2. The 64 MiB per-block page budget is a pragmatic bound, not a consensus one. A contrived but valid block whose Esplora JSON needs more is refused, as a page over 16 MiB already is; examples are opcode-dense script disassembly or many large spent bare scripts. Only test networks are enabled. Against a hostile server, one scan can still download up to MAX_SCAN_BLOCKS (500) x 64 MiB: the whole-block design is inherently heavy, and the user can cancel. The block summary and header requests stay under the 16 MiB per-response cap but are not counted in the block budget.\n3. Browsers with strict activation rules (Safari) may refuse the clear at unmount even after a click. The retry then runs at the next click or key press, which matches the updated texts."
+  },
+  "AR2": {
+   "branch": "fix-A-scanner",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "373ba0e",
+    "b2e9a52",
+    "d340320",
+    "755b902",
+    "ef967f0"
+   ],
+   "commands": "Cluster checks on 755b902, all exit 0: build chain-adapters; typecheck chain-adapters+web; lint both; npm test chain-adapters 383 passed/18 skipped (coverage 97.09/95.92/98.9/98.88); 5 web scan files 130 passed. Full web suite with coverage, --maxWorkers=2: 1355 passed, 3 failed, 4 skipped; coverage 91.28/86.81/92.95/95.22 (thresholds met). The 3 failures (scannerCore.fuzz timeout, ReconciliationLedger saturated backup, TagArchive waitFor) passed alone without coverage: 1/1, 16/16, 3/3. ef967f0 is docs only. Simulation numbers: fix-AR2/sim/results-final.txt.",
+   "review_summary": "A-R6, A-R7 and A-R8 are fixed at the root; checkout and mutation runs show the new tests fail without each rule. Checks: build, typecheck, lint pass; chain-adapters 383 passed/18 skipped (97.09/95.92/98.9/98.88); 5 web scan files 130 passed; full web suite 1357 passed, 4 skipped, 1 failed (scannerCore.fuzz timeout under coverage; passes alone 1/1), coverage 91.25/86.75/92.89/95.21. One minor A-R7 trade-off: dense stretches after sparse ones oscillate (up to 2x fetches in sim); resetting served on halving avoids it. Worktree left clean.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "packages/chain-adapters/src/logs.ts:365 (A-R7 `to - next + 1n <= served`)",
+     "problem": "`served` spans the whole fetch, so in a result-limited dense stretch after a sparse one (Infura -32005, Alchemy -32602) each regrown window is refused again (1 refused per 2 served). Sim: sparse 6000/dense 2000, 100-log limit: 5->10 fetches; alt 2000/2000 with -32005: 10->14, refused 120->462.",
+     "suggestion": "Count `served` only since the last refusal (reset it on each halving): in my sim the 27-burst fix holds (1 fetch), range-limit cost is unchanged, dense pairs go 118->61 (vs 51), and both patterns above return to base (5 and 10 fetches). Or record the trade-off in commit/spec."
+    },
+    {
+     "severity": "nit",
+     "where": "packages/chain-adapters/src/scanVerify.test.ts (A-R6 describe block)",
+     "problem": "Mutation 'accept the router-lane logs before the second whole-block read' passes all 15 tests: block 7 has no router-caller log that fails validation, so skipped logs double-counted on the success path would go unnoticed.",
+     "suggestion": "Add a router-caller log with undecodable data to block 7 in the burst test (primarySkipped 2), so a lane read that is not discarded shows up as skipped_count_differs."
+    },
+    {
+     "severity": "nit",
+     "where": "packages/chain-adapters/src/logs.ts:136 (mayBeRateLimit)",
+     "problem": "New public export (index.ts `export *`) with no direct unit asserts, unlike isLogSizeError/isLogLimitError in logs.test.ts (-320050, non-ChainAdapterError, other codes). Behaviour equals the old inline check, so low risk.",
+     "suggestion": "Add the same edge asserts for mayBeRateLimit in logs.test.ts, or mark it @internal if it is not meant as package API."
+    },
+    {
+     "severity": "nit",
+     "where": "packages/chain-adapters/src/scanVerify.ts:125-137",
+     "problem": "compareProviders has no request budget. A secondary that refuses every unfiltered read with -32005 (lane fine) narrows every block, now at 7 attempts per block instead of 4 (probe, 1,000-block page: 4,027 -> 7,027 attempts) plus backoff. Documented residual; cost up 75%.",
+     "suggestion": "Optional follow-up: bound one comparison (e.g. secondary_error after N one-block -32005 narrowings) so a persistently limiting secondary withholds the page quickly instead of stalling it."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/Scan.tsx:338 (outside cluster ownership)",
+     "problem": "The narrowed-block warning says 'likely announcement spam', while the updated user doc says a residual -32005 rate limit can narrow a block that holds no spam. The implementer flagged this (open question 1).",
+     "suggestion": "Track a follow-up for the Scan.tsx owner: neutral copy such as 'too large for one RPC response, or refused by a provider limit'."
+    }
+   ],
+   "open_questions": "1) Scan.tsx's narrowed-block warning calls the block 'likely announcement spam'; in the A-R8 residual it can be an ordinary rate-limited block. That copy is outside my ownership. 2) A-R7's one-block rule: a provider that allowed only one-block getLogs ranges (none known) would cost a refused request per regrowth (25 -> 36 fetches per 1,000 blocks in simulation). 3) mayBeRateLimit becomes a public export via index.ts export *."
+  },
+  "CR2": {
+   "branch": "fix-C-keys",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "a43dbaacb5165e3b453e841b013c1e84c10b148b",
+    "8ef431320a018f086a4f3ea60d1d00a351d95f82",
+    "56cb35c838ca0c59ae7ad6003ac5e400a0e743af"
+   ],
+   "commands": "apps/web: tsc --noEmit OK; eslint src e2e OK; 8 cluster files --coverage.enabled=false: 140/140 pass (base 135/135). Root: i18n extract 0 missing (520 used, 20 unused as at base); i18n check 1464 errors vs 1440 at base: +24 'missing key' in the ar/es/ja stubs for the 8 new en keys, no translations added. Full suite --coverage --maxWorkers=2 (14 min): 1380 pass, 4 skipped, 2 fail = the known flakes (scannerCore.fuzz 180 s timeout; ReconciliationLedger saturated backup); coverage 91.84/87.26/93.62/95.73 vs 90/85/90/90; ReconciliationLedger alone without coverage: 15/15. Mutation check: C-R9 guard removed -> drop test fails.",
+   "review_summary": "All three findings fixed at the root: C-R9 wipe re-reads the vault under a version guard; C-R10 adds a signerOnly custody state with accurate copy and an idle-lock wipe plus notice; C-R11 TagArchive clears archive passphrases at idle lock, DEVIATIONS 11 narrowed. Verified: tsc, eslint, cluster 140/140; new tests fail on base; guard, idle-lock and paymentsOnly mutations caught; i18n +24 stub-only missing keys; full suite 1381 pass, 1 known fuzz timeout, coverage 91.82/87.22/93.57/95.72. Minor: same cached-state gap on Unlock (probe-confirmed); stale user docs outside ownership.",
+   "review_issues": [
+    {
+     "severity": "minor",
+     "where": "apps/web/src/views/SellerKeys.tsx:254-259 (onUnlockVault); apps/web/src/lib/keyVault.ts:261-271 (unlockEncryptedVault)",
+     "problem": "C-R9 class remains on Unlock (implementer flagged it): the replace check reads cached backedUp. Probe confirmed: keys tied to vault V1; another tab deletes V1 and saves V2; Unlock with V2's passphrase replaces the keys, whose only copy is gone, with no confirmation.",
+     "suggestion": "Mirror onWipe in onUnlockVault: unless sessionHasExternalCopy(), await loadedKeysRecoverable() under captureSessionVersionGuard and show confirmReplace unless true; also in unlockEncryptedVault forget a tied record that differs from the one read before the backedUp check. Add a test."
+    },
+    {
+     "severity": "minor",
+     "where": "docs/user/troubleshooting.md:23-24; docs/guides/troubleshooting-by-symptom.md:50-51; apps/web/README.md:21 (outside ownership)",
+     "problem": "User docs now contradict C-R10: they list hex imported without its signing key among keys the idle lock keeps and say its meta-address needs the waiver; the README says the idle lock never wipes keys with no backup. Not fixable in this cluster (ownership).",
+     "suggestion": "Route to the docs owner: the idle lock wipes such keys and the generated signing key is lost (a notice says so); the meta-address is shown; Create invoice, registry and policy stay gated until a keystore download or vault save."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/features/registry/RegistryView.tsx:247; apps/web/src/features/policy/PolicyCreate.tsx:102 (outside ownership)",
+     "problem": "Both keep BackupGate's default, so after a signer-less hex import they stay gated and show copy about invoice signing, though neither uses the signing key: over-gated and slightly confusing, not unsafe.",
+     "suggestion": "Route to their owners to pass paymentsOnly; PolicyView.test C-R1 then needs generated keys for its no-backup case."
+    },
+    {
+     "severity": "nit",
+     "where": "apps/web/src/views/SellerKeys.tsx:377,503; en.json sellerKeys.wipeUnsaved.confirm / unlockReplaces.confirm",
+     "problem": "In the signerOnly state the confirm buttons still say 'Replace the unsaved keys' / 'Wipe the unsaved keys', while the new titles say only the signing key lacks a backup.",
+     "suggestion": "Optional: signerOnly button labels (e.g. 'Wipe keys and their signing key'), or keep as is."
+    }
+   ],
+   "open_questions": "RegistryView.tsx and PolicyCreate.tsx (not mine) keep BackupGate's default, so after a signer-less hex import they stay gated with signing-key copy; they sign nothing and should pass paymentsOnly (PolicyView.test C-R1 then needs generated keys). docs/user/set-up-stealth-meta-address.md:22, docs/user/troubleshooting.md:23-24, docs/guides/troubleshooting-by-symptom.md:50-51 still state C-R6 behaviour. Unlock still confirms from the cached backup state (C-R9 class, not fixed)."
+  },
+  "H3": {
+   "branch": "fix-H-merchant",
+   "approved": true,
+   "rounds": 1,
+   "commits": [
+    "f8ad40cd2070753c55e67f2a2abc9894435eb8fd",
+    "902f3872e9a004fb5215df94747a2007de6aa211",
+    "42a061512552815160b83163e4c3713b0a6a3d75",
+    "77d7d70e38679db65bee6646016105d12b0b1893",
+    "0ba2b73c15895ad56163087ca72a786e5d8d9cd0"
+   ],
+   "commands": "All in wt-H. Full cluster check after the last commit: exit 0. woocommerce and prestashop php tests ok. php -l clean on the 4 changed .php files (and all integration .php). merchant-ledger build+lint ok, 26 tests pass. prettier --check decimal.ts clean. scan-secrets OK. Per item: failing run saved under scratchpad/fix-H3/HR*-before.txt, then a passing re-run. Mutants (restored after) confirm: H-R11 DELETE outside try -> 500; H-R9 ignoring addLog result -> 200 not 503; H-R9 no duplicates -> 503 on re-run. Ownership: diff 5f10167..HEAD only touches the 3 allowed paths. Worktree clean.",
+   "review_summary": "All 5 items fixed at the root, with real tests. My full cluster check passed: woo+ps PHP suites (ps re-run 4x), php -l, ledger build/lint/26 tests, prettier, scan-secrets. Reverting webhook.php or ghostpay.php to base fails the H-R9/H-R10 tests; H-R11 mutant (DELETE outside try) gives 500. H-R9 mutants (ignore addLog result, no duplicates) and each dropped hook condition fail tests. PS 8.0.0/8.1.7 sources confirm Customer::delete, handler refusal, addLog API/validation, log grid. Returning addLog's result instead of true is reasoned and tested. Ownership respected; worktree clean.",
+   "review_issues": [
+    {
+     "severity": "nit",
+     "where": "integrations/prestashop/ghostpay/ghostpay.php:121-122 (hookPaymentOptions) vs controllers/front/validation.php:27",
+     "problem": "The hook copies the validation controller's checks (active, service URL, pay host, service secret) instead of sharing them. A check added later only in validation.php would bring back the H-R10 state: an option is listed but every attempt fails.",
+     "suggestion": "Extract one helper, e.g. Ghostpay::canStartPayment(), and use it in both hookPaymentOptions and the validation controller's guard. Keep the existing per-condition tests."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/remote/usability/specs/fiat-display.md:14,45 (outside this cluster's ownership)",
+     "problem": "This spec still asks formatFiat to use ISO 4217 exponents (\"3-dec BHD/KWD\"; T-2 \"BHD exponent 3\"). That contradicts the app table that R2 and currencyExponent now cite. Building it as written would put the decimal point in the wrong place on BHD/KWD/JOD invoice amounts.",
+     "suggestion": "In a follow-up outside H3, align fiat-display.md with fiatDecimals (2 for BHD/KWD/JOD), or limit its ISO table to display-only rates that are never invoice minorUnits."
+    },
+    {
+     "severity": "nit",
+     "where": "docs/remote/usability/specs/accounting-export.md:5 (R2)",
+     "problem": "The check that R2 matches the app table was a scratch script and was not committed (no test file in scope fits). R2 can silently drift from apps/web/src/lib/format.ts again, as it did after H-R3.",
+     "suggestion": "Follow-up: when ledger.test.ts is in scope, add an assertion beside its existing app-table check that R2 lists ZERO_DECIMAL_CURRENCIES and states '2 otherwise'."
+    }
+   ],
+   "open_questions": "1) H-R9 differs from 'return true' on purpose: add_note returns addLog's result with allowDuplicate=true. On PS 8.0 with PHP 7, PDO is silent, so a failed write returns false; returning true would lose the note. Cost: an event re-processed after a released claim is logged twice, as thread notes already are. 2) H-R12: a committed drift check would belong in packages/merchant-ledger/src/ledger.test.ts (not owned). The spec's missing blank lines after headings (prettier) were already there and are outside R2."
+  }
+ },
+ "L5-01": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "service.ts permit ladder: when the permit is still needed, refuse with the existing permit_expired (422) if permit.deadline < sweep.deadline or it has already expired. No margin is added. The README check order and DEVIATIONS are updated.",
+  "tests": "api.test.ts L5-01: permit deadline now+1 and now+599 give 422 with no simulation; deadline equal to or after the sweep's gives 200; a permit the ladder drops is still 200. The audit's timebomb repro now gets 422.",
+  "fail_before": "AssertionError: expected 200 to be 422 (permit with deadline now+1 was relayed)"
+ },
+ "L5-02": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "Guard: new LossBudget.reserveAll charges the global cap once per sweep, and late settlement too. cleanReserve: the relayer keeps 25% of globalWei for sources with no loss this window. RevertRate uses the breaker thresholds: a sustained mined-revert rate sends a mined_revert_rate alert and degrades /healthz (new minedReverts field). Breaker unchanged.",
+  "tests": "api.test.ts: global cap charged once, clean slice still serves new users, revert-rate alert and health (also recovers). limiter.test.ts: reserveAll, cleanReserve, late settle.",
+  "fail_before": "Global cap: 2nd sweep got 'loss_budget_exhausted' (expected '200'); slice: ['200','200',429] not 3 then 429; revert rate: 'expected [Array(3)] to include mined_revert_rate'"
+ },
+ "L5-03": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "New rateLimit.quoteGroupPerMinute/Burst (default 60/min, burst 20) limits quotes per IPv4 /24 or IPv6 /48, refused with the existing rate_limited_ip. The global token is taken only after parseQuoteRequest succeeds. Gas-price lookups are single-flight. Global refusals are counted and alerted (quote_budget_exhausted). README lists RELAYER-01 as open.",
+  "tests": "api.test.ts L5-03: junk and valid quotes from one /48 leave quotes for others; junk spends no global token; alert and metric; 5 concurrent quotes make one gas lookup. config.test checks the new keys.",
+  "fail_before": "/48 junk tally mismatch (honest 429 rate_limited_global); 'expected rate_limited_global to match /^invalid_/'; alerts [] ; 'expected 5 to be 1' gas lookups"
+ },
+ "L5-05": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "Compose pins the backend (172.30.10.0/24) and frontend (172.30.11.0/24) subnets. nginx: set_real_ip_from the two gateways, real_ip_header X-Forwarded-For, recursive on, XFF set to $remote_addr. New deploy/config/relayer.config.example.json trusts the backend subnet. selfhost.sh warns when trustedProxies is loopback-only or empty.",
+  "tests": "config.test.ts 'deploy recipe wiring' checks the subnets against set_real_ip_from, models the TLS terminator\u2192nginx\u2192relayer address resolution and parses the deploy example. The warning was exercised on a scratch copy.",
+  "fail_before": "AssertionError: expected [] to deeply equal ['backend','frontend'] (no pinned subnets); TypeError reading 'subnet'"
+ },
+ "L7-L3": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "nginx proxies only `location ~ ^/api/(healthz|v1/info|v1/quote|v1/sweep)$`, rewriting off the prefix and clearing X-Real-IP and Forwarded. `location /api/` returns 404, so /api/metrics is 404. The deploy README explains scraping /metrics from inside the backend network.",
+  "tests": "config.test.ts deploy wiring: the allowlist is exactly the 4 routes, /api/ returns 404, there is a single proxy_pass, and XFF is $remote_addr.",
+  "fail_before": "AssertionError: expected undefined to deeply equal ['healthz','v1/info',\u2026] (location /api/ proxied every path)"
+ },
+ "L5-07": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "Config parsing (objectAt) names the first unknown key, for example 'config $.queue.foo: unknown key'. For trustProxyHops the message says it was replaced by trustedProxies. A key that doesn't look like a config key is not echoed. deploy/config/README, the runbook and apps.md now describe trustedProxies.",
+  "tests": "config.test.ts: errors name unknown top-level, nested, chain and token keys; the trustProxyHops hint; a secret-like key is not echoed.",
+  "fail_before": "expected to throw /^config \\$\\.trustProxyHops: unknown key; it was replaced by trustedProxies/ but got 'config $: invalid'"
+ },
+ "L5-04": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "Guard: groups now live in a BoundedTable whose idle test is 'window != current'. Probes no longer refresh recency. Overflow entries are per kind (dst/net). Reservations report overflow, counted as relayer_loss_budget_overflow_total. Follow-up commit: reserveAll admits against the entries it actually gets and rolls back on refusal.",
+  "tests": "api.test.ts: stale groups evicted, new users served after a day, overflow metric emitted. limiter.test.ts: eviction, per-kind overflow, read-only probe, rollback edge case.",
+  "fail_before": "AssertionError: expected 'loss_budget_exhausted' to be '200' (new user after 16 stale groups; also after a day at production limits)"
+ },
+ "L5-06": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "On a receipt timeout: breaker failure recorded directly and alert sent (receipt_timeout, relayer_receipt_timeouts_total). Reservations go to a per-chain pending ledger (max 8, 24 h); later jobs look them up with the new ChainClient.getReceipt and settle mined ones. Fee bump/cancel deferred (README).",
+  "tests": "api.test.ts L5-06: two timeouts open the breaker and send alerts; reservations are released only once a later lookup finds the receipt; a late revert is charged; lookup failures are swallowed; age-out. chain.test.ts covers getReceipt.",
+  "fail_before": "AssertionError: expected [] to deeply equal ['receipt_timeout']; 'expected +0 to be 1' lookups; 'expected [] to include mined_revert'"
+ },
+ "L5-10": {
+  "cluster": "D",
+  "outcome": "fixed",
+  "change": "runSettled reads both in-lane gas prices through op(getGasPrice), then applies capGasPrice separately, so an RPC failure is an rpc_error outcome while gas_price_too_high stays neutral. The quote path keeps gasPrice().",
+  "tests": "api.test.ts L5-10: with the RPC down, 3 sweeps get rpc_unavailable, the 4th gets breaker_open and /healthz is degraded; 5 sweeps capped at gas_price_too_high leave health ok.",
+  "fail_before": "AssertionError: expected 'rpc_unavailable' to be 'breaker_open' (RPC outage never opened the breaker)"
+ },
+ "G3-01": {
+  "cluster": "H",
+  "outcome": "fixed",
+  "change": "Draft 7df1cd1 kept: secrets only from the GHOSTPAY_*_SECRET constant, then env; secret form fields removed; init purge deletes stored copies, keeps a SHA-256 for a rotation notice until replaced; README. Review c92b61b: record the exposure before deleting (an interrupted purge lost the notice).",
+  "tests": "wc run.php: no secret fields, stored secret unused, webhook signed with it refused, purge + notice until rotation, purge stopped at every DB step keeps or records secrets, constant beats env",
+  "fail_before": "e8cdb31 secret code: 'a webhook signed with the stored webhook secret is refused: got 200 want 400', forged webhook paid the order; draft purge order: interrupted at steps 3-4 lost the record"
+ },
+ "G3-02": {
+  "cluster": "H",
+  "outcome": "fixed",
+  "change": "Draft eddb39a kept: GhostPay_Money::currency_minor (app table: 0 for JPY,KRW,VND,CLP,ISK,UGX,XAF,XOF, else 2; null only on precision loss) in WC invoice+webhook, PS orderTotalMinor in both controllers, examples money.mjs. Added: Shopify doc names the same table (e4e79f3).",
+  "tests": "WC/PS run.php: USD, JPY (2 and 0 display decimals), KWD 12.340 ok / 12.345 refused, USD store with 0 decimals, webhook compares, table == apps/web; merchant-checkout money/checkout tests",
+  "fail_before": "display-decimal code: 'invoice amount: JPY with the default 2 display decimals: got 150000 want 1500'; 'USD 0.13 does not pay a 13 USD order: got processing'; checkout.mjs JPY 1500 -> 150000"
+ },
+ "G3-03": {
+  "cluster": "H",
+  "outcome": "fixed",
+  "change": "Draft 70cd56f kept: webhook selects only id_order (claim table replaced event_ids in ecc29c1); set_state() no longer &&s the void changeIdOrderState(); pays only from awaiting/PS_OS_ERROR/PS_OS_CANCELED/unpaid backorder, else private note; duplicate-nonce PDO throw -> 400.",
+  "tests": "PS run.php on ps-shim.php (SQLite): install DDL, recordInvoice/exactOrderTotal, webhook controller end to end (one process per request), each state/action, failed side effect retry, uninstall",
+  "fail_before": "e8cdb31 webhook.php: 'valid webhook for an awaiting order is processed: got 500 PDOException ... no such column: event_ids'; with only the && left: got 503 retry, no history row"
+ },
+ "G3-04": {
+  "cluster": "H",
+  "outcome": "fixed",
+  "change": "Draft 4021887 kept: insert_option_once() = INSERT IGNORE on unique option_name (1 claimed, 0 exists, false error) for delivery and nonce claims; existing state read with $wpdb->get_var, cache entry deleted; CAS lease takeover unchanged.",
+  "tests": "WC run.php race harness: a second delivery or a replay runs at every DB step of the first (wp-shim yield hook): exactly one payment; other answer 200 duplicate or 503; replay 400",
+  "fail_before": "add_option claims: 'one event delivered twice, raced at step 6: paid once: got [2,2] want [2]' (steps 6-7); 'replayed signature raced at step 3 is refused' fails (steps 3-4)"
+ },
+ "G3-05": {
+  "cluster": "H",
+  "outcome": "fixed",
+  "change": "Draft fc5acc2 kept: payment events change only statuses payment_complete() accepts (pending, on-hold, failed, cancelled); paid/refunded orders only get a double-payment/refund note; on-hold only for an unpaid order below total; expiry cancels only for the newest _ghostpay_invoice_id.",
+  "tests": "WC run.php: second/over/small payment on paid orders kept and noted, refunded kept, underpay holds, superseded expiry ignored, current expiry cancels, late payment pays",
+  "fail_before": "e8cdb31 transitions: 'second full payment: a paid order stays paid: got on-hold want processing'; 'expiry of a superseded invoice does not cancel the order: got cancelled want pending'"
+ },
+ "G3-06": {
+  "cluster": "H",
+  "outcome": "fixed",
+  "change": "IdempotencyGuard.begin() -> claimed|processing|done, complete(), release() (in-flight only); never evicts in-flight ids, answers processing when full of them. Boolean claim() removed so old callers fail loudly. Receiver: done 200 duplicate, processing 503 retry, failure release+500.",
+  "tests": "selftest holds the 1st delivery in onEvent: redelivery 503, 1st fails 500, retry processed, then 200 duplicate; vitest: states, release, bounded eviction (29 tests, coverage ok)",
+  "fail_before": "selftest on e8cdb31 receiver/guard: 'redelivery during the first attempt is retryable, not a 2xx duplicate: 200 !== 503'; new vitest: 'g.begin is not a function'"
+ },
+ "L2-F2": {
+  "cluster": "B",
+  "outcome": "fixed",
+  "change": "Added an opStack flag to chains.ts (Base, OP). Native sweep takes gas from eth_estimateGas; on OP Stack it keeps back 2x(getL1Fee(unsigned tx)+getOperatorFee) and refuses clearly. Same-nonce re-sign uses a CAS in beginSweepAttempt, persisted before handoff. A nonce used at finalized resolves the lock as 'replaced'.",
+  "tests": "sweep.test.ts (mocked oracle, estimateGas dest + dry-run gas, refusals, re-sign nonce, replaced); state.sweep.test.ts (CAS/persist/tombstone); journal; Sweep.test.tsx (op-geth-like node, re-sign UI)",
+  "fail_before": "UI: node refused the native sweep -> 'Outcome unknown', no re-sign button. Lib: expected 99958000000000000n to be 99951999999990000n; expected 21000n to be 55874n; 'unknown-after-handoff' not 'replaced'"
+ },
+ "L2-F1": {
+  "cluster": "B",
+  "outcome": "fixed",
+  "change": "ChainAdapterError gets a sanitized 'reverted' flag, set in rpc.ts parseResponse (code 3, or -32000/-32015 with revert in message/data; node text dropped). simulateCall refuses on it, keeps REVERT_TEXT for EIP-1193 and accepts gas. 'unavailable' is now a visible warning in payExec and on the Sweep page.",
+  "tests": "rpc.test.ts via createClient with a node-like transport (3, -32000, -32015, non-reverts); txGuard.test.ts simulateCall through the real createClient; payExec.test.ts (refusal, warning); sweep dry-run tests",
+  "fail_before": "rpc: expected undefined to be true (reverted). txGuard: promise resolved 'unavailable' instead of rejecting. payExec: expected 'Waiting for wallet confirmation\u2026' to match /could not dry-run this payment/"
+ },
+ "L4-02": {
+  "cluster": "B",
+  "outcome": "fixed",
+  "change": "deriveStealthSecret gets an ignoreViewTag option (default false). It skips only the tag compare; the ZERO_STEALTH_KEY and ADDRESS_MISMATCH checks remain. deriveVerifiedSweepKey passes it and still requires addressOfSecret === owner. Normal-scan matches always have a correct tag, so they behave as before.",
+  "tests": "core-crypto negative.test.ts (refused by default, accepted with the option, address mismatch still refused); sweep.test.ts deriveVerifiedSweepKey + directSweep on a wrong tag; Sweep.test.tsx deep-scan payment swept",
+  "fail_before": "GhostPayCryptoError: announcement view tag does not match; UI: 'A cryptographic check failed (VIEW_TAG_MISMATCH).'"
+ },
+ "L4-01": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "Read/log caps now end the fetch at the last completed window (resumable) instead of throwing; more limit codes halve; an oversized block is re-read for caller=manifest router and reported (Scan warns per committed page); the windowed client splits only refused windows.",
+  "tests": "logs.test.ts, scanHardening.test.ts (L4-01 block), scanPrivacy.test.ts, scanClient.test.ts spam suite, Scan.test.tsx router-only warnings; real 2 MiB client scratch repros (R3/R4/t2/t3/t4) pass",
+  "fail_before": "scanHardening: 'RPC_FAILURE: canonical log block read cap reached', 'accepted log cap exceeded within one block', 'RESPONSE_TOO_LARGE: response exceeds cap' (router-lane test)"
+ },
+ "L3-F1": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "A null checkpoint/window block is RPC_FAILURE (no rollback); onReorg passes canonicalHash (primary and second RPC must agree) and invalidateFrom tombstones only observations whose block hash changed, writing nothing on doubt; an unconfirmed 2-RPC fork keeps the checkpoint.",
+  "tests": "logs.test.ts reorg cases; scanClient.test.ts (null checkpoint, unconfirmed fork, 2-RPC invalidation, disagreement); reconciliationVault.test.ts; Scan.test.tsx reorg tests",
+  "fail_before": "logs: 'promise resolved \"{ announcements: [], \u2026(4) }\" instead of rejecting'; scanClient: 'expected \"vi.fn()\" to not be called at all, but actually been called 1 times'"
+ },
+ "L1-03": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "Only replaced blocks are invalidated; a fresh verified observation replaces a non-tombstoned invalidation (tombstones/saturation still block); cutoffs record invalidatedAt (doc v3) and imports apply them only to records recorded before; preview uses the import merge.",
+  "tests": "reconciliationVault.test.ts (4 new tests), ReconciliationLedger.test.tsx preview count, Scan.test.tsx unchanged-block observation stays recordable",
+  "fail_before": "\"expected 'invalidated-after-reorg' to be 'verified-at-scan'\"; preview \"expected +0 to be 1\"; Scan: 'promise rejected \"Error: This historical observation was in\u2026\"'"
+ },
+ "L3-F2": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "compareProviders halves on size/range limits (grows back) and compares the router lane of router-only/oversized blocks; runScan ends each page at the lower of both heads and reports secondaryLag (shown in Scan) when the second RPC is > finalityDepth behind.",
+  "tests": "scanVerify.test.ts L3-F2 cases; scanClient.test.ts dense range, lower head, far-behind lag; Scan.test.tsx lag notice",
+  "fail_before": "\"expected [ { kind: 'secondary_error', \u2026(1) } ] to deeply equal []\"; \"expected [ { kind: 'secondary_behind', \u2026(1) } ] to deeply equal []\""
+ },
+ "L3-F3": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "The worker reply timer restarts on each forward 'progress' message of the pending batch; a silent or repeating worker still times out after replyTimeoutMs.",
+  "tests": "scanClient.test.ts 'keeps waiting for a worker that reports progress on a long batch, and still stops one that stalls' (fake timers)",
+  "fail_before": "\"expected 'The scanner did not answer in time an\u2026' to be 'done'\""
+ },
+ "L3-F4": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "The first page of a run is never deferred (defer only when openSeen > 0 && openSeen + open > budget); per-run open-lane work is at most budget plus one page.",
+  "tests": "scanClient.test.ts 'never defers the first page of a run' with openLaneBudget 5",
+  "fail_before": "\"expected [] to deeply equal [ Array(1) ]\" (router payment after the spam page never found)"
+ },
+ "L3-F5": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "Scan wraps the second RPC in createWindowedScanClient with the same policy and router; both RPC disclosure rows now say block reads still show exactly how far the scan got; spec 10 lists this residual.",
+  "tests": "Scan.privacy.test.tsx second RPC aligned windows; scanPrivacy.test.ts disclosure rows",
+  "fail_before": "\"expected 234n to be 0n\" (second RPC fromBlock % 1000); \"expected 'your IP address; that you read GhostP\u2026' to match /exactly how far you have scanned/\""
+ },
+ "F5": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "Deleted verifyReceipt, ReceiptClaim and their tests; kept ReceiptStatus. index.ts re-exports scanVerify via export *, so no index.ts edit was needed.",
+  "tests": "scanVerify.test.ts 'no longer exports the unused router-claim verifier'",
+  "fail_before": "\"expected [ 'ghostPayRouterAbi', \u2026(108) ] to not include 'verifyReceipt'\""
+ },
+ "L1-07(Scan)": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "Scan.tsx uses revealViewingKey() for the scan and the tag unlock (runScan and TagVault.unlock wipe the copy); requireSession is no longer called in Scan.tsx and was not deleted.",
+  "tests": "Scan.test.tsx 'opens only the viewing key for scanning and tags, never the full key set (L1-07)'",
+  "fail_before": "'expected \"requireSession\" to not be called at all, but actually been called 2 times'"
+ },
+ "L1-04(Scan)": {
+  "cluster": "A",
+  "outcome": "fixed",
+  "change": "Tag unlock and save take captureSessionGuard() first; if the keys changed meanwhile they lock the tag vault again, show the error and announce no success.",
+  "tests": "Scan.test.tsx two L1-04 tests (pending unlock and pending save across a session change)",
+  "fail_before": "unlock: 'Unable to find role=\"alert\"'; save: 'expected true to be false' (tag vault still unlocked)"
+ },
+ "G2-01": {
+  "cluster": "G",
+  "outcome": "fixed",
+  "change": "A scan selects no output (each must be ticked); more than one selected shows a linkage warning and reviewSweep repeats it (incl. separate sweeps to one address). checkDestination validates a pasted/scanned destination with nothing selected (full sp decode). Audit 17 PRIVACY-E2E-03 row reopened.",
+  "tests": "BtcView.test.tsx: no preselection, Review disabled until a pick, warnings at selection and review, paste with nothing selected; sweep.test.ts: link warning, checkDestination, wrong-net sp",
+  "fail_before": "BtcView: 'expected [ true, true ] to deeply equal [ false, false ]' (all preselected); sweep: 'expected [] to have a length of 1'; 'checkDestination is not a function'"
+ },
+ "G2-04": {
+  "cluster": "G",
+  "outcome": "fixed",
+  "change": "BtcView keeps walletRef/scanRef: Lock, new wallet and unmount wipe scan+spend secrets (wipeWallet); Lock, new scan and unmount wipe spend tweaks (wipeFound); op guard drops and wipes late scan/sign/broadcast results. scanForPayments wipes tweaks it does not return (spent, failed scan).",
+  "tests": "BtcView.secrets.test.tsx: real key/tweak buffers zeroed on Lock, new scan, unmount; scan finishing after Lock dropped+wiped. scan-secrets.hardening.test.ts: spent, failed, shared tweak",
+  "fail_before": "Lock/new scan/unmount: 'expected false to be true' (buffers not zeroed); late scan after Lock shows an alert ('expected <div \u2026> to be null'); spent-output tweak not wiped"
+ },
+ "G2-02": {
+  "cluster": "G",
+  "outcome": "fixed",
+  "change": "New lib/appLock.ts: subscribeAppLock(listener) returns unsubscribe, notifyAppLock(reason), a throwing listener is isolated. BTC/Solana/TRON views subscribe and run lock() (key/tweak wipe, late results dropped), clear a typed import secret and show an 'app locked' notice. App.tsx not edited.",
+  "tests": "appLock.test.ts; BtcView.secrets, SolanaView.lock, TronView.lock tests call notifyAppLock('idle'): real key buffers zeroed, results gone, import field empty, notice shown",
+  "fail_before": "e8cdb31 views after notifyAppLock('idle'): keys still live, 'AssertionError: expected false to be true' at the keys-wiped assertion (all three views)"
+ },
+ "G2-03": {
+  "cluster": "G",
+  "outcome": "fixed",
+  "change": "Feature-local SecretBackup (features/btc, used by all 3 views; Common.tsx unchanged): backup absent until 'Show backup', re-showable while loaded, hides after 60 s or on hidden tab; Copy needs a warned 2nd click; Hide/Lock clear the clipboard if copied. BTC/Solana seed kept as wipeable bytes.",
+  "tests": "SecretBackup.test.tsx: timer, hidden tab, copy confirm, clipboard clear/failure; Btc/Solana/TronView.test.tsx: hidden on create, re-show, import back, copy then Lock; seed bytes wiped",
+  "fail_before": "e8cdb31 views render the secret on create: 'expected <code class=\"mono\"></code> to be null'; no 'Show backup seed' button; seed bytes never kept or wiped"
+ },
+ "L4-03": {
+  "cluster": "G",
+  "outcome": "fixed",
+  "change": "blockTxs reads tx_count from GET /block/:hash (id must match), requests exactly ceil(n/25) pages and requires min(25, n-start) per page; cap is the consensus bound 16,666 txs; txid/Merkle/witness checks kept. Test double answers 400 past the end like electrs.",
+  "tests": "esplora.test.ts: 1/24/25/26/50-tx blocks request exact pages, 10,001-tx block read in full, bad tx_count or page length refused, scan over a 25-tx block finds the payment",
+  "fail_before": "'SilentPaymentError: tweak source request failed' (TRANSPORT_FAILURE on the 400 for start=25); 10,001-tx block refused ('tweak source returned an invalid response')"
+ },
+ "L4-04": {
+  "cluster": "G",
+  "outcome": "fixed",
+  "change": "SCAN_CHECKS/SCAN_LIMITS now state: blocks link only within the scanned range (to genesis only for a scan from block 0/1), no checkpoint anchoring, and a server can invent a payment with a self-mined block (no most-work check). No anchoring implemented.",
+  "tests": "esplora.test.ts: forged unlinked block paying the wallet is accepted at range start and REORG_DETECTED from block 1; disclosure text assertions",
+  "fail_before": "expected 'The block header hash equals the hash\u2026' not to match /down to the pinned genesis/"
+ },
+ "L4-05+L3-F6(chains)": {
+  "cluster": "G",
+  "outcome": "fixed",
+  "change": "Solana, TRON and Esplora read bodies via a streaming byte cap (Content-Length pre-check, cancel past cap; Solana had none). Esplora: redirect:'error', cache:'no-store', 30 s deadline combined with the cancel; abort cancels a stalled body, also when already aborted.",
+  "tests": "solana-stealth and tron-adapter rpc.test.ts, esplora.test.ts: 64 MiB streamed body cancelled near the cap, big Content-Length unread, fetch options, deadline, stalled body",
+  "fail_before": "Solana: 'expected NO_THROW to be INVALID_RESPONSE'; TRON/Esplora: 'expected false to be true' (body read to the end); Esplora init lacked redirect/cache; deadline test timed out"
+ },
+ "L1-01": {
+  "cluster": "C",
+  "outcome": "fixed",
+  "change": "Per-session custody in session.ts (import, keystore download, vault save, waiver). Idle lock locks tags; wipes keys only if recoverable (visible notice), else keeps them under a visible no-backup banner. Create invoice and meta-address gated; vault unlock over unsaved keys asks. Docs fixed.",
+  "tests": "App.test L1-01 x3 (idle keeps unsaved keys, wipes vault-only keys, visible notice), CreateInvoice/SellerKeys/Settings L1-01, session and keyVault L1-01 suites",
+  "fail_before": "App 'idle lock never wipes keys...': expected false to be true (keys wiped after 15 min idle); CreateInvoice: Unable to find text 'Back up these seller keys first'"
+ },
+ "L1-02": {
+  "cluster": "C",
+  "outcome": "fixed",
+  "change": "Vault record the keys were unlocked from/saved to/found in stays in memory; each sweep verifies against it even after IndexedDB is emptied. Keystore export and new-vault save need its passphrase, as does deleting the loaded identity's vault; delete confirm shows meta-address. Step-up field renamed.",
+  "tests": "keyVault.test L1-02 x4, Sweep.test L1-02 (vault deleted mid-session), SellerKeys export step-up and delete confirmation; e2e passphrase-vault spec",
+  "fail_before": "keyVault: authorize after vault delete 'promise resolved \"undefined\" instead of rejecting'; Sweep: no 'Vault passphrase (required for each sweep action)' field"
+ },
+ "L1-04": {
+  "cluster": "C",
+  "outcome": "fixed",
+  "change": "App locks the tag vault on every session change; TagVault binds unlocked keys to the session version (unlock and every write's commit guard; unlocked=false after a key change); TagArchive re-checks the session before revealing the viewing key.",
+  "tests": "tagsConcurrency.test L1-04 x2 (wipe locks; in-flight unlock/save refused), App.test L1-04 (lock on wipe and on new keys)",
+  "fail_before": "tagsConcurrency: 'expected true to be false' (vault.unlocked after clearSession); App: 'expected \"lock\" to be called 1 times, but got 0 times'"
+ },
+ "L1-06": {
+  "cluster": "C",
+  "outcome": "fixed",
+  "change": "passphraseStrength credits rule-made characters 0-1 bit (common/app words incl. leet, months/seasons, years, sequences, keyboard walks, repeats); generatePassphrase (6 of 1024 words, crypto.getRandomValues, 60 bits) pre-fills keystore, vault, archive and invoice fields. scrypt unchanged.",
+  "tests": "keystore.test L1-06 (4 audit examples weak; generator unbiased, always strong), pre-fill tests in SellerKeys, CreateInvoice, TagArchive",
+  "fail_before": "keystore: 'ghostpayghostpay' expected {score 1, weak}, got {score 2, fair}; SellerKeys pre-fill: expected '' to match /^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/"
+ },
+ "L1-07": {
+  "cluster": "C",
+  "outcome": "fixed",
+  "change": "buildInvoiceLink signs via withSessionSecrets((s) => signInvoice(invoice, s.signingKey)); test helper currentSignerHex reads the public summary; requireSession kept, marked @deprecated, for Scan, pay.test and sweep.test until the integrator deletes it.",
+  "tests": "invoiceCreate.test L1-07: the key passed to signInvoice is zeroed once the link returns; requireSession not called",
+  "fail_before": "invoiceCreate L1-07: 'expected false to be true' (signing-key copy still non-zero after buildInvoiceLink returned)"
+ },
+ "I-3": {
+  "cluster": "C",
+  "outcome": "fixed",
+  "change": "validatePayload requires string invoiceLabel/notes (trimmed, bounded, blank=absent) and string address/announcement id; save and archive import reject junk. Records stored by older builds drop non-text label/notes on read instead of failing list/export (the draft had broken that).",
+  "tests": "tags.test I-3 x2: junk incl. arrays rejected by validate/save/previewImport; trim/bounds; legacy record with null/object fields still readable",
+  "fail_before": "base: 'expected function to throw an error, but it didn't'; read test: 'expected {\u2026} to not have property invoiceLabel' (draft: 'A stored tag could not be decrypted')"
+ },
+ "I-2": {
+  "cluster": "C",
+  "outcome": "fixed",
+  "change": "TagArchive export lists the reconciliation IndexedDB keys for the seller (keys only; never creates or upgrades the DB) and names stored chains this build does not support in the 'NOT in this archive' warning, or says the listing failed.",
+  "tests": "TagArchive.test I-2: storedHistoryChains with an IndexedDB double (missing DB aborted, filtering, failures); export names Ethereum (chain 1), chain 777777",
+  "fail_before": "expected 'Archive downloaded: 0 tag(s). SHA-256\u2026' to contain 'Scan history stored in this browser f\u2026'; 'storedHistoryChains is not a function'"
+ },
+ "I-1": {
+  "cluster": "C",
+  "outcome": "fixed",
+  "change": "THREAT_MODEL browser-profile row: SHA-256(pubkeys)-keyed scan checkpoints and history confirm a candidate meta-address and survive Wipe keys; also vault meta/ciphertext, tag metadata. troubleshooting.md row and a Seller keys wipe hint: clear site data. No storage migration.",
+  "tests": "SellerKeys.test asserts the wipe hint; otherwise docs only",
+  "fail_before": "docs-only; base has no wipe hint (the base generate-keys test already fails earlier, on the L1-01 banner)"
+ },
+ "B-R2": {
+  "cluster": "BR",
+  "outcome": "fixed",
+  "change": "714919e (draft, checked, kept): rpc.ts reportsRevert also sets the reverted flag for -32000/-32015 whose message or string data says 'out of gas' or 'invalid opcode'. Only the boolean leaves; no node text is kept. errors.ts and createClient docs updated.",
+  "tests": "rpc.test: 3 new flagged cases (-32000 out of gas, -32000 invalid opcode, -32015 out of gas in data) plus -32603 out-of-gas negative; txGuard.test: simulateCall through createClient refuses both.",
+  "fail_before": "8d4532e: rpc.test 'flags -32000 out of gas...' expected false to be true (e.reverted), 3 cases; txGuard.test: promise resolved 'unavailable' instead of rejecting."
+ },
+ "B-R4": {
+  "cluster": "BR",
+  "outcome": "fixed",
+  "change": "1139b54 (draft, checked, kept): readOperatorFee returns 0 when the getOperatorFee eth_call error has the sanitized reverted flag (oracle from before Isthmus). Any other operator-fee failure, and every getL1Fee failure including a revert, still refuses before signing.",
+  "tests": "sweep.test: native sweep with a reverting getOperatorFee keeps back only 2x the L1 fee; refuses on operator-fee 429, -32603 or plain error, and on an L1 revert, malformed answer or failure.",
+  "fail_before": "8d4532e: B-R4 test threw UserFacingError 'Could not read the L1 data fee from this chain's fee oracle, so the amount to send cannot be computed'."
+ },
+ "B-R3": {
+  "cluster": "BR",
+  "outcome": "fixed",
+  "change": "e7d1b20+33fd075 (draft, checked, kept): on OP Stack the ERC-20 branch prices L1+operator fee on the exact unsigned transfer bytes (opStackFeeReserve), re-checks the session and refuses before signing if nativeBalance < gas*maxFee + reserve. An oracle failure refuses.",
+  "tests": "sweep.test: refusal (no send; priced bytes match the tx that would be signed), exact boundary signs, non-OP chain skips the oracle, oracle failure refuses; Sweep.test: refused, no raw tx, no lock.",
+  "fail_before": "8d4532e: sweep.test 'promise resolved {...} instead of rejecting'; Sweep.test alert was 'The RPC request failed after the signed transaction was handed to it...' (lock jammed)."
+ },
+ "B-R1": {
+  "cluster": "BR",
+  "outcome": "fixed",
+  "change": "d53c32e (draft, checked, kept): readReceipt separates an explicit null (absent) from an RPC error, malformed answer or other-hash receipt (unknown). Once the nonce is final, 'replaced' needs a null for every recorded hash; otherwise the lock is unchanged.",
+  "tests": "sweep.test B-R1: 429 and 7 malformed receipt shapes at the final look keep the lock; an explicit null after the nonce is final gives replaced; same rule for re-signed locks.",
+  "fail_before": "8d4532e: B-R1 test (receipt reads fail with 429, finalized nonce 4 > locked 3): expected status 'unknown-after-handoff', received 'replaced'."
+ },
+ "B-R5": {
+  "cluster": "BR",
+  "outcome": "fixed",
+  "change": "0546e15: re-sign only for unknown-after-handoff locks (UI, resignableLock, state CAS); lock persists otherHashes, reconcile checks all of them, a mined earlier tx resolves included. Hint reworded; no fee bump. 83c5669: cap 8->3 so a full journal fits 32 KB. c561f9a: comments.",
+  "tests": "sweep.test 3; state.sweep.test 3; journal round-trip, malformed and full-journal-cap tests; Sweep.test: a submitted lock offers no re-sign; a mined first tx resolves included under its own hash.",
+  "fail_before": "8d4532e: submitted lock 'expected [Function] to throw'; Sweep.test re-sign button shown for a submitted lock, 'Included on chain' not found. Draft cap 8: SweepJournalUnavailableError."
+ },
+ "B-R6": {
+  "cluster": "BR",
+  "outcome": "fixed",
+  "change": "954acf5 (draft, checked, kept): DirectSweepOutcomeUnknownError carries the dry-run result; Sweep.tsx sets the skipped-dry-run warning before rethrowing, so the warning also shows when the outcome after handoff is unknown.",
+  "tests": "sweep.test B-R6: the error carries simulation 'unavailable' or 'ok'; Sweep.test: warning shown on an unknown outcome after a skipped dry run, absent when the dry run ran.",
+  "fail_before": "8d4532e: the error had no simulation field ('to match object { simulation: unavailable }'); Sweep.test: unable to find /could not dry-run this sweep/."
+ },
+ "B-R7": {
+  "cluster": "BR",
+  "outcome": "fixed",
+  "change": "8f65749: unknownDirect reworded (new sweep disabled, same-nonce replacement allowed); chain-adapters.md documents reverted and opStack; D4 row and receive-and-scan.md describe the opt-in deep scan and its sweep. f679424: opStack text now covers ERC-20 and pre-Isthmus.",
+  "tests": "Sweep.test B-R7: the unknown-direct notice agrees with the re-sign button and no longer says 'signing a new one is disabled'. Docs: no automated check fits.",
+  "fail_before": "8d4532e: Sweep.test unable to find /so a new sweep is disabled; only a replacement with the same nonce can be signed/."
+ },
+ "G1-01": {
+  "cluster": "B2",
+  "outcome": "fixed",
+  "change": "validateInvoice caps expiresAt, quote.timestamp and quote.expiresAt at 253402300799; formatUnix returns 'invalid time' instead of throwing; new ErrorBoundary (error panel, Back to Home/Reload, resetKey) with en.json keys; THREAT_MODEL 4.1 D. No review blocker: unreachable after validation.",
+  "tests": "schema: 2^53-1 and year 10000 rejected at their paths, 9999-12-31 accepted; formatUnix total; Pay with a hand-signed expiresAt 2^53-1 shows 'Invoice rejected (field: expiresAt)'; ErrorBoundary x5",
+  "fail_before": "Pay test with 915d710 schema+format: 'Unable to find an element with the text: Invoice rejected' + unhandled RangeError: Invalid time value; schema: expected 'NO_THROW' to be 'expiresAt'"
+ },
+ "L2-F3": {
+  "cluster": "B2",
+  "outcome": "fixed",
+  "change": "submitTx: when a receipt exists after 'not-visible-yet', re-fetch and compare the tx (mismatch -> SubmissionMismatchError in PostBroadcastError); still missing -> new 'unverified'. buildReceipt/proof QR record 'included' only if verified (else 'unconfirmed'); Pay says unverified. 'no-rpc' unchanged.",
+  "tests": "payExec: delayed visibility then match / then mismatch, never visible -> unverified+unconfirmed, approval redirect caught late; Pay: unverified text, no 'included', caution proof QR, 'unconfirmed'",
+  "fail_before": "5/5 fail on 915d710: expected {..} to match { verification: 'verified' }; promise resolved instead of rejecting (mismatch); Pay: Unable to find /did not return the transaction itself/"
+ },
+ "L2-F4": {
+  "cluster": "B2",
+  "outcome": "fixed",
+  "change": "Fixed-token review: 'Invoice total' is the token amount, the fiat figure a 'Seller-stated fiat total (not converted or checked)' row; reviewInvoice adds non-blocking warnings when a USDC/EURC amount is >1 % off a same-currency total; printed bill shows 'Amount due'. No feeds, never blocks.",
+  "tests": "pay.test: 1 % boundary both ways, other currency/native/fiat_quote skipped, zero items vs no fiat, EURC; Pay: token total, relabel, warning, Continue enabled, bill; PrintableBill layout",
+  "fail_before": "8/8 fail before the fix: Pay expected 'USD 10.00' to be '1000 USDC (fixed token amount)'; pay.test 'fixedAmountWarnings is not a function' / 'expected undefined to deeply equal []'"
+ },
+ "L2-I3": {
+  "cluster": "B2",
+  "outcome": "fixed",
+  "change": "grantApproval/revokeApproval pass the invoice digest as attempt scope; walletAttemptKey adds a non-payment scope to the calldata key, so approve and revoke stay distinct and a same-invoice repeat is still a duplicate. Payment and unscoped keys byte-identical; 4001 still leaves 'unknown'.",
+  "tests": "payExec: approve+revoke, then identical approve+revoke for a later invoice reach the wallet; same-invoice repeats refused; 4001 stays 'unknown' and blocks retry; wallet.test: key properties",
+  "fail_before": "payExec: promise rejected 'A previous wallet attempt for this action already exists...' instead of resolving; wallet.test: approve and revoke keys equal under one scope"
+ },
+ "G1-03": {
+  "cluster": "B2",
+  "outcome": "fixed",
+  "change": "parseInvoiceLink applies the WHATWG 'ends in a number' rule: a host whose last label is decimal or 0x+hex (0x7f000001, 0x7f.1, 1.2.3.0x4, 0xa9.0xfe.0xa9.0xfe, a.example.0x) is refused; literal 127.0.0.1 with allowLocalDev stays the only IP exception. Draft fe9f120 reviewed, kept.",
+  "tests": "negative.test: 11 int/hex/octal/mixed host cases incl. dev mode; vectors.test: 0x7f.example, 10.0.0.1a, 0xg1 etc. stay accepted and equal new URL().hostname",
+  "fail_before": "915d710: 8 new negatives fail, AssertionError: expected 'NO_THROW' to be 'INVALID_LINK' (hex loopback, 0x7f.1, 1.2.3.0x4, link-local, rfc1918, upper hex, bare 0x, hex in dev)"
+ },
+ "L4-I3": {
+  "cluster": "B2",
+  "outcome": "fixed",
+  "change": "(a) SecretBytes throws on toReversed/toSorted/with/toBase64; 'guardrail, not a boundary' kept. toHex deliberately not blocked: noble bytesToHex calls bytes.toHex() on engines with native hex, so keygen would break in browsers. (b) buildLookupCall refuses a bad EIP-55 checksum (strict isAddress).",
+  "tests": "secrets.test: 4 methods throw; secret.builtinHex.test emulates native toHex and runs keygen/derive/scan; registry.test: case-flipped registrant refused before any RPC call",
+  "fail_before": "secrets.test and registry.test on 915d710: 'expected [Function] to throw an error'. With a throwing toHex added, builtinHex fails in generateKeySet (TypeError ...must not be serialized)"
+ },
+ "H-R1": {
+  "cluster": "H2",
+  "outcome": "fixed",
+  "change": "WC handle_webhook(): no valid webhook secret (missing or under 32 bytes of hex) -> 503 {ok:false,retry:true}, checked before reading the body and the same for every request. Bad signature, replay and malformed stay 400. README upgrade note updated.",
+  "tests": "woocommerce/tests/run.php: no secret, signed with the purged secret / unsigned / too-short secret -> 503; once a secret is set, a bad signature -> 400 and the sender's retry pays the order.",
+  "fail_before": "FAIL no webhook secret configured: a webhook signed with the stored secret gets a retryable 503: got [400, {ok:false}] want [503, {ok:false, retry:true}] (also unsigned, too-short)"
+ },
+ "H-R2": {
+  "cluster": "H2",
+  "outcome": "fixed",
+  "change": "add_note(): private CustomerMessage (id_employee 0) in the order's CustomerThread, found by getIdCustomerThreadByEmailAndIdOrder or created like AddOrderCustomerMessageHandler, in one transaction (no empty thread). README says PS8 shows it customer-style; checked in PS sources.",
+  "tests": "Notes read back with PS 8.1.7's order-page and storefront queries: listed (private), hidden from customer, thread reused (2nd note, checkout thread), failed note leaves no thread.",
+  "fail_before": "FAIL payment for a paid order: private note: got 0 want 1 (PS 8 order-page query finds nothing; the note went to ps_message); same for shipped, mismatch and retry cases"
+ },
+ "H-R3": {
+  "cluster": "H2",
+  "outcome": "fixed",
+  "change": "merchant-ledger currencyExponent(): GhostPay app table (exported ZERO_DECIMAL_CURRENCIES JPY,KRW,VND,CLP,ISK,UGX,XAF,XOF = 0, every other code 2, KWD/BHD included), replacing the ISO-style map. Explicit overrides unchanged.",
+  "tests": "ledger.test.ts: KWD/ISK/JPY/USD CSV rows + schema-invoice JSON totals (ghostpay export path), ISK/XOF/KWD/BHD exponents, drift check vs apps/web/src/lib/format.ts.",
+  "fail_before": "AssertionError: expected '...KWD,1.234,0,0.000,1.234,0.000,' to contain ',KWD,12.34,...'; currencyExponent('ISK') expected 0 got 2; ZERO_DECIMAL_CURRENCIES is not iterable"
+ },
+ "H-R4": {
+  "cluster": "H2",
+  "outcome": "fixed",
+  "change": "New GhostPay_Secrets: constant (config/defines_custom.inc.php) else env. On every load it purges stored secrets (records SHA-256 first) and sets the module warning until rotated. No secret form fields. Webhook 503 when unset; uninstall drops the record. README Secrets section.",
+  "tests": "PS run.php: stored secrets unused/purged, warning until rotated, forged webhook 503, form stores none, retry pays, constant wins, upgrade stopped at each query keeps secrets stored or recorded.",
+  "fail_before": "FAIL no webhook secret configured: a webhook signed with the stored secret gets a retryable 503: got '200 {\"ok\":true}' (order paid); stored service secret used; form stored secrets"
+ },
+ "H-R5": {
+  "cluster": "H2",
+  "outcome": "fixed",
+  "change": "Nonce claim (expired-nonce DELETE + INSERT) catches exceptions. Only a duplicate key (Ghostpay::isDuplicateKey: SQLSTATE 23000, also inside PrestaShopException) counts as a replay (400). Any other DB error gives 503 retry (only reachable after a valid MAC).",
+  "tests": "Shim makes ghostpay_nonce inserts fail with a real HY000 PDO error: 503, order unchanged, sender's retry pays; replayed signature still 400.",
+  "fail_before": "FAIL database error at the nonce claim: retryable 503, not a replay 400: got '400 {\"ok\":false}' want '503 {\"ok\":false,\"retry\":true}'"
+ },
+ "H-R6": {
+  "cluster": "H2",
+  "outcome": "fixed",
+  "change": "recordInvoice() returns false on a duplicate key (first link kept, so validation cancels the order); other DB errors still throw. Shim Db now throws like PS 8 DbPDO::_query (PrestaShopException wrapping PDOException, checked 8.0.0/8.1.7).",
+  "tests": "Duplicate invoice id returns false and keeps the link; other SQL error still throws; isDuplicateKey on raw, wrapped, other-SQL and non-PDO exceptions.",
+  "fail_before": "FAIL duplicate invoice id: recordInvoice() returns false: got 'PrestaShopException: SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed: ps_ghostpay_invoice.invoice_id' want false"
+ },
+ "H-R7": {
+  "cluster": "H2",
+  "outcome": "fixed",
+  "change": "On a currency mismatch: invoice.paid/over keep the manual-check/refund note; expired and partial get a neutral 'GhostPay <type> event <id> (<amount> <cur> minor units) ignored: currency mismatch.' note. The order never changes.",
+  "tests": "EUR expiry on a USD awaiting order: not cancelled, one neutral note without refund wording; EUR partial: same; EUR payment keeps refund wording.",
+  "fail_before": "FAIL expiry in another currency: neutral note, no refund wording: got [1, false, true] want [1, true, false] (refund text, no 'ignored: currency mismatch'); same for partial"
+ },
+ "H-R8": {
+  "cluster": "H2",
+  "outcome": "fixed",
+  "change": "webhooks.md R6 now covers begin/complete/release, claimed/processing/done, a retryable 503 during the first attempt, and bounded eviction. pos-terminal parseMinor/formatMinor take the currency and use the app table; pos.js passes the sale currency.",
+  "tests": "hooks.test.ts: R6 names every IdempotencyGuard method, its states and 503, and no claim(). parity.test.mjs: USD/JPY/KWD cases, table vs apps/web; posReduce parity unchanged.",
+  "fail_before": "expected '- R6 Idempotency: ... guard `claim(id)` true once; bounded.' to contain 'begin('; POS: parseMinor('1500','JPY'): 150000n !== 1500n"
+ },
+ "A-R1": {
+  "cluster": "AR",
+  "outcome": "fixed",
+  "change": "logs.ts: a one-block -32005 refusal now re-asks the whole block once after its router lane is read. Narrowed only if refused again as too large; read whole if it succeeds; any other error, or a budget without the 2 extra requests, ends the fetch before the block (or fails it). Code matched numerically.",
+  "tests": "scanHardening.test.ts 'A-R1' block (5 tests: burst then success, persistent size refusal still narrows, outlasting burst fails, other recheck error, budget); scanClient.test.ts A-R1 (direct payment found)",
+  "fail_before": "burst test: expected [[7n,1]] to deeply equal [[7n,0],[7n,1]] (direct announcement dropped); web: expected [] to deeply equal [Array(1)]; budget and other-error tests resolved narrowed"
+ },
+ "A-R2": {
+  "cluster": "AR",
+  "outcome": "fixed",
+  "change": "logs.ts: the window doubles after each completed window, up to the cap, once a refused single block is passed (narrowed or read whole) or the cursor passes a range that overflowed the client's 2 MiB cap. After a provider limit code alone it keeps its size (likely a fixed range limit).",
+  "tests": "scanHardening: regrowth sizes past a spam block; dense pair with no refused block; spam every 100 blocks (<80 fetches, <4000 getLogs). logs.test: grows only to a 4-block provider limit; reorg rollback 5->4",
+  "fail_before": "spam/100: expected 201 to be less than 80 (10,001 getLogs); dense pair: cursor 63n, truncated, instead of 5001n; range-limit test: 29 requests, mostly one block"
+ },
+ "A-R3": {
+  "cluster": "AR",
+  "outcome": "fixed",
+  "change": "reconciliationVault.invalidateFrom reads canonical hashes with up to 8 in flight. After the first failed or invalid read no new read starts, the reads in flight settle, the first error is thrown and nothing is written, so the write stays all or nothing.",
+  "tests": "reconciliationVault.test.ts 'reads canonical hashes eight heights at a time and still writes nothing when one read fails (A-R3)': 20 heights, peak 8, a failure leaves the ciphertext unchanged",
+  "fail_before": "expected 1 to be 8 (peak in-flight reads; reads were sequential)"
+ },
+ "A-R4": {
+  "cluster": "AR",
+  "outcome": "fixed",
+  "change": "The preview now says 'Activating would mark N observation(s) invalid because of reorg history.' through a new en.json key, ledger.import.invalidated (ICU plural =0/one/other), placed after the other counts. ReconciliationLedger uses the optional translator.",
+  "tests": "ReconciliationLedger.test.tsx: preview assertion updated (0 -> 'no observations'); new A-R4 test for 1 and 3 (singular and plural) that also checks no 'after a reorg' text remains",
+  "fail_before": "Unable to find an element with the text: /Activating would mark 1 observation invalid because of reorg history\\./ (and the 'no observations' form)"
+ },
+ "A-R5": {
+  "cluster": "AR",
+  "outcome": "fixed",
+  "change": "Spec 05 and receive-and-scan.md now name the refusals treated as a response-size limit (2 MiB cap, -32602, -32005 with the recheck) and list a one-block -32600/-32614/-32000 refusal, which has no router-lane fallback, among the remaining limits that stop the scan.",
+  "tests": "logs.test.ts it.each(-32600/-32614/-32000) 'never narrows a single block refused with range-limit code': pins the documented limit (fetch ends before the block, then fails there)",
+  "fail_before": "n/a: docs-only change. The pinning test passes on ace3c65 too, because the docs were wrong and the code was not."
+ },
+ "C-R1": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "RegistryView: the publish section (meta-address, consent, wallet, review, publish/clear) sits in BackupGate; PolicyCreate: the create form is gated (record import/restore stay open). DEVIATIONS 11 lists both, 'yet' gone.",
+  "tests": "RegistryView.test C-R1 (unbacked: gate, no meta/consent/wallet; after keystore download the publish review is reachable); PolicyView.test C-R1 (form only after waiver)",
+  "fail_before": "Unable to find an element with the text: Back up these seller keys first (RegistryView.test and PolicyView.test C-R1)"
+ },
+ "C-R2": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "readEncryptedVault forgets the copy of the record tied before the read when the store returns another or none; authorizeKeyExport does so after the proof if a readable store lacks it. The step-up record stays armed.",
+  "tests": "keyVault.test C-R2 x3 (read; export incl. unreadable store; pending-read race); SellerKeys.test C-R2 (banner and gate after an external delete)",
+  "fail_before": "expected { backedUp: true, ... } to match object { backedUp: false, vaultStepUp: true }; SellerKeys: Unable to find text 'These seller keys have no backup'"
+ },
+ "C-R3": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "The SellerKeys export-and-wipe test uses cheapKeystoreExport() (N=2^14) and the session.test S3-08 round trip passes { N: 1 << 14 }. All assertions kept; production N=2^17 unchanged.",
+  "tests": "Same two tests: 2309 -> 1030 ms and 1355 -> 160 ms here",
+  "fail_before": "No local assertion failure (timing only): production scrypt inside a 30 s waitFor timed out on slow runners per the review"
+ },
+ "C-R4": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "'Wipe keys from memory' on keys whose backup state is not backed up shows a warning with 'Wipe the unsaved keys' and Cancel before clearSession(); backed-up keys wipe at once; a key change drops the request.",
+  "tests": "SellerKeys.test C-R4 (cancel keeps keys, confirm wipes); 3 tests that wipe unsaved keys now confirm",
+  "fail_before": "AssertionError: expected undefined to be { ...(4) } (the first click wiped the keys)"
+ },
+ "C-R5": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "New TagArchive.history.test.ts writes history through the real createCurrentReconciliationVault/IdbReconciliationVaultStore into a new in-memory IndexedDB (src/test/memoryIndexedDb.ts) and expects storedHistoryChains to list it. reconciliationVault.ts untouched.",
+  "tests": "TagArchive.history.test.ts (two chains found, other seller empty, listing creates no DB)",
+  "fail_before": "n/a, names match today. Scratch mutations of the store name, DB name or key separator in TagArchive.tsx: expected [] to deeply equal [ 1, 84532 ]"
+ },
+ "C-R6": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "importSession installs with the 'generated' origin when it generates the signing key, so the set is unsaved until a keystore download or vault save; the hex-import hint, Settings idle-lock hint and memory notice say so.",
+  "tests": "session.test C-R6; keyVault recoverability; App idle lock keeps such keys; SellerKeys banner + hint. Tests meaning 'copy elsewhere' import with a signing key",
+  "fail_before": "expected { backedUp: true, ... } to deeply equal { backedUp: false, ... }; keyVault: expected true to be false; App/SellerKeys: no 'These seller keys have no backup'"
+ },
+ "C-R7": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "ViewSwitch 'create' renders <BackupGate heading=\"Create invoice\"><CreateInvoice/></BackupGate>; CreateInvoice.tsx back to e8cdb31 indentation. BackupGate got an optional heading so the gated view keeps its h2.",
+  "tests": "CreateInvoice.test L1-01 tests pass unchanged and now also assert the h2 while gated",
+  "fail_before": "n/a (refactor): git diff e8cdb31 -- CreateInvoice.tsx had 289 changed lines, now 13 (only the L1-06 passphrase lines)"
+ },
+ "C-R8": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "Troubleshooting rows: forgotten vault passphrase with keystore (wipe, delete the vault with no keys loaded after checking its meta-address, re-import) and browser save offers; stale key-lifetime text fixed in 4 docs + DEVIATIONS 11; ar/es/ja orphan keys deleted.",
+  "tests": "node scripts/i18n/check.mjs: 'extra key' errors 6 -> 0; extract.mjs: 0 missing",
+  "fail_before": "i18n check: ERROR ar/es/ja.json: extra key settings.lock.label and settings.lock.hint (6 errors)"
+ },
+ "G2-05": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "SellerKeys forgetTyped() clears hex and every passphrase field (fresh suggestions for keystore/vault save) on each key change and idle lock; a failed hex import clears the hex fields. session.ts subscribeIdleLock/notifyIdleLock sent by App's idle lock; Sweep clears its field.",
+  "tests": "SellerKeys G2-05 x3 (failed import; key change + wipe; idle lock with no keys and with kept keys; value and value attribute); Sweep G2-05; session.test signal",
+  "fail_before": "expected 'abc' to be ''; expected '2222...' to be ''; expected '1111...' to be ''; Sweep: expected 'violet comet maple lantern' to be ''"
+ },
+ "G2-06": {
+  "cluster": "CR",
+  "outcome": "fixed",
+  "change": "Vault unlock/save/delete, export and save step-ups, Sweep step-up: autocomplete=off and distinct names (ghostpay-vault-unlock...); hints: do not let the browser save it, even when it offers; 'never saved' -> 'GhostPay never stores your passphrase'.",
+  "tests": "SellerKeys G2-06 (6 fields: autocomplete, names, hint copy, unlockExplain); Sweep G2-06 (autocomplete, name, hint)",
+  "fail_before": "AssertionError: expected 'current-password' to be 'off' (SellerKeys and Sweep)"
+ },
+ "D-R1": {
+  "cluster": "D2",
+  "outcome": "fixed",
+  "change": "runJob settles the job's permit once, when the receipt wait ends: mined=success, timeout or throwing wait=failure, mined revert=neutral (mined_revert_state_changed). Errors before send still settle at once. receiptTimedOut no longer adds a separate failure. Half-open probe stays in flight until its receipt. README and runbook updated.",
+  "tests": "api.test.ts: it.each ratio 0.5/0.6, receipts released after the HTTP reply (2 timeouts: closed, 3: open). Probe test: half_open until receipt; timeout re-opens; revert frees probe; success closes. Probe-expiry test.",
+  "fail_before": "0.5: alerts [receipt_timeout x2, breaker_open], opened after S,F,S,F. 0.6: three timeouts, no breaker_open. Probe: expected 'half_open', received 'closed' right after the 200."
+ },
+ "D-R2": {
+  "cluster": "D2",
+  "outcome": "fixed",
+  "change": "Right before the final simulation, the lane refuses with deadline_too_soon 422 (admission's class, already in PRE_BROADCAST_CODES) when sweep.deadline <= now + deadline.minSeconds. Nothing sent, breaker-neutral, no owner strike. README check order and apps.md updated.",
+  "tests": "api.test.ts D-R2: admitted with 31 s left, queued until queue_pending=2, clock +2 s, then 422 deadline_too_soon; 3 simulations, 1 sent, breaker closed under a 1-failure trip config, no strike.",
+  "fail_before": "AssertionError: expected 200 to be 422. The queued sweep was broadcast with 29 s left."
+ },
+ "D-R3": {
+  "cluster": "D2",
+  "outcome": "fixed",
+  "change": "selfhost.sh trustedProxies block reads the backend subnet from docker-compose.yml (default 172.30.10.0/24). Ok only if some entry contains or overlaps it (IPv4-mapped handled); otherwise a warning naming the subnet. Empty/loopback-only wording kept. 3 docs updated.",
+  "tests": "config.test.ts runs selfhost.sh --dry-run on scratch copies with a stub docker. Cases: covered, contains, mapped, 10/8, frontend subnet, empty, loopback, unreadable, moved subnet. Manual scratch matrix; selftest ok.",
+  "fail_before": "[\"10.0.0.0/8\"] and [\"127.0.0.1\",\"172.30.11.0/24\"] gave 'ok relayer trustedProxies lists a non-loopback proxy network'. Vitest: expected 'ok ... lists a \u2026' to match /covers \u2026/."
+ },
+ "D-R4": {
+  "cluster": "D2",
+  "outcome": "fixed",
+  "change": "README loss-budget bullet: the clean quarter keeps repeat losers out but is no service guarantee. A group new to the window is clean until its first loss, so distinct groups (one loss each) can use it up, like RELAYER-01. Size globalWei for it. Same fix in the lossCleanReserve comment.",
+  "tests": "None: docs only, behaviour unchanged.",
+  "fail_before": "n/a (docs). README:164 claimed sources that keep losing 'cannot refuse everyone'."
+ },
+ "D-R5": {
+  "cluster": "D2",
+  "outcome": "fixed",
+  "change": "prettier --write on limiter.ts and limiter.test.ts (clean before this branch) and revertRate.ts (new in this branch). Formatting only. service/api.test/config.test were off-style before the branch and were not reformatted.",
+  "tests": "prettier --check on the three files passes. relayer-guard build, typecheck, lint and tests pass.",
+  "fail_before": "prettier --check: [warn] limiter.ts, limiter.test.ts, revertRate.ts: Code style issues found in 3 files."
+ },
+ "D-R6": {
+  "cluster": "D2",
+  "outcome": "fixed",
+  "change": "config.test.ts now checks: exactly one proxy_pass in the /api/ allowlist block, none in location /api/, and http://api:8787 proxied once in the whole file (still catches an /api/metrics route). Replaces the count of all proxy_pass in nginx.conf.",
+  "tests": "config.test.ts deploy-wiring test. Scratch nginx copies: an unrelated proxied location passes new and fails old; an /api/metrics proxy fails both.",
+  "fail_before": "Scratch nginx.conf plus 'location /rpc/ { proxy_pass http://rpc:8545; }': old assertion fails (proxy_pass count 2)."
+ },
+ "B2-R1": {
+  "cluster": "B2R",
+  "outcome": "fixed",
+  "change": "schemas.ts: expiresAt, quote.timestamp and quote.expiresAt use a 0..253402300799 integer; webhook createdAt keeps 0..2^53-1 (no Date use; merchant-hooks takes any safe int). invoice.v1.schema.json re-emitted with npm run emit:schema; invoice-schema.md Validation highlights list the cap.",
+  "tests": "schemas.test: at the cap the schema and buildInvoice accept; cap+1 and 2^53-1 are refused by both (buildInvoice at the same path); webhook createdAt 2^53-1 still valid; drift guard passes.",
+  "fail_before": "schemas.test.ts:112 expect(valid(s, {...inv, expiresAt: 253402300800})).toBe(false) -> AssertionError: expected true to be false"
+ },
+ "B2-R2": {
+  "cluster": "B2R",
+  "outcome": "fixed",
+  "change": "grantApproval/revokeApproval: a receipt whose verification is not 'verified' now throws inside the existing PostBroadcastError path (hash kept, do not resend), naming the missing comparison, so Pay stops before the payment. Journal untouched: entry stays 'submitted', repeats refused.",
+  "tests": "payExec.test: wallet swaps in approve(spender, 2^256-1), RPC shows receipts only -> PostBroadcastError, hash kept, journal 'submitted', repeat refused, 1 send; unreturned revoke refused.",
+  "fail_before": "grant resolved 2^256-1: 'expected 11579208923731619542357098500868790785...n to be an instance of PostBroadcastError'; revoke: 'expected undefined to be an instance of PostBroadcastError'"
+ },
+ "B2-R3": {
+  "cluster": "B2R",
+  "outcome": "fixed",
+  "change": "Pay.tsx: with review.token undefined the fixed amount reads '<n> base units of token <address>' (no assumed decimals) in Invoice total, Pricing and the bill's Amount due; PrintableBill's fixedAmount doc names the fallback (the bill prints what Pay passes). Listed tokens/native unchanged.",
+  "tests": "Pay.test: a hand-signed fixed_token invoice for an unlisted token shows '1000000 base units of token 0xabab...' as total, in Pricing and as the bill's Amount due; Pay with = address.",
+  "fail_before": "Pay.test.tsx:352 expected '0.000000000001  (fixed token amount)' to be '1000000 base units of token 0xabab... (fixed token amount)'"
+ },
+ "B2-R4": {
+  "cluster": "B2R",
+  "outcome": "fixed",
+  "change": "registry.ts buildLookupCall: the EIP-55 checksum is required only for mixed-case hex; all-lowercase and all-uppercase are accepted and normalized by getAddress. A wrong mixed-case checksum is still refused before any RPC with 'registrant address checksum does not match'; 0X stays no address.",
+  "tests": "registry.test: uppercase registrant builds the lowercase call, checksummed preview, reaches eth_getCode+eth_call; the L4-I3 case expecting uppercase refused now uses another bad mixed-case checksum.",
+  "fail_before": "registry.test.ts:73 buildLookupCall('0x70997970C51812DC3A010C7D01B50E0D17DC79C8') threw ChainAdapterError: INVALID_INPUT: registrant address checksum does not match"
+ },
+ "B-R8": {
+  "cluster": "B2R",
+  "outcome": "fixed",
+  "change": "Merged 5e94954 first (clean, no conflict; aa2a449). rpc.ts: -32003 joins the codes that count only with a failure text, and the text adds 'invalid instruction' and 'EVM error'. Other -32003 rejections (insufficient funds) stay unflagged; only the boolean leaves. Remarks/comments updated.",
+  "tests": "rpc.test: -32003 out of gas (2 texts), -32003 EVM error, -32015 invalid instruction flagged, no node text kept; -32003 insufficient funds not. txGuard.test: those 3 refused; funds: unavailable.",
+  "fail_before": "rpc.test (4 new flag cases): e.reverted 'expected false to be true'; txGuard.test (3 new): \"promise resolved 'unavailable' instead of rejecting\""
+ },
+ "D-R7": {
+  "cluster": "D3",
+  "outcome": "fixed",
+  "change": "service.ts: breaker probeTimeoutMs = (breaker.probeTimeoutSeconds + queue.receiptTimeoutSeconds)*1000. probeTimeoutSeconds covers in-lane work up to the broadcast; the receipt wait is added, so the receipt decides a broadcast probe (180 s by default). Example configs unchanged; docs updated.",
+  "tests": "api.test.ts (defaults): probe mined 90 s after admission closes the breaker; an unsettled probe is half_open at 179 s, open at 180 s, late receipt ignored. S3-05 wedge test now advances 36 s (5+30), not 6 s.",
+  "fail_before": "Both new tests: AssertionError: expected 'open' to be 'half_open' (probe expired at 60 s while its receipt was still pending)"
+ },
+ "D-R8": {
+  "cluster": "D3",
+  "outcome": "fixed",
+  "change": "service.ts: keeps the D-R2 deadline check before the final simulation and repeats it right after the final simulation and fee check, before the loss/daily reservations (deadline_too_soon 422, pre-broadcast, breaker-neutral, no strike). README check order and apps.md list updated.",
+  "tests": "api.test.ts D-R8: 45 s left, final simulation advances the clock 20 s -> 422 deadline_too_soon after 2 simulations; nothing sent or reserved, breaker closed (1-failure trip config), no owner strike.",
+  "fail_before": "AssertionError: expected 200 to be 422 (the sweep was broadcast with 25 s left)"
+ },
+ "D-R9": {
+  "cluster": "D3",
+  "outcome": "fixed",
+  "change": "selfhost.sh trustedProxies block: the subnet regex takes only the CIDR token (quotes and a trailing comment allowed). If no subnet can be read, it warns that it checks against the default 172.30.10.0/24 and calls it the assumed backend subnet. deploy/config/README.md notes it.",
+  "tests": "config.test.ts selfhost: moved subnet with trailing comment, quoted+comment, quoted -> new list ok, old default warns; no networks section and invalid CIDR -> assumed notice before the result line.",
+  "fail_before": "expected 'warn  relayer trustedProxies does not cover the compose backend subnet 172.30.10.0/24 ...' to match /^ok +.* 10\\.89\\.10\\.0\\/24$/ (subnet with trailing comment)"
+ },
+ "D-R10": {
+  "cluster": "D3",
+  "outcome": "fixed",
+  "change": "selfhost.sh: 'covers' only if an entry contains the whole subnet (subnet_of). A partial overlap gets its own warning: lists only part of <subnet>, Docker assigns nginx's address there, make sure it is listed or list the subnet. deploy/config/README.md and runbook updated.",
+  "tests": "config.test.ts: ['172.30.10.200'], ['172.30.10.0/25'], ['::ffff:172.30.10.3'] (was asserted as covers), ['10.0.0.0/8','172.30.10.128/25'] -> partial warning; a list with one containing entry still covers.",
+  "fail_before": "expected 'ok    relayer trustedProxies covers the compose backend subnet 172.30.10.0/24' to match /^warn +relayer trustedProxies lists only part of .../ (for ['172.30.10.200'])"
+ },
+ "G-R2": {
+  "cluster": "GR",
+  "outcome": "fixed",
+  "change": "c7dc826 (earlier): blockTxs refuses a block as soon as the BIP-141 weight read so far (80-byte header, tx count, each re-serialized tx) passes 4,000,000, before the next page. f05f58a (this revision, fixes the review's major issue that prevout scripts were unweighed, unbounded and kept): apps/web/src/features/btc/esplora.ts now (1) refuses a spent output script (vin[].prevout.scriptpubkey) over 10,000 bytes. That is consensus MAX_SCRIPT_SIZE: a longer script fails when run and never enters the UTXO set, so no valid block spends one. (2) Gives the pages of one block a shared budget of 64 MiB (MAX_BLOCK_JSON = 4 x the 16 MiB response cap). Each page is read through min(16 MiB, what is left), so a page that would pass the budget is cancelled while it streams and no further page is requested. This bounds what is streamed (64 MiB) and kept, including padding in prevout scripts, asm, addresses or unknown fields. A private request() returns text and bytes read; text() and json() are unchanged. Doc comments say that real blocks need a fraction of the budget, and that a contrived valid block needing more is refused, as a page over 16 MiB already is.",
+  "tests": "apps/web/src/features/btc/esplora.test.ts, 3 new tests. (a) A 10,000-byte spent script is read (weight unchanged at 82*4) and 10,001 bytes are refused. (b) Lying tx_count 16,666 with light transactions padded via prevout (30 inputs x 10,000-byte spent scripts per tx, so 14.4 MiB pages weighing 127,100 units; weight alone would stop only at page 32, about 462 MiB): the block is refused INVALID_RESPONSE. Pages requested are exactly 0,25,50,75,100; only the fifth is cancelled mid-stream, and at most 66 MiB are pulled. (c) Five pages totalling exactly 64 MiB are read; one byte more is refused although that page (8 MiB + 1) is far below the per-response cap. The 3 earlier weight tests still pass. File: 33/33.",
+  "fail_before": "All 3 new tests fail against the previous esplora.ts (HEAD~3 version swapped in). (a) Got 'none' instead of INVALID_RESPONSE. (b) Got TRANSPORT_FAILURE: the old client read until the stub's HTTP 500 after 8 pages. (c) Got 'none'. A variant that checks the budget only after each whole page fails (b): the fifth page is not cancelled, giving [false,false,false,false,false]."
+ },
+ "G-R1": {
+  "cluster": "GR",
+  "outcome": "fixed",
+  "change": "99acdf8 (earlier): the clipboard mark is kept until writeText('') resolves (numbered copies; a clear settling after a newer copy keeps the newer one marked; a failed copy restores the earlier mark). A refused clear retries at the next click or keydown (capture phase) and at the next Hide or Lock. No second write while a clear is pending. 0f9b987 (this revision, fixes the review's minor issue that leaving the view skipped every clear): apps/web/src/components/SecretBackup.tsx (1) empties a copied backup when the component unmounts, i.e. when the view is left (a click, so user activation). The exception is while a refused clear already waits for activation: the app lock unmounts it without activation, and the next click runs the clear anyway. (2) Subscribes clearCopiedBackup to the app lock at module level, so the idle lock still tries after the view is gone; if refused, the retry stays armed. Texts updated: English COPY_WARNING/copied, en.json btc.seed.copyWarning/btc.seed.copied, the Bitcoin/Solana/TRON user guides and docs/chains/bitcoin.md now read 'Hide, Lock(, the app lock) and leaving the view empty the clipboard again (best effort)'. apps/web/src/lib/appLock.ts doc names the new subscriber. 0feb1d7 (review nit): copyNow's counter local is now `mine`, no longer shadowing the `copy` UI state.",
+  "tests": "apps/web/src/components/SecretBackup.test.tsx: 4 new tests. Unmount empties the clipboard. After an unmount whose clear is refused, notifyAppLock empties it. With the app lock refused too, the next click empties it and a later key press writes nothing. No second attempt at unmount while a refused clear waits. New apps/web/src/components/SecretBackup.views.test.tsx renders the real App and uses its navigation: for Bitcoin, Solana and TRON, copy and then the Home button empties the clipboard, and coming back and leaving again writes nothing more. Also: copy, leave (refused), notifyAppLock (refused), then the next click empties it. Earlier R1 tests and BtcView.test.tsx's idle-lock test still pass. Both files: 21/21.",
+  "fail_before": "All 8 new tests fail with the previous SecretBackup.tsx (661ebdf version swapped in): writeText is called once, not twice, after unmount or leave, and notifyAppLock does nothing after the view is gone. Removing only the waiting-retry exception fails 2 tests (the new component test and BtcView 'empties the clipboard at the next click when the app lock could not', both seeing a redundant third write). Removing only the module-level app-lock subscription fails the app-lock tests."
+ },
+ "G-R3": {
+  "cluster": "GR",
+  "outcome": "fixed",
+  "change": "e794883 (unchanged this revision): scripts/regtest/esplora-shim-lib.mjs answers GET /block/:hash with {id, height, tx_count} from getblock verbosity 1, and answers /block/:hash/txs/:start with HTTP 400 when start >= tx_count, as current electrs does (the reviewer confirmed this). README updated.",
+  "tests": "scripts/regtest/esplora-shim.test.mjs (stubbed RPC): node --test scripts/regtest/*.test.mjs gives 5/5 pass.",
+  "fail_before": "Verified by the reviewer in the previous round: the shim answered 404 for /block/:hash before e794883. Not re-verified this revision because nothing changed."
+ },
+ "G-R4": {
+  "cluster": "GR",
+  "outcome": "fixed",
+  "change": "661ebdf: the user guides and docs/chains/bitcoin.md describe the backup as hidden until 'Show backup', hidden again after 60 s or when the tab is hidden, and copied only behind a warning. They describe the scanned range as linked only within the scan (anchored to genesis only from block 0 or 1, to no checkpoint; a server can invent a payment with a self-mined block). The unused btc.seed.title was removed. 0f9b987 extends the same docs' clipboard statements to the app lock and leaving the view.",
+  "tests": "Docs only. node scripts/i18n/extract.mjs reports 0 missing keys and 18 unused, the same counts as before this revision; btc.seed.title is gone. node scripts/i18n/check.mjs reports 1368 errors both with and without this revision: these are pre-existing missing keys in other locales.",
+  "fail_before": "n/a (documentation)"
+ },
+ "G-R5": {
+  "cluster": "GR",
+  "outcome": "fixed",
+  "change": "7d4a737 (unchanged this revision): SoftwareSilentPaymentSigner.dispose() zeroes its copy of b_spend (best effort) and later requests reject with SIGNER_REFUSED. signSweep disposes the signer in finally.",
+  "tests": "packages/btc-silent-payments/src/signer.test.ts and apps/web/src/features/btc/sweep.test.ts. Package suite this run: 432/432, coverage 97.22/94.74/97.94/99.26.",
+  "fail_before": "Verified by the reviewer in the previous round (R5 web and package tests fail at base)."
+ },
+ "G-R6": {
+  "cluster": "GR",
+  "outcome": "fixed",
+  "change": "7df6cb9 (unchanged this revision): the ABORTED-path test was renamed and now uses waitFor instead of a 50 ms sleep. A new case has a mocked scanForPayments ignore the abort and resolve after Lock; it asserts the result is dropped and its tweak wiped.",
+  "tests": "apps/web/src/features/btc/BtcView.secrets.test.tsx; passes in the features/components run and in the full run.",
+  "fail_before": "Verified by the reviewer in the previous round (R6 mutant caught: the new case fails when the wipe in BtcView is removed)."
+ },
+ "G-R7": {
+  "cluster": "GR",
+  "outcome": "fixed",
+  "change": "9c69620 (unchanged this revision): SecretBackup and its test moved to apps/web/src/components/. The BtcView, SolanaView and TronView imports were updated; components/Common.tsx is unchanged. This revision's fixes live in that shared module.",
+  "tests": "components/SecretBackup.test.tsx (moved) and the new components/SecretBackup.views.test.tsx.",
+  "fail_before": "n/a (structure)"
+ },
+ "A-R6": {
+  "cluster": "AR2",
+  "outcome": "fixed",
+  "change": "compareProviders: after a one-block -32005 refusal it reads the router lane, then asks for the whole block once more; it compares the block whole if that succeeds, narrows only on a repeated size refusal, else secondary_error (page withheld). Shares mayBeRateLimit (logs.ts).",
+  "tests": "scanVerify.test.ts A-R6 (4 tests): burst over -> block compared whole; lying primary -> missing_in_primary + skipped_count_differs; repeated refusal narrows; else secondary_error. Web e2e test.",
+  "fail_before": "Probe: expected [] to deeply equal [missing_in_primary, skipped_count_differs]; web e2e vs base: expected [] to deeply equal ['missing_in_primary']; recheck asked [2,8n,8n] not [2,7n,7n]"
+ },
+ "A-R7": {
+  "cluster": "AR2",
+  "outcome": "fixed",
+  "change": "logs.ts: a halving also lets the window grow back past the refused range when a fixed range limit cannot explain it: the refused range is no larger than one served in this fetch, or the halving reached one block. Range-limit cost unchanged (10-block limit: 17 fetches).",
+  "tests": "scanHardening A-R7: 27-attempt -32005 burst -> one fetch reaches head (39 attempts); -32602 dense pairs/100 blocks -> 51 fetches, 2,517 getLogs; guard: 10-block range limit 17 fetches, 357 refused.",
+  "fail_before": "Burst: cursor nextBlock 41n, truncated true (expected 1001n, false); dense pairs: 'expected 118 to be 51'. The range-limit guard passes before and after."
+ },
+ "A-R8": {
+  "cluster": "AR2",
+  "outcome": "fixed",
+  "change": "receive-and-scan.md, spec 05: a block refused as too large again after its router lane is read is narrowed (direct announcements skipped, warned); only a failed router-lane read or another error on the 2nd read stops the scan. Residual: needs provider error text, which rpc.ts drops.",
+  "tests": "Docs-only; no doc check fits. Pin test (scanHardening): a rate limit passing the router lane but refusing the 2nd read narrows an ordinary block, read whole later; same result on base logs.ts.",
+  "fail_before": "n/a (docs-only). The overstatement was receive-and-scan.md:42 'a rate limit that persists stops the scan with an RPC error'. The pin test passes before and after (the residual exists on base)."
+ },
+ "C-R9": {
+  "cluster": "CR2",
+  "outcome": "fixed",
+  "change": "SellerKeys onWipe: keys with a copy outside the browser are wiped at once; otherwise it awaits loadedKeysRecoverable() (reads the store, forgets a missing vault copy) under captureSessionVersionGuard and shows the C-R4 confirmation unless it returns true; a key change or unmount drops the request.",
+  "tests": "SellerKeys.test: vault deleted after mount -> confirmation, Cancel keeps keys, banner back; vault still saved -> wiped at once; key change during the read -> new keys kept (fails without the guard).",
+  "fail_before": "SellerKeys.test.tsx:328 TestingLibraryElementError: Unable to find an element with the text: Wipe keys that have no backup? (keys already wiped; page shows Generate new keys)"
+ },
+ "C-R10": {
+  "cluster": "CR2",
+  "outcome": "fixed",
+  "change": "session.ts: custody paymentKeysExternal, SessionBackup.signerOnly for hex imported without its signer. Idle lock wipes such keys, notice says the signer is gone. Banner, gate, wipe/unlock confirmations get accurate copy; Create invoice stays gated; Seller keys' meta-address gate passes paymentsOnly.",
+  "tests": "session.test: signerOnly via vault save, external delete, download. App.test: banner, idle-lock wipe and notice, Create invoice gate and waiver. SellerKeys.test: meta-address shown, wipe/unlock copy.",
+  "fail_before": "App.test: Unable to find an element with the text: The invoice-signing key has no backup; gate: expected '\u26a0 Back up these seller keys first:Inv\u2026' to match /Payments stay sweepable\u2026/"
+ },
+ "C-R11": {
+  "cluster": "CR2",
+  "outcome": "fixed",
+  "change": "TagArchive subscribes to subscribeIdleLock: clears pass2 and importPass and re-suggests pass. DEVIATIONS 11 names the archive form and lists where the vault record is looked up (idle lock, C-R9 wipe check, Seller keys vault reads, export/new-vault step-up), not unlock or sweep.",
+  "tests": "TagArchive.test C-R11: after an idle lock that keeps unsaved keys, the repeat and import fields and their value attributes are empty and the archive passphrase is a fresh suggestion.",
+  "fail_before": "AssertionError: expected 'my own archive passphrase' to match /^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/"
+ },
+ "H-R9": {
+  "cluster": "H3",
+  "outcome": "fixed",
+  "change": "add_note(): if !Validate::isLoadedObject($customer), no thread; returns PrestaShopLogger::addLog(text, WARNING(2), null, 'Order', id, allowDuplicate=true). Deviates from 'return true': a failed write is a 503 retry; duplicates avoid a forever-503. README notes.",
+  "tests": "Shim gains ps_log + addLog (8.1.7). Deleted customer: failed log write 503, retry 200, no thread, order page OK, one warning entry, re-run 200. Invariant: threads keep their customer",
+  "fail_before": "no thread created: got [2,0,1] want [2,0,0]; order page row without customer name: got 1 want 0; log entry count got 0 want 1; no customer thread without its customer: got '1' want '0'"
+ },
+ "H-R10": {
+  "cluster": "H3",
+  "outcome": "fixed",
+  "change": "hookPaymentOptions() returns array() unless active, service URL, pay host and a valid service secret (constant/env) are set, as WooCommerce is_available(). README caveat replaced: GhostPay is not offered at checkout until the secrets are set.",
+  "tests": "Shim: PaymentOption alias, Link::getModuleLink, Tools::getToken, module context. No secret/no host/short secret/no URL/disabled: no option; all set: one option with the validation action.",
+  "fail_before": "'no service secret configured: GhostPay is not offered at checkout': got [['ghostpay','https://shop.test/module/ghostpay/validation?token=test-token']] want array(); same for no pay host and too short secret"
+ },
+ "H-R11": {
+  "cluster": "H3",
+  "outcome": "fixed",
+  "change": "Test only (code already correct): shim GHOSTPAY_TEST_FAIL_DELETE makes DELETEs on a table fail with a non-duplicate PDO error (HY000). New block for the expired-nonce DELETE.",
+  "tests": "DELETE on ps_ghostpay_nonce fails: 503 {ok:false,retry:true}, order 16 still awaiting with no history; the retry pays it.",
+  "fail_before": "Passes on base (code correct). With the DELETE moved back before the try (pre-H-R5): got '500 PrestaShopException: SQLSTATE[HY000]: General error: 1 no such function: ghostpay_test_server_has_gone_away' want 503"
+ },
+ "H-R12": {
+  "cluster": "H3",
+  "outcome": "fixed",
+  "change": "R2 cites the GhostPay app table (apps/web/src/lib/format.ts fiatDecimals): 0 for JPY, KRW, VND, CLP, ISK, UGX, XAF, XOF; 2 otherwise (BHD/KWD/JOD included); explicit overrides allowed. Only R2 edited.",
+  "tests": "Scratch drift check only (fix-H3/hr12-check.php, not committed; no owned test file fits): R2 zero-decimal list equals the app table, no 3-decimal code, '2 otherwise', override kept.",
+  "fail_before": "FAIL R2 zero-decimal codes: got '' want 'JPY, KRW, VND, CLP, ISK, UGX, XAF, XOF'; FAIL R2 still gives some code 3 decimals (BHD/KWD/JOD 3); FAIL no '2 otherwise'"
+ },
+ "H-R13": {
+  "cluster": "H3",
+  "outcome": "fixed",
+  "change": "prettier --write on packages/merchant-ledger/src/decimal.ts only: the ZERO_DECIMAL_CURRENCIES array is split one code per line (same codes, same order).",
+  "tests": "npx prettier --check decimal.ts clean; merchant-ledger build, lint and 26 tests pass, including the drift check against the app table.",
+  "fail_before": "[warn] packages/merchant-ledger/src/decimal.ts / Code style issues found in the above file. Run Prettier with --write to fix. (exit 1)"
+ },
+ "C-R12": {
+  "cluster": "integration",
+  "outcome": "fixed",
+  "change": "SellerKeys onUnlockVault awaits loadedKeysRecoverable() under a session-version guard (as onWipe, C-R9) and asks before replacing keys whose vault copy is gone; unlockEncryptedVault forgets a tied vault copy that is no longer the stored record and refuses to replace unsaved keys without replaceUnsavedKeys.",
+  "tests": "SellerKeys.test 'C-R12': UI confirmation after another tab replaced the vault; library refusal unless confirmed.",
+  "fail_before": "Unable to find an element with the text: The keys loaded now have no backup; promise resolved 'undefined' instead of rejecting"
+ }
+}

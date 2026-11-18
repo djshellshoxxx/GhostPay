@@ -1,28 +1,49 @@
 # Completion gates
 
-Status at final consolidation (2026-10-22): **source migration, validation, and promotion to `main` are complete; product and release readiness remain incomplete**. Audit 22 records the final candidate, promotion commit, ancestry and clean-tree comparisons, successful uncancelled hosted CI and Integration runs, and the final verification results. Earlier notes below that say candidate CI, full web coverage, browser verification, owner checks, or migration closure are pending have been superseded by that report. Historical security findings remain limited to their stated trigger and evidence; closing a finding does not certify the broader system.
+## Current product snapshot — 2026-11-09
 
-## Current product-code gaps and completed flows
+The current review stack is **#84 → #88 → #89 → #90**. `main` remains
+`14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d`; the application consolidation has not been merged.
+The older migration evidence below applies only to its named historical commits. It does not qualify this stack.
+See the [current source ledger](../handoffs/SOURCE_FOLLOWUP_2026-11-09.md) for source heads,
+ancestry, review dispositions and the [Sonar access/result follow-up](SONAR_FOLLOWUP_2026-11-09.md).
 
-### Implemented in the promoted tree
+The previous gap list was stale: seller public-config pairing, Settings/Registry QR exchange, encrypted local
+invoice matching, and receipt archival already existed in #88. This continuation checks and hardens their remaining
+boundaries rather than introducing duplicate implementations. The [PR #90 handoff](../handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md)
+records final runtime-qualified head `42ae712f5804724b4213bed4e2e0cb129f855abf`, successful CI/Hosting/Integration,
+2,188 hosted web passes plus one separately passed live-Core test, and full/lean browser results
+(60/52 passes; one opposite-profile skip each). Local interrupted aggregate commands are not counted as passes.
 
-- **Passphrase-protected invoices and seller vault.** Invoice creation/opening, encrypted IndexedDB key storage, passphrase-gated sweep actions, and idle session lock are implemented and covered by web and browser tests. Audit 22 records the final 17/17 Playwright pass, including passphrase invoices and vault reload/unlock.
-- **QR display and limited camera import.** QR display is wired in invoice creation, SellerKeys, BTC and opt-in seller receipt output. Camera/text import is wired in Sweep, BTC and Pay seller receipts. Receipt QR output checks capacity and uses the same strict JSON format accepted by Pay. Seller-key/device exchange, Settings and Registry QR flows remain absent.
-- **Seller-signed receipt issuance and Pay-side import.** Scan can issue a signed seller receipt for an eligible verified match. Pay bounds and verifies imported JSON, binds it to the open invoice and available payment facts, and rejects stale async imports. The receipt is a seller-key attestation, not independent proof of payment. Audit 21 records the focused 86/86 security regression pass; audit 22 records the browser, web coverage, and hosted validation results.
-- **Local seller reconciliation.** Scan offers an opt-in local ledger for selected verified router-scan observations, scoped to seller keys and chain. It persists across reloads, supports search, scoped export/delete and global disable/erase, and invalidates affected historical entries on detected reorgs. Records are plain text, locally editable and non-authoritative. Optional invoice digest links are manual assertions; no private keys, customer tags, invoice contents or signed receipts are stored. See audit 23 for this subsequent change and its validation boundaries.
-- **Settings localization.** The provider and language picker are mounted; catalog-backed Settings strings, English fallback, and document `lang`/`dir` updates work. Other production screens remain English. Existing Spanish, Japanese and Arabic catalogs are machine-drafted and still need native-speaker review.
-- **Payment and scan safety.** Audits 20 and 21 record the reviewed fixes for stale payment preparation/import, provider disagreement and checkpoint handling, transaction/log identity, and bounded deep scans. Audit 22 provides final suite and browser results; these scoped closures do not establish independent provider truth or eliminate scan privacy disclosure.
+| Feature | Implemented behavior and current limits |
+| --- | --- |
+| Seller/device QR exchange | Strict bounded public configuration, public-key comparison, Settings preview/apply and Registry meta-address export/import exist. The continuation rejects unsupported pairing chains and invalidates stale camera/file/settings/registry previews, including repeat imports. These flows do not transfer secrets or authenticate seller identity. See [public device exchange](../user/public-device-exchange.md). |
+| Reconciliation and receipt archive | Opt-in invoice registration and an encrypted seller/chain-scoped vault propose matches and require confirmation. Receipt signatures never count as payment evidence. The continuation rechecks scan identity inside the storage transaction, includes unsaved competing observations, checks announcement recipients, and treats observations first recorded at/after invoice expiry as ambiguous. See [ADR-0026](../adr/ADR-0026-local-reconciliation-and-receipt-archive.md) and the [user guide](../user/reconciliation-and-receipts.md). |
+| Localization | PR #90 adds ledger/static errors, current-language descriptor rendering, passphrase/sweep guards, navigation and QR copy: 430 keys, including 414 deliberately English security messages. Catalog check: 0 errors, 2,013 warnings; extraction: 0 missing. Dynamic post-broadcast/permit outcome modeling and native review remain open; no locale was promoted. |
+| Policy accounts / scheme 2 | PR #90 validates code identity/linked deployment, isolated direct native/ERC-20 payment evidence, canonical withdrawal history and durable cross-tab submission guards. The feature remains disabled/testnet-only, production pins empty, and ordinary receipt/reconciliation status isolated. Accepted deployment-bound request/record formats, other execution variants, complete browser lifecycle and lost-key recovery remain open; see [ADR-0027](../adr/ADR-0027-policy-end-to-end-gates.md) and unaccepted [ADR-0028](../adr/ADR-0028-policy-recovery-authority-model.md). |
+| Scanner privacy estimate | The continuation uses the latest reachable provider head rather than an obsolete highest head; budget-limited scans still disclose partial counts. This is a local announcement-volume heuristic, not a privacy guarantee. |
 
-### Confirmed product gaps
+No contracts, manifests, trust roots, release settings, fee policy or API-funded workflows are enabled by this work.
+No current source branch is deleted or merged into `main`. Current validation belongs to the continuation handoff
+and draft PR; historical green runs below are not current-head evidence.
 
-1. **Automatic seller reconciliation and receipt archival.** The local ledger provides durable searchable scan observations with manual invoice digest associations. It does not open/validate the associated invoice, automatically reconcile invoices against payments, or archive seller receipts. Those features need explicit privacy and data-lifecycle decisions; a receipt signature alone must never count as payment evidence.
-2. **QR/device exchange beyond current screens.** Pay now accepts bounded receipt JSON through camera/text or files, and Scan can show a signed receipt QR. Seller-key/device pairing, Settings and Registry exchange remain unimplemented. These need explicit schemas, sensitivity disclosures and lifecycle handling before camera input is enabled there.
-3. **Application-wide localization.** `useI18n` currently covers Settings and its picker; invoice, payment, scan, seller keys, sweep, registry, BTC and shared security disclosures remain English literals. Catalog coverage and native-speaker review are required before claiming those screens localized.
-4. **Policy-account/scheme-2 end-to-end path.** The policy package and contracts contain experimental support, but the web app lacks scheme-2 create/pay/withdraw flows and the standard router/scanner remains scheme 1. Keep this functionality experimental until UI, scanner, recovery, vectors, tests, deployment and readback are designed and validated.
+### Remaining product and owner gates
 
-These are current code and product-scope gaps, distinct from migration completeness. The completion-plan percentage is an older estimate and is not a current completeness measure.
+- Accept the recovery authority model before any contract implementation; obtain authorized deployment/asset pins,
+  finish versioned request/record identity and unsupported execution variants, and qualify the complete policy
+  lifecycle before enabling scheme 2. An announcement match alone remains insufficient payment evidence.
+- Preserve the real local PP/Railgun/sponsor and Bitcoin fixture evidence. Internal pool witness and ceremony-dependent
+  tests remain a separate unqualified scope; no trusted setup was regenerated.
+- Finish remaining application-wide literal-copy coverage and native review of every shipped locale. Security
+  translations are deliberately held on the reviewed-English path.
+- Resolve or review the actual Sonar security issue causing #84's D rating. Retrieved GitHub annotations alone do
+  not establish the cause; do not suppress or lower the quality gate.
+- Decide API-funded automation PRs #79/#82/#51/#52 separately. The existing invalid `openai-agents.yml` fragment
+  is unchanged. Draft feature PRs do not enable that automation.
+- Complete external deployment, custody, release signing, funded-wallet/device, professional audit and launch
+  gates listed below. Code and local tests cannot supply those external decisions or evidence.
 
-## Migration and automated-validation gates
+## Historical migration and automated-validation gates
 
 **Closed for the promoted source tree.** Audit 22 records candidate `c206655ebfa747b3dd56b1dc9f4e7f16e641a833`, promotion merge `5795857d9e366cc9a4304c6afa9b03365e7c1844`, successful uncancelled CI and Integration runs, zero candidate/worktree and promoted runtime-tree differences, and every authored remote source tip as an ancestor of `main`. Audit 19 and the source inventory/ledger provide path-level dispositions; generated `gh-pages` output and historical `.source` harnesses are not product source or current test evidence.
 

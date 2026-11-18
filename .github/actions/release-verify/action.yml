@@ -21,9 +21,19 @@ inputs:
     description: 40-hex commit SHA that the SIGNED tag points at (you must obtain it independently of the artifacts).
     required: true
   verify-attestation:
-    description: "Set to 'true' to also run `gh attestation verify` for every file in the checksums file."
+    description: >-
+      Set to 'true' to also run `gh attestation verify` for every file in the checksums file, pinned to the
+      repository's .github/workflows/release.yml, refs/tags/<tag>, expected-commit and a GitHub-hosted runner
+      (the same check as deploy/selfhost.sh). Requires the tag input.
     required: false
     default: 'false'
+  tag:
+    description: >-
+      Release tag the artifacts were built from, such as v1.2.3 (the signed tag you verified). Required when
+      verify-attestation is 'true'; anything that is not a plain release tag (v followed by letters, digits, . _ + -)
+      fails the step.
+    required: false
+    default: ''
   repository:
     description: owner/repo that produced the attestation (only used when verify-attestation is 'true').
     required: false
@@ -53,12 +63,19 @@ runs:
         GP_DIR: ${{ inputs.artifact-dir }}
         GP_SUMS: ${{ inputs.sums-file }}
         GP_REPO: ${{ inputs.repository }}
+        GP_TAG: ${{ inputs.tag }}
+        GP_COMMIT: ${{ inputs.expected-commit }}
         GH_TOKEN: ${{ inputs.github-token }}
       run: |
         set -euo pipefail
         [[ "$GP_REPO" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || { echo "::error::invalid repository input"; exit 1; }
+        [[ "${GP_TAG:-}" =~ ^v[0-9A-Za-z][0-9A-Za-z._+-]*$ ]] || { echo "::error::tag input must be a release tag such as v1.2.3 (required with verify-attestation)"; exit 1; }
+        [[ "$GP_COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::expected-commit must be a full 40-hex SHA"; exit 1; }
         cd "$GP_DIR"
+        # --repo alone accepts an attestation from any workflow on any ref of the repository. Pin the release
+        # workflow, the tag and the commit the signed tag points at, on a GitHub-hosted runner (as deploy/selfhost.sh).
         while read -r _ f; do
           f="${f#\*}"
-          gh attestation verify "$f" --repo "$GP_REPO"
+          gh attestation verify "$f" --repo "$GP_REPO" --signer-workflow "$GP_REPO/.github/workflows/release.yml" \
+            --source-ref "refs/tags/$GP_TAG" --source-digest "$GP_COMMIT" --deny-self-hosted-runners
         done < "$GP_SUMS"

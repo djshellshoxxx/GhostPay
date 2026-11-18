@@ -1,5 +1,7 @@
 # 09 Chain, token, announcer/registry matrix and version pins
 
+> **Implementation status (2026-11-16):** `packages/chain-adapters/config/matrix.json` now inventories all 14 configured chains, nine tokens and four feeds. `scripts/check-chain-matrix.mjs` validates strict cell provenance and runtime configuration parity; CI runs it. `--release` rejects unverified cells on enabled chains, and release builds invoke that gate. Current strict release readiness fails because runtime hashes, signed deployments and external acceptance are missing. Operator instructions are in `docs/operators/chain-matrix.md`. Nightly RPC revalidation and production pin readback remain outstanding; no deployment evidence was fabricated.
+
 Priority P1 | Effort M (3-4 d docs+code) | Owner: chain-adapters + docs | Deps: network access for primary-source verification (owner/operator)
 Sources: research DOC-3, DOC-5, DOC-7, DOC-14, DOC-19; ADR-0011; MULTICHAIN s2; DEV P6/R6.
 

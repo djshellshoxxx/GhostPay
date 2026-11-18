@@ -5,13 +5,13 @@ import { keccakHex } from './hex.js';
 
 const CODE = '0x6080';
 type Resp = { ok: boolean; status: number; text(): Promise<string> };
-const ok = (result: unknown): Resp => ({ ok: true, status: 200, text: () => Promise.resolve(JSON.stringify({ jsonrpc: '2.0', id: 1, result })) });
+const ok = (result: unknown, id: number): Resp => ({ ok: true, status: 200, text: () => Promise.resolve(JSON.stringify({ jsonrpc: '2.0', id, result })) });
 function server(chain = '0xe708', code = CODE): FetchLike & { bodies: string[] } {
   const bodies: string[] = [];
   const f: FetchLike = (_u, init) => {
     bodies.push(init.body);
-    const b = JSON.parse(init.body) as { method: string; params: string[] };
-    return Promise.resolve(b.method === 'eth_chainId' ? ok(chain) : ok(b.params[0] === CANONICAL_ANNOUNCER || b.params[0] === ARACHNID_DEPLOYER ? code : '0x'));
+    const b = JSON.parse(init.body) as { id: number; method: string; params: string[] };
+    return Promise.resolve(b.method === 'eth_chainId' ? ok(chain, b.id) : ok(b.params[0] === CANONICAL_ANNOUNCER || b.params[0] === ARACHNID_DEPLOYER ? code : '0x', b.id));
   };
   return Object.assign(f, { bodies });
 }
@@ -38,8 +38,8 @@ describe('createFetchRpc', () => {
     await expect(createFetchRpc(URL_, mk('null')).getChainId()).rejects.toThrow('malformed');
     await expect(createFetchRpc(URL_, mk('{"error":{"message":"KEY123"}}')).getChainId()).rejects.toThrow('JSON-RPC error');
     await expect(createFetchRpc(URL_, mk('{}')).getChainId()).rejects.toThrow('JSON-RPC error');
-    await expect(createFetchRpc(URL_, mk('{"result":5}')).getChainId()).rejects.toThrow('chain id');
-    await expect(createFetchRpc(URL_, mk('{"result":5}')).getCode(CANONICAL_ANNOUNCER)).rejects.toThrow('code');
+    await expect(createFetchRpc(URL_, mk('{"jsonrpc":"2.0","id":1,"result":5}')).getChainId()).rejects.toThrow('chain id');
+    await expect(createFetchRpc(URL_, mk('{"jsonrpc":"2.0","id":1,"result":5}')).getCode(CANONICAL_ANNOUNCER)).rejects.toThrow('code');
   });
 });
 

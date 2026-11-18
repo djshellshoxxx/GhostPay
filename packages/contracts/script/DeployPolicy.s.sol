@@ -46,7 +46,7 @@ contract DeployPolicy is DeployBase {
 
         string memory tokenRaw = _env("FEE_TOKEN");
         if (bytes(tokenRaw).length == 0) revert FeeTokenNotSet();
-        address feeToken = vm.parseAddress(tokenRaw);
+        address feeToken = _parseChecksummedAddress("FEE_TOKEN", tokenRaw);
         if (feeToken == address(0)) revert FeeTokenNotSet();
 
         string memory flatRaw = _env("FLAT_FEE");

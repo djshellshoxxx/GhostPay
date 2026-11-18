@@ -262,7 +262,11 @@ describe('key rotation', () => {
     const store = new MemoryTagStore();
     const v = await vaultWith(2, store);
     const r = (await store.getAll())[0] as EncryptedTagRecord;
-    await store.put({ ...r, ciphertext: `${r.ciphertext.slice(0, -2)}00` });
+    // Always flip a bit: replacing the last byte with 00 leaves 1/256 records unchanged.
+    const lastByte = Number.parseInt(r.ciphertext.slice(-2), 16) ^ 1;
+    const corrupted = `${r.ciphertext.slice(0, -2)}${lastByte.toString(16).padStart(2, '0')}`;
+    expect(corrupted).not.toBe(r.ciphertext);
+    await store.put({ ...r, ciphertext: corrupted });
     const before = JSON.stringify([await store.getMeta(), await store.getAll()]);
     await expect(v.rotateKeys(key(7))).rejects.toThrow(/could not be decrypted/);
     expect(JSON.stringify([await store.getMeta(), await store.getAll()])).toBe(before);
