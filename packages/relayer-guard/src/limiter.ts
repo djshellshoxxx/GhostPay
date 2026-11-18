@@ -79,13 +79,17 @@ export interface TokenBucketOptions {
   /** Most distinct keys held, >= 1. */
   readonly maxKeys: number;
   /**
-   * Capacity of the shared overflow bucket used while the table is full of non-idle keys
+   * Capacity of each overflow bucket (per group and shared) used while the table is full of non-idle keys
    * (default `burst`).
    */
   readonly overflowBurst?: number;
   /** Maximum tracked keys per abuse group (default `max(1, ceil(maxKeys / 8))`). */
   readonly maxPerGroup?: number;
-  /** Maximum isolated overflow buckets before using the shared overflow bucket (default 0). */
+  /**
+   * Most per-group overflow buckets held, integer >= 0 (default 1024). While the key table is full, a newcomer is
+   * charged to its abuse group's own overflow bucket; only when this table is also full of live (not refilled)
+   * buckets does it share the one global overflow bucket. 0 keeps the single global bucket (audit M-3).
+   */
   readonly maxOverflowGroups?: number;
   /** Derives an abuse group from a key. Pass a privacy-preserving group explicitly to `take` when keys are hashed. */
   readonly groupOf?: (key: string) => string;
@@ -96,7 +100,7 @@ export interface TakeResult {
   readonly ok: boolean;
   /** Milliseconds until `cost` tokens are available (0 when `ok`). */
   readonly retryAfterMs: number;
-  /** True when the request was charged to the shared overflow bucket. */
+  /** True when the request was charged to an overflow bucket (its group's own or the shared one). */
   readonly overflow: boolean;
 }
 
@@ -110,9 +114,12 @@ interface Bucket {
  *
  * Differences from `apps/relayer/src/limiter.ts` (haiku audit L6): elapsed time is clamped at 0 and
  * the default clock is monotonic, so a clock step never removes tokens; when the table is full, only
- * an idle (fully refilled) bucket is evicted, which loses nothing, and otherwise the newcomer shares
- * one overflow bucket, so an attacker with many keys cannot evict and thereby refill a victim's
- * drained bucket.
+ * an idle (fully refilled) bucket is evicted, which loses nothing, and otherwise the newcomer is charged to its
+ * abuse group's overflow bucket, so an attacker with many keys cannot evict and thereby refill a victim's
+ * drained bucket, and an attacker who fills the table does not drain the overflow of other groups (M-3).
+ *
+ * Memory: at most `maxKeys` key buckets (with their group counters), `maxOverflowGroups` group overflow
+ * buckets and one shared overflow bucket; groups are at most 256 characters.
  *
  * @security Keys should come from {@link bucketKey} (or an owner/destination address), optionally
  *   hashed. The limiter stores keys as given.
@@ -121,9 +128,8 @@ export class TokenBucketLimiter {
   private readonly table: BoundedTable<Bucket>;
   private readonly overflowBucket: Bucket;
   private readonly overflowBurst: number;
-  private readonly groupOverflow = new Map<string, Bucket>();
+  private readonly overflowTable: BoundedTable<Bucket>;
   private readonly maxPerGroup: number;
-  private readonly maxOverflowGroups: number;
 
   /**
    * @param opts Tunables (validated).
@@ -142,16 +148,20 @@ export class TokenBucketLimiter {
       'overflowBurst must be >= 1',
     );
     this.maxPerGroup = opts.maxPerGroup ?? Math.max(1, Math.ceil(opts.maxKeys / 8));
-    this.maxOverflowGroups = opts.maxOverflowGroups ?? 0;
+    const maxOverflowGroups = opts.maxOverflowGroups ?? 1024;
     requireConfig(
       Number.isInteger(this.maxPerGroup) && this.maxPerGroup >= 1,
       'maxPerGroup must be an integer >= 1',
     );
     requireConfig(
-      Number.isInteger(this.maxOverflowGroups) && this.maxOverflowGroups >= 0,
+      Number.isInteger(maxOverflowGroups) && maxOverflowGroups >= 0,
       'maxOverflowGroups must be an integer >= 0',
     );
     this.table = new BoundedTable(opts.maxKeys, (b) => this.refilled(b, opts.burst) >= opts.burst);
+    this.overflowTable = new BoundedTable(
+      maxOverflowGroups,
+      (b) => this.refilled(b, this.overflowBurst) >= this.overflowBurst,
+    );
     this.overflowBucket = { tokens: this.overflowBurst, last: now() };
   }
 
@@ -178,12 +188,7 @@ export class TokenBucketLimiter {
       if (this.table.groupSize(group) < this.maxPerGroup && this.table.insert(key, fresh, group))
         bucket = fresh;
       else {
-        bucket = this.groupOverflow.get(group);
-        if (bucket === undefined && this.groupOverflow.size < this.maxOverflowGroups) {
-          bucket = { tokens: this.overflowBurst, last: this.now() };
-          this.groupOverflow.set(group, bucket);
-        }
-        bucket ??= this.overflowBucket;
+        bucket = this.overflowFor(group);
         overflow = true;
         cap = this.overflowBurst;
       }
@@ -199,6 +204,14 @@ export class TokenBucketLimiter {
         ? Number.POSITIVE_INFINITY
         : Math.ceil(((cost - bucket.tokens) / this.opts.ratePerSecond) * 1000);
     return { ok: false, retryAfterMs, overflow };
+  }
+
+  /** The overflow bucket of `group`: its own while the overflow table has room, else the shared last resort. */
+  private overflowFor(group: string): Bucket {
+    const own = this.overflowTable.get(group);
+    if (own !== undefined) return own;
+    const fresh = { tokens: this.overflowBurst, last: this.now() };
+    return this.overflowTable.insert(group, fresh, '') ? fresh : this.overflowBucket;
   }
 
   private refilled(b: Bucket, cap: number): number {
