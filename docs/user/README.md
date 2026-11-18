@@ -14,6 +14,7 @@
 | [Reconciliation and receipt archive](reconciliation-and-receipts.md) | Review local invoice matches and manage archived seller receipts |
 | [Receive and scan](receive-and-scan.md) | Find payments sent to you and keep private notes about them |
 | [Sweep funds and gas privacy](sweep-and-gas-privacy.md) | Move funds to your wallet and understand what that reveals |
+| [Recover stealth payment keys without GhostPay](recover-stealth-payment-keys.md) | Open exported payment keys or a master backup offline, check them, and import one key into another wallet |
 | [Privacy limits](privacy-limits.md) | See who can learn what (observer table) |
 | [Seller privacy](seller-privacy.md) | The privacy-set banner, scanner lanes and spam, what the scan RPC learns |
 | [Fees](fees.md) | Know exactly what you pay and when GhostPay's fee does not apply |
