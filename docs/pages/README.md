@@ -8,6 +8,10 @@ GitHub Pages (static files) -> your browser (keys, invoices, scanning, signing) 
 
 **Status: pre-audit testnet beta. Not for real funds.** No external audit has been performed. A Pages build never enables a mainnet: the build refuses any mainnet deployment manifest.
 
+Current consolidation evidence is in [the 2026-11-18 completion report](../handoffs/pages-completion-20261118/COMPLETION_REPORT.md).
+It separates integrated code from executed checks, hosted qualification and public-testnet acceptance. Older PR and
+audit results below apply only to their recorded commits.
+
 ## Release states
 
 | State | Meaning | Current |
@@ -46,22 +50,23 @@ Details: [privacy limits](../user/privacy-limits.md), [receive and scan](../user
 ### Settings you must make yourself
 
 - **RPC URL per chain.** No provider is built in and no provider is substituted silently. Only `https://` and `wss://` URLs without a username, password or fragment are accepted. The app checks `eth_chainId` before use. A configured second RPC is used as a cross-check; if it cannot be opened the scan stops instead of continuing with one provider.
-- **Your own node.** Give it an HTTPS or WSS endpoint, or choose the local-proxy scan path in Settings, which accepts `http://127.0.0.1`, `http://localhost` or `http://[::1]` for scanning.
+- **Your own node.** Settings includes an acknowledged own-node profile that restricts RPC dispatch to loopback or valid v3 onion endpoints. The check runs for each request and retry, including clients created before the setting changed. Local-proxy scanning also accepts `http://127.0.0.1`, `http://localhost` or `http://[::1]`. Tor Browser and own-node profiles remain explicitly unverified against their real target networks; local-server tests do not establish Tor routing or anonymity.
 - **Scan privacy.** A "private path required" setting (Tor Browser or a local proxy) blocks the scan when that path is not available instead of falling back to a direct connection.
-- **Idle lock.** After the configured idle time the app locks local tags and records, and clears seller keys from memory when they can be loaded again (encrypted storage, imported keys, or a downloaded backup that you verified). Keys that exist only in the tab, or whose only copy is a downloaded file you have not verified yet, are kept loaded and the app tells you to back them up or verify the backup. The deadline is a wall-clock check: a device that slept past it locks as soon as the page is visible or used again.
+- **Idle lock.** After the configured idle time the app locks local tags and records, and clears seller keys from memory when they can be loaded again (encrypted storage, imported keys, or a downloaded backup that you verified). Keys that exist only in the tab, or whose only copy is a downloaded file you have not verified yet, are kept loaded and the app tells you to back them up or verify the backup. Wall-clock and monotonic deadlines cover device sleep and clock rollback; visibility and activity checks enforce expiration on return. Leaving with loaded keys and no verified backup requests the browser's navigation confirmation, subject to browser support.
 
 ### Typical flow (testnet beta)
 
 1. **Seller keys:** create keys, set a passphrase, then **back up** (encrypted file), **verify the backup** (pick the downloaded file and type its passphrase; the app decrypts it locally, compares it with the loaded keys and loads nothing) and keep the file somewhere else. Keys without a backup are lost if the tab closes; a download alone shows as "not verified".
 2. **Create invoice:** choose the testnet, token, amount and expiry. Copy the link or show the QR code.
 3. **Buyer (Pay):** open the link, review chain, token, amount and destination, connect a browser wallet on the right network, confirm. The wallet sends the transaction directly; no relayer is involved. Reloading during a pending payment keeps its hash and blocks a duplicate.
-4. **Seller (Scan and receive):** set the RPC, start a scan. The checkpoint survives closing and reopening the browser; the next scan resumes from it.
-5. **Sweep:** choose **Directly**. The one-time address pays its own gas:
+4. **Seller (Scan and receive):** set the RPC, start a scan. Private v4 checkpoint names derive from secret viewing-key material and bind the relevant scan configuration; they cannot be derived from a public seller identifier. Stored progress is untrusted and rechecked on resume. Locking or cancelling stops new bulk-evidence requests; already-dispatched requests remain subject to transport timeouts and retry behavior.
+5. **Sweep:** explicitly choose **Read balance** after reviewing the RPC disclosure, then choose **Directly**. Each balance refresh requires another click. Destination-reuse warnings retain links only in the current session and clear on lock or seller change. The one-time address pays its own gas:
    - **Native coin payments** can always be swept directly: the fee is deducted from the amount.
    - **ERC-20 payments** need native coin at the one-time address to pay its own gas. This build has no payer gas buffer: buffer-policy invoices (v2, ADR-0024) are made only by the full profile and refused by this one. To sweep an ERC-20 payment directly, first send a small amount of native coin to the one-time address yourself. That transfer links your funding wallet to the one-time address on-chain. The Sweep view says so when the gas is missing. A browser wallet cannot sign for a one-time address and is never asked to.
    - So the direct sweep supported end to end by this release is **native coin**. ERC-20 direct sweeps work with self-funded gas but are not covered by the local-chain acceptance run (the devnet tokens are not on the app's allowlist).
    - The optional relayed sweep needs a relayer URL that you configure yourself. None is provided or required.
-6. **Receipt:** sign a receipt for a finalized payment. A receipt is a seller statement; the on-chain transaction is the settlement evidence.
+6. **Receipt:** sign a receipt for a finalized payment. The default receipt omits the payment address; including it requires an explicit choice. A receipt is a seller statement; the on-chain transaction is the settlement evidence.
+7. **Independent recovery:** Scan exposes public records, encrypted payment-key exports and explicit raw-key downloads; Seller keys includes encrypted master export and recovery. Secret exports require proof that you hold the loaded keys. The address-code check contacts the selected RPC only for secret export and is disclosed before export. See [the recovery guide](../user/recover-stealth-payment-keys.md) for formats, the independent Node decoder and the viewing-key authority boundary.
 
 ### Verify the files you were served
 
@@ -92,7 +97,7 @@ The output directory must not exist and must be outside `apps/web`. Without `GHO
 
 | Variable | Meaning |
 |---|---|
-| `GHOSTPAY_PAGES_ORIGIN` | The serving origin, `https://host[:port]` with no path. Recorded in the evidence and the banner. Required when manifests are bundled. A `*.github.io` origin is treated as shared. |
+| `GHOSTPAY_PAGES_ORIGIN` | The serving origin, `https://host[:port]` with no path. Recorded in evidence and compiled into the app; an origin mismatch disables manifest trust and displays a notice. Required when manifests are bundled. A `*.github.io` origin is treated as shared. |
 | `GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet` | Accept a shared `*.github.io` origin for a build with testnet manifests. Without it such a build is refused (GP-PAGES-01). |
 | `GHOSTPAY_PAGES_DEPLOYMENTS_DIR`, `GHOSTPAY_RELEASE_PUBKEYS` | Release-signed testnet manifests and their public keys. |
 | `GHOSTPAY_PAGES_DEV=1` | Test build: a modified tree and a plain-http loopback origin are accepted; the banner and evidence say it is not a release. |
@@ -139,9 +144,9 @@ Starts anvil, deploys the contracts, switches the chain to the Base Sepolia id (
 | Trigger | Jobs |
 |---|---|
 | Pull request touching the app, packages or Pages tooling | `site` (Pages tooling tests, dependency tree, libraries built from source, `build-pages.sh`, source secret scan, artifact with SHA256SUMS) and `acceptance` (the real-chain Pages journey). Typecheck, lint, unit and mocked browser tests run in `ci.yml` for the same PR. |
-| `workflow_dispatch` on `main` with `deploy: true` | Additionally `release-gates` (typecheck, lint, web unit tests with anvil, mocked lean browser suite), then `deploy` and the post-deployment `smoke` test. |
+| `workflow_dispatch` on `main` with `deploy: true` | Additionally `release-gates` (typecheck, lint, web unit tests with anvil, mocked lean browser suite), an exact-file checksum check and build-provenance attestation, then `deploy` and the post-deployment `smoke` test. The deployed URL must match the declared origin. |
 
-Nothing deploys automatically. Publishing jobs are never cancelled by a newer run. Permissions are `contents: read` except the deploy job (`pages: write`, `id-token: write`).
+Nothing deploys automatically. Publishing jobs are never cancelled by a newer run. Permissions are `contents: read` except the deploy job (`pages: write`, `id-token: write`) and the publishing-only attestation job (`attestations: write`, `id-token: write`). The attestation job runs no checked-out repository code.
 
 ### Serving origin (read before publishing)
 
@@ -170,11 +175,11 @@ Only the repository owner can do these. Each step names where it is done and wha
 
 **B. Publish the demonstration build (`DEMO_DEPLOYED`)**
 
-4. Settings > Pages > Build and deployment > Source: **GitHub Actions**. The prototype's `gh-pages` branch is then unused; keep or delete it.
+4. Settings > Pages > Build and deployment > Source: **GitHub Actions**. Preserve the historical `gh-pages` branch.
 5. Settings > Environments > `github-pages`:
    - Deployment branches and tags: **Selected branches**, add `main` only.
    - Optional: Required reviewers, for a second approval before each deployment.
-6. Get the release onto `main`, because the deploy job runs only from `main`. Pull request #137 is stacked: #137 → #135 (`nodata/jolly-rubin-u4zd45`) → #98 (`integration/ghostpay-beta-consolidated-20261109`) → `main`. Either merge the stack in that order after review, or open one pull request from `claude/ghostpay-github-pages-up6cj6` to `main` (it contains the whole stack). Wait for CI to pass on the merge commit.
+6. Qualify and merge the intended candidate into `main`, because the deploy job runs only from `main`. Use the current completion report's exact source and check results; historical PR stacks do not qualify a newer tree. All required checks must pass on the intended merge result.
 7. Actions > **Pages** > Run workflow > Branch `main`, tick **deploy**, Run. The run builds and verifies the site and runs the real-chain acceptance plus the release gates (typecheck, lint, unit tests, mocked browser suite). Then it deploys, and the `smoke` job checks the live site.
 8. In the run summary, check:
    - `pages-evidence.json`: `release: true`, your origin, `sharedOrigin: false`, and status `DEMO: payments disabled …`;
@@ -199,7 +204,7 @@ Only the repository owner can do these. Each step names where it is done and wha
 
 **D. Before calling the release done**
 
-14. SonarCloud: the project's new-code security rating was D, and its issue list was not reachable from the build sandbox. In SonarCloud > Issues, filter Type = Vulnerability and Security Hotspot, New code. Export or copy the list into pull request #137 so each item can be fixed or dispositioned. Do not mark items as "won't fix" to reach a rating.
+14. Reconcile the current source's SonarCloud vulnerabilities and security hotspots with accessible issue evidence. Preserve historical ratings and findings as historical evidence; a missing report does not qualify the candidate. Record each disposition in the candidate PR without lowering the quality gate.
 15. Arrange an independent security review of the exact release commit (the review in `RELEASE_MATRIX.md` was AI-assisted, not an audit).
 
 ### External testnet qualification
@@ -215,7 +220,7 @@ Record them in a dated file under `docs/handoffs/`. Local anvil results do not c
 
 ### Limits of a GitHub Pages host
 
-- Only the `<meta>` CSP applies. `frame-ancestors`, `X-Frame-Options`, `X-Content-Type-Options`, `Permissions-Policy`, COOP/CORP and `Cache-Control` cannot be set, so the site can be framed (clickjacking) and the iframe embed mode is unavailable.
+- Only the `<meta>` CSP applies. `frame-ancestors`, `X-Frame-Options`, `X-Content-Type-Options`, `Permissions-Policy`, COOP/CORP and `Cache-Control` cannot be set. The site can be framed; the app refuses sensitive views while framed outside explicit full-profile embedding. Lean Pages embedding stays unavailable. This runtime guard does not provide header-level isolation or protection against a compromised same-origin host.
 - `connect-src 'self' https: wss:` is broad on purpose, because users choose their own RPCs.
 - GitHub (and anyone who controls the repository or its Actions) controls the code you run. Compare served files with `SHA256SUMS` from the workflow run.
 - ADR-0015 (hosting gating) and [ADR-0029](../adr/ADR-0029-github-pages-static-beta.md) record which hosting gates are met and which still need the owner.
