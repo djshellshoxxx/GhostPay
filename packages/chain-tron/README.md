@@ -17,11 +17,11 @@ refused with `LEGACY_META_ADDRESS`: it is the EVM meta-address, which need not b
 - `meta.ts`: `encodeTronMetaAddress` / `decodeTronMetaAddress` (`st:trx:0x`, strict, same accept set as tron-adapter), `buildTronAnnouncementMemo` / `parseTronAnnouncementMemo` (`GPT1 || R || viewTag`).
 - `stealth.ts`: `deriveTronStealthPayment` (takes `st:trx:0x`, returns the memo too), `checkTronAnnouncement`, `deriveTronStealthSecret`, `tronAddressOfSecret`. Same maths and view tag as core-crypto; only presentation differs.
 - `trc20.ts`: `transfer(address,uint256)` (a9059cbb) and `balanceOf(address)` (70a08231) encoders, `triggersmartcontract` / `triggerconstantcontract` body builders, `fee_limit` bounded to 1..15,000,000,000 sun.
-- `adapter.ts`: `createTronAdapter`, `TronFamily = 'tron'`, fees all `not_enforceable`.
+- `adapter.ts`: `createTronAdapter`, `TronFamily = 'tron'`, fees all `not_enforceable`. Payment requests validate and quote, but `build()` fails closed with `TronAdapterError` `MEMO_NOT_BOUND`: this package cannot bind the `GPT1` memo into the transaction's `raw_data.data` (ADR-0019 section 2), and a transfer without it pays an address the receiver can never detect.
 
 ## Verification (run in this package)
 - `tsc --noEmit`: clean. `eslint`: clean.
-- `vitest run --coverage` (2026-11-18): 6 files, 54 tests passing; coverage statements 100% (160/160), branches 100% (96/96), functions 100% (37/37), lines 100% (134/134). Thresholds 95/90/95/95 unchanged.
+- `vitest run --coverage` (2026-11-18, after the fail-closed `build()`): 6 files, 54 tests passing; coverage statements 100% (166/166), branches 100% (105/105), functions 100% (38/38), lines 100% (139/139). Thresholds 95/90/95/95 unchanged.
 - Property tests (fast-check): encode/decode round trip, EVM round trip, single-character mutation always rejected (500 runs), non-0x41 prefix rejected, stealth round trip against core-crypto (25 seeds), amount ABI round trip.
 
 ## Unverified
