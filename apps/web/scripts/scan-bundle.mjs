@@ -9,6 +9,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseReleaseKeys, validateDeployments } from './validate-deployments.mjs';
+import { leanModuleProblem } from '../../../scripts/pages/lean-exclusions.mjs';
 
 /** Hosts/URLs that may appear as inert string literals. None is ever fetched; each has a reason. */
 export const ALLOWED_URLS = [
@@ -86,6 +87,38 @@ function scanHosts(text, label, problems) {
   }
 }
 
+/** Inline-code, remote-resource and CSP/referrer checks for one HTML document of the output. */
+function scanHtmlDocument(html, label, problems) {
+  // Visit every script start tag. An HTML parser ends a script element at `</script` followed by whitespace, `/`
+  // or `>` (any case), so the end tag may carry whitespace or junk attributes; an element with no end tag runs to
+  // the end of the document. Neither form may escape the inline-code checks.
+  const scriptStart = /<script\b([^>]*)>/gi;
+  const scriptEnd = /<\/script(?=[\s/>])[^>]*>/gi;
+  for (let start = scriptStart.exec(html); start !== null; start = scriptStart.exec(html)) {
+    const attrs = start[1];
+    scriptEnd.lastIndex = scriptStart.lastIndex;
+    const end = scriptEnd.exec(html);
+    const body = html.slice(scriptStart.lastIndex, end === null ? html.length : end.index);
+    if (end === null) problems.push(`${label}: unterminated <script>`);
+    if (!/\bsrc\s*=/.test(attrs)) problems.push(`${label}: inline <script>`);
+    else if (body.trim() !== '') problems.push(`${label}: script with both src and inline body`);
+    if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(attrs)) problems.push(`${label}: remote script`);
+    if (end === null) break;
+    scriptStart.lastIndex = scriptEnd.lastIndex;
+  }
+  if (/<style\b/i.test(html)) problems.push(`${label}: inline <style>`);
+  if (/\sstyle\s*=/i.test(html)) problems.push(`${label}: inline style attribute`);
+  if (/\son[a-z]+\s*=/i.test(html)) problems.push(`${label}: inline event handler attribute`);
+  if (/<link\b[^>]*\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(html)) problems.push(`${label}: remote <link>`);
+  if (!/http-equiv="Content-Security-Policy"/.test(html)) problems.push(`${label}: meta CSP missing`);
+  if (!/name="referrer"\s+content="no-referrer"/.test(html)) problems.push(`${label}: meta referrer no-referrer missing`);
+  if (/script-src[^;"]*'unsafe-(?:inline|eval)'/.test(html)) problems.push(`${label}: CSP allows unsafe-inline/eval scripts`);
+  if (/style-src[^;"]*'unsafe-inline'/.test(html)) problems.push(`${label}: CSP allows unsafe-inline styles`);
+  // The app entry carries no external URL at all. Other pages (help, privacy) may link out with plain https <a href>
+  // navigation, never load an external resource; the href value is masked before the host scan.
+  scanHosts(label === 'index.html' ? html : html.replace(/(<a\b[^>]*?\bhref\s*=\s*)(["'])https:\/\/[^"'<>\s]*\2/gi, '$1$2#$2'), label, problems);
+}
+
 /** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
 /**
  * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
@@ -150,36 +183,31 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     }
   }
 
-  const indexPath = join(distDir, 'index.html');
-  if (!existsSync(indexPath)) problems.push('index.html missing');
-  else {
-    const html = readFileSync(indexPath, 'utf8');
-    // Visit every script start tag. An HTML parser ends a script element at `</script` followed by whitespace, `/`
-    // or `>` (any case), so the end tag may carry whitespace or junk attributes; an element with no end tag runs to
-    // the end of the document. Neither form may escape the inline-code checks.
-    const scriptStart = /<script\b([^>]*)>/gi;
-    const scriptEnd = /<\/script(?=[\s/>])[^>]*>/gi;
-    for (let start = scriptStart.exec(html); start !== null; start = scriptStart.exec(html)) {
-      const attrs = start[1];
-      scriptEnd.lastIndex = scriptStart.lastIndex;
-      const end = scriptEnd.exec(html);
-      const body = html.slice(scriptStart.lastIndex, end === null ? html.length : end.index);
-      if (end === null) problems.push('index.html: unterminated <script>');
-      if (!/\bsrc\s*=/.test(attrs)) problems.push('index.html: inline <script>');
-      else if (body.trim() !== '') problems.push('index.html: script with both src and inline body');
-      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(attrs)) problems.push('index.html: remote script');
-      if (end === null) break;
-      scriptStart.lastIndex = scriptEnd.lastIndex;
+  // Every HTML document of the output (SEC-24): index.html, help.html, privacy.html and any other page.
+  if (!existsSync(join(distDir, 'index.html'))) problems.push('index.html missing');
+  for (const f of files) {
+    const r = rel(f);
+    if (/\.html?$/i.test(r)) scanHtmlDocument(readFileSync(f, 'utf8'), r, problems);
+  }
+
+  // The lean module report (lean profile only) against the exclusion list shared with the Pages verifier (SEC-24).
+  const leanReportPath = join(distDir, 'ghostpay-lean-build.json');
+  if (existsSync(leanReportPath)) {
+    let report;
+    try {
+      report = JSON.parse(readFileSync(leanReportPath, 'utf8'));
+    } catch {
+      problems.push('ghostpay-lean-build.json: not valid JSON');
     }
-    if (/<style\b/i.test(html)) problems.push('index.html: inline <style>');
-    if (/\sstyle\s*=/i.test(html)) problems.push('index.html: inline style attribute');
-    if (/\son[a-z]+\s*=/i.test(html)) problems.push('index.html: inline event handler attribute');
-    if (/<link\b[^>]*\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(html)) problems.push('index.html: remote <link>');
-    if (!/http-equiv="Content-Security-Policy"/.test(html)) problems.push('index.html: meta CSP missing');
-    if (!/name="referrer"\s+content="no-referrer"/.test(html)) problems.push('index.html: meta referrer no-referrer missing');
-    if (/script-src[^;"]*'unsafe-(?:inline|eval)'/.test(html)) problems.push("index.html: CSP allows unsafe-inline/eval scripts");
-    if (/style-src[^;"]*'unsafe-inline'/.test(html)) problems.push("index.html: CSP allows unsafe-inline styles");
-    scanHosts(html, 'index.html', problems);
+    if (report !== undefined) {
+      const groups = [...(Array.isArray(report?.chunks) ? report.chunks : []), ...(Array.isArray(report?.workers) ? report.workers.flatMap((w) => w?.chunks ?? []) : [])];
+      for (const chunk of groups) {
+        for (const m of Array.isArray(chunk?.modules) ? chunk.modules : []) {
+          const why = leanModuleProblem(m);
+          if (why !== undefined) problems.push(`ghostpay-lean-build.json: ${why}`);
+        }
+      }
+    }
   }
 
   const headersPath = join(distDir, '_headers');
