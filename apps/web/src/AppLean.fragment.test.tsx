@@ -141,4 +141,30 @@ describe('static Pages invoice-fragment privacy', () => {
     expect(window.location.search).toBe('?view=pay');
   });
 
+  it('focuses main for a new invoice link even when Pay was already selected', () => {
+    window.history.replaceState(null, '', '/app/?view=pay#gpi=v1.initial');
+    renderWith(<AppLean />);
+
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    const pay = within(nav).getByRole('button', { name: 'Pay' });
+    expect(pay.getAttribute('aria-current')).toBe('page');
+    pay.focus();
+    expect(document.activeElement).toBe(pay);
+
+    // A second incoming invoice is new content even though the selected view stays Pay.
+    // Screen-reader and keyboard users must land in the updated main region.
+    const navigationState = { source: 'second-invoice' };
+    act(() => {
+      window.history.replaceState(navigationState, '', '/app/?view=pay#gpi=v1.second');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+
+    expect(pay.getAttribute('aria-current')).toBe('page');
+    expect(document.activeElement).toBe(screen.getByRole('main'));
+    expect(window.location.hash).toBe('');
+    expect(window.location.pathname).toBe('/app/');
+    expect(window.location.search).toBe('?view=pay');
+    expect(window.history.state).toEqual(navigationState);
+  });
+
 });

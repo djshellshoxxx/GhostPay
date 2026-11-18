@@ -68,8 +68,34 @@ describe('contextual help', () => {
     expect(tip.hasAttribute('hidden')).toBe(true);
     fireEvent.click(button);
     expect(tip.hasAttribute('hidden')).toBe(false);
-    fireEvent.pointerDown(screen.getByRole('button', { name: 'Outside' }), { pointerType: 'touch' });
+    // A whole outside tap: dismissal happens at its click, after the tapped control was activated.
+    const outside = screen.getByRole('button', { name: 'Outside' });
+    fireEvent.pointerDown(outside, { pointerType: 'touch' });
+    fireEvent.pointerUp(outside, { pointerType: 'touch' });
+    fireEvent.click(outside);
     expect(tip.hasAttribute('hidden')).toBe(true);
+  });
+
+  it('keeps an open in-flow explanation in place while a control below it is pressed, so the click still lands', () => {
+    // The explanation is in the page flow: hiding it at pointerdown moves the pressed control away before the release,
+    // and the click then lands elsewhere or nowhere (a keystore "Decrypt and load" press did nothing).
+    let submitted = 0;
+    render(<><ContextHelp label="About keystore files">Choose the original encrypted keystore.</ContextHelp><button type="button" onClick={() => { submitted += 1; }}>Decrypt and load</button></>);
+    const help = screen.getByRole('button', { name: 'About keystore files' });
+    const tip = screen.getByRole('tooltip', { hidden: true });
+    const below = screen.getByRole('button', { name: 'Decrypt and load' });
+    for (const pointerType of ['mouse', 'touch'] as const) {
+      fireEvent.click(help);
+      expect(tip.hasAttribute('hidden')).toBe(false);
+      fireEvent.pointerDown(below, { pointerType });
+      expect(tip.hasAttribute('hidden')).toBe(false);
+      fireEvent.pointerUp(below, { pointerType });
+      expect(tip.hasAttribute('hidden')).toBe(false);
+      fireEvent.click(below);
+      expect(tip.hasAttribute('hidden')).toBe(true);
+      expect(help.getAttribute('aria-expanded')).toBe('false');
+    }
+    expect(submitted).toBe(2);
   });
 
   it('keeps field hints and help attached to the control, including when it is disabled', () => {
