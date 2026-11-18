@@ -31,7 +31,7 @@ Integration branch `claude/lucid-meitner-apalzc` is built on the PR #157 head (`
 | Anvil-dependent tests | **not run** (skipped) | payer-sponsor 4, pool-relayer 9, apps/relayer 5, chain-adapters/pool-circuits skips |
 | Foundry, Slither, contract format/NatSpec, Playwright, repro-check, release/signing | **not run** | tools/browsers/clean clones unavailable |
 | Hosted CI on the final HEAD | **not confirmed** | PR #164 CI results seen earlier were mostly cancelled aggregators from superseded pushes (concurrency); #164 was then closed without merge |
-| Regression-test strength (revert each fix, confirm a test fails) | MUTATION_CHECK_PLACEHOLDER | |
+| Regression-test strength (revert each fix, confirm a test fails) | 13 fix groups mutated (fix reverted, tests kept): every one made a test fail. One was weak: reverting the chain-adapters NaN-retries fix made the suite HANG (>90 s) instead of failing; fixed by capping the test transport (reverted code now fails in ~12 ms). ReDoS tests (300 ms budget) failed 3/3 when mutated at 1.4-2.6 s; fixed code takes milliseconds. Caveat: this ran before the final AST scanner, additive `tx.origin` pass and `maxQueue` validation, which have RED/GREEN evidence but were not mutation-checked; docs-only, test-only and YAML-move commits were not mutated. Report: [mutation check](GHOSTPAY_REGRESSION_MUTATION_CHECK.md) | |
 
 ## Reviews performed
 - 3 independent randomized Haiku rounds (37 files, seeds 20261115/16/18): 13 + 6 + 6 findings, all triaged; see the Haiku doc. Round 3 is also the post-fix regression pass and caught an incomplete fix.
