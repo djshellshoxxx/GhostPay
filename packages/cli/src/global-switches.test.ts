@@ -137,6 +137,44 @@ describe('global switches are not honoured in option-value positions (R11-1)', (
   }
 });
 
+describe('no command matched: a switch behind an option is still not honoured (R11-1)', () => {
+  // Without a matching command the option spec is unknown, so a token behind any other option may be that
+  // option's value. A mistyped command plus an attacker-chosen value must not turn into exit 0.
+  const rows: readonly (readonly string[])[] = [
+    ['webhok', 'verify', '--header', '--version', '--json'],
+    ['webhok', 'verify', '--header', '--help'],
+    ['webhook', 'verifyy', '--header', '--help'],
+    ['webhook', 'verifyy', '--body-file', 'b', '--header', '-h', '--json'],
+    ['split', '--total', '10', '--share', '--version'],
+    ['chain', 'deployment', '--in', '--version'],
+    ['merchant', 'refunds', 'statuss', '--in', '-h'],
+    ['sandbox', 'chain', '--seed', '--help'],
+    ['nosuch', '--anything', '--help', '--json'],
+  ];
+  for (const argv of rows) {
+    it(`${argv.join(' ')} is a usage error`, async () => {
+      const io = makeIo();
+      expect(await run(argv, io)).toBe(2);
+      expect(io.out.join('')).toBe('');
+      expect(io.err.join('')).not.toMatch(/"ok":true/);
+      expect(io.err.join('')).toMatch(/UNKNOWN_COMMAND|MISSING_SUBCOMMAND|unknown command|needs a subcommand/);
+    });
+  }
+
+  it('a switch directly behind the words is still a genuine request', async () => {
+    for (const argv of [['payment', '--help'], ['payment', 'verifyy', '--help'], ['payment', 'verifyy', '-h', '--json'], ['webhook', '--json', '--help']]) {
+      const io = makeIo();
+      expect(await run(argv, io), argv.join(' ')).toBe(0);
+      expect(io.out.join(''), argv.join(' ')).toMatch(/verify/);
+    }
+    for (const argv of [['nosuch', '--version'], ['webhok', 'verify', '--version', '--header', 'x']]) {
+      const io = makeIo();
+      expect(await run(argv, io), argv.join(' ')).toBe(0);
+      expect(io.out.join('')).toContain(VERSION);
+    }
+  });
+});
+
 describe('genuine help and version invocations still work (R11-1)', () => {
   it('top-level, group, command and help-command forms exit 0 with help', async () => {
     for (const argv of [['--help'], ['-h'], ['--help', '--json'], ['--json', '--help'], ['help'], []]) {

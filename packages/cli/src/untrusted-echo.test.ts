@@ -55,6 +55,12 @@ describe('error and human output do not echo raw untrusted text (R11-4)', () => 
       expect(displayPath(p)).toBeUndefined();
   });
 
+  it('displayPath withholds key=value text and network paths (a link fragment pasted without its #)', () => {
+    for (const p of ['gpi=v1.SECRETSECRETSECRETSECRET', 'dir/gpi=v1.SECRETSECRET', 'token=abc', '//pay.example/SECRETSECRET', '\\\\host\\share\\SECRETSECRET'])
+      expect(displayPath(p), p).toBeUndefined();
+    expect(displayPath('reports/2026-11 (final) [v2].json')).toBe('"2026-11 (final) [v2].json"');
+  });
+
   it('i18n check human output does not emit terminal escape characters from catalog keys', async () => {
     const en = JSON.stringify({ hello: 'Hello' });
     const es = '{"hello":"Hola","x\\u001b[1A\\u001b[2Kok   es       10/10":"y"}';
