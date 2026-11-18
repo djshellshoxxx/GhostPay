@@ -3,7 +3,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { affectedSet, buildsNeeded, classifyChanges, loadRepo, topoOrder } from './workspaces.mjs';
-import { render } from './package-map.mjs';
+import { cell, render } from './package-map.mjs';
+
+test('table cells escape backslashes before pipes and collapse whitespace', () => {
+  assert.equal(cell('a | b'), 'a \\| b');
+  assert.equal(cell('x\\|y'), 'x\\\\\\|y'); // \| -> \\\| : escaped backslash, then escaped pipe
+  assert.equal(cell(' one\n two\t'), 'one two');
+});
 
 // Synthetic graph: a <- b <- c, a <- d (d has no build script), e isolated, plus apps/web and chain-adapters.
 const ws = (location, deps = [], scripts = ['build', 'test']) => ({

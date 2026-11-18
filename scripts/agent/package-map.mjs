@@ -11,9 +11,10 @@ import { dependents, internalDeps, loadRepo } from './workspaces.mjs';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const target = join(root, '.claude/skills/ghostpay-package-map/PACKAGE_MAP.md');
 
-// Table cells: one line, no pipes.
-const cell = (s) => String(s).replace(/\s+/g, ' ').replace(/\|/g, '\\|').trim();
-const short = (loc) => loc.replace(/^packages\//, '').replace(/^apps\//, 'apps/');
+// Table cells: one line; escape backslashes first so an input `\|` cannot unescape the pipe that follows.
+export const cell = (s) => String(s).replace(/\s+/g, ' ').replace(/\\/g, '\\\\').replace(/\|/g, '\\|').trim();
+// packages/x -> x; apps/x stays apps/x so the two groups remain distinguishable.
+const short = (loc) => loc.replace(/^packages\//, '');
 
 export function render({ workspaces, forge }) {
   const deps = internalDeps(workspaces);
