@@ -14,8 +14,9 @@ Evidence rule: "fixed" below means a regression test failed before the change an
 | CodeQL x2 | High (scanner) | i18n readability, ops-monitor fetcher | `js/polynomial-redos` (5.5 s / 4.2 s on 60k-char input) | RED/GREEN; both now linear. Whether CodeQL now clears is unverified (needs a CI run) |
 | off-filter | Medium | web scan | Token/block-window telemetry from off-filter logs was accepted | recovered from #162/#163 with its test |
 | C-1 | Medium | web | "Show larger" QR dialog dropped bearer/secret/caution warning | RED 3 failed, GREEN |
-| H-R1-F1 | Low | web scripts | `scan-bundle` comment stripper hid same-line sinks after `https://` | RED/GREEN |
-| H-R2-F1 | Low-Med | CI script | `check-tx-origin.sh` missed `tx` and `.origin` on separate lines | RED/GREEN. Gap left: an inline `/* */` between the lines is still not joined |
+| H-R1-F1, H-R3-F1, Opus-1 | Low | web scripts | `scan-bundle` src sink scan was bypassable through its comment stripper three ways (URL in a string; `//` in a regex; nested template, regex after `)`, URL in JSX text) | Heuristic stripper **replaced by a TypeScript AST scan** (`scanSourceSinks`): comments/strings/regex/JSX text cannot hide a sink; also flags compound `+=`, `el['innerHTML']`, `(0,eval)()`, and fails closed on unparsable source. RED/GREEN; 142 real src files: 0 hits; real build + postbuild scan pass |
+| H-R2-F1, Opus-2 | Low-Med | CI script | `check-tx-origin.sh` missed `tx` / `.origin` split across lines, comments or an inline block comment | RED/GREEN. Additive whole-file, comment-insensitive pass (node); the stricter per-line checks are unchanged, so it can only add failures. 39 real `.sol` files still OK |
+| Opus-5 | Low | pool-relayer | `maxQueue` NaN disabled the bound; 0/negative/fractional refused every request | RED (5 failed)/GREEN: rejected at construction |
 | SOLANA-TRON-08 | Low | tron-adapter | `getBlockRange` accepted short/gapped lists, so a scan could skip payments | RED/GREEN; one old test that expected `[]` was changed deliberately |
 | CHAIN-ADAPTERS-10 | Low | chain-adapters | `2026-02-30` accepted as a manifest date; `retries: NaN` looped forever (RED hung); `price.decimals` unbounded | RED/GREEN |
 | H-R2-F3 | Low | pool-circuits | Zero values accepted for withdraw/ragequit though the contract rejects them | RED/GREEN |
@@ -27,6 +28,12 @@ Evidence rule: "fixed" below means a regression test failed before the change an
 - Severity changed: S3-01 manifest trust High -> Medium (while mainnet stays refused; `RELEASE_KEY` still undefined). CHAIN-ADAPTERS-04 Medium -> Low (evidence is now transfer-bound).
 - Still valid, other owner: CRYPTO-CORE-01 (stuck RNG in secret-box).
 - **No new Critical or High found** by this review. That is absence of findings in what was read, not proof of absence.
+
+## Final adversarial review (Opus, read-only, over `a89a2e94..HEAD` code)
+No regression against baseline and no weakening of privacy found; no new telemetry. Six Low findings: three fixed above (stripper, tx-origin, maxQueue). Not fixed:
+- **Opus-3 (Low, speculative)**: payer-sponsor send lane queue is unbounded and a hung simulate/send blocks that chain's lane (viem HTTP timeout bounds it in production; a custom transport might not). `loss.allows()` runs before queueing, so N concurrent requests from one bucket can overrun the budget (older TOCTOU, not introduced here). A `gasPrice()` throw inside the lane is recorded by the breaker as `send_failed` though nothing was sent.
+- **Opus-4 (Low, speculative)**: the `OUTCOME_UNKNOWN` worst-case charge (gasLimit x gasPrice) can undercharge if the base fee rises; the client stays charged if the tx later mines (deliberately conservative, no refund) and flaky operator RPC drains honest budgets; `guarded()` logs it as `rejected` without the txHash, which loses reconciliation data.
+- **Opus-6 (Low, UX, fail-closed)**: web `checkNetwork` for a Tron node without block 0 now shows the adapter's INVALID_RESPONSE instead of the `tron.error.firstBlock` message.
 
 ## Open, not fixed
 - B-W4 (Low): pool-relayer/sponsor trust the RPC-returned tx hash (sweep relayer already verifies).

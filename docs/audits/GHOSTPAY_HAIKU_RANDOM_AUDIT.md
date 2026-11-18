@@ -21,11 +21,11 @@ Honest scale note: 37 files of ~1,900-2,000 candidates is under 2% of the reposi
 | 1 | F7 | Low | Missing validation | Paymaster has no `validAfter <= validUntil` check | Open, Info: fails closed (EntryPoint rejects). Needs `forge` |
 | 1 | F4, F10, F12 | Low | Probable/doc | stale snapshot in `PolicyReceive` finalizer; invoice-parity test name overstates; `ctm-cleartext` selectable with no prod guard | Open, Low (no prod callers found) |
 | 1 | F8 | - | False positive | paymaster gas-cap math and signed-field coverage verified correct | closed |
-| 2 | F1 | Low-Med | Potential vuln (reproduced) | `check-tx-origin.sh` missed `tx` / `.origin` on separate lines | **Fixed** (RED/GREEN). Gap left: inline `/* */` between the lines |
+| 2 | F1 | Low-Med | Potential vuln (reproduced) | `check-tx-origin.sh` missed `tx` / `.origin` on separate lines | **Fixed** (RED/GREEN); comment-split gaps found by the Opus review fixed by an additive whole-file pass |
 | 2 | F2 | Med | Probable | payer-sponsor receipt timeout: no hash, no loss charge | **Fixed** (worker B W1, `OUTCOME_UNKNOWN`) |
 | 2 | F3 | Low | Probable | pool-circuits accepts zero values the contract rejects | **Fixed** (worker E) |
 | 2 | F4-F6 | Low | Doc/test | WrongChain NatSpec omits 31337 refusal; donation test title overstates; reminder-bridge comment implies recurrence | Open (F4 needs `.sol` edit + `forge`) |
-| 3 | F1 | Low | Confirmed (incomplete R1 fix) | stripper still fooled by `//` or `/*` inside a regex literal | **Fixed** (regex-position heuristic; 142 real files identical before/after) |
+| 3 | F1 | Low | Confirmed (incomplete R1 fix) | stripper still fooled by `//` or `/*` inside a regex literal | **Fixed**, then superseded: a regex heuristic was itself bypassed (Opus review), so the stripper was replaced by a TypeScript AST scan |
 | 3 | F2 | Doc | Documentation | scanBundle JSDoc ended up on `stripComments` | Open, trivial |
 | 3 | F3 | Med (as reported) | Missing functionality | `embed-sri.mjs` not called by any build step | **Known and documented** (`apps/web/README.md`, `DEVIATIONS.md` S3-10/11 still open). Wiring changes release output and CORS headers: owner decision |
 | 3 | F4 | Low | Probable | `embed-sri` appends duplicate `_headers` block on re-run; silently skips if `_headers` missing | Open (script is unwired) |

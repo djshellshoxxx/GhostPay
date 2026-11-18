@@ -18,7 +18,9 @@ Still experimental and unaudited. Nothing deployed, enabled for mainnet, or publ
 7. Merging to `main` requires explicit owner authorization.
 
 ## Engineering follow-ups
-- B-W4/W5/W6 (relayer/sponsor hash trust, unknown-outcome tracking, duplicate-in-flight); paymaster `validAfter<=validUntil` + `WrongChain` NatSpec; Haiku R2 F5/F6; `check-tx-origin` inline-comment gap.
+- B-W4/W5/W6 (relayer/sponsor hash trust, unknown-outcome tracking, duplicate-in-flight); paymaster `validAfter<=validUntil` + `WrongChain` NatSpec; Haiku R2 F5/F6.
+- Opus-3/4/6 (see the security reassessment): bound the payer-sponsor lane queue and move `loss.allows()` inside the lane; fix `OUTCOME_UNKNOWN` log (include txHash) and charge estimate; restore the `tron.error.firstBlock` message.
+- Haiku R3: F3 `embed-sri.mjs` unwired (known, README/DEVIATIONS S3-10/11, owner decision), F4 duplicate `_headers` block on re-run, F5/F6 unverified.
 - Read line by line: rest of `Scan.tsx`, `Pay.tsx`, ops-monitor lifecycle; re-run dependency audit; SOLANA-TRON-10..12.
 - Dependabot npm updates (regenerate lockfile + full CI). Docs-only branches (8) were not content-reviewed.
 - PR inventory is partial (only 30 newest open PRs read; closed PRs not enumerated). Branch inventory is complete.
