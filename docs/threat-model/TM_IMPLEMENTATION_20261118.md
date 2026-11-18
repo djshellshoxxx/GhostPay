@@ -5,7 +5,7 @@
 Worker: branch-archaeology/security-tooling lane; coordinator: current Pages completion session.
 Branch: `integration/ghostpay-doc-evidence-20261118`.
 Reviewed runtime source: `e85db1ef942bda9cb54317a6c036a22484b46ff9`.
-Owned files: this ledger, `README.md`, `docs/threat-model/PRIVACY_THREAT_MODEL.md` `docs/DEPLOYMENT_MANIFEST.md` and `deploy/TOR.md`.
+Owned files: this ledger, `README.md`, `docs/threat-model/PRIVACY_THREAT_MODEL.md`, `docs/DEPLOYMENT_MANIFEST.md` and `deploy/TOR.md`.
 Acceptance: refresh #223's useful documentation against the combined source; distinguish source presence,
 actual local execution and missing release acceptance; preserve residual risks and historical evidence.
 No runtime, test, dependency, gate, deployment or release change belongs to this documentation lane.
@@ -13,6 +13,11 @@ No runtime, test, dependency, gate, deployment or release change belongs to this
 The current [completion report](../handoffs/pages-completion-20261118/COMPLETION_REPORT.md) records later
 qualification and integration decisions. This ledger does not certify a deployed site, a real Tor route or
 public-network anonymity.
+
+Independent documentation review checked the production import lists and CI prerequisite/aggregate facts,
+and found no whole-candidate, Tor or mandatory-signer-pinning overclaim. Its two precision corrections are included:
+public announcement fields remain visible to providers, and later pinned native-toolchain evidence is separate
+from the original recovery lane. This documentation work ran no additional product tests.
 
 ## How to read the status
 
