@@ -24,6 +24,8 @@ Branch: `integration/ghostpay-pages-completion-20261118`.
 Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
 Owned paths: consolidation conflicts and Pages security/privacy integration, focused regression tests,
 this registry, and `docs/handoffs/pages-completion-20261118/`.
+Follow-up: the coordinator owns the legacy portable keystore's temporary passphrase-byte lifetime and its focused
+regression in `packages/ux-vault/src/keystore-portable*`; archaeology independently reviews the change.
 Recovery, dependency and security-tooling implementation use separate worktrees and branches.
 Existing remote PRs are read-only source inputs. The #209 extraction includes Pages hosting protections,
 root error reporting and backup navigation; release-test relaxation and unrelated workflow updates are excluded.
