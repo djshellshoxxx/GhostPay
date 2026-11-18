@@ -8,16 +8,18 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
-**Pages completion source update — 2026-11-18.** [Draft PR #238](https://github.com/djshellshoxxx/GhostPay/pull/238)
-is open at `9bad95e5cc0ee73f5adb8d2c587161074b21e080`, with exactly the source tree of local integration
+**Pages completion source update — 2026-11-18.** The runtime candidate was initially published as
+[draft PR #238](https://github.com/djshellshoxxx/GhostPay/pull/238) at
+`9bad95e5cc0ee73f5adb8d2c587161074b21e080`, with exactly the source tree of local integration
 `e8c77e7e8699dd16b86b7a1ff90b834594d07105`. It includes the reviewed recovery, privacy, dependency, hosting and
 key-lifetime changes. Remote `main` remained `dfc75ef2087fa6463ae59e0818abec01796c578d` at the independent
-14:58:28 UTC check. Final candidate qualification is incomplete; no main merge, deployment or release is claimed.
+15:32:34 UTC check. Final candidate qualification is incomplete; no main merge, deployment or release is claimed.
 The [current completion report](docs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md) records source identities,
 actual local/hosted execution, independent reviews and remaining gates. The
 [TM1–TM15 ledger](docs/threat-model/TM_IMPLEMENTATION_20261118.md) distinguishes implementation from unqualified
-Tor/browser behavior and residual privacy limits. This documentation update is staged separately from that initial
-published runtime head and must be appended before its links are presented as published candidate content.
+Tor/browser behavior and residual privacy limits. Documentation/evidence descendants preserve the runtime inputs.
+The PR body records the final published documentation head, incremental commit mapping, tree verification and
+subsequent CI observations.
 
 ### Historical Pages qualification — November 14, 2026
 

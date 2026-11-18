@@ -2776,5 +2776,412 @@
     }
   ],
   "scope_note": "Exact local object metadata. Integration counts include preexisting source-branch history, not 78 newly authored commits. Documentation history includes the initial packet commit; this later finalization commit is outside this self-referential snapshot. Published identities and unchanged trees are recorded in REMOTE_SHA_MAPPING.json.",
-  "documentation_updated_utc": "2026-11-18 15:01:41 UTC"
+  "documentation_updated_utc": "2026-11-18 15:01:41 UTC",
+  "post_runtime_documentation_milestone": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+  "post_runtime_documentation_commits": [
+    {
+      "sha": "a8a8d7ec1cdeaf11df53aa6aa0ea48ee9ecb9583",
+      "tree": "7ca9995add76d6cbbaaa32e9e6caabddd7698f24",
+      "parents": [
+        "e85db1ef942bda9cb54317a6c036a22484b46ff9"
+      ],
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:34:02-08:00"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:34:02-08:00"
+      },
+      "subject": "docs(pages): reconcile current implementation and privacy evidence",
+      "message": "docs(pages): reconcile current implementation and privacy evidence",
+      "on_integration_first_parent": false,
+      "first_parent_changed_paths": [
+        "M\tREADME.md",
+        "M\tdocs/DEPLOYMENT_MANIFEST.md",
+        "M\tdocs/threat-model/PRIVACY_THREAT_MODEL.md",
+        "A\tdocs/threat-model/TM_IMPLEMENTATION_20261118.md"
+      ]
+    },
+    {
+      "sha": "8acfacf2b93af606fc02e5638bf7007231893a59",
+      "tree": "a4b25d8468efa6de28e7060e67308731327b0431",
+      "parents": [
+        "a8a8d7ec1cdeaf11df53aa6aa0ea48ee9ecb9583"
+      ],
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:34:32-08:00"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:34:32-08:00"
+      },
+      "subject": "docs(privacy): describe current network controls and Tor limits",
+      "message": "docs(privacy): describe current network controls and Tor limits",
+      "on_integration_first_parent": false,
+      "first_parent_changed_paths": [
+        "M\tdeploy/TOR.md",
+        "M\tdocs/threat-model/TM_IMPLEMENTATION_20261118.md"
+      ]
+    },
+    {
+      "sha": "1e513ea9b5c7edb2afcc97df1381a6dcd6335bcc",
+      "tree": "9d0a4cd182b4ea2c007c2c2a840a53a2259cc331",
+      "parents": [
+        "8acfacf2b93af606fc02e5638bf7007231893a59"
+      ],
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:34:59-08:00"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:34:59-08:00"
+      },
+      "subject": "docs(handoff): record independent documentation review",
+      "message": "docs(handoff): record independent documentation review",
+      "on_integration_first_parent": false,
+      "first_parent_changed_paths": [
+        "M\tdocs/threat-model/TM_IMPLEMENTATION_20261118.md"
+      ]
+    },
+    {
+      "sha": "2d83582af7b4611a3cde062a8041bc3dbe423555",
+      "tree": "8ff0f714d1cdfd4adaf4941650597ef611c5a320",
+      "parents": [
+        "1e513ea9b5c7edb2afcc97df1381a6dcd6335bcc"
+      ],
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:51:31-08:00"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:51:31-08:00"
+      },
+      "subject": "docs(handoff): stage source-pinned Pages completion packet",
+      "message": "docs(handoff): stage source-pinned Pages completion packet",
+      "on_integration_first_parent": false,
+      "first_parent_changed_paths": [
+        "M\tdocs/audits/08-completion-gates.md",
+        "M\tdocs/handoffs/PRODUCT_COMPLETION_HANDOFF.md",
+        "A\tdocs/handoffs/pages-completion-20261118/ARTIFACT_MANIFEST.json",
+        "A\tdocs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md",
+        "A\tdocs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.json",
+        "A\tdocs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.md",
+        "A\tdocs/handoffs/pages-completion-20261118/EXECUTION_STATUS.json",
+        "A\tdocs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.json",
+        "A\tdocs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.md",
+        "A\tdocs/handoffs/pages-completion-20261118/NATIVE_QUALIFICATION_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/PACKET_VALIDATION.md",
+        "A\tdocs/handoffs/pages-completion-20261118/PAGES_FEATURE_THREAT_EVIDENCE_20261118.json",
+        "A\tdocs/handoffs/pages-completion-20261118/PAGES_FEATURE_THREAT_EVIDENCE_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/README.md",
+        "A\tdocs/handoffs/pages-completion-20261118/RECONCILIATION_MATRIX.json",
+        "A\tdocs/handoffs/pages-completion-20261118/RECONCILIATION_MATRIX.md",
+        "A\tdocs/handoffs/pages-completion-20261118/REMAINING_PR_DELTA_REVIEW_20261118.json",
+        "A\tdocs/handoffs/pages-completion-20261118/REMAINING_PR_DELTA_REVIEW_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/REMOTE_SHA_MAPPING.json",
+        "A\tdocs/handoffs/pages-completion-20261118/SOURCE_FILES_SHA256.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-full.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-production.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/dependencies/picomatch-current-registry.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-error-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-hosting-script-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-hosting-web-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-render-errors-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-render-errors-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-script-suite.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-bulk-cancellation.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-pages-smoke-render-errors.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-scan-client.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-security-gates.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-security-tooling-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/initial/stage1-invoice-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/initial/stage1-web-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-forge-contracts-185.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-foundry-config.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-raw-key-anvil-185.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-slither-0116.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/bulk-cancel-final.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/bulk-cancel-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/bulk-cancel-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/privacy-focused-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/sweep-disclosure-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/sweep-disclosure-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/build-libs.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/install.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-build.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-lint.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-typecheck.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/lint.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/pages-scripts-final.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/static-results.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/tested-source.txt",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/typecheck.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/web-lint-retry.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/web-typecheck-retry.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-disclosure-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-disclosure-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-i18n-extract.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-i18n.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-independent-export-ui.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-node-after-build.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-raw-key-foundry151.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-vault-coverage-retry.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-web-final.log",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/DEPENDENCY_QUALIFICATION_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/INDEPENDENT_SECURITY_TOOLING_REVIEW.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/INDEPENDENT_SOURCE_REVIEW.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/KEYSTORE_SCRATCH_INDEPENDENT_REVIEW_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/PAGES_RECOVERY_INTEGRATION_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/PAGES_SMOKE_RENDER_ERRORS_20261118.md",
+        "M\tdocs/wiki/Verification-and-Release-Gates.md"
+      ]
+    },
+    {
+      "sha": "24b90633b058166551a51df5460b7fa09619acb5",
+      "tree": "b3bbaa35145a78f3742d0d9b568422f1a2293ca9",
+      "parents": [
+        "2d83582af7b4611a3cde062a8041bc3dbe423555"
+      ],
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T07:06:22-08:00"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T07:06:22-08:00"
+      },
+      "subject": "docs(handoff): record published candidate and scoped qualification updates",
+      "message": "docs(handoff): record published candidate and scoped qualification updates",
+      "on_integration_first_parent": false,
+      "first_parent_changed_paths": [
+        "M\tREADME.md",
+        "M\tdocs/handoffs/pages-completion-20261118/ARTIFACT_MANIFEST.json",
+        "M\tdocs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md",
+        "M\tdocs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.json",
+        "M\tdocs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.md",
+        "M\tdocs/handoffs/pages-completion-20261118/EXECUTION_STATUS.json",
+        "M\tdocs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.json",
+        "M\tdocs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.md",
+        "M\tdocs/handoffs/pages-completion-20261118/PACKET_VALIDATION.md",
+        "M\tdocs/handoffs/pages-completion-20261118/README.md",
+        "M\tdocs/handoffs/pages-completion-20261118/REMOTE_SHA_MAPPING.json",
+        "M\tdocs/handoffs/pages-completion-20261118/SOURCE_FILES_SHA256.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/build/clean-install.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/build/clean-install.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/build/source-before-builds.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosted/pr238-initial-ci-snapshot.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/action-pins.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/audit-full.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/audit-production.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/i18n-check.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/i18n-extract.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/light-results.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/secrets.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/security/Settings.test.source.txt",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/security/codeql-222-annotations-live.json",
+        "A\tdocs/handoffs/pages-completion-20261118/publication/PUBLICATION.md",
+        "A\tdocs/handoffs/pages-completion-20261118/publication/PUBLICATION_PACKET_REVIEW_20261118.json",
+        "A\tdocs/handoffs/pages-completion-20261118/publication/publication-map.json",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/CODEQL_FIXTURE_DISPOSITION_20261118.md"
+      ]
+    },
+    {
+      "sha": "63592da4a2b5718fcaf6796d6ef5e404416a9f07",
+      "tree": "30b0484b25bd0e7eb9f8d19695e0b0ce06981f4c",
+      "parents": [
+        "24b90633b058166551a51df5460b7fa09619acb5"
+      ],
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T07:07:06-08:00"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T07:07:06-08:00"
+      },
+      "subject": "docs(handoff): qualify analyzer interruption and partial campaign observations",
+      "message": "docs(handoff): qualify analyzer interruption and partial campaign observations",
+      "on_integration_first_parent": false,
+      "first_parent_changed_paths": [
+        "M\tdocs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md",
+        "M\tdocs/handoffs/pages-completion-20261118/EXECUTION_STATUS.json"
+      ]
+    },
+    {
+      "sha": "e033855b02736f28d6ac583582b984f1d973d4be",
+      "tree": "b5940de9e6f77fd2c9483c61b90aae4496b575f1",
+      "parents": [
+        "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+        "63592da4a2b5718fcaf6796d6ef5e404416a9f07"
+      ],
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T07:09:27-08:00"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T07:09:27-08:00"
+      },
+      "subject": "docs: integrate source-pinned Pages completion evidence",
+      "message": "docs: integrate source-pinned Pages completion evidence",
+      "on_integration_first_parent": true,
+      "first_parent_changed_paths": [
+        "M\tREADME.md",
+        "M\tdeploy/TOR.md",
+        "M\tdocs/DEPLOYMENT_MANIFEST.md",
+        "M\tdocs/audits/08-completion-gates.md",
+        "M\tdocs/handoffs/PRODUCT_COMPLETION_HANDOFF.md",
+        "A\tdocs/handoffs/pages-completion-20261118/ARTIFACT_MANIFEST.json",
+        "A\tdocs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md",
+        "A\tdocs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.json",
+        "A\tdocs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.md",
+        "A\tdocs/handoffs/pages-completion-20261118/EXECUTION_STATUS.json",
+        "A\tdocs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.json",
+        "A\tdocs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.md",
+        "A\tdocs/handoffs/pages-completion-20261118/NATIVE_QUALIFICATION_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/PACKET_VALIDATION.md",
+        "A\tdocs/handoffs/pages-completion-20261118/PAGES_FEATURE_THREAT_EVIDENCE_20261118.json",
+        "A\tdocs/handoffs/pages-completion-20261118/PAGES_FEATURE_THREAT_EVIDENCE_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/README.md",
+        "A\tdocs/handoffs/pages-completion-20261118/RECONCILIATION_MATRIX.json",
+        "A\tdocs/handoffs/pages-completion-20261118/RECONCILIATION_MATRIX.md",
+        "A\tdocs/handoffs/pages-completion-20261118/REMAINING_PR_DELTA_REVIEW_20261118.json",
+        "A\tdocs/handoffs/pages-completion-20261118/REMAINING_PR_DELTA_REVIEW_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/REMOTE_SHA_MAPPING.json",
+        "A\tdocs/handoffs/pages-completion-20261118/SOURCE_FILES_SHA256.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/build/clean-install.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/build/clean-install.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/build/source-before-builds.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-full.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-production.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/dependencies/picomatch-current-registry.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosted/pr238-initial-ci-snapshot.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-error-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-hosting-script-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-hosting-web-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-render-errors-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-render-errors-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-script-suite.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-bulk-cancellation.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-pages-smoke-render-errors.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-scan-client.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-security-gates.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/independent/independent-security-tooling-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/initial/stage1-invoice-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/initial/stage1-web-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-forge-contracts-185.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-foundry-config.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-raw-key-anvil-185.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-slither-0116.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/bulk-cancel-final.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/bulk-cancel-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/bulk-cancel-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/privacy-focused-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/sweep-disclosure-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/privacy/sweep-disclosure-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/action-pins.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/audit-full.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/audit-production.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/build-libs.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/i18n-check.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/i18n-extract.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/install.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-build.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-lint.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/keystore-memory-typecheck.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/light-results.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/lint.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/pages-scripts-final.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/secrets.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/static-results.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/tested-source.txt",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/typecheck.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/web-lint-retry.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/web-typecheck-retry.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-disclosure-green.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-disclosure-red.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-i18n-extract.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-i18n.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-independent-export-ui.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-node-after-build.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-raw-key-foundry151.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-vault-coverage-retry.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/recovery/recovery-web-final.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/security/Settings.test.source.txt",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/security/codeql-222-annotations-live.json",
+        "A\tdocs/handoffs/pages-completion-20261118/publication/PUBLICATION.md",
+        "A\tdocs/handoffs/pages-completion-20261118/publication/PUBLICATION_PACKET_REVIEW_20261118.json",
+        "A\tdocs/handoffs/pages-completion-20261118/publication/publication-map.json",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/CODEQL_FIXTURE_DISPOSITION_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/DEPENDENCY_QUALIFICATION_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/INDEPENDENT_SECURITY_TOOLING_REVIEW.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/INDEPENDENT_SOURCE_REVIEW.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/KEYSTORE_SCRATCH_INDEPENDENT_REVIEW_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/PAGES_RECOVERY_INTEGRATION_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/reviews/PAGES_SMOKE_RENDER_ERRORS_20261118.md",
+        "M\tdocs/threat-model/PRIVACY_THREAT_MODEL.md",
+        "A\tdocs/threat-model/TM_IMPLEMENTATION_20261118.md",
+        "M\tdocs/wiki/Verification-and-Release-Gates.md"
+      ]
+    },
+    {
+      "sha": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+      "tree": "454a178ce81b7b13995c55a52f7f8c0fa23d5294",
+      "parents": [
+        "e033855b02736f28d6ac583582b984f1d973d4be"
+      ],
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T07:23:07-08:00"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T07:23:07-08:00"
+      },
+      "subject": "docs: record completed workspace and fuzzing evidence",
+      "message": "docs: record completed workspace and fuzzing evidence",
+      "on_integration_first_parent": true,
+      "first_parent_changed_paths": [
+        "M\tdocs/ai/ACTIVE_WORK.md",
+        "M\tdocs/handoffs/pages-completion-20261118/ARTIFACT_MANIFEST.json",
+        "M\tdocs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md",
+        "M\tdocs/handoffs/pages-completion-20261118/EXECUTION_STATUS.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/ECHIDNA_COMPLETION_20261118.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/ECHIDNA_COMPLETION_20261118.md",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/native/combined-echidna-227.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/package-tests-final.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/package-tests-final.md",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/package-tests-result.json",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/package-tests-source.txt",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/package-tests.log",
+        "A\tdocs/handoffs/pages-completion-20261118/evidence/qualification/parse-package-tests.py",
+        "M\tdocs/pages/README.md"
+      ]
+    }
+  ],
+  "post_runtime_note": "Additional documentation/evidence commits through the named milestone. The final report commit is identified by its Git revision and PR body publication mapping; no self-referential commit SHA is guessed."
 }

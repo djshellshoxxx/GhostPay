@@ -5,19 +5,21 @@
 This draft closeout is pinned to local integration `e8c77e7e8699dd16b86b7a1ff90b834594d07105`, tree
 `81341de7972041b5f7ce53da76027846356fab90`, on `integration/ghostpay-pages-completion-20261118`.
 The verified starting remote main was `dfc75ef2087fa6463ae59e0818abec01796c578d`.
-The initial packet snapshot was **2026-11-18 14:37:21 UTC**. This publication/status addendum is recorded at
-**15:01:41 UTC**, with each execution/CI observation retaining its own source and time. The published candidate
-[**draft PR #238**](https://github.com/djshellshoxxx/GhostPay/pull/238) is open at
+The initial packet snapshot was **2026-11-18 14:37:21 UTC**. Later completed execution and review records are
+included below, each retaining its own source and time. The runtime candidate was initially published as
+[**draft PR #238**](https://github.com/djshellshoxxx/GhostPay/pull/238) at
 `9bad95e5cc0ee73f5adb8d2c587161074b21e080`, with exactly the same complete tree as the local runtime source above.
-A fresh read at **14:58:28 UTC** confirmed the PR remains unmerged and remote main remains `dfc75ef2`. The separate
-documentation branch, including this packet, still needs its publication append; its exact staged history is retained.
+A fresh read at **15:32:34 UTC** confirmed the PR remained unmerged and remote main remained `dfc75ef2`.
+Documentation/evidence descendants preserve the runtime inputs. Use the PR body for the final published
+documentation head, incremental commit mapping and complete-tree transport proof. Retained build artifacts are
+explicitly attributed to `9bad95e5`; a build stamped with a later documentation commit would have different hashes.
 
 The implementation preserves client-side key handling and signing, independent recovery, explicit secret export,
 user-selected RPC infrastructure, testnet restrictions and the static Pages scope. It adds no project-operated
 custody, mandatory account service, analytics or mainnet enablement. No deployment, release publication, branch
 deletion or PR closure was performed. The authenticated GitHub Git Data API published the candidate because CLI
-push credentials were absent. All 61 recreated commits have verified trees and ordered parents, including 15 merge
-commits; their changed identities and original-author/committer provenance are recorded in the
+push credentials were absent. The initial publication recreated 61 commits with verified trees and ordered parents,
+including 15 merge commits; their changed identities and original-author/committer provenance are recorded in the
 [publication record](publication/PUBLICATION.md) and [complete mapping](REMOTE_SHA_MAPPING.json). Source-tree
 equality does not rename a local test execution as hosted CI or prove a release artifact is reproducible.
 
@@ -87,6 +89,9 @@ separate. The current server does not emit its additional `client_queue_full` co
 conservative unknown-outcome locking. #219's spent-recognition consent/worker/header changes remain outside the
 active lean route list. These branches are preserved; see the
 [remaining-work review](REMAINING_PR_DELTA_REVIEW_20261118.md).
+The confidential-router return-data mitigation and merchant-ledger tolerance correction in #220 remain preserved
+outside the active Pages release scope. Its attempted ux-flow payer-proof ambiguity guard was reverted upstream
+after independent review found a bypass and a liveness failure; no claim is made that this design issue was fixed.
 
 The #209 release-test relaxation, speculative contract modifications, earlier bypassable D1 ambiguity guard,
 unrelated runtime/action-pin changes and connecting the Mythril helper to a release gate were excluded. Git
@@ -116,7 +121,7 @@ suite totals. Every criterion and point is visible in the
 | C — Invoice and payment flow | 100% (12/12) | 46% (5.5/12) | Final combined Pay/wallet/browser tests, same-nonce replacement and pending-reload journeys, approved signed testnet manifest and real wallet/network acceptance. | Exact-head hosted/full-browser qualification and approved external deployment inputs. Optional two-provider manifest readback remains Scan-only; do not silently add another observer to Pay/Sweep. |
 | D — Scan, sweep and reconciliation | 95% (9.5/10) | 70% (7/10) | Actual browser restart/reorg/storage-denial/concurrent-scan, replacement/retry journeys and provider/public-network acceptance. Existing unit coverage passes; preserve the uncertain-send journals. | External provider/browser acceptance and final hosted qualification. |
 | E — Backup, idle lock and device sleep | 100% (9/9) | 83% (7.5/9) | Actual process restart, OS suspension/wake, browser navigation and fresh-profile restore at the intended serving origin; final lint and hosted qualification. | Device/browser lifecycle acceptance and complete candidate qualification. |
-| F — Application quality, accessibility and localization | 86% (9.5/11) | 41% (4.5/11) | Qualify the integrated smoke regression in actual browsers; run full/lean browser journeys, project-subpath and dedicated-origin builds, keyboard/screen-reader/mobile checks and native translation review. | Browser launch environment, real devices and human native-language/accessibility acceptance. |
+| F — Application quality, accessibility and localization | 86% (9.5/11) | 41% (4.5/11) | Full/lean builds and project-subpath/declared-origin artifact checks pass. Actual browser journeys, smoke behavior, keyboard/screen-reader/mobile checks and native translation review remain unqualified. | Browser launch environment, real devices and human native-language/accessibility acceptance. |
 
 ### Feature boundaries
 
@@ -191,6 +196,43 @@ including 14 high and 16 low**, with an unpatched upstream Picomatch advisory in
 The production-only rerun at the same source exited 0. These scopes must not be conflated. No blanket suppression
 or threshold reduction was introduced. Under the user's release rule, unresolved high findings continue to block release qualification.
 
+### Current hosted Mythril gate
+
+The existing [main-branch Mythril job](https://github.com/djshellshoxxx/GhostPay/actions/runs/44297673763/job/134778851902)
+finished with **runner exit 1** at exact `dfc75ef2087fa6463ae59e0818abec01796c578d`. All five target JSON reports
+returned `success: true` and `error: null`; the gate failed on **11 retained findings: three medium and eight low**,
+not an installation failure, malformed report or outer timeout. Router and PolicyRouter had zero findings;
+SweepRelayer had one low timestamp record, PolicyAccount two low timestamp records, and Factory eight records.
+The complete `packages/contracts` tree and analyzer workflow are unchanged in the candidate, so the finding
+review applies to those inputs while the hosted job retains its original main SHA. The
+[retained metadata](evidence/hosted/main-mythril-dfc75ef2/metadata.json) and
+[full report](evidence/hosted/main-mythril-dfc75ef2/report.log) preserve the execution.
+
+The current record set differs from the historical disposition inventory: it adds low SWC-113 at Factory PC 999,
+the initialization call, and omits the old low SWC-113 allowance-call record at PC 1781. Equal totals are not exact
+finding coverage. The strict gate remains failed; no suppression, accepted-risk file or release policy was changed.
+Fresh [record-by-record review](evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.md), its
+[structured evidence](evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.json) and an
+[independent check](reviews/FINAL_EVIDENCE_REVIEW_20261118.md) established specific counterevidence: all eight
+Factory-analysis traces encode constructor `implementation_ = address(1)`, which the real constructor rejects for
+having no deployed code on the ordinary EVM precompile model. Each creation segment contains the exact existing
+3,296-byte metadata-free runtime template; this does not establish whole-initcode or immutable-resolved deployed
+runtime identity. The new PC999 record repeats identical deploy inputs. After a successful first deployment those
+inputs would trigger `AlreadyDeployed` before fee collection/initialization; the raw trace alone does not establish
+that the first call succeeded. These are bounded source/trace observations, not a new EVM replay or proof that
+every execution with a valid implementation is safe. The
+[exact historical delta](reviews/HOSTED_MYTHRIL_DISPOSITION_COMPARISON_20261118.md) and
+[independent byte/ABI evidence](reviews/INDEPENDENT_MYTHRIL_TRACE_COUNTEREVIDENCE_20261118.json) are retained.
+The conditional policy fee-token availability/freeze risk remains a real design limitation, separately from the
+symbolic-trace findings. No professional final release audit or current SonarCloud clearance is established.
+
+The [source-pinned #220 remediation report](https://github.com/djshellshoxxx/GhostPay/blob/16c48521f99903ccd2e584df5d00a9dec5ef754c/docs/audits/security-remediation-20261118.md)
+classifies **D-1 as medium and latent**, open design in
+`packages/ux-flow/src/reconcile.ts`: an unsigned payer proof does not bind the observed transfer to its invoice.
+That package is not imported by the Pages app. A reverted ambiguity heuristic and a warning comment are not a
+repair. Payer-bound proof design is required before enabling it; this record does not relabel it as a resolved
+or active-lean high-severity finding.
+
 ### CodeQL fixture finding and remaining scanner limits
 
 PR #222 check `134777382565` reported one high-severity finding on `Settings.test.tsx` at source
@@ -240,14 +282,16 @@ Do not describe the earlier Node 24 runs as a pinned Node 22 execution.
 
 | Check | Source and actual outcome | Status at this packet snapshot |
 |---|---|---|
-| Clean install and library build | Root logs retained at `e85db1ef`; install reports 721 packages. Earlier paired-dependency lane separately passed 77 library builds | Coordinator to finalize full command exit metadata |
+| Clean install and library build | At published `9bad95e5`, clean install exited 0 with 721 packages; dependency-ordered library build exited 0. Two earlier install processes were killed with SIGKILL and remain recorded | **Passed on the published runtime source** |
 | Typecheck | Full `npm run typecheck` at `e85db1ef` exited 134 when web exhausted 768 MiB; other workspaces passed. Web-only retry at `ea8f8d65`, 1536 MiB, exited 0; subsequent vault change has scoped checks | All workspace types covered across the successful scopes; original failed aggregate remains recorded |
-| Typed lint | Full run/retry killed with 137 in web; narrower earlier probe demonstrated heap exhaustion | **Blocked**, no whole-candidate lint pass |
-| Secret scan and action pins | At local `e8c77e7e`, `npm run ci:scan-secrets` and `npm run ci:check-actions` both exited 0; all 113 inspected action references are pinned | **Passed within shipped scanner scopes**; no full supply-chain/audit claim |
+| Typed lint | Final isolated full run at documentation descendant `1656558a`, Node 22.23.5/npm 11.21.2 with a 2,048 MiB heap, again exited 137 in web after 185.58 seconds; earlier workspace lints passed | **Blocked**; no ESLint source diagnostic was printed and the kill cause is unproven; no whole-candidate lint pass |
+| Secret scan and action pins | At local `e8c77e7e`, `npm run ci:scan-secrets` and `npm run ci:check-actions` both exited 0; 113 action references passed the existing external-pin/local-action policy | **Passed within shipped scanner scopes**; no full supply-chain/audit claim |
 | `npm test` | At `e8c77e7e`, exit 0 in 2,204.93 seconds: **12,402 passed, 0 failed, 79 skipped**, across all 68 test-bearing workspaces | **Passed with explicit skips**; original coverage thresholds retained |
-| Final web build, release build and reproducibility | Separate build lane is pinned to published `9bad95e5`; its first clean install ended in SIGKILL (-9), before build qualification | **Pending**; no completed final build, artifact or browser result |
-| Final hosted checks, CodeQL and SonarCloud | Draft #238 and exact tree mapping are verified. Initial 14:43:53 snapshot: 18 checks, 17 queued/1 skipped. Worker 14:49:58 observation: 15 queued/2 CLI jobs running/1 skipped; no executed success/failure in either snapshot | **Not qualified**; snapshots do not establish current final gates |
-| Local actual Playwright/browser journeys | Chromium fails a required socket operation, exit 134 | **Blocked by executor**; collection/jsdom is not a replacement |
+| Full/lean web builds | Actual TypeScript, Vite and postbuild scans passed at published `9bad95e5`; separate full/lean snapshots retained | **Passed**, 19 full-profile files and 17 lean-profile files |
+| Pages artifact and loopback checks | Default clean-source build gates and actual HTTP checks passed under `/GhostPay/` and `/` with declared origins | **Passed within static/local HTTP scope**; no hosted or browser claim |
+| Development release build and reproducibility | `npm run release:build` and `npm run release:repro -- --head` both exited 0 at `9bad95e5`; two clean-clone tarballs and SBOMs are byte-identical | **Passed for development artifacts**; no release/tag/publication |
+| Hosted checks, CodeQL and SonarCloud | At 15:32:34 UTC, draft #238 runtime head `9bad95e5` had 18 checks: 2 CLI successes, 15 queued and 1 skipped | **Not qualified**; no candidate browser, aggregate or final scanner clearance |
+| Actual full/lean Playwright journeys | Both supported system-browser attempts built their server and launched Chromium, then failed at socket EPERM/SIGABRT. Full: 1 launch failure/84 not run; lean: 1 launch failure/74 not run | **Blocked by executor**; zero application assertion passes |
 
 ### Completed full workspace run
 
@@ -336,6 +380,64 @@ unused keys. The later full-source light checks at `e8c77e7e` report **four cata
 source scopes; they are not evidence of native translation approval. None of the overlapping test counts is a total
 of distinct project tests. Exact commands, exits and durations are in [light-results.json](evidence/qualification/light-results.json).
 
+### Built artifacts, browser attempts and reproducibility
+
+The [complete build qualification record](evidence/build/BUILD_QUALIFICATION_20261118.md) and
+[structured command results](evidence/build/qualification-results.json) retain all 19 invocations, including
+unsuccessful setup attempts. The clean published checkout and both reproducibility clones remained at `9bad95e5`,
+tree `81341de7972041b5f7ce53da76027846356fab90`, with no source edits. Node 22.23.5 and npm 11.21.2 were used.
+
+Full and lean TypeScript/Vite/postbuild checks passed. The clean-source Pages builds produced 16 files each. An
+independent reviewer checked complete checksum membership and source/configuration metadata. Actual loopback
+HTTP checks fetched and compared 15 files per artifact; `.nojekyll` was hash-checked separately. The project case
+used `/GhostPay/` with declared `https://djshellshoxxx.github.io`; the dedicated-origin configuration used `/`
+with placeholder `https://ghostpay.example`. The declared external origins were not contacted or deployed to.
+Both configurations contained no approved deployment manifests and kept all payments disabled.
+
+The actual Playwright commands used one worker and stopped after the first launch failure. The normal full
+invocation built its server but lacked the pinned Chromium headless-shell 1255 binary. Supported
+`GHOSTPAY_CHROMIUM=/usr/bin/chromium` retries actually launched system Chromium 156.0.8078.79; both full and lean
+then aborted at a denied Unix socket operation before application assertions. Full selected 85 tests, with one
+launch failure and 84 not run; lean selected 75, with one launch failure and 74 not run. No accessibility, wallet,
+IndexedDB, CSP, worker or browser journey acceptance is inferred. An earlier full attempt incorrectly stamped the
+fixture with `GP_COMMIT`; the existing production-key guard correctly rejected its public test key. That preflight
+failure is separately retained and no source or guard was changed to fix the invocation.
+
+The normal `release:build` performed its own fresh install, library rebuild, chain-matrix check, full web build,
+bundle scan and SBOM generation, exiting 0 in 102.182 seconds. `release:repro -- --head` built twice in distinct
+clean clone paths and exited 0 in 206.123 seconds. The exact label was `qualification-9bad95e5`; all manifests
+say **development**, with no tag, clean source and the published runtime SHA. No release was published.
+
+| Artifact | SHA-256, identical in the standalone development build and both clean clones |
+|---|---|
+| Web tarball | `3ad9d94c09e5dfedecf2fe5be5b5748b83e3d0df5cd9b396230f603d41eb4cc1` |
+| CycloneDX SBOM | `e2165196882b5150466731805c38c7fb93d088d1344aebba11d880831bee107d` |
+| Release manifest | `5a8c345a094e048542b00c1adb0cbb9aae15c4194fb32af6e9162245fbab4213` |
+
+The repository reproducibility gate compares tarball and SBOM. Separate checks also verified manifest/checksum
+identity, archive file membership, duplicate/link/path rejection and normalized tar timestamps/ownership. The SBOM
+contains 139 components; this is not an independent completeness audit. Reproducibility covers the pinned Linux
+environment and two clean paths, not every operating system. Later documentation commits preserve the runtime
+inputs but would change embedded commit/time metadata and resulting artifact hashes if rebuilt.
+
+### Hosted execution on the runtime candidate
+
+The [15:32:34 UTC readiness snapshot](evidence/hosted/READINESS_SNAPSHOT_20261118_153234.md) and its
+[complete check inventory](evidence/hosted/READINESS_SNAPSHOT_20261118_153234.json) record draft #238
+at `9bad95e5`, with 2 successful CLI jobs, 15 queued checks and one skipped release-gate job. Both completed jobs
+checked out synthetic merge `f8cf77781311635e281d3c9e3d692ed17ee778b3`, whose complete tree equals the tested
+runtime tree. Their actual tool versions were Node **22.23.4** and npm **10.9.9**, distinct from local qualification.
+
+- [Ubuntu CLI job](https://github.com/djshellshoxxx/GhostPay/actions/runs/44327356184/job/134882135309):
+  570 unit cases, 21 compiled-CLI cases and one build-helper case passed.
+- [Windows CLI job](https://github.com/djshellshoxxx/GhostPay/actions/runs/44327356184/job/134882135056):
+  568 unit cases passed, two skipped; 21 compiled-CLI cases and one build-helper case passed.
+
+These CLI jobs do not establish Pages browser acceptance, a passing TypeScript/contract aggregate, or security
+clearance. The main-branch Mythril result above has its own main-source identity. Main's other passing jobs are
+not assigned to this candidate. Later documentation commits also require their own intended-result hosted checks;
+the final PR body records the refreshed head rather than relabeling these earlier job results.
+
 ### Fresh upstream hosted evidence
 
 The CI worker inspected actual checkout and execution logs for PR #233. The jobs used synthetic merge
@@ -354,20 +456,20 @@ smoke pass. No funded public-network, real Tor, external-wallet or physical-devi
 | Level | Current status | Required next evidence |
 |---|---|---|
 | Code implementation complete | Broad in-scope implementation plus the six repairs above; several compound TM recommendations and compatibility obligations remain partial | Keep explicit scope/defer decisions and unfinished obligations visible |
-| Locally verified | Full npm test and coverage gates passed; focused/native results have explicit limits; typed web lint remains blocked | Successful lint or equivalent qualified hosted execution, final build/reproducibility evidence and actual browser acceptance |
-| CI qualified | **No final combined candidate qualification**; initial draft/source mapping verified | Final documentation append and fresh required checks on the intended candidate/merge result |
-| Security reviewed | Separate AI-assisted source reviews exist; no professional final release audit | Exact final source review, analyzer outcomes, current CodeQL/Sonar clearance and disposition of unresolved high findings |
+| Locally verified | Full npm/coverage, full/lean builds, Pages artifact checks and development reproducibility passed; typed web lint and actual browser acceptance remain blocked | Qualified lint and browser execution; preserve native/analyzer limits |
+| CI qualified | **No final combined candidate qualification**; runtime draft/source mapping and two CLI job results verified | Fresh required checks on the intended final candidate/merge result |
+| Security reviewed | Separate AI-assisted source and evidence reviews completed; no professional final release audit; strict Mythril and full audit gates remain unresolved | Supported exact-finding dispositions, current CodeQL/Sonar clearance and resolution of high dependency findings |
 | Public-testnet qualified | **No** | Approved signed deployment data and authorized external wallet/provider recovery/payment acceptance |
 | Ready for owner release approval | **No** | All preceding mandatory gates and the approved origin/trust-root configuration |
 
 The task authorizes verified integration, not an unconditional merge. Missing required CI and unresolved security
-gates still prevent claiming a main merge is ready. The concrete candidate is published as draft #238 while tests
-continue. This workstream does not deploy, publish a release, enable mainnet or delete branches.
+gates prevent a main merge. The concrete candidate remains draft #238 with traceable implementation and execution
+evidence. This workstream performed zero deployments, release publications, mainnet enablements or branch deletions.
 
 ## F. Outstanding decisions and finalization
 
-Only genuine authority/product choices belong in this section. Executor memory failures, browser launch failures,
-running tests and missing evidence are engineering/qualification tasks; they are not requests to lower gates or
+Only genuine authority/product choices belong in this section. Killed lint processes, browser launch failures,
+queued hosted checks and missing acceptance evidence are engineering/qualification tasks; they are not requests to lower gates or
 new owner approvals.
 
 | Decision or input | Why it remains necessary | Current safe boundary |
@@ -376,23 +478,26 @@ new owner approvals.
 | Approved testnet deployment manifests, fee recipient and release signer material | Addresses/hashes/authority must be independently verified and supplied through the existing process | Do not invent deployment data or use published test keys in a release |
 | Future per-invoice signer/trust compatibility design (TM10) | Rotation changes identity pinning and receipt continuity; a library primitive alone does not specify migration/UX | Keep explicit scoped deferral and the encrypted default; do not claim rotation exists |
 | Future quote-free relayer protocol (TM11) | The signed fee and bound quote tuple require a coherent protocol design | Preserve current signing/fee checks and optional-service scope |
-| Experimental non-EVM/policy/guardian/escrow expansion | These have separate compatibility, protocol, authority or custody prerequisites outside the active Pages target | Preserve disabled/experimental scope and valuable branches; no implicit production enablement |
+| Experimental non-EVM/policy/guardian/escrow and payer-proof expansion | These have separate compatibility, protocol, authority or custody prerequisites outside the active Pages target; ux-flow also needs payer binding before use | Preserve disabled/experimental scope and valuable branches; no implicit production enablement |
 
-The full npm results and completed, diagnostically limited Echidna campaign are recorded above. Final closeout still
-needs build/reproducibility evidence, the final documentation append to draft #238, refreshed main/check state, and the
-coordinator's final independent review. The initial published mapping is verified and preserved. The coordinator will update this report and `EXECUTION_STATUS.json` with those concrete
-results. Native translation, real accessibility/device/Tor and public-testnet acceptance remain external gates even
-if local/hosted automated checks subsequently pass.
+The completed npm, build, reproducibility and native results are recorded above, including every retained failure
+and limitation. The remaining merge/release blockers are the unpatched high dependency advisory, failed strict
+Mythril finding gate, unqualified typed web lint, unavailable local browser acceptance and incomplete required
+hosted checks. Current CodeQL/Sonar clearance, native translation, real accessibility/device/Tor and public-testnet
+acceptance remain separate gates. The original published mapping is preserved; the PR body records the final
+documentation transport proof after the guarded append. No blocker is converted into a pass or an approval request
+to reduce the existing requirements.
 
 ### Packet contents and integrity
 
 - [Full branch/PR matrix](RECONCILIATION_MATRIX.md) and [JSON](RECONCILIATION_MATRIX.json).
 - [Local consolidation outcomes](CONSOLIDATION_OUTCOMES.md), [exact commit ledger](LOCAL_COMMIT_LEDGER.md),
-  [changed-source hashes](SOURCE_FILES_SHA256.json) and [verified initial publisher mapping](REMOTE_SHA_MAPPING.json).
+  [changed-source hashes](SOURCE_FILES_SHA256.json), [runtime identity proof](RUNTIME_IDENTITY.json) and
+  [verified initial publisher mapping](REMOTE_SHA_MAPPING.json).
 - [Feature/TM evidence and explicit scoring](PAGES_FEATURE_THREAT_EVIDENCE_20261118.md),
-  [remaining-source review](REMAINING_PR_DELTA_REVIEW_20261118.md) and [independent reviews](reviews/).
+  [remaining-source review](REMAINING_PR_DELTA_REVIEW_20261118.md),
+  [final independent evidence review](reviews/FINAL_EVIDENCE_REVIEW_20261118.md) and [independent reviews](reviews/).
 - [Execution status](EXECUTION_STATUS.json), [native qualification](NATIVE_QUALIFICATION_20261118.md), stable
   [evidence](evidence/) and [artifact SHA-256 manifest](ARTIFACT_MANIFEST.json).
 
-The packet is a durable execution record with explicit pending fields. It does not turn the current running work
-into a completed release claim.
+The packet records completed engineering work and explicit qualification blockers. It makes no claim of release readiness.

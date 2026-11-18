@@ -45,7 +45,7 @@ The delta contains 78 commits, 36 on the integration first-parent chain, 15 merg
 | `ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929` | `9156f803849997058f398ee05648675e99fec1a1` | docs(pages): describe runtime framing guard and artifact provenance accurately |
 | `e8c77e7e8699dd16b86b7a1ff90b834594d07105` | `ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929` | fix(vault): wipe temporary keystore passphrase bytes on every exit |
 
-## Documentation work staged separately
+## Initial documentation work staged separately
 
 | Commit | Tree | Subject |
 |---|---|---|
@@ -54,4 +54,10 @@ The delta contains 78 commits, 36 on the integration first-parent chain, 15 merg
 | `1e513ea9b5c7edb2afcc97df1381a6dcd6335bcc` | `9d0a4cd182b4ea2c007c2c2a840a53a2259cc331` | docs(handoff): record independent documentation review |
 | `2d83582af7b4611a3cde062a8041bc3dbe423555` | `8ff0f714d1cdfd4adaf4941650597ef611c5a320` | docs(handoff): stage source-pinned Pages completion packet |
 
-Remote candidate publication and remote main integration are separate actions. See `REMOTE_SHA_MAPPING.json`; the initial published mapping is independently verified. Main integration remains unperformed.
+The complete post-runtime documentation history through `1656558a78f52a2251a3e84b1ce980741a6d46fc`, including
+the documentation merge and completed npm/native evidence, is recorded in
+[LOCAL_COMMIT_LEDGER.json](LOCAL_COMMIT_LEDGER.json). The self-referential final report commit and its remote
+mapping are recorded in [PR #238](https://github.com/djshellshoxxx/GhostPay/pull/238) after publication.
+
+Remote candidate publication and remote main integration are separate actions. See [REMOTE_SHA_MAPPING.json](REMOTE_SHA_MAPPING.json);
+the initial published mapping is independently verified. Main integration remains unperformed.

@@ -1,6 +1,6 @@
 {
-  "status": "DRAFT_PR_PUBLISHED_WITH_INCOMPLETE_QUALIFICATION",
-  "snapshot_utc": "2026-11-18 15:01:41 UTC",
+  "status": "DRAFT_PR_IMPLEMENTED_LOCAL_QUALIFICATION_COMPLETED_WITH_BLOCKERS",
+  "snapshot_utc": "2026-11-18 15:43:02 UTC",
   "local_runtime_source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
   "starting_remote_main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
   "remote_main_merges": 0,
@@ -16,23 +16,23 @@
     "pull_request_state": "open",
     "identical_tree": "81341de7972041b5f7ce53da76027846356fab90",
     "independent_verification": "publication/PUBLICATION_PACKET_REVIEW_20261118.json",
-    "documentation_status": "Staged separately; packet/documentation updates are not in initial published runtime candidate."
+    "documentation_status": "Runtime candidate is published. Documentation/evidence descendants are prepared; final local-to-remote mapping and final head/tree proof will be recorded in PR #238 body after the guarded fast-forward."
   },
   "checks": [
     {
-      "name": "Root clean install",
+      "name": "Historical root clean install log",
       "command": null,
       "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
-      "status": "EXECUTION_LOG_RETAINED",
-      "result": "Log reports 721 packages installed; full exact command/exit metadata is pending coordinator confirmation.",
+      "status": "HISTORICAL_LOG_WITHOUT_COMPLETE_INVOCATION_METADATA",
+      "result": "Historical log reports 721 packages installed; exact invocation/exit metadata was not retained. The later published-source clean install has complete command/exit metadata in the build qualification record and passed.",
       "artifact": "evidence/qualification/install.log"
     },
     {
-      "name": "Root library build",
+      "name": "Historical root library build log",
       "command": "npm run build:libs",
       "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
-      "status": "EXECUTION_LOG_RETAINED",
-      "result": "Workspace library build log retained; coordinator must finalize command exit metadata. Earlier dependency lane separately passed all 77 library builds.",
+      "status": "HISTORICAL_LOG_WITHOUT_COMPLETE_INVOCATION_METADATA",
+      "result": "Historical workspace library build log retained without complete invocation exit metadata. The later published-source build:libs and release build have complete command/exit metadata and passed.",
       "artifact": "evidence/qualification/build-libs.log"
     },
     {
@@ -70,7 +70,7 @@
       "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
       "status": "BLOCKED_RESOURCE_LIMIT",
       "exit_code": 137,
-      "result": "Typed web ESLint remains killed by the executor. Do not claim whole-repository lint passed.",
+      "result": "Historical full lint and web retries ended with exit 137. The typed web lint scope did not pass; later isolated retry is recorded separately.",
       "artifact": "evidence/qualification/web-lint-retry.log"
     },
     {
@@ -212,8 +212,22 @@
     {
       "name": "Local actual browser journeys",
       "status": "BLOCKED_BROWSER_LAUNCH",
-      "exit_code": 134,
-      "result": "Chromium socket operation failed under executor restrictions. Collection, jsdom and synthetic Playwright-interface tests are not actual browser acceptance."
+      "exit_code": 1,
+      "result": "Both actual full and lean Playwright attempts launched system Chromium 156.0.8078.79 via the supported override, then failed at socket() EPERM/SIGABRT before application assertions. Earlier full normal invocation lacked pinned Chromium1255; a separate initial GP_COMMIT fixture invocation failed preflight. All attempts retained.",
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "full": {
+        "selected": 85,
+        "launch_failures": 1,
+        "did_not_run": 84,
+        "application_assertions_passed": 0
+      },
+      "lean": {
+        "selected": 75,
+        "launch_failures": 1,
+        "did_not_run": 74,
+        "application_assertions_passed": 0
+      },
+      "artifact": "evidence/build/BUILD_QUALIFICATION_20261118.md"
     },
     {
       "name": "Upstream PR233 Pages browser",
@@ -242,18 +256,21 @@
         "npm run release:build",
         "npm run release:repro"
       ],
-      "status": "PENDING_FINAL_CANDIDATE_EXECUTION",
-      "exit_code": null,
+      "status": "PASS_DEVELOPMENT_SCOPE",
+      "exit_code": 0,
       "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
-      "result": "Separate published-source build lane prepared. Its first clean install was killed by SIGKILL (-9) after 14.677 seconds; final build/release/repro outcomes remain pending. No completed artifact or browser acceptance is claimed.",
+      "result": "Actual full and lean web builds, development release build and two clean-clone reproducibility passed. Exact details and initial failed setup attempts are recorded separately. Retained artifacts embed 9bad; later documentation heads would produce different commit stamps and hashes.",
       "preparation_artifact": "evidence/build/source-before-builds.json",
-      "interrupted_install_artifact": "evidence/build/clean-install.json"
+      "interrupted_install_artifact": "evidence/build/clean-install.json",
+      "artifact": "evidence/build/BUILD_QUALIFICATION_20261118.md"
     },
     {
       "name": "Final candidate hosted checks / CodeQL / SonarCloud",
-      "status": "PENDING_EXACT_CANDIDATE_EVIDENCE",
-      "result": "Initial draft PR #238 exists at the published source-equivalent head. At retained 14:43:53 UTC snapshot: 18 checks, 17 queued and one skipped; no executed success/failure. Later worker observation at 14:49:58 UTC: 15 queued, two CLI jobs running, one skipped. These are snapshots, not final gates. Current CodeQL/Sonar clearance remains unqualified.",
-      "artifact": "evidence/hosted/pr238-initial-ci-snapshot.json"
+      "status": "NOT_QUALIFIED",
+      "result": "Draft runtime candidate has two CLI job successes, fifteen queued checks and one skipped check. Candidate browser/aggregate/CodeQL/Sonar clearance is not established. CLI jobs checked out synthetic merge f8cf77781311635e281d3c9e3d692ed17ee778b3 with the same full tree; hosted Node22.23.4/npm10.9.9 differ from local versions.",
+      "artifact": "evidence/hosted/READINESS_SNAPSHOT_20261118_153234.json",
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "observed_utc": "2026-11-18 15:32:34 UTC"
     },
     {
       "name": "Public testnet / Tor / external wallet / physical device / native localization",
@@ -279,7 +296,7 @@
       "exit_code": 0,
       "seconds": 0.2,
       "references_checked": 113,
-      "result": "All inspected uses references pinned to full SHAs with version comments.",
+      "result": "All 113 inspected uses references passed the shipped pinning policy: external actions require fixed SHA/digest pins; repository-local actions and workflows are permitted.",
       "artifact": "evidence/qualification/action-pins.log",
       "execution_metadata": "evidence/qualification/light-results.json"
     },
@@ -321,16 +338,212 @@
       "review": "reviews/CODEQL_FIXTURE_DISPOSITION_20261118.md",
       "artifact": "evidence/security/codeql-222-annotations-live.json",
       "limit": "No scanner exclusion, suppression, dismissal or check clearance. Private alert/SARIF inventory and final candidate scans remain unqualified."
+    },
+    {
+      "name": "Full lint final isolated retry",
+      "command": "npm run lint",
+      "source": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+      "runtime_equivalent_to": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "status": "BLOCKED_PROCESS_KILLED",
+      "exit_code": 137,
+      "seconds": 185.58,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "artifact": "evidence/qualification/lint-isolated-2048.log",
+      "execution_metadata": "evidence/qualification/lint-isolated-2048-result.json",
+      "result": "All preceding workspaces passed; web process was killed without an ESLint source diagnostic even with no other heavy qualification job. No whole-repository lint pass is claimed; cause is unproven."
+    },
+    {
+      "name": "Published-source clean install",
+      "command_argv": [
+        "npm",
+        "ci",
+        "--ignore-scripts",
+        "--prefer-offline",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 9.594,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "overrides": {},
+      "artifact": "evidence/build/logs/clean-install-after-suite.log",
+      "record": "evidence/build/clean-install-after-suite.json",
+      "packages_installed": 721
+    },
+    {
+      "name": "Published-source library build",
+      "command_argv": [
+        "npm",
+        "run",
+        "build:libs"
+      ],
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 79.462,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "overrides": {},
+      "artifact": "evidence/build/logs/build-libraries.log",
+      "record": "evidence/build/build-libraries.json"
+    },
+    {
+      "name": "Published-source full web build",
+      "command_argv": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 14.043,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "overrides": {
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "full",
+        "GP_COMMIT": "9bad95e5cc0ee73f5adb8d2c587161074b21e080"
+      },
+      "artifact": "evidence/build/logs/web-full.log",
+      "record": "evidence/build/web-full.json",
+      "profile": "full",
+      "retained_files": 19
+    },
+    {
+      "name": "Published-source lean web build",
+      "command_argv": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 14.441,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "overrides": {
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean",
+        "GP_COMMIT": "9bad95e5cc0ee73f5adb8d2c587161074b21e080"
+      },
+      "artifact": "evidence/build/logs/web-lean.log",
+      "record": "evidence/build/web-lean.json",
+      "profile": "lean",
+      "retained_files": 17
+    },
+    {
+      "name": "Development release build",
+      "command_argv": [
+        "npm",
+        "run",
+        "release:build"
+      ],
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 102.182,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "overrides": {
+        "VERSION": "qualification-9bad95e5",
+        "OUT_DIR": "/workspace/scratch/4fa14be12559/analysis-build/artifacts/release-development",
+        "GP_SOLC_VERSION": "0.8.28"
+      },
+      "artifact": "evidence/build/logs/release-build.log",
+      "record": "evidence/build/release-build.json",
+      "channel": "development",
+      "version": "qualification-9bad95e5"
+    },
+    {
+      "name": "Two clean-clone reproducibility",
+      "command_argv": [
+        "npm",
+        "run",
+        "release:repro",
+        "--",
+        "--head"
+      ],
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 206.123,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "overrides": {
+        "VERSION": "qualification-9bad95e5",
+        "GP_SOLC_VERSION": "0.8.28",
+        "KEEP": "1",
+        "TMPDIR": "/workspace/scratch/4fa14be12559/analysis-build/tmp"
+      },
+      "artifact": "evidence/build/logs/release-repro.log",
+      "record": "evidence/build/release-repro.json",
+      "channel": "development",
+      "compared": "tarball and SBOM",
+      "cross_platform": false
+    },
+    {
+      "name": "Pages project subpath and declared dedicated-origin artifacts",
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "status": "PASS_STATIC_AND_LOOPBACK_ONLY",
+      "exit_code": 0,
+      "profiles": [
+        {
+          "origin": "https://djshellshoxxx.github.io",
+          "path": "/GhostPay/",
+          "shared_origin": true
+        },
+        {
+          "origin": "https://ghostpay.example",
+          "path": "/",
+          "shared_origin": false,
+          "placeholder": true
+        }
+      ],
+      "files_hashed_each": 16,
+      "files_fetched_each": 15,
+      "hosted_origin_tested": false,
+      "browser_tested": false,
+      "payments_enabled_chain_ids": [],
+      "artifact": "evidence/build/BUILD_QUALIFICATION_20261118.md"
+    },
+    {
+      "name": "Existing hosted main Mythril campaign",
+      "source": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "contracts_tree": "a84815152b8f07c854197c84b5613b02f7939882",
+      "same_contract_inputs_as_candidate": true,
+      "status": "FAIL_STRICT_FINDINGS_GATE",
+      "exit_code": 1,
+      "reports": 5,
+      "reports_success_true": 5,
+      "findings": 11,
+      "medium": 3,
+      "low": 8,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44297673763/job/134778851902",
+      "artifact": "evidence/hosted/main-mythril-dfc75ef2/report.log",
+      "metadata": "evidence/hosted/main-mythril-dfc75ef2/metadata.json",
+      "result": "All five hosted target reports are valid; strict gate failed on eleven findings. Ten historical location tuples match; new low SWC-113 at Factory PC999 replaces absent historical PC1781. Independent read-only review confirms all eight Factory model traces encode implementation address(1), rejected by the real constructor. Runtime-template identity is bounded; no trace replay or gate change was performed. Real conditional fee-token availability risk remains open.",
+      "review": "evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.json",
+      "independent_review": "reviews/FINAL_EVIDENCE_REVIEW_20261118.md",
+      "trace_counterevidence": "reviews/INDEPENDENT_MYTHRIL_TRACE_COUNTEREVIDENCE_20261118.json"
     }
   ],
   "finalization_required": [
-    "Append full npm test exit and per-workspace pass/fail/skip/coverage outcomes",
-    "Append analyzer campaign outcomes without weakening budgets or gates",
-    "Resolve or clearly retain typed web lint resource failure",
-    "Record final build and release reproducibility results",
-    "Refresh live main, required checks and relevant PR heads",
-    "Perform final independent combined-source review before any authorized merge",
-    "Append final documentation to the published draft using the verified mapping; record final head/tree and rerun applicable gates"
+    "Publish the final documentation/evidence descendant and verify its complete tree through the existing guarded publication process",
+    "Obtain passing required typed lint and actual full/lean browser acceptance in a capable environment",
+    "Complete exact-candidate hosted gates and current CodeQL/Sonar qualification",
+    "Resolve the full dependency-audit high entries and strict Mythril finding gate without weakening policies",
+    "Complete approved-origin, public-testnet, Tor, device, accessibility and native-language acceptance before any release"
   ],
   "note": "Source-scoped passes and partial retries are not silently promoted to a single all-green command. The feature estimates retain their original conservative checklist points.",
   "initial_snapshot_utc": "2026-11-18 14:37:21 UTC",
@@ -367,5 +580,8 @@
       "failure": 0,
       "basis": "CI worker report; two running jobs are CLI jobs"
     }
-  ]
+  ],
+  "local_documentation_milestone": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+  "independent_final_review": "reviews/FINAL_EVIDENCE_REVIEW_20261118.md",
+  "final_readonly_ci_handoff_manifest": "evidence/hosted/READONLY_FINAL_HANDOFF_MANIFEST_20261118.json"
 }

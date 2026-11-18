@@ -631,17 +631,688 @@
       "sha256": "3e014fbaa53f327a1d47790e04747e376fcb948980ed3ddf514e6e359197f6b7",
       "bytes": 7362,
       "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/build-libraries.json",
+      "original_path": "analysis-build/build-libraries.json",
+      "sha256": "28e68fa34a6e89c5fc5f0b2ac7d956b6d1f87b00a00b31bfc3bc56df44db492c",
+      "bytes": 677,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/capture-web-full.json",
+      "original_path": "analysis-build/capture-web-full.json",
+      "sha256": "fa78137021c40b6a079fb436560875750b01a19de09392f9b4fc9707eb4fd0f2",
+      "bytes": 938,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/capture-web-lean.json",
+      "original_path": "analysis-build/capture-web-lean.json",
+      "sha256": "a8ab302de7d431736c4b2f0808bf2b28a735ea5172ec4dd2db2236cef690cc03",
+      "bytes": 938,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/clean-install-after-suite.json",
+      "original_path": "analysis-build/clean-install-after-suite.json",
+      "sha256": "08f4cbce5cc4eec0be0b9ff07afa77eff0b5b25d39aa51c25d1c1e19057209ff",
+      "bytes": 760,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/clean-install-retry-384.json",
+      "original_path": "analysis-build/clean-install-retry-384.json",
+      "sha256": "735b20d6176e6627181c7fc3c03e66af78460e68e201dcad9c296583f84456f6",
+      "bytes": 757,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/pages-dedicated-build.json",
+      "original_path": "analysis-build/pages-dedicated-build.json",
+      "sha256": "ef496020c584e3bc56e315ae73e6ce860f7fabe42ebc6802b0086a1d902aec47",
+      "bytes": 836,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/pages-dedicated-check.json",
+      "original_path": "analysis-build/pages-dedicated-check.json",
+      "sha256": "e6ba273354860f6de9c87982f75d5f3cd001d6960e17fef7463dcb35fa0d01ec",
+      "bytes": 982,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/pages-project-build.json",
+      "original_path": "analysis-build/pages-project-build.json",
+      "sha256": "0af49736102ad2212eae72d012bca42a7927ead32858c06110639e577373d5a5",
+      "bytes": 837,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/pages-project-check.json",
+      "original_path": "analysis-build/pages-project-check.json",
+      "sha256": "ff89de6f861ca8f7a4b182384f4add14ce02975162106362601fc80a775fd8c5",
+      "bytes": 991,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/playwright-full-standard.json",
+      "original_path": "analysis-build/playwright-full-standard.json",
+      "sha256": "00276f8a68bf9f4b6912d6a022c46cb76f6f56ec4474dde3b59539254e1f2468",
+      "bytes": 1014,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/playwright-full-system.json",
+      "original_path": "analysis-build/playwright-full-system.json",
+      "sha256": "e3eb774fdcb140f36ca3c9244b0f1e1e884fd0952b089517c59cf5e9bdb28fe1",
+      "bytes": 1054,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/playwright-full.json",
+      "original_path": "analysis-build/playwright-full.json",
+      "sha256": "da7536a1a05947529473f889f16e35ea60cf54cdda7d6b9738409de9980611b2",
+      "bytes": 1048,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/playwright-lean-system.json",
+      "original_path": "analysis-build/playwright-lean-system.json",
+      "sha256": "2981d83ab62ba89ef6f0368af6b1a1056b8cb4f0aa3262e2f2424b5da1afdba0",
+      "bytes": 1054,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/prepare-checkout.json",
+      "original_path": "analysis-build/prepare-checkout.json",
+      "sha256": "9c4eb362d7ad9468d774db72fb3d3be1f78d46c553f3c289b51b1efd05f94641",
+      "bytes": 1207,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/qualification-results.json",
+      "original_path": "analysis-build/qualification-results.json",
+      "sha256": "b73abc80752ec7422f045697227c9fb49de453813f3292d0448cbc8d2b07f65b",
+      "bytes": 26163,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/release-artifact-check.json",
+      "original_path": "analysis-build/release-artifact-check.json",
+      "sha256": "bc0575b5f596b59dc4d0d62690e73b25490338c9acf959eccfb0ee9224c1a9a6",
+      "bytes": 966,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/release-build.json",
+      "original_path": "analysis-build/release-build.json",
+      "sha256": "d5149d332281a3928442bb57d5a2c247e8a37b156e2f8d59f0e41394a3e628c4",
+      "bytes": 849,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/release-repro.json",
+      "original_path": "analysis-build/release-repro.json",
+      "sha256": "7c744e3709e487aa08522395a56c1b2dadd9bfda48ab0771eb0ddd04848240c2",
+      "bytes": 863,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/repro-a-artifact-check.json",
+      "original_path": "analysis-build/repro-a-artifact-check.json",
+      "sha256": "178f22a386a20b481d82c4ccc4298f98b4d4c7e8340f75979943788df7dff52c",
+      "bytes": 991,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/repro-b-artifact-check.json",
+      "original_path": "analysis-build/repro-b-artifact-check.json",
+      "sha256": "ca055aa126d58383abd8f5f7fbc7db0ead9619bfad3b7cbccc72582dca26c5f9",
+      "bytes": 1005,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/resolved-toolchain-check.json",
+      "original_path": "analysis-build/resolved-toolchain-check.json",
+      "sha256": "92056e06dae4bb954c8a7904b39575d8a375f59dbce5ee75478ca6c909df1875",
+      "bytes": 980,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/resource-wrapper-check.json",
+      "original_path": "analysis-build/resource-wrapper-check.json",
+      "sha256": "fdc4813c94e4bab76f5b92d39b2b70264300f5a42d9bdaef3530a614702f8b85",
+      "bytes": 1041,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/source-after-builds.json",
+      "original_path": "analysis-build/source-after-builds.json",
+      "sha256": "0be77cc1572975a21cbd78f5766e303b19305b4ba633bc8a5920611dcfbc5adb",
+      "bytes": 896,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/system-chromium-version.json",
+      "original_path": "analysis-build/system-chromium-version.json",
+      "sha256": "142673644cd6b8bafa0d06d43512dcfd0f12abfa9733f121c777f51833591084",
+      "bytes": 694,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/toolchain-versions.json",
+      "original_path": "analysis-build/toolchain-versions.json",
+      "sha256": "5b1dd7b9afdade2fbfbdfde0dbc06dca3cec366c6cbc9ef0ba82eb9831e8ac22",
+      "bytes": 1272,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/web-full.json",
+      "original_path": "analysis-build/web-full.json",
+      "sha256": "ecf8a805535ec06f09292cba8e3cb7e1eb6925d968f88f03adc03a76bde9f9e7",
+      "bytes": 806,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/web-lean.json",
+      "original_path": "analysis-build/web-lean.json",
+      "sha256": "a55c153cabf56ef7abdaf9a906859bbd61f4393c9eb28e8a978e995c8c4ccc0e",
+      "bytes": 806,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/capture-web-artifact.py",
+      "original_path": "analysis-build/capture-web-artifact.py",
+      "sha256": "3a1fac5aa360e60bacabaa8fc0aa0152630930f7f1be00e159dd09df43f986a8",
+      "bytes": 1326,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/check-release-artifact.py",
+      "original_path": "analysis-build/check-release-artifact.py",
+      "sha256": "8c4e6b51ec1038593855929bf7119d10b64e0a0b3fd6a1ce788001f2ec6ef2be",
+      "bytes": 3674,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/run.py",
+      "original_path": "analysis-build/run.py",
+      "sha256": "fee3d095b8e90ef048945daf24dab85bf812347e8039e9cf85ea37f662242aba",
+      "bytes": 3492,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/check-pages-artifact.mjs",
+      "original_path": "analysis-build/check-pages-artifact.mjs",
+      "sha256": "e91fad80ffb41e494dbb4bcf3d667251840382e58aa3793104bb83c51f08d9c8",
+      "bytes": 6751,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/BUILD_QUALIFICATION_20261118.md",
+      "original_path": "analysis-build/BUILD_QUALIFICATION_20261118.md",
+      "sha256": "2d4a073a4773a74dc65015bf2f4dc4fa6a71922f4277ee5f67bb8c6f038ba2b7",
+      "bytes": 20549,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/CLAIM.md",
+      "original_path": "analysis-build/CLAIM.md",
+      "sha256": "4845aef3c63f6480b68104075ba8fd8e4edf660ddce85bedb7b8dcdbda52b174",
+      "bytes": 1267,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/build-libraries.log",
+      "original_path": "analysis-build/logs/build-libraries.log",
+      "sha256": "9bbc13cd2f61859752e96c3cd50be3c887bcc082d7f1abf1fdc69352275052f2",
+      "bytes": 31620,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/capture-web-full.log",
+      "original_path": "analysis-build/logs/capture-web-full.log",
+      "sha256": "65c27828e3ad47b1d0c1d23f117b8e8e2a2e5b221a673c7241751d4245d6f963",
+      "bytes": 613,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/capture-web-lean.log",
+      "original_path": "analysis-build/logs/capture-web-lean.log",
+      "sha256": "2e1ed05ccad96e112d73aa2220adb132d085a431034124c6091d5e10a54ba6f6",
+      "bytes": 613,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/clean-install-after-suite.log",
+      "original_path": "analysis-build/logs/clean-install-after-suite.log",
+      "sha256": "c1f81b661b604b50188c103a42d42fc2249af4e096b425e5d8314c6ae67d46c4",
+      "bytes": 814,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/clean-install-retry-384.log",
+      "original_path": "analysis-build/logs/clean-install-retry-384.log",
+      "sha256": "240ef11abd2d9b5b6518c34b41e9ca7ced7a4834aa864a46c39501a7f5fb1820",
+      "bytes": 564,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/clean-install.log",
+      "original_path": "analysis-build/logs/clean-install.log",
+      "sha256": "2541e66aaaa54f679989cf618d35f03024ccc2b6c97cd81fe9bdf0c503b818d6",
+      "bytes": 565,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/pages-dedicated-build.log",
+      "original_path": "analysis-build/logs/pages-dedicated-build.log",
+      "sha256": "46c37e817ba5f11383852b47ec3cc122427154c34ad48f26655fc41a60380a19",
+      "bytes": 1631,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/pages-dedicated-check.log",
+      "original_path": "analysis-build/logs/pages-dedicated-check.log",
+      "sha256": "21981f1e2e0843db589fd155edd47a53005e957cb861d1fd49cd42c1da1d169c",
+      "bytes": 1398,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/pages-project-build.log",
+      "original_path": "analysis-build/logs/pages-project-build.log",
+      "sha256": "86e07e4d8f2d3a1738f723b151712dec4e46ac74e472eae5df213b28de22007a",
+      "bytes": 1625,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/pages-project-check.log",
+      "original_path": "analysis-build/logs/pages-project-check.log",
+      "sha256": "cb1a31198142e0738fbab3232ffcb3009fecace0329d340239b803854bd81f31",
+      "bytes": 1424,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/playwright-full-standard.log",
+      "original_path": "analysis-build/logs/playwright-full-standard.log",
+      "sha256": "a15db910eca6663822de727520d424b60510c5834a5e9f61b78e286f92e83eeb",
+      "bytes": 6726,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/playwright-full-system.log",
+      "original_path": "analysis-build/logs/playwright-full-system.log",
+      "sha256": "f2081d40c96494b9ff687cf8e87fc7d4cc267fb581ffb9be15a1cc5341413e30",
+      "bytes": 10549,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/playwright-full.log",
+      "original_path": "analysis-build/logs/playwright-full.log",
+      "sha256": "5694f9c63f5972c19767decd1f60ef1726e99dd8349763d8fe0a6b5f88770f32",
+      "bytes": 4517,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/playwright-lean-system.log",
+      "original_path": "analysis-build/logs/playwright-lean-system.log",
+      "sha256": "414b5f3ba462e02f409c9a388bb73c953cee37ea77f98b73fa5478eae9590c6a",
+      "bytes": 10549,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/prepare-checkout.log",
+      "original_path": "analysis-build/logs/prepare-checkout.log",
+      "sha256": "b8c697e72f4fe3436ab652739016d1c98a5aa64ee207c0c6ea17aa7e92ee5b4b",
+      "bytes": 1120,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/release-artifact-check.log",
+      "original_path": "analysis-build/logs/release-artifact-check.log",
+      "sha256": "dc121fd8c359f57ce071e5820be35474492ef500e7ec42fbece5a74b28ab5a9f",
+      "bytes": 1211,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/release-build.log",
+      "original_path": "analysis-build/logs/release-build.log",
+      "sha256": "fbd658fb181bcb771cbd25b8270ca478592957b2006e390e2c5e6dd384869032",
+      "bytes": 37817,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/release-repro.log",
+      "original_path": "analysis-build/logs/release-repro.log",
+      "sha256": "770852849dd95546a26a18e9b6f6d7bd8756ca91d39d4006b3b41f68db4c32b0",
+      "bytes": 2309,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/repro-a-artifact-check.log",
+      "original_path": "analysis-build/logs/repro-a-artifact-check.log",
+      "sha256": "fc57b4111dafdd5efc6d638ed587a54fcd325a1c8a7061b62a8ee5e6b8b23a6c",
+      "bytes": 1261,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/repro-b-artifact-check.log",
+      "original_path": "analysis-build/logs/repro-b-artifact-check.log",
+      "sha256": "fb0aafc3f06dac2bb17e30311df3d3dbf4d2483333bd30048fac426d85ff5be6",
+      "bytes": 1289,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/resolved-toolchain-check.log",
+      "original_path": "analysis-build/logs/resolved-toolchain-check.log",
+      "sha256": "5886d58fb1849d18ec600202fe46b0f38c1b8d377fb77f4fb1bed493d6d399fa",
+      "bytes": 868,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/resource-wrapper-check.log",
+      "original_path": "analysis-build/logs/resource-wrapper-check.log",
+      "sha256": "4a2d2dfcdf1c4455d267f6626b625b217370295600753a2f58dc64df0c4a78a6",
+      "bytes": 812,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/system-chromium-version.log",
+      "original_path": "analysis-build/logs/system-chromium-version.log",
+      "sha256": "beaec0a39e1687183a234dd98ec84576230e21901189c762f9dde1f1eacab418",
+      "bytes": 323,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/web-full.log",
+      "original_path": "analysis-build/logs/web-full.log",
+      "sha256": "95fe246f174e9a983d2ba9857fba2b51301bf7f723248c9bdcf33416e6b9320c",
+      "bytes": 3583,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/logs/web-lean.log",
+      "original_path": "analysis-build/logs/web-lean.log",
+      "sha256": "0a0c5b6654b126972665b685fc245e91d749b24619e2597fa3e5312a165dd191",
+      "bytes": 3528,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/pages-dedicated/evidence/SHA256SUMS",
+      "original_path": "analysis-build/artifacts/pages-dedicated/evidence/SHA256SUMS",
+      "sha256": "ddcca5eda8cb44ea3f781df0e8483da28e50c9738cd91d472e81fe60ed75ec17",
+      "bytes": 1397,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/pages-dedicated/evidence/pages-evidence.json",
+      "original_path": "analysis-build/artifacts/pages-dedicated/evidence/pages-evidence.json",
+      "sha256": "418e32662cb4e734faf8d9e8f8ab1250e43e6f9c9dcdafa68a179fc629a5bcaf",
+      "bytes": 794,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/pages-dedicated/site/build-info.json",
+      "original_path": "analysis-build/artifacts/pages-dedicated/site/build-info.json",
+      "sha256": "2256840b493eab359956613bdf05f587764667c54420bd20021988fc434a2bdd",
+      "bytes": 178,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/pages-project/evidence/SHA256SUMS",
+      "original_path": "analysis-build/artifacts/pages-project/evidence/SHA256SUMS",
+      "sha256": "e9d03e75ec6232af625cf1193a0978777a6f56f69927e1169b95493e95b5118f",
+      "bytes": 1397,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/pages-project/evidence/pages-evidence.json",
+      "original_path": "analysis-build/artifacts/pages-project/evidence/pages-evidence.json",
+      "sha256": "14ef393bd15d1c242b706d5cb899bb2671c1c0234e235d450b01333bd24eb20b",
+      "bytes": 879,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/pages-project/site/build-info.json",
+      "original_path": "analysis-build/artifacts/pages-project/site/build-info.json",
+      "sha256": "2256840b493eab359956613bdf05f587764667c54420bd20021988fc434a2bdd",
+      "bytes": 178,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/release-development/SHA256SUMS",
+      "original_path": "analysis-build/artifacts/release-development/SHA256SUMS",
+      "sha256": "8a14d81516a5223c2ac87983272e864509f3c4e36fcedf901cf1c26886fc78fa",
+      "bytes": 277,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/release-development/release-manifest.json",
+      "original_path": "analysis-build/artifacts/release-development/release-manifest.json",
+      "sha256": "5a8c345a094e048542b00c1adb0cbb9aae15c4194fb32af6e9162245fbab4213",
+      "bytes": 3134,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/release-development/sbom.cdx.json",
+      "original_path": "analysis-build/artifacts/release-development/sbom.cdx.json",
+      "sha256": "e2165196882b5150466731805c38c7fb93d088d1344aebba11d880831bee107d",
+      "bytes": 145651,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/web-full/build-info.json",
+      "original_path": "analysis-build/artifacts/web-full/build-info.json",
+      "sha256": "2256840b493eab359956613bdf05f587764667c54420bd20021988fc434a2bdd",
+      "bytes": 178,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/web-full.inventory.json",
+      "original_path": "analysis-build/artifacts/web-full.inventory.json",
+      "sha256": "2e372d0ff133b77ad3bfc447b1b03a0b61ebd619a56c46d0bd339aa6212218ae",
+      "bytes": 2007,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/web-lean/build-info.json",
+      "original_path": "analysis-build/artifacts/web-lean/build-info.json",
+      "sha256": "2256840b493eab359956613bdf05f587764667c54420bd20021988fc434a2bdd",
+      "bytes": 178,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/artifacts/web-lean.inventory.json",
+      "original_path": "analysis-build/artifacts/web-lean.inventory.json",
+      "sha256": "8dda514ba2dff066cb951441911bbc332d6574f1146496a419fdc47d3874f5ce",
+      "bytes": 1809,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/tmp/ghostpay-repro.tvEPwc/a-first.log",
+      "original_path": "analysis-build/tmp/ghostpay-repro.tvEPwc/a-first.log",
+      "sha256": "a4ad9268b27a875c90f95b10adb291d325fd2b1fbbce510128426c3ba11e1baf",
+      "bytes": 37300,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/tmp/ghostpay-repro.tvEPwc/nested.log",
+      "original_path": "analysis-build/tmp/ghostpay-repro.tvEPwc/nested.log",
+      "sha256": "fe0def17f8db7c7f3d51c0bfea57e8fa3366139e54310921ecf613ae3b6eb8f2",
+      "bytes": 37377,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/resource-bin/node",
+      "original_path": "analysis-build/resource-bin/node",
+      "sha256": "8c4f32e46e0afb8fe82f9d940e0bed6af0d00b3babf84d2f4fadf66f5c97bb08",
+      "bytes": 159,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/build/evidence-index.json",
+      "original_path": "analysis-build/evidence-index.json",
+      "sha256": "0098780040faf3aa0151686113c019d3e4d6e8e7751cd619acbc4afa9620ffb2",
+      "bytes": 10887,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/lint-isolated-2048.log",
+      "original_path": "qualification/lint-isolated-2048.log",
+      "sha256": "5b6bea4d44373e3c21e0044e822e52c4ec198fd82abb124f4a6451aaf7cf2db6",
+      "bytes": 19833,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/qualification/lint-isolated-2048-result.json",
+      "original_path": "qualification/lint-isolated-2048-result.json",
+      "sha256": "6af9e2cd86f93ac6ebd553d2b1d966b1bd75527a55a4989340423a6303ac34f2",
+      "bytes": 579,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/hosted/main-mythril-dfc75ef2/metadata.json",
+      "original_path": "analysis-ci/main-mythril-dfc75ef2-14437897350/metadata.json",
+      "sha256": "71b5294a4c113b56f1d24151d108c19ee21849af76c2fc6fd3d696be22542089",
+      "bytes": 532,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/hosted/main-mythril-dfc75ef2/report.log",
+      "original_path": "analysis-ci/main-mythril-dfc75ef2-14437897350/report.log",
+      "sha256": "40e9faf6e54b4e5f1e683cb07d6522eea55f5bff50fcf46eeb5395d615c932f7",
+      "bytes": 283205,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "evidence/hosted/main-mythril-dfc75ef2/parsed-reports.json",
+      "original_path": "analysis-ci/main-mythril-dfc75ef2-14437897350/parsed-reports.json",
+      "sha256": "20aa019ffe9380dd793133dce900094e3620af3314139036cb7f4dcbf2736b41",
+      "bytes": 291196,
+      "copy_mode": "byte-identical completed execution artifact"
+    },
+    {
+      "packet_path": "reviews/FINAL_EVIDENCE_REVIEW_20261118.md",
+      "original_path": "analysis-branches/FINAL_EVIDENCE_REVIEW_20261118.md",
+      "sha256": "91367130b3d7608c2560c0df986156e7a04fa944393dfc11e5d9c15b4ba03dc8",
+      "bytes": 13188,
+      "copy_mode": "byte-identical completed review or hosted evidence"
+    },
+    {
+      "packet_path": "reviews/FINAL_EVIDENCE_REVIEW_20261118.json",
+      "original_path": "analysis-branches/FINAL_EVIDENCE_REVIEW_20261118.json",
+      "sha256": "03f5ab7278ec2947ea0f7bf23bcdf96ff83c11517199a1c8e80d02834e0b5d0e",
+      "bytes": 25161,
+      "copy_mode": "byte-identical completed review or hosted evidence"
+    },
+    {
+      "packet_path": "reviews/HOSTED_MYTHRIL_DISPOSITION_COMPARISON_20261118.md",
+      "original_path": "analysis-branches/HOSTED_MYTHRIL_DISPOSITION_COMPARISON_20261118.md",
+      "sha256": "7d2139ae57ae3dfcf13aa846d22fc4e5d288bd635025a61d451a480d46d25e6a",
+      "bytes": 4281,
+      "copy_mode": "byte-identical completed review or hosted evidence"
+    },
+    {
+      "packet_path": "reviews/HOSTED_MYTHRIL_DISPOSITION_COMPARISON_20261118.json",
+      "original_path": "analysis-branches/HOSTED_MYTHRIL_DISPOSITION_COMPARISON_20261118.json",
+      "sha256": "3e07de9fcd82036306188986e9cca8d787705db32e041cbf7fd73c49920765b4",
+      "bytes": 8895,
+      "copy_mode": "byte-identical completed review or hosted evidence"
+    },
+    {
+      "packet_path": "reviews/INDEPENDENT_MYTHRIL_TRACE_COUNTEREVIDENCE_20261118.json",
+      "original_path": "analysis-branches/INDEPENDENT_MYTHRIL_TRACE_COUNTEREVIDENCE_20261118.json",
+      "sha256": "f60b9c31a80393c1a57bfa3ec19dc6bcd7a6d99a0ee9ec20c88f4cb00a479717",
+      "bytes": 7738,
+      "copy_mode": "byte-identical completed review or hosted evidence"
+    },
+    {
+      "packet_path": "evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.json",
+      "original_path": "analysis-ci/HOSTED_MYTHRIL_REVIEW_20261118.json",
+      "sha256": "db3af78d3a39870c4ac4ffac2e398853b4cc0c4b16d8d64b886c3e1378709ff1",
+      "bytes": 31075,
+      "copy_mode": "byte-identical completed review or hosted evidence"
+    },
+    {
+      "packet_path": "evidence/hosted/READINESS_SNAPSHOT_20261118_153234.json",
+      "original_path": "analysis-ci/READINESS_SNAPSHOT_20261118_153234.json",
+      "sha256": "bd23e9cb10e3a451d9a1e38d9a4a75dfae6c3f184ab919f06e654512e04ed0d8",
+      "bytes": 45087,
+      "copy_mode": "byte-identical completed review or hosted evidence"
+    },
+    {
+      "packet_path": "evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.md",
+      "original_path": "analysis-ci/HOSTED_MYTHRIL_REVIEW_20261118.md",
+      "sha256": "034379a2fc4950a3aa8830540eb62d4ea4e1c27768399a5434a556aadd7b708e",
+      "bytes": 17341,
+      "copy_mode": "byte-identical completed read-only CI handoff"
+    },
+    {
+      "packet_path": "evidence/hosted/READINESS_SNAPSHOT_20261118_153234.md",
+      "original_path": "analysis-ci/READINESS_SNAPSHOT_20261118_153234.md",
+      "sha256": "43fdc5e395c7c4300d04e3dbc9ec084003ac96bb04baa3f8f96114ea5e299c5d",
+      "bytes": 8050,
+      "copy_mode": "byte-identical completed read-only CI handoff"
+    },
+    {
+      "packet_path": "evidence/hosted/inspect-retained-mythril.py",
+      "original_path": "analysis-ci/inspect-retained-mythril.py",
+      "sha256": "63bc0baf34704b0deb370d4e584ecfa829e545283dac0934e5fe39c8e3cbac2c",
+      "bytes": 9908,
+      "copy_mode": "byte-identical completed read-only CI handoff"
+    },
+    {
+      "packet_path": "evidence/hosted/main-mythril-dfc75ef2-134778851902-job.log",
+      "original_path": "analysis-ci/main-mythril-dfc75ef2-134778851902-job.log",
+      "sha256": "d208a760b34939ecb0d69314937c409dd1d43b22d02915902824a2d9bcf99525",
+      "bytes": 34046,
+      "copy_mode": "byte-identical completed read-only CI handoff"
+    },
+    {
+      "packet_path": "evidence/hosted/pr238-cli-ubuntu-134882135309.log",
+      "original_path": "analysis-ci/pr238-cli-ubuntu-134882135309.log",
+      "sha256": "fa5302ee0dd81740c36be4a82541859ec8c8144a922611d5fdf1dbba4675eb21",
+      "bytes": 63084,
+      "copy_mode": "byte-identical completed read-only CI handoff"
+    },
+    {
+      "packet_path": "evidence/hosted/pr238-cli-windows-134882135056.log",
+      "original_path": "analysis-ci/pr238-cli-windows-134882135056.log",
+      "sha256": "6db1d129354aefd1ce28da88a8c249c55e1248d3053c1a0bf7e9d4a21bcf992e",
+      "bytes": 63455,
+      "copy_mode": "byte-identical completed read-only CI handoff"
+    },
+    {
+      "packet_path": "evidence/hosted/READONLY_FINAL_HANDOFF_MANIFEST_20261118.json",
+      "original_path": "analysis-ci/READONLY_FINAL_HANDOFF_MANIFEST_20261118.json",
+      "sha256": "784dcd0ce70868ad5f77e01997487a1f358ab9c56998603f283cc6a544911e82",
+      "bytes": 2968,
+      "copy_mode": "byte-identical completed read-only CI handoff"
     }
   ],
-  "running_outputs_not_copied": [
-    "qualification/package-tests.log"
-  ],
+  "running_outputs_not_copied": [],
   "notes": [
     "Copied logs are source-pinned historical execution records even if the coordinator has a later run.",
     "Generated reports/metadata are tracked by git; source copies retain their independent SHA-256.",
     "Referenced workspace-local paths identify original execution locations; packet_path identifies the durable copy.",
-    "Post-publication additions preserve the original 62 artifacts and their hashes. Initial CI counts, build interruption and prior analyzer states remain timestamped observations, not current success claims."
+    "Post-publication additions preserve the original 62 artifacts and their hashes. Initial CI counts, build interruption and prior analyzer states remain timestamped observations, not current success claims.",
+    "The completed full npm output supersedes its initial running-output exclusion and is now copied with exact hashes. No execution remains in progress in the final local qualification packet."
   ],
   "updated_utc": "2026-11-18 15:01:41 UTC",
-  "last_extended_utc": "2026-11-18 15:18:46 UTC"
+  "last_extended_utc": "2026-11-18 15:43:02 UTC",
+  "intermediate_binary_artifacts_not_copied": [
+    {
+      "original_path": "analysis-build/artifacts/release-development/ghostpay-web-qualification-9bad95e5.tar.gz",
+      "sha256": "3ad9d94c09e5dfedecf2fe5be5b5748b83e3d0df5cd9b396230f603d41eb4cc1",
+      "bytes": 917749,
+      "reason": "Development binary retained as an intermediate; exact checksum is recorded. It is not a release publication."
+    },
+    {
+      "original_path": "analysis-ci/main-mythril-dfc75ef2-14437897350.zip",
+      "sha256": "e998907946a170b95509e51f94013daf34377b6b02195c21c763605f2f4a3130",
+      "bytes": 17233,
+      "reason": "Downloaded hosted artifact retained as an intermediate; complete extracted report, parsed reports and metadata are copied into this packet."
+    }
+  ]
 }

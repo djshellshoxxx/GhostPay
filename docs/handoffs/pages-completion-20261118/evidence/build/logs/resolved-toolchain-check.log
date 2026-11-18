@@ -1,0 +1,20 @@
+$ python -c 'import shutil, subprocess, json; result={}; names=["node", "npm", "npx"]; [(result.update({name:{"path":shutil.which(name),"version":subprocess.run([name,"--version"],capture_output=True,text=True,check=True).stdout.strip()}})) for name in names]; print(json.dumps(result,indent=2))'
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=384", "pages_node_cap": false}
+{
+  "node": {
+    "path": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+    "version": "v22.23.5"
+  },
+  "npm": {
+    "path": "/workspace/scratch/4fa14be12559/toolchain-probe/npm-bin/npm",
+    "version": "11.21.2"
+  },
+  "npx": {
+    "path": "/workspace/scratch/4fa14be12559/toolchain-probe/npm-bin/npx",
+    "version": "11.21.2"
+  }
+}
+
+EXIT_CODE=0
+SECONDS=0.224
