@@ -404,14 +404,16 @@ describe('Seller keys', () => {
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const field = screen.getByLabelText<HTMLInputElement>('Passphrase (at least 14 characters)');
+    // A URL unique to this test: earlier tests' successful downloads leave delayed revocations that call whatever
+    // URL.revokeObjectURL is installed when their timers fire, so counting every revocation would race with them.
     const revoked: string[] = [];
-    URL.createObjectURL = (): string => 'blob:test';
+    URL.createObjectURL = (): string => 'blob:blocked-keystore';
     URL.revokeObjectURL = (url: string): void => { revoked.push(url); };
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw new Error('download blocked'); });
     await user.type(screen.getByLabelText('Repeat passphrase'), field.value);
     const download = screen.getByRole('button', { name: 'Download encrypted keystore' });
     await user.click(download);
-    await waitFor(() => { expect(revoked).toEqual(['blob:test']); }, { timeout: 30_000 });
+    await waitFor(() => { expect(revoked.filter((url) => url === 'blob:blocked-keystore')).toEqual(['blob:blocked-keystore']); }, { timeout: 30_000 });
     await waitFor(() => { expect((download as HTMLButtonElement).disabled).toBe(false); });
     expect(screen.queryByText(/Encrypted keystore downloaded\./)).toBeNull();
     expect(getSessionBackup()?.backedUp).not.toBe(true);
