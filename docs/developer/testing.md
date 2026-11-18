@@ -113,6 +113,10 @@ are `echidna_*` view functions returning `true`:
 | Sweep | `sweep_nonce_single_use`, `used_nonces_marked`, `relayer_never_holds_tokens`, `token_conservation` |
 | Policy | `funds_only_to_destination`, `destination_only_changes_via_timelock`, `timelocks_never_shortened`, `policy_immutable`, `rolling_window_cap` |
 
+The Policy harness also has targeted actions (`requestNative`, `requestToken`, `executePending`) that keep the
+native and token execution canaries reachable within the 300k-call budget; their reachability is pinned by
+`test/echidna/EchidnaPolicyReachability.t.sol` (`forge test --match-path 'test/echidna/*'`).
+
 Each harness also has `echidna_canary_*` properties that are **expected to fail** (they prove the success paths are
 reachable); a run therefore prints "failed" lines by design. Evidence level: `docs/remote/contracts-assurance.md` records one
 run per harness of about 300 000 calls with no violation, recorded with the commit that added the harnesses (`3524033`). The harnesses were modified
