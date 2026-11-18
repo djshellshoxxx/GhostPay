@@ -16,6 +16,8 @@ export type InvoiceErrorCode =
   | 'SIGNING'
   | 'RANDOMNESS'
   | 'UNSUPPORTED'
+  | 'UNTRUSTED_SIGNER'
+  | 'INVALID_SIGNATURE'
   | 'PASSPHRASE_REQUIRED'
   | 'PASSPHRASE_UNEXPECTED'
   | 'PASSPHRASE_POLICY'
@@ -131,5 +133,27 @@ export class PassphrasePolicyError extends InvoiceError {
 export class WrongPassphraseError extends InvoiceError {
   public constructor() {
     super('PASSPHRASE', 'wrong passphrase or damaged invoice link');
+  }
+}
+
+/**
+ * `ParseOptions.requirePinnedSigner` was set and the invoice has a valid signature from a signer that is not in
+ * `pinnedSigners` (an empty or missing `pinnedSigners` pins nothing). The message is fixed: it never names the
+ * signer, the payee or any invoice content.
+ */
+export class UntrustedSignerError extends InvoiceError {
+  public constructor() {
+    super('UNTRUSTED_SIGNER', 'invoice signer is not pinned');
+  }
+}
+
+/**
+ * `ParseOptions.requirePinnedSigner` was set and the invoice signature does not verify against its embedded signer
+ * (for example the payee was edited after signing). Distinct from {@link UntrustedSignerError} so a tampered link is
+ * not reported as an unknown seller. The message is fixed: it never names the signer, the payee or any invoice content.
+ */
+export class InvalidSignatureError extends InvoiceError {
+  public constructor() {
+    super('INVALID_SIGNATURE', 'invoice signature is invalid');
   }
 }
