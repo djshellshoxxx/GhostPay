@@ -1,0 +1,662 @@
+[
+ {
+  "package": "apps/relayer",
+  "test_files": 18,
+  "framework": "vitest",
+  "in_ci_job": "ts-test-relayer",
+  "local_result": "exit=0; files=18 passed=475 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 2
+ },
+ {
+  "package": "apps/web",
+  "test_files": 223,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (web) + e2e (full,lean)",
+  "local_result": "exit=0; files=201 passed=2752 failed=0 skipped=1",
+  "skipped": 1,
+  "static_skip_markers": 9
+ },
+ {
+  "package": "packages/address-safety",
+  "test_files": 4,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=4 passed=76 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/amount-blur",
+  "test_files": 8,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=8 passed=96 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/btc-family",
+  "test_files": 9,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=9 passed=162 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/btc-payjoin",
+  "test_files": 11,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=10 passed=158 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 1
+ },
+ {
+  "package": "packages/btc-silent-payments",
+  "test_files": 32,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (btc-silent-payments)",
+  "local_result": "exit=0; files=32 passed=559 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/chain-adapters",
+  "test_files": 26,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=26 passed=573 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 3
+ },
+ {
+  "package": "packages/chain-evm-extra",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=5 passed=44 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/chain-solana",
+  "test_files": 10,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=10 passed=97 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/chain-tron",
+  "test_files": 4,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=4 passed=42 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/cli",
+  "test_files": 37,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2) + cli-operator.yml",
+  "local_result": "exit=0; files=37 passed=570 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 2
+ },
+ {
+  "package": "packages/confidential-amounts",
+  "test_files": 7,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=7 passed=88 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 2
+ },
+ {
+  "package": "packages/confidential-contracts",
+  "test_files": 3,
+  "framework": "hardhat(mocha)",
+  "in_ci_job": "ts-test (confidential-contracts)",
+  "local_result": "exit=1; files=0 passed=0 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/core-crypto",
+  "test_files": 9,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (core-crypto)",
+  "local_result": "exit=0; files=9 passed=75 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 1
+ },
+ {
+  "package": "packages/donation",
+  "test_files": 6,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=6 passed=68 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/external-pools",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=5 passed=94 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/external-pools-privacypools",
+  "test_files": 8,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0(rerun w/o REQUIRE_ANVIL); files=8 passed=73 failed=0 skipped=4",
+  "skipped": 4,
+  "static_skip_markers": 2
+ },
+ {
+  "package": "packages/external-pools-railgun",
+  "test_files": 4,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0(rerun w/o REQUIRE_ANVIL); files=4 passed=20 failed=0 skipped=1",
+  "skipped": 1,
+  "static_skip_markers": 1
+ },
+ {
+  "package": "packages/hops",
+  "test_files": 8,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=8 passed=57 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/hygiene",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=5 passed=142 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/i18n",
+  "test_files": 12,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=12 passed=215 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/invoice-schema",
+  "test_files": 12,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=12 passed=715 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/merchant-billing",
+  "test_files": 10,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=10 passed=275 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/merchant-hooks",
+  "test_files": 2,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=2 passed=35 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 1
+ },
+ {
+  "package": "packages/merchant-ledger",
+  "test_files": 1,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=1 passed=27 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 1
+ },
+ {
+  "package": "packages/merchant-multisig",
+  "test_files": 6,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=6 passed=92 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/metadata-hardening",
+  "test_files": 10,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=10 passed=115 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/net-harness",
+  "test_files": 1,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=1 passed=27 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/net-transport",
+  "test_files": 4,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=4 passed=149 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ops-monitor",
+  "test_files": 8,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=8 passed=113 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/payer-sponsor",
+  "test_files": 14,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0(rerun w/o REQUIRE_ANVIL); files=14 passed=135 failed=0 skipped=4",
+  "skipped": 4,
+  "static_skip_markers": 1
+ },
+ {
+  "package": "packages/payment-uri",
+  "test_files": 3,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=3 passed=199 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/pir-two-server",
+  "test_files": 4,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=4 passed=60 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/plugin-api",
+  "test_files": 4,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=4 passed=45 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/policy-scheme",
+  "test_files": 6,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=6 passed=95 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 1
+ },
+ {
+  "package": "packages/pool-circuits",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=5 passed=18 failed=0 skipped=59",
+  "skipped": 59,
+  "static_skip_markers": 8
+ },
+ {
+  "package": "packages/pool-prover",
+  "test_files": 1,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=1 passed=8 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/pool-relayer",
+  "test_files": 7,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=7 passed=43 failed=0 skipped=9",
+  "skipped": 9,
+  "static_skip_markers": 3
+ },
+ {
+  "package": "packages/pool-sdk",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=5 passed=47 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/privacy-pipeline",
+  "test_files": 12,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=12 passed=747 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/privacy-profiles",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=5 passed=176 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/qr-exchange",
+  "test_files": 7,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=7 passed=233 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/relayer-guard",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=5 passed=167 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 1
+ },
+ {
+  "package": "packages/sandbox",
+  "test_files": 9,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=9 passed=95 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/scan-source",
+  "test_files": 6,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=6 passed=57 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/sdk",
+  "test_files": 8,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=8 passed=54 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/secret-box",
+  "test_files": 3,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=3 passed=47 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/solana-stealth",
+  "test_files": 6,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=6 passed=109 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/tron-adapter",
+  "test_files": 8,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=8 passed=74 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/tx-review",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=5 passed=160 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-connect",
+  "test_files": 4,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=4 passed=129 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-core",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=5 passed=118 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-export",
+  "test_files": 6,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=6 passed=134 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-fees",
+  "test_files": 3,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=3 passed=50 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-fiat",
+  "test_files": 1,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=1 passed=48 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-flow",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=5 passed=91 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-guide",
+  "test_files": 3,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=3 passed=62 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-i18n",
+  "test_files": 1,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=1 passed=2 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-intake",
+  "test_files": 6,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=6 passed=77 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-links",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=5 passed=49 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-notify",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=5 passed=79 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-presets",
+  "test_files": 4,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=4 passed=57 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-privacy",
+  "test_files": 2,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=2 passed=33 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-receipts",
+  "test_files": 2,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=2 passed=117 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-sandbox",
+  "test_files": 1,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-0)",
+  "local_result": "exit=0; files=1 passed=2 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-schedule",
+  "test_files": 5,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-1)",
+  "local_result": "exit=0; files=5 passed=133 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/ux-vault",
+  "test_files": 7,
+  "framework": "vitest",
+  "in_ci_job": "ts-test (rest-2)",
+  "local_result": "exit=0; files=7 passed=284 failed=0 skipped=0",
+  "skipped": 0,
+  "static_skip_markers": 0
+ },
+ {
+  "package": "packages/contracts",
+  "test_files": 34,
+  "framework": "foundry",
+  "in_ci_job": "contracts-test",
+  "local_result": "490 passed/0 failed/0 skipped (forge 1.8.5, solc 0.8.28 from GitHub release)",
+  "skipped": 0
+ },
+ {
+  "package": "packages/pool-contracts",
+  "test_files": 12,
+  "framework": "foundry",
+  "in_ci_job": "contracts-extra",
+  "local_result": "86 passed (forge 1.8.5, solc 0.8.28 from GitHub release)",
+  "skipped": 0
+ },
+ {
+  "package": "packages/payer-hiding-contracts",
+  "test_files": 7,
+  "framework": "foundry",
+  "in_ci_job": "contracts-extra",
+  "local_result": "109 passed (forge 1.8.5, solc 0.8.28 from GitHub release)",
+  "skipped": 0
+ },
+ {
+  "package": "apps/web/e2e",
+  "test_files": 22,
+  "framework": "playwright",
+  "in_ci_job": "e2e (full, lean)",
+  "local_result": "full: 78 passed 1 skipped; lean: 66 passed 3 skipped",
+  "skipped": 4
+ },
+ {
+  "package": "scripts/{tests,testnet,regtest}",
+  "test_files": 32,
+  "framework": "node:test (+python)",
+  "in_ci_job": "ts-test (rest-0), secrets-and-egress",
+  "local_result": "201 tests: 199 pass, 1 fail (cast missing; passes with foundry: 4/4), 1 skip (ssh-keygen)",
+  "skipped": 1
+ },
+ {
+  "package": "examples/*",
+  "test_files": 8,
+  "framework": "node:test",
+  "in_ci_job": "ci.yml ts-check runs only 2 files (money, parity); cli-operator.yml covers subscription-cron path only",
+  "local_result": "all 9 files: 60 pass 0 fail",
+  "skipped": 0
+ }
+]

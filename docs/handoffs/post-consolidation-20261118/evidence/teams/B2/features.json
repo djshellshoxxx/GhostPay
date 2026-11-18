@@ -1,0 +1,4117 @@
+[
+ {
+  "id": "F-CLI-01",
+  "name": "CLI core: registry, strict arg parsing, --json, exit codes, doctor, build-info",
+  "area": "cli",
+  "tier": "beta-supporting",
+  "spec_refs": [
+   "docs/handoffs/CLI_COMPLETION_HANDOFF.md",
+   "packages/cli/README.md"
+  ],
+  "implementation_files": [
+   "packages/cli/src/args.ts",
+   "packages/cli/src/bin.ts",
+   "packages/cli/src/commands/registry.ts",
+   "packages/cli/src/commands/doctor.ts",
+   "packages/cli/src/build-info.ts"
+  ],
+  "test_files": [
+   "packages/cli/src/args.test.ts",
+   "packages/cli/src/cli.test.ts",
+   "packages/cli/test/compiled.test.mjs"
+  ],
+  "related_branches": [
+   {
+    "ref": "origin/gpt/ghostpay-cli-completion-20261109",
+    "sha": null,
+    "pr": 92,
+    "note": "ancestor of cand"
+   },
+   {
+    "ref": "pr/129",
+    "sha": "",
+    "pr": 129,
+    "note": "end-of-options port; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Command registry with help/usage/--json envelope",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "packages/cli/src/commands/registry.ts; ~69 command paths"
+   },
+   {
+    "req": "Strict parser: unknown/repeated opts fail; '--' end-of-options preserved",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "packages/cli/src/args.ts:67; args.test.ts; PR #125/#129"
+   },
+   {
+    "req": "Offline-by-default; --online + explicit RPC consent",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "cli README; payment-context.ts"
+   },
+   {
+    "req": "doctor + build-info stamp (stamp-build.mjs)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "build-info-command.test.ts"
+   },
+   {
+    "req": "Compiled-binary acceptance (test/compiled.test.mjs, operators.test.mjs)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "needs build; not run here (shared dist); CI cli-operator.yml 44231986608 success per PROMOTION_PACKET"
+   }
+  ],
+  "verified_working": [
+   "packages/cli vitest: 37 files / 570 tests pass (local, no coverage)"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "no CLI command signs/broadcasts funds-moving tx (README claim; execute=unsupported)"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "none required",
+  "implementation_pct": 100,
+  "verification_pct": 85,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 packages/cli 570/570"
+  ],
+  "unverified": [
+   "handoff claims 68 command paths / 100% acceptance; counted ~69 path literals incl. dynamic; not independently recounted",
+   "compiled .mjs tests not run (would need dist build)"
+  ]
+ },
+ {
+  "id": "F-CLI-02",
+  "name": "CLI invoice, receipt, QR, seller-pairing commands",
+  "area": "cli",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/cli/src/commands/invoice.ts",
+   "packages/cli/src/commands/receipt.ts",
+   "packages/cli/src/commands/qr.ts",
+   "packages/cli/src/commands/seller.ts"
+  ],
+  "test_files": [
+   "packages/cli/src/invoice-parity.test.ts",
+   "packages/cli/src/receipt-parity.test.ts",
+   "packages/cli/src/qr-parity.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/105",
+    "sha": "",
+    "pr": 105,
+    "note": "invoice-bound receipt negatives; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "invoice create/sign/verify/link/inspect with pin+expected fields",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "invoice-parity.test.ts"
+   },
+   {
+    "req": "receipt create/inspect/verify/export bound to invoice",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "receipt-create.test.ts, receipt-parity.test.ts"
+   },
+   {
+    "req": "qr encode/decode incl multipart, parity with web codec",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "qr-parity.test.ts"
+   },
+   {
+    "req": "seller export-public/import-public",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "cli tests"
+   }
+  ],
+  "verified_working": [
+   "570 cli tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 cli"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-CLI-03",
+  "name": "CLI encrypted backup, restore, rekey, offline recovery",
+  "area": "cli",
+  "tier": "beta-core",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/cli/src/commands/backup.ts",
+   "packages/cli/src/backup-data.ts"
+  ],
+  "test_files": [
+   "packages/cli/src/backup-command.test.ts",
+   "packages/cli/src/recovery-auth-negative.test.ts",
+   "packages/cli/src/b0-receipt-recovery.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/108",
+    "sha": "",
+    "pr": 108,
+    "note": "receipt create+archive+offline recovery; ancestor"
+   },
+   {
+    "ref": "pr/109",
+    "sha": "",
+    "pr": 109,
+    "note": "unauth recovery; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "backup generate/create/inspect/verify/rekey/restore (scrypt/AES-GCM)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "backup-command.test.ts, backup-generate.test.ts"
+   },
+   {
+    "req": "Unauthenticated/tampered recovery rejected without writes",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "recovery-auth-negative.test.ts (PR #109)"
+   },
+   {
+    "req": "Immutable output, no overwrite; passphrase sources",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "passphrase.test.ts, node-io*.test.ts"
+   },
+   {
+    "req": "Independent of GhostPay infra (spec 18 / req 3q portability)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "offline by default; keypair-level export is B1b ux-vault"
+   }
+  ],
+  "verified_working": [
+   "cli backup/recovery tests pass"
+  ],
+  "missing_requirements": [
+   "CLI per-keypair export command (spec 18) not present in registry"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "fail-closed on auth failure",
+   "no secret in logs (not independently audited)"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 85,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 cli"
+  ],
+  "unverified": [
+   "per-stealth-address keypair export is not a CLI command (spec 18 lives in web/ux-vault; B1b)"
+  ]
+ },
+ {
+  "id": "F-CLI-04",
+  "name": "CLI reconcile, history, encrypted receipt archive",
+  "area": "cli",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/cli/src/commands/reconcile.ts",
+   "packages/cli/src/commands/history.ts",
+   "packages/cli/src/reconcile-session.ts"
+  ],
+  "test_files": [
+   "packages/cli/src/reconcile-command.test.ts",
+   "packages/cli/src/history-command.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/111",
+    "sha": "",
+    "pr": 111,
+    "note": "shared RPC byte budgets; ancestor"
+   },
+   {
+    "ref": "pr/107",
+    "sha": "",
+    "pr": 107,
+    "note": "live RPC evidence; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "reconcile inspect/create/register/propose/confirm/record/import/clear/remove",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "reconcile-command.test.ts, reconcile-local.test.ts"
+   },
+   {
+    "req": "archive-receipt / export-receipts encrypted archive",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "b0-receipt-recovery.test.ts"
+   },
+   {
+    "req": "history list/inspect incl. live-vs-historical labels",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "history-command.test.ts"
+   },
+   {
+    "req": "front-run/time/stale-context regressions",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "reconcile-frontrun.test.ts, reconcile-time.test.ts"
+   }
+  ],
+  "verified_working": [
+   "pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 cli"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-CLI-05",
+  "name": "CLI read-only chain/payment/scan/registry commands",
+  "area": "cli",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/cli/src/commands/chain.ts",
+   "packages/cli/src/commands/payment.ts",
+   "packages/cli/src/commands/scan.ts",
+   "packages/cli/src/commands/registry.ts"
+  ],
+  "test_files": [
+   "packages/cli/src/chain-commands.test.ts",
+   "packages/cli/src/payment-commands.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "chain list/assets/deployment verify, recipient inspect, solana announcement, btc headers",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "chain-commands.test.ts"
+   },
+   {
+    "req": "payment inspect/verify/status with trust pin + --online consent",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "payment-commands.test.ts"
+   },
+   {
+    "req": "scan plan/run/inspect bounded + authenticated resume",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "cli tests"
+   },
+   {
+    "req": "registry lookup (ERC-6538) dual-provider check",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "registry.ts; spec 06"
+   },
+   {
+    "req": "Live-network acceptance on public testnet",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "external"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "Public-testnet CLI verification not performed here (handoff: pending)",
+  "implementation_pct": 100,
+  "verification_pct": 80,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 cli"
+  ],
+  "unverified": [
+   "no live RPC used; fixtures only"
+  ]
+ },
+ {
+  "id": "F-CLI-06",
+  "name": "CLI merchant commands: refunds, installments, subscriptions, webhooks, split, batch",
+  "area": "cli",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/cli/src/commands/merchant.ts",
+   "packages/cli/src/commands/merchant-refund.ts",
+   "packages/cli/src/commands/sub.ts",
+   "packages/cli/src/commands/webhook.ts",
+   "packages/cli/src/commands/split.ts",
+   "packages/cli/src/commands/batch.ts"
+  ],
+  "test_files": [
+   "packages/cli/src/merchant.test.ts",
+   "packages/cli/src/merchant-refund.test.ts",
+   "packages/cli/src/merchant-subscription.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "merchant refunds inspect/status; execute explicitly unsupported",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "merchant-refund.test.ts"
+   },
+   {
+    "req": "installments plan/inspect; subscriptions validate/inspect/schedule",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "merchant-subscription.test.ts"
+   },
+   {
+    "req": "webhook sign/verify; webhooks inspect",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "merchant.test.ts"
+   },
+   {
+    "req": "split compute, batch preview/confirm, export",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "cli tests"
+   },
+   {
+    "req": "Refund execution (on-chain)",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "intentionally unsupported"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "refund execute is deliberately unsupported (noncustodial / no hosted signing)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [
+   "F-MER-01",
+   "F-MER-03",
+   "F-MER-04"
+  ],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 80,
+  "verification_pct": 80,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "keep execute unsupported; matches constraint 1",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 cli"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-MER-01",
+  "name": "Merchant billing: subscriptions, schedules, installments, refunds, payouts, CSV",
+  "area": "merchant",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/merchant-billing/src/"
+  ],
+  "test_files": [
+   "packages/merchant-billing/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/130",
+    "sha": "",
+    "pr": 130,
+    "note": "horizon regression; ancestor"
+   },
+   {
+    "ref": "pr/131",
+    "sha": "",
+    "pr": 131,
+    "note": "CSV formula; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Subscription reminder invoices + period schedule with MAX_PERIOD_INDEX horizon",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "schedule.ts:88 beyond horizon; schedule.test.ts (PR #123/#130)"
+   },
+   {
+    "req": "CSV export formula neutralisation (leading '), quoted cells",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "csv.ts:104-108; csv.test.ts (PR #124/#131)"
+   },
+   {
+    "req": "Installments/deposits, split+bulk payouts, private refund plans, exact bigint money",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "installments.ts, payouts.ts, refunds.ts, money.ts"
+   },
+   {
+    "req": "Durable operator state (operator-state.ts)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "operator-state.test.ts"
+   },
+   {
+    "req": "Consumed by a user surface (CLI + examples/subscription-cron)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "cli imports; web does NOT import it"
+   },
+   {
+    "req": "Web app merchant billing UI",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "no apps/web import of any merchant-* package"
+   }
+  ],
+  "verified_working": [
+   "275 tests / 10 files pass"
+  ],
+  "missing_requirements": [
+   "no web UI; merchant side is CLI/examples/library only"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 85,
+  "verification_pct": 85,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "optional full-profile; keep as library+CLI, no web UI needed for Sepolia beta",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 merchant-billing 275"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-MER-02",
+  "name": "Merchant ledger: reconciliation + accounting/tax exports",
+  "area": "merchant",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/merchant-ledger/src/"
+  ],
+  "test_files": [
+   "packages/merchant-ledger/src/ledger.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/148",
+    "sha": "",
+    "pr": 148,
+    "note": "closed unmerged; fix present in cand? ledger.test passes NaN case - INFERRED"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Reconciliation + exports, bigint money, CSV formula neutralisation (= + - @ TAB CR)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "merchant-ledger/src/csv.ts:3-11; ledger.test.ts"
+   },
+   {
+    "req": "NaN-timed payment never counted on time (PR #148)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "ledger.test.ts"
+   },
+   {
+    "req": "Thin test depth (1 test file, 27 tests)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "coverage depth low"
+   },
+   {
+    "req": "Wired into web reconciliation",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "web has own lib/reconciliationLedger.ts+Match.ts; package used by CLI only"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "duplicate logic with apps/web reconciliation (two implementations)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 80,
+  "verification_pct": 65,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "decide single reconciliation source; web version is the shipped one",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 merchant-ledger 27"
+  ],
+  "unverified": [
+   "PR #148 closed-unmerged: not verified its NaN fix is byte-identical in cand"
+  ]
+ },
+ {
+  "id": "F-MER-03",
+  "name": "Merchant hooks: signed webhooks, payment button/link, POS/NFC payload builders",
+  "area": "merchant",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/merchant-hooks/src/"
+  ],
+  "test_files": [
+   "packages/merchant-hooks/src/hooks.test.ts",
+   "packages/merchant-hooks/src/webhook-vectors.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/189",
+    "sha": "",
+    "pr": 189,
+    "note": "historical CLI/merchant recovery; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "HMAC-signed webhooks (GhostPay-Signature), timestamp window, constant-time verify",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "webhooks.ts; webhook-vectors.test.ts + test-vectors/"
+   },
+   {
+    "req": "Cross-language vectors shared with PHP plugins",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "woocommerce/prestashop tests/run.php pass 177/239 assertions"
+   },
+   {
+    "req": "Button/link/POS/NFC builders (pure)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "button.ts link.ts pos.ts nfc.ts; hooks.test.ts"
+   },
+   {
+    "req": "Idempotent durable receiver",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "examples/webhook-receiver selftest passes"
+   }
+  ],
+  "verified_working": [
+   "35 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "raw-byte HMAC before parse",
+   "replay window 300s"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 merchant-hooks 35",
+   "LOCAL node --test examples/* 52/52 pass"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-MER-04",
+  "name": "Merchant m-of-n multisig approvals",
+  "area": "merchant",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/merchant-multisig/src/"
+  ],
+  "test_files": [
+   "packages/merchant-multisig/src/*.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Proposals, canonical digests, domain-separated secp256k1 approvals",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "account/approvals/proposal tests"
+   },
+   {
+    "req": "Replay protection, timelocks, expiry",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "state-boundary.test.ts, policy.test.ts"
+   },
+   {
+    "req": "Exchange format for offline approvals",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "exchange.test.ts"
+   },
+   {
+    "req": "On-chain execution of approved refunds",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "off-chain approval policy only; CLI refund execute unsupported"
+   },
+   {
+    "req": "Wired into web",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "CLI + examples/merchant-operations only"
+   }
+  ],
+  "verified_working": [
+   "92 tests pass"
+  ],
+  "missing_requirements": [
+   "no execution path; no UI"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 60,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "approval logic only; keep as optional library",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 merchant-multisig 92"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-MER-05",
+  "name": "Web merchant profile, templates, printable bill, reconciliation UI (cross-ref B1b)",
+  "area": "merchant",
+  "tier": "beta-core",
+  "spec_refs": [
+   "docs/specs/14-embed-merchant-profile.md"
+  ],
+  "implementation_files": [
+   "apps/web/src/components/MerchantProfilePanel.tsx",
+   "apps/web/src/lib/merchantIdentity.ts",
+   "apps/web/src/lib/reconciliationLedger.ts"
+  ],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Signed merchant profile + templates (spec 14)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/src/lib/merchantIdentity.ts,merchantTemplate.ts; MerchantProfilePanel.tsx; merchant-profile.spec.ts"
+   },
+   {
+    "req": "Reconciliation ledger + vault + receipts in browser",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "reconciliationLedger/Match/Vault.ts; reconciliation.spec.ts"
+   },
+   {
+    "req": "PrintableBill",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "PrintableBill.test.tsx"
+   },
+   {
+    "req": "Embed postMessage mode (spec 14 B)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "embedV2.test.ts, embed-iframe.spec.ts; ghostpay-embed-v2.js"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "spec 14 acceptance: ADR-0002/0015 signer pinning+hosting gates",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "CI-green d91ae16a e2e full 78/1skip (PROMOTION_PACKET); not rerun by B2"
+  ],
+  "unverified": [
+   "owned by B1b; B2 did not rerun web e2e (shared dist/build)"
+  ]
+ },
+ {
+  "id": "F-MER-06",
+  "name": "Merchant examples: checkout, POS terminal, subscription cron, webhook receiver, operations, plugin conformance",
+  "area": "merchant",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "examples/"
+  ],
+  "test_files": [
+   "examples/*/*.test.mjs"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "merchant-checkout demo+money tests",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "node --test pass"
+   },
+   {
+    "req": "webhook-receiver durable idempotent + selftest",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "selftest 8 ok; durable.test.mjs"
+   },
+   {
+    "req": "subscription-cron runner + durable state",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "run.test.mjs pass; cron under real cron not run"
+   },
+   {
+    "req": "pos-terminal static page",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "parity.test.mjs pass; HTML/JS never browser-tested (examples/README)"
+   },
+   {
+    "req": "merchant-operations refund-batch + approvals demos",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "tests pass"
+   },
+   {
+    "req": "plugin-conformance reference host",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "conformance.test.mjs pass"
+   }
+  ],
+  "verified_working": [
+   "node --test of 6 example test sets: 52 pass / 0 fail"
+  ],
+  "missing_requirements": [
+   "POS page browser test"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [
+   "webhook-receiver/subscription-cron/merchant-operations/plugin-conformance not in CI (only cli-operator path trigger for subscription-cron)"
+  ],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 90,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    2
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "add example tests to CI; browser smoke for POS",
+  "evidence": [
+   "LOCAL node --test examples/... exit 0, 52 pass",
+   "CI ci.yml:111 runs only merchant-checkout money + pos parity tests"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-MER-07",
+  "name": "Optional itemised developer donation",
+  "area": "merchant",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/donation/src/"
+  ],
+  "test_files": [
+   "packages/donation/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/12",
+    "sha": "",
+    "pr": 12,
+    "note": "closed; feat(remote) relayer-guard,donation; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Rate validation, amount computation, review view-model, transfer builders",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "donation tests 68 pass"
+   },
+   {
+    "req": "Wired into any app / manifest schema donationRecipient",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "README: Not wired in"
+   },
+   {
+    "req": "Run vs wallet/network",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "README: never run"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "must be opt-in, itemised in review UI"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 40,
+  "verification_pct": 40,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "keep; separated; constraint 3/5: needs explicit opt-in design before wiring",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 donation 68",
+   "packages/donation/README.md:12"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-INT-01",
+  "name": "WooCommerce gateway plugin (payment-link redirect flow)",
+  "area": "integrations",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "integrations/woocommerce/ghostpay-for-woocommerce/"
+  ],
+  "test_files": [
+   "integrations/woocommerce/tests/run.php"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Classic checkout gateway: process_payment -> signed invoice service -> https link redirect",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "ghostpay-for-woocommerce/includes/class-ghostpay-gateway.php"
+   },
+   {
+    "req": "Webhook HMAC, replay window, atomic idempotent claims, exact money compare",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "php tests/run.php: ok 177 assertions (local PHP 8.3.6)"
+   },
+   {
+    "req": "Secrets only from constants/env, never DB",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "class-ghostpay-secrets.php"
+   },
+   {
+    "req": "Real WordPress/WooCommerce platform run",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "README claims WP 7.1.4/WC 11.2.2/28 checks; harness not rerun here"
+   },
+   {
+    "req": "Blocks checkout, native refunds, phpcs",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "README: unsupported"
+   }
+  ],
+  "verified_working": [
+   "php -l all files clean; 177 assertions pass"
+  ],
+  "missing_requirements": [
+   "Blocks checkout",
+   "refunds"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "live shop + real invoice service + browser checkout not qualified",
+  "implementation_pct": 85,
+  "verification_pct": 75,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "REAL code, not stub; keep as optional merchant integration",
+  "evidence": [
+   "LOCAL php integrations/woocommerce/tests/run.php ok 177"
+  ],
+  "unverified": [
+   "platform 28-check harness (docs/companion-merchant/shop-acceptance-20261109.md) not rerun"
+  ]
+ },
+ {
+  "id": "F-INT-02",
+  "name": "PrestaShop module",
+  "area": "integrations",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "integrations/prestashop/ghostpay/"
+  ],
+  "test_files": [
+   "integrations/prestashop/tests/run.php"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Checkout option, validation controller, webhook controller, order-state policy",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "ghostpay/ghostpay.php, controllers/front/*.php"
+   },
+   {
+    "req": "SQLite-shim tests incl DDL, queries, uninstall",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "php tests/run.php ok 239 assertions"
+   },
+   {
+    "req": "Run inside real PrestaShop 8",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "README: callbacks not run inside PrestaShop; validator/multishop pending"
+   },
+   {
+    "req": "Refund API",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "out of milestone"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "real PrestaShop install/validator/browser not done",
+  "implementation_pct": 60,
+  "verification_pct": 60,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "real module, shim-qualified only",
+  "evidence": [
+   "LOCAL php integrations/prestashop/tests/run.php ok 239"
+  ],
+  "unverified": [
+   "behaviour vs real PrestaShop 8.1.7 is read from source only"
+  ]
+ },
+ {
+  "id": "F-INT-03",
+  "name": "Shopify integration",
+  "area": "integrations",
+  "tier": "future",
+  "spec_refs": [],
+  "implementation_files": [
+   "integrations/shopify/"
+  ],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Documentation of payment-link app options",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "README skeleton"
+   },
+   {
+    "req": "Liquid button snippet (https/host/fragment checks)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "snippets/ghostpay-button.liquid 41 lines total; not linted"
+   },
+   {
+    "req": "Embedded app backend, webhooks, orderMarkAsPaid",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "not provided"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 50,
+  "verification_pct": 0,
+  "status": "SPEC_ONLY",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    3,
+    10
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "STUB: snippet+docs only; Shopify gateway needs Payments Partner program",
+  "evidence": [
+   "integrations/shopify/README.md:1 'skeleton, documentation only'"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-INT-04",
+  "name": "Plugin/extension API (privacy options) + conformance example",
+  "area": "integrations",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/plugin-api/src/"
+  ],
+  "test_files": [
+   "packages/plugin-api/src/*.test.ts",
+   "examples/plugin-conformance/conformance.test.mjs"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Manifest validation, capability-scoped sandbox, deny-by-default perms, deterministic registry",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "plugin-api tests 45 pass"
+   },
+   {
+    "req": "Conformance reference host",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "examples/plugin-conformance passes"
+   },
+   {
+    "req": "Consumed by any app",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "no import in apps/ or other packages"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "deny-by-default capability sandbox"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 55,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "keep isolated; constraint 5",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 plugin-api 45"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-RLY-01",
+  "name": "Optional relayer: quote/sweep API, fee policy, permit failure classes",
+  "area": "relayer",
+  "tier": "full-profile",
+  "spec_refs": [
+   "docs/APP_AND_RELAYER_SPEC.md",
+   "docs/FEE_SCHEDULE.md",
+   "docs/specs/04-permit-griefing-fallback.md"
+  ],
+  "implementation_files": [
+   "apps/relayer/src/service.ts",
+   "apps/relayer/src/server.ts",
+   "apps/relayer/src/quoteToken.ts",
+   "apps/relayer/src/pricing.ts"
+  ],
+  "test_files": [
+   "apps/relayer/src/api.test.ts",
+   "apps/relayer/src/e2e.anvil.test.ts",
+   "apps/relayer/src/stress.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/118",
+    "sha": "97b919c9",
+    "pr": 118,
+    "note": "restart-safe budget+nonce journal, permit classes; ancestor"
+   },
+   {
+    "ref": "pr/40",
+    "sha": "63994db6",
+    "pr": 40,
+    "note": "secret fd-bind; superseded: packages/relayer-guard/src/secrets.ts uses openSync+O_NOFOLLOW+fstat"
+   },
+   {
+    "ref": "pr/17",
+    "sha": "e96cee1a",
+    "pr": 17,
+    "note": "claude/laughing-bardeen 104 commits, old line; 64 files differ - review before deleting"
+   },
+   {
+    "ref": "pr/39",
+    "sha": "1d28f24d",
+    "pr": 39,
+    "note": "D3 deadline fix present in cand service.ts:762"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "POST /v1/quote, /v1/sweep, /healthz, /v1/info; fee min 50bps cap 300bps; stateless quote token v2",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/relayer/src/service.ts,quoteToken.ts; api.test.ts"
+   },
+   {
+    "req": "Permit failure classes permit_nonce_consumed/signature_invalid/unsupported/failed; metric relayer_permit_failures_total",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "service.ts:1014-1030; PR #118/#69"
+   },
+   {
+    "req": "Serial per-chain lane, simulation x2, deadline rechecks (D3), gas cap",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "service.ts:762-808"
+   },
+   {
+    "req": "Anvil e2e against real contract",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "e2e.anvil.test.ts skipped locally (no anvil); CI ts-test-relayer runs it"
+   },
+   {
+    "req": "Price feeds: operator constants, not oracles (DEVIATIONS 2)",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "yes",
+    "evidence": "feedPricing.ts exists; spec 03 relayer registry required before mainnet"
+   },
+   {
+    "req": "Mainnet gate (manifest + ALLOW_MAINNET)",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "DEVIATIONS 10"
+   }
+  ],
+  "verified_working": [
+   "apps/relayer vitest: 17 files pass, 470 pass / 5 skipped (anvil e2e)"
+  ],
+  "missing_requirements": [
+   "fee bump / cancel stuck tx (DEVIATIONS 7)",
+   "oracle-based pricing; manifest-verified fee feeds for mainnet"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [
+   "anvil e2e not run locally"
+  ],
+  "security_privacy_requirements": [
+   "contract guarantees destination/amount/fee; relayer cannot redirect (noncustodial)",
+   "hot key must be funded conservatively",
+   "unknown keys rejected, 16KiB body cap"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "real testnet deployment + funded hot-key run not done",
+  "implementation_pct": 95,
+  "verification_pct": 90,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "complete for testnet self-host; mainnet gated",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 relayer 470p/5s",
+   "CI 44231986652 ts-test-relayer success (per PROMOTION_PACKET)"
+  ],
+  "unverified": [
+   "anvil e2e (5 tests) not run locally: forge/anvil absent"
+  ]
+ },
+ {
+  "id": "F-RLY-02",
+  "name": "Relayer restart-safe daily budget + nonce journal (state lock)",
+  "area": "relayer",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "apps/relayer/src/stateStore.ts",
+   "apps/relayer/src/budget.ts",
+   "apps/relayer/src/lane.ts"
+  ],
+  "test_files": [
+   "apps/relayer/src/stateStore.test.ts",
+   "apps/relayer/src/restart.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/118",
+    "sha": "97b919c9",
+    "pr": 118,
+    "note": "ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Atomic FileStateBackend, StateJournal, process lock (acquireStateLock), decode/encode validation",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "stateStore.ts:87,269,446; stateStore.test.ts"
+   },
+   {
+    "req": "Restart reconstructs pending sends, budget",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "restart.test.ts"
+   },
+   {
+    "req": "Receipt reconciliation for timed-out sweeps",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "service.ts reconcilePending"
+   },
+   {
+    "req": "One api container per volume documented",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "deploy/README.md"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 100,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 relayer"
+  ],
+  "unverified": [
+   "multi-host/network filesystem locking not verified"
+  ]
+ },
+ {
+  "id": "F-RLY-03",
+  "name": "Relayer private metrics listener (PR #185) and signed alerts",
+  "area": "relayer",
+  "tier": "full-profile",
+  "spec_refs": [
+   "docs/specs/07-relayer-metrics-observability.md",
+   "docs/operators/relayer-monitoring.md"
+  ],
+  "implementation_files": [
+   "apps/relayer/src/metricsServer.ts",
+   "apps/relayer/src/metrics.ts",
+   "apps/relayer/src/alerts.ts",
+   "apps/relayer/src/rejectSpike.ts",
+   "apps/relayer/src/revertRate.ts"
+  ],
+  "test_files": [
+   "apps/relayer/src/metrics.observability.test.ts",
+   "apps/relayer/src/alerts.lifecycle.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/185",
+    "sha": "c738f96e",
+    "pr": 185,
+    "note": "open draft PR; head is ANCESTOR of cand -> content in candidate; PR can be closed once #203 lands"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Opt-in separate 127.0.0.1:9464 listener, no route to payment API, optional bearer token",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "metricsServer.ts:7,46; metrics.observability.test.ts"
+   },
+   {
+    "req": "Webhook alerts: https-only, allow-listed hosts, public-IP DNS pin, X-GP-Signature HMAC",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "alerts.ts validateWebhookUrl/publicOnlyLookup; alerts.lifecycle.test.ts"
+   },
+   {
+    "req": "nginx never routes /metrics",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "deploy/nginx/nginx.conf:82; compose not run"
+   },
+   {
+    "req": "Spec 07 metrics observability",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "docs/specs/07; reject-spike, revert-rate monitors"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "metrics bound to loopback by default",
+   "SSRF guard on alert URL"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 95,
+  "status": "VERIFIED_COMPLETE",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 relayer"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-RLY-04",
+  "name": "relayer-guard: breaker, trusted-proxy IP, /64 buckets, limiter, loss budget, challenge",
+  "area": "relayer",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/relayer-guard/src/"
+  ],
+  "test_files": [
+   "packages/relayer-guard/src/*.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Non-wedging breaker, classify outcomes, trusted proxy XFF, IPv6 /64, flood-proof token bucket, LossBudget",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "167 tests pass; wired into apps/relayer"
+   },
+   {
+    "req": "fd-bound secret file reads",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "secrets.ts:5,54-65 + secrets.test.ts"
+   },
+   {
+    "req": "Challenge module wired",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "README: challenge module is not wired / unused"
+   },
+   {
+    "req": "Run against real proxy/network",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "README: never run"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "challenge-bank/challenge unused (bot-cost only, not a security boundary)"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "abuse controls only; no custody"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 60,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 relayer-guard 167"
+  ],
+  "unverified": [
+   "real proxy topology"
+  ]
+ },
+ {
+  "id": "F-RLY-05",
+  "name": "payer-sponsor: payer-address hiding modes + testnet sponsor core",
+  "area": "relayer",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/payer-sponsor/src/"
+  ],
+  "test_files": [
+   "packages/payer-sponsor/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/16",
+    "sha": "698404ca",
+    "pr": 16,
+    "note": "remote-extensions-10: 17 unique commits, 10 files differ vs cand (payer-sponsor); triage before retire"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "PH-1..4 planners (fresh wallet, permit relay, EIP-7702, ERC-4337), manifest, chain guard",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "135 tests pass"
+   },
+   {
+    "req": "Anvil e2e",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "4 skipped locally; PR #16 payer-sponsor branch differs"
+   },
+   {
+    "req": "Consumed by app",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "no importer outside its own package"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [
+   "packages/payer-hiding-contracts (B3)"
+  ],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 40,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "keep isolated; doc claim limits already honest (constraint 3)",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 payer-sponsor 135p/4s",
+   "README: Testnet only; reduces gas-funding link only, payer address stays public"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-OPS-01",
+  "name": "ops-monitor: read-only chain anomaly probes + bounded release-asset streaming",
+  "area": "ops",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ops-monitor/src/"
+  ],
+  "test_files": [
+   "packages/ops-monitor/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/184",
+    "sha": "73371b57",
+    "pr": 184,
+    "note": "open; ancestor (content in cand)"
+   },
+   {
+    "ref": "pr/106",
+    "sha": "5280569b",
+    "pr": 106,
+    "note": "open; ancestor"
+   },
+   {
+    "ref": "pr/188",
+    "sha": "d2e8689b",
+    "pr": 188,
+    "note": "merged"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "W1-W6 probes (manifest drift, fee recipient, release integrity, hot key, announce rate, RPC disagreement)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "w1..w6; 113 tests pass"
+   },
+   {
+    "req": "Bounded fetch: no redirects, 10s timeout, maxBytes enforced on stream, cancel capped streams",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "fetcher.ts:8-37; fetcher.regression.test.ts; PRs #106/#184/#188"
+   },
+   {
+    "req": "Prometheus + webhook output, dedupe",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "output.test.ts"
+   },
+   {
+    "req": "systemd unit/timer",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "deploy/ghostpay-ops-monitor.*; not run"
+   },
+   {
+    "req": "Run vs real chain",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "never; no dedicated CI job (only generic ts-test shard)"
+   }
+  ],
+  "verified_working": [
+   "113 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "read-only; no keys"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 80,
+  "verification_pct": 75,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    2
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "add live-RPC smoke on Sepolia; not wired to any app",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ops-monitor 113"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-OPS-02",
+  "name": "hygiene: own-leak hygiene options (HY-DST/CON/VER/BUF/FUND)",
+  "area": "ops",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/hygiene/src/"
+  ],
+  "test_files": [
+   "packages/hygiene/src/*.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Destination/consolidation/verify/buffer/funding hygiene logic, testnet guard",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "142 tests pass"
+   },
+   {
+    "req": "Wired to app",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "no importer"
+   },
+   {
+    "req": "Option B GhostPaySweepRelayerV2 contract",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "README: not built"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 45,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 hygiene 142",
+   "README: testnet PoC; hygiene not anonymity"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-OPS-03",
+  "name": "sandbox / test mode: deterministic mock chain, faucet, clock, fault injection",
+  "area": "ops",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/sandbox/src/"
+  ],
+  "test_files": [
+   "packages/sandbox/src/*.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "In-memory mock chain/faucet/clock/faults",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "95 tests pass"
+   },
+   {
+    "req": "CLI `sandbox chain demo`",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "cli sandbox.ts"
+   },
+   {
+    "req": "Web sandbox surface",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "web does not import"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [
+   "no network, in-memory"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 70,
+  "verification_pct": 70,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 sandbox 95"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-01",
+  "name": "ux-connect: wallet connect compat, WalletConnect session grammar, hardware-signer status",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-connect/src/"
+  ],
+  "test_files": [
+   "packages/ux-connect/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "129 tests / 4 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-connect)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-connect.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "129 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-connect 129",
+   "README: UNVERIFIED no real wallet/device; grammar from memory"
+  ],
+  "unverified": [
+   "README: UNVERIFIED no real wallet/device; grammar from memory"
+  ]
+ },
+ {
+  "id": "F-UX-02",
+  "name": "ux-core: netstate, theme, palette, store (pure UX core)",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-core/src/"
+  ],
+  "test_files": [
+   "packages/ux-core/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "118 tests / 5 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-core)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-core.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "118 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-core 118"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-03",
+  "name": "ux-export: structured export encoder/parser/import with formula neutralisation",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-export/src/"
+  ],
+  "test_files": [
+   "packages/ux-export/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "134 tests / 6 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-export)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-export.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "134 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-export 134"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-04",
+  "name": "ux-fees: fee preview, cheapest route, timing",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-fees/src/"
+  ],
+  "test_files": [
+   "packages/ux-fees/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "50 tests / 3 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-fees)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-fees.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "50 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-fees 50"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-05",
+  "name": "ux-fiat: BigInt fiat display + rate validation/state machine",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-fiat/src/"
+  ],
+  "test_files": [
+   "packages/ux-fiat/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "48 tests / 1 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-fiat)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-fiat.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "48 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-fiat 48",
+   "1 test file; rates injected; web does fiat via MerchantTemplateIssuer/PrintableBill own code"
+  ],
+  "unverified": [
+   "1 test file; rates injected; web does fiat via MerchantTemplateIssuer/PrintableBill own code"
+  ]
+ },
+ {
+  "id": "F-UX-06",
+  "name": "ux-flow: return URLs, embed, proof, reconcile, undo",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-flow/src/"
+  ],
+  "test_files": [
+   "packages/ux-flow/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "91 tests / 5 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-flow)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-flow.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "91 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-flow 91"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-07",
+  "name": "ux-guide: onboarding checklist, profiles, questionnaire validation (PR #127/#133)",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-guide/src/"
+  ],
+  "test_files": [
+   "packages/ux-guide/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "62 tests / 3 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-guide)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-guide.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "62 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-guide 62"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-08",
+  "name": "ux-intake: address/deeplink/NL amount/QR payload intake",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-intake/src/"
+  ],
+  "test_files": [
+   "packages/ux-intake/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "77 tests / 6 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-intake)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-intake.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "77 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-intake 77"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-09",
+  "name": "ux-links: payment links, handles, address book, tip, URI",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-links/src/"
+  ],
+  "test_files": [
+   "packages/ux-links/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "49 tests / 5 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-links)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-links.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "49 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-links 49"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-10",
+  "name": "ux-notify: notification manifest, redaction, URL safety, reminder bridge",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-notify/src/"
+  ],
+  "test_files": [
+   "packages/ux-notify/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "79 tests / 5 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-notify)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-notify.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "79 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-notify 79"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-11",
+  "name": "ux-presets: pay-again presets, sealed store",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-presets/src/"
+  ],
+  "test_files": [
+   "packages/ux-presets/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "57 tests / 4 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-presets)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-presets.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "57 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-presets 57"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-12",
+  "name": "ux-privacy: privacy score + policy",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-privacy/src/"
+  ],
+  "test_files": [
+   "packages/ux-privacy/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "33 tests / 2 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-privacy)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-privacy.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "33 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-privacy 33"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-13",
+  "name": "ux-receipts: receipt parse/render/verify/disclose",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-receipts/src/"
+  ],
+  "test_files": [
+   "packages/ux-receipts/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "117 tests / 2 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-receipts)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-receipts.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "117 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-receipts 117",
+   "web has its own lib/receipts.ts; 2 test files"
+  ],
+  "unverified": [
+   "web has its own lib/receipts.ts; 2 test files"
+  ]
+ },
+ {
+  "id": "F-UX-14",
+  "name": "ux-schedule: recurrence, schedule templates, advancing-clock expiry guard (PR #126/#132)",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-schedule/src/"
+  ],
+  "test_files": [
+   "packages/ux-schedule/src/*.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/8",
+    "sha": "e2ac361b",
+    "pr": 8,
+    "note": "closed; ux-* swarm 7; ancestor of cand"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Pure logic implemented (no UI/network)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "133 tests / 5 files pass"
+   },
+   {
+    "req": "Consumed by apps/web (import @ghostpay/ux-schedule)",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "grep apps/web/src: 0 importers; only ux-vault is consumed by web"
+   },
+   {
+    "req": "Wiring doc / spec present",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "docs/remote/usability/wiring/ux-schedule.md (not checked per-file)"
+   }
+  ],
+  "verified_working": [
+   "133 tests pass"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 55,
+  "verification_pct": 45,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "support/experimental library; not imported by any app. Keep, separate from beta-qualified. Wire or retire per feature need.",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-schedule 133"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-UX-15",
+  "name": "ux-i18n and ux-sandbox: deprecated thin re-export shims",
+  "area": "ux",
+  "tier": "experimental",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/ux-i18n/src/index.ts",
+   "packages/ux-sandbox/src/index.ts"
+  ],
+  "test_files": [
+   "packages/ux-i18n/src/*.test.ts",
+   "packages/ux-sandbox/src/*.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Re-export @ghostpay/i18n / @ghostpay/sandbox with legacy names",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "36 / 26 LOC; 2+2 tests"
+   },
+   {
+    "req": "Consumers",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "none outside shims; web does not import"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 50,
+  "verification_pct": 50,
+  "status": "EXPERIMENTAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "deprecated; candidates for retirement in phase 2 after confirming zero consumers",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 ux-i18n 2, ux-sandbox 2"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-I18N-01",
+  "name": "Web i18n framework: catalogs, translator, plurals/ICU-lite, RTL, language picker, pseudo-locales",
+  "area": "i18n",
+  "tier": "beta-core",
+  "spec_refs": [],
+  "implementation_files": [
+   "apps/web/src/i18n/",
+   "scripts/i18n/check.mjs"
+  ],
+  "test_files": [
+   "apps/web/src/i18n/*.test.ts*",
+   "apps/web/src/AppShell.i18n.test.tsx"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/66",
+    "sha": "e02d04c7",
+    "pr": 66,
+    "note": "Pay view; ancestor"
+   },
+   {
+    "ref": "pr/67",
+    "sha": "7f4702fd",
+    "pr": 67,
+    "note": "Scan view; ancestor"
+   },
+   {
+    "ref": "pr/68",
+    "sha": "4fe95fc0",
+    "pr": 68,
+    "note": "Create invoice; ancestor"
+   },
+   {
+    "ref": "pr/88",
+    "sha": "0a68a57b",
+    "pr": 88,
+    "note": "notice labels; ancestor"
+   },
+   {
+    "ref": "pr/183",
+    "sha": "2de9b0c5",
+    "pr": 183,
+    "note": "merchant identity disclosures; merged"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Lazy same-origin catalog chunks, English bundled, no 3rd-party fetch",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/src/i18n/catalog.ts:25-35; catalog.test.ts"
+   },
+   {
+    "req": "Translator, plurals, <Trans>, context/provider, storage, picker, dir/RTL",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web vitest src/i18n: 10 files 80 tests pass"
+   },
+   {
+    "req": "Pseudo-locales en-XA/en-XB dev-only",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "languages.ts, message.ts"
+   },
+   {
+    "req": "CI gate scripts/i18n/check.mjs",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "ran: 4 catalogs 0 errors 409 warnings; ci.yml:113"
+   },
+   {
+    "req": "Views localised via t()",
+    "weight": 3,
+    "implemented": "half",
+    "verified": "half",
+    "evidence": "40 non-test tsx files use i18n hooks of ~66 components/views; residual hard-coded strings not counted"
+   }
+  ],
+  "verified_working": [
+   "80 i18n unit tests pass; i18n:check 0 errors"
+  ],
+  "missing_requirements": [
+   "hard-coded string audit (an automated 'no literal JSX text' lint) not found"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [
+   "extraction coverage test for untranslated JSX literals"
+  ],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 90,
+  "verification_pct": 90,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL vitest apps/web src/i18n 80 pass; node scripts/i18n/check.mjs exit 0"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-I18N-02",
+  "name": "Locale catalogs: translation completeness and native review",
+  "area": "i18n",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "apps/web/locales/{en,es,ar,ja}.json"
+  ],
+  "test_files": [
+   "scripts/i18n/check.mjs",
+   "apps/web/src/i18n/catalog.test.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/147",
+    "sha": "c6a90334",
+    "pr": 147,
+    "note": "closed unmerged 'translate ~860 keys' but ancestor of cand -> content present (now 2253 keys, was ~860 untranslated)"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "LANGUAGES registry of 24 locales",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "languages.ts:20-45"
+   },
+   {
+    "req": "Shipped catalogs for registry locales",
+    "weight": 3,
+    "implemented": "half",
+    "verified": "half",
+    "evidence": "only en, es, ar, ja shipped in apps/web/locales (3 non-source); 20 registry locales have NO catalog -> fall back to English"
+   },
+   {
+    "req": "Key completeness vs en (2253 keys)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "python count: es/ar/ja each 2253 keys, 0 missing"
+   },
+   {
+    "req": "Translated (not copies of English)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "identical-to-en: es 142, ar 128, ja 127 (many brand/technical tokens; check.mjs warns 409 total)"
+   },
+   {
+    "req": "Native-speaker review",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "REVIEWED_LOCALES empty; all 3 status 'machine-drafted: needs native review'"
+   }
+  ],
+  "verified_working": [
+   "es/ar/ja structurally complete: 2253/2253 keys"
+  ],
+  "missing_requirements": [
+   "20 of 24 listed languages unshipped",
+   "native review for es/ar/ja"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "native-speaker review per locale (human)",
+  "implementation_pct": 60,
+  "verification_pct": 55,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "L",
+   "engineer_days": [
+    3,
+    10
+   ]
+  },
+  "strategy": "recover",
+  "strategy_detail": "trim LANGUAGES to shipped locales or ship catalogs; get native review before removing 'needs review' banner",
+  "evidence": [],
+  "unverified": [
+   "quality of machine translations not assessed (cannot read all 3 languages reliably)"
+  ]
+ },
+ {
+  "id": "F-I18N-03",
+  "name": "packages/i18n localisation framework (CLI/library) + CLI i18n check",
+  "area": "i18n",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "packages/i18n/src/"
+  ],
+  "test_files": [
+   "packages/i18n/src/*.test.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Catalogs en/es/de, ICU-lite plural/placeholder, negotiation, BCP47, RTL, completeness",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "215 tests / 12 files pass"
+   },
+   {
+    "req": "Used by CLI (i18n check command)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "cli/src/commands/i18n.ts"
+   },
+   {
+    "req": "Used by web app",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "web has separate apps/web/src/i18n; duplicate framework"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [
+   "web does not consume"
+  ],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 60,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    2,
+    3
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "two parallel i18n stacks (packages/i18n vs apps/web/src/i18n); pick one, retire ux-i18n shim",
+  "evidence": [
+   "LOCAL vitest run local 2026-11-18 exit 0 i18n 215"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-A11Y-01",
+  "name": "Automated accessibility: axe-core audit in Playwright (all routes, keyboard, 320px reflow, forced-colors, reduced-motion)",
+  "area": "a11y",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "apps/web/e2e/accessibility-audit.ts",
+   "apps/web/e2e/accessibility.spec.ts"
+  ],
+  "test_files": [
+   "apps/web/e2e/accessibility.spec.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/59",
+    "sha": "",
+    "pr": 59,
+    "note": "axe page-global cast typecheck fix; ancestor?"
+   },
+   {
+    "ref": "pr/73",
+    "sha": "92af349a",
+    "pr": 73,
+    "note": "C5 device projects a11y; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "axe-core 4.14.0 injected from pinned dev dep, all default rules, no exclusions",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "e2e/accessibility-audit.ts:7-8"
+   },
+   {
+    "req": "9 core routes + error/review states + 320px/200% text + forced-colors/reduced-motion",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "accessibility.spec.ts:49,67,103,121"
+   },
+   {
+    "req": "Skip link, focus, live announcement",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "accessibility.spec.ts"
+   },
+   {
+    "req": "Serious/critical violations fail gate",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "handoff ACCESSIBILITY_QUALIFICATION"
+   },
+   {
+    "req": "Deferred views (network/embed) and all modals covered",
+    "weight": 2,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "handoff: not covered"
+   }
+  ],
+  "verified_working": [
+   "CI d91ae16a e2e: 200 recorded axe states/profile, zero violations (PRODUCT_COMPLETION_HANDOFF; CI-qualified)"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [
+   "modals, deferred routes, theme combos"
+  ],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "screen-reader / native AT / real device testing not done (handoff states emulation is not AT proof)",
+  "implementation_pct": 90,
+  "verification_pct": 85,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "add remaining modals/routes; manual screen-reader pass (NVDA/VoiceOver) as external acceptance",
+  "evidence": [
+   "not rerun locally: requires build (shared dist) + webServer"
+  ],
+  "unverified": [
+   "axe results not rerun by B2"
+  ]
+ },
+ {
+  "id": "F-A11Y-02",
+  "name": "Mobile/responsive: Chromium device-emulation projects (Pixel 7, iPhone SE, iPad Mini descriptors)",
+  "area": "a11y",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "apps/web/playwright.config.ts",
+   "apps/web/e2e/devices.spec.ts"
+  ],
+  "test_files": [
+   "apps/web/e2e/devices.spec.ts"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/73",
+    "sha": "92af349a",
+    "pr": 73,
+    "note": "ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Viewport meta, responsive CSS (@media in app/qr/print css), no horizontal overflow",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "devices.spec.ts assertFits; playwright.config.ts:35-42"
+   },
+   {
+    "req": "3 emulated device projects running a11y + device specs",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "playwright.config.ts DEVICE_SPECS"
+   },
+   {
+    "req": "Real WebKit/Safari, real iOS/Android devices",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "config comment: Chromium engine only; no WebKit"
+   },
+   {
+    "req": "Camera QR scan on real mobile hardware",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "qr-camera.spec.ts uses fake video"
+   },
+   {
+    "req": "PWA/offline manifest/service worker",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "no manifest link; serviceWorkers blocked in tests"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "real device + Safari acceptance outstanding",
+  "implementation_pct": 50,
+  "verification_pct": 50,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "defer",
+  "strategy_detail": "external acceptance only; emulation labelled honestly",
+  "evidence": [
+   "config read; not rerun locally"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-A11Y-03",
+  "name": "Screen-reader / assistive-tech qualification",
+  "area": "a11y",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Documented manual screen-reader test log",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "none found; handoff lists as remaining human step"
+   },
+   {
+    "req": "aria-live announcements, labelled controls (code)",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "axe + live-announcement test"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "human AT testing",
+  "implementation_pct": 40,
+  "verification_pct": 20,
+  "status": "NOT_STARTED",
+  "effort": {
+   "size": "M",
+   "engineer_days": [
+    1,
+    3
+   ]
+  },
+  "strategy": "implement",
+  "strategy_detail": "manual NVDA/VoiceOver/TalkBack pass on 9 core routes; record in docs/operators",
+  "evidence": [],
+  "unverified": []
+ },
+ {
+  "id": "F-HOST-01",
+  "name": "Self-host recipe: docker-compose + nginx + relayer image + selfhost.sh",
+  "area": "hosting",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "deploy/",
+   "apps/relayer/Dockerfile"
+  ],
+  "test_files": [
+   "deploy/selftest.sh"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "Hardened compose (read_only, cap_drop ALL, no-new-privileges, non-root, API internal, web 127.0.0.1)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "deploy/docker-compose.yml read; compose NOT run (docker present but not exercised here)"
+   },
+   {
+    "req": "nginx headers CSP/COOP/COEP/XFO/Referrer/Permissions; /metrics never routed; 16KiB body",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "deploy/nginx/*.conf; mirrors apps/web/public/_headers; connect-src https: wss: is broad by design (user RPC)"
+   },
+   {
+    "req": "selfhost.sh release gate (manifest, sha256, gh attestation) + selftest",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "bash deploy/selftest.sh: 'selfhost selftest: ok' exit 0"
+   },
+   {
+    "req": "Pinned image digests",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": ".env.example uses tags; README: not done"
+   },
+   {
+    "req": "Live compose up / image build / TLS",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "not tested (README, and not run by B2)"
+   }
+  ],
+  "verified_working": [
+   "selftest.sh ok"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [
+   "compose config validation in CI (docker compose config)",
+   "header conformance test (infra/proxy/check-headers.sh exists)"
+  ],
+  "security_privacy_requirements": [
+   "no secrets in repo",
+   "API not published",
+   "connect-src https: wss: required for user-chosen RPC; document leakage"
+  ],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "real host deploy by operator",
+  "implementation_pct": 70,
+  "verification_pct": 45,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    2
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "pin digests; add `docker compose config` + header check to CI",
+  "evidence": [
+   "LOCAL bash deploy/selftest.sh -> ok"
+  ],
+  "unverified": [
+   "image builds, container permissions"
+  ]
+ },
+ {
+  "id": "F-HOST-02",
+  "name": "Tor onion service for the static bundle",
+  "area": "hosting",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "deploy/tor/",
+   "deploy/TOR.md",
+   "tools/portable-hosting-kit (tor profile)"
+  ],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "tor Dockerfile + torrc (v3 HS -> web:8080; no keys in repo; no single-hop mode)",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "deploy/tor/torrc read"
+   },
+   {
+    "req": "TOR.md operator guide; per-IP rate-limit collapse documented",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "deploy/README.md"
+   },
+   {
+    "req": "Run test of onion reachability",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "not tested"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 45,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    1,
+    2
+   ]
+  },
+  "strategy": "repair",
+  "strategy_detail": "onion smoke in hosting-kit CI",
+  "evidence": [
+   "torrc read"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-HOST-03",
+  "name": "Portable hosting kit: package/verify/preview + nginx/container/Tor/I2P profiles",
+  "area": "hosting",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "tools/portable-hosting-kit/"
+  ],
+  "test_files": [
+   "tools/portable-hosting-kit/test/"
+  ],
+  "related_branches": [
+   {
+    "ref": "pr/36",
+    "sha": "cb917c67",
+    "pr": 36,
+    "note": "Portable hosting kit; ancestor"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Zero-dep Node CLI: validate, package, verify, preview, profile generation",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "npm test: 293 tests, 280 pass, 13 skipped, 0 fail (local)"
+   },
+   {
+    "req": "Never installs/starts/signs; no key generation",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "README; privacy tests dir"
+   },
+   {
+    "req": "CI workflow hosting-kit.yml",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "run 44231986657-ish success per PROMOTION_PACKET (Hosting kit)"
+   },
+   {
+    "req": "Public hosting legal/signing gates (ADR-0015)",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "gated, outside kit"
+   }
+  ],
+  "verified_working": [
+   "280 pass / 0 fail / 13 skipped"
+  ],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "ADR-0015 signed releases + legal review",
+  "implementation_pct": 80,
+  "verification_pct": 80,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL npm test in kit"
+  ],
+  "unverified": [
+   "13 skipped tests not analysed"
+  ]
+ },
+ {
+  "id": "F-HOST-04",
+  "name": "infra/: devnet, integration, proxy, publish (IPFS/Tor), static web Caddy",
+  "area": "hosting",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "infra/"
+  ],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "devnet (anvil+web) and integration (anvil+bitcoind+solana) compose for CI",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "CI Integration 44231986622 success (per PROMOTION_PACKET)"
+   },
+   {
+    "req": "Reverse-proxy header configs (nginx/Caddy) + check-headers.sh",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "half",
+    "evidence": "infra/proxy; not run"
+   },
+   {
+    "req": "IPFS publish + torrc example",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "no",
+    "evidence": "scripts present, not run"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 100,
+  "verification_pct": 40,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "files listed; CI per PROMOTION_PACKET"
+  ],
+  "unverified": [
+   "not run locally (docker/anvil/bitcoind absent or shared)"
+  ]
+ },
+ {
+  "id": "F-DOC-01",
+  "name": "User docs (docs/user, 20 pages) + guides (docs/guides, 11 pages)",
+  "area": "docs",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "docs/user/",
+   "docs/guides/"
+  ],
+  "test_files": [],
+  "related_branches": [
+   {
+    "ref": "pr/104",
+    "sha": "",
+    "pr": 104,
+    "note": "source-pinned user/dev guides; ancestor?"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Product guide, per-chain, privacy limits, fees, sweep, troubleshooting",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "20+11 files, ~4k lines incl. wiki/operators"
+   },
+   {
+    "req": "Honest privacy claims / limits page",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "privacy-limits.md, seller-privacy.md"
+   },
+   {
+    "req": "Internal relative links resolve",
+    "weight": 1,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "python check: 305 links in user/wiki/operators/guides, 0 broken"
+   },
+   {
+    "req": "Translated / native-reviewed docs",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "English only"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 90,
+  "verification_pct": 90,
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "LOCAL link check 0 broken of 305 relative links"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-DOC-02",
+  "name": "Developer wiki (docs/wiki, 9 pages)",
+  "area": "docs",
+  "tier": "beta-supporting",
+  "spec_refs": [],
+  "implementation_files": [
+   "docs/wiki/"
+  ],
+  "test_files": [],
+  "related_branches": [
+   {
+    "ref": "pr/140",
+    "sha": "58a47006",
+    "pr": 140,
+    "note": "open; not ancestor; wiki Home/User/Developer/Codebase-Map differ"
+   }
+  ],
+  "requirements": [
+   {
+    "req": "Architecture, codebase map, dev guide, QR, relayer, verification gates",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "9 files"
+   },
+   {
+    "req": "Wiki publication to GitHub Wiki",
+    "weight": 2,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "PROMOTION_PACKET: no Wiki publication performed"
+   },
+   {
+    "req": "Latest wiki edits from PR #140 branch",
+    "weight": 1,
+    "implemented": "half",
+    "verified": "no",
+    "evidence": "pr/140 58a47006 (108 unique commits, 5 wiki files differ from cand) NOT ancestor -> triage"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 60,
+  "verification_pct": 50,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "consolidate",
+  "strategy_detail": "diff #140 wiki files vs cand, merge newer text",
+  "evidence": [],
+  "unverified": []
+ },
+ {
+  "id": "F-DOC-03",
+  "name": "Operator docs (docs/operators, 17 pages): runbooks, relayer, monitoring, release, rollback",
+  "area": "docs",
+  "tier": "full-profile",
+  "spec_refs": [],
+  "implementation_files": [
+   "docs/operators/"
+  ],
+  "test_files": [],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "hosting, deployment, relayer runbook+monitoring, incident, rollback, release/verify, chain matrix",
+    "weight": 3,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "17 files"
+   },
+   {
+    "req": "Runbooks exercised on real infra",
+    "weight": 3,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "testnet-runbook/devnet-e2e-log only"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "operator dry-run",
+  "implementation_pct": 50,
+  "verification_pct": 50,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "files read by listing"
+  ],
+  "unverified": []
+ },
+ {
+  "id": "F-DOC-04",
+  "name": "In-app contextual help + static help/privacy pages",
+  "area": "docs",
+  "tier": "beta-core",
+  "spec_refs": [],
+  "implementation_files": [
+   "apps/web/help.html",
+   "apps/web/src/components/ContextHelp.tsx"
+  ],
+  "test_files": [
+   "apps/web/e2e/contextual-help.spec.ts"
+  ],
+  "related_branches": [],
+  "requirements": [
+   {
+    "req": "help.html, privacy.html, ContextHelp component",
+    "weight": 2,
+    "implemented": "yes",
+    "verified": "yes",
+    "evidence": "apps/web/help.html; contextual-help.spec.ts (4 regressions, CI)"
+   },
+   {
+    "req": "Native-language help",
+    "weight": 1,
+    "implemented": "no",
+    "verified": "no",
+    "evidence": "English"
+   }
+  ],
+  "verified_working": [],
+  "missing_requirements": [],
+  "confirmed_defects": [],
+  "missing_tests": [],
+  "security_privacy_requirements": [],
+  "dependencies": [],
+  "blockers": [],
+  "external_acceptance": "",
+  "implementation_pct": 65,
+  "verification_pct": 65,
+  "status": "PARTIAL",
+  "effort": {
+   "size": "S",
+   "engineer_days": [
+    0,
+    1
+   ]
+  },
+  "strategy": "none",
+  "strategy_detail": "",
+  "evidence": [
+   "CI d91ae16a e2e"
+  ],
+  "unverified": [
+   "not rerun"
+  ]
+ }
+]

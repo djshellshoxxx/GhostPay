@@ -1,0 +1,93 @@
+# Scoring consistency issues
+
+- F-PROTO-03: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'range mode: grid-aligned padded windows, budgets'
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'pir2 two-server PIR, dummy-padded epochs, manifest match'
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'light-client wrapper (block hashes confirmed by LC)'
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'quorum composition fails closed on disagreement'
+- F-PROTO-11: requirement verified > implemented (verification capped at implementation): 'createScanSource never falls back; describeScanMode honest c'
+- F-PROTO-11: reported verif 100 != computed 70 (computed used)
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R1 createClient: no I/O on construct; https-only baseUrl, no'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R2 invoice helpers (build/sign/link/parse, immutable builder'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R3 typed errors, fixed messages, no echo'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R4 merchant API client strict validation, 1 MiB cap, AbortSi'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'R5 React adapter without importing react'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'JSON Schemas (invoice v1, webhook) drift-guarded'
+- F-PROTO-12: requirement verified > implemented (verification capped at implementation): 'verifyInvoice verdict matrix (pinned signer, expiry, warning'
+- F-PROTO-12: reported verif 90 != computed 45 (computed used)
+- F-PROTO-13: status SPEC_ONLY normalized to rubric-implied PARTIAL
+- F-CTR-02: reported verif 95 != computed 90 (computed used)
+- F-DEP-05: requirement verified > implemented (verification capped at implementation): 'adapter.scan AsyncIterable'
+- F-DEP-05: reported verif 80 != computed 75 (computed used)
+- F-WEB-04: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-06: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-09: status VERIFIED_COMPLETE normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-WEB-18: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-03: status VERIFIED_COMPLETE normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-05: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-13: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Encrypted profiles/contacts (PBKDF2 600k + AES-256-GCM, AAD '
+- F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Backup export/import merge/replace with report'
+- F-KEY-14: requirement verified > implemented (verification capped at implementation): 'Lookalike/confusable findings on contacts'
+- F-KEY-14: reported verif 65 != computed 30 (computed used)
+- F-INT-03: status SPEC_ONLY normalized to rubric-implied PARTIAL
+- F-RLY-01: requirement verified > implemented (verification capped at implementation): 'Price feeds: operator constants, not oracles (DEVIATIONS 2)'
+- F-RLY-01: reported verif 90 != computed 80 (computed used)
+- F-A11Y-03: status NOT_STARTED normalized to rubric-implied PARTIAL
+- F-BTC-01: reported impl 90 != computed 100 (computed used)
+- F-BTC-02: reported impl 90 != computed 100 (computed used)
+- F-BTC-02: reported verif 75 != computed 100 (computed used)
+- F-BTC-02: status IMPLEMENTED_UNVERIFIED normalized to rubric-implied VERIFIED_COMPLETE
+- F-BTC-03: reported verif 75 != computed 80 (computed used)
+- F-BTC-04: reported impl 70 != computed 40 (computed used)
+- F-BTC-04: reported verif 60 != computed 40 (computed used)
+- F-BTC-05: reported impl 70 != computed 60 (computed used)
+- F-BTC-05: reported verif 75 != computed 45 (computed used)
+- F-SOL-01: reported impl 75 != computed 60 (computed used)
+- F-SOL-01: reported verif 70 != computed 50 (computed used)
+- F-SOL-02: reported impl 60 != computed 40 (computed used)
+- F-SOL-02: reported verif 60 != computed 40 (computed used)
+- F-TRX-01: reported impl 75 != computed 70 (computed used)
+- F-TRX-01: reported verif 70 != computed 60 (computed used)
+- F-TRX-02: reported impl 60 != computed 40 (computed used)
+- F-TRX-02: reported verif 60 != computed 40 (computed used)
+- F-EVMX-01: reported impl 60 != computed 55 (computed used)
+- F-EVMX-01: reported verif 70 != computed 55 (computed used)
+- F-POOL-01: reported impl 70 != computed 35 (computed used)
+- F-POOL-01: reported verif 50 != computed 15 (computed used)
+- F-POOL-02: reported impl 70 != computed 35 (computed used)
+- F-POOL-02: reported verif 60 != computed 15 (computed used)
+- F-POOL-03: reported impl 70 != computed 50 (computed used)
+- F-POOL-03: reported verif 70 != computed 50 (computed used)
+- F-POOL-04: reported impl 75 != computed 100 (computed used)
+- F-POOL-04: reported verif 70 != computed 60 (computed used)
+- F-POOL-05: reported impl 65 != computed 40 (computed used)
+- F-POOL-05: reported verif 65 != computed 40 (computed used)
+- F-POOL-06: reported impl 65 != computed 100 (computed used)
+- F-POOL-06: reported verif 65 != computed 60 (computed used)
+- F-POOL-07: reported impl 55 != computed 50 (computed used)
+- F-POOL-07: reported verif 60 != computed 50 (computed used)
+- F-POOL-08: reported impl 70 != computed 50 (computed used)
+- F-POOL-08: reported verif 60 != computed 25 (computed used)
+- F-POOL-09: reported impl 65 != computed 60 (computed used)
+- F-POOL-09: reported verif 60 != computed 45 (computed used)
+- F-PRIV-01: reported impl 70 != computed 50 (computed used)
+- F-PRIV-01: reported verif 70 != computed 50 (computed used)
+- F-PRIV-02: reported impl 75 != computed 60 (computed used)
+- F-PRIV-02: reported verif 75 != computed 60 (computed used)
+- F-PRIV-03: reported impl 70 != computed 60 (computed used)
+- F-PRIV-03: reported verif 75 != computed 60 (computed used)
+- F-PRIV-04: reported impl 75 != computed 60 (computed used)
+- F-PRIV-04: reported verif 75 != computed 60 (computed used)
+- F-PRIV-05: reported impl 70 != computed 80 (computed used)
+- F-PRIV-05: reported verif 75 != computed 60 (computed used)
+- F-NET-01: reported impl 70 != computed 100 (computed used)
+- F-NET-01: reported verif 65 != computed 80 (computed used)
+- F-NET-01: status PARTIAL normalized to rubric-implied IMPLEMENTED_UNVERIFIED
+- F-NET-02: reported impl 95 != computed 100 (computed used)
+- F-NET-02: reported verif 85 != computed 100 (computed used)
+- F-NET-02: status IMPLEMENTED_UNVERIFIED normalized to rubric-implied VERIFIED_COMPLETE
+- F-NET-03: reported impl 70 != computed 40 (computed used)
+- F-NET-03: reported verif 65 != computed 40 (computed used)
+- F-NET-04: reported verif 60 != computed 100 (computed used)
+- F-NET-04: status IMPLEMENTED_UNVERIFIED normalized to rubric-implied VERIFIED_COMPLETE
