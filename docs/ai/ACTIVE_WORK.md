@@ -404,3 +404,24 @@ and their retries from sending new requests to a third party. Refusals contain
 no endpoint or request data. Loopback requests remain usable in own-node mode.
 Other #222 findings and integration conflicts remain separate; no Tor or release
 qualification, remote mutation, deployment or public-chain transaction.
+
+## Privacy-default browser fixtures — 2026-11-18
+
+Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-privacy-browser-fixtures-20261118`.
+Base: PR #222 head `2bc2098298d90928eb1acafad969f28316bb05fc`; the failing hosted Pages job tested synthetic merge
+`644a43ee6366298f418a0aca5a40ecf974871748` in run `44279444265`, job `134715947261`.
+Owned paths: affected receipt/envelope/consent setup in `apps/web/e2e/{pages-devnet,core-journey,devnet-journey,flows,sweep}.spec.ts`,
+`apps/web/e2e/devnet/pages.ts`, a pure invoice-tamper fixture helper, its focused `apps/web/src/test` regression,
+this claim and `docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md`.
+Acceptance: assert minimized receipts omit the payment address, then explicitly opt into full receipts without
+weakening signature/address assertions; preserve encrypted invoice defaults and prove altered amounts still decrypt
+but fail signature verification; explicitly request Sweep balances before existing spend/dust assertions.
+Runtime sources, defaults, dependencies, CI gates and skips remain unchanged. Local helper and existing UI tests,
+scoped lint/typecheck and independent source review are evidence only for their stated scope. Local Chromium cannot
+launch; no browser acceptance is claimed and fresh hosted CI remains required.
+
+Milestone: repaired fixture source `6dc3ae7c419c8f706c11fc3d96de66e055ad165d` passes 49 focused tests, whole-web
+typecheck at a 1536 MiB cap and scoped lint. Independent review reports no blocker and independently passes the
+three pure tamper-helper tests. Playwright discovery lists 14 tests in three mocked suites without execution.
+The prior hosted result remains 11 passed, 2 failed and 3 not run until fresh exact-source CI executes.
+Handoff: `docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md`.

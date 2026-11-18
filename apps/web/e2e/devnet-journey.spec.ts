@@ -168,6 +168,9 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await panel.getByLabel('I consent to opening this invoice locally to bind the receipt.').check();
     await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receiptText = await panel.getByLabel('Signed receipt JSON').inputValue();

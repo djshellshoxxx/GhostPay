@@ -513,6 +513,9 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
     await expect(panel.getByRole('button', { name: 'Sign receipt', exact: true })).toBeDisabled();
     await expect(s.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receiptText = await panel.getByLabel('Signed receipt JSON').inputValue();
