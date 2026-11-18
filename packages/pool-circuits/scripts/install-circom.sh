@@ -8,7 +8,7 @@ DEST="${1:-$(cd "$(dirname "$0")/.." && pwd)/.tools}"
 mkdir -p "$DEST"
 TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
-curl -sSfL -o "$TMP" "https://github.com/iden3/circom/releases/download/${VERSION}/circom-linux-amd64"
+curl --proto '=https' --proto-redir '=https' -sSfL -o "$TMP" "https://github.com/iden3/circom/releases/download/${VERSION}/circom-linux-amd64"
 GOT="$(sha256sum "$TMP" | cut -d' ' -f1)"
 if [ "$GOT" != "$SHA256" ]; then
   echo "circom sha256 mismatch: got $GOT want $SHA256" >&2
