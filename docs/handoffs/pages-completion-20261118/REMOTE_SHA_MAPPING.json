@@ -1,0 +1,18 @@
+{
+  "status": "PENDING_PUBLISHER_RESULT",
+  "local_runtime_snapshot": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+  "local_documentation_snapshot": "1e513ea9b5c7edb2afcc97df1381a6dcd6335bcc",
+  "remote_main_at_start": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "remote_main_merge_count": 0,
+  "remote_candidate_ref": null,
+  "remote_candidate_head": null,
+  "pull_request_url": null,
+  "mappings": [],
+  "required_before_final_closeout": [
+    "Exact recreated local-to-remote commit mapping",
+    "Full tree equality or explicit documented content differences at the published candidate",
+    "Fresh checks attached to the intended final candidate/merge result",
+    "Refresh live main and relevant PR states"
+  ],
+  "note": "The publisher is using authenticated GitHub API capabilities because CLI push credentials are absent. Do not substitute a guessed remote SHA or label candidate publication as a merge to main."
+}

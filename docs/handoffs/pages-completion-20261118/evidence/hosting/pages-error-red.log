@@ -1,0 +1,47 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/GhostPay/apps/web
+
+ ❯ src/main.test.tsx (4 tests | 2 failed) 985ms
+   ❯ main.tsx root error handlers (SEC-42) (4)
+     × does not log an identifier-shaped secret in Error.name 4ms
+     × does not inspect name getters and contains hostile prototype inspection 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/main.test.tsx > main.tsx root error handlers (SEC-42) > does not log an identifier-shaped secret in Error.name
+AssertionError: expected 'Password123Secret' to be 'Error' // Object.is equality
+
+Expected: "Error"
+Received: "Password123Secret"
+
+ ❯ src/main.test.tsx:62:35
+     60|     const error = new Error('private');
+     61|     error.name = 'Password123Secret';
+     62|     expect(rootErrorClass(error)).toBe('Error');
+       |                                   ^
+     63|     (created.options?.['onCaughtError'] as (e: unknown) => void)(error…
+     64|     expect(logged).toEqual([['GhostPay: caught render error (Error)']]…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/main.test.tsx > main.tsx root error handlers (SEC-42) > does not inspect name getters and contains hostile prototype inspection
+Error: private getter value
+ ❯ TypeError.<anonymous> src/main.test.tsx:69:49
+     67|   it('does not inspect name getters and contains hostile prototype ins…
+     68|     const { rootErrorClass } = await import('./main');
+     69|     const readName = vi.fn((): never => { throw new Error('private get…
+       |                                                 ^
+     70|     const error = new TypeError('private');
+     71|     Object.defineProperty(error, 'name', { get: readName });
+ ❯ rootErrorClass src/main.tsx:16:47
+ ❯ src/main.test.tsx:72:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  06:13:57
+   Duration  1.92s (tests 55%, environment 41%, transform 2%, import 1%)
+

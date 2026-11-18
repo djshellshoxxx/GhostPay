@@ -1,0 +1,63 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/invoice-schema@0.1.0 test
+> vitest run --coverage
+
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/GhostPay/packages/invoice-schema
+      Coverage enabled with v8
+
+
+ Test Files  13 passed (13)
+      Tests  728 passed (728)
+   Start at  05:58:11
+   Duration  118.90s (tests 97%, import 1%, transform 1%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   98.09 |    97.73 |     100 |   99.26 |                   
+ envelope.ts       |   98.57 |    97.52 |     100 |   99.44 | 545               
+ ...hantProfile.ts |   89.36 |    91.66 |     100 |   97.22 | 170,178           
+ receipts.ts       |   99.03 |    98.96 |     100 |   98.63 | 96                
+ schema.ts         |   99.37 |    99.21 |     100 |     100 | 361               
+ sign.ts           |   94.44 |      100 |     100 |   93.75 | 110               
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.09% ( 822/838 )
+Branches     : 97.73% ( 562/575 )
+Functions    : 100% ( 110/110 )
+Lines        : 99.26% ( 672/677 )
+================================================================================
+
+> @ghostpay/ux-core@0.1.0 test
+> vitest run --coverage
+
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/GhostPay/packages/ux-core
+      Coverage enabled with v8
+
+
+ Test Files  5 passed (5)
+      Tests  119 passed (119)
+   Start at  06:00:11
+   Duration  1.35s (tests 82%, transform 11%, import 5%, worker 2%)
+
+ % Coverage report from v8
+-------------|---------|----------|---------|---------|-------------------------
+File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s       
+-------------|---------|----------|---------|---------|-------------------------
+All files    |     100 |    97.94 |     100 |     100 |                         
+ netstate.ts |     100 |    95.55 |     100 |     100 | 123,198,231,243         
+ palette.ts  |     100 |    97.22 |     100 |     100 | ...,180,298,476,497,540 
+ store.ts    |     100 |    98.68 |     100 |     100 | 550,572                 
+-------------|---------|----------|---------|---------|-------------------------
+
+=============================== Coverage summary ===============================
+Statements   : 100% ( 766/766 )
+Branches     : 97.94% ( 621/634 )
+Functions    : 100% ( 167/167 )
+Lines        : 100% ( 607/607 )
+================================================================================

@@ -1,0 +1,218 @@
+{
+  "status": "DRAFT_CLOSEOUT_WITH_RUNNING_QUALIFICATION",
+  "snapshot_utc": "2026-11-18 14:37:21 UTC",
+  "local_runtime_source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+  "starting_remote_main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "remote_main_merges": 0,
+  "pr_closures": 0,
+  "deployments": 0,
+  "release_publications": 0,
+  "candidate_publication": {
+    "status": "IN_PROGRESS_BY_PUBLISHER",
+    "local_to_remote_map": "REMOTE_SHA_MAPPING.json",
+    "remote_head": null,
+    "pull_request_url": null
+  },
+  "checks": [
+    {
+      "name": "Root clean install",
+      "command": null,
+      "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
+      "status": "EXECUTION_LOG_RETAINED",
+      "result": "Log reports 721 packages installed; full exact command/exit metadata is pending coordinator confirmation.",
+      "artifact": "evidence/qualification/install.log"
+    },
+    {
+      "name": "Root library build",
+      "command": "npm run build:libs",
+      "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
+      "status": "EXECUTION_LOG_RETAINED",
+      "result": "Workspace library build log retained; coordinator must finalize command exit metadata. Earlier dependency lane separately passed all 77 library builds.",
+      "artifact": "evidence/qualification/build-libs.log"
+    },
+    {
+      "name": "Full typecheck first attempt",
+      "command": "npm run typecheck",
+      "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
+      "status": "FAILED_RESOURCE_LIMIT",
+      "exit_code": 134,
+      "node": "22.23.5",
+      "npm": "11.21.2",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=768",
+        "VITEST_MAX_WORKERS": "1"
+      },
+      "result": "Web exhausted the heap; other workspace typechecks completed successfully.",
+      "artifact": "evidence/qualification/typecheck.log"
+    },
+    {
+      "name": "Web typecheck retry",
+      "command": "npm run typecheck --workspace @ghostpay/web",
+      "source": "ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929",
+      "status": "PASS",
+      "exit_code": 0,
+      "node": "22.23.5",
+      "npm": "11.9.0",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "result": "Completes the web check missing from the first run. New vault cleanup has a separate scoped typecheck log.",
+      "artifact": "evidence/qualification/web-typecheck-retry.log"
+    },
+    {
+      "name": "Full lint and web retry",
+      "command": "npm run lint; subsequent web lint retry",
+      "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
+      "status": "BLOCKED_RESOURCE_LIMIT",
+      "exit_code": 137,
+      "result": "Typed web ESLint remains killed by the executor. Do not claim whole-repository lint passed.",
+      "artifact": "evidence/qualification/web-lint-retry.log"
+    },
+    {
+      "name": "Full npm test",
+      "command": "npm test",
+      "expanded_command": "npm run test --workspaces --if-present",
+      "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "status": "RUNNING",
+      "exit_code": null,
+      "pass": null,
+      "fail": null,
+      "skip": null,
+      "result": "No completed aggregate outcome at packet snapshot. Active log is not copied as a finished artifact; coordinator must append actual totals and exit."
+    },
+    {
+      "name": "Core Foundry",
+      "command": "forge test --threads 1 (full exact environment in NATIVE_QUALIFICATION_20261118.md)",
+      "source": "ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929",
+      "status": "PASS",
+      "exit_code": 0,
+      "pass": 490,
+      "fail": 0,
+      "skip": 0,
+      "suites": 34,
+      "foundry": "1.8.5",
+      "solc": "0.8.28",
+      "fuzz_runs": 10000,
+      "invariant_runs": 256,
+      "invariant_depth": 50,
+      "artifact": "evidence/native/combined-forge-contracts-185.log"
+    },
+    {
+      "name": "Pinned raw-key independent recovery",
+      "command": "REQUIRE_ANVIL=1 node --test --test-concurrency=1 scripts/recovery/raw-key-anvil.test.mjs (exact paths/environment in native record)",
+      "source": "ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929",
+      "status": "PASS",
+      "exit_code": 0,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "node": "22.23.5",
+      "foundry": "1.8.5",
+      "artifact": "evidence/native/combined-raw-key-anvil-185.log"
+    },
+    {
+      "name": "Slither configured CI gate",
+      "command": "slither . --filter-paths \"lib|test|script\" --fail-medium --exclude-informational --exclude-low",
+      "source": "ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929",
+      "status": "PASS_CONFIGURED_FILTERS",
+      "exit_code": 0,
+      "version": "0.11.6",
+      "contracts": 34,
+      "detectors": 64,
+      "retained_results": 0,
+      "artifact": "evidence/native/combined-slither-0116.log",
+      "limit": "Existing low/informational/path/source exclusions remain; this is not a zero-finding claim under every detector/configuration."
+    },
+    {
+      "name": "Echidna repository campaigns",
+      "status": "RUNNING_WORKER_REPORTED",
+      "version": "2.2.7",
+      "exit_code": null,
+      "result": "No final campaign outcome in this packet. Retain all three harnesses, canaries and 300000 calls per harness."
+    },
+    {
+      "name": "Mythril repository campaigns",
+      "status": "PENDING_EXECUTION",
+      "version": "0.24.8",
+      "exit_code": null,
+      "result": "Installed tool executes; full five-target campaign has no outcome here. Preserve 900-second target timeout, depth 3 and strict finding/error gate. Standalone disposition helper remains unwired."
+    },
+    {
+      "name": "Production dependency audit",
+      "command": "npm audit --omit=dev --audit-level=high --json",
+      "source": "ef464ee582086192c5c8a498ec9730cdf62c3f66",
+      "status": "PASS",
+      "exit_code": 0,
+      "findings": 0,
+      "artifact": "evidence/dependencies/dependency-audit-production.json"
+    },
+    {
+      "name": "Full dependency audit",
+      "command": "npm audit --json",
+      "source": "ef464ee582086192c5c8a498ec9730cdf62c3f66",
+      "status": "FAIL_UNRESOLVED_ADVISORY",
+      "exit_code": 1,
+      "affected_package_entries": 30,
+      "high": 14,
+      "low": 16,
+      "result": "Unfixed upstream Picomatch advisory remains in the development dependency graph. No threshold or blanket suppression was changed.",
+      "artifact": "evidence/dependencies/dependency-audit-full.json"
+    },
+    {
+      "name": "Local actual browser journeys",
+      "status": "BLOCKED_BROWSER_LAUNCH",
+      "exit_code": 134,
+      "result": "Chromium socket operation failed under executor restrictions. Collection, jsdom and synthetic Playwright-interface tests are not actual browser acceptance."
+    },
+    {
+      "name": "Upstream PR233 Pages browser",
+      "source": "5ce26fc6023c048ecfcb81b959a939e673f9d0e9",
+      "pr_head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "status": "PASS_UPSTREAM_ONLY",
+      "pass": 16,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44304211061/job/134801443002",
+      "limit": "Actual upstream synthetic merge, not the combined local/published candidate."
+    },
+    {
+      "name": "Upstream PR233 beta browser",
+      "source": "5ce26fc6023c048ecfcb81b959a939e673f9d0e9",
+      "pr_head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "status": "PASS_UPSTREAM_ONLY",
+      "browser_pass": 3,
+      "cli_pass": 124,
+      "library": "PASS",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44304211191/job/134801441908",
+      "limit": "Actual upstream synthetic merge, not final combined qualification."
+    },
+    {
+      "name": "Final candidate web build / release build / reproducibility",
+      "commands": [
+        "npm run build --workspace @ghostpay/web",
+        "npm run release:build",
+        "npm run release:repro"
+      ],
+      "status": "PENDING_FINAL_CANDIDATE_EXECUTION",
+      "exit_code": null
+    },
+    {
+      "name": "Final candidate hosted checks / CodeQL / SonarCloud",
+      "status": "PENDING_EXACT_CANDIDATE_EVIDENCE",
+      "result": "No final combined check or alert clearance is asserted. Historical or independently passing scanner jobs do not clear unrelated gates."
+    },
+    {
+      "name": "Public testnet / Tor / external wallet / physical device / native localization",
+      "status": "UNQUALIFIED_EXTERNAL_ACCEPTANCE",
+      "result": "No deployment, funded public-network execution, real Tor route, physical device, screen-reader or native-language approval is claimed."
+    }
+  ],
+  "finalization_required": [
+    "Append full npm test exit and per-workspace pass/fail/skip/coverage outcomes",
+    "Append analyzer campaign outcomes without weakening budgets or gates",
+    "Resolve or clearly retain typed web lint resource failure",
+    "Record final build and release reproducibility results",
+    "Record publisher SHA/tree mapping and actual candidate PR URL",
+    "Refresh live main, required checks and relevant PR heads",
+    "Perform final independent combined-source review before any authorized merge"
+  ],
+  "note": "Source-scoped passes and partial retries are not silently promoted to a single all-green command. The feature estimates retain their original conservative checklist points."
+}
