@@ -300,6 +300,12 @@ describe('fetchTransport (global fetch stubbed, no network)', () => {
     vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(stream(['{"a"', ':1}']), { status: 200 }))));
     expect(await fetchTransport.send(URL_OK, '{}', init)).toBe('{"a":1}');
   });
+  it('sends no cookies, no referrer and bypasses the HTTP cache (audit C-1)', async () => {
+    const f = vi.fn<(u: string, i: RequestInit) => Promise<Response>>(() => Promise.resolve(new Response(stream(['{}']), { status: 200 })));
+    vi.stubGlobal('fetch', f);
+    await fetchTransport.send(URL_OK, '{}', init);
+    expect(f.mock.calls[0]?.[1]).toMatchObject({ redirect: 'error', credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-store' });
+  });
   it('enforces the streamed size cap', async () => {
     vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(stream(['x'.repeat(60), 'x'.repeat(60)]), { status: 200 }))));
     await expect(fetchTransport.send(URL_OK, '{}', init)).rejects.toThrow(/RESPONSE_TOO_LARGE/);
