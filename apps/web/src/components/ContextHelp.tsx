@@ -37,14 +37,16 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
       event.stopPropagation();
       dismiss();
     };
-    const onPointer = (event: PointerEvent): void => {
+    // Outside dismissal waits for the click: the explanation is in the page flow, so hiding it at pointerdown would move
+    // the pressed control away before the release, and that click (or tap) would land elsewhere or nowhere.
+    const onOutsideClick = (event: MouseEvent): void => {
       if (event.target instanceof Node && !root.current?.contains(event.target)) dismiss();
     };
     document.addEventListener('keydown', onKey);
-    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('click', onOutsideClick);
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('click', onOutsideClick);
     };
   }, [open]);
 
