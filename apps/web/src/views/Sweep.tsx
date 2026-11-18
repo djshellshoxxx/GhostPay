@@ -8,7 +8,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { captureDestinationLedgerGuard, checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
@@ -192,6 +192,7 @@ export function Sweep(): ReactNode {
 
   const onRelay = (): void => {
     if (signingLocked) return;
+    const ledgerUnchanged = captureDestinationLedgerGuard();
     void guard(async (assertCurrent) => {
       const rpc = await app.getRpc(chainId);
       assertCurrent();
@@ -222,7 +223,7 @@ export function Sweep(): ReactNode {
         throw e;
       }
       setHash(submitted);
-      recordSweepDestination(browserStorage(), chainId, dest, target.owner);
+      recordSweepDestination(browserStorage(), chainId, dest, target.owner, ledgerUnchanged);
       // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
       // Compare-and-swap: a status check may already have resolved this order (and a newer lock may exist) while the
       // relayer was answering; never overwrite anything but the lock this flow created.
@@ -244,6 +245,7 @@ export function Sweep(): ReactNode {
 
   /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
   const sweepDirectly = (resign: boolean): void => {
+    const ledgerUnchanged = captureDestinationLedgerGuard();
     void guard(async (assertCurrent) => {
       setDryRunSkipped(false);
       const rpc = await app.getRpc(chainId);
@@ -272,7 +274,7 @@ export function Sweep(): ReactNode {
         throw e;
       }
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
-      recordSweepDestination(browserStorage(), chainId, dest, target.owner);
+      recordSweepDestination(browserStorage(), chainId, dest, target.owner, ledgerUnchanged);
       setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(latestT.current('sweep.announceBroadcast'));
       return true;

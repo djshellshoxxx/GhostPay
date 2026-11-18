@@ -178,13 +178,46 @@ describe('Sweep', () => {
     const sink: RawSink = { calls: [] };
     const user = await toSweep({ raw: sink });
     await screen.findByText('5 USDC');
-    window.localStorage.setItem('ghostpay.sweepDestinations.v1', JSON.stringify([{ chainId: 84532, destination: DEST, sources: ['0x2222222222222222222222222222222222222222'] }]));
+    sweepLib.recordSweepDestination(window.localStorage, 84532, DEST, '0x2222222222222222222222222222222222222222');
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    expect(screen.getByText(/already in this browser's list of sweep destinations/)).toBeTruthy();
+    expect(screen.getByText(/used earlier in this session/)).toBeTruthy();
     await user.click(screen.getByLabelText(/Directly/));
     await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
     await waitFor(() => { expect((sink.calls ?? []).includes('eth_sendRawTransaction')).toBe(true); });
-    await waitFor(() => { expect((JSON.parse(window.localStorage.getItem('ghostpay.sweepDestinations.v1') ?? '[]') as { sources: string[] }[])[0]?.sources).toHaveLength(2); });
+    await waitFor(() => { expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toHaveLength(2); });
+    expect(window.localStorage.getItem(sweepLib.DEST_LEDGER_KEY)).toBeNull();
+  });
+
+  it('TM7: a sweep completed after app lock does not restore the cleared address links', async () => {
+    let release: () => void = () => undefined;
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    let reached: () => void = () => undefined;
+    const beforeCompletion = new Promise<void>((resolve) => { reached = resolve; });
+    const original = sweepLib.directSweep;
+    const wrapper = vi.spyOn(sweepLib, 'directSweep').mockImplementation(async (...args: Parameters<typeof original>) => {
+      const result = await original(...args);
+      reached();
+      await held;
+      return result;
+    });
+    try {
+      const sink: RawSink = { calls: [] };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await user.click(screen.getByLabelText(/Directly/));
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await beforeCompletion;
+      expect(sink.calls).toContain('eth_sendRawTransaction');
+      act(() => { notifyAppLock('idle'); });
+      await act(async () => { release(); await held; });
+      expect(await screen.findByText('Submitted')).toBeTruthy();
+      expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toEqual([]);
+      expect(window.localStorage.getItem(sweepLib.DEST_LEDGER_KEY)).toBeNull();
+    } finally {
+      release();
+      wrapper.mockRestore();
+    }
   });
 
   it('accepts a pasted destination only after the chain and address checks pass', async () => {

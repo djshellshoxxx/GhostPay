@@ -1091,9 +1091,9 @@ describe('sweep permit state messages (spec 04)', () => {
 });
 
 describe('TM7 destination reuse ledger', () => {
-  const mem = (): { store: Map<string, string>; getItem(k: string): string | null; setItem(k: string, v: string): void } => {
+  const mem = (): { store: Map<string, string>; getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void } => {
     const store = new Map<string, string>();
-    return { store, getItem: (k) => store.get(k) ?? null, setItem: (k, v) => { store.set(k, v); } };
+    return { store, getItem: (k) => store.get(k) ?? null, setItem: (k, v) => { store.set(k, v); }, removeItem: (k) => { store.delete(k); } };
   };
   const OWNER = '0x1111111111111111111111111111111111111111' as Address;
   const OTHER = '0x2222222222222222222222222222222222222222' as Address;
@@ -1117,7 +1117,7 @@ describe('TM7 destination reuse ledger', () => {
 
   it('warns for a known wallet and never throws on blocked storage', () => {
     expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined), [DEST])).toBe('known-wallet');
-    const broken = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } };
+    const broken = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); }, removeItem: () => { throw new Error('blocked'); } };
     expect(() => { sweepModule.recordSweepDestination(broken, 84532, DEST, OWNER); }).not.toThrow();
     expect(sweepModule.destinationWarning(DEST, OWNER, 1, sweepModule.loadDestLedger(broken))).toBeUndefined();
   });
