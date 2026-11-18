@@ -25,7 +25,7 @@ import {
   type RpcLog,
 } from '@ghostpay/chain-adapters';
 import { FIRST_USE_NOTICE, TOR_BROWSER_NOTICE, createFetchTransport, type FetchLike } from '@ghostpay/net-transport/browser';
-import { createIndexerSource, padWindow, ScanSourceError, TESTNET_CHAIN_IDS, type HttpTransport, type HeadSource, type ScanAnnouncement } from '@ghostpay/scan-source';
+import { createIndexerSource, padRange, ScanSourceError, TESTNET_CHAIN_IDS, type HttpTransport, type HeadSource, type ScanAnnouncement } from '@ghostpay/scan-source';
 import { encodeAbiParameters } from 'viem/utils';
 import { UserFacingError, displayMessage, type MessageDescriptor } from './errors';
 import { randomDelayMs, type CryptoLike } from './jitter';
@@ -48,6 +48,17 @@ export interface ScanPrivacySettings {
   readonly indexerUrls: Readonly<Record<string, string>>;
   /** Spec 05: non-router ("open lane") announcements processed per scan before the rest is deferred. */
   readonly openLaneBudget: number;
+  /**
+   * TM15: extra blocks added on both sides of each announcement query before it is rounded to the window grid, so the
+   * provider does not see where a scan range starts or ends inside a window. 0 (default) keeps the plain grid. Only
+   * used while fixed windows are on (`windowBlocks` > 0). Costs up to two extra window requests per query.
+   */
+  readonly padBlocks: number;
+  /**
+   * Bulk receipt evidence: fetch the receipt of every router transaction on a page (up to this many per page), matched or
+   * not, so the RPC cannot tell which ones matched. 0 (default) keeps per-match reads. Costs extra requests per scan.
+   */
+  readonly bulkEvidence: number;
 }
 
 export const DEFAULT_SCAN_PRIVACY: ScanPrivacySettings = Object.freeze({
@@ -60,12 +71,33 @@ export const DEFAULT_SCAN_PRIVACY: ScanPrivacySettings = Object.freeze({
   source: 'rpc',
   indexerUrls: Object.freeze({}),
   openLaneBudget: 20_000,
+  padBlocks: 0,
+  bulkEvidence: 0,
 });
 
 export const SCAN_PRIVACY_KEY = 'ghostpay.scanPrivacy.v1';
 const MAX_WINDOW = 100_000;
 const MAX_JITTER_MS = 10_000;
 const MAX_OPEN_BUDGET = 100_000;
+/** Largest accepted `padBlocks`; a larger stored or typed value is clamped to it. */
+export const MAX_PAD_BLOCKS = 100_000;
+
+/**
+ * Normalizes a `padBlocks` value: non-numbers, NaN and negatives give 0, fractions are truncated, and anything above
+ * {@link MAX_PAD_BLOCKS} is clamped to it.
+ */
+export const MAX_BULK_EVIDENCE = 500;
+
+/** Clamps `bulkEvidence` to 0..{@link MAX_BULK_EVIDENCE}; non-numbers and non-positive values give 0 (off). */
+export function clampBulkEvidence(v: unknown): number {
+  if (typeof v !== 'number' || Number.isNaN(v) || v <= 0) return 0;
+  return Math.min(Math.trunc(v), MAX_BULK_EVIDENCE);
+}
+
+export function clampPadBlocks(v: unknown): number {
+  if (typeof v !== 'number' || Number.isNaN(v) || v <= 0) return 0;
+  return Math.min(Math.trunc(v), MAX_PAD_BLOCKS);
+}
 const LOOPBACK = new Set(['127.0.0.1', 'localhost', '[::1]']);
 
 /** Validates a scan endpoint for a transport. Returns the normalized URL. */
@@ -126,6 +158,8 @@ export function sanitizeScanPrivacy(raw: unknown): ScanPrivacySettings {
     source: o['source'] === 'indexer' ? 'indexer' : 'rpc',
     indexerUrls: sanitizeMap(o['indexerUrls'], (v) => checkIndexerUrl(v, transport)),
     openLaneBudget: intIn(o['openLaneBudget'], 1, MAX_OPEN_BUDGET) ? o['openLaneBudget'] : d.openLaneBudget,
+    padBlocks: clampPadBlocks(o['padBlocks']),
+    bulkEvidence: clampBulkEvidence(o['bulkEvidence']),
   };
 }
 
@@ -171,6 +205,8 @@ export function applyParanoidPreset(s: ScanPrivacySettings): ScanPrivacySettings
 export interface WindowPolicy {
   readonly windowBlocks: number;
   readonly jitterMs: readonly [number, number];
+  /** TM15 padding on both sides before grid rounding (default 0). Ignored when `windowBlocks` is 0. */
+  readonly padBlocks?: number;
 }
 
 export type ScanPlan =
@@ -234,7 +270,7 @@ export function planScan(s: ScanPrivacySettings, chain: ChainConfig): ScanPlan {
     // The second RPC from Settings is contacted directly; behind a required local proxy that would leak the IP.
     useSecondary: !privatePathForbidsDirect(s),
     indexerUrl,
-    window: { windowBlocks, jitterMs: [s.jitterMinMs, s.jitterMaxMs] },
+    window: { windowBlocks, jitterMs: [s.jitterMinMs, s.jitterMaxMs], padBlocks: clampPadBlocks(s.padBlocks) },
   };
 }
 
@@ -359,6 +395,8 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
   if (!Number.isSafeInteger(o.policy.windowBlocks) || o.policy.windowBlocks < 0) throw new RangeError('windowBlocks');
   randomDelayMs(jMin, jMax, { getRandomValues: (a) => a }); // validates the range without drawing randomness
   const W = Math.min(o.policy.windowBlocks, o.chain.getLogsMaxRange);
+  const pad = o.policy.padBlocks ?? 0;
+  if (!Number.isSafeInteger(pad) || pad < 0 || pad > MAX_PAD_BLOCKS) throw new RangeError('padBlocks');
   let head: bigint | undefined;
   let networkRequests = 0;
   const depth = BigInt(o.chain.finalityDepth);
@@ -397,16 +435,20 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
     return logs;
   }
 
-  /** Collects the logs of grid window [start, end] that fall in [from, to], splitting refused windows into halves. */
-  async function fetchNode(f: LogFilter, start: bigint, end: bigint, out: RpcLog[]): Promise<void> {
-    if (end < f.fromBlock || start > f.toBlock) return;
+  /**
+   * Collects the logs of grid window [start, end] that fall in [from, to], splitting refused windows into halves. Halves
+   * outside `[lo, hi]` are not requested: the caller's range without padding, the padded range with it (so padding
+   * windows are really requested, also when split).
+   */
+  async function fetchNode(f: LogFilter, start: bigint, end: bigint, out: RpcLog[], lo: bigint, hi: bigint): Promise<void> {
+    if (end < lo || start > hi) return;
     const key = nodeKey(f, start, end);
     if (end > start && split.has(key)) {
       const mid = start + (end - start + 1n) / 2n - 1n;
       const halves: [bigint, bigint][] = [[start, mid], [mid + 1n, end]];
       // CSPRNG order inside a split window as well.
       if (randomDelayMs(0, 1, cryptoApi) === 1) halves.reverse();
-      for (const [s, e] of halves) await fetchNode(f, s, e, out);
+      for (const [s, e] of halves) await fetchNode(f, s, e, out, lo, hi);
       return;
     }
     let logs: readonly RpcLog[];
@@ -417,7 +459,7 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
       if (!isLogLimitError(e) || end === start) throw e;
       if (split.size >= SPLIT_MAX) split.delete(split.values().next().value as string);
       split.add(key);
-      await fetchNode(f, start, end, out);
+      await fetchNode(f, start, end, out, lo, hi);
       return;
     }
     for (const l of logs) {
@@ -441,21 +483,29 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
       if (W === 0) return inner.getLogs(f);
       if (f.fromBlock < 0n || f.toBlock < f.fromBlock) throw new ChainAdapterError('INVALID_INPUT', 'invalid scan range');
       head ??= await inner.blockNumber();
-      const grid = padWindow(f.fromBlock, f.toBlock, W, W);
       // The window containing the head is clamped to it (inherent: it shows roughly where the head is, which is public).
       const limit = head > f.toBlock ? head : f.toBlock;
-      const windows: [bigint, bigint][] = [];
-      for (let s = grid.from; s <= grid.to && s <= limit; s += BigInt(W)) {
-        const e = s + BigInt(W) - 1n;
-        windows.push([s, e < limit ? e : limit]);
+      // TM15 (scan-source padRange): widen by `pad` on both sides, round out to the W grid, clamp to the head. With
+      // pad 0 this is the plain grid. No extra span cap here: the scanner's page size bounds a query.
+      let grid: { from: bigint; to: bigint };
+      try {
+        grid = padRange(f.fromBlock, f.toBlock, { align: W, minSpan: W, padBlocks: pad, maxSpan: Number.MAX_SAFE_INTEGER }, limit);
+      } catch {
+        throw new ChainAdapterError('INVALID_INPUT', 'invalid scan range');
       }
+      const windows: [bigint, bigint][] = [];
+      for (let s = grid.from; s <= grid.to; s += BigInt(W)) {
+        const e = s + BigInt(W) - 1n;
+        windows.push([s, e < grid.to ? e : grid.to]);
+      }
+      const [lo, hi] = pad === 0 ? [f.fromBlock, f.toBlock] : [grid.from, grid.to];
       // Fisher-Yates with the CSPRNG: request order does not follow scan progress.
       for (let i = windows.length - 1; i > 0; i--) {
         const j = randomDelayMs(0, i, cryptoApi);
         [windows[i], windows[j]] = [windows[j] as [bigint, bigint], windows[i] as [bigint, bigint]];
       }
       const out: RpcLog[] = [];
-      for (const [s, e] of windows) await fetchNode(f, s, e, out);
+      for (const [s, e] of windows) await fetchNode(f, s, e, out, lo, hi);
       const pos = (l: RpcLog): bigint => (BigInt(l.blockNumber) << 32n) + (parseHexNumber(l.logIndex) ?? 0n);
       out.sort((a, b) => (pos(a) < pos(b) ? -1 : pos(a) > pos(b) ? 1 : 0));
       return out;

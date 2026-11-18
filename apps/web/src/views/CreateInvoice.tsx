@@ -65,7 +65,8 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   const [bufferMode, setBufferMode] = useState<BufferMode>('off');
   const [bufferMin, setBufferMin] = useState('');
   const [bufferMax, setBufferMax] = useState('');
-  const [encrypt, setEncrypt] = useState(false);
+  // On by default: line items and memo stay out of the shared link's readable text unless the seller opts out.
+  const [encrypt, setEncrypt] = useState(true);
   const [protectWithPassphrase, setProtectWithPassphrase] = useState(false);
   // The invoice passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
   const [suggested, setSuggested] = useState(generatePassphrase);

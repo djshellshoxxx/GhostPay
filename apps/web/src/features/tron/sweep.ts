@@ -13,7 +13,7 @@ import {
 } from '@ghostpay/tron-adapter';
 import { zeroize } from '@ghostpay/core-crypto';
 import type { FoundPayment } from './scan';
-import { getBalanceSun, TronViewError } from './rpc';
+import { fetchMemo, getBalanceSun, TronViewError } from './rpc';
 import type { TronWallet } from './wallet';
 
 /** Burned by the network when a transfer activates an address that was never used (about 1 TRX). */
@@ -35,6 +35,24 @@ export interface SignedSweep {
   readonly signedHex: string;
 }
 
+/** A detected payment with the balance and memo of its one-time address, read when the sweep is reviewed. */
+export interface FundedPayment extends FoundPayment {
+  /** Balance of the one-time address when it was read, in sun. */
+  readonly balanceSun: bigint;
+  /** Announcement memo of the funding transaction (public data). */
+  readonly memo: Uint8Array;
+}
+
+/**
+ * Reads the balance and funding-transaction memo of the one address being swept. The node learns this address when you
+ * review, not for every address a scan matched.
+ */
+export async function readSweepDetails(rpc: TronRpc, found: FoundPayment, signal?: AbortSignal): Promise<FundedPayment> {
+  const balanceSun = await getBalanceSun(rpc, found.stealthAddress, signal);
+  const memo = await fetchMemo(rpc, found.txID, signal);
+  return { ...found, balanceSun, memo };
+}
+
 export function formatTrx(sun: bigint): string {
   const whole = sun / 1_000_000n;
   const frac = (sun % 1_000_000n).toString().padStart(6, '0').replace(/0+$/, '');
@@ -51,12 +69,14 @@ const SIZE_PROBE = { number: 1n, blockId: '00'.repeat(32) } as const;
 const SIZE_PROBE_TIME = 1_700_000_000_000n;
 
 /** Validates the destination and computes the exact amounts. @throws {TronViewError} with a user-safe message. */
-export function reviewSweep(wallet: TronWallet, found: FoundPayment, destination: string, ctx: ReviewContext): SweepReview {
+export function reviewSweep(wallet: TronWallet, found: FundedPayment, destination: string, ctx: ReviewContext): SweepReview {
   const dest = destination.trim();
   decodeTronAddress(dest);
   if (dest === found.stealthAddress) {
     throw new TronViewError({ key: 'chainView.error.sameAddress' });
   }
+  // A scan no longer filters empty addresses: the balance is read here, and an empty one has nothing to sweep.
+  if (found.balanceSun <= 0n) throw new TronViewError({ key: 'tron.error.balanceFee' });
   const probe = buildTrxTransfer({
     owner: found.stealthAddress,
     to: dest,
@@ -90,7 +110,7 @@ export function reviewSweep(wallet: TronWallet, found: FoundPayment, destination
 export interface SignParams {
   readonly rpc: TronRpc;
   readonly wallet: TronWallet;
-  readonly found: FoundPayment;
+  readonly found: FundedPayment;
   readonly review: SweepReview;
   readonly nowMs: number;
   readonly signal?: AbortSignal;

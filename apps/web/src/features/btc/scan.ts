@@ -81,7 +81,8 @@ export function wipeFound(found: readonly FoundPayment[]): void {
 
 /**
  * Scans a block range for silent payments to the wallet and drops outputs that are already spent.
- * The scan secret stays in this process; the server sees block heights and outpoints only.
+ * The scan secret stays in this process; the server sees the block heights it is asked for, plus the outpoints of outputs
+ * whose spend state the scanned blocks could not settle (none, when every block up to the tip was read).
  * Every spend tweak the scanner produced that is not in the returned `found` (spent, skipped, or all of them when
  * the scan fails) is wiped before this returns; the caller owns, and must wipe, the returned ones ({@link wipeFound}).
  */
@@ -137,6 +138,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       const id = `${r.txid}:${String(r.vout)}`;
       if (seen.has(id)) return;
       seen.add(id);
+      esplora.watchOutput(r.txid, r.vout, r.height);
       candidates.push({
         txid: r.txid, vout: r.vout, amountSats: r.amountSats, xOnlyPublicKey: r.xOnlyPublicKey,
         spendTweak: r.spendTweak, height: r.height, blockHash: r.blockHash, label: r.label, duplicateKey: r.duplicateKey,
@@ -181,7 +183,13 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
     }
     let spentCount = 0;
     for (const c of candidates) {
-      if (await client.isUnspent(c.txid, c.vout, signal)) {
+      // Spends are read from the blocks this scan already downloaded (their txids are bound to the checked headers), so
+      // the server is not asked about each output. A local "unspent" counts only when the blocks from the output's block
+      // up to the server tip were all read; otherwise (light oracle mode, recovered history, a range that stops short of
+      // the tip) the server is asked as before. Mempool spends are re-checked when the sweep is signed.
+      const local = esplora.spendStatus(c.txid, c.vout, tip);
+      const unspent = local === 'spent' ? false : local === 'unspent' ? true : await client.isUnspent(c.txid, c.vout, signal);
+      if (unspent) {
         const duplicateKey = c.duplicateKey || (keyCounts.get(Array.from(c.xOnlyPublicKey).join(',')) ?? 0) > 1;
         found.push(duplicateKey === c.duplicateKey ? c : { ...c, duplicateKey });
       }

@@ -45,6 +45,27 @@ export interface ChainRuntimeConfig {
   readonly manifest?: DeploymentManifest;
 }
 
+/**
+ * How clients reach the listener.
+ * - `direct`: clients connect to the listener; `trustedProxies` must be empty.
+ * - `trusted-proxy`: a reverse proxy in `trustedProxies` sets `X-Forwarded-For`.
+ * - `onion`: a local Tor onion service forwards to a loopback listener. Every client then arrives from loopback, so
+ *   `X-Forwarded-For` (which a Tor client can set freely) is never honoured and the per-IP limits act as one shared
+ *   onion budget. Not tested against a real Tor in this repository (deploy/TOR.md).
+ */
+export type IngressMode = 'direct' | 'trusted-proxy' | 'onion';
+/** Default `direct`: unpadded and padded bodies are accepted; `required` refuses unpadded ones (after the transition). */
+export type BodyPaddingMode = 'optional' | 'required';
+
+/** Resolved `privacy` block. */
+export interface RelayerPrivacyConfig {
+  /** Drop per-request log lines and request ids (default false). IPs and destinations are never logged either way. */
+  readonly zeroLog: boolean;
+  readonly ingress: IngressMode;
+  /** MH-REL-3 `pad` member handling (default `optional`, the documented transition). */
+  readonly bodyPadding: BodyPaddingMode;
+}
+
 /** Resolved relayer configuration. */
 export interface RelayerConfig {
   readonly host: string;
@@ -53,6 +74,11 @@ export interface RelayerConfig {
   readonly allowInsecureLocalhostRpc: boolean;
   /** Addresses or CIDR blocks of reverse proxies whose `X-Forwarded-For` is honoured (empty: ignore the header). */
   readonly trustedProxies: readonly string[];
+  /**
+   * Privacy switches (`privacy` in the file; apps/relayer/PRIVACY.md). Optional here so programmatic configs keep
+   * working; {@link parseConfig} always sets it. Absent means the defaults below.
+   */
+  readonly privacy?: RelayerPrivacyConfig;
   readonly allowFeeToHotKey: boolean;
   /** `griefReserveBps`: spec 04 griefing margin added to the gas term of the sponsor fee (default 0, operator-tuned). */
   readonly gas: { readonly coverPercent: number; readonly maxMovePercent: number; readonly quoteCacheSeconds: number; readonly griefReserveBps?: number };
@@ -436,7 +462,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     raw,
     '$',
     ['allowedOrigins', 'chains'],
-    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state'],
+    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state', 'privacy'],
   );
   const stateFile = parseState(o['state'], ctx);
   const listen = sub(o, 'listen', '$', ['host', 'port']);
@@ -461,12 +487,15 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   if (new Set(chains.map((c) => c.chainId)).size !== chains.length) return bad('chains', 'duplicate chainId');
 
   const windowSize = numberOr(br, 'windowSize', 'breaker', 20, 2, 1000);
+  const trustedProxies = parseTrustedProxies(o['trustedProxies']);
+  const privacy = parsePrivacy(o, host, trustedProxies);
   return {
     host,
     port: numberOr(listen, 'port', 'listen', 8787, 0, 65535),
     allowedOrigins: parseOrigins(o['allowedOrigins']),
     allowInsecureLocalhostRpc,
-    trustedProxies: parseTrustedProxies(o['trustedProxies']),
+    trustedProxies,
+    privacy,
     allowFeeToHotKey,
     gas: {
       coverPercent: numberOr(ga, 'coverPercent', 'gas', 100, 1, 300),
@@ -512,6 +541,31 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     ...(stateFile === undefined ? {} : { stateFile }),
     chains,
   };
+}
+
+const LOOPBACK_HOSTS: ReadonlySet<string> = new Set(['127.0.0.1', '::1', 'localhost']);
+
+/**
+ * `privacy`: `{ zeroLog?, ingress?, bodyPadding? }`. The ingress default follows `trustedProxies` so existing
+ * configs keep their meaning; an explicit mode must agree with it.
+ */
+function parsePrivacy(o: JsonObject, host: string, trustedProxies: readonly string[]): RelayerPrivacyConfig {
+  const p = sub(o, 'privacy', '$', ['zeroLog', 'ingress', 'bodyPadding']);
+  const zeroLog = boolOr(p, 'zeroLog', 'privacy', false);
+  const rawIngress = p['ingress'] ?? (trustedProxies.length > 0 ? 'trusted-proxy' : 'direct');
+  if (rawIngress !== 'direct' && rawIngress !== 'trusted-proxy' && rawIngress !== 'onion') {
+    return bad('privacy.ingress', 'must be direct, trusted-proxy or onion');
+  }
+  if (rawIngress === 'direct' && trustedProxies.length > 0) return bad('privacy.ingress', 'direct needs an empty trustedProxies');
+  if (rawIngress === 'trusted-proxy' && trustedProxies.length === 0) return bad('privacy.ingress', 'trusted-proxy needs trustedProxies');
+  if (rawIngress === 'onion') {
+    // A Tor client controls every header it sends; honouring X-Forwarded-For from the local tor would let it mint buckets.
+    if (trustedProxies.length > 0) return bad('privacy.ingress', 'onion needs an empty trustedProxies');
+    if (!LOOPBACK_HOSTS.has(host)) return bad('privacy.ingress', 'onion needs listen.host on loopback');
+  }
+  const bodyPadding = p['bodyPadding'] ?? 'optional';
+  if (bodyPadding !== 'optional' && bodyPadding !== 'required') return bad('privacy.bodyPadding', 'must be optional or required');
+  return { zeroLog, ingress: rawIngress, bodyPadding };
 }
 
 /**

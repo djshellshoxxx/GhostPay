@@ -4,6 +4,8 @@ import {
   compareProviders,
   dedupeClaims,
   fetchAnnouncements,
+  fetchRouterEvidence,
+  selectEvidenceTargets,
   verifyClaimedPayment,
   type Address,
   type ChainConfig,
@@ -13,6 +15,7 @@ import {
   type ScanCursor,
   type ProviderDiscrepancy,
   type ReceiptStatus,
+  type RouterEvidenceBatch,
   type ScannedAnnouncement,
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
@@ -134,6 +137,14 @@ export interface ScanParams {
    * fixed recent window (no sender or recipient in the query). Costs RPC calls; `unknown` on any limit or error.
    */
   readonly privacySetTransfers?: boolean;
+  /**
+   * TM12, opt-in: read the receipt and transaction of up to this many router transactions on EVERY page that has router
+   * announcements (1 to 500; off when unset or 0), always including the matched ones, from each configured provider.
+   * Matched claims are then verified from that batch with no request of their own, so a provider sees which router
+   * transactions of a page were read, not which matched. Cost per page and provider: `1 + 2 * blocks + 2 * transactions`
+   * requests (blocks: distinct blocks of those transactions), reported as `evidenceRequests`.
+   */
+  readonly bulkEvidence?: number;
 }
 
 function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
@@ -144,7 +155,7 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
  * Network access happens here (via chain-adapters), never in the worker. The worker receives public logs and, once,
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
-export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag }> {
+export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag; readonly evidenceRequests?: number }> {
   let worker: ScanWorkerLike | undefined;
   let stopped = false;
   const stopWorker = (): void => {
@@ -220,6 +231,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   // must move back with the rollback, rather than remaining pinned to the old checkpoint.
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
+  // TM12: requests sent for bulk evidence batches this run (all providers).
+  let evidenceRequests = 0;
+  const bulkEvidence = p.bulkEvidence !== undefined && Number.isSafeInteger(p.bulkEvidence) && p.bulkEvidence > 0 ? Math.min(500, p.bulkEvidence) : 0;
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -381,6 +395,23 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
         break;
       }
+      let evidence: RouterEvidenceBatch | undefined;
+      let secondaryEvidence: RouterEvidenceBatch | undefined;
+      if (bulkEvidence > 0) {
+        // Every page with router announcements is read, matched or not, so the batches themselves do not mark pages.
+        const targets = selectEvidenceTargets({
+          announcements: res.announcements, router: p.manifest.router, maxTransactions: bulkEvidence,
+          include: uniqueClaims.items.filter((c) => c.viaRouter && c.metadata !== undefined).map((c) => c.announcement),
+        });
+        if (targets.length > 0) {
+          [evidence, secondaryEvidence] = await Promise.all([
+            fetchRouterEvidence(p.client, targets),
+            p.secondaryClient === undefined ? Promise.resolve(undefined) : fetchRouterEvidence(p.secondaryClient, targets),
+          ]);
+          evidenceRequests += evidence.requests + (secondaryEvidence?.requests ?? 0);
+        }
+        if (p.signal.aborted) break;
+      }
       const pageMatches: ScanMatch[] = [];
       const pageEvidence = new Set(evidenceLedger.keys());
       const workerMatches = new Map(reply.matches.map((m) => [m.id, m] as const));
@@ -397,6 +428,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
               claim,
               ...(p.secondaryClient === undefined ? {} : { secondaryClient: p.secondaryClient }),
               consumedTransfers: pageEvidence,
+              ...(evidence === undefined ? {} : { evidence }),
+              ...(secondaryEvidence === undefined ? {} : { secondaryEvidence }),
             });
         // A router-attributed announcement alone is still just a claim. Only independent transfer
         // evidence can be shown as received; pending applies only to evidence-backed, non-final funds.
@@ -527,7 +560,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       : await estimateSimilarTransfers({ client: p.client, chain: p.chain, token: paid.metadata.token, amount: paid.metadata.netAmount, head: windowHead });
   }
   const anonymity = counted ? anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead, ...(transfers === undefined ? {} : { transfers }) }) : undefined;
-  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
+  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), ...(bulkEvidence > 0 ? { evidenceRequests } : {}), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
 }
 
 /**

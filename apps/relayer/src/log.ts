@@ -80,3 +80,25 @@ export function createLogger(sink: (line: string) => void, now: () => number = D
 
 /** Logger that discards everything. */
 export const nullLogger: Logger = { log: () => undefined };
+
+/** Events emitted once per HTTP request; zero-log mode drops them. */
+const PER_REQUEST_EVENTS: ReadonlySet<string> = new Set(['request']);
+
+/**
+ * Zero-log mode (`privacy.zeroLog`, apps/relayer/PRIVACY.md): drops the per-request access line and strips `requestId`
+ * from every other line, so no log line can be tied to one HTTP request or its timing. Operational events (startup,
+ * breaker, state, receipt outcomes) stay, with chain id and error class only.
+ *
+ * @remarks IP addresses, owners and destinations are never logged in either mode ({@link sanitizeFields}); this
+ * removes the remaining per-request trail.
+ */
+export function zeroLogLogger(inner: Logger): Logger {
+  return {
+    log(level, event, fields = {}) {
+      if (PER_REQUEST_EVENTS.has(event)) return;
+      const rest: { -readonly [K in keyof LogFields]: LogFields[K] } = { ...fields };
+      delete rest.requestId;
+      inner.log(level, event, rest);
+    },
+  };
+}

@@ -23,7 +23,19 @@ export interface ProfileLabel {
   readonly experimental: boolean;
   /** Labelled secondary / best-effort (NP-I2P-1). */
   readonly secondary: boolean;
+  /** What has actually been tested ({@link PROFILE_VERIFICATION}); the UI must show `unverified` next to the title. */
+  readonly verification: ProfileVerification;
 }
+
+/**
+ * Test status per profile (TM14). `loopback-tested`: exercised end to end against loopback servers only.
+ * `unverified`: never run against the real network it names (Tor, I2P, Nym, an OHTTP relay/gateway); only fakes from
+ * `@ghostpay/net-harness` or local checks. Nothing here is upgraded without a recorded smoke test (deploy/TOR.md).
+ */
+export type ProfileVerification = 'loopback-tested' | 'unverified';
+
+/** Shown with every `unverified` profile, in its `doesNotHide` list and next to its title. */
+export const UNVERIFIED_NOTICE = 'Unverified: GhostPay has not tested this profile against the real network it names; only local fakes were used.';
 
 /** Shown once per session when any non-direct profile is selected (NP-C-3). */
 export const FIRST_USE_NOTICE = 'This hides your IP from the server, not what you send or what is on-chain.';
@@ -40,7 +52,12 @@ export const COMMON_NOT_HIDDEN: readonly string[] = Object.freeze([
   'Wallet extension traffic goes to the wallet\'s own RPC outside GhostPay\'s control.',
 ]);
 
-const L = (x: ProfileLabel): ProfileLabel => Object.freeze({ ...x, doesNotHide: Object.freeze([...x.doesNotHide]), trust: Object.freeze([...x.trust]) });
+const L = (x: ProfileLabel): ProfileLabel =>
+  Object.freeze({
+    ...x,
+    doesNotHide: Object.freeze(x.verification === 'unverified' ? [UNVERIFIED_NOTICE, ...x.doesNotHide] : [...x.doesNotHide]),
+    trust: Object.freeze([...x.trust]),
+  });
 
 /** Labels for all profiles. */
 export const PROFILE_LABELS: Readonly<Record<ProfileId, ProfileLabel>> = Object.freeze({
@@ -52,10 +69,11 @@ export const PROFILE_LABELS: Readonly<Record<ProfileId, ProfileLabel>> = Object.
     trust: [],
     experimental: false,
     secondary: false,
+    verification: 'loopback-tested',
   }),
   'tor-browser': L({
     id: 'tor-browser',
-    title: 'Tor Browser (you run it)',
+    title: 'Tor Browser (you run it; unverified)',
     hides: 'Depends entirely on you running this page inside Tor Browser; GhostPay cannot check that.',
     doesNotHide: [
       TOR_BROWSER_NOTICE,
@@ -66,19 +84,21 @@ export const PROFILE_LABELS: Readonly<Record<ProfileId, ProfileLabel>> = Object.
     trust: ['Tor network and exit operator'],
     experimental: false,
     secondary: false,
+    verification: 'unverified',
   }),
   'tor-socks': L({
     id: 'tor-socks',
-    title: 'Tor via local SOCKS5h proxy',
+    title: 'Tor via local SOCKS5h proxy (unverified)',
     hides: 'Your IP from the RPC/relayer; host names are resolved by the proxy, not locally.',
     doesNotHide: ['Tor exit sees destination host and SNI, not TLS content.', ...COMMON_NOT_HIDDEN],
     trust: ['Local Tor proxy you run', 'Tor network and exit operator'],
     experimental: false,
     secondary: false,
+    verification: 'unverified',
   }),
   onion: L({
     id: 'onion',
-    title: 'Onion service',
+    title: 'Onion service (unverified)',
     hides: 'Your IP from an onion-hosted RPC/relayer, and the host from your local network.',
     doesNotHide: [
       'An onion address check proves the address is well-formed, not that the service is the one you intended.',
@@ -88,10 +108,11 @@ export const PROFILE_LABELS: Readonly<Record<ProfileId, ProfileLabel>> = Object.
     trust: ['Tor network', 'Operator of the onion service'],
     experimental: false,
     secondary: false,
+    verification: 'unverified',
   }),
   'i2p-outproxy': L({
     id: 'i2p-outproxy',
-    title: 'I2P outproxy (secondary, best-effort)',
+    title: 'I2P outproxy (secondary, best-effort, unverified)',
     hides: 'Your IP from the destination.',
     doesNotHide: [
       'The outproxy operator sees the destination and, for plain HTTP, the content.',
@@ -101,10 +122,11 @@ export const PROFILE_LABELS: Readonly<Record<ProfileId, ProfileLabel>> = Object.
     trust: ['I2P router you run', 'Outproxy operator'],
     experimental: false,
     secondary: true,
+    verification: 'unverified',
   }),
   'nym-mixfetch': L({
     id: 'nym-mixfetch',
-    title: 'Nym browser fetch (experimental)',
+    title: 'Nym browser fetch (experimental, unverified)',
     hides: 'Your IP from the destination.',
     doesNotHide: [
       'Nym: mixing "does not protect against the server you are talking to"; per-request exit rotation not available in SDKs, so a destination can group requests.',
@@ -114,10 +136,11 @@ export const PROFILE_LABELS: Readonly<Record<ProfileId, ProfileLabel>> = Object.
     trust: ['Nym entry gateway and exit (IPR) operators'],
     experimental: true,
     secondary: false,
+    verification: 'unverified',
   }),
   'nym-socks5': L({
     id: 'nym-socks5',
-    title: 'Nym SOCKS5 client (experimental)',
+    title: 'Nym SOCKS5 client (experimental, unverified)',
     hides: 'Your IP from the destination.',
     doesNotHide: [
       'Nym: mixing "does not protect against the server you are talking to"; per-request exit rotation not available in SDKs, so a destination can group requests.',
@@ -127,10 +150,11 @@ export const PROFILE_LABELS: Readonly<Record<ProfileId, ProfileLabel>> = Object.
     trust: ['Nym entry gateway and exit operators', 'Local Nym SOCKS5 client you run'],
     experimental: true,
     secondary: false,
+    verification: 'unverified',
   }),
   ohttp: L({
     id: 'ohttp',
-    title: 'Oblivious HTTP (experimental)',
+    title: 'Oblivious HTTP (experimental, unverified)',
     hides: 'Your IP from the gateway and the request content from the relay, if relay and gateway do not collude.',
     doesNotHide: [
       'Relay and gateway collusion defeats the split; if one operator runs both there is no protection.',
@@ -141,6 +165,7 @@ export const PROFILE_LABELS: Readonly<Record<ProfileId, ProfileLabel>> = Object.
     trust: ['Non-collusion of OHTTP relay and gateway'],
     experimental: true,
     secondary: false,
+    verification: 'unverified',
   }),
 });
 
@@ -159,3 +184,8 @@ export const RPC_MODE_LABELS = Object.freeze({
   'own-node': 'Your own node (loopback or onion URL); no third-party RPC sees queries.',
   'light-client': 'Verifies answers, does not hide queries from the execution RPC.',
 } as const);
+
+/** Test status per profile id (TM14); only `direct` is `loopback-tested`. */
+export const PROFILE_VERIFICATION: Readonly<Record<ProfileId, ProfileVerification>> = Object.freeze(
+  Object.fromEntries(Object.values(PROFILE_LABELS).map((l) => [l.id, l.verification])) as Record<ProfileId, ProfileVerification>,
+);

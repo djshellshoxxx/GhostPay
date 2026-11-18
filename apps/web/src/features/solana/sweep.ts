@@ -34,6 +34,29 @@ export interface SignedSweep {
   readonly wireBase64: string;
 }
 
+/** A detected payment together with the balance of its one-time address, read when the sweep is reviewed. */
+export interface FundedPayment extends FoundPayment {
+  /** Finalized balance of the one-time address when it was read. */
+  readonly balanceLamports: bigint;
+}
+
+/**
+ * Reads the finalized balance of the one address being swept. This is the only balance read of the flow besides the
+ * re-check at signing: the node learns this address when you review, not for every address a scan matched.
+ */
+export async function readSweepBalance(rpc: SolanaRpc, found: FoundPayment, signal?: AbortSignal): Promise<FundedPayment> {
+  return { ...found, balanceLamports: await getBalance(rpc, found.stealthAddress, signal) };
+}
+
+/** Parses the destination and refuses the one-time address itself. @throws {SolViewError} with a user-safe message. */
+export function checkDestination(found: FoundPayment, destination: string): string {
+  const dest = parseSolanaAddress(destination.trim());
+  if (dest === found.stealthAddress) {
+    throw new SolViewError({ key: 'chainView.error.sameAddress' });
+  }
+  return dest;
+}
+
 export function formatSol(lamports: bigint): string {
   const whole = lamports / 1_000_000_000n;
   const frac = (lamports % 1_000_000_000n).toString().padStart(9, '0').replace(/0+$/, '');
@@ -41,11 +64,8 @@ export function formatSol(lamports: bigint): string {
 }
 
 /** Validates the destination and computes the exact amounts. @throws {SolViewError} with a user-safe message. */
-export function reviewSweep(wallet: SolWallet, found: FoundPayment, destination: string): SweepReview {
-  const dest = parseSolanaAddress(destination.trim());
-  if (dest === found.stealthAddress) {
-    throw new SolViewError({ key: 'chainView.error.sameAddress' });
-  }
+export function reviewSweep(wallet: SolWallet, found: FundedPayment, destination: string): SweepReview {
+  const dest = checkDestination(found, destination);
   const send = found.balanceLamports - SWEEP_FEE_LAMPORTS;
   if (send <= 0n) throw new SolViewError({ key: 'sol.error.balanceFee' });
   const warnings: MessageDescriptor[] = [
@@ -71,7 +91,7 @@ export function reviewSweep(wallet: SolWallet, found: FoundPayment, destination:
 export interface SignParams {
   readonly rpc: SolanaRpc;
   readonly wallet: SolWallet;
-  readonly found: FoundPayment;
+  readonly found: FundedPayment;
   readonly review: SweepReview;
   readonly signal?: AbortSignal;
 }

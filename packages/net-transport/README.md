@@ -39,6 +39,10 @@ Settings: `validateNetworkSettings(raw, {env, network, builds, ohttpGatewayConfi
 - Timing correlation (announcement at block N, sweep at N+k) is not hidden by any transport. Wallet extension traffic is outside the app's control.
 - An onion address checksum is 16 bits: it catches typos, it does not prove the service is the intended one. No mirror is called "verified".
 
+Verification (TM14): `PROFILE_VERIFICATION` and `ProfileLabel.verification` mark every profile except `direct` as `unverified` (no real Tor, Tor Browser, onion, I2P, Nym or OHTTP run). Their titles say "unverified" and their `doesNotHide` list starts with `UNVERIFIED_NOTICE`; the UI must show both. Nothing is upgraded without a recorded smoke test (`deploy/TOR.md`).
+
+Web per-purpose selection (`src/selection.ts`, browser entry): `rpcProfile`/`relayerProfile` in `direct|tor-browser`, `rpcMode` in `single|own-node`, stored as `ghostpay.networkProfiles.v1`. `parseWebNetworkSelection` rejects anything else as a whole; `effectiveSelection` returns the default until a non-default selection's `firstUseNotices` were acknowledged; `profileForPurpose` maps `quote|sweep|submit` to the relayer profile and the rest to the RPC profile; `checkOwnNodeRpcUrl` allows loopback or v3 onion only. `tor-browser` is ambient (same `fetch`). Wired in `apps/web/src/lib/defaultServices.ts` (`createRpc` enforces `own-node`); there is no Settings control yet.
+
 First use of any non-direct profile must show `FIRST_USE_NOTICE`: "This hides your IP from the server, not what you send or what is on-chain."
 
 ## OHTTP and HPKE: UNVERIFIED
@@ -53,7 +57,7 @@ No HPKE library is added. `OhttpHpke` is an injected interface (KEM/KDF/AEAD, ke
 - `AT-NP-1` (browser egress e2e), `AT-NP-8` (bundle scan), `AT-NP-21` (network-namespace egress denial), `NP-B-3` worker plumbing, light-client/PIR/indexer (other packages): not in this package.
 - `tor-browser` self-check facts are supplied by the caller; nothing here touches `window`.
 - Cross-process isolation proof with a real `tor` control port (M1) not done.
-- Only the browser subpath (`@ghostpay/net-transport/browser`, `src/browser.ts`) is wired into `apps/web` (`src/lib/scanPrivacy.ts`); the Node-only profiles are not wired into any app. Not independently audited.
+- Only the browser subpath (`@ghostpay/net-transport/browser`, `src/browser.ts`) is wired into `apps/web` (`src/lib/scanPrivacy.ts`, `src/lib/defaultServices.ts`); the Node-only profiles are not wired into any app. Not independently audited.
 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory (needs @ghostpay/net-harness built: npm run build in packages/net-harness)

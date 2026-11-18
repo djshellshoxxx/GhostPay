@@ -16,7 +16,7 @@ import { useServices } from '../../lib/services';
 import { SOL_NETWORKS, solNetwork, type SolNetworkId } from './network';
 import { checkNetwork, createRpc, sendTransaction, SolViewError, captureSolErrorMessage } from './rpc';
 import { MAX_SCAN_PAGES, scanForPayments, wipeFound, type FoundPayment, type ScanResult } from './scan';
-import { formatSol, reviewSweep, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { checkDestination, formatSol, readSweepBalance, reviewSweep, signSweep, type FundedPayment, type SignedSweep, type SweepReview } from './sweep';
 import { randomSeedHex, walletFromSeedHex, wipeWallet, type SolWallet } from './wallet';
 
 /**
@@ -59,6 +59,8 @@ export function SolanaView(): ReactNode {
   /** Seed of a created wallet, as bytes so that Lock, a new wallet and unmount can wipe it. */
   const seedRef = useRef<Uint8Array | undefined>(undefined);
   const scanRef = useRef<ScanResult | undefined>(undefined);
+  /** The reviewed payment with the balance read at review time; signing re-checks that balance. */
+  const fundedRef = useRef<FundedPayment | undefined>(undefined);
   const net = solNetwork(netId);
 
   const invalidate = (): void => {
@@ -98,6 +100,7 @@ export function SolanaView(): ReactNode {
     scanRef.current = undefined;
     setScan(undefined);
     setPicked(undefined);
+    fundedRef.current = undefined;
     setReview(undefined);
     setApproved(false);
     setSigned(undefined);
@@ -178,17 +181,35 @@ export function SolanaView(): ReactNode {
   };
 
   const doReview = (): void => {
-    if (wallet === undefined || selected === undefined) return;
-    guard(() => {
-      clearReview();
-      setReview(reviewSweep(wallet, selected, destination));
-      setApproved(false);
-      setSigned(undefined);
-    });
+    if (wallet === undefined || selected === undefined || busy) return;
+    setError(undefined);
+    clearReview();
+    // Cheap local checks first, so a typo never costs a request.
+    try { checkDestination(selected, destination); } catch (e) { setError(captureSolErrorMessage(e)); return; }
+    const { signal, live } = begin();
+    setBusy(true);
+    void (async () => {
+      try {
+        // The balance of this one address is read now, not for every match during the scan.
+        const rpc = await connect(signal);
+        const funded = await readSweepBalance(rpc, selected, signal);
+        if (!live()) return;
+        const next = reviewSweep(wallet, funded, destination);
+        fundedRef.current = funded;
+        setReview(next);
+        setApproved(false);
+        setSigned(undefined);
+      } catch (e) {
+        if (live()) setError(captureSolErrorMessage(e));
+      } finally {
+        if (live()) setBusy(false);
+      }
+    })();
   };
 
   const doSign = (): void => {
-    if (wallet === undefined || selected === undefined || review === undefined || !approved || busy) return;
+    const funded = fundedRef.current;
+    if (wallet === undefined || selected === undefined || funded === undefined || review === undefined || !approved || busy) return;
     setError(undefined);
     const { signal, live } = begin();
     setBusy(true);
@@ -196,7 +217,7 @@ export function SolanaView(): ReactNode {
       try {
         const rpc = await connect(signal);
         if (!live()) return;
-        const out = await signSweep({ rpc, wallet, found: selected, review, signal });
+        const out = await signSweep({ rpc, wallet, found: funded, review, signal });
         if (live()) setSigned(out);
       } catch (e) {
         if (live()) setError(captureSolErrorMessage(e));
@@ -262,6 +283,7 @@ export function SolanaView(): ReactNode {
 
   const clearReview = (): void => {
     clearSigning();
+    fundedRef.current = undefined;
     setReview(undefined);
   };
 
@@ -360,6 +382,7 @@ export function SolanaView(): ReactNode {
               <input id={id} aria-describedby={d} inputMode="numeric" value={fromSlot} onChange={(e) => { setFromSlot(e.target.value); }} />
             )}
           </Field>
+          <p role="note">{t('sol.exposure.notice')}</p>
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={runScan}>
             {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
@@ -373,14 +396,13 @@ export function SolanaView(): ReactNode {
                 {scan.found.length === 0
                   ? t('chainView.noneFound')
                   : t('chainView.foundCount', { count: String(scan.found.length) })}
-                {scan.emptiedCount > 0 && ` ${t('chainView.alreadySwept', { count: String(scan.emptiedCount) })}`}
               </p>
               {scan.found.length > 0 && (
                 <div className="table-wrap">
                   <p role="note">{t('sol.singleProvider')}</p>
                   <table>
                     <thead>
-                      <tr><th>{t('btc.scan.sweep')}</th><th>{t('sweep.oneTimeAddress')}</th><th>{t('sol.col.slot')}</th><th>{t('policy.account.balance')}</th></tr>
+                      <tr><th>{t('btc.scan.sweep')}</th><th>{t('sweep.oneTimeAddress')}</th><th>{t('sol.col.slot')}</th></tr>
                     </thead>
                     <tbody>
                       {scan.found.map((f) => (
@@ -396,7 +418,6 @@ export function SolanaView(): ReactNode {
                           </td>
                           <td dir="ltr"><Mono>{f.stealthAddress}</Mono></td>
                           <td>{String(f.slot)}</td>
-                          <td>{formatSol(f.balanceLamports)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -422,9 +443,9 @@ export function SolanaView(): ReactNode {
             onText={(scanned) => {
               const candidate = scanned.trim().replace(/^solana:/i, '').split('?')[0] ?? '';
               try {
-                // reviewSweep applies the same address and amount checks used before signing.
+                // The same address checks as the review; amounts are checked at review time, when the balance is read.
                 if (selected === undefined) throw new SolViewError({ key: 'sol.selectFirst' });
-                reviewSweep(wallet, selected, candidate);
+                checkDestination(selected, candidate);
                 setDestination(candidate);
                 clearReview();
                 setError(undefined);
@@ -436,7 +457,7 @@ export function SolanaView(): ReactNode {
             }}
           />
           <p className="hint">{t('sol.fee.hint')}</p>
-          <button type="button" className="btn btn-primary" disabled={selected === undefined || destination.trim() === ''} onClick={doReview}>
+          <button type="button" className="btn btn-primary" disabled={selected === undefined || destination.trim() === '' || busy} onClick={doReview}>
             {t('btc.sweep.review')}
           </button>
 

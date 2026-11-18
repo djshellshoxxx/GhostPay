@@ -33,6 +33,7 @@ function useScanT(): T {
 
 // latestT.current('key') is not seen by scripts/i18n/extract.mjs; the keys translated through it in this file:
 // i18n-use: scan.error.reorg scan.error.observationLimit scan.announce.limit scan.announce.finished
+// i18n-use: scan.providerSeesPayments
 // i18n-use: scan.tag.saved scan.tags.unlocked scan.tags.deleted
 /** The translator of the latest render, for text produced after an await (a language change may have happened since). */
 function useLatestScanT(t: T): { readonly current: T } {
@@ -256,6 +257,7 @@ export function Scan(): ReactNode {
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
           keyId,
           deep: deepScan,
+          ...(privacy.bulkEvidence > 0 ? { bulkEvidence: privacy.bulkEvidence } : {}),
           ...(secondary === undefined ? {} : { secondaryClient: secondary }),
           viewingKey,
           createWorker: services.createScanWorker,
@@ -349,6 +351,7 @@ export function Scan(): ReactNode {
       <Notice kind="warn" title={t('scan.rpcPrivacy.title')}>
         {t('scan.rpcPrivacy.body')}
       </Notice>
+      <Notice kind="warn">{t('scan.providerSeesPayments')}</Notice>
       <details className="panel">
         <summary>{t('scan.disclosure.summary')}</summary>
         <ul>

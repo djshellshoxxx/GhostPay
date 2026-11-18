@@ -8,7 +8,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard, captureSessionVersionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
@@ -100,6 +100,7 @@ export function Sweep(): ReactNode {
     [sel, chainId, tokenAddr, balanceRpcUrl, app.getRpc, app.session]);
   const currentBalanceScope = useRef(balanceScope);
   currentBalanceScope.current = balanceScope;
+  const destWarning = sel === undefined || chainId === undefined ? undefined : destinationWarning(destination, sel.match.stealthAddress, chainId, loadDestLedger(browserStorage()));
 
   useEffect(() => {
     setBalance(undefined);
@@ -237,6 +238,7 @@ export function Sweep(): ReactNode {
         throw e;
       }
       setHash(submitted);
+      recordSweepDestination(browserStorage(), chainId, dest, target.owner);
       // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
       // Compare-and-swap: a status check may already have resolved this order (and a newer lock may exist) while the
       // relayer was answering; never overwrite anything but the lock this flow created.
@@ -286,6 +288,7 @@ export function Sweep(): ReactNode {
         throw e;
       }
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
+      recordSweepDestination(browserStorage(), chainId, dest, target.owner);
       setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(latestT.current('sweep.announceBroadcast'));
       return true;
@@ -374,6 +377,7 @@ export function Sweep(): ReactNode {
             {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
           </Field>
         )}
+        {destWarning !== undefined && <Notice kind="warn">{t(destWarning === 'used' ? 'sweep.destination.used' : 'sweep.destination.knownWallet')}</Notice>}
         {vaultState === 'checking' && !vaultStepUp && <p role="status">{t('sweep.vaultChecking')}</p>}
         {vaultState === 'error' && !vaultStepUp && <Notice kind="error">{t('sweep.vaultError')}</Notice>}
         {loaded !== undefined && (
@@ -476,3 +480,5 @@ export function Sweep(): ReactNode {
 }
 
 // i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive
+
+// i18n-use: sweep.destination.used sweep.destination.knownWallet

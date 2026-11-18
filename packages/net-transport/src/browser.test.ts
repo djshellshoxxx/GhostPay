@@ -40,4 +40,11 @@ describe('browser entry', () => {
     expect(browser.TOR_BROWSER_NOTICE).toMatch(/cannot verify/);
     expect(browser.PROFILE_LABELS['tor-browser'].doesNotHide).toContain(browser.TOR_BROWSER_NOTICE);
   });
+
+  it('exposes the TM14 per-purpose selection with the default unchanged', () => {
+    expect(browser.parseWebNetworkSelection(undefined)).toEqual(browser.DEFAULT_WEB_NETWORK_SELECTION);
+    expect(browser.WEB_SELECTABLE_PROFILES).toEqual(['direct', 'tor-browser']);
+    expect(browser.PROFILE_VERIFICATION['tor-browser']).toBe('unverified');
+    expect(typeof browser.checkOwnNodeRpcUrl).toBe('function');
+  });
 });
