@@ -17,6 +17,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
+import { checkpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
@@ -94,7 +95,7 @@ export interface ScanParams {
   readonly client: RpcClient;
   readonly cursor: ScanCursor;
   readonly spendingPublicKeyHex: string;
-  /** {@link checkpointKeyId} of the keys being scanned; checkpoints are stored under it. */
+  /** {@link checkpointKeyId} of the keys being scanned; checkpoints are bound to it (see {@link localCheckpointStore}). */
   readonly keyId: string;
   /** Raw viewing key bytes; consumed (zeroized by the worker) and sent nowhere else. */
   readonly viewingKey: Uint8Array;
@@ -658,10 +659,7 @@ function zeroizeBytes(b: Uint8Array): void {
   b.fill(0);
 }
 
-// v2: bound to the key set. v1 entries (chain only) are ignored: they cannot be attributed to a key.
-const CP_PREFIX = 'ghostpay.scan.checkpoint.v2.';
 const KEY_ID = /^[0-9a-f]{64}$/;
-const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_PREFIX}${String(chainId)}.${keyId}` : undefined);
 
 interface StorageLike {
   getItem(k: string): string | null;
@@ -669,8 +667,16 @@ interface StorageLike {
   removeItem(k: string): void;
 }
 
-/** Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures. */
-export function localCheckpointStore(storage: StorageLike | undefined): CheckpointStore {
+/**
+ * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
+ *
+ * SEC-22: slots are named by {@link checkpointSlot} from the viewing key that `viewingKey` lends for the key id (by default
+ * the loaded session's, and only for its own key id), so a slot name tells someone who knows only the meta-address nothing.
+ * Without those keys nothing is read or written. Legacy v2 slots, named from the public keys, are never read (the scan
+ * starts over from the chosen block); the first v3 save for that chain and key id deletes them, and so does `clear`.
+ */
+export function localCheckpointStore(storage: StorageLike | undefined, viewingKey: ViewingKeyLender = sessionViewingKey): CheckpointStore {
+  const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? viewingKey(keyId, (vk) => checkpointSlot(vk, chainId, keyId)) : undefined);
   return {
     load(chainId, keyId) {
       try {
@@ -694,11 +700,18 @@ export function localCheckpointStore(storage: StorageLike | undefined): Checkpoi
         if (k === undefined) return;
         const body = { nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) };
         storage?.setItem(k, JSON.stringify(body));
+        storage?.removeItem(legacyCheckpointSlot(chainId, keyId));
       } catch {
         /* checkpoints are an optimisation */
       }
     },
     clear(chainId, keyId) {
+      if (!KEY_ID.test(keyId)) return;
+      try {
+        storage?.removeItem(legacyCheckpointSlot(chainId, keyId));
+      } catch {
+        /* ignore */
+      }
       try {
         const k = slot(chainId, keyId);
         if (k !== undefined) storage?.removeItem(k);

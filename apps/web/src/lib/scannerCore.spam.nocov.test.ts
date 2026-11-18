@@ -125,7 +125,8 @@ describe('spec 05 acceptance: 1M spam + 10 real router payments through the lane
     const client = receiptsClient(real);
     const store = (() => {
       const m = new Map<string, string>();
-      return localCheckpointStore({ getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v), removeItem: (k) => void m.delete(k) });
+      // Slots are named from a viewing key (SEC-22); KEY is synthetic, so the store borrows a fixed test key.
+      return localCheckpointStore({ getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v), removeItem: (k) => void m.delete(k) }, (_keyId, use) => use(new Uint8Array(32).fill(7)));
     })();
     // Each open-lane log, by (block, index), and each real payment id: counted when it reaches the worker.
     const spamSeen = new Uint8Array(SPAM_TOTAL);
