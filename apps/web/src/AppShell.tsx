@@ -19,6 +19,7 @@ import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { notifyAppLock } from './lib/appLock';
+import { FRAME_REFUSAL, embedModeEnabled, frameRefusesView, isFramed } from './lib/frameGuard';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
 export const IDLE_CHECK_MS = 20_000;
@@ -38,8 +39,20 @@ export interface AppShellProps {
 
 export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'registry', 'settings', 'about']);
 
-function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode }): ReactNode {
+/** Shown instead of a key, sweep or settings view while the page is framed by another site (SEC-18). */
+function FrameRefusal(): ReactNode {
+  return (
+    <Notice kind="warn" title={FRAME_REFUSAL.title}>
+      {FRAME_REFUSAL.body}{' '}
+      {/* The app root without the current fragment: an invoice link is never handed to the new tab. */}
+      <a href="./" target="_blank" rel="noopener noreferrer">{FRAME_REFUSAL.action}</a>
+    </Notice>
+  );
+}
+
+function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode; readonly framedRefusal: boolean }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  if (props.framedRefusal) return <FrameRefusal />;
   switch (props.view) {
     case 'home':
       return <Home />;
@@ -90,6 +103,9 @@ export function AppShell(props: AppShellProps): ReactNode {
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
+  // Framed by another site outside the explicit embed mode: key, sweep and settings views are refused (SEC-18).
+  const [framed] = useState(() => isFramed(window));
+  const embedMode = embedModeEnabled(import.meta.env, profile);
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
 
   // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
@@ -289,7 +305,7 @@ export function AppShell(props: AppShellProps): ReactNode {
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
           <ShellProfileContext.Provider value={profile}>
-            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={props.sellerArchive} />
+            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={props.sellerArchive} framedRefusal={frameRefusesView(view, framed, embedMode)} />
           </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>
