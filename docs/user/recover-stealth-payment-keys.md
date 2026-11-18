@@ -7,11 +7,13 @@
 
 ## Status
 
+Current source and executed checks are recorded in the [recovery integration handoff](../handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md).
+
 | Path | Status |
 |---|---|
 | Reference recovery script (`scripts/recovery/stealth-export-recover.mjs`) | Implemented; tested against the reference vectors and against files freshly written by the GhostPay codec |
-| Raw private key in an independent EVM wallet tool | Tested with Foundry `cast` on a local anvil chain only (`scripts/recovery/raw-key-anvil.test.mjs`): synthetic test key, no real network, no real funds |
-| Loading an export in a freshly opened GhostPay page | Specified by spec 18; desktop and mobile browser acceptance is **pending** (not yet exercised) |
+| Raw private key in an independent EVM wallet tool | Supplemental test passed with Foundry 1.5.1 `cast` on loopback Anvil (`scripts/recovery/raw-key-anvil.test.mjs`): synthetic test key, no real network or real funds. Qualification with the workflow-pinned Foundry 1.8.5 remains pending. |
+| Loading an export in a freshly opened GhostPay page | Implemented and covered by local UI regressions; actual desktop and mobile browser acceptance is **pending**. jsdom tests do not qualify a browser. |
 | Import into third-party wallets, hardware wallets or phones | **Pending: not exercised.** No wallet, device or browser beyond the rows above has been tested |
 
 ## Which file do I have?
@@ -71,9 +73,9 @@ that boundary. Encrypting the private-key body protects its stored key material 
 
 ## Option A: GhostPay in a fresh browser
 
-Spec 18 requires that an encrypted export opens in a freshly opened GhostPay page without the original installation,
-site, host or account: GhostPay is a static page and does no server-side recovery. Use a new browser profile, open a
-GhostPay build you trust (one you built or verified yourself is best), load the file and enter the passphrase. The
+Open **Seller keys**, then **Open a stealth key export**. The app accepts an encrypted export without the original
+installation, site, host or account: GhostPay is a static page and does no server-side recovery. Use a new browser
+profile, open a GhostPay build you trust (one you built or verified yourself is best), load the file and enter the passphrase. The
 page checks every key against its address before showing anything, and a file with any problem is refused as a whole.
 
 Status: this in-app import has not yet passed its desktop and mobile browser acceptance. Until that is recorded, use

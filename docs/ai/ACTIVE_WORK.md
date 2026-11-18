@@ -12,6 +12,14 @@ privacy/session/scanner changes and final integration. Acceptance: inspect curre
 reconcile both PRs onto live main, reproduce and fix concrete defects, run complete focused
 codec/recovery/vault checks plus web typecheck and scoped lint, and record exact evidence.
 No remote mutation, deployment, release, mainnet enablement or browser-pass claim.
+Status: integrated and independently reviewed at code/test source
+`f2ed1ed4240f91ef2fb41f3edaf3ea6546e87e60`. Web recovery selection 135/135,
+core crypto 75/75 and complete vault coverage 348/348 pass; the independent
+export/i18n selection passes 24/24. Node recovery passes 15 cases, with the
+separate raw-key interoperability case passing on available Foundry 1.5.1 only.
+Full-web typed lint remains blocked by executor memory; actual browser, pinned
+Foundry 1.8.5 and final combined/hosted qualification remain pending. See
+[the exact-source recovery handoff](../handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md).
 
 # Recovery cancellation review — 2026-11-18
 
