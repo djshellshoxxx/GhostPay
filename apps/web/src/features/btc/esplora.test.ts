@@ -529,7 +529,11 @@ describe('EsploraTweakSource and scanning', () => {
     // The server only ever saw heights, hashes, outpoints (no key material).
     for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}|block\/[0-9a-f]{64}\/txs\/\d+|block\/[0-9a-f]{64}\/header|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
 
+    // Every block up to the tip was read, so no output was asked about (spends come from the blocks, TM13).
+    expect(chain.requests.filter((r) => r.includes('/outspend/'))).toEqual([]);
+
     chain.spent.add(`${res.found[0]?.txid ?? ''}:1`);
+    // This range stops below the tip, so the server is asked and its answer decides.
     const again = await scanForPayments({ client, wallet: w, fromHeight: 3, toHeight: 3 });
     expect(again.found).toHaveLength(0);
     expect(again.spentCount).toBe(1);

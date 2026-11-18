@@ -499,9 +499,15 @@ export function BtcView(
   const doSign = (): void => {
     if (wallet === undefined || review === undefined || !approved || !reviewChecked(review)) return;
     setError(undefined);
-    const { live } = begin();
+    const { live, signal } = begin();
     void (async () => {
       try {
+        // Scans read spends from the downloaded blocks, which cannot see the mempool: ask once, now, about the outputs being spent.
+        const c = client();
+        for (const f of selected) {
+          if (!(await c.isUnspent(f.txid, f.vout, signal))) throw new UserFacingError({ key: 'btc.sweep.spentSinceScan' });
+        }
+        if (!live()) return;
         const out = await signSweep(wallet, selected, review);
         if (live()) setSigned(out);
       } catch (e) {
@@ -710,6 +716,7 @@ export function BtcView(
               <input id={id} aria-describedby={d} inputMode="numeric" disabled={scanning || (saveScan && savedScan !== undefined)} value={fromHeight} onChange={(e) => { setFromHeight(e.target.value); }} />
             )}
           </Field>
+          <p role="note">{t('btc.exposure.notice')}</p>
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={() => { runScan(); }}>
             {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>

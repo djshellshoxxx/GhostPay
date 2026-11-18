@@ -11,13 +11,22 @@ are defined locally; no other method package's internals are imported. `pir2` us
 |---|---|---|---|
 | `range` (default) | `createRangeSource` | unverified | Grid-aligned full ranges (`windowBlocks`/`align`/`minSpan` default 1000), local matching, budgets (50 calls, 10 000 logs) |
 | `indexer-tor` | `createIndexerSource` | unverified | `GET /v1/logs`; checks complete contiguous parent-hash chain; cross-checks window ends and every announcement block against a second source |
-| `pir2` | `createPir2Source` | unverified | Two-server XOR PIR via pir-two-server; dummy-padded fixed W pages per epoch; manifest must match on both servers and third source |
+| `pir2` | `createPir2Source` | unverified | EXPERIMENTAL research PoC, OFF unless `experimental: true` is passed (no UI offers it). Two-server XOR PIR via pir-two-server; dummy-padded fixed W pages per epoch; manifest must match on both servers and third source |
 | `light-client` | `createLightSource` | unverified, `proof` only if the client proves logs | Wraps another source; every returned block hash must be confirmed by the light client |
 | (composition) | `createQuorumSource(sources, k)` | quorum | Fails closed on any disagreement (`SOURCE_DISAGREE`) |
 
 `createScanSource({ mode, ... })` builds one; it never falls back to another mode. `describeScanMode(mode)` returns the honest UI text
 (`SCAN_MODE_CLAIMS`); render it verbatim. All entry points refuse any chain outside 31337, 11155111, 84532.
 `padWindow(from, to, align, minSpan)` is the pure window padding (a fresh install and a one-block catch-up send same-size requests).
+
+### Padded ranges (TM15)
+
+`padRange(from, to, { align, minSpan?, padBlocks?, maxSpan? }, head?)` pads a requested range to a grid, after widening it by a
+configurable `padBlocks` on both sides, so the server does not learn the exact range. `fetchPadded(req, fetchWindow, { windowBlocks, ... })`
+runs it for any `(from, to) => items[]` fetcher: it splits the padded range into calls of at most `windowBlocks`, can shuffle the call order
+(`random`, use a CSPRNG), drops items outside each window, and by default trims the result back to the requested range (`exact: false` keeps
+the whole padded range). `createRangeSource` takes the same `padBlocks`. This hides the exact first/last block and the true need; it does not
+hide the coarse window, its timing, the IP, or that you scan GhostPay announcements.
 
 ## What each mode does NOT protect
 

@@ -4,6 +4,8 @@ import {
   compareProviders,
   dedupeClaims,
   fetchAnnouncements,
+  fetchRouterEvidence,
+  selectEvidenceTargets,
   verifyClaimedPayment,
   type Address,
   type ChainConfig,
@@ -13,10 +15,15 @@ import {
   type ScanCursor,
   type ProviderDiscrepancy,
   type ReceiptStatus,
+  type RouterEvidenceBatch,
   type ScannedAnnouncement,
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
+import { hmac } from '@noble/hashes/hmac.js';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
+import { hasSession, revealViewingKey } from './session';
 import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
@@ -133,6 +140,14 @@ export interface ScanParams {
    * fixed recent window (no sender or recipient in the query). Costs RPC calls; `unknown` on any limit or error.
    */
   readonly privacySetTransfers?: boolean;
+  /**
+   * TM12, opt-in: read the receipt and transaction of up to this many router transactions on EVERY page that has router
+   * announcements (1 to 500; off when unset or 0), always including the matched ones, from each configured provider.
+   * Matched claims are then verified from that batch with no request of their own, so a provider sees which router
+   * transactions of a page were read, not which matched. Cost per page and provider: `1 + 2 * blocks + 2 * transactions`
+   * requests (blocks: distinct blocks of those transactions), reported as `evidenceRequests`.
+   */
+  readonly bulkEvidence?: number;
 }
 
 function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
@@ -143,7 +158,7 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
  * Network access happens here (via chain-adapters), never in the worker. The worker receives public logs and, once,
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
-export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag }> {
+export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag; readonly evidenceRequests?: number }> {
   let worker: ScanWorkerLike | undefined;
   let stopped = false;
   const stopWorker = (): void => {
@@ -219,6 +234,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   // must move back with the rollback, rather than remaining pinned to the old checkpoint.
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
+  // TM12: requests sent for bulk evidence batches this run (all providers).
+  let evidenceRequests = 0;
+  const bulkEvidence = p.bulkEvidence !== undefined && Number.isSafeInteger(p.bulkEvidence) && p.bulkEvidence > 0 ? Math.min(500, p.bulkEvidence) : 0;
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -380,6 +398,23 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
         break;
       }
+      let evidence: RouterEvidenceBatch | undefined;
+      let secondaryEvidence: RouterEvidenceBatch | undefined;
+      if (bulkEvidence > 0) {
+        // Every page with router announcements is read, matched or not, so the batches themselves do not mark pages.
+        const targets = selectEvidenceTargets({
+          announcements: res.announcements, router: p.manifest.router, maxTransactions: bulkEvidence,
+          include: uniqueClaims.items.filter((c) => c.viaRouter && c.metadata !== undefined).map((c) => c.announcement),
+        });
+        if (targets.length > 0) {
+          [evidence, secondaryEvidence] = await Promise.all([
+            fetchRouterEvidence(p.client, targets),
+            p.secondaryClient === undefined ? Promise.resolve(undefined) : fetchRouterEvidence(p.secondaryClient, targets),
+          ]);
+          evidenceRequests += evidence.requests + (secondaryEvidence?.requests ?? 0);
+        }
+        if (p.signal.aborted) break;
+      }
       const pageMatches: ScanMatch[] = [];
       const pageEvidence = new Set(evidenceLedger.keys());
       const workerMatches = new Map(reply.matches.map((m) => [m.id, m] as const));
@@ -396,6 +431,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
               claim,
               ...(p.secondaryClient === undefined ? {} : { secondaryClient: p.secondaryClient }),
               consumedTransfers: pageEvidence,
+              ...(evidence === undefined ? {} : { evidence }),
+              ...(secondaryEvidence === undefined ? {} : { secondaryEvidence }),
             });
         // A router-attributed announcement alone is still just a claim. Only independent transfer
         // evidence can be shown as received; pending applies only to evidence-backed, non-final funds.
@@ -526,7 +563,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       : await estimateSimilarTransfers({ client: p.client, chain: p.chain, token: paid.metadata.token, amount: paid.metadata.netAmount, head: windowHead });
   }
   const anonymity = counted ? anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead, ...(transfers === undefined ? {} : { transfers }) }) : undefined;
-  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
+  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), ...(bulkEvidence > 0 ? { evidenceRequests } : {}), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
 }
 
 /**
@@ -658,10 +695,16 @@ function zeroizeBytes(b: Uint8Array): void {
   b.fill(0);
 }
 
-// v2: bound to the key set. v1 entries (chain only) are ignored: they cannot be attributed to a key.
-const CP_PREFIX = 'ghostpay.scan.checkpoint.v2.';
+// v3 (TM8): the slot name is an HMAC of the chain id and key id under the seller's PRIVATE viewing key, so holding the
+// public meta-address is not enough to test whether this browser keeps checkpoints for it, or for which chains.
+// v2 slots (`v2.<chainId>.<sha256 of the public keys>`) are moved to v3 on the first load with the keys present and then
+// removed; until then they stay untouched, so no position is lost and the worst case is a rescan. v1 entries (chain only)
+// are ignored: they cannot be attributed to a key.
+const CP_V3_PREFIX = 'ghostpay.scan.checkpoint.v3.';
+const CP_V2_PREFIX = 'ghostpay.scan.checkpoint.v2.';
 const KEY_ID = /^[0-9a-f]{64}$/;
-const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_PREFIX}${String(chainId)}.${keyId}` : undefined);
+const SLOT_DOMAIN = 'GhostPay/scan-checkpoint-slot/v3';
+const legacySlot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_V2_PREFIX}${String(chainId)}.${keyId}` : undefined);
 
 interface StorageLike {
   getItem(k: string): string | null;
@@ -669,21 +712,75 @@ interface StorageLike {
   removeItem(k: string): void;
 }
 
-/** Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures. */
-export function localCheckpointStore(storage: StorageLike | undefined): CheckpointStore {
+/**
+ * Returns a fresh copy of the secret that names checkpoint slots, or `undefined` when no keys are loaded. The store
+ * wipes the copy after use. The default is the loaded seller's viewing key.
+ */
+export type CheckpointSlotSecret = () => Uint8Array | undefined;
+
+const sessionViewingKey: CheckpointSlotSecret = () => (hasSession() ? revealViewingKey() : undefined);
+
+function parseCursor(text: string): ScanCursor | undefined {
+  const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
+  if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
+  const last = o.last;
+  if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
+    return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
+  }
+  return { nextBlock: BigInt(o.nextBlock) };
+}
+
+const encodeCursor = (cursor: ScanCursor): string =>
+  JSON.stringify({ nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) });
+
+/**
+ * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
+ * Without the slot secret (no keys loaded) nothing is read or written: a checkpoint is only an optimisation.
+ *
+ * @param storage Web storage, or `undefined` for none.
+ * @param slotSecret Source of the secret that names the slots; defaults to the loaded viewing key.
+ */
+export function localCheckpointStore(storage: StorageLike | undefined, slotSecret: CheckpointSlotSecret = sessionViewingKey): CheckpointStore {
+  const slot = (chainId: number, keyId: string): string | undefined => {
+    if (!KEY_ID.test(keyId) || !Number.isSafeInteger(chainId)) return undefined;
+    let secret: Uint8Array | undefined;
+    try {
+      secret = slotSecret();
+      if (secret === undefined || secret.length === 0) return undefined;
+      return `${CP_V3_PREFIX}${bytesToHex(hmac(sha256, secret, utf8ToBytes(`${SLOT_DOMAIN}|${String(chainId)}|${keyId}`)))}`;
+    } catch {
+      return undefined;
+    } finally {
+      secret?.fill(0);
+    }
+  };
   return {
     load(chainId, keyId) {
       try {
         const k = slot(chainId, keyId);
-        const text = k === undefined ? undefined : storage?.getItem(k);
-        if (text === null || text === undefined) return undefined;
-        const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
-        if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
-        const last = o.last;
-        if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
-          return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
+        if (k === undefined || storage === undefined) return undefined;
+        const legacy = legacySlot(chainId, keyId);
+        const text = storage.getItem(k);
+        if (text !== null) {
+          // A v3 checkpoint is newer than any v2 one left by a failed migration: drop the public-key-named copy.
+          if (legacy !== undefined) storage.removeItem(legacy);
+          return parseCursor(text);
         }
-        return { nextBlock: BigInt(o.nextBlock) };
+        const old = legacy === undefined ? null : storage.getItem(legacy);
+        if (old === null || legacy === undefined) return undefined;
+        const cursor = parseCursor(old);
+        if (cursor === undefined) {
+          storage.removeItem(legacy);
+          return undefined;
+        }
+        // Remove the v2 slot only once the v3 copy reads back identically; otherwise keep it for the next try.
+        try {
+          storage.setItem(k, encodeCursor(cursor));
+          if (storage.getItem(k) === encodeCursor(cursor)) storage.removeItem(legacy);
+        } catch {
+          /* keep the v2 slot; this run still resumes from it */
+        }
+        return cursor;
       } catch {
         return undefined;
       }
@@ -692,13 +789,21 @@ export function localCheckpointStore(storage: StorageLike | undefined): Checkpoi
       try {
         const k = slot(chainId, keyId);
         if (k === undefined) return;
-        const body = { nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) };
-        storage?.setItem(k, JSON.stringify(body));
+        storage?.setItem(k, encodeCursor(cursor));
+        const legacy = legacySlot(chainId, keyId);
+        if (legacy !== undefined) storage?.removeItem(legacy);
       } catch {
         /* checkpoints are an optimisation */
       }
     },
     clear(chainId, keyId) {
+      // The v2 slot is cleared even without the keys: its name is public anyway.
+      try {
+        const legacy = legacySlot(chainId, keyId);
+        if (legacy !== undefined) storage?.removeItem(legacy);
+      } catch {
+        /* ignore */
+      }
       try {
         const k = slot(chainId, keyId);
         if (k !== undefined) storage?.removeItem(k);

@@ -17,6 +17,7 @@ import {
   type SweepOrder,
 } from '@ghostpay/chain-adapters';
 import { findLookalikes, parseStrictAddress, isReason, classifyDestination, type DestinationClass } from '@ghostpay/address-safety';
+import { DestLedger, fundingGuard } from '@ghostpay/hygiene';
 import { deriveStealthSecret, zeroize, type PublicAnnouncement, type SecretScalar } from '@ghostpay/core-crypto';
 import type { TypedDataInput } from '@ghostpay/tx-review';
 import { decodeFunctionResult, encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
@@ -82,6 +83,63 @@ export function checkDestination(destination: string, owner: Address, manifest: 
 /** How the destination relates to what the user knows; the UI shows the linkability warning for `new`. */
 export function describeDestination(destination: Address, owner: Address, saved: readonly Address[] = []): DestinationClass {
   return classifyDestination(destination, { saved, ownStealth: [owner], feeRecipients: [] });
+}
+
+export const DEST_LEDGER_KEY = 'ghostpay.sweepDestinations.v1';
+
+interface LedgerStorage {
+  getItem(k: string): string | null;
+  setItem(k: string, v: string): void;
+}
+
+/** Loads the local used-destination ledger; a missing, blocked or corrupt store yields an empty ledger. */
+export function loadDestLedger(storage: LedgerStorage | undefined): DestLedger {
+  try {
+    const text = storage?.getItem(DEST_LEDGER_KEY);
+    return text === null || text === undefined ? new DestLedger() : DestLedger.from(JSON.parse(text));
+  } catch {
+    return new DestLedger();
+  }
+}
+
+/** Records a submitted sweep in the local ledger. Best effort: storage failures never affect the sweep. */
+export function recordSweepDestination(storage: LedgerStorage | undefined, chainId: number, destination: Address, source: Address): void {
+  try {
+    const ledger = loadDestLedger(storage);
+    try {
+      ledger.record(chainId, destination, source);
+    } catch {
+      ledger.recordAcknowledgedReuse(chainId, destination, source);
+    }
+    storage?.setItem(DEST_LEDGER_KEY, JSON.stringify(ledger.toJSON()));
+  } catch {
+    // Storage unavailable or full: the warning is advisory, so the sweep is not affected.
+  }
+}
+
+export type DestinationWarning = 'used' | 'known-wallet';
+
+/**
+ * Advisory only (never blocks): does the destination already appear in the local ledger of swept-to addresses, or is it a known wallet?
+ * @returns `undefined` for an unknown or unparsable destination and for an empty ledger.
+ */
+export function destinationWarning(
+  destination: string,
+  owner: Address,
+  chainId: number,
+  ledger: DestLedger,
+  knownWallets: readonly Address[] = [],
+): DestinationWarning | undefined {
+  const parsed = parseStrictAddress(destination.trim());
+  if (isReason(parsed)) return undefined;
+  try {
+    if (!fundingGuard(parsed, { wallets: knownWallets, destinations: [] }).allow) return 'known-wallet';
+    if (describeDestination(parsed, owner, knownWallets) === 'saved') return 'known-wallet';
+    if (ledger.linkedSources(chainId, parsed).length > 0) return 'used';
+  } catch {
+    // Unsupported chain id or malformed address: no advisory.
+  }
+  return undefined;
 }
 
 export async function readBalance(rpc: Rpc, owner: Address, token: Address | 'native'): Promise<bigint> {

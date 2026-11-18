@@ -6,7 +6,10 @@ import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest'
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
-import { checkpointKeyId, localCheckpointStore, runScan } from './scanClient';
+import { checkpointKeyId, localCheckpointStore as secretKeyedStore, runScan } from './scanClient';
+
+/** TM8: checkpoint slots are named under a secret; these tests hold a fixed one in place of the loaded viewing key. */
+const localCheckpointStore = (storage: Parameters<typeof secretKeyedStore>[0]) => secretKeyedStore(storage, () => new Uint8Array(32).fill(7));
 
 /*
  * Spec 05 section 4 acceptance: one million open-lane spam announcements plus ten real router payments, driven through

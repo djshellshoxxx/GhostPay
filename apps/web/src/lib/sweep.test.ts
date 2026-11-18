@@ -1089,3 +1089,36 @@ describe('sweep permit state messages (spec 04)', () => {
     expect(sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', status, code))).toBeUndefined();
   });
 });
+
+describe('TM7 destination reuse ledger', () => {
+  const mem = (): { store: Map<string, string>; getItem(k: string): string | null; setItem(k: string, v: string): void } => {
+    const store = new Map<string, string>();
+    return { store, getItem: (k) => store.get(k) ?? null, setItem: (k, v) => { store.set(k, v); } };
+  };
+  const OWNER = '0x1111111111111111111111111111111111111111' as Address;
+  const OTHER = '0x2222222222222222222222222222222222222222' as Address;
+
+  it('an empty, missing or corrupt ledger warns about nothing', () => {
+    const st = mem();
+    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();
+    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined))).toBeUndefined();
+    st.setItem(sweepModule.DEST_LEDGER_KEY, '{not json');
+    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();
+  });
+
+  it('records a submitted destination and then warns, also for another source, and keeps both sources', () => {
+    const st = mem();
+    sweepModule.recordSweepDestination(st, 84532, DEST, OWNER);
+    expect(sweepModule.destinationWarning(DEST, OTHER, 84532, sweepModule.loadDestLedger(st))).toBe('used');
+    sweepModule.recordSweepDestination(st, 84532, DEST, OTHER);
+    expect(sweepModule.loadDestLedger(st).linkedSources(84532, DEST)).toHaveLength(2);
+    expect(sweepModule.destinationWarning(DEST, OWNER, 11155111, sweepModule.loadDestLedger(st))).toBeUndefined();
+  });
+
+  it('warns for a known wallet and never throws on blocked storage', () => {
+    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined), [DEST])).toBe('known-wallet');
+    const broken = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } };
+    expect(() => { sweepModule.recordSweepDestination(broken, 84532, DEST, OWNER); }).not.toThrow();
+    expect(sweepModule.destinationWarning(DEST, OWNER, 1, sweepModule.loadDestLedger(broken))).toBeUndefined();
+  });
+});

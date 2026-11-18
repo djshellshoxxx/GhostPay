@@ -6,18 +6,19 @@ import {
   type SecretScalar,
   type SolanaRpc,
 } from '@ghostpay/solana-stealth';
-import { getBalance, SolViewError } from './rpc';
+import { SolViewError } from './rpc';
 import type { SolWallet } from './wallet';
 
-/** A detected one-time address that still holds SOL. */
+/**
+ * A detected one-time address. Its balance is not read during the scan (that would show the node every matched address
+ * at scan time); `readSweepBalance` in `sweep.ts` reads it for the one address being reviewed.
+ */
 export interface FoundPayment {
   readonly signature: string;
   readonly slot: bigint;
   readonly stealthAddress: string;
   /** Lamports credited by the funding transaction. */
   readonly receivedLamports: bigint;
-  /** Current finalized balance of the one-time address. */
-  readonly balanceLamports: bigint;
   /** SPL token credits seen in the funding transaction; this view sweeps SOL only. */
   readonly tokenReceiptCount: number;
   /** Tweak `h`: with the spend secret it gives the one-time spend key. Secret. */
@@ -28,8 +29,6 @@ export interface ScanResult {
   readonly fromSlot: bigint;
   readonly toSlot: bigint;
   readonly found: readonly FoundPayment[];
-  /** Detected payments whose one-time address is already empty (not offered for sweeping). */
-  readonly emptiedCount: number;
 }
 
 /** Signature pages per scan: each page is up to 1000 transactions fetched one by one. */
@@ -50,13 +49,14 @@ export function wipeFound(found: readonly FoundPayment[]): void {
 
 /**
  * Scans finalized announcements from `fromSlot` to the finalized head. The view key stays in this
- * process; the server sees the signatures and transactions requested and the balances checked.
+ * process; the server sees the signatures and transactions requested. It sees no balance check here: those are deferred to
+ * sweep time, one address at a time.
  */
 export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const { rpc, wallet, fromSlot, signal } = p;
   if (fromSlot < 0n) throw new SolViewError({ key: 'sol.slot.required' });
   const toSlot = await getSlot(rpc, 'finalized', signal);
-  if (toSlot < fromSlot) return { fromSlot, toSlot, found: [], emptiedCount: 0 };
+  if (toSlot < fromSlot) return { fromSlot, toSlot, found: [] };
   const records = fetchAnnouncements(rpc, {
     fromSlot,
     toSlot,
@@ -64,7 +64,6 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
     ...(signal === undefined ? {} : { signal }),
   });
   const found: FoundPayment[] = [];
-  let emptiedCount = 0;
   const seen = new Set<string>();
   try {
     for await (const d of scanAnnouncements(records, wallet.keys.viewSecret, wallet.keys.spendPublicKey, signal)) {
@@ -73,14 +72,11 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
         p.onFound?.(d.slot);
         if (seen.has(d.stealthAddress)) continue;
         seen.add(d.stealthAddress);
-        const balance = await getBalance(rpc, d.stealthAddress, signal);
-        if (balance === 0n) { emptiedCount++; continue; }
         found.push({
           signature: d.signature,
           slot: d.slot,
           stealthAddress: d.stealthAddress,
           receivedLamports: d.lamportsReceived,
-          balanceLamports: balance,
           tokenReceiptCount: d.tokenReceipts.length,
           tweak: d.tweak,
         });
@@ -94,7 +90,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
     wipeFound(found);
     throw e;
   }
-  return { fromSlot, toSlot, found, emptiedCount };
+  return { fromSlot, toSlot, found };
 }
 
 // i18n-use: sol.slot.required

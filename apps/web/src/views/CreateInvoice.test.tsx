@@ -129,7 +129,7 @@ describe('Create invoice', () => {
     expect(parsed.verification.signatureValid).toBe(true);
     expect(screen.getByText('Bearer link')).toBeTruthy();
     expect(screen.getByRole('img', { name: 'QR code containing the invoice link' })).toBeTruthy();
-    expect(screen.getByText('SHARE').closest('section')?.getAttribute('data-qr-kind')).toBe('shareable');
+    expect(screen.getByText('PRIVATE LINK').closest('section')?.getAttribute('data-qr-kind')).toBe('bearer');
     expect(screen.getByRole('button', { name: 'Copy link' })).toBeTruthy();
     expect(fetchFn).not.toHaveBeenCalled();
   });
@@ -149,7 +149,7 @@ describe('Create invoice', () => {
     await user.clear(screen.getByLabelText('Tax rate (%)'));
     await user.type(screen.getByLabelText('Tax rate (%)'), '10');
     await user.type(screen.getByLabelText(/Memo/), 'hello');
-    await user.click(screen.getByLabelText('Encrypt line items and memo with a key included in the link'));
+    expect(screen.getByLabelText<HTMLInputElement>('Encrypt line items and memo with a key included in the link').checked).toBe(true);
     await user.click(screen.getByRole('button', { name: 'Remove item 2' }));
     await user.click(screen.getByRole('button', { name: 'Add item' }));
     await user.type(screen.getByLabelText('Item 2 description'), 'C');
@@ -163,6 +163,20 @@ describe('Create invoice', () => {
     expect(parsed.invoice.memo).toBe('hello');
     expect(screen.getByText(/encryption key is inside the link/)).toBeTruthy();
     expect(screen.getByText('PRIVATE LINK').closest('section')?.getAttribute('data-qr-kind')).toBe('bearer');
+  });
+
+  it('encrypts by default and lets the seller opt out', async () => {
+    generateWaivedSession();
+    const user = await open();
+    const box = screen.getByLabelText<HTMLInputElement>('Encrypt line items and memo with a key included in the link');
+    expect(box.checked).toBe(true);
+    await user.click(box);
+    await user.type(screen.getByLabelText('Token amount'), '1');
+    await user.type(screen.getByLabelText('Item 1 description'), 'A');
+    await user.type(screen.getByLabelText('Item 1 unit price'), '1.00');
+    await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
+    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link');
+    expect((await parseFragment(link.value.slice('https://app.test/'.length))).encrypted).toBe(false);
   });
 
   it('protects the whole invoice with an out-of-band passphrase', async () => {
