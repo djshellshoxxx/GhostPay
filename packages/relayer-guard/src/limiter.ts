@@ -45,25 +45,32 @@ class BoundedTable<V> {
     return this.groups.get(group) ?? 0;
   }
 
-  /** @returns The key of the oldest idle entry among the {@link EVICT_SCAN} oldest, if any. */
-  private evictable(): string | undefined {
+  /**
+   * @param keep Keys the caller still holds (for example resolved earlier in the same operation); never chosen,
+   *   though they count towards the scan.
+   * @returns The key of the oldest idle entry among the {@link EVICT_SCAN} oldest, if any.
+   */
+  private evictable(keep?: ReadonlySet<string>): string | undefined {
     let n = 0;
     for (const [k, v] of this.map) {
       if (n++ >= EVICT_SCAN) break;
-      if (this.idle(v)) return k;
+      if (keep?.has(k) !== true && this.idle(v)) return k;
     }
     return undefined;
   }
 
-  /** @returns Whether {@link insert} would succeed now. */
-  public canInsert(): boolean {
-    return this.map.size < this.max || this.evictable() !== undefined;
+  /** @returns Whether {@link insert} with the same `keep` would succeed now. */
+  public canInsert(keep?: ReadonlySet<string>): boolean {
+    return this.map.size < this.max || this.evictable(keep) !== undefined;
   }
 
-  /** Inserts `key`, evicting an idle entry among the oldest ones if full. @returns false if there was no room. */
-  public insert(key: string, v: V, group: string): boolean {
+  /**
+   * Inserts `key`, evicting an idle entry (not in `keep`) among the oldest ones if full.
+   * @returns false if there was no room.
+   */
+  public insert(key: string, v: V, group: string, keep?: ReadonlySet<string>): boolean {
     if (this.map.size >= this.max) {
-      const victim = this.evictable();
+      const victim = this.evictable(keep);
       if (victim === undefined) return false;
       this.remove(victim);
     }
@@ -440,6 +447,12 @@ export class LossBudget {
     const w = this.windowIndex();
     const entries = new Set<Spend>();
     const inserted: (() => void)[] = [];
+    // Keys this resolution already holds per table: a stale hit is idle, and evicting it for a later source would
+    // charge an orphaned entry and reset that key's spend (review R1).
+    const held = new Map<BoundedTable<Spend>, Set<string>>([
+      [this.keys, new Set()],
+      [this.groups, new Set()],
+    ]);
     let overflow = false;
     const pick = (
       table: BoundedTable<Spend>,
@@ -448,12 +461,17 @@ export class LossBudget {
       spill: Spend,
       partition: boolean,
     ): Spend => {
+      const keep = held.get(table) as Set<string>;
       const hit = create ? table.get(key) : table.peek(key);
-      if (hit !== undefined) return hit;
-      if ((!partition || table.groupSize(group) < this.maxPerGroup) && table.canInsert()) {
+      if (hit !== undefined) {
+        keep.add(key);
+        return hit;
+      }
+      if ((!partition || table.groupSize(group) < this.maxPerGroup) && table.canInsert(keep)) {
         const fresh = { window: w, spent: 0n, lost: 0n };
+        keep.add(key);
         if (create) {
-          table.insert(key, fresh, group);
+          table.insert(key, fresh, group, keep);
           inserted.push(() => table.remove(key));
         }
         return fresh;

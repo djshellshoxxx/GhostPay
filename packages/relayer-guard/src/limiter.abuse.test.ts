@@ -157,6 +157,69 @@ describe('T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats()', () =>
     expect(b.reserve('newer', 10n, 'g-newer')?.overflow).toBe(true); // 'live' and 'new' are live
   });
 
+  describe('one reserveAll never evicts a stale entry it already resolved (review R1)', () => {
+    /** `D` / `gD` charged in window 0, then window 1 with `fill` run; `maxKeys` 4 per table. */
+    function staleD(fill: (b: LossBudget) => void, maxKeys = 4): LossBudget {
+      const clock = { t: 0 };
+      const b = new LossBudget(
+        { windowMs: 1000, perKeyLimit: 50n, globalLimit: 10_000n, maxKeys, maxPerGroup: 4 },
+        () => clock.t,
+      );
+      b.charge('D', 1n, 'gD');
+      clock.t = 1000; // D and gD are stale now
+      fill(b);
+      return b;
+    }
+
+    it('key table: the stale key hit by source 1 keeps the charge when source 2 is new', () => {
+      // Both tables: D / gD (stale) then A, B, C (live), so only D / gD are evictable.
+      const b = staleD((x) => {
+        for (const k of ['A', 'B', 'C']) x.charge(k, 1n, `g${k}`);
+      });
+      const r = b.reserveAll(
+        [
+          { key: 'D', group: 'gD' },
+          { key: 'E', group: 'gE' },
+        ],
+        50n,
+      );
+      expect(r?.overflow).toBe(true); // E had no room: D is held by this reservation
+      expect(b.allows('D', 'gD')).toBe(false); // D spent its whole per-key limit in window 1
+      expect(b.reserve('D', 50n, 'gD')).toBeNull();
+    });
+
+    it('group table: the stale group hit by source 1 keeps the charge when source 2 is new', () => {
+      // Keys: D (stale), K. Groups: gD (stale), gA, gB, gC (live), so only the group table is full.
+      const b = staleD((x) => {
+        for (const g of ['gA', 'gB', 'gC']) x.charge('K', 1n, g);
+      });
+      expect(
+        b.reserveAll(
+          [
+            { key: 'D', group: 'gD' },
+            { key: 'E', group: 'gE' },
+          ],
+          50n,
+        ),
+      ).not.toBeNull();
+      expect(b.allows('Z', 'gD')).toBe(false); // gD spent its whole limit in window 1
+    });
+
+    it('a one-entry table: the stale entry is not evicted for source 2 either', () => {
+      const b = staleD(() => undefined, 1);
+      expect(
+        b.reserveAll(
+          [
+            { key: 'D', group: 'gD' },
+            { key: 'E', group: 'gE' },
+          ],
+          50n,
+        ),
+      ).not.toBeNull();
+      expect(b.allows('D', 'gD')).toBe(false);
+    });
+  });
+
   it('stats() returns counters only, never a key, group or address', () => {
     const { l } = limiter({ maxKeys: 1, maxPerGroup: 1, maxOverflowGroups: 1 });
     const empty: LimiterStats = l.stats();
