@@ -7,6 +7,7 @@ import {
   FRAGMENT_PREFIX,
   FragmentFormatError,
   FragmentTooLargeError,
+  InvalidSignatureError,
   InvoiceError,
   JsonParseError,
   MAX_DECODED_BYTES,
@@ -28,7 +29,7 @@ import {
   type Invoice,
   type SignedInvoice,
 } from './index.js';
-import { OTHER_SIGNER, SIGNER, sampleInvoice, sampleSigned, seededRng } from './fixtures.testutil.js';
+import { OTHER_META, OTHER_SIGNER, SIGNER, sampleInvoice, sampleSigned, seededRng } from './fixtures.testutil.js';
 
 const enc = (s: string): Uint8Array => utf8ToBytes(s);
 const frag = (o: unknown): string => FRAGMENT_PREFIX + encodeBase64Url(enc(canonicalize(o)));
@@ -659,15 +660,59 @@ describe('requirePinnedSigner (opt-in fail-closed for unpinned signers, T-b85e0b
       await expect(parseFragment(f, opts)).rejects.toBeInstanceOf(UntrustedSignerError);
     }
   });
-  it('an invalid signature keeps today\'s behaviour: reported as invalid-signature, never masked as UNTRUSTED_SIGNER or pinned', async () => {
+  it('exports InvalidSignatureError with its own stable code and a fixed message', () => {
+    const e = new InvalidSignatureError();
+    expect(e).toBeInstanceOf(InvoiceError);
+    expect(e).not.toBeInstanceOf(UntrustedSignerError);
+    expect(e.code).toBe('INVALID_SIGNATURE');
+    expect(e.name).toBe('InvalidSignatureError');
+    expect(e.path).toBeUndefined();
+    expect(e.message).toBe('invoice signature is invalid');
+  });
+  it('without the option an invalid signature is still returned as invalid-signature (default unchanged)', async () => {
     const env = decodeEnvelope(await encodeFragment(sampleSigned()));
     env['sig'] = '1'.repeat(128);
-    for (const pins of [[SIGNER], [OTHER_SIGNER], undefined]) {
-      const p = await parseFragment(frag(env), requirePin(pins));
+    for (const opts of [undefined, { pinnedSigners: [SIGNER] }, { requirePinnedSigner: false, pinnedSigners: [SIGNER] }]) {
+      const p = await parseFragment(frag(env), opts);
       expect(p.trust).toBe('invalid-signature');
       expect(p.verification).toEqual({ signatureValid: false, signerPinned: false });
       expect(isTrustedSeller(p)).toBe(false);
     }
+  });
+  it('with the option an invalid signature throws INVALID_SIGNATURE, never masked as UNTRUSTED_SIGNER', async () => {
+    const env = decodeEnvelope(await encodeFragment(sampleSigned()));
+    env['sig'] = '1'.repeat(128);
+    for (const pins of [[SIGNER], [OTHER_SIGNER], [], undefined]) {
+      await expect(parseFragment(frag(env), requirePin(pins))).rejects.toMatchObject({
+        name: 'InvalidSignatureError',
+        code: 'INVALID_SIGNATURE',
+      });
+      await expect(openFragment(frag(env), requirePin(pins))).rejects.toMatchObject({ code: 'INVALID_SIGNATURE' });
+    }
+  });
+  it('with the option a pinned seller invoice whose payee was swapped never resolves (review F2 ADV1)', async () => {
+    const env = decodeEnvelope(await encodeFragment(sampleSigned()));
+    env['inv'] = { ...rec(env['inv']), metaAddress: OTHER_META };
+    await expect(parseFragment(frag(env), requirePin([SIGNER]))).rejects.toMatchObject({ code: 'INVALID_SIGNATURE' });
+    await expect(openFragment(frag(env), requirePin([SIGNER]))).rejects.toMatchObject({ code: 'INVALID_SIGNATURE' });
+    // default path: still parses, flagged invalid-signature, exactly as before the option existed
+    expect((await parseFragment(frag(env), { pinnedSigners: [SIGNER] })).trust).toBe('invalid-signature');
+  });
+  it('with the option a pinned signer field over a signature from another key never resolves (review F2 ADV2)', async () => {
+    const forged = signInvoice(
+      sampleInvoice({ signer: OTHER_SIGNER, metaAddress: OTHER_META }),
+      new Uint8Array(32).fill(0).map((_, i) => (i === 31 ? 8 : 0)),
+    );
+    const env = decodeEnvelope(await encodeFragment(forged));
+    env['inv'] = { ...rec(env['inv']), signer: SIGNER };
+    await expect(openFragment(frag(env), requirePin([SIGNER]))).rejects.toMatchObject({ code: 'INVALID_SIGNATURE' });
+    await expect(parseFragment(frag(env), requirePin([SIGNER]))).rejects.toMatchObject({ code: 'INVALID_SIGNATURE' });
+  });
+  it('with the option every resolved result is trusted-seller', async () => {
+    const f = await encodeFragment(sampleSigned());
+    const p = await parseFragment(f, requirePin([SIGNER]));
+    expect(p.trust).toBe('trusted-seller');
+    expect(p.verification).toEqual({ signatureValid: true, signerPinned: true });
   });
   it('an unsigned or malformed envelope keeps today\'s error (SchemaError), not UNTRUSTED_SIGNER', async () => {
     const env = decodeEnvelope(await encodeFragment(sampleSigned()));
