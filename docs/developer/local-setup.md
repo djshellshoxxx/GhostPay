@@ -114,10 +114,8 @@ Two TypeScript test files deploy the compiled contracts to a local `anvil` (star
 
 Behaviour (read from the tests):
 
-- If `anvil` or an artifact is missing, the test **skips silently** (a green run does not prove it ran).
-- **`REQUIRE_ANVIL=1` turns "missing" into a failure, but only in `packages/policy-scheme/src/anvil.test.ts`.** The relayer
-  e2e does not read it yet (CI comments and `docs/operators/release-and-verify.md` section 6 say so), although CI and the
-  release workflow set it for the whole `npm test`.
+- If `anvil` or an artifact is missing, a test that does not check `REQUIRE_ANVIL` **skips silently** (a green run does not prove it ran).
+- **`REQUIRE_ANVIL=1` turns "missing" into a failure in the anvil tests that read it**, including `packages/policy-scheme/src/anvil.test.ts`, `apps/relayer/src/e2e.anvil.test.ts` (which also treats `CI=true` as required), `packages/chain-adapters/src/*.anvil.test.ts`, `apps/web/src/features/registry/registry.anvil.test.ts` and `packages/external-pools-privacypools/src/anvil.integration.test.ts`. CI and the release workflow set it for the `npm test` runs.
 - The relayer test checks `existsSync(ANVIL)`, so `ANVIL_BIN` must be an **absolute path** (`ANVIL_BIN=$(command -v anvil)`,
   which is what CI does); a bare `anvil` only works for the policy-scheme test.
 

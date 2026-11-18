@@ -349,3 +349,9 @@ Owned paths: `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md` and this claim
 Acceptance: independently review new delegated registry signing, isolated escrow supporting harness, corrected worker fetch injection/CI setup, browser regression repairs, and oracle critical-message integration. Preserve prior reviewed-source evidence and separate execution, external acceptance, and final-candidate gates. Record findings at exact source pins and execute bounded focused regressions when available.
 
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
+
+## Documentation sweep — 2026-11-18
+
+Worker: docs sweep agent (Claude Code, documentation only). Branch: `nodata/doc-sweep-20261118`; base `5467c158069c5bab264b6a653ac56e89e13f3e13` (origin/main).
+Owned paths: `README.md` (stale CI, workspace-wiring, anvil and PR-status statements), `docs/developer/local-setup.md` (stale `REQUIRE_ANVIL` behaviour note), this claim. No source, package, lockfile or CI workflow changes.
+Acceptance: each edited statement re-checked against `package.json`, `.github/workflows/ci.yml`, `apps/web/src`, and the test sources it describes; PR states checked through the GitHub REST API; unverified statements left unchanged and reported.
