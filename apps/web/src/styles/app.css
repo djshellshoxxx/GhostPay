@@ -266,7 +266,9 @@ th, td { text-align: start; vertical-align: top; padding: 8px 12px; border-top: 
 
 summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
 
-.context-help { display: block; max-width: 100%; }
+/* Shrink-wrapped so only the help button, or the open explanation itself, is a hover target: blank space beside the
+   button must not open an in-flow explanation that moves the controls below it. */
+.context-help { display: block; width: fit-content; max-width: 100%; }
 .context-help-button {
   min-width: 44px;
   min-height: 44px;
