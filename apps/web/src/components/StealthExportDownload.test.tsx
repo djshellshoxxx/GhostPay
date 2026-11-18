@@ -17,7 +17,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); downloads.restore(); });
 
 describe('retaining generated encrypted exports after a blocked download', () => {
   it.each(['payment', 'archive', 'master'] as const)('%s retries the same generated file without re-exporting or claiming verification', async (kind) => {
-    const file = {
+    const file: exportModule.StealthExportFile = {
       filename: kind === 'payment' ? 'ghostpay-stealth-keypair.json' : kind === 'archive' ? 'ghostpay-stealth-keypairs.json' : 'ghostpay-stealth-master.json',
       text: kind === 'payment' ? VECTORS.files.single.text : kind === 'archive' ? VECTORS.files.archive.text : VECTORS.files.master.text,
       type: 'application/json',

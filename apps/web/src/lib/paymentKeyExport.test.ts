@@ -359,12 +359,12 @@ describe('verifying an export without importing', () => {
     expect(payment.kind === 'keypair' && payment.header.count).toBe(3);
     expect(payment).not.toHaveProperty('keys');
     expect(paymentDispose).toHaveBeenCalledTimes(1);
-    expect(paymentDispose.mock.instances[0]?.disposed).toBe(true);
+    expect(paymentDispose.mock.instances[0]).toHaveProperty('disposed', true);
     const master = await verifyStealthExport(VECTORS.files.master.text, VECTOR_PASS);
     expect(master.kind === 'master' && master.header.metaAddress).toBe(VECTORS.seller.metaAddress);
     expect(master).not.toHaveProperty('keys');
     expect(masterDispose).toHaveBeenCalledTimes(1);
-    expect(masterDispose.mock.instances[0]?.disposed).toBe(true);
+    expect(masterDispose.mock.instances[0]).toHaveProperty('disposed', true);
     expect(getSessionPublic()).toBe(session);
     expect(getSessionBackup()).toEqual(custody);
   });
@@ -386,7 +386,7 @@ describe('verifying an export without importing', () => {
     });
     await expect(verifyStealthExport(VECTORS.files.master.text, VECTOR_PASS)).rejects.toThrow(/changed during this action/);
     expect(dispose).toHaveBeenCalledTimes(1);
-    expect(dispose.mock.instances[0]?.disposed).toBe(true);
+    expect(dispose.mock.instances[0]).toHaveProperty('disposed', true);
   });
 
   it('never reports success when cancellation arrives during decryption', async () => {
@@ -400,6 +400,6 @@ describe('verifying an export without importing', () => {
     });
     await expect(verifyStealthExport(VECTORS.files.archive.text, VECTOR_PASS, { signal: controller.signal })).rejects.toThrow(/cancelled/);
     expect(dispose).toHaveBeenCalledTimes(1);
-    expect(dispose.mock.instances[0]?.disposed).toBe(true);
+    expect(dispose.mock.instances[0]).toHaveProperty('disposed', true);
   });
 });

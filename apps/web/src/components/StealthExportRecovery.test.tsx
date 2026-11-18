@@ -277,7 +277,7 @@ describe('verify an existing backup without importing', () => {
     expect(screen.queryByRole('button', { name: /Download private key for/ })).toBeNull();
     expect(screen.queryByTestId('stealth-export-open-keypair')).toBeNull();
     expect(disposed).toHaveBeenCalledTimes(1);
-    expect(disposed.mock.instances[0]?.disposed).toBe(true);
+    expect(disposed.mock.instances[0]).toHaveProperty('disposed', true);
     expect(getSessionPublic()).toBe(before);
     expect(getSessionBackup()).toEqual(custody);
     expect(passwordValues().every((value) => value === '')).toBe(true);
