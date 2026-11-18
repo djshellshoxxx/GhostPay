@@ -10,6 +10,21 @@ All publication, main merge, hosted qualification and release actions remain coo
 
 # Pages idle-clock integration — 2026-11-18
 
+# Session-only sweep destination history — 2026-11-18
+
+Worker: ChatGPT security review, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-ledger-memory-20261118`.
+Base: PR #222, `2bc2098298d90928eb1acafad969f28316bb05fc`.
+Owned paths: sweep destination history source/tests, the two Sweep view recording call sites and focused tests,
+the existing reuse-warning messages, user privacy guidance, this claim and the task handoff.
+Acceptance: no source/destination linkage is serialized to browser storage; delete only the legacy plaintext key
+without importing it; clear memory on app lock and seller-session change; reject delayed records from old epochs;
+retain nonblocking reuse warnings within the active session. Persistence across sessions stays unavailable until an
+encrypted, explicitly opted-in design is qualified. Signing and duplicate-send journal behavior remain unchanged.
+Local verification complete: 171 affected tests, focused lint, whole-web typecheck and i18n check passed.
+Evidence and remaining integration gates: `docs/handoffs/GHOSTPAY_SWEEP_LEDGER_PRIVACY_20261118.md`.
+
+# Repository consolidation — 2026-11-18 (active)
+
 
 Coordinator: Claude Code session (integration owner). Integration branch: `nodata/wizardly-allen-qwol6u`, created from
 unified `beb525dd` (tree `36177d29`), main ancestry merged at `f5e10f84` (tree unchanged), Pages #200 lineage merged at
