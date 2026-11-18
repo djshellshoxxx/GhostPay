@@ -5,8 +5,10 @@ import {
   decodePolicyPaymentCalldata,
   decodeScheme2MetaAddress,
   deriveScheme2Payment,
+  policyCoversToken,
   type Address,
   type PolicyPayment,
+  type PolicyRecord,
   type Scheme2Payment,
 } from '@ghostpay/policy-scheme';
 import { encodeFunctionData, getAddress, isAddress } from 'viem/utils';
@@ -24,7 +26,16 @@ export interface PolicyPayInput {
   /** Seconds the payment stays valid (default 20 minutes). */
   readonly validForSec?: bigint;
   readonly rng?: RandomSource;
+  /** Verified policy records loaded in this tab (created or imported); see {@link assertPayeeTokenCoverage}. */
+  readonly knownRecords?: readonly PolicyRecord[];
 }
+
+/**
+ * What the payer can know about whether the payee's policy can withdraw the asset (SEC-11): `'covered'` when a
+ * verified record of the meta-address's policy is loaded and has a limit for the asset (or no limits at all);
+ * `'unknown'` when no such record is loaded.
+ */
+export type PayeeTokenCoverage = 'covered' | 'unknown';
 
 export interface PreparedPolicyPayment {
   readonly payment: Scheme2Payment;
@@ -34,6 +45,26 @@ export interface PreparedPolicyPayment {
   readonly token: Address | 'native';
   /** Payee meta-address as entered (trimmed); part of the duplicate-attempt scope, which must survive re-review. */
   readonly metaAddress: string;
+  /** Whether a loaded policy record shows the payee can withdraw `token`; `'unknown'` means the payer cannot check. */
+  readonly tokenCoverage: PayeeTokenCoverage;
+}
+
+/**
+ * SEC-11 payer gate. With a non-zero limits root, the policy account can never withdraw an asset that has no limits
+ * leaf, while the router accepts any token or native payment. A scheme-2 meta-address carries only the spending key,
+ * viewing key and policy hash, so a payer who holds just the meta-address cannot know the leaves: that case is
+ * `'unknown'` and the review states the risk. When a verified record of the same policy hash is loaded in this tab
+ * (`parsePolicyRecord`/`buildPolicyRecord` checked it against the hash), the answer is known and an asset the policy
+ * cannot withdraw is refused before any wallet request.
+ *
+ * @throws {UserFacingError} `policy.pay.tokenNotWithdrawable` when the loaded record has limits and none for `token`.
+ */
+export function assertPayeeTokenCoverage(metaAddress: string, token: Address | 'native', records: readonly PolicyRecord[]): PayeeTokenCoverage {
+  const { policyHash } = decodeScheme2MetaAddress(metaAddress.trim());
+  const record = records.find((r) => r.policyHash === policyHash);
+  if (record === undefined) return 'unknown';
+  if (!policyCoversToken(record, token)) throw new UserFacingError({ key: 'policy.pay.tokenNotWithdrawable' });
+  return 'covered';
 }
 
 /**
@@ -52,6 +83,7 @@ export function preparePolicyPayment(input: PolicyPayInput): PreparedPolicyPayme
   const t = input.token.trim();
   const token: Address | 'native' = t.toLowerCase() === 'native' ? 'native' : isAddress(t, { strict: true }) ? getAddress(t) : (() => { throw new UserFacingError('The token must be "native" or a checksummed address.'); })();
   if (input.gross <= 0n) throw new UserFacingError('Enter an amount above zero.');
+  const tokenCoverage = assertPayeeTokenCoverage(input.metaAddress, token, input.knownRecords ?? []);
   const payment = deriveScheme2Payment(input.metaAddress.trim(), input.deployment, input.rng);
   const built = buildPolicyPaymentTx({
     router: input.deployment.router,
@@ -68,5 +100,7 @@ export function preparePolicyPayment(input: PolicyPayInput): PreparedPolicyPayme
     throw new UserFacingError('The prepared payment failed its self-check. Nothing was sent.');
   }
   const approval = token === 'native' ? undefined : { to: token, value: 0n, data: encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [input.deployment.router, input.gross] }) };
-  return Object.freeze({ payment, built, token, metaAddress: input.metaAddress.trim(), ...(approval === undefined ? {} : { approval }) });
+  return Object.freeze({ payment, built, token, metaAddress: input.metaAddress.trim(), tokenCoverage, ...(approval === undefined ? {} : { approval }) });
 }
+
+// i18n-use: policy.pay.tokenNotWithdrawable

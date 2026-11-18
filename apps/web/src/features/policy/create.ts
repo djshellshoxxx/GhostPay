@@ -3,11 +3,13 @@ import {
   MAX_DELAY,
   MIN_DELAY,
   UNLIMITED,
+  ZERO_ADDRESS,
   ZERO_HASH,
   buildLimitsTree,
   buildPolicyRecord,
   computePolicyHash,
   encodeScheme2MetaAddress,
+  policyCoversToken,
   validatePolicy,
   type PolicyRecord,
   type TokenLimit,
@@ -75,4 +77,15 @@ export function createPolicyMetaAddress(input: CreatePolicyInput): PolicyRecord 
     policyHash: computePolicyHash(policy),
   });
   return buildPolicyRecord({ metaAddress, policy, limits });
+}
+
+/**
+ * The assets a record's policy can ever withdraw (SEC-11), for the seller to tell payers: `'any'` without limits,
+ * otherwise exactly the tokens that have a limits leaf (`'native'` for the coin). Every other asset paid to the
+ * meta-address stays in the account forever, and payers cannot see the limits: the meta-address carries only the
+ * policy hash.
+ */
+export function withdrawableAssets(rec: PolicyRecord): 'any' | readonly string[] {
+  if (rec.policy.limitsRoot === ZERO_HASH) return 'any';
+  return rec.limits.filter((l) => policyCoversToken(rec, l.token)).map((l) => (l.token === ZERO_ADDRESS ? 'native' : l.token));
 }
