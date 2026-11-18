@@ -1871,6 +1871,8 @@ export const SECURITY_KEY_GROUPS = {
     'stealthExport.open.replace.savedTitle',
     'stealthExport.open.replace.savedBody',
     'stealthExport.verify.heading',
+    'stealthExport.verify.generated',
+    'stealthExport.verify.retryDownload',
     'stealthExport.verify.downloadStarted',
     'stealthExport.verify.retained',
     'stealthExport.verify.savedSuccess',

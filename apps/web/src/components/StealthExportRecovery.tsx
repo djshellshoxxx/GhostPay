@@ -283,4 +283,4 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
   );
 }
 
-// i18n-use: stealthExport.open.scope.single stealthExport.open.scope.selected stealthExport.open.scope.allDiscovered stealthExport.open.chooseFile stealthExport.open.master.done stealthExport.open.working stealthExport.raw.done stealthExport.verify.success
+// i18n-use: stealthExport.open.scope.single stealthExport.open.scope.selected stealthExport.open.scope.allDiscovered stealthExport.open.chooseFile stealthExport.open.master.done stealthExport.open.working stealthExport.raw.done stealthExport.verify.success stealthExport.open.replace.savedTitle stealthExport.open.replace.savedBody stealthExport.open.replace.title stealthExport.open.replace.body

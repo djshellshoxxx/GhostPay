@@ -382,6 +382,29 @@ test('CLI: unknown options never echo their untrusted contents', () => {
   assert.match(result.stderr, /unknown option/);
 });
 
+test('CLI: failed passphrase input wipes previously received chunks and never prints their contents', async () => {
+  const marker = 'synthetic-passphrase-stream-marker';
+  const chunk = Buffer.from(marker, 'utf8');
+  const output = [];
+  const errors = [];
+  const stdin = {
+    isTTY: false,
+    async *[Symbol.asyncIterator]() {
+      yield chunk;
+      throw new Error(marker);
+    },
+  };
+  const code = await main([fileOf('interrupted-passphrase.json', files.single.text)], {
+    stdin,
+    stdout: { write: (text) => output.push(text) },
+    stderr: { write: (text) => errors.push(text) },
+  });
+  assert.equal(code, 1);
+  assert.equal(output.join(''), '');
+  assert.ok(!errors.join('').includes(marker), 'input failure disclosed passphrase data');
+  assert.ok(chunk.every((byte) => byte === 0), 'input failure retained passphrase bytes');
+});
+
 test('CLI: raw-file read buffers are wiped after successful recovery and oversized-input refusal', async (t) => {
   const captured = new Set();
   const original = fs.readSync;

@@ -224,6 +224,9 @@ discover other stealth payments.
 - Fresh-environment acceptance copies only the reference script and its two noble dependencies into a temporary
   directory, permits the child process to read only that directory, and opens every supported format. This verifies
   recovery without repository files, GhostPay packages, browser state or website access.
+- The reference reader wipes owned file buffers and piped passphrase buffers on success and failure, including an
+  interrupted input stream. This is best-effort cleanup; immutable strings and engine-internal copies remain outside
+  that guarantee.
 
 ## 9. Future migration
 

@@ -667,12 +667,18 @@ function announcementsFrom(values) {
 async function readPassphrase(stdin, stderr) {
   if (!stdin.isTTY) {
     const chunks = [];
-    for await (const c of stdin) chunks.push(c);
-    const all = Buffer.concat(chunks);
-    const text = all.toString('utf8').replace(/\r?\n$/, '');
-    wipe(all, ...chunks);
-    if (text === '') throw new UsageError('no passphrase on standard input');
-    return text;
+    let all;
+    try {
+      for await (const c of stdin) chunks.push(c);
+      all = Buffer.concat(chunks);
+      const text = all.toString('utf8').replace(/\r?\n$/, '');
+      if (text === '') throw new UsageError('no passphrase on standard input');
+      return text;
+    } finally {
+      // A failed or cancelled pipe must erase chunks already received as well as the complete input buffer.
+      wipe(all);
+      for (const chunk of chunks) wipe(chunk);
+    }
   }
   stderr.write('Passphrase (not echoed): ');
   stdin.setRawMode(true);

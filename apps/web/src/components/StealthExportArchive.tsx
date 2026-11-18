@@ -34,13 +34,14 @@ export function StealthExportArchive(props: { readonly matches: readonly ScanMat
   const latestT = useLatestExportT(t);
   const panelId = useId();
   const [open, setOpen] = useState(false);
-  const [downloaded, setDownloaded] = useState<StealthExportFile | undefined>(undefined);
+  const [generated, setGenerated] = useState<StealthExportFile | undefined>(undefined);
+  const [downloadStarted, setDownloadStarted] = useState(false);
   const [message, setMessage] = useState<ExportMessage | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [credential, setCredential] = useState<CredentialInput>(EMPTY_CREDENTIAL);
   const [newPass, setNewPass] = useState<NewPassphrase>(EMPTY_PASSPHRASE);
   const clearTyped = (): void => { setCredential(withoutPassphrase); setNewPass(EMPTY_PASSPHRASE); };
-  const reset = (): void => { setDownloaded(undefined); clearTyped(); setBusy(false); };
+  const reset = (): void => { setGenerated(undefined); setDownloadStarted(false); clearTyped(); setBusy(false); setMessage(undefined); };
   const identity = exportSelectionIdentity(props.matches);
   const op = useExportOperation(reset, [props.chainId, identity, props.rpc]);
 
@@ -59,6 +60,9 @@ export function StealthExportArchive(props: { readonly matches: readonly ScanMat
     setMessage({ kind: 'ok', text });
     props.announce(displayMessage(text, latestT.current));
   };
+  const download = (file: StealthExportFile): void => {
+    if (startDownload(file, fail)) { setDownloadStarted(true); done({ key: 'stealthExport.archive.done' }); }
+  };
   const close = (): void => { op.stop(); reset(); setMessage(undefined); setOpen(false); };
 
   let summary: { readonly chainId: number; readonly count: number } | undefined;
@@ -71,7 +75,7 @@ export function StealthExportArchive(props: { readonly matches: readonly ScanMat
     if (problem !== undefined) { fail(problem); return; }
     const controller = op.start();
     const matches = props.matches; const rpc = props.rpc; const passphrase = newPass.pass; const input = credential;
-    setDownloaded(undefined); setBusy(true);
+    setGenerated(undefined); setDownloadStarted(false); setBusy(true);
     setMessage({ kind: 'ok', text: { key: 'stealthExport.status.working' } });
     void (async () => {
       try {
@@ -80,7 +84,7 @@ export function StealthExportArchive(props: { readonly matches: readonly ScanMat
         const file = await exportPaymentArchive(matches, 'all-discovered', proof, passphrase, { rpc, signal: controller.signal });
         if (!op.current(controller)) return;
         reset();
-        if (startDownload(file, fail)) { setDownloaded(file); done({ key: 'stealthExport.archive.done' }); }
+        setGenerated(file); download(file);
       } catch (error) {
         if (!op.current(controller)) return;
         reset();
@@ -112,7 +116,7 @@ export function StealthExportArchive(props: { readonly matches: readonly ScanMat
                 <button type="submit" className="btn" data-testid="payment-keys-archive-download" disabled={busy || !credentialReady(credential)}>{t('stealthExport.archive.download')}</button>
                 {busy && <button type="button" className="btn" onClick={() => { op.stop(); reset(); setMessage(undefined); }}>{t('stealthExport.cancel')}</button>}
               </form>
-              {downloaded !== undefined && <StealthExportVerification file={downloaded} announce={props.announce} />}
+              {generated !== undefined && <StealthExportVerification file={generated} downloadStarted={downloadStarted} onRetryDownload={() => { download(generated); }} announce={props.announce} />}
             </>
           )}
         </section>

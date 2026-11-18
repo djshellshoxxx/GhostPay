@@ -88,8 +88,8 @@ describe('Seller keys: spec 18 master backup and recovery', () => {
     expect(await screen.findByText(VECTORS.seller.metaAddress)).toBeTruthy();
   });
 
-  it('loads master keys over keys whose saved vault still holds them without asking', async () => {
-    generateSession();
+  it('requires fresh confirmation before replacing keys whose saved vault still holds them', async () => {
+    const before = generateSession();
     await saveEncryptedVault(VAULT_PASS, { N: TEST_N });
     const user = await open();
     const panel = screen.getByTestId('stealth-export-open');
@@ -97,6 +97,9 @@ describe('Seller keys: spec 18 master backup and recovery', () => {
     await user.type(within(panel).getByLabelText('Export file passphrase'), VECTOR_PASS);
     await user.click(within(panel).getByRole('button', { name: 'Open export' }));
     await user.click(await within(panel).findByRole('button', { name: 'Load these spending and viewing keys' }, { timeout: 30_000 }));
+    const confirm = await within(panel).findByRole('button', { name: 'Replace the loaded keys' });
+    expect(getSessionPublic()).toBe(before);
+    await user.click(confirm);
     await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(VECTORS.seller.metaAddress); });
     expect(screen.queryByText('The keys loaded now have no verified backup')).toBeNull();
   });

@@ -137,6 +137,46 @@ test('payment details: public record holds no key; encrypted keypair after vault
   expect(downloads.names).toEqual(['ghostpay-stealth-public.json', 'ghostpay-stealth-keypair.json', 'ghostpay-stealth-private-key.txt']);
 });
 
+test('a blocked encrypted download can retry the generated file without running key export again', async ({ context, page }) => {
+  await installCryptoProbe(context);
+  await sellerWithPayment(context, page, { vault: true });
+  const master = page.getByTestId('stealth-master-backup');
+  await useVault(master);
+  await fillNewPassphrase(master);
+  await page.evaluate(() => {
+    const original = HTMLAnchorElement.prototype.click;
+    let blocked = false;
+    HTMLAnchorElement.prototype.click = function click(this: HTMLAnchorElement): void {
+      if (!blocked && this.download === 'ghostpay-stealth-master.json') {
+        blocked = true;
+        throw new DOMException('Synthetic blocked download', 'NotAllowedError');
+      }
+      original.call(this);
+    };
+  });
+  const downloads = countDownloads(page);
+  await master.getByTestId('stealth-master-download').click();
+  await expect(master.getByRole('alert')).toContainText('The browser did not start the download', { timeout: 60_000 });
+  await expect(master.getByTestId('stealth-export-backup-state')).toContainText('download has not started');
+  expect(downloads.names).toEqual([]);
+  const generated = await readProbe(page);
+
+  const saved = await download(page, () => master.getByRole('button', { name: 'Retry this download' }).click());
+  const retried = await readProbe(page);
+  expect(saved.name).toBe('ghostpay-stealth-master.json');
+  expect(retried.encrypts).toBe(generated.encrypts);
+  expect(retried.decrypts).toBe(generated.decrypts);
+  await expect(master.getByRole('alert')).toHaveCount(0);
+  await expect(master.getByTestId('stealth-export-backup-state')).toContainText('download initiated');
+  await expect(master.getByTestId('stealth-export-backup-state')).not.toContainText('Saved backup verified');
+  const recovered = await codec.decryptMasterBackup(saved.text, EXPORT_PASS);
+  try {
+    expect(recovered.header.metaAddress).toBe(VECTORS.seller.metaAddress);
+  } finally {
+    recovered.spendingSecret.fill(0); recovered.viewingSecret.fill(0);
+  }
+});
+
 test('keys without a vault: secret exports are refused until the keystore backup file and its passphrase are given', async ({ context, page }) => {
   const { keystore } = await sellerWithPayment(context, page, { vault: false });
   if (keystore === undefined) throw new Error('keystore expected');

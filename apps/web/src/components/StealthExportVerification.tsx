@@ -10,7 +10,12 @@ import { useExportOperation, useExportT, useLatestExportT } from './StealthExpor
  * by this panel, then authenticate and validate every key without installing it. This never changes seller custody:
  * payment archives and master backups do not contain the complete three-key seller keystore.
  */
-export function StealthExportVerification(props: { readonly file: StealthExportFile; readonly announce: (message: string) => void }): ReactNode {
+export function StealthExportVerification(props: {
+  readonly file: StealthExportFile;
+  readonly downloadStarted: boolean;
+  readonly onRetryDownload: () => void;
+  readonly announce: (message: string) => void;
+}): ReactNode {
   const t = useExportT();
   const latestT = useLatestExportT(t);
   const headingId = useId();
@@ -69,8 +74,9 @@ export function StealthExportVerification(props: { readonly file: StealthExportF
     <section className="stack" aria-labelledby={headingId} data-testid="stealth-export-verification">
       <h4 id={headingId}>{t('stealthExport.verify.heading')}</h4>
       <p role="status" aria-live="polite" data-testid="stealth-export-backup-state">
-        {visibleVerified !== undefined ? t('stealthExport.verify.savedSuccess') : visibleRetained ? t('stealthExport.verify.retained') : t('stealthExport.verify.downloadStarted')}
+        {visibleVerified !== undefined ? t('stealthExport.verify.savedSuccess') : visibleRetained ? t('stealthExport.verify.retained') : t(props.downloadStarted ? 'stealthExport.verify.downloadStarted' : 'stealthExport.verify.generated')}
       </p>
+      {!props.downloadStarted && <p><button type="button" className="btn" disabled={busy} onClick={props.onRetryDownload}>{t('stealthExport.verify.retryDownload')}</button></p>}
       <p className="hint">{t('stealthExport.verify.scope')}</p>
       <div className="check">
         <input id={retainedId} type="checkbox" checked={visibleRetained} onChange={(event) => { cancel(); setRetained(event.target.checked); }} />
@@ -86,7 +92,7 @@ export function StealthExportVerification(props: { readonly file: StealthExportF
           {selected !== undefined && <p className="hint">{t('upload.selectedFile')}: <bdi><SafeText value={selected.name} /></bdi></p>}
         </>}</Field>
         <Field label={t('stealthExport.verify.passphrase')}>
-          {(id) => <input id={id} type="password" autoComplete="off" value={passphrase} disabled={busy} onChange={(event) => { setPassphrase(event.target.value); }} />}
+          {(id) => <input id={id} type="password" autoComplete="off" value={passphrase} disabled={busy} onChange={(event) => { setPassphrase(event.target.value); setVerified(undefined); setError(undefined); }} />}
         </Field>
         <button type="submit" className="btn" disabled={busy || !retained || selected === undefined || passphrase === ''}>{t('stealthExport.verify.submit')}</button>
         {busy && <button type="button" className="btn" onClick={cancel}>{t('stealthExport.cancel')}</button>}
@@ -98,4 +104,4 @@ export function StealthExportVerification(props: { readonly file: StealthExportF
   );
 }
 
-// i18n-use: stealthExport.verify.differentFile stealthExport.verify.savedSuccess
+// i18n-use: stealthExport.verify.differentFile stealthExport.verify.savedSuccess stealthExport.verify.downloadStarted stealthExport.verify.generated

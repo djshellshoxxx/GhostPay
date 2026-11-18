@@ -54,7 +54,8 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
   const latestT = useLatestExportT(t);
   const panelId = useId();
   const [open, setOpen] = useState(false);
-  const [downloaded, setDownloaded] = useState<StealthExportFile | undefined>(undefined);
+  const [generated, setGenerated] = useState<StealthExportFile | undefined>(undefined);
+  const [downloadStarted, setDownloadStarted] = useState(false);
   const [message, setMessage] = useState<ExportMessage | undefined>(undefined);
   const [busy, setBusy] = useState<'encrypted' | 'raw' | undefined>(undefined);
   const [credential, setCredential] = useState<CredentialInput>(EMPTY_CREDENTIAL);
@@ -64,7 +65,7 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
   const clearTyped = (): void => {
     setCredential(withoutPassphrase); setNewPass(EMPTY_PASSPHRASE); setRawStep(false);
   };
-  const reset = (): void => { setDownloaded(undefined); clearTyped(); setBusy(undefined); };
+  const reset = (): void => { setGenerated(undefined); setDownloadStarted(false); clearTyped(); setBusy(undefined); setMessage(undefined); };
   const identity = exportSelectionIdentity([props.match]);
   const op = useExportOperation(reset, [props.chainId, identity, props.rpc]);
 
@@ -83,6 +84,11 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
     setMessage({ kind: 'ok', text });
     props.announce(displayMessage(text, latestT.current));
   };
+  const retryDownload = (): void => {
+    if (generated !== undefined && startDownload(generated, fail)) {
+      setDownloadStarted(true); done({ key: 'stealthExport.details.encrypted.done' });
+    }
+  };
   const close = (): void => { op.stop(); reset(); setMessage(undefined); setOpen(false); };
 
   const onPublic = (): void => {
@@ -97,7 +103,7 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
   const run = (kind: 'encrypted' | 'raw', exportFile: (credential: SecretExportCredential, signal: AbortSignal) => Promise<StealthExportFile>, success: DisplayMessage): void => {
     const controller = op.start();
     const input = credential;
-    if (kind === 'encrypted') setDownloaded(undefined);
+    if (kind === 'encrypted') { setGenerated(undefined); setDownloadStarted(false); }
     setBusy(kind);
     setMessage({ kind: 'ok', text: { key: 'stealthExport.status.working' } });
     void (async () => {
@@ -107,8 +113,9 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
         const file = await exportFile(proof, controller.signal);
         if (!op.current(controller)) return;
         clearTyped(); setBusy(undefined);
+        if (kind === 'encrypted') setGenerated(file);
         if (startDownload(file, fail)) {
-          if (kind === 'encrypted') setDownloaded(file);
+          if (kind === 'encrypted') setDownloadStarted(true);
           done(success);
         }
       } catch (error) {
@@ -166,7 +173,7 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
             <button type="submit" className="btn" data-testid="stealth-export-encrypted" disabled={busy !== undefined || !credentialReady(credential)}>{t('stealthExport.details.encrypted.download')}</button>
           </form>
 
-          {downloaded !== undefined && <StealthExportVerification file={downloaded} announce={props.announce} />}
+          {generated !== undefined && <StealthExportVerification file={generated} downloadStarted={downloadStarted} onRetryDownload={retryDownload} announce={props.announce} />}
 
           <h4>{t('stealthExport.details.raw.heading')}</h4>
           <p className="hint">{t('stealthExport.details.raw.hint')}</p>

@@ -7,7 +7,8 @@
 
 ## Status
 
-Current source and executed checks are recorded in the [recovery integration handoff](../handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md).
+Current source, executed checks and remaining acceptance gates are recorded in the
+[Spec 18 completion report](../handoffs/spec18-reviewed-20261118/COMPLETION_REPORT.md).
 
 | Path | Status |
 |---|---|
@@ -87,6 +88,10 @@ against its public identity, and disposes the recovered private material. It doe
 session. A public-only record cannot pass as a recoverable secret backup.
 
 After creating an encrypted payment, archive or master backup, use **Keep and verify this backup**:
+
+If the browser blocks the download, the panel keeps the generated encrypted file available for **Retry this download**
+while the current session remains active. Retrying does not regenerate keys, prove that a file was saved, or mark the
+backup verified. A lock, session replacement or navigation clears this pending export.
 
 1. Keep the downloaded file and its passphrase separately. Confirm **I saved this backup file and kept its passphrase
    separately.** A started download alone never proves the file was retained.

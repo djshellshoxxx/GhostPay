@@ -23,8 +23,13 @@ Assigned lanes on this branch:
 - `lifecycle_review`: `StealthExportRecovery`, `StealthExportVerification`, their tests,
   `StealthExportSelection.test.tsx`, and `paymentKeyExport` source/tests. Acceptance:
   bound fresh consent, verify-only disposal, selected-file and session cancellation.
+  A reproduced import-preservation defect additionally assigns the narrow `session.ts`
+  box/install transaction and `session.atomicity.test.ts`: stage the replacement
+  before disposing the old keys and clean partially allocated secret boxes on failure.
 - Coordinator: remaining export panels/Common, locales/security keys, browser tests,
   dependency preparation, combined qualification, evidence and integration.
+- `recovery_recon`: read-only independent final source/threat review; sole write scope
+  is `docs/handoffs/spec18-reviewed-20261118/THREAT_REVIEW.md`.
 
 # Pages smoke render-error regression — 2026-11-18
 
