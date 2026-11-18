@@ -1,4 +1,9 @@
-# Completion run 2026-11-18 (gap-fill, second coordinator) — ACTIVE
+# Completion run 2026-11-18 (gap-fill, second coordinator) — CLOSED for new work; PR #211 open
+
+Status 2026-11-18: every lane below is integrated on `nodata/wonderful-darwin-kd1h22` (PR #211) and qualified (see
+`docs/handoffs/completion-20261118-gapfill/HANDOFF.md`). No worker is active. The owned paths stay reserved for PR #211
+until it merges or is closed. Remaining coordinator work is only the POST-209 merge (sequenced after PR #209) and the
+test-vectors README entry after PR #213. SEC-22 identifiers outside the scan cursor are unclaimed.
 
 Coordinator: Claude Code cloud session `wonderful-darwin` (integration owner of this claim only). Integration branch
 `nodata/wonderful-darwin-kd1h22`, created from `origin/main` = `5467c158` (merge of PR #203). Draft PR to `main`
