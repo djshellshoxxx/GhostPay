@@ -79,13 +79,30 @@ jobs:
           forge fmt --check
           forge build --sizes
           forge test
-      - name: Locate anvil
-        run: echo "ANVIL_BIN=$(command -v anvil)" >> "$GITHUB_ENV"
       - run: npm run typecheck
       - run: npm run lint
-      - run: npm test
-        env:
-          REQUIRE_ANVIL: "1"
+      # Same per-workspace anvil policy as ci.yml `ts-test` and `ts-test-relayer` (TB-01): REQUIRE_ANVIL=1 only where
+      # the anvil suites have their artifacts in this checkout. A blanket REQUIRE_ANVIL=1 fails closed in payer-sponsor
+      # and external-pools-railgun/-privacypools, whose contracts and circuits are not in the repository (nightly.yml
+      # runs what it can of them). scripts/tests/release-ci-anvil-parity.test.mjs keeps this step equal to ci.yml.
+      - name: Unit tests (per-workspace anvil policy of ci.yml)
+        run: |
+          set -euo pipefail
+          anvil_bin="$(command -v anvil)"
+          solc_bin="$HOME/.svm/0.8.28/solc-0.8.28"
+          test -x "$anvil_bin"
+          test -x "$solc_bin"
+          special='apps/web|apps/relayer|packages/chain-adapters|packages/policy-scheme|packages/confidential-contracts'
+          other=()
+          while IFS= read -r w; do other+=(-w "$w"); done < <(
+            npm query '.workspace' | jq -r '.[].location' | sort | grep -vxE "$special"
+          )
+          test "${#other[@]}" -gt 0
+          ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test -w apps/web
+          ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test -w packages/chain-adapters -w packages/policy-scheme --if-present
+          ANVIL_BIN="$anvil_bin" REQUIRE_ANVIL=1 npm test -w apps/relayer
+          ANVIL_BIN="$anvil_bin" npm test -w packages/confidential-contracts
+          npm test "${other[@]}" --if-present
       - name: Release tooling tests (verify-tag, verify-release, manifest channel)
         run: node --test scripts/tests/release-*.test.mjs
       - run: bash scripts/scan-secrets.sh

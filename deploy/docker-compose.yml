@@ -50,7 +50,7 @@ services:
 
   web:
     <<: *hardening
-    image: ${GHOSTPAY_NGINX_IMAGE:-nginxinc/nginx-unprivileged:1.27-alpine}
+    image: ${GHOSTPAY_NGINX_IMAGE:-nginxinc/nginx-unprivileged:1.27-alpine@sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0}
     user: "101:101"
     depends_on: [api]
     volumes:
@@ -79,7 +79,7 @@ services:
     build:
       context: ./tor
       args:
-        BASE_IMAGE: ${GHOSTPAY_TOR_BASE_IMAGE:-debian:bookworm-slim}
+        BASE_IMAGE: ${GHOSTPAY_TOR_BASE_IMAGE:-debian:bookworm-20261104-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc}
     image: ${GHOSTPAY_TOR_IMAGE:-ghostpay-tor:local}
     depends_on: [web]
     volumes:

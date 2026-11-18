@@ -13,7 +13,7 @@ Every QR code in GhostPay is shown inside a frame that tells the user what kind 
 | `proof` | purple | dotted | check-document | PROOF | receipts, proof of payment, signed manifests, fingerprints | keep or compare |
 | `caution` | yellow | groove plus hazard stripe | warning triangle | CAUTION | testnet, dev, unsigned, unverified data | verify before relying on it |
 
-`kindForPayload(type, flags)` picks the kind. `secret` is never downgraded; any other kind becomes `caution` if flagged testnet, unsigned or unverified.
+`kindForPayload(type, flags)` picks the presentation kind. **Both `secret` and `bearer` take precedence over testnet, unsigned and unverified flags:** a key-bearing QR must not lose its spending/decryption warning just because the content is also testnet or unverified. All other flagged kinds become `caution`. This is enforced in `apps/web/src/lib/qrKinds.test.ts` (the bearer-with-testnet and bearer-with-unsigned/unverified assertions). QR kind classification is not independent payload verification; scanned content still needs its owning parser and application trust checks.
 
 ## Rationale
 

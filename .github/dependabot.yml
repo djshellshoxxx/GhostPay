@@ -30,3 +30,39 @@ updates:
         update-types: ["major"]
     commit-message:
       prefix: "deps"
+  # SEC-26: base images. One entry per ecosystem lists every directory that holds a Dockerfile (Dockerfile,
+  # Dockerfile.*) or a compose file, so a tag or digest pin there gets update PRs like the npm and Actions pins.
+  # Images that are only ARG/`${VAR:-default}` defaults may not be parsed by Dependabot: re-resolve those by hand
+  # (deploy/README.md "Pin images"). Locally built images (ghostpay-*:local, ghostpay-it/*) are not registry images.
+  - package-ecosystem: docker
+    directories:
+      - /apps/relayer
+      - /deploy/tor
+      - /infra/devnet
+      - /infra/integration
+      - /infra/web
+      - /scripts/regtest
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns: ["*"]
+    commit-message:
+      prefix: "deps"
+  - package-ecosystem: docker-compose
+    directories:
+      - /deploy
+      - /infra/devnet
+      - /infra/integration
+      - /scripts/regtest
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      docker-compose:
+        patterns: ["*"]
+    commit-message:
+      prefix: "deps"

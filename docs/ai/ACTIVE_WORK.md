@@ -1,3 +1,35 @@
+# Completion run 2026-11-18 (claude completion-audit) — ACTIVE
+
+Coordinator: Claude Code cloud session (integration owner of this claim only). Integration branch
+`claude/ghostpay-completion-audit-ot5jjm`, created from `origin/main` = `5467c158` (merge of PR #203). Draft PR to
+`main` opened with this claim. Lane branches `claude/completion-20261118/<lane>` are local-only worktrees; only the
+coordinator merges them (`--no-ff`) after independent review. Prompt: `docs/handoffs/completion-20261118/EXECUTION_PROMPT.md`
+(PR #208, not this session's file). Ledgers: `docs/handoffs/completion-20261118/{LEDGER,SECURITY_CLOSURE,HANDOFF}.md`.
+
+| Lane | Owned paths (exclusive for this run) | Acceptance |
+|---|---|---|
+| ~~C1 spec 18 crypto core~~ / ~~C2 spec 18 web UI~~ | **Dropped 07:50Z**: spec 18 K01-K06/KC is owned by session `session_01KtKj8n5RpS93YXABPS297n` (PR #213, `claude/ghostpay-consolidation-9xhtxg-spec18`, work from 06:27Z). Not integrated here; this run reviews #213 independently instead | — |
+| B1 web hosting hardening (+SEC-43 attestation) | `apps/web/src/{main.tsx,AppShell.tsx}`, new `apps/web/src/lib/frameGuard.ts`, `apps/web/src/lib/manifest.ts`, `apps/web/scripts/{scan-bundle,validate-deployments}.mjs`, `scripts/pages/**`, `.github/workflows/pages.yml`, their tests | SEC-09/TB-03, SEC-14, SEC-18, SEC-24, SEC-40, SEC-42, SEC-44, SEC-46 closed RED-first or recorded |
+| B2 transport and settings | `packages/chain-adapters/src/rpc.ts`, `packages/net-transport/src/**`, `apps/web/src/lib/scanPrivacy.ts`, settings view files, their tests | SEC-10/TB-02, SEC-19, SEC-20, SEC-23, SEC-45 closed RED-first or recorded |
+| B3 key management and docs honesty (+SEC-37 residual doc) | `packages/pool-sdk/src/store.ts`, `docs/developer/byte-layouts.md`, `docs/threat-model/**`, stale README/ADR text named by TB-10 | SEC-15, SEC-16, SEC-21, SEC-27, TB-10 |
+| B4 CI, release and supply chain | `.github/workflows/{release,nightly}.yml`, `.github/dependabot.yml`, `deploy/**`, `scripts/test-reconciliation-idb.mjs`, `apps/web/package.json` scripts, workflow tests under `scripts/tests/` | TB-01, TB-06 (reconciliation IDB script; `validate:deployments` is in PR #212), TB-09, SEC-17 (nightly part), SEC-25, SEC-26 |
+| A consolidation ports | `docs/design/qr-colors.md`, `apps/web/scripts/test-seller-vault-idb.mjs` | Selective recoveries named by the post-consolidation BRANCH_RECOVERY_MATRIX, provenance via `cherry-pick -x` or cited source SHA |
+| D/E/F finders, G review, H CI | read-only, then fixes as separate claimed follow-up lanes recorded in LEDGER.md | Findings need a concrete failing input and an adversarial verifier |
+
+Coordinator-only: `package-lock.json`, `apps/web/locales/**` merge resolution, this section, the integration merges.
+
+**Excluded (owned by other active sessions; read-only here):** `docs/handoffs/post-consolidation-20261118/**`
+(PR #205, `nodata/zealous-hopper-lr0nxe`); `CLAUDE.md`, `AGENTS.md`, `docs/ai/**` tooling, `.claude/**`,
+`scripts/agent/**`, `.github/workflows/ci.yml` (PR #206/#204, until it lands on `main`);
+`docs/handoffs/completion-20261118/EXECUTION_PROMPT.md` (PR #208); every `chatgpt/*`, `codex/*`, `dependabot/*`
+branch and PR. If the post-consolidation audit lands its own plan, its task IDs are adopted and rows it owns are
+marked `owned by` that session.
+
+Other concurrent coordinators (verified on GitHub 07:40-07:50Z): PR #211 (`nodata/wonderful-darwin-kd1h22`, rows SEC-11/12/13/22/29/30, TB-08; merges after #209); PR #212 (security/release reconciliation, includes `validate:deployments` and dependabot `/.github/actions/*`); PR #213 (spec 18); PR #206 (agent tooling, merges before #209). Their paths are excluded here.
+
+Out of scope: merging to `main`, closing PRs, deleting branches/tags, deployment, signing, release publication,
+real funds, mainnet, contract source changes, new custody/authority surfaces, invented owner decisions (OD-*/OA-*).
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker

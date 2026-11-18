@@ -9,6 +9,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseReleaseKeys, validateDeployments } from './validate-deployments.mjs';
+import { leanModuleProblem } from '../../../scripts/pages/lean-exclusions.mjs';
 
 /** Hosts/URLs that may appear as inert string literals. None is ever fetched; each has a reason. */
 export const ALLOWED_URLS = [
@@ -57,6 +58,16 @@ const PRESERVED_CODE_MARKERS = [
   { marker: 'privacy-pools', reason: '@ghostpay/external-pools exit route' },
 ];
 
+/**
+ * Legacy text-manifest scheme (SEC-14 / D-09): sha256/ed25519 text signatures under this domain, and unsigned-dev
+ * acceptance on testnets. The app trusts only bundled, release-signed manifests; neither string may reach any build.
+ */
+const LEGACY_MANIFEST_MARKERS = [
+  // The acceptance-path warning itself; the views' generic "UNSIGNED DEV MANIFEST: testnet only." label is display text.
+  { marker: 'no release key is pinned, so this deployment manifest is not authenticated', reason: 'unsigned-dev manifest acceptance (chain-adapters UNSIGNED_DEV_WARNING)' },
+  { marker: 'GhostPay-deployment-manifest-v1', reason: 'legacy text-manifest signing domain (chain-adapters MANIFEST_SIGNING_DOMAIN)' },
+];
+
 function walk(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
@@ -78,15 +89,62 @@ function scanInnerHtml(text, label, problems) {
   if (all > allowed) problems.push(`${label}: ${String(all - allowed)} innerHTML assignment(s) outside the known React DOM fingerprints`);
 }
 
-function scanHosts(text, label, problems) {
+function scanHosts(text, label, problems, ownOrigin) {
   for (const m of text.matchAll(/\b(?:https?|wss?):\/\/([A-Za-z0-9][A-Za-z0-9.-]*)?[^\s"'`<>)\\]*/g)) {
     const full = m[0];
     if (m[1] === undefined) continue; // a bare "https://" scheme literal used for prefix checks
+    if (ownOrigin !== undefined && full === ownOrigin) continue;
     if (!ALLOWED_URLS.some((a) => full.startsWith(a.prefix))) problems.push(`${label}: unexpected origin or hostname "${full.slice(0, 80)}"`);
   }
 }
 
-/** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
+/**
+ * The build's own declared serving origin (SEC-09): scripts/pages/build-pages.sh compiles GHOSTPAY_PAGES_ORIGIN in as
+ * VITE_GHOSTPAY_PAGES_ORIGIN so the app can compare it with location.origin; it is never fetched. Only that exact
+ * literal is allowed (no path under it, no other origin), and only when the declaration is exactly an origin.
+ */
+function ownOriginOf(raw) {
+  if (typeof raw !== 'string' || raw === '') return undefined;
+  try {
+    const u = new URL(raw);
+    return u.origin === raw && /^https?:$/.test(u.protocol) ? raw : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Inline-code, remote-resource and CSP/referrer checks for one HTML document of the output. */
+function scanHtmlDocument(html, label, problems) {
+  // Visit every script start tag. An HTML parser ends a script element at `</script` followed by whitespace, `/`
+  // or `>` (any case), so the end tag may carry whitespace or junk attributes; an element with no end tag runs to
+  // the end of the document. Neither form may escape the inline-code checks.
+  const scriptStart = /<script\b([^>]*)>/gi;
+  const scriptEnd = /<\/script(?=[\s/>])[^>]*>/gi;
+  for (let start = scriptStart.exec(html); start !== null; start = scriptStart.exec(html)) {
+    const attrs = start[1];
+    scriptEnd.lastIndex = scriptStart.lastIndex;
+    const end = scriptEnd.exec(html);
+    const body = html.slice(scriptStart.lastIndex, end === null ? html.length : end.index);
+    if (end === null) problems.push(`${label}: unterminated <script>`);
+    if (!/\bsrc\s*=/.test(attrs)) problems.push(`${label}: inline <script>`);
+    else if (body.trim() !== '') problems.push(`${label}: script with both src and inline body`);
+    if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(attrs)) problems.push(`${label}: remote script`);
+    if (end === null) break;
+    scriptStart.lastIndex = scriptEnd.lastIndex;
+  }
+  if (/<style\b/i.test(html)) problems.push(`${label}: inline <style>`);
+  if (/\sstyle\s*=/i.test(html)) problems.push(`${label}: inline style attribute`);
+  if (/\son[a-z]+\s*=/i.test(html)) problems.push(`${label}: inline event handler attribute`);
+  if (/<link\b[^>]*\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(html)) problems.push(`${label}: remote <link>`);
+  if (!/http-equiv="Content-Security-Policy"/.test(html)) problems.push(`${label}: meta CSP missing`);
+  if (!/name="referrer"\s+content="no-referrer"/.test(html)) problems.push(`${label}: meta referrer no-referrer missing`);
+  if (/script-src[^;"]*'unsafe-(?:inline|eval)'/.test(html)) problems.push(`${label}: CSP allows unsafe-inline/eval scripts`);
+  if (/style-src[^;"]*'unsafe-inline'/.test(html)) problems.push(`${label}: CSP allows unsafe-inline styles`);
+  // The app entry carries no external URL at all. Other pages (help, privacy) may link out with plain https <a href>
+  // navigation, never load an external resource; the href value is masked before the host scan.
+  scanHosts(label === 'index.html' ? html : html.replace(/(<a\b[^>]*?\bhref\s*=\s*)(["'])https:\/\/[^"'<>\s]*\2/gi, '$1$2#$2'), label, problems);
+}
+
 /**
  * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
  * literal (e.g. "https://x") cannot swallow same-line code. Conservative: an unterminated literal
@@ -117,8 +175,13 @@ export function stripComments(src) {
   return out;
 }
 
-export function scanBundle(distDir, srcDir, viteConfigPath) {
+/**
+ * Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems.
+ * `options.ownOrigin` defaults to the build's VITE_GHOSTPAY_PAGES_ORIGIN (see ownOriginOf).
+ */
+export function scanBundle(distDir, srcDir, viteConfigPath, { ownOrigin = process.env['VITE_GHOSTPAY_PAGES_ORIGIN'] } = {}) {
   const problems = [];
+  const own = ownOriginOf(ownOrigin);
   if (!existsSync(distDir)) return [`dist directory not found: ${distDir}`];
   const files = walk(distDir);
   const rel = (f) => relative(distDir, f).split(sep).join('/');
@@ -129,7 +192,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     if (/\.(js|mjs|css)$/.test(r)) {
       const text = readFileSync(f, 'utf8');
       if (/sourceMappingURL/.test(text)) problems.push(`${r}: sourceMappingURL reference`);
-      scanHosts(text, r, problems);
+      scanHosts(text, r, problems, r.endsWith('.css') ? undefined : own);
       if (r.endsWith('.css')) {
         if (/@import/.test(text)) problems.push(`${r}: @import in CSS`);
         if (/url\(\s*["']?(?:https?:)?\/\//.test(text)) problems.push(`${r}: remote url() in CSS`);
@@ -143,6 +206,9 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
         for (const { marker, reason } of PRESERVED_CODE_MARKERS) {
           if (text.includes(marker)) problems.push(`${r}: preserved-code marker "${marker}" (${reason}) is not part of the lean beta`);
         }
+        for (const { marker, reason } of LEGACY_MANIFEST_MARKERS) {
+          if (text.includes(marker)) problems.push(`${r}: legacy text-manifest marker "${marker}" (${reason}) must not ship`);
+        }
         if (/worker/i.test(r)) {
           for (const w of WORKER_FORBIDDEN) if (text.includes(w)) problems.push(`${r}: scanner worker contains network API "${w}"`);
         }
@@ -150,36 +216,31 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     }
   }
 
-  const indexPath = join(distDir, 'index.html');
-  if (!existsSync(indexPath)) problems.push('index.html missing');
-  else {
-    const html = readFileSync(indexPath, 'utf8');
-    // Visit every script start tag. An HTML parser ends a script element at `</script` followed by whitespace, `/`
-    // or `>` (any case), so the end tag may carry whitespace or junk attributes; an element with no end tag runs to
-    // the end of the document. Neither form may escape the inline-code checks.
-    const scriptStart = /<script\b([^>]*)>/gi;
-    const scriptEnd = /<\/script(?=[\s/>])[^>]*>/gi;
-    for (let start = scriptStart.exec(html); start !== null; start = scriptStart.exec(html)) {
-      const attrs = start[1];
-      scriptEnd.lastIndex = scriptStart.lastIndex;
-      const end = scriptEnd.exec(html);
-      const body = html.slice(scriptStart.lastIndex, end === null ? html.length : end.index);
-      if (end === null) problems.push('index.html: unterminated <script>');
-      if (!/\bsrc\s*=/.test(attrs)) problems.push('index.html: inline <script>');
-      else if (body.trim() !== '') problems.push('index.html: script with both src and inline body');
-      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(attrs)) problems.push('index.html: remote script');
-      if (end === null) break;
-      scriptStart.lastIndex = scriptEnd.lastIndex;
+  // Every HTML document of the output (SEC-24): index.html, help.html, privacy.html and any other page.
+  if (!existsSync(join(distDir, 'index.html'))) problems.push('index.html missing');
+  for (const f of files) {
+    const r = rel(f);
+    if (/\.html?$/i.test(r)) scanHtmlDocument(readFileSync(f, 'utf8'), r, problems);
+  }
+
+  // The lean module report (lean profile only) against the exclusion list shared with the Pages verifier (SEC-24).
+  const leanReportPath = join(distDir, 'ghostpay-lean-build.json');
+  if (existsSync(leanReportPath)) {
+    let report;
+    try {
+      report = JSON.parse(readFileSync(leanReportPath, 'utf8'));
+    } catch {
+      problems.push('ghostpay-lean-build.json: not valid JSON');
     }
-    if (/<style\b/i.test(html)) problems.push('index.html: inline <style>');
-    if (/\sstyle\s*=/i.test(html)) problems.push('index.html: inline style attribute');
-    if (/\son[a-z]+\s*=/i.test(html)) problems.push('index.html: inline event handler attribute');
-    if (/<link\b[^>]*\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(html)) problems.push('index.html: remote <link>');
-    if (!/http-equiv="Content-Security-Policy"/.test(html)) problems.push('index.html: meta CSP missing');
-    if (!/name="referrer"\s+content="no-referrer"/.test(html)) problems.push('index.html: meta referrer no-referrer missing');
-    if (/script-src[^;"]*'unsafe-(?:inline|eval)'/.test(html)) problems.push("index.html: CSP allows unsafe-inline/eval scripts");
-    if (/style-src[^;"]*'unsafe-inline'/.test(html)) problems.push("index.html: CSP allows unsafe-inline styles");
-    scanHosts(html, 'index.html', problems);
+    if (report !== undefined) {
+      const groups = [...(Array.isArray(report?.chunks) ? report.chunks : []), ...(Array.isArray(report?.workers) ? report.workers.flatMap((w) => w?.chunks ?? []) : [])];
+      for (const chunk of groups) {
+        for (const m of Array.isArray(chunk?.modules) ? chunk.modules : []) {
+          const why = leanModuleProblem(m);
+          if (why !== undefined) problems.push(`ghostpay-lean-build.json: ${why}`);
+        }
+      }
+    }
   }
 
   const headersPath = join(distDir, '_headers');
