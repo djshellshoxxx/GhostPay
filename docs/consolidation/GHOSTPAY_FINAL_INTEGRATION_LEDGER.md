@@ -113,15 +113,17 @@ Machine-readable source: [`ghostpay-final-ledger.json`](ghostpay-final-ledger.js
 |---|---|---|
 | `4b107609` | recovered (#151 A5-2) | removed invalid `.github/workflows/openai-agents.yml` fragment (disabled copy already present) |
 | `aa827a43`, `6e986e85`, `f471ab4e` | recovered (#162/#163/#161/#159) | off-filter transfer telemetry fails closed (`scanSpam.ts`) + regression test + docs pin |
-| `e77172cf` | fix (Haiku R1 F1) | `scan-bundle` comment stripper no longer hides same-line sinks after a `//` in a string |
+| `e77172cf`, `c0885a7a`, `016fa252` | fix (Haiku R1 F1, R3 F1, Opus-1) | `scan-bundle` src sink scan: string-aware, then regex-aware stripper, finally **replaced by a TypeScript AST scan** after the Opus review showed the heuristic stripper was still bypassable |
 | `00e93f7a` | fix (worker C) | "Show larger" QR dialog kept dropping bearer/secret/caution warning |
-| `be7e9671` | fix (Haiku R2 F1 / worker D) | `check-tx-origin.sh` split-line bypass |
+| `be7e9671`, `016fa252` | fix (Haiku R2 F1 / worker D, Opus-2) | `check-tx-origin.sh` split-line bypass, then comment/multi-line splits via an additive whole-file pass |
 | `62ccb311`, `38cb0bfa` | fix | two polynomial-ReDoS regexes (CodeQL on #157) in `i18n` readability and `ops-monitor` fetcher; lint fix |
 | `f37b06c1` | fix (worker B W1/W2) | payer-sponsor: per-chain send lane; receipt failure after broadcast = `OUTCOME_UNKNOWN` with hash, loss charged |
 | `5da91c2d` | fix (worker B W3) | pool-relayer bounded admission (503 `queue_full`) |
 | `ea1f0b24`, `768b1f4c` | fix (Haiku R2 F3) | pool-circuits refuses zero values for withdraw/ragequit |
 | `e2fef011` | fix (CHAIN-ADAPTERS-10) | real-calendar manifest date, NaN retries, bounded price decimals |
 | `c37604d1` | fix (SOLANA-TRON-08) | tron-adapter `getBlockRange` fails closed on missing/gapped blocks (one old test that expected `[]` was changed on purpose) |
+| `016fa252` | fix (Opus-5) | pool-relayer `maxQueue` NaN/0/negative/fractional rejected at construction |
+| `b098b73a` | test | chain-adapters NaN-retries test fails cleanly (was a hang) when its fix is reverted |
 | docs commits | docs | audit reports for rounds 1-3 and workers B, C, D, E; task ledger |
 
 Every code fix above has a regression test that was run RED before the fix and GREEN after (per the worker reports and my own re-runs of F1 and the ReDoS pair).
