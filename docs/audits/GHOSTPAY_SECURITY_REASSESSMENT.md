@@ -30,7 +30,7 @@ Evidence rule: "fixed" below means a regression test failed before the change an
 
 ## Open, not fixed
 - B-W4 (Low): pool-relayer/sponsor trust the RPC-returned tx hash (sweep relayer already verifies).
-- B-W5 (Low-Med): a send error after possible broadcast is a plain failure with no unknown-outcome tracking in pool-relayer/sponsor (pool nullifier limits duplicates).
+- B-W5 (Low): a send error after possible broadcast is a plain failure with no unknown-outcome tracking in pool-relayer/sponsor (pool nullifier limits duplicates).
 - B-W6 (not reproduced): possible duplicate send if an identical request is queued while the first receipt is pending.
 - Paymaster `validAfter <= validUntil` (Info): fails closed because the EntryPoint rejects; add the check and the `WrongChain` NatSpec 31337 note (Haiku R2 F4) when `forge` is available.
 - Haiku R2 F5/F6 (Low, doc/test wording): donation test title overstates uppercase-hex coverage; `reminder-bridge.ts` comment implies recurrence the schema lacks.
