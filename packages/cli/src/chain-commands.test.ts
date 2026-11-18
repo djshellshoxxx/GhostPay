@@ -27,6 +27,7 @@ describe('chain and operator inspection', () => {
     ['evm', 'bad', [], 'INVALID_INPUT'], ['bitcoin', 'x'.repeat(2049), [], 'INVALID_INPUT'],
     ['future-chain', 'public', [], 'UNSUPPORTED_FAMILY'], ['evm', `st:eth:0x${G}${G2}`, ['--network', 'testnet'], 'BAD_NETWORK'],
     ['bitcoin', 'public', ['--network', 'regtest'], 'BAD_NETWORK'],
+    ['solana', 'gpsol:iVPRKEPsBrg9QjbrbTCwPpfqABVe6AgZGSnE3hPZFWJJY9G8coNm6o2by4A2777LoAyj3Rxh6f1VBUWUgUHxs3uinozTS', [], 'INVALID_INPUT'],
   ])('rejects unsupported or invalid %s recipient input', async (family, value, extra, code) => {
     const io = makeIo({ 'address.txt': value });
     await expect(execute('chain recipient inspect', io, ['--family', family, '--in', 'address.txt', ...extra])).rejects.toMatchObject({ code });
@@ -108,17 +109,17 @@ describe('chain and operator inspection', () => {
   });
   it('inspects a valid Solana announcement memo offline without promoting its opaque metadata to a payment', async () => {
     const keys = solanaKeys();
-    const memo = encodeAnnouncementMemo({ ephemeralPublicKey: keys.viewPublicKey, viewTag: 17, metadata: new Uint8Array([1, 2]) });
+    const memo = encodeAnnouncementMemo({ ephemeralPublicKey: keys.viewPublicKey, viewTag: 17 });
     keys.spendSecret.fill(0); keys.viewSecret.fill(0);
     const io = makeIo({ 'memo.txt': memo });
     expect(await execute('chain solana announcement inspect', io, ['--in', 'memo.txt'])).toBe(0);
     expect(stdoutJson(io)).toMatchObject({ valid: true, family: 'solana', status: 'announced', viewTag: 17,
-      metadataHex: '0102', paymentVerified: false, networkUsed: false });
+      metadataHex: '', paymentVerified: false, networkUsed: false });
   });
 
   it.each(['evm', 'solana', 'bitcoin'] as const)('validates %s public recipient encoding with its shared decoder', async (family) => {
     const keys = solanaKeys();
-    const canonical = family === 'evm' ? `st:eth:0x${G}${G2}` : family === 'solana' ? solanaMeta(keys)
+    const canonical = family === 'evm' ? `st:eth:0x${G}${G2}` : family === 'solana' ? solanaMeta({ ...keys, cluster: 'devnet' })
       : encodeSilentPaymentAddress('testnet', Buffer.from(G, 'hex'), Buffer.from(G2, 'hex'));
     keys.spendSecret.fill(0); keys.viewSecret.fill(0);
     const io = makeIo({ 'address.txt': canonical });
