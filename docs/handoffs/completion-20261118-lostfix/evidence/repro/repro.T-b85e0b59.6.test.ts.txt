@@ -1,0 +1,14 @@
+// Untracked repro for dropped-fix lead T-b85e0b59-6 (b85e0b59 getLimitProof recomputes a stored leaf).
+import { describe, expect, it } from 'vitest';
+import { PolicySchemeError, ZERO_ADDRESS, buildLimitsTree, getLimitProof, type Address } from './index.js';
+
+const USDC: Address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const code = (f: () => unknown): string => { try { f(); } catch (e) { if (e instanceof PolicySchemeError) return e.code; throw e; } return 'no error'; };
+
+describe('repro T-b85e0b59-6: getLimitProof rejects a restored tree whose leaf fields were edited', () => {
+  it('edited limit is refused', () => {
+    const tree = buildLimitsTree([{ token: ZERO_ADDRESS, limit: 100n, windowSeconds: 60n }, { token: USDC, limit: 10n, windowSeconds: 60n }]);
+    const forged = { ...tree, leaves: tree.leaves.map((l) => (l.token === USDC ? { ...l, limit: 10n ** 30n } : l)) };
+    expect(code(() => getLimitProof(forged as never, USDC))).toBe('INVALID_PROOF');
+  });
+});

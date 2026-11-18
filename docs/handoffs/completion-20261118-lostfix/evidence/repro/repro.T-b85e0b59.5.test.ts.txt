@@ -1,0 +1,22 @@
+// Untracked repro for dropped-fix lead T-b85e0b59-5 (b85e0b59 buildWithdrawTypedData recomputes the limit leaf).
+import { describe, expect, it } from 'vitest';
+import { PolicySchemeError, ZERO_ADDRESS, buildLimitsTree, buildWithdrawTypedData, getLimitProof, type Address } from './index.js';
+import { vectors, type VectorAccount } from './fixtures.testutil.js';
+
+const A = vectors.accounts[0] as VectorAccount;
+const USDC: Address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const code = (f: () => unknown): string => { try { f(); } catch (e) { if (e instanceof PolicySchemeError) return e.code; throw e; } return 'no error'; };
+
+describe('repro T-b85e0b59-5: withdraw builder binds proof leaf to (token, limit, window)', () => {
+  const tree = buildLimitsTree([{ token: ZERO_ADDRESS, limit: 100n, windowSeconds: 60n }, { token: USDC, limit: 10n, windowSeconds: 60n }]);
+  const lp = getLimitProof(tree, USDC);
+  const wbase = { chainId: 1, account: A.accountAddress, token: USDC, amount: 5n, deadline: 10n, nonce: 1n, limit: { limitsRoot: tree.root, proof: lp } };
+  it('baseline builds', () => expect(code(() => buildWithdrawTypedData(wbase))).toBe('no error'));
+  it('rejects an inflated limit on a genuine leaf', () => {
+    const inflated = { ...lp, limit: 10n ** 30n, windowSeconds: 1n };
+    expect(code(() => buildWithdrawTypedData({ ...wbase, amount: 10n ** 20n, limit: { limitsRoot: tree.root, proof: inflated } }))).toBe('INVALID_PROOF');
+  });
+  it("rejects another token's leaf", () => expect(code(() => buildWithdrawTypedData({ ...wbase, token: ZERO_ADDRESS }))).toBe('INVALID_PROOF'));
+  it('rejects the root (inner node) as a leaf', () =>
+    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { leaf: tree.root, proof: [], limit: 10n ** 30n, windowSeconds: 1n } } }))).toBe('INVALID_PROOF'));
+});

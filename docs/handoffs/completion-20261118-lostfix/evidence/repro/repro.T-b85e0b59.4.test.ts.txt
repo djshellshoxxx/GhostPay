@@ -1,0 +1,23 @@
+// Untracked repro for dropped-fix lead T-b85e0b59-4 (b85e0b59 signPolicyTypedData refuses foreign typed data).
+import { secretScalarFromBytes } from '@ghostpay/core-crypto';
+import { hashTypedData } from 'viem/utils';
+import { describe, expect, it } from 'vitest';
+import { PolicySchemeError, signPolicyTypedData } from './index.js';
+import { hexBytes, vectors, type VectorAccount } from './fixtures.testutil.js';
+
+const A = vectors.accounts[0] as VectorAccount;
+async function acode(f: () => Promise<unknown>): Promise<string> { try { await f(); } catch (e) { if (e instanceof PolicySchemeError) return e.code; throw e; } return 'no error'; }
+
+describe('repro T-b85e0b59-4: signPolicyTypedData is not a generic EIP-712 signing oracle', () => {
+  it('refuses a self-consistent foreign struct under a foreign domain', async () => {
+    const foreign = {
+      domain: { name: 'Evil', version: '1', chainId: 1, verifyingContract: A.accountAddress },
+      types: { Transfer: [{ name: 'amt', type: 'uint256' }] },
+      primaryType: 'Transfer',
+      message: { amt: 1n },
+    } as const;
+    const digest = hashTypedData(foreign);
+    const owner = secretScalarFromBytes(hexBytes(A.ownerPrivateKey));
+    expect(await acode(() => signPolicyTypedData({ ...foreign, structHash: digest, digest } as never, owner, A.ownerAddress))).toBe('SIGNING_FAILED');
+  });
+});

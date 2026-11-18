@@ -1,0 +1,61 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.28;
+
+import {PolicyRouterBase} from "./PolicyRouterBase.t.sol";
+
+/// @notice Dropped-fix triage T-50881e47-1 (round-3 audit N-01, commit 50881e47): the policy router
+/// must take the per-payment CREATE2 salt, so the seller-constant `policyHash` never appears in calldata.
+/// Written ABI-agnostically (low-level calls) so it compiles against both the 50881e47 router and today's.
+contract ReproT50881e47_1 is PolicyRouterBase {
+    function _hasWord(bytes memory data, bytes32 word) internal pure returns (bool) {
+        if (data.length < 32) return false;
+        for (uint256 i; i + 32 <= data.length; i++) {
+            bytes32 w;
+            assembly { w := mload(add(add(data, 32), i)) }
+            if (w == word) return true;
+        }
+        return false;
+    }
+
+    /// 50881e47 ABI: payNative(address stealth, bytes32 salt, ...). Must be accepted.
+    function test_repro_saltOnlyPayNativeIsAccepted() public {
+        uint256 gross = 1 ether;
+        uint256 net = gross - _fee(gross);
+        bytes32 salt = keccak256(abi.encode(owner, policyHash));
+        bytes memory data = abi.encodeWithSignature(
+            "payNative(address,bytes32,uint256,uint256,bytes,bytes)",
+            stealth, salt, net, block.timestamp + 1 hours, _eph(), _nativeMeta(net)
+        );
+        vm.prank(alice);
+        (bool ok,) = address(router).call{value: gross}(data);
+        assertTrue(ok, "N-01: router rejects the salt-only payNative selector");
+        assertEq(stealth.balance, net);
+    }
+
+    /// The calldata the router actually accepts must not carry the seller-constant policyHash.
+    function test_repro_acceptedCalldataNeverCarriesPolicyHash() public {
+        uint256 gross = 1 ether;
+        uint256 net = gross - _fee(gross);
+        bytes32 salt = keccak256(abi.encode(owner, policyHash));
+        bytes memory saltCall = abi.encodeWithSignature(
+            "payNative(address,bytes32,uint256,uint256,bytes,bytes)",
+            stealth, salt, net, block.timestamp + 1 hours, _eph(), _nativeMeta(net)
+        );
+        bytes memory refCall = abi.encodeWithSignature(
+            "payNative(address,(address,bytes32),uint256,uint256,bytes,bytes)",
+            stealth, owner, policyHash, net, block.timestamp + 1 hours, _eph(), _nativeMeta(net)
+        );
+        uint256 snap = vm.snapshotState();
+        vm.prank(alice);
+        (bool saltOk,) = address(router).call{value: gross}(saltCall);
+        vm.revertToState(snap);
+        vm.prank(alice);
+        (bool refOk,) = address(router).call{value: gross}(refCall);
+        bytes memory accepted = saltOk ? saltCall : (refOk ? refCall : bytes(""));
+        assertTrue(accepted.length != 0, "no payNative form accepted");
+        assertFalse(
+            _hasWord(accepted, policyHash),
+            "N-01: accepted router calldata contains the seller-constant policyHash"
+        );
+    }
+}

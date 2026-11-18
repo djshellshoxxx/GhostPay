@@ -1,0 +1,28 @@
+// Untracked repro for dropped-fix lead T-b85e0b59-3 (b85e0b59 decodePolicyPaymentCalldata hardening, TS-05).
+import { decodeFunctionData, encodeFunctionData } from 'viem/utils';
+import { describe, expect, it } from 'vitest';
+import { PolicySchemeError, buildPolicyPaymentTx, decodePolicyPaymentCalldata, deriveScheme2Payment, ghostPayPolicyRouterAbi, type Address, type PolicyPaymentInput } from './index.js';
+import { hexBytes, scriptedRng, vectors, type VectorAccount } from './fixtures.testutil.js';
+
+const dep = { factory: vectors.deployment.factory, implementation: vectors.deployment.implementation };
+const A = vectors.accounts[0] as VectorAccount;
+const USDC: Address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const payment = deriveScheme2Payment(A.metaAddress, dep, scriptedRng([hexBytes(A.ephemeralPrivateKey)]));
+const base: PolicyPaymentInput = { router: '0x5FbDB2315678afecb367f032d93F642f64180aa3', feeRecipient: '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc', deployment: dep, payment, token: USDC, gross: 1_000_000n, deadline: 100n };
+const code = (f: () => unknown): string => { try { f(); } catch (e) { if (e instanceof PolicySchemeError) return e.code; return `other:${(e as Error).name}`; } return 'no error'; };
+
+describe('repro T-b85e0b59-3: decodePolicyPaymentCalldata validates metadata, R and encoding', () => {
+  const good = buildPolicyPaymentTx(base);
+  const args = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: good.tx.data }).args as unknown as unknown[];
+  // payERC20 today: [token, stealth, {owner, policyHash}, gross, minNet, deadline, eph, metadata]
+  const rebuild = (patch: Record<number, unknown>): `0x${string}` =>
+    encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: args.map((v, i) => (i in patch ? patch[i] : v)) as never });
+  const tag = good.metadata.slice(2, 4);
+  const mk = (token: string, net: bigint): string => `0x${tag}a9059cbb${token.slice(2).toLowerCase()}${net.toString(16).padStart(64, '0')}`;
+  it('baseline decodes', () => expect(code(() => decodePolicyPaymentCalldata(rebuild({}), dep))).toBe('no error'));
+  it('rejects corrupt metadata (ff*57)', () => expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: `0x${'ff'.repeat(57)}` }), dep))).toBe('INVALID_INPUT'));
+  it('rejects metadata naming another token', () => expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: mk('0xdAC17F958D2ee523a2206206994597C13D831ec7', good.net) }), dep))).toBe('INVALID_INPUT'));
+  it('rejects metadata net != gross - fee', () => expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: mk(USDC, good.net + 1n) }), dep))).toBe('INVALID_INPUT'));
+  it('rejects an off-curve / uncompressed ephemeral key', () => expect(code(() => decodePolicyPaymentCalldata(rebuild({ 6: `0x04${'11'.repeat(32)}` }), dep))).toBe('INVALID_INPUT'));
+  it('rejects trailing calldata bytes', () => expect(code(() => decodePolicyPaymentCalldata(`${good.tx.data}00`, dep))).toBe('INVALID_INPUT'));
+});

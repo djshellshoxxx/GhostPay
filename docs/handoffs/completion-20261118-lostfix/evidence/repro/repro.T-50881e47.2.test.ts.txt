@@ -1,0 +1,29 @@
+// Dropped-fix triage T-50881e47-2 (round-3 audit N-01, commit 50881e47, policy-scheme side):
+// the calldata built for GhostPayPolicyRouter must never carry the seller-constant policyHash.
+import { describe, expect, it } from 'vitest';
+import { buildPolicyPaymentTx, deriveScheme2Payment, type Address, type PolicyPaymentInput } from './index.js';
+import { hexBytes, scriptedRng, vectors, type VectorAccount } from './fixtures.testutil.js';
+
+const dep = { factory: vectors.deployment.factory, implementation: vectors.deployment.implementation };
+const ROUTER: Address = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+const FEE: Address = '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc';
+const USDC: Address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+
+describe('repro T-50881e47-2: N-01 policyHash in router calldata', () => {
+  it('calldata never carries the seller-constant policyHash (all four entry points)', () => {
+    const A = vectors.accounts[0] as VectorAccount;
+    const payment = deriveScheme2Payment(A.metaAddress, dep, scriptedRng([hexBytes(A.ephemeralPrivateKey)]));
+    const base: PolicyPaymentInput = { router: ROUTER, feeRecipient: FEE, deployment: dep, payment, token: USDC, gross: 1_000_000n, deadline: 100n };
+    const sig = `0x${'11'.repeat(32)}${'22'.repeat(32)}1b` as const;
+    const variants = [
+      buildPolicyPaymentTx(base),
+      buildPolicyPaymentTx({ ...base, token: 'native', minNet: 1n }),
+      buildPolicyPaymentTx({ ...base, permitSignature: sig }),
+      buildPolicyPaymentTx({ ...base, buffer: { bufferWei: 1n } }),
+    ];
+    const needle = A.policyHash.slice(2).toLowerCase();
+    for (const v of variants) {
+      expect(v.tx.data.toLowerCase().includes(needle), `${v.method} calldata contains policyHash`).toBe(false);
+    }
+  });
+});
