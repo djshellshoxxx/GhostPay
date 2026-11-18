@@ -40,7 +40,7 @@ concurrency:
 
 jobs:
   kit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
       contents: read
@@ -78,7 +78,7 @@ jobs:
 
   # Qualify the real GhostPay web build: build it, then validate, package and verify it with the kit.
   qualify-ghostpay-web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read

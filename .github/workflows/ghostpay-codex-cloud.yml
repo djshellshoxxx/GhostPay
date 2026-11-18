@@ -49,6 +49,9 @@ jobs:
               # Build, bundle-gate and analyzer configuration also judges the shipped artifact (audit F-1, 2026-11-18).
               */vite.config.*|*/hardhat.config.*|*/.npmrc|*/echidna.yaml|apps/web/index.html|apps/web/public/_headers|apps/web/e2e/*|apps/web/scripts/*|scripts/pages/*|scripts/beta/*|scripts/integration/*|scripts/release/*)
                 return 1 ;;
+              # Infix test/e2e configs, CI-imported helpers, analyzer runners, vendored libraries and trust roots (review G).
+              */vitest.*config.*|*/playwright.*config.*|*/postcss.config.*|*/.postcssrc*|*/remappings.txt|scripts/i18n/*|scripts/lib/*|packages/contracts/scripts/*|packages/*/lib/*|packages/pool-circuits/SHA256SUMS|packages/pool-circuits/vkeys/*)
+                return 1 ;;
               # Top-level scripts/* are CI, build and release gates (scan-secrets, check-actions-pinned,
               # build-workspaces, lib-common, release and verify scripts); subdirectories stay writable.
               scripts/*/*) ;;
@@ -261,6 +264,9 @@ jobs:
               # Build, bundle-gate and analyzer configuration also judges the shipped artifact (audit F-1, 2026-11-18).
               */vite.config.*|*/hardhat.config.*|*/.npmrc|*/echidna.yaml|apps/web/index.html|apps/web/public/_headers|apps/web/e2e/*|apps/web/scripts/*|scripts/pages/*|scripts/beta/*|scripts/integration/*|scripts/release/*)
                 return 1 ;;
+              # Infix test/e2e configs, CI-imported helpers, analyzer runners, vendored libraries and trust roots (review G).
+              */vitest.*config.*|*/playwright.*config.*|*/postcss.config.*|*/.postcssrc*|*/remappings.txt|scripts/i18n/*|scripts/lib/*|packages/contracts/scripts/*|packages/*/lib/*|packages/pool-circuits/SHA256SUMS|packages/pool-circuits/vkeys/*)
+                return 1 ;;
               # Top-level scripts/* are CI, build and release gates (scan-secrets, check-actions-pinned,
               # build-workspaces, lib-common, release and verify scripts); subdirectories stay writable.
               scripts/*/*) ;;
@@ -379,6 +385,9 @@ jobs:
                 return 1 ;;
               # Build, bundle-gate and analyzer configuration also judges the shipped artifact (audit F-1, 2026-11-18).
               */vite.config.*|*/hardhat.config.*|*/.npmrc|*/echidna.yaml|apps/web/index.html|apps/web/public/_headers|apps/web/e2e/*|apps/web/scripts/*|scripts/pages/*|scripts/beta/*|scripts/integration/*|scripts/release/*)
+                return 1 ;;
+              # Infix test/e2e configs, CI-imported helpers, analyzer runners, vendored libraries and trust roots (review G).
+              */vitest.*config.*|*/playwright.*config.*|*/postcss.config.*|*/.postcssrc*|*/remappings.txt|scripts/i18n/*|scripts/lib/*|packages/contracts/scripts/*|packages/*/lib/*|packages/pool-circuits/SHA256SUMS|packages/pool-circuits/vkeys/*)
                 return 1 ;;
               # Top-level scripts/* are CI, build and release gates (scan-secrets, check-actions-pinned,
               # build-workspaces, lib-common, release and verify scripts); subdirectories stay writable.

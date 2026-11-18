@@ -247,7 +247,12 @@ export function reconcile(
       continue;
     }
     seen.add(key);
-    const fits = (i: Invoice): AmountClass | null => fitsInvoice(i, t, tol);
+    const fits = (i: Invoice): AmountClass | null => {
+      if (i.chainId !== t.chainId || i.token !== t.token) return null;
+      if (t.observedAt < i.issuedAt || t.observedAt > i.expiresAt) return null;
+      const c = classifyAmount(i.expected, t.amount, tol);
+      return c === 'exact' || c === 'tolerated' ? c : null;
+    };
     const cands: { nonce: string; amountClass: AmountClass }[] = [];
     let settled = false;
     for (const i of state) {
@@ -284,14 +289,6 @@ export function reconcile(
   return { invoices: state, outcomes };
 }
 
-/** Heuristic fit: same chain and token, observed inside the invoice window, amount exact or tolerated. */
-function fitsInvoice(i: Invoice, t: Transfer, tol: Tolerance): AmountClass | null {
-  if (i.chainId !== t.chainId || i.token !== t.token) return null;
-  if (t.observedAt < i.issuedAt || t.observedAt > i.expiresAt) return null;
-  const c = classifyAmount(i.expected, t.amount, tol);
-  return c === 'exact' || c === 'tolerated' ? c : null;
-}
-
 /** Result of {@link confirm}. */
 export type ConfirmResult =
   | {
@@ -309,7 +306,6 @@ export type ConfirmResult =
         | 'ALREADY_CONFIRMED'
         | 'MISMATCH'
         | 'DUPLICATE_TX'
-        | 'AMBIGUOUS'
         | 'INVALID_TRANSITION'
         | 'BAD_PROOF';
     };
@@ -317,13 +313,17 @@ export type ConfirmResult =
 /**
  * Confirm payment with a payer proof (exact path). The proof's tx must be among the observed `transfers`
  * (NOT_FOUND otherwise), on the invoice's chain and token (MISMATCH), and not already applied to any invoice
- * (DUPLICATE_TX). The proof is unsigned and a tx hash is public, so a proof cannot claim a transfer that is suggested
- * for, or also fits, another open or suggested invoice (AMBIGUOUS, audit D-1): the seller resolves that case, because
- * otherwise anyone could attach another payer's same-amount transfer to their own invoice. A nonce confirms once (ALREADY_CONFIRMED, PAYRE-3). Partial and over payments are applied and
+ * (DUPLICATE_TX). A nonce confirms once (ALREADY_CONFIRMED, PAYRE-3). Partial and over payments are applied and
  * reflected in `status` and `amountClass` (PAYRE-6). A tx observed before the invoice was issued still confirms but
  * adds the TX_BEFORE_ISSUE warning (PAYRE-7).
  *
  * @security `proof` may be an untrusted string; decode failures return BAD_PROOF, never throw.
+ * @security OPEN (audit D-1, 2026-11-18): the proof is unauthenticated and a tx hash is public, so any party can claim
+ * another payer's observed transfer for an invoice of theirs on the same chain and token (and lock out the real payer
+ * with DUPLICATE_TX). Do not expose this path to untrusted proofs or treat its `confirmed` status as payment evidence
+ * until the proof is bound to the payer (sender signature, or the invoice nonce carried in calldata/metadata). An
+ * ambiguity-only check was tried and rejected: it is bypassable with partial or over amounts and lets a second
+ * same-amount invoice block every honest confirmation.
  */
 export function confirm(
   invoices: readonly Invoice[],
@@ -350,16 +350,6 @@ export function confirm(
   if (t.chainId !== inv.chainId || t.token !== inv.token) return { ok: false, error: 'MISMATCH' };
   if (invoices.some((i) => i.chainId === t.chainId && i.txs.includes(t.txHash)))
     return { ok: false, error: 'DUPLICATE_TX' };
-  if (
-    invoices.some(
-      (i) =>
-        i.nonce !== inv.nonce &&
-        i.chainId === t.chainId &&
-        (i.suggestedTx === t.txHash ||
-          ((i.status === 'open' || i.status === 'suggested') && fitsInvoice(i, t, tol) !== null)),
-    )
-  )
-    return { ok: false, error: 'AMBIGUOUS' };
   let next: Invoice;
   try {
     next = transition(inv, { type: 'payment', transfer: t, confirmed: true }, tol);

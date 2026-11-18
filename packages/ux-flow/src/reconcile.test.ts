@@ -307,20 +307,6 @@ describe('confirm (proof path)', () => {
       error: 'DUPLICATE_TX',
     });
   });
-  it('audit D-1: an unsigned proof cannot claim a transfer that also fits another open invoice', () => {
-    // A and B have the same chain, token and amount; the transfer was A's payer's. B's "payer" replays A's public hash.
-    expect(confirm([inv(1), inv(2)], pf(2, 1), [tr(1, 1_000_000n)])).toEqual({ ok: false, error: 'AMBIGUOUS' });
-    // The real payer cannot win the race either: the seller must resolve the ambiguity, not the first proof.
-    expect(confirm([inv(1), inv(2)], pf(1, 1), [tr(1, 1_000_000n)])).toEqual({ ok: false, error: 'AMBIGUOUS' });
-    // A different amount, an expired window or a settled other invoice keeps the proof path unambiguous.
-    expect(confirm([inv(1), inv(2, 7n)], pf(1, 1), [tr(1, 1_000_000n)]).ok).toBe(true);
-    expect(confirm([inv(1), inv(2, 1_000_000n, { expiresAt: 1500 })], pf(1, 1), [tr(1, 1_000_000n)]).ok).toBe(true);
-  });
-  it('audit D-1: a transfer heuristically suggested for another invoice cannot be claimed by proof', () => {
-    const r = reconcile([inv(1), inv(2, 7n)], [tr(1, 1_000_000n)]);
-    expect(r.invoices.find((i) => i.nonce === nonce(1))?.suggestedTx).toBe(h(1));
-    expect(confirm(r.invoices, pf(2, 1), [tr(1, 1_000_000n)])).toEqual({ ok: false, error: 'AMBIGUOUS' });
-  });
   it('cancelled invoice cannot be confirmed', () => {
     const c = transition(inv(1), { type: 'cancel' });
     expect(confirm([c], pf(1, 1), [tr(1, 1_000_000n)])).toEqual({ ok: false, error: 'INVALID_TRANSITION' });
