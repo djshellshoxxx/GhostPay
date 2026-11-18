@@ -102,3 +102,14 @@ test('tx and .origin split across lines (even with a comment between) fails', ()
   const ok = run({ 'packages/a/src/A.sol': 'contract A { uint256 tx;\n uint256 y = tx;\n uint256 origin; }\n' });
   assert.equal(ok.status, 0, out(ok));
 });
+
+test('tx/origin split by several lines, a trailing comment or an inline block comment fails (Opus review)', () => {
+  for (const body of ['tx\n.\norigin', 'tx // c\n.origin', 'tx /* c */ .origin', 'tx /* a */\n/* b */ . /* c */ origin', 'tx // c\n// d\n.\n origin']) {
+    const r = run({ 'packages/a/src/A.sol': `contract A { function f() external view returns (address) { return ${body}; } }\n` });
+    assert.equal(r.status, 1, `${JSON.stringify(body)}: ${out(r)}`);
+    assert.match(out(r), /packages\/a\/src\/A\.sol:\d+/, body);
+  }
+  // Still no false positive when tx and origin are unrelated identifiers across comments.
+  const ok = run({ 'packages/a/src/A.sol': 'contract A { uint256 tx; /* x */\n uint256 y = tx; // tx\n uint256 origin; }\n' });
+  assert.equal(ok.status, 0, out(ok));
+});

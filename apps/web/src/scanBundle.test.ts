@@ -110,6 +110,26 @@ describe('scan-bundle', () => {
     expect(scan(b)).toEqual([]);
   });
 
+  it('cannot be hidden by nested templates, a regex after ), or JSX text containing a URL (Opus review)', () => {
+    const cases: Record<string, string> = {
+      'src/N1.ts': 'const t = `${`//`}`; el.innerHTML = x;\n',
+      'src/N2.ts': 'if (a) /\\/*/.test(b); el.innerHTML = c; const r = /x*/;\n',
+      'src/N3.tsx': 'export const A = () => <a>https://x.y</a>; eval(z);\n',
+    };
+    for (const [file, text] of Object.entries(cases)) {
+      const out = scan(build({ [file]: text })).join('\n');
+      expect(out, file).toMatch(file.endsWith('N3.tsx') ? /N3\.tsx: eval/ : /innerHTML/);
+    }
+  });
+
+  it('flags compound innerHTML assignment, string-keyed access, parenthesised eval and unparsable source', () => {
+    expect(scan(build({ 'src/C1.ts': 'el.innerHTML += x;\n' })).join()).toMatch(/innerHTML/);
+    expect(scan(build({ 'src/C2.ts': 'el["outerHTML"] = x;\n' })).join()).toMatch(/outerHTML/);
+    expect(scan(build({ 'src/C3.ts': '(0, eval)("1");\n' })).join()).toMatch(/eval/);
+    expect(scan(build({ 'src/C4.ts': 'const = = = ;\n' })).join()).toMatch(/could not be parsed/);
+    expect(scan(build({ 'src/C5.ts': 'if (a === b) { x.innerHTML == y; }\n' }))).toEqual([]);
+  });
+
   it('allows the documented React DOM fingerprints but not extra innerHTML assignments', () => {
     const react = 'o.innerHTML=`<script><\\/script>`;\n?.__html!==n&&(e.innerHTML=n);case`innerHTML`:break;case`dangerouslySetInnerHTML`:if(r!=null){}n.dangerouslySetInnerHTML!=null';
     expect(scan(build({ 'dist/assets/a.js': react }))).toEqual([]);

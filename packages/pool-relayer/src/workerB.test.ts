@@ -41,3 +41,17 @@ describe('worker B: lane queue bound', () => {
     expect(out.filter((c) => c === 'ok')).toHaveLength(4);
   });
 });
+
+describe('worker B: maxQueue validation (Opus review)', () => {
+  it.each([Number.NaN, 0, -1, 1.5, Number.POSITIVE_INFINITY])('rejects invalid maxQueue %s at construction', (bad) => {
+    const mk = (): PoolRelayerService =>
+      new PoolRelayerService({
+        config: config(),
+        chains: new Map([[31337, fakeChain()]]),
+        verifyProof: () => Promise.resolve(true),
+        limiter: new TokenBucketLimiter({ ratePerSecond: 1000, burst: 100_000, maxKeys: 100 }),
+        maxQueue: bad,
+      });
+    expect(mk).toThrow(/maxQueue/);
+  });
+});

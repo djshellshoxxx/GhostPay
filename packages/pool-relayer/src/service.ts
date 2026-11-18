@@ -92,6 +92,10 @@ export class PoolRelayerService {
   private readonly admitted = new Map<number, number>();
 
   public constructor(private readonly d: ServiceDeps) {
+    if (d.maxQueue !== undefined && !(Number.isSafeInteger(d.maxQueue) && d.maxQueue >= 1)) {
+      // NaN would disable the bound; 0 or a negative value would refuse every request.
+      throw new Error('maxQueue must be a positive integer');
+    }
     this.cfg = d.config;
     this.logger = d.logger ?? nullLogger;
     for (const p of d.config.pools) {

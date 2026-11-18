@@ -5,6 +5,7 @@
 // React DOM's own internals contain a few innerHTML / dangerouslySetInnerHTML strings; those are matched by explicit
 // fingerprints below (and the application source is separately forbidden from using them, enforced by ESLint and by
 // the source scan here). Anything else fails.
+import ts from 'typescript';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -87,61 +88,35 @@ function scanHosts(text, label, problems) {
 }
 
 /** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
-/** Heuristic: can a `/` here start a regex literal (vs division)? Looks at the last significant output token. */
-function regexAllowed(out) {
-  let k = out.length - 1;
-  while (k >= 0 && /\s/.test(out[k])) k--;
-  if (k < 0) return true;
-  const ch = out[k];
-  if (/[(,=:[!&|?{};+\-*%<>~^]/.test(ch)) return true;
-  if (/[A-Za-z_$]/.test(ch)) {
-    let w = k;
-    while (w >= 0 && /[\w$]/.test(out[w])) w--;
-    return /^(?:return|typeof|case|delete|void|throw|in|of|new|else|do|yield|await)$/.test(out.slice(w + 1, k + 1));
-  }
-  return false;
-}
-
 /**
- * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
- * literal (e.g. "https://x") cannot swallow same-line code. Conservative: an unterminated literal
- * is kept verbatim to the end of its line (template literals to end of file), never dropped.
+ * Scan a source file for forbidden sinks using the TypeScript AST, so comments, strings, templates, regex literals and
+ * JSX text can never hide or fake a sink (a text/regex comment stripper was bypassable three times: URL in a string,
+ * `//` in a regex or nested template, URL in JSX text). Fails closed: a file that does not parse is reported.
+ * @returns Problem kinds found, e.g. `dangerouslySetInnerHTML`, `innerHTML/outerHTML assignment`, `eval/new Function`.
  */
-export function stripComments(src) {
-  let out = '';
-  let i = 0;
-  const n = src.length;
-  while (i < n) {
-    const c = src[i];
-    const d = src[i + 1];
-    if (c === '/' && d === '/') {
-      while (i < n && src[i] !== '\n') i++;
-    } else if (c === '/' && d === '*') {
-      const end = src.indexOf('*/', i + 2);
-      i = end === -1 ? n : end + 2;
-    } else if (c === '/' && regexAllowed(out)) {
-      // Regex literal: copy it verbatim (a `//` or `/*` inside it is not a comment). Classes may hold an unescaped `/`.
-      let j = i + 1;
-      let inClass = false;
-      while (j < n && src[j] !== '\n' && (inClass || src[j] !== '/')) {
-        if (src[j] === '\\') j++;
-        else if (src[j] === '[') inClass = true;
-        else if (src[j] === ']') inClass = false;
-        j++;
-      }
-      out += src.slice(i, Math.min(j + 1, n));
-      i = j + 1;
-    } else if (c === '"' || c === "'" || c === '`') {
-      let j = i + 1;
-      while (j < n && src[j] !== c && (c === '`' || src[j] !== '\n')) j += src[j] === '\\' ? 2 : 1;
-      out += src.slice(i, Math.min(j + 1, n));
-      i = j + 1;
-    } else {
-      out += c;
-      i++;
+export function scanSourceSinks(text, fileName) {
+  const kind = fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  const sf = ts.createSourceFile(fileName, text, ts.ScriptTarget.ESNext, true, kind);
+  const found = new Set();
+  if (sf.parseDiagnostics.length > 0) found.add('could not be parsed');
+  const calleeIdent = (e) => {
+    while (ts.isParenthesizedExpression(e)) e = e.expression;
+    if (ts.isBinaryExpression(e) && e.operatorToken.kind === ts.SyntaxKind.CommaToken) return calleeIdent(e.right);
+    return ts.isIdentifier(e) ? e.text : undefined;
+  };
+  const visit = (n) => {
+    if ((ts.isIdentifier(n) || ts.isStringLiteralLike(n)) && n.text === 'dangerouslySetInnerHTML') found.add('dangerouslySetInnerHTML');
+    if (ts.isBinaryExpression(n) && n.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && n.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+      const l = n.left;
+      const name = ts.isPropertyAccessExpression(l) ? l.name.text : ts.isElementAccessExpression(l) && ts.isStringLiteralLike(l.argumentExpression) ? l.argumentExpression.text : undefined;
+      if (name === 'innerHTML' || name === 'outerHTML') found.add('innerHTML/outerHTML assignment');
     }
-  }
-  return out;
+    if (ts.isCallExpression(n) && calleeIdent(n.expression) === 'eval') found.add('eval/new Function');
+    if (ts.isNewExpression(n) && calleeIdent(n.expression) === 'Function') found.add('eval/new Function');
+    ts.forEachChild(n, visit);
+  };
+  visit(sf);
+  return [...found];
 }
 
 export function scanBundle(distDir, srcDir, viteConfigPath) {
@@ -222,10 +197,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     for (const f of walk(srcDir)) {
       const r = relative(srcDir, f).split(sep).join('/');
       if (!/\.(ts|tsx)$/.test(r) || /\.test\.|\/test\//.test(r)) continue;
-      const text = stripComments(readFileSync(f, 'utf8'));
-      if (/dangerouslySetInnerHTML/.test(text)) problems.push(`src/${r}: dangerouslySetInnerHTML`);
-      if (/\.innerHTML\s*=(?!=)|\.outerHTML\s*=(?!=)/.test(text)) problems.push(`src/${r}: innerHTML/outerHTML assignment`);
-      if (/(?<![.\w$])eval\s*\(|new\s+Function\s*\(/.test(text)) problems.push(`src/${r}: eval/new Function`);
+      for (const k of scanSourceSinks(readFileSync(f, 'utf8'), r)) problems.push(`src/${r}: ${k}`);
     }
   }
   return problems;

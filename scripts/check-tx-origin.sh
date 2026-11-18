@@ -13,8 +13,10 @@ root="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 status=0
 count=0
 
+files=()
 while IFS= read -r file; do
   count=$((count + 1))
+  files+=("$file")
   lineno=0
   in_block=0
   prev=''
@@ -53,6 +55,37 @@ while IFS= read -r file; do
 done < <(find "$root"/packages/*/src "$root"/packages/*/contracts -type f -name '*.sol' \
   -not -path '*/test/*' -not -path '*/tests/*' -not -path '*/script/*' -not -path '*/scripts/*' \
   -not -path '*/node_modules/*' 2>/dev/null | LC_ALL=C sort)
+
+# Second, additive pass over each whole file: drop all comments (keeping newlines) and match `tx` `.` `origin` across any
+# whitespace/line breaks. The per-line checks above stay as they are (stricter: a mention inside a comment on a code
+# line still fails); this pass only adds failures, for splits that hide behind comments or several lines.
+if [ "${#files[@]}" -gt 0 ]; then
+  node - "$root" "${files[@]}" <<'NODE' || status=1
+const { readFileSync } = require('node:fs');
+const [root, ...files] = process.argv.slice(2);
+let bad = 0;
+for (const f of files) {
+  const t = readFileSync(f, 'utf8');
+  let o = '';
+  for (let i = 0; i < t.length; ) {
+    if (t[i] === '/' && t[i + 1] === '/') { while (i < t.length && t[i] !== '\n') { o += ' '; i++; } }
+    else if (t[i] === '/' && t[i + 1] === '*') {
+      o += '  '; i += 2;
+      while (i < t.length && !(t[i] === '*' && t[i + 1] === '/')) { o += t[i] === '\n' ? '\n' : ' '; i++; }
+      if (i < t.length) { o += '  '; i += 2; }
+    } else { o += t[i]; i++; }
+  }
+  const re = /(?<![A-Za-z0-9_$])tx\s*\.\s*origin(?![A-Za-z0-9_$])/g;
+  let m;
+  while ((m = re.exec(o)) !== null) {
+    const line = o.slice(0, m.index).split('\n').length;
+    console.log(`ERROR ${f.startsWith(root + '/') ? f.slice(root.length + 1) : f}:${line}: tx.origin (split across lines or comments) must not be used`);
+    bad = 1;
+  }
+}
+process.exit(bad);
+NODE
+fi
 
 if [ "$status" -eq 0 ]; then
   echo "OK: no tx.origin in $count Solidity source file(s)."
