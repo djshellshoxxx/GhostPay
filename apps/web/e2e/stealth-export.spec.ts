@@ -144,14 +144,14 @@ test('a blocked encrypted download can retry the generated file without running 
   await useVault(master);
   await fillNewPassphrase(master);
   await page.evaluate(() => {
-    const original = HTMLAnchorElement.prototype.click;
     let blocked = false;
     HTMLAnchorElement.prototype.click = function click(this: HTMLAnchorElement): void {
       if (!blocked && this.download === 'ghostpay-stealth-master.json') {
         blocked = true;
         throw new DOMException('Synthetic blocked download', 'NotAllowedError');
       }
-      original.call(this);
+      // The anchor override shadows the inherited method; call that method with this anchor as its receiver.
+      HTMLElement.prototype.click.call(this);
     };
   });
   const downloads = countDownloads(page);
@@ -277,7 +277,8 @@ test('mobile verification-only flow rejects malformed and public files, authenti
   await select('{"not":"an export"}');
   await verify.click();
   await expect(recovery.getByRole('alert')).toContainText('not a valid GhostPay stealth key export');
-  const publicRecord = codec.parsePublicRecord(JSON.stringify(JSON.parse(VECTORS.files.single.text).payments[0]));
+  const publicRecord = codec.inspectPaymentKeys(VECTORS.files.single.text).payments[0];
+  if (publicRecord === undefined) throw new Error('single-payment fixture required');
   await select(codec.serializePublicRecord(publicRecord));
   await verify.click();
   await expect(recovery.getByRole('alert')).toContainText('contains no private keys');

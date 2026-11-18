@@ -336,7 +336,7 @@ async function verifyBackup(page: Page, keystore: string): Promise<void> {
   await expect(page.getByText('This backup is not verified yet')).toBeVisible();
   await keysView(page).getByLabel('Downloaded keystore file', { exact: true }).setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') });
   await keysView(page).getByLabel('Keystore passphrase', { exact: true }).fill(BACKUP_PASS);
-  await keysView(page).getByRole('button', { name: 'Verify backup' }).click();
+  await keysView(page).getByRole('button', { name: 'Verify backup', exact: true }).click();
   await kdfExpect(keysView(page).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible();
   await expect(page.getByText('This backup is not verified yet')).toHaveCount(0);
 }

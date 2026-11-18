@@ -18,7 +18,7 @@ describe('atomic seller-key replacement', () => {
     const unsubscribe = subscribeSession(notices);
     const copied: SecretBox[] = [];
     const scalars: Uint8Array[] = [];
-    const actualCopy = SecretBox.copyOf;
+    const actualCopy = SecretBox.copyOf.bind(SecretBox);
     let calls = 0;
     vi.spyOn(SecretBox, 'copyOf').mockImplementation((source, options) => {
       scalars.push(source);

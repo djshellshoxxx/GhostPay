@@ -31,6 +31,17 @@ Assigned lanes on this branch:
 - `recovery_recon`: read-only independent final source/threat review; sole write scope
   is `docs/handoffs/spec18-reviewed-20261118/THREAT_REVIEW.md`.
 
+Hosted test follow-up, `lifecycle_review`: local source
+`58995408bec0e072a969db7bd4eb4687579bd4a7`; findings from hosted jobs
+`135206455356`, `135206455231` and `135206357114`.
+Owned paths: the test-only receiver/type repairs in `apps/web/e2e/stealth-export.spec.ts`
+and `apps/web/src/lib/session.atomicity.test.ts`; exact legacy `Verify backup` button
+selectors across the affected `apps/web/e2e/` journeys. Acceptance: resolve the three
+hosted typed-lint diagnostics and disambiguate legacy keystore verification from the
+new Spec 18 verify-only button while retaining all assertions, timing and release gates.
+Run only bounded focused checks during the coordinator's full web coverage run;
+fresh hosted browser/lint results remain necessary. No runtime or remote changes.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:
