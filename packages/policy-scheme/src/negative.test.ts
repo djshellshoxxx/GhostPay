@@ -346,3 +346,25 @@ describe('buildWithdrawTypedData binds the proof leaf to (token, limit, window)'
     expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { leaf: tree.root, proof: [], limit: 10n ** 30n, windowSeconds: 1n } } }))).toBe('INVALID_PROOF');
   });
 });
+
+// Repro from the PR #218 dropped-fix triage (T-b85e0b59-6): check of b85e0b59 lost in merge 84c2c185.
+describe('getLimitProof recomputes the stored leaf of a restored tree', () => {
+  const tree = buildLimitsTree([
+    { token: ZERO_ADDRESS, limit: 100n, windowSeconds: 60n },
+    { token: USDC, limit: 10n, windowSeconds: 60n },
+  ]);
+  const edit = (patch: Record<string, unknown>): never =>
+    ({ ...tree, leaves: tree.leaves.map((l) => (l.token === USDC ? { ...l, ...patch } : l)) }) as never;
+
+  it('accepts an untouched tree', () => {
+    expect(getLimitProof(tree, USDC).limit).toBe(10n);
+  });
+
+  it('refuses a leaf whose limit, window or token was edited', () => {
+    expect(code(() => getLimitProof(edit({ limit: 10n ** 30n }), USDC))).toBe('INVALID_PROOF');
+    expect(code(() => getLimitProof(edit({ windowSeconds: 1n }), USDC))).toBe('INVALID_PROOF');
+    expect(code(() => getLimitProof(edit({ limit: 0n }), USDC))).toBe('INVALID_PROOF');
+    const other: Address = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+    expect(code(() => getLimitProof(edit({ token: other }), other))).toBe('INVALID_PROOF');
+  });
+});
