@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // Post-deployment smoke test of a published GhostPay GitHub Pages site (or any static host serving the same files).
 //
-// Usage: node scripts/pages/smoke.mjs <site url ending in /> [--commit <40-hex>] [--timeout-s 600]
+// Usage: node scripts/pages/smoke.mjs <site url ending in /> [--commit <40-hex>] [--timeout-s 600] [--expect-origin <origin>]
 // Checks, in order (any failure exits 1):
+//   0. with --expect-origin: the site URL (the deployment's page_url) is served from exactly that declared origin
+//      (SEC-09), checked before any request;
 //   1. build-info.json is served and names the expected commit (retried until --timeout-s: Pages propagates slowly);
 //   2. index.html is text/html, carries the meta CSP with script-src 'self', and its entry script is served as JavaScript;
 //   3. in Chromium: the app renders its main navigation, offers only the lean EVM views, shows no page errors, and makes
@@ -10,7 +12,7 @@
 // Read-only: it never connects a wallet, creates keys or contacts an RPC.
 import { chromium } from '@playwright/test';
 import { existsSync } from 'node:fs';
-import { requestWithinPublishedSite } from './smoke-url.mjs';
+import { deployedOriginProblem, requestWithinPublishedSite } from './smoke-url.mjs';
 
 const args = process.argv.slice(2);
 const url = args[0];
@@ -21,7 +23,7 @@ const opt = (name) => {
 const commit = opt('--commit');
 const timeoutS = Number(opt('--timeout-s') ?? '600');
 if (url === undefined || !/^https?:\/\/[^/]+\/(?:[^?#]*\/)?$/.test(url)) {
-  console.error('usage: smoke.mjs <site url ending in /> [--commit <sha>] [--timeout-s N]');
+  console.error('usage: smoke.mjs <site url ending in /> [--commit <sha>] [--timeout-s N] [--expect-origin <origin>]');
   process.exit(2);
 }
 if (commit !== undefined && !/^[0-9a-f]{40}$/.test(commit)) {
@@ -37,6 +39,13 @@ const fail = (msg) => {
   console.error(`SMOKE FAIL: ${msg}`);
   process.exit(1);
 };
+
+// 0. The deployed origin is the declared one (SEC-09): the build's shared-origin gate and runtime guard trusted it.
+if (args.includes('--expect-origin')) {
+  const problem = deployedOriginProblem(url, opt('--expect-origin'));
+  if (problem !== undefined) fail(problem);
+  console.log(`origin: ${site.origin} (declared)`);
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function get(path) {

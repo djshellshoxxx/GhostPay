@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest';
 import { CORE_ORDER } from '../AppShell';
-import { FRAME_SAFE_VIEWS, embedModeEnabled, frameRefusesView, isFramed } from './frameGuard';
+import { FRAME_SAFE_VIEWS, currentOriginCheck, declaredOrigin, embedModeEnabled, frameRefusesView, isFramed, originMismatch } from './frameGuard';
 
 afterEach(() => { document.body.replaceChildren(); });
 
@@ -37,5 +37,31 @@ describe('frame guard', () => {
     }
     for (const v of FRAME_SAFE_VIEWS) expect(frameRefusesView(v, true, false)).toBe(false);
     expect(CORE_ORDER.filter((v) => !frameRefusesView(v, true, false))).toEqual(['home', 'pay', 'about']);
+  });
+});
+
+// SEC-09 / E-03: the build knows the origin it was declared for; any other serving origin fails closed.
+describe('declared-origin guard', () => {
+  it('reads the declared origin from the build env', () => {
+    expect(declaredOrigin({ VITE_GHOSTPAY_PAGES_ORIGIN: 'https://pay.example' })).toBe('https://pay.example');
+    expect(declaredOrigin({})).toBeUndefined();
+    expect(declaredOrigin({ VITE_GHOSTPAY_PAGES_ORIGIN: '' })).toBeUndefined();
+    expect(declaredOrigin({ VITE_GHOSTPAY_PAGES_ORIGIN: 5 })).toBeUndefined();
+  });
+  it('flags any other serving origin, and a malformed declaration, as a mismatch', () => {
+    expect(originMismatch(undefined, 'https://anything.example')).toBe(false);
+    expect(originMismatch('https://pay.example', 'https://pay.example')).toBe(false);
+    expect(originMismatch('http://localhost:4175', 'http://localhost:4175')).toBe(false);
+    expect(originMismatch('https://pay.example', 'https://djshellshoxxx.github.io')).toBe(true);
+    expect(originMismatch('https://pay.example', 'https://pay.example:8443')).toBe(true);
+    expect(originMismatch('https://pay.example', 'http://pay.example')).toBe(true);
+    expect(originMismatch('https://pay.example', 'null')).toBe(true);
+    for (const bad of ['pay.example', 'https://pay.example/GhostPay/', 'https://user@pay.example', 'not a url']) {
+      expect(originMismatch(bad, 'https://pay.example'), bad).toBe(true);
+    }
+  });
+  it('compares against the page origin', () => {
+    expect(currentOriginCheck({ VITE_GHOSTPAY_PAGES_ORIGIN: 'https://pay.example' })).toEqual({ declared: 'https://pay.example', actual: window.location.origin });
+    expect(currentOriginCheck({})).toEqual({ declared: undefined, actual: window.location.origin });
   });
 });

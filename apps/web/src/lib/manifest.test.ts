@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { fakeManifestJson } from '../test/fakeManifest';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { prepareManifestFixture } from '../../e2e/prepare-manifest.mjs';
 import { fileURLToPath } from 'node:url';
 import { stripComments } from '../../scripts/scan-bundle.mjs';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
@@ -88,5 +91,24 @@ describe('static Pages deployment-manifest gates', () => {
     const offline = mockRpc(84532, () => { throw new Error('offline'); });
     expect((await verifyManifestForFlow(state, offline)).status).toBe('invalid');
     expect((await verifyManifestForFlow(state, withManifestChain(offline))).status).toBe('loaded');
+  });
+});
+
+// SEC-09 / E-03: a copy served from another origin than the one the build declares never trusts its manifests.
+describe('declared-origin gate on bundled manifests', () => {
+  const root = mkdtempSync(join(tmpdir(), 'gp-origin-'));
+  afterAll(() => { rmSync(root, { recursive: true, force: true }); });
+  const fixture = prepareManifestFixture({ tempRoot: root });
+  const source = { '84532': readFileSync(join(fixture.directory, '84532.json'), 'utf8') };
+  it('loads a signed manifest on the declared origin or when none is declared', () => {
+    expect(loadBundledManifest(84532, source, [fixture.publicKey], { declared: 'https://pay.example', actual: 'https://pay.example' }).status).toBe('loaded');
+    expect(loadBundledManifest(84532, source, [fixture.publicKey], { declared: undefined, actual: 'https://other.example' }).status).toBe('loaded');
+    expect(loadBundledManifest(84532, source, [fixture.publicKey]).status).toBe('loaded');
+  });
+  it('refuses it (invalid, payments disabled) on any other origin', () => {
+    const s = loadBundledManifest(84532, source, [fixture.publicKey], { declared: 'https://pay.example', actual: 'https://djshellshoxxx.github.io' });
+    expect(s.status).toBe('invalid');
+    if (s.status === 'invalid') expect(s.reason).toMatch(/served from https:\/\/djshellshoxxx\.github\.io.*declared for https:\/\/pay\.example/);
+    expect(loadBundledManifest(84532, source, [fixture.publicKey], { declared: 'not an origin', actual: 'https://pay.example' }).status).toBe('invalid');
   });
 });

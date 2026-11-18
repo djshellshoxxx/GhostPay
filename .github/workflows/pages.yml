@@ -252,10 +252,13 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: ./node_modules/.bin/playwright install --with-deps chromium
-      - name: Smoke test the published site
+      # The build trusted the declared origin (shared-origin gate, runtime origin guard): the URL GitHub deployed to must be
+      # exactly that origin, or the run fails (SEC-09). Same expression as the site job's GHOSTPAY_PAGES_ORIGIN.
+      - name: Smoke test the published site (deployed origin = declared origin)
         env:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+          DECLARED_ORIGIN: ${{ vars.GHOSTPAY_PAGES_ORIGIN || format('https://{0}.github.io', github.repository_owner) }}
         run: |
           set -euo pipefail
           case "$PAGE_URL" in */) ;; *) PAGE_URL="$PAGE_URL/" ;; esac
-          node scripts/pages/smoke.mjs "$PAGE_URL" --commit "$GITHUB_SHA" --timeout-s 600
+          node scripts/pages/smoke.mjs "$PAGE_URL" --expect-origin "$DECLARED_ORIGIN" --commit "$GITHUB_SHA" --timeout-s 600

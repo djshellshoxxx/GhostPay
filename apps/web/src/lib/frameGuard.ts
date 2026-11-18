@@ -47,3 +47,42 @@ export const FRAME_REFUSAL = Object.freeze({
   body: 'This page is shown inside another site. Seller keys, invoices, scanning, sweeps, the registry and settings are not available here, because the other site could cover them and trick a click.',
   action: 'Open in a new tab',
 });
+
+/**
+ * Origin the build was made for (SEC-09 / E-03): scripts/pages/build-pages.sh passes the declared GHOSTPAY_PAGES_ORIGIN
+ * to the Vite build as VITE_GHOSTPAY_PAGES_ORIGIN. Undefined for builds that declare none (self-hosted, development).
+ */
+export function declaredOrigin(env: Readonly<Record<string, unknown>>): string | undefined {
+  const raw = env['VITE_GHOSTPAY_PAGES_ORIGIN'];
+  return typeof raw === 'string' && raw !== '' ? raw : undefined;
+}
+
+/**
+ * True when an origin is declared and the page is served from any other one. A declaration that is not exactly a
+ * scheme://host[:port] origin also counts as a mismatch (fail closed).
+ */
+export function originMismatch(declared: string | undefined, actual: string): boolean {
+  if (declared === undefined) return false;
+  try {
+    const d = new URL(declared);
+    return d.origin !== declared || d.origin !== actual;
+  } catch {
+    return true;
+  }
+}
+
+export interface OriginCheck {
+  readonly declared: string | undefined;
+  readonly actual: string;
+}
+
+/** The build's declared origin and the page's real origin; undefined outside a browser document. */
+export function currentOriginCheck(env: Readonly<Record<string, unknown>> = import.meta.env): OriginCheck | undefined {
+  return typeof location === 'undefined' ? undefined : { declared: declaredOrigin(env), actual: location.origin };
+}
+
+export const ORIGIN_MISMATCH = Object.freeze({
+  title: 'This copy is not served from its declared address',
+  body: (declared: string, actual: string): string =>
+    `This build was made for ${declared}, but this page is served from ${actual}. Another site may control this copy, so its deployment manifests are not trusted and payments stay disabled. Open GhostPay from its declared address.`,
+});

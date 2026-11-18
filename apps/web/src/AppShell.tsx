@@ -19,7 +19,7 @@ import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { notifyAppLock } from './lib/appLock';
-import { FRAME_REFUSAL, embedModeEnabled, frameRefusesView, isFramed } from './lib/frameGuard';
+import { FRAME_REFUSAL, ORIGIN_MISMATCH, currentOriginCheck, embedModeEnabled, frameRefusesView, isFramed, originMismatch } from './lib/frameGuard';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
 export const IDLE_CHECK_MS = 20_000;
@@ -106,6 +106,11 @@ export function AppShell(props: AppShellProps): ReactNode {
   // Framed by another site outside the explicit embed mode: key, sweep and settings views are refused (SEC-18).
   const [framed] = useState(() => isFramed(window));
   const embedMode = embedModeEnabled(import.meta.env, profile);
+  // Served from another origin than the build declares (SEC-09): manifests are refused in loadBundledManifest; say why.
+  const [wrongOrigin] = useState(() => {
+    const check = currentOriginCheck();
+    return check !== undefined && originMismatch(check.declared, check.actual) ? check : undefined;
+  });
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
 
   // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
@@ -308,6 +313,9 @@ export function AppShell(props: AppShellProps): ReactNode {
       </header>
       <main id="main" tabIndex={-1} ref={main}>
         {props.mainPrelude}
+        {wrongOrigin !== undefined && (
+          <Notice kind="error" title={ORIGIN_MISMATCH.title}>{ORIGIN_MISMATCH.body(wrongOrigin.declared ?? 'another origin', wrongOrigin.actual)}</Notice>
+        )}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
             {t('app.backup.unverified.body')}

@@ -60,3 +60,24 @@ describe('AppShell frame guard (SEC-18)', () => {
     expect(within(screen.getByRole('main')).queryByText(REFUSAL)).toBeNull();
   });
 });
+
+// SEC-09: a build served from another origin than the declared one says so on every view.
+describe('AppShell declared-origin warning (SEC-09)', () => {
+  it('shows a visible warning when the page origin differs from the declared origin', () => {
+    vi.spyOn(frameGuard, 'currentOriginCheck').mockReturnValue({ declared: 'https://pay.example', actual: 'https://djshellshoxxx.github.io' });
+    renderWith(<AppLean />);
+    const main = screen.getByRole('main');
+    expect(within(main).getByText(/not served from its declared address/)).toBeTruthy();
+    expect(within(main).getByText(/made for https:\/\/pay\.example, but this page is served from https:\/\/djshellshoxxx\.github\.io/)).toBeTruthy();
+  });
+
+  it('shows nothing on the declared origin or when no origin is declared', () => {
+    vi.spyOn(frameGuard, 'currentOriginCheck').mockReturnValue({ declared: window.location.origin, actual: window.location.origin });
+    const first = renderWith(<AppLean />);
+    expect(screen.queryByText(/not served from its declared address/)).toBeNull();
+    first.unmount();
+    vi.spyOn(frameGuard, 'currentOriginCheck').mockReturnValue({ declared: undefined, actual: window.location.origin });
+    renderWith(<AppLean />);
+    expect(screen.queryByText(/not served from its declared address/)).toBeNull();
+  });
+});
