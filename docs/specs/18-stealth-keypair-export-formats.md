@@ -189,8 +189,11 @@ discover other stealth payments.
   result that completes after cancellation is discarded and its secrets wiped, never downloaded.
 - Nothing is downloaded or revealed automatically when a payment is discovered. Secrets are never written to
   IndexedDB/localStorage/sessionStorage, the URL, the clipboard, logs or any network request.
-- Before a secret export the stealth address is checked with `eth_getCode` through the user-selected RPC (no fallback):
-  non-empty code (a contract or EIP-7702 delegation) refuses the export; a failed check refuses it too (fail closed).
+- Before a payment-key export (encrypted keypair, archive or raw key) every stealth address in it is checked with
+  `eth_getCode` at `latest` through the client the scan used (the user-selected RPC, or the private scan endpoint when
+  one is configured; no fallback): non-empty code (a contract or EIP-7702 delegation) refuses the export; a failed or
+  malformed check refuses it too (fail closed). One refused address refuses the whole archive. The master backup names
+  no stealth address and has no such check.
 
 ## 8. Reference vectors and independent recovery
 

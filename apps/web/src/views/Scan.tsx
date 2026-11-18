@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
 import { ReconciliationLedger } from '../components/ReconciliationLedger';
+import { StealthExportArchive } from '../components/StealthExportArchive';
+import { StealthExportPayment } from '../components/StealthExportPayment';
 import { useManifest } from '../components/Disclosure';
 import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
@@ -92,6 +94,9 @@ export function Scan(): ReactNode {
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  // The client the scan of `scope` used (user-selected RPC or private scan endpoint); spec 18 exports check eth_getCode
+  // through it and through nothing else.
+  const [scanRpc, setScanRpc] = useState<{ readonly scope: NonNullable<typeof scanOwner>; readonly rpc: RpcClient } | undefined>(undefined);
   const [autoRescan, setAutoRescan] = useState(false);
   // Bumped to re-arm the timer after a tick that was skipped because the tab was hidden.
   const [autoWake, setAutoWake] = useState(0);
@@ -130,6 +135,7 @@ export function Scan(): ReactNode {
     abort.current?.abort();
     app.setMatches([]);
     setScanOwner(undefined);
+    setScanRpc(undefined);
     setProgress(undefined);
     setDone(undefined);
   }), [app.setMatches]);
@@ -146,6 +152,7 @@ export function Scan(): ReactNode {
       abort.current?.abort();
       app.setMatches([]);
       setScanOwner(undefined);
+      setScanRpc(undefined);
     }
   }, [app.session?.signerPublicKey, app.setMatches, chainId, keyId, scanOwner]);
 
@@ -161,6 +168,7 @@ export function Scan(): ReactNode {
 
   const scanMatchesCurrentScope = scanOwner !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session.signerPublicKey;
   const scopedMatches = scanMatchesCurrentScope ? app.matches.filter((match) => match.chainId === chainId) : [];
+  const exportRpc = scanMatchesCurrentScope && scanRpc?.scope === scanOwner && scanRpc.rpc.chainId === chainId ? scanRpc.rpc : undefined;
   const routerOnlyNote = routerOnlyBlocks === undefined ? undefined : describeRouterOnly(routerOnlyBlocks, t);
 
   const begin = (opts?: { readonly append: true }): void => {
@@ -184,6 +192,7 @@ export function Scan(): ReactNode {
     setLagNote(undefined);
     if (!append) {
       setScanOwner(undefined);
+      setScanRpc(undefined);
       app.setMatches([]);
     }
     const scopeKeysAreCurrent = (): boolean => {
@@ -240,6 +249,7 @@ export function Scan(): ReactNode {
         const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep });
         assertScopeCurrent();
         setScanOwner(scope);
+        setScanRpc({ scope, rpc });
         let found: ScanMatch[] = [...seed];
         let quarantined: ScanMatch[] = [];
         // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
@@ -416,6 +426,7 @@ export function Scan(): ReactNode {
         matches={scopedMatches}
         sellerSignerPublicKey={app.session.signerPublicKey}
         receiptSignerPublicKey={scanMatchesCurrentScope ? scanOwner.signerPublicKey : undefined}
+        exportRpc={exportRpc}
       />
       <ReconciliationLedger
         chainId={chainId}
@@ -444,7 +455,7 @@ function describe(m: ScanMatch, chainId: number, t: T): string {
   return token === undefined ? t('scan.match.unlistedToken', { amount: m.metadata.netAmount.toString(), token: m.metadata.token }) : `${formatUnits(m.metadata.netAmount, token.decimals)} ${token.symbol}`;
 }
 
-function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
+function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined; readonly exportRpc: RpcClient | undefined }): ReactNode {
   const t = useScanT();
   const latestT = useLatestScanT(t);
   const app = useApp();
@@ -483,6 +494,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   return (
     <div>
       <h3>{t('scan.matches.heading')}</h3>
+      <StealthExportArchive matches={matches} chainId={props.chainId} rpc={props.exportRpc} announce={app.announce} />
       {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
       {shared.size > 0 && <Notice kind="warn">{t('scan.matches.sharedAddress')}</Notice>}
       <ul className="plain-list matches">
@@ -548,6 +560,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
               <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: m.chainId }); app.setView('sweep'); }}>
                 {t('scan.sweep')}
               </button>
+              <StealthExportPayment match={m} chainId={props.chainId} rpc={props.exportRpc} announce={app.announce} />
             </li>
           );
         })}
