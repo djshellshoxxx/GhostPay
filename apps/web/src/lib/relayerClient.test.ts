@@ -83,6 +83,11 @@ describe('requestQuote', () => {
     }
     expect(RELAYER_PRE_BROADCAST_CODES).not.toContain('nonce_used');
     expect(emitted.get('send_failed')).toBe(503);
+    // The other direction: a 4xx class the relayer can emit and this list does not know keeps the signing lock for
+    // nothing (the relayer sends no 4xx after a broadcast, see its README). A new class must be listed here on purpose.
+    const unknown = [...emitted].filter(([code, status]) => status >= 400 && status < 500 && code !== 'nonce_used' && !/^invalid_[a-z_]{1,32}$/.test(code) && !RELAYER_PRE_BROADCAST_CODES.includes(code)).map(([code]) => code);
+    expect(unknown).toEqual([]);
+    expect(new RelayerRefusedError('x', 429, 'client_queue_full').beforeBroadcast).toBe(true);
   });
   it('handles transport failures, oversized and non-JSON replies', async () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline')))).rejects.toThrow(/Could not reach the relayer/);
