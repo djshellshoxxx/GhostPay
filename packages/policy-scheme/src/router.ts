@@ -1,4 +1,4 @@
-import { buildErc20Metadata, buildNativeMetadata, parseCompressedPoint } from '@ghostpay/core-crypto';
+import { buildErc20Metadata, buildNativeMetadata, parseCompressedPoint, parseMetadata } from '@ghostpay/core-crypto';
 import { bytesToHex, decodeFunctionData, encodeFunctionData, hexToBytes } from 'viem/utils';
 import { ghostPayPolicyRouterAbi } from './abi/policyRouter.js';
 import type { CallRequest } from './calldata.js';
@@ -153,16 +153,29 @@ export interface DecodedPolicyPayment {
 /**
  * Decodes policy-router calldata and re-checks the policy binding.
  *
+ * @remarks Besides the binding (`stealth` is the account predicted from `owner` and `policyHash`), the
+ * calldata must be the canonical ABI encoding (no trailing bytes), the ephemeral key must be a valid
+ * compressed secp256k1 point, and the metadata must be valid router metadata consistent with the call:
+ * native metadata for `payNative`, the call's token for the ERC-20 methods, `net = gross - fee` for the
+ * ERC-20 methods, and `net >= minNet`. For `payNative` the gross is `msg.value`, which is not part of
+ * the calldata, so only `net >= minNet` is checked.
+ *
  * @param data Calldata.
  * @param deployment Factory and implementation; `stealth` must equal the predicted account.
  * @returns Method and the scheme-2 fields.
- * @throws {PolicySchemeError} `INVALID_INPUT` on unknown calldata or a stealth/policy mismatch.
- * @security Use before showing a wallet prompt: a tampered `stealth` or `owner` is detected here.
+ * @throws {PolicySchemeError} `INVALID_INPUT` on unknown or non-canonical calldata, a stealth/policy
+ * mismatch, an invalid ephemeral key, or metadata that does not match the call.
+ * @security Use before showing a wallet prompt: a tampered `stealth` or `owner` is detected here. This
+ * proves only internal consistency: a frontend that swaps the whole payee (owner, policyHash, stealth,
+ * ephemeral key, view tag) produces calldata that still decodes. Compare the returned fields with your
+ * own derivation from the payee's meta-address, and check the router address and `msg.value` yourself.
  */
 export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeployment): DecodedPolicyPayment {
   let d: ReturnType<typeof decodeFunctionData<typeof ghostPayPolicyRouterAbi>>;
+  let canonical: Hex;
   try {
     d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: hexBytes(data, 'data') });
+    canonical = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: d.functionName, args: d.args });
   } catch {
     return fail('INVALID_INPUT', 'not policy router calldata');
   }
@@ -170,18 +183,45 @@ export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeploym
   const ephIdx = ({ payNative: 4, payERC20: 6, payERC20WithPermit: 6, payERC20WithBuffer: 7 } as Record<string, number>)[method];
   if (ephIdx === undefined) return fail('INVALID_INPUT', 'not a payment method');
   const a = d.args as readonly unknown[];
+  // Refuse trailing bytes and any other encoding than the one the router ABI produces.
+  if (canonical !== data.toLowerCase()) return fail('INVALID_INPUT', 'non-canonical calldata');
   const native = method === 'payNative';
   const stealth = (native ? a[0] : a[1]) as Address;
   const policy = (native ? a[1] : a[2]) as { owner: Address; policyHash: Hex };
   if (predictAccountAddress(deployment, policy.owner, policy.policyHash) !== stealth) {
     return fail('INVALID_INPUT', 'stealth is not the policy account');
   }
+  const ephemeralPublicKey = a[ephIdx] as Hex;
+  const metadata = a[ephIdx + 1] as Hex;
+  try {
+    parseCompressedPoint(hexToBytes(ephemeralPublicKey));
+  } catch {
+    return fail('INVALID_INPUT', 'invalid ephemeral key');
+  }
+  let meta: ReturnType<typeof parseMetadata>;
+  try {
+    meta = parseMetadata(metadata);
+  } catch {
+    return fail('INVALID_INPUT', 'invalid payment metadata');
+  }
+  if (native) {
+    if (meta.kind !== 'native') return fail('INVALID_INPUT', 'metadata is not native');
+    if (meta.netAmount < (a[2] as bigint)) return fail('INVALID_INPUT', 'metadata net below minNet');
+  } else {
+    if (meta.kind !== 'erc20' || meta.token.toLowerCase() !== (a[0] as Address).toLowerCase()) {
+      return fail('INVALID_INPUT', 'metadata token does not match the call');
+    }
+    // policyRouterFee refuses a gross the router would not accept (zero or overflowing).
+    const gross = a[3] as bigint;
+    if (meta.netAmount !== gross - policyRouterFee(gross)) return fail('INVALID_INPUT', 'metadata net is not gross minus fee');
+    if (meta.netAmount < (a[4] as bigint)) return fail('INVALID_INPUT', 'metadata net below minNet');
+  }
   return Object.freeze({
     method: method as PolicyRouterMethod,
     stealth,
     owner: policy.owner,
     policyHash: policy.policyHash,
-    ephemeralPublicKey: a[ephIdx] as Hex,
-    metadata: a[ephIdx + 1] as Hex,
+    ephemeralPublicKey,
+    metadata,
   });
 }
