@@ -13,6 +13,15 @@ the owning PR); behaviour-preserving fixes pass their package tests. Read-only: 
 `.github/workflows/{ci,nightly}.yml` (#213/#220), `packages/merchant-ledger/src/ledger.test.ts` (#220).
 Out of scope: contract sources, scheme-2 ABI (AUD24-01 stays owner-gated), merges to `main`, deployment, signing.
 
+# Independent PoC static-server security followup — 2026-11-18
+
+Worker: ChatGPT security review, Caveman workflow. Branch: `chatgpt/ghostpay-sonar-review-20261118`.
+Base: PR #224, `1054daabc5cabe958466ec144582d76137b54910`.
+Owned paths: `docs/audits/poc/static-server.mjs`, its tests, this claim and the task handoff.
+Acceptance: reproduce malformed-URL process termination and symlink escape; return safe responses for URL and
+filesystem failures, constrain served files to the canonical bundle directory, and retain normal serving behavior.
+This audit-only helper change does not alter product bundles, SonarCloud state, release gates or deployment behavior.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
