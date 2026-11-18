@@ -137,7 +137,7 @@ describe('scan-bundle', () => {
     }
     expect(bad(GOOD_HTML.replace(module, `<script src="./a.js">alert(1)</script >`))).toMatch(/both src and inline/);
     // An unterminated element is not a parsable external script either.
-    expect(bad(GOOD_HTML.replace(module, '<script>alert(1)'))).toMatch(/<script>/);
+    expect(scan(build({}, { html: GOOD_HTML.replace(module, '<script>alert(1)') }))).toContain('index.html: unterminated <script>');
     expect(scan(build())).toEqual([]);
   });
 
