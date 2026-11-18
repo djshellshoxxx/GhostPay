@@ -3,7 +3,7 @@ import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { afterEach, describe, expect, it } from 'vitest';
 import { checkpointKeyId, localCheckpointStore } from './scanClient';
 import { CHECKPOINT_SLOT_PREFIX, checkpointSlot, legacyCheckpointSlot, sessionViewingKey } from './scanCursorSlot';
-import { clearSession, generateSession, importSession, type SessionPublic } from './session';
+import { clearSession, generateSession, getSessionPublic, importSession, type SessionPublic } from './session';
 
 /** SEC-22: a scan cursor slot must not tell anyone holding only a seller's public keys that this browser scans for them. */
 
@@ -13,6 +13,13 @@ const CURSOR = { nextBlock: 4242n, last: { number: 4241n, hash: `0x${'c'.repeat(
 function mem() {
   const map = new Map<string, string>();
   return { map, getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => void map.set(k, v), removeItem: (k: string) => void map.delete(k) };
+}
+
+/** Like Web Storage, `key(i)` indexes the live key list, so removing an entry shifts every later index down. */
+function webStorage(entries: Record<string, string> = {}) {
+  const st = mem();
+  for (const [k, v] of Object.entries(entries)) st.setItem(k, v);
+  return { ...st, get length() { return st.map.size; }, key: (i: number) => [...st.map.keys()][i] ?? null };
 }
 
 /** Every identifier an observer can compute from a meta-address (both public keys) alone. */
@@ -103,6 +110,44 @@ describe('SEC-22 scan cursor slot names', () => {
     expect(cp.load(1, keyId)).toEqual({ nextBlock: 7n });
     cp.clear(1, keyId);
     expect(st.map.size).toBe(0);
+  });
+
+  it('sweep every public-key-named legacy slot, of any chain or key set, as soon as the store exists and without any keys', () => {
+    const other = checkpointKeyId('02cc', '03dd');
+    const v3 = checkpointSlot(new Uint8Array(32).fill(9), 1, other);
+    const st = webStorage({
+      [`${LEGACY_PREFIX}1.${other}`]: '{"nextBlock":"5"}',
+      [`${LEGACY_PREFIX}84532.${other}`]: '{"nextBlock":"6"}', // adjacent: a sweep that removes while indexing skips this one
+      'ghostpay.settings.v1': '{}',
+      [v3]: '{"nextBlock":"7"}',
+      'ghostpay.scan.checkpoint.v1.84532': '{"nextBlock":"8"}', // chain-only v1: never read, and it names a chain v3 hides
+      'ghostpay.scan.checkpoint.v1.1': '{"nextBlock":"9"}',
+      'ghostpay.scan.checkpoint.v20.decoy': 'x',
+      [`x.${LEGACY_PREFIX}1.${other}`]: 'x',
+    });
+    expect(getSessionPublic()).toBeUndefined();
+    localCheckpointStore(st);
+    expect([...st.map.keys()]).toEqual(['ghostpay.settings.v1', v3, 'ghostpay.scan.checkpoint.v20.decoy', `x.${LEGACY_PREFIX}1.${other}`]);
+  });
+
+  it('sweep best effort: storage without key enumeration, or that throws, never breaks the store', () => {
+    const legacy = `${LEGACY_PREFIX}1.${checkpointKeyId('02cc', '03dd')}`;
+    const plain = mem();
+    plain.setItem(legacy, '{}');
+    expect(() => localCheckpointStore(plain)).not.toThrow();
+    expect(plain.map.has(legacy)).toBe(true); // nothing to enumerate with: only the per-key deletes on save and clear apply
+    const second = `${LEGACY_PREFIX}2.${checkpointKeyId('02cc', '03dd')}`;
+    const flaky = webStorage({ [legacy]: '{}', [second]: '{}' });
+    const remove = flaky.removeItem;
+    expect(() => localCheckpointStore({ ...flaky, get length() { return flaky.map.size; }, removeItem: (k: string) => { if (k === legacy) throw new Error('SecurityError'); remove(k); } })).not.toThrow();
+    expect([...flaky.map.keys()]).toEqual([legacy]); // one failed removal does not stop the rest
+    const hostile = [
+      { ...mem(), get length(): number { throw new Error('SecurityError'); }, key: () => null },
+      { ...mem(), length: 1, key: (): string | null => { throw new Error('SecurityError'); } },
+      { ...mem(), length: Number.POSITIVE_INFINITY, key: () => legacy },
+      { ...mem(), length: 1, key: 'not a function' },
+    ];
+    for (const s of hostile) expect(() => localCheckpointStore(s as unknown as ReturnType<typeof mem>)).not.toThrow();
   });
 
   it('are HKDF-SHA256 of the viewing key, bound to the chain and key id (format pinned: a change orphans every checkpoint)', () => {
