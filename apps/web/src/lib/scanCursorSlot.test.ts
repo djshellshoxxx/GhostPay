@@ -1,8 +1,9 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { checkpointKeyId, localCheckpointStore } from './scanClient';
-import { CHECKPOINT_SLOT_PREFIX, checkpointSlot, legacyCheckpointSlot, sessionViewingKey } from './scanCursorSlot';
+import { CHECKPOINT_SLOT_PREFIX, checkpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
+import * as session from './session';
 import { clearSession, generateSession, getSessionPublic, importSession, type SessionPublic } from './session';
 
 /** SEC-22: a scan cursor slot must not tell anyone holding only a seller's public keys that this browser scans for them. */
@@ -174,5 +175,51 @@ describe('SEC-22 scan cursor slot names', () => {
     clearSession(false);
     expect(sessionViewingKey(keyId, () => { called = true; })).toBeUndefined();
     expect(called).toBe(false);
+  });
+
+  it('lend the session viewing key once per slot while the scan view loads its checkpoint on every render', () => {
+    const hex = { spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) };
+    const pub = importSession(hex);
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    const lent = vi.spyOn(session, 'revealViewingKey');
+    try {
+      const st = mem();
+      const cp = localCheckpointStore(st); // as createDefaultServices builds it: the loaded session lends the key
+      // Scan.tsx calls `load` while rendering, and runScan saves after every page.
+      for (let i = 0; i < 10; i++) expect(cp.load(84532, keyId)).toBeUndefined();
+      cp.save(84532, keyId, CURSOR);
+      for (let i = 0; i < 10; i++) expect(cp.load(84532, keyId)).toEqual(CURSOR);
+      expect(lent).toHaveBeenCalledTimes(1);
+      cp.load(1, keyId); // another chain is another slot
+      expect(lent).toHaveBeenCalledTimes(2);
+      // A cached name serves only the keys it was derived from, and only while they are loaded.
+      clearSession(false);
+      expect(cp.load(84532, keyId)).toBeUndefined();
+      cp.save(84532, keyId, { nextBlock: 1n });
+      generateSession();
+      expect(cp.load(84532, keyId)).toBeUndefined();
+      cp.save(84532, keyId, { nextBlock: 2n });
+      expect(lent).toHaveBeenCalledTimes(2);
+      expect(st.map.size).toBe(1);
+      // Changing or wiping the keys dropped the cache: the same keys restored are lent again, once.
+      clearSession(false);
+      importSession(hex);
+      for (let i = 0; i < 10; i++) expect(cp.load(84532, keyId)).toEqual(CURSOR);
+      expect(lent).toHaveBeenCalledTimes(3);
+      for (const r of lent.mock.results) expect((r.value as Uint8Array).every((b) => b === 0)).toBe(true);
+    } finally {
+      lent.mockRestore();
+    }
+  });
+
+  it('derive afresh on every use from a lender that cannot say which keys are loaded', () => {
+    let lends = 0;
+    const lender: ViewingKeyLender = (_keyId, use) => { lends++; return use(new Uint8Array(32).fill(7)); };
+    const keyId = checkpointKeyId('02aa', '03bb');
+    const cp = localCheckpointStore(mem(), lender);
+    cp.save(1, keyId, CURSOR);
+    cp.load(1, keyId);
+    cp.load(1, keyId);
+    expect(lends).toBe(3);
   });
 });

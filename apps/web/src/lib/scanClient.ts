@@ -17,7 +17,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
-import { checkpointSlot, isLegacyCheckpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
+import { checkpointSlotNamer, isLegacyCheckpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
@@ -699,15 +699,16 @@ function sweepLegacySlots(storage: StorageLike | undefined): void {
 /**
  * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
  *
- * SEC-22: slots are named by {@link checkpointSlot} from the viewing key that `viewingKey` lends for the key id (by default
- * the loaded session's, and only for its own key id), so a slot name tells someone who knows only the meta-address nothing.
- * Without those keys nothing is read or written. Legacy slots, named from public data, are never read (the scan starts over
- * from the chosen block): creating the store sweeps them for every chain and key set where the storage can list its keys,
- * and the first v3 save for a chain and key id, and `clear`, delete that one's v2 slot in any case.
+ * SEC-22: slots are named by {@link checkpointSlotNamer} from the viewing key that `viewingKey` lends for the key id (by
+ * default the loaded session's, and only for its own key id), so a slot name tells someone who knows only the meta-address
+ * nothing. Without those keys nothing is read or written. Legacy slots, named from public data, are never read (the scan
+ * starts over from the chosen block): creating the store sweeps them for every chain and key set where the storage can list
+ * its keys, and the first v3 save for a chain and key id, and `clear`, delete that one's v2 slot in any case.
  */
 export function localCheckpointStore(storage: StorageLike | undefined, viewingKey: ViewingKeyLender = sessionViewingKey): CheckpointStore {
   sweepLegacySlots(storage);
-  const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? viewingKey(keyId, (vk) => checkpointSlot(vk, chainId, keyId)) : undefined);
+  const named = checkpointSlotNamer(viewingKey);
+  const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? named(chainId, keyId) : undefined);
   return {
     load(chainId, keyId) {
       try {
