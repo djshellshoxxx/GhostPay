@@ -8,7 +8,7 @@ the evidence named; "Open" means it remains a gate, owner decision or backlog it
 | ID | Area | Severity | Finding | Resolution | State |
 |---|---|---|---|---|---|
 | R-01 | Bundle guard (CodeQL `js/bad-tag-filter`) | High (guard fail-open) | `apps/web/scripts/scan-bundle.mjs` matched only `</script>`, so an inline script ending `</script >`, `</SCRIPT\t>`, `</script foo>` or never closed escaped the postbuild index.html check. Pre-existing since `1f7ab710`; build input is the project's own Vite output, so exploitation needs a compromised build step. | Start/end tags paired with an HTML-conformant end-tag rule; unterminated elements reported (`b441cc64`); RED-first regression; CodeQL's follow-up flag on the test's own assertion regex replaced by an exact string (`5ddb042a`). | Resolved |
-| R-02 | Browser journey (#201/#202 e2e) | Medium (user-visible lost click) | `ContextHelp` dismissed its in-flow explanation on outside `pointerdown`; the collapse moved the pressed control before release, so the click went to a common ancestor and "Decrypt and load" never submitted. Hit the verified-keystore re-import e2e (#202 control 0/5 locally in lean) and, inferred, #201's stale-session failure. Real users pinning help and clicking below it hit the same loss. #201's AppShell change excluded by in-place revert. | Outside dismissal on `click` (`af32d7f7`) with RED-first unit regression; help hover target shrink-wrapped (`86b6e9e5`). Local lean 10/10 and full 10/10 for both e2e tests; CI run on `bbd24cd0` e2e full and lean passed. | Resolved |
+| R-02 | Browser journey (#201/#202 e2e) | Medium (user-visible lost click; see also FR-M1) | `ContextHelp` dismissed its in-flow explanation on outside `pointerdown`; the collapse moved the pressed control before release, so the click went to a common ancestor and "Decrypt and load" never submitted. Hit the verified-keystore re-import e2e (#202 control 0/5 locally in lean) and, inferred, #201's stale-session failure. Real users pinning help and clicking below it hit the same loss. #201's AppShell change excluded by in-place revert. | Outside dismissal on `click` (`af32d7f7`) with RED-first unit regression; help hover target shrink-wrapped (`86b6e9e5`). Local lean 10/10 and full 10/10 for both e2e tests; CI run on `bbd24cd0` e2e full and lean passed. | Resolved |
 | R-03 | ContextHelp residual | Low | Moving the pointer off an open explanation still collapses it (hover-leave), shifting layout; React flushes it at lower priority, after the click in 26/26 local runs. | Documented; a non-shifting help presentation is next-phase UX work. | Open (backlog) |
 | R-04 | #201 focus scope | Low | `[view, fragment]` also focuses `main` after in-view paste "Read", QR "Open", "Forget" and the asynchronous cancel on session change; the code comment names only deep links. Nothing remounts or cancels. | Accepted as merged: narrowing to hashchange arrivals would drop focus to `body` when those controls unmount. A test pinning paste-submit focus is backlog. | Accepted / backlog |
 | R-05 | Pages merge (Common.tsx, manifest.test.ts) | Info | Independent review: 15/16 Pages commits present byte-for-byte, the 16th intentionally superseded by unified's stronger Common.tsx; manifest tests 19 = 15 + 4 with no clobbered helper. | No change needed. | Closed |
@@ -25,6 +25,26 @@ the evidence named; "Open" means it remains a gate, owner decision or backlog it
 | R-16 | Private security inventories | Gate (access) | CodeQL and Dependabot alert APIs return 403 for this integration; secret-scanning API blocked by the proxy; no Sonar configuration in the repository. | Inventory not obtained; passing scanner jobs are not issue closure. | Open (owner access) |
 | R-17 | Concurrent PR #204 | Info | Another session's open draft #204 (agent tooling, base `main`) conflicts with this candidate in `.github/workflows/ci.yml` and `CLAUDE.md`. | Not integrated (out of scope); merge-order note in the promotion packet. | Open (coordination) |
 
-The final independent combined review (source preservation, conflict semantics, product constraints on the
-shipped runtime, session/custody boundaries and evidence honesty) is in progress; its result is added below when
-complete.
+## Final independent combined review (candidate `1e1121b3`)
+
+Scope: source preservation and conflict semantics versus `beb525dd`; product constraints on the shipped runtime;
+session, custody and crypto boundaries touched by the delta; honesty of the consolidation and disposition
+documents. Result: no Critical or High finding, no product-constraint violation and no regression from
+`beb525dd`. Verified by the reviewer: Pages lineage files blob-identical to the Pages tip where claimed; AppShell
+carries exactly the Pages hunks plus unified's wiring; `downloadBlob` is a pure extraction; manifest tests 15 + 4;
+main merge tree `36177d29`; contracts `src`/`lib`/`script` unchanged, `.gas-snapshot` additions only; no added
+fetch/XHR/WebSocket/sendBeacon/clipboard/console/storage writes in product code; lean module set (316 ids)
+identical to a `beb525dd` lean build apart from the index chunk name; lean bundle has no sendBeacon/WebSocket/
+EventSource/XHR and `clipboard.writeText` only in the click-driven CopyButton; stale-session e2e body
+byte-identical; lean and full builds, `localBuildProfile.test.mjs` 33/33, `ci:scan-secrets`, `ci:check-tx-origin`,
+`ci:check-actions`, 18 + 10 focused vitest files (322 + 76 tests) and Mythril test files 64/64 passed.
+
+| ID | Severity | Finding | Resolution | State |
+|---|---|---|---|---|
+| FR-M1 | Medium (pre-existing at `beb525dd`) | The lost-click class was only partly closed: `ContextHelp.onBlur` still collapsed a focused or pinned explanation at mousedown, so "Decrypt and load" below the Keystore file help submitted 0 times when the help was opened by "?", keyboard focus or tap (mouse and touch). The jsdom test used `fireEvent`, which never moves focus. | `4a3d47d8`: a blur during a press defers the close until after that press's click; keyboard blur closes at once. RED-first jsdom user-event test and browser tests (click, focus, hover, tap). Lean and full contextual-help + core-journey 12/12; repeat x5 30/30. | Resolved |
+| FR-L1 | Low | Integration record linked files not yet present at `1e1121b3` and gave only the first tree for combined rows. | Files now exist; both trees listed (`88318203`, `8a3723bd`). | Resolved |
+| FR-L2 | Low | Disposition records still said "awaiting independent review". | Status lines corrected (`88318203`). | Resolved |
+| FR-L3 | Low (pre-existing) | SellerKeys keystore export called `downloadText` in its success callback: a blocked download left the form busy with an unhandled rejection (backup state stayed unrecorded). | `cfb482f9` with RED-first regression; other download call sites checked (synchronous handlers or a wrapper that catches). | Resolved |
+| FR-I1 | Info | `width: fit-content` also narrows an open explanation shorter than 38rem. | Integration record corrected. | Closed |
+| FR-I2 | Info | Contract-analysis non-PR runs are never cancelled while in progress; a pending run in the same group could still be replaced. | Tag-scoped and nightly groups leave no practical exposure; noted. | Closed |
+| FR-I3 | Info | The lean bundle contains the pre-existing opt-in `src/lib/relayerClient.ts` client (no relayer runtime); the module set is unchanged from the foundation. | No change. | Closed |
