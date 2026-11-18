@@ -34,7 +34,7 @@ commits are documentation only. Commands as in CI; clean `npm ci --ignore-script
 | Relayer anvil e2e (`ANVIL_BIN=… REQUIRE_ANVIL=1 CI=true npm test -w apps/relayer`) | pass: 475 tests |
 
 At `f2f35909`: policy-scheme 111 passed / 7 skipped (anvil), web `src/features/policy src/i18n` 332 passed / 4
-skipped, policy-scheme and web typecheck 0, eslint 0, i18n check 0 errors, secret scan OK; the full web unit suite and the full-profile Playwright rerun at `f2f35909` were still running when this file was written; their result is recorded in the commit that follows.
+skipped, policy-scheme and web typecheck 0, eslint 0, i18n check 0 errors, secret scan OK; `npm test -w apps/web` (coverage + no-coverage configs) 199 files passed / 2 skipped, 2737 tests passed / 13 skipped; Playwright full profile 79 passed / 1 skipped.
 
 Hosted CI: earlier heads of PR #211 show red aggregator checks only because newer pushes cancelled their runs
 (`RESULTS: cancelled`); see the PR comments. The final push is the first one CI can run to completion.
