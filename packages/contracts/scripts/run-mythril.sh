@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Symbolic analysis of the production contracts with Mythril. Fails on any reported issue or tool error.
 # Mythril JSON omits report.exceptions; passing this output gate does not prove complete symbolic execution.
-# Needs `myth` on PATH (pip install mythril) and solc 0.8.28 (svm/solc-select/local). Issues that are accepted by
-# design must be documented in docs/audits/ and suppressed with --exclude-swc, not by weakening this script.
+# Needs `myth` on PATH (pip install mythril) and solc 0.8.28 (svm/solc-select/local). Mythril 0.24.8 has no per-SWC
+# exclusion flag (only the whole-detector `-m` module whitelist) and no inline suppression. Every reported issue keeps
+# this gate red until the source changes or a separately reviewed, owner-approved, finding-specific disposition
+# mechanism exists; record each issue's disposition in docs/audits/ and never weaken this script to pass.
 # Usage: scripts/run-mythril.sh [execution-timeout-seconds]
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."

@@ -47,6 +47,16 @@ every result is useful. Locally: `bash scripts/integration/run-all.sh up && bash
 `workflow_dispatch` only, main ref only, behind the `github-pages` environment. Nothing deploys automatically. The build
 job rebuilds `apps/web`, runs the bundle scan, and checks the CSP meta and the absence of source maps before upload.
 
+## Contract analysis (`contract-analysis.yml`)
+
+Echidna 2.2.7 and Mythril 0.24.8 run in the reusable `contract-analysis.yml` workflow, which is triggered by pull
+requests that touch contract, analyzer or caller-workflow paths, is called by `nightly.yml`, and is called by
+`release.yml` on every `v*` tag. The release `build` job needs it and re-checks this run's uploaded metadata for exactly
+the tagged commit, so a failed, cancelled, skipped or absent analyzer result blocks the release. Per-push `ci.yml` does
+not run these analyzers. Pull-request runs cancel superseded runs; release and nightly runs are never cancelled by a
+newer run. As of 2026-11-18 both analyzers fail on the current contract source (Echidna native-policy canary not
+reached; Mythril reports 11 issues), so a release is blocked until each is resolved or an approved disposition exists.
+
 ## Nightly only (`nightly.yml`)
 
 | Job | Purpose | Reproduce locally |
