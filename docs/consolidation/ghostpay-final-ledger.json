@@ -1,0 +1,697 @@
+{
+  "baseline": "a89a2e948321314acf97db435e9776d9322a9461",
+  "generated": "2026-11-18",
+  "note": "Branch-level revalidation by real ancestry + git merge-tree; 130 further remote branches are fully contained in baseline. Per-PR rows of the older 113-row ledger were not individually re-derived.",
+  "entries": [
+    {
+      "sourceBranch": "automation/ghostpay-parallel-four-agents-20261103",
+      "sourceSha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "pr": null,
+      "commitsAheadOfBaseline": 6,
+      "patchUniqueCommits": 6,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 3
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Agent/automation infrastructure (workflow + prompts). Brief requires independent review of agent infrastructure (#152) first; not done, nothing changed."
+    },
+    {
+      "sourceBranch": "automation/ghostpay-recurrent-backlog-20261103",
+      "sourceSha": "5835736c12968231ac7b3152e394077bee453622",
+      "pr": null,
+      "commitsAheadOfBaseline": 3,
+      "patchUniqueCommits": 3,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Agent/automation infrastructure (workflow + prompts). Brief requires independent review of agent infrastructure (#152) first; not done, nothing changed."
+    },
+    {
+      "sourceBranch": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "sourceSha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "pr": null,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 2,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 2
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Same scanSpam off-filter change as the ported #162 content (worker A: identical tips/patches). Recovered once via #162 row."
+    },
+    {
+      "sourceBranch": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "sourceSha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "pr": null,
+      "commitsAheadOfBaseline": 5,
+      "patchUniqueCommits": 3,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 3
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Same scanSpam off-filter change as the ported #162 content (worker A: identical tips/patches). Recovered once via #162 row."
+    },
+    {
+      "sourceBranch": "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "sourceSha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "pr": null,
+      "commitsAheadOfBaseline": 6,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "chatgpt/pages-browser-fixes-combined-20261114",
+      "sourceSha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "pr": 161,
+      "commitsAheadOfBaseline": 5,
+      "patchUniqueCommits": 3,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 3
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Same scanSpam off-filter change as the ported #162 content (worker A: identical tips/patches). Recovered once via #162 row."
+    },
+    {
+      "sourceBranch": "chatgpt/pages-release-gate-audit-20261114",
+      "sourceSha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "pr": 160,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 2,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 2
+      },
+      "classification": "DEFERRED_DOCS_ONLY",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Docs/handoff only by file list (1-6 files each); content not individually reviewed; not integrated to avoid stale or competing handoff documents."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "sourceSha": "61a7b4874577c97fe370b7bd2b6cadea54153760",
+      "pr": 139,
+      "commitsAheadOfBaseline": 26,
+      "patchUniqueCommits": 26,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED_DOCS_ONLY",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Docs/handoff only by file list (1-6 files each); content not individually reviewed; not integrated to avoid stale or competing handoff documents."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "sourceSha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "pr": 125,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "sourceSha": "2377d4ae3ab3b1f022fc96603b723f5c4cad5d7a",
+      "pr": 140,
+      "commitsAheadOfBaseline": 76,
+      "patchUniqueCommits": 76,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 6
+      },
+      "classification": "DEFERRED_DOCS_ONLY",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Docs/handoff only by file list (1-6 files each); content not individually reviewed; not integrated to avoid stale or competing handoff documents."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "sourceSha": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "sourceSha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "pr": null,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "sourceSha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "pr": 154,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 1,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "sourceSha": "3270a29a555aa3469cdaf391a1978fc32882a090",
+      "pr": 153,
+      "commitsAheadOfBaseline": 27,
+      "patchUniqueCommits": 27,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED_DOCS_ONLY",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Docs/handoff only by file list (1-6 files each); content not individually reviewed; not integrated to avoid stale or competing handoff documents."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "sourceSha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "pr": 163,
+      "commitsAheadOfBaseline": 3,
+      "patchUniqueCommits": 3,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 3
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Same scanSpam off-filter change as the ported #162 content (worker A: identical tips/patches). Recovered once via #162 row."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "sourceSha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "pr": 162,
+      "commitsAheadOfBaseline": 7,
+      "patchUniqueCommits": 4,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 4
+      },
+      "classification": "INTEGRATED",
+      "result": "integrated",
+      "recoveredFunctionality": "estimateSimilarTransfers fails closed on wrong token address / out-of-window block",
+      "reason": "Off-filter transfer fail-closed fix + regression test ported (scanSpam.ts, scanSpam.test.ts). qrKinds bearer fix already present."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "sourceSha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "pr": 159,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 2,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 2
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Same scanSpam off-filter change as the ported #162 content (worker A: identical tips/patches). Recovered once via #162 row."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "sourceSha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "pr": 126,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "sourceSha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "pr": 127,
+      "commitsAheadOfBaseline": 3,
+      "patchUniqueCommits": 2,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "sourceSha": "243d98d67c7cbcc854b2107da5461e4718cb6272",
+      "pr": null,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 2,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED_DOCS_ONLY",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Docs/handoff only by file list (1-6 files each); content not individually reviewed; not integrated to avoid stale or competing handoff documents."
+    },
+    {
+      "sourceBranch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "sourceSha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "pr": 151,
+      "commitsAheadOfBaseline": 8,
+      "patchUniqueCommits": 4,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 9
+      },
+      "classification": "INTEGRATE_AFTER_FIXES",
+      "result": "partially_integrated",
+      "recoveredFunctionality": "Removed invalid .github/workflows/openai-agents.yml (disabled copy already in .github/agent-prompts)",
+      "reason": "Only A5-2 (invalid openai-agents.yml step fragment) was missing; A5-1 skipped (baseline gate stronger), A3-2 skipped (baseline has assertInvoiceStillPayable), rest patch-equivalent."
+    },
+    {
+      "sourceBranch": "claude/gifted-planck-115x2k",
+      "sourceSha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "pr": null,
+      "commitsAheadOfBaseline": 4,
+      "patchUniqueCommits": 3,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 12
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Worker A: D3 relayer deadline present with broader test; B2R sweep fee covered by stricter executionReverted; AR2 patch-equivalent; 1d28f24 stale doc edit rejected."
+    },
+    {
+      "sourceBranch": "claude/haiku-wave-2-handoff-qepfoe",
+      "sourceSha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "pr": null,
+      "commitsAheadOfBaseline": 3,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED_DOCS_ONLY",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Docs/handoff only by file list (1-6 files each); content not individually reviewed; not integrated to avoid stale or competing handoff documents."
+    },
+    {
+      "sourceBranch": "claude/happy-maxwell-onl4x5",
+      "sourceSha": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 1,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Single script tweak (gen-audit24-report.py file mode); conflicts; low value, not reviewed."
+    },
+    {
+      "sourceBranch": "claude/laughing-bardeen-4t20ys",
+      "sourceSha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "pr": null,
+      "commitsAheadOfBaseline": 105,
+      "patchUniqueCommits": 104,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 203
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Older lineage (merge-base 2026-10-21); 0 files absent from baseline; 203 files differ because baseline evolved."
+    },
+    {
+      "sourceBranch": "claude/remote-extensions-10",
+      "sourceSha": "698404ca488c87347858105bda66be21bf428303",
+      "pr": null,
+      "commitsAheadOfBaseline": 18,
+      "patchUniqueCommits": 17,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 47
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Only file absent from baseline is apps/relayer/src/breaker.ts, an older copy; baseline has packages/relayer-guard/src/breaker.ts + tests; nothing imports the branch copy except tests."
+    },
+    {
+      "sourceBranch": "claude/sharp-bohr-uigfgh",
+      "sourceSha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "pr": null,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 2,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge changes 0 files; docs handoff already present."
+    },
+    {
+      "sourceBranch": "claude/vigilant-johnson-yjgq94",
+      "sourceSha": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 1,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Single web test (Settings.test.tsx idle-lock hint wording); conflicts; not reviewed for current wording."
+    },
+    {
+      "sourceBranch": "codex/ghostpay-cloud-41868394956",
+      "sourceSha": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "sourceSha": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "pr": null,
+      "commitsAheadOfBaseline": 19,
+      "patchUniqueCommits": 19,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 140
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Adds vendor/viem-2.22.14-ghostpay-deps2.tgz (repacked dependency binary) plus a rewritten normalize-sbom.mjs; its test fails on baseline script (5 not ok). Dependency-integrity/provenance policy is an owner decision; do not import a binary tarball unreviewed."
+    },
+    {
+      "sourceBranch": "codex/ghostpay-resume-20261028",
+      "sourceSha": "75400888c96b9bddb2a406dd8fd6d273521aebb2",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 1,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED_DOCS_ONLY",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Docs/handoff only by file list (1-6 files each); content not individually reviewed; not integrated to avoid stale or competing handoff documents."
+    },
+    {
+      "sourceBranch": "codex/ghostpay-security-audit-20261030",
+      "sourceSha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "pr": null,
+      "commitsAheadOfBaseline": 5,
+      "patchUniqueCommits": 3,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 14
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Worker A: D3 relayer deadline present with broader test; B2R sweep fee covered by stricter executionReverted; AR2 patch-equivalent; 1d28f24 stale doc edit rejected."
+    },
+    {
+      "sourceBranch": "codex/setup-autonomous-agent-20261104",
+      "sourceSha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "pr": null,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 2,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 2
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Agent/automation infrastructure (workflow + prompts). Brief requires independent review of agent infrastructure (#152) first; not done, nothing changed."
+    },
+    {
+      "sourceBranch": "dependabot/github_actions/actions-1850456dc8",
+      "sourceSha": "d071b39396ac49d3b666965303574f76e75d7112",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 1,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 2
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Bumps actions in agent workflows; repo requires SHA pins (check-actions-pinned); needs pinned SHAs and owner review."
+    },
+    {
+      "sourceBranch": "dependabot/npm_and_yarn/follow-redirects-1.16.2",
+      "sourceSha": "6bffb63d1638253e677511672ffd32c24ac8f2f6",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "sourceSha": "5338a7e04ef4aa9319266dd351ea6edb9c35e2ff",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 1,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 69
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Lockfile conflicts (68-69 files); needs regenerated lockfile and full CI; not verifiable offline here."
+    },
+    {
+      "sourceBranch": "dependabot/npm_and_yarn/npm-minor-patch-f818bbfb6d",
+      "sourceSha": "e09bbc1201b56d0fa40d7fa1a963263c81fb3da6",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 1,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 68
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Lockfile conflicts (68-69 files); needs regenerated lockfile and full CI; not verifiable offline here."
+    },
+    {
+      "sourceBranch": "docs/future-privacy-feature-specs-20261109",
+      "sourceSha": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "pr": null,
+      "commitsAheadOfBaseline": 2,
+      "patchUniqueCommits": 2,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DEFERRED_DOCS_ONLY",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Docs/handoff only by file list (1-6 files each); content not individually reviewed; not integrated to avoid stale or competing handoff documents."
+    },
+    {
+      "sourceBranch": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "sourceSha": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": false,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "merge-tree vs baseline changes 0 files: content already present (patch ids differ from re-picks)."
+    },
+    {
+      "sourceBranch": "fix/remediation-b16c7936-5ce634",
+      "sourceSha": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 1
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "Baseline copy (29a58109) is stricter: also requires blockNumber > floor. Branch version would weaken it."
+    },
+    {
+      "sourceBranch": "fix/remediation-f95457fd-22ecf9",
+      "sourceSha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "pr": null,
+      "commitsAheadOfBaseline": 1,
+      "patchUniqueCommits": 0,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 2
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Baseline contains Revert 051c1c12 of this exact fix, no reason recorded. Fix refuses a new payment if ANY other payment record exists for same payer+chain (a.key !== key), which looks over-broad for scoped keys (hypothesis, not reproduced). Owner decision / narrower design needed."
+    },
+    {
+      "sourceBranch": "gh-pages",
+      "sourceSha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+      "pr": null,
+      "commitsAheadOfBaseline": 3,
+      "patchUniqueCommits": 3,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 0
+      },
+      "classification": "DEFERRED",
+      "result": "not_applicable",
+      "recoveredFunctionality": null,
+      "reason": "Deploy branch with unrelated history (merge-tree rc=128); never merge."
+    },
+    {
+      "sourceBranch": "ghostpay-cloud-recovery-2026-10-26",
+      "sourceSha": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "pr": null,
+      "commitsAheadOfBaseline": 12,
+      "patchUniqueCommits": 12,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 124
+      },
+      "classification": "DUPLICATE_SUPERSEDED",
+      "result": "superseded",
+      "recoveredFunctionality": null,
+      "reason": "0 non-doc files absent from baseline; older recovery lineage."
+    },
+    {
+      "sourceBranch": "ghostpay-local-lean-boundary-20261027",
+      "sourceSha": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "pr": null,
+      "commitsAheadOfBaseline": 18,
+      "patchUniqueCommits": 18,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 139
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Adds vendor/viem-2.22.14-ghostpay-deps2.tgz (repacked dependency binary) plus a rewritten normalize-sbom.mjs; its test fails on baseline script (5 not ok). Dependency-integrity/provenance policy is an owner decision; do not import a binary tarball unreviewed."
+    },
+    {
+      "sourceBranch": "ghostpay-offline-deps-2026-10-27",
+      "sourceSha": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "pr": null,
+      "commitsAheadOfBaseline": 13,
+      "patchUniqueCommits": 13,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 130
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Adds vendor/viem-2.22.14-ghostpay-deps2.tgz (repacked dependency binary) plus a rewritten normalize-sbom.mjs; its test fails on baseline script (5 not ok). Dependency-integrity/provenance policy is an owner decision; do not import a binary tarball unreviewed."
+    },
+    {
+      "sourceBranch": "ghostpay-sbom-repro-2026-10-27",
+      "sourceSha": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "pr": null,
+      "commitsAheadOfBaseline": 14,
+      "patchUniqueCommits": 14,
+      "mergeSimulation": {
+        "conflicted": true,
+        "filesChangedOnMerge": 132
+      },
+      "classification": "DEFERRED",
+      "result": "deferred",
+      "recoveredFunctionality": null,
+      "reason": "Adds vendor/viem-2.22.14-ghostpay-deps2.tgz (repacked dependency binary) plus a rewritten normalize-sbom.mjs; its test fails on baseline script (5 not ok). Dependency-integrity/provenance policy is an owner decision; do not import a binary tarball unreviewed."
+    }
+  ]
+}
