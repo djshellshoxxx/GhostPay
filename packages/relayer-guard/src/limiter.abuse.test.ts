@@ -72,7 +72,13 @@ describe('T-dd756b08-3 (M-3): per-group overflow while the key table is full', (
 
   it('idle (refilled) overflow buckets are evicted, so the overflow table does not fill up for good', () => {
     // Slow main buckets (burst 4) stay live while the 1-token overflow buckets refill in 1 s.
-    const { l, clock } = limiter({ burst: 4, overflowBurst: 1, maxKeys: 1, maxPerGroup: 1, maxOverflowGroups: 1 });
+    const { l, clock } = limiter({
+      burst: 4,
+      overflowBurst: 1,
+      maxKeys: 1,
+      maxPerGroup: 1,
+      maxOverflowGroups: 1,
+    });
     drain(l, 'a:1', 4);
     expect(l.take('x:1').ok).toBe(true); // x holds the only overflow slot, drained
     expect(l.take('y:1').ok).toBe(true); // shared bucket, drained
@@ -121,7 +127,13 @@ describe('T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats()', () =>
   });
 
   it('the overflow table shares the scan: an idle group bucket behind a live one is evicted', () => {
-    const { l, clock } = limiter({ burst: 4, overflowBurst: 2, maxKeys: 1, maxPerGroup: 1, maxOverflowGroups: 2 });
+    const { l, clock } = limiter({
+      burst: 4,
+      overflowBurst: 2,
+      maxKeys: 1,
+      maxPerGroup: 1,
+      maxOverflowGroups: 2,
+    });
     drain(l, 'a:1', 4);
     drain(l, 'x:1', 2); // x: own overflow bucket, drained, oldest
     l.take('y:1'); // y: own overflow bucket, 1 of 2
@@ -134,7 +146,10 @@ describe('T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats()', () =>
 
   it('LossBudget tables share the scan and still evict only stale entries', () => {
     const clock = { t: 0 };
-    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 }, () => clock.t);
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 },
+      () => clock.t,
+    );
     b.charge('old', 1n, 'g-old');
     clock.t = 1000;
     b.charge('live', 1n, 'g-live');
