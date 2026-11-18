@@ -4,8 +4,13 @@ import { groupOfBucketKey } from './ip.js';
 /** Key used for every request that arrives while the table is full of active entries. */
 export const OVERFLOW_KEY = '\u0000overflow';
 
+/** How many of the oldest entries {@link BoundedTable} inspects for an idle one per insert (audit L-8). */
+const EVICT_SCAN = 8;
+
 /**
- * Insertion-ordered bounded map that never evicts an entry the caller still considers live.
+ * Recency-ordered bounded map that never evicts an entry the caller still considers live. When full, it evicts
+ * the least recently used idle entry among the {@link EVICT_SCAN} oldest, so one live entry at the front does not
+ * pin eviction while idle ones sit right behind it, and an insert does constant work.
  * @internal
  */
 class BoundedTable<V> {
@@ -40,19 +45,27 @@ class BoundedTable<V> {
     return this.groups.get(group) ?? 0;
   }
 
-  /** @returns Whether {@link insert} would succeed now. */
-  public canInsert(): boolean {
-    if (this.map.size < this.max) return true;
-    const oldest = this.map.values().next().value;
-    return oldest !== undefined && this.idle(oldest);
+  /** @returns The key of the oldest idle entry among the {@link EVICT_SCAN} oldest, if any. */
+  private evictable(): string | undefined {
+    let n = 0;
+    for (const [k, v] of this.map) {
+      if (n++ >= EVICT_SCAN) break;
+      if (this.idle(v)) return k;
+    }
+    return undefined;
   }
 
-  /** Inserts `key`, evicting the least-recently-used entry only if it is idle. @returns false if full. */
+  /** @returns Whether {@link insert} would succeed now. */
+  public canInsert(): boolean {
+    return this.map.size < this.max || this.evictable() !== undefined;
+  }
+
+  /** Inserts `key`, evicting an idle entry among the oldest ones if full. @returns false if there was no room. */
   public insert(key: string, v: V, group: string): boolean {
-    if (!this.canInsert()) return false;
     if (this.map.size >= this.max) {
-      const oldest = this.map.keys().next().value;
-      if (oldest !== undefined) this.remove(oldest);
+      const victim = this.evictable();
+      if (victim === undefined) return false;
+      this.remove(victim);
     }
     this.map.set(key, v);
     this.keyGroups.set(key, group);
@@ -95,6 +108,18 @@ export interface TokenBucketOptions {
   readonly groupOf?: (key: string) => string;
 }
 
+/** Counters of a {@link TokenBucketLimiter} for alerting; never a key, group or address. */
+export interface LimiterStats {
+  /** Requests charged to any overflow bucket since construction. A sustained rate means a flood or a small table. */
+  readonly overflowHits: number;
+  /** Of those, requests charged to the shared last-resort bucket (the overflow table was full too). */
+  readonly sharedOverflowHits: number;
+  /** Tracked keys (excluding overflow). */
+  readonly tableSize: number;
+  /** Per-group overflow buckets currently held. */
+  readonly overflowGroups: number;
+}
+
 /** Result of a limiter probe. */
 export interface TakeResult {
   readonly ok: boolean;
@@ -130,6 +155,8 @@ export class TokenBucketLimiter {
   private readonly overflowBurst: number;
   private readonly overflowTable: BoundedTable<Bucket>;
   private readonly maxPerGroup: number;
+  private overflowHits = 0;
+  private sharedOverflowHits = 0;
 
   /**
    * @param opts Tunables (validated).
@@ -170,6 +197,16 @@ export class TokenBucketLimiter {
     return this.table.size;
   }
 
+  /** Cheap counters for alerting on overflow (contain no key, group or address). */
+  public stats(): LimiterStats {
+    return {
+      overflowHits: this.overflowHits,
+      sharedOverflowHits: this.sharedOverflowHits,
+      tableSize: this.table.size,
+      overflowGroups: this.overflowTable.size,
+    };
+  }
+
   /**
    * Consumes `cost` tokens for `key` if available.
    *
@@ -190,6 +227,8 @@ export class TokenBucketLimiter {
       else {
         bucket = this.overflowFor(group);
         overflow = true;
+        this.overflowHits++;
+        if (bucket === this.overflowBucket) this.sharedOverflowHits++;
         cap = this.overflowBurst;
       }
     }

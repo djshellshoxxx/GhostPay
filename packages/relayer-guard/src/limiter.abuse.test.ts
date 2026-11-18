@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { TokenBucketLimiter, type TokenBucketOptions } from './limiter.js';
+import type { LimiterStats } from './index.js';
+import { LossBudget, TokenBucketLimiter, type TokenBucketOptions } from './limiter.js';
 
 /** Keys look like `<group>:<client>`; time is the limiter's injected clock. */
 function limiter(opts: Partial<TokenBucketOptions> = {}): { l: TokenBucketLimiter; clock: { t: number } } {
@@ -91,5 +92,67 @@ describe('T-dd756b08-3 (M-3): per-group overflow while the key table is full', (
   it('rejects a negative or fractional maxOverflowGroups', () => {
     expect(() => limiter({ maxOverflowGroups: -1 })).toThrow();
     expect(() => limiter({ maxOverflowGroups: 1.5 })).toThrow();
+  });
+});
+
+describe('T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats()', () => {
+  it('an idle (refilled) entry behind a drained least-recently-used entry is evicted instead of overflowing', () => {
+    const { l, clock } = limiter({ maxKeys: 2 });
+    drain(l, 'A', 2); // A drained, least recently used
+    l.take('B'); // B holds 1 token
+    clock.t = 1000; // B refilled (idle); A holds 1 token (live) and is still the oldest entry
+    expect(l.take('D')).toEqual({ ok: true, retryAfterMs: 0, overflow: false });
+    expect(l.size).toBe(2);
+    expect(l.take('A').ok).toBe(true); // A kept its bucket (1 token), it was not evicted
+    expect(l.take('A').ok).toBe(false);
+  });
+
+  /** 9 live entries except the one at `idleAt` (0 = oldest), which is idle at t = 1000. */
+  function nineWithIdleAt(idleAt: number): TokenBucketLimiter {
+    const { l, clock } = limiter({ maxKeys: 9 });
+    for (let i = 0; i < 9; i++) drain(l, `k${String(i)}`, i === idleAt ? 1 : 2);
+    clock.t = 1000;
+    return l;
+  }
+
+  it('scans the 8 oldest entries for an idle one, and no further (constant work per insert)', () => {
+    expect(nineWithIdleAt(7).take('new').overflow).toBe(false); // 8th oldest: found
+    expect(nineWithIdleAt(8).take('new').overflow).toBe(true); // 9th oldest: beyond the scan
+  });
+
+  it('the overflow table shares the scan: an idle group bucket behind a live one is evicted', () => {
+    const { l, clock } = limiter({ burst: 4, overflowBurst: 2, maxKeys: 1, maxPerGroup: 1, maxOverflowGroups: 2 });
+    drain(l, 'a:1', 4);
+    drain(l, 'x:1', 2); // x: own overflow bucket, drained, oldest
+    l.take('y:1'); // y: own overflow bucket, 1 of 2
+    clock.t = 1000; // y refilled (idle), x 1 of 2 (live), a 1 of 4 (live)
+    expect(l.take('z:1')).toEqual({ ok: true, retryAfterMs: 0, overflow: true });
+    expect(l.take('z:1').ok).toBe(true); // z got its own bucket (y evicted) ...
+    expect(l.take('v:1').ok).toBe(true); // ... so the shared bucket still holds tokens for v
+    expect(l.stats().overflowGroups).toBe(2);
+  });
+
+  it('LossBudget tables share the scan and still evict only stale entries', () => {
+    const clock = { t: 0 };
+    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 }, () => clock.t);
+    b.charge('old', 1n, 'g-old');
+    clock.t = 1000;
+    b.charge('live', 1n, 'g-live');
+    expect(b.reserve('new', 10n, 'g-new')?.overflow).toBe(false); // evicts stale 'old'
+    expect(b.reserve('newer', 10n, 'g-newer')?.overflow).toBe(true); // 'live' and 'new' are live
+  });
+
+  it('stats() returns counters only, never a key, group or address', () => {
+    const { l } = limiter({ maxKeys: 1, maxPerGroup: 1, maxOverflowGroups: 1 });
+    const empty: LimiterStats = l.stats();
+    expect(empty).toEqual({ overflowHits: 0, sharedOverflowHits: 0, tableSize: 0, overflowGroups: 0 });
+    l.take('203.0.113.7:a');
+    l.take('198.51.100.9:b'); // its group's own overflow bucket
+    l.take('192.0.2.1:c'); // overflow table full: the shared bucket
+    l.take('192.0.2.1:c');
+    const s = l.stats();
+    expect(s).toEqual({ overflowHits: 3, sharedOverflowHits: 2, tableSize: 1, overflowGroups: 1 });
+    expect(Object.values(s).every((v) => typeof v === 'number')).toBe(true);
+    expect(JSON.stringify(s)).not.toMatch(/203|198|192|:a|:b|:c/);
   });
 });
