@@ -45,7 +45,7 @@ export const chainCommands: readonly Command[] = [{
   }),
 }, {
   path: ['chain', 'recipient', 'inspect'], summary: 'validate public EVM/Solana meta-addresses, Bitcoin silent addresses or TRON addresses',
-  usage: 'ghostpay chain recipient inspect --family evm|bitcoin|solana|tron --in recipient.txt [--network mainnet|testnet] [--json]\n  Example: ghostpay chain recipient inspect --family bitcoin --network testnet --in recipient.txt --json\n  Validation checks format and checksums only. It proves neither recipient identity nor payment.',
+  usage: 'ghostpay chain recipient inspect --family evm|bitcoin|solana|tron --in recipient.txt [--network mainnet|testnet] [--json]\n  Example: ghostpay chain recipient inspect --family bitcoin --network testnet --in recipient.txt --json\n  Validation checks format and checksums only. It proves neither recipient identity nor payment. Solana reports the meta-address cluster and refuses mainnet.',
   opts: { family: 'value', in: 'value', network: 'value' },
   handler: async (ctx, a) => chainBoundary(async () => {
     noPositionals(a);
@@ -58,7 +58,14 @@ export const chainCommands: readonly Command[] = [{
     let canonical: string;
     let detectedNetwork: string | undefined;
     if (family === 'evm') canonical = encodeEvmMeta(decodeEvmMeta(text));
-    else if (family === 'solana') canonical = encodeSolanaMeta(decodeSolanaMeta(text));
+    else if (family === 'solana') {
+      const meta = decodeSolanaMeta(text);
+      if (meta.cluster === 'mainnet')
+        throw new CliError('unsupported', 'CHAIN_DISABLED', 'Solana mainnet recipients are refused: experimental chains are testnet-only.',
+          'Ask the recipient for an st:sol: meta-address on devnet, testnet or localnet.');
+      canonical = encodeSolanaMeta(meta);
+      detectedNetwork = meta.cluster;
+    }
     else if (family === 'tron') canonical = parseTronAddress(text);
     else if (family === 'bitcoin') {
       const parsed = decodeSilentPaymentAddress(text, network);
