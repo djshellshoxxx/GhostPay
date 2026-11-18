@@ -17,6 +17,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
+import { checkpointSlotNamer, isLegacyCheckpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
@@ -658,50 +659,88 @@ function zeroizeBytes(b: Uint8Array): void {
   b.fill(0);
 }
 
-// v2: bound to the key set. v1 entries (chain only) are ignored: they cannot be attributed to a key.
-const CP_PREFIX = 'ghostpay.scan.checkpoint.v2.';
 const KEY_ID = /^[0-9a-f]{64}$/;
-const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_PREFIX}${String(chainId)}.${keyId}` : undefined);
+const validScope = (chainId: number, keyId: string): boolean => Number.isSafeInteger(chainId) && KEY_ID.test(keyId);
 
 interface StorageLike {
   getItem(k: string): string | null;
   setItem(k: string, v: string): void;
   removeItem(k: string): void;
+  /** Web Storage enumeration, used only to purge legacy slots; adapters without it cannot purge unknown names. */
+  readonly length?: number;
+  key?(index: number): string | null;
 }
 
-/** Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures. */
-export function localCheckpointStore(storage: StorageLike | undefined): CheckpointStore {
+/** Snapshot names before removing them: Web Storage indexes shift after each removal. Never read legacy values. */
+function sweepLegacySlots(storage: StorageLike | undefined): void {
+  const stale: string[] = [];
+  try {
+    const count = storage?.length;
+    if (storage === undefined || typeof storage.key !== 'function' || count === undefined || !Number.isSafeInteger(count)) return;
+    for (let i = 0; i < count; i++) {
+      const name = storage.key(i);
+      if (name !== null && isLegacyCheckpointSlot(name)) stale.push(name);
+    }
+  } catch {
+    /* still remove any names already found */
+  }
+  for (const name of stale) {
+    try { storage?.removeItem(name); } catch { /* best effort */ }
+  }
+}
+
+function parseCursor(text: string): ScanCursor | undefined {
+  const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
+  if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
+  const last = o.last;
+  if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
+    return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
+  }
+  return { nextBlock: BigInt(o.nextBlock) };
+}
+
+const encodeCursor = (cursor: ScanCursor): string =>
+  JSON.stringify({ nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) });
+
+/**
+ * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
+ *
+ * v4 names use #211's HKDF and session-bound key lending, with a distinct version from both incompatible v3 formats.
+ * Without the matching loaded seller keys nothing is read or written. Legacy v1/v2/v3 cursors are never read: the scan
+ * restarts from the user's chosen block. Creating the store purges all old slots if storage supports enumeration. For
+ * non-enumerable adapters, save/clear still remove the known v2 slot, while unknown old names remain unread and unused.
+ */
+export function localCheckpointStore(storage: StorageLike | undefined, viewingKey: ViewingKeyLender = sessionViewingKey): CheckpointStore {
+  sweepLegacySlots(storage);
+  const named = checkpointSlotNamer(viewingKey);
+  const slot = (chainId: number, keyId: string): string | undefined => (validScope(chainId, keyId) ? named(chainId, keyId) : undefined);
   return {
     load(chainId, keyId) {
       try {
-        const k = slot(chainId, keyId);
-        const text = k === undefined ? undefined : storage?.getItem(k);
-        if (text === null || text === undefined) return undefined;
-        const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
-        if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
-        const last = o.last;
-        if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
-          return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
-        }
-        return { nextBlock: BigInt(o.nextBlock) };
+        const name = slot(chainId, keyId);
+        const text = name === undefined ? undefined : storage?.getItem(name);
+        return text === null || text === undefined ? undefined : parseCursor(text);
       } catch {
         return undefined;
       }
     },
     save(chainId, keyId, cursor) {
       try {
-        const k = slot(chainId, keyId);
-        if (k === undefined) return;
-        const body = { nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) };
-        storage?.setItem(k, JSON.stringify(body));
+        const name = slot(chainId, keyId);
+        if (name === undefined) return;
+        storage?.setItem(name, encodeCursor(cursor));
+        storage?.removeItem(legacyCheckpointSlot(chainId, keyId));
       } catch {
         /* checkpoints are an optimisation */
       }
     },
     clear(chainId, keyId) {
+      if (!validScope(chainId, keyId)) return;
+      // A v2 name is public and can be removed even without the seller keys.
+      try { storage?.removeItem(legacyCheckpointSlot(chainId, keyId)); } catch { /* best effort */ }
       try {
-        const k = slot(chainId, keyId);
-        if (k !== undefined) storage?.removeItem(k);
+        const name = slot(chainId, keyId);
+        if (name !== undefined) storage?.removeItem(name);
       } catch {
         /* ignore */
       }
