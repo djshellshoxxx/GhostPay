@@ -71,6 +71,10 @@ Retained local logs under `/workspace/scratch/4fa14be12559/analysis-security/`:
 - `pages-smoke-render-errors-green.log`
 - `pages-smoke-script-suite.log`
 
+Independent rerun log:
+`/workspace/scratch/4fa14be12559/analysis-ci/independent-pages-smoke-render-errors.log`
+(exit 0, 9 passed, 0 failed/skipped, 1.269 s; reviewed files matched `a77cadbb`).
+
 ## Overall selected PR #209 source review
 
 The live API still showed [PR #209](https://github.com/djshellshoxxx/GhostPay/pull/209)
