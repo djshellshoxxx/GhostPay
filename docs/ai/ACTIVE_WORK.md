@@ -1,3 +1,18 @@
+# Pages Spec 18 recovery integration — 2026-11-18
+
+Worker: security_recovery (independent integration lane). Branch:
+`integration/ghostpay-recovery-completion-20261118`. Base:
+`dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: Spec 18 export/recovery components and tests, paymentKeyExport and stealthExport
+helpers, exact credential/session additions, ux-vault portable codec and tests, recovery
+scripts/vectors, recovery i18n entries, exact Scan/SellerKeys wiring, and this handoff.
+Inputs: #213 `ebf7c92c3be1c7aebd37fc58b5567e114fb932fc` and #229
+`18110015e99efbeb4f23d47cd88bd6f917010108`. The coordinator owns unrelated
+privacy/session/scanner changes and final integration. Acceptance: inspect current sources,
+reconcile both PRs onto live main, reproduce and fix concrete defects, run complete focused
+codec/recovery/vault checks plus web typecheck and scoped lint, and record exact evidence.
+No remote mutation, deployment, release, mainnet enablement or browser-pass claim.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
