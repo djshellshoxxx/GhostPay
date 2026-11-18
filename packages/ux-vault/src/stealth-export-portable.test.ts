@@ -753,6 +753,42 @@ describe('ghostpay-stealth-master-v1 backups', () => {
 });
 
 describe('format separation, routing and diagnostics', () => {
+  it('wipes the temporary KDF passphrase bytes after success and every failure', async () => {
+    const passwordBuffers: Uint8Array[] = [];
+    const { scryptAsync: realScrypt } = await vi.importActual<typeof import('@noble/hashes/scrypt.js')>('@noble/hashes/scrypt.js');
+    const capture = (pass: Parameters<typeof realScrypt>[0]): void => {
+      expect(pass).toBeInstanceOf(Uint8Array);
+      passwordBuffers.push(pass as Uint8Array);
+    };
+    scrypt.mockImplementationOnce((pass, salt, options) => {
+      capture(pass);
+      return realScrypt(pass, salt, options);
+    });
+    const recovered = await api.decryptPaymentKeys(V.files.single.text, PASS);
+    for (const payment of recovered.payments) payment.secret.fill(0);
+
+    scrypt.mockImplementationOnce((pass) => {
+      capture(pass);
+      return Promise.reject(new Error('synthetic KDF failure'));
+    });
+    await expect(api.decryptMasterBackup(V.files.master.text, PASS)).rejects.toThrow('synthetic KDF failure');
+
+    const key = new Uint8Array(32).fill(0x42);
+    scrypt.mockImplementationOnce((pass) => {
+      capture(pass);
+      return Promise.resolve(key);
+    });
+    const importKey = vi.spyOn(globalThis.crypto.subtle, 'importKey').mockRejectedValueOnce(new Error('synthetic import failure'));
+    try {
+      await expect(api.decryptMasterBackup(V.files.master.text, PASS)).rejects.toThrow('synthetic import failure');
+    } finally {
+      importKey.mockRestore();
+    }
+    expect(passwordBuffers).toHaveLength(3);
+    for (const bytes of passwordBuffers) expect(bytes.every((byte) => byte === 0)).toBe(true);
+    expect(key.every((byte) => byte === 0)).toBe(true);
+  });
+
   it('never opens one format as another, even with the right passphrase', async () => {
     const keystore = createKeystoreApi();
     const legacy = await keystore.encryptKeystore(

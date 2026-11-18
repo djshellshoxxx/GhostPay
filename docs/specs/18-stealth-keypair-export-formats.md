@@ -81,12 +81,14 @@ never appears in any of them.
   keystore profile, APP_AND_RELAYER_SPEC §1) and a fresh 16-byte salt from `crypto.getRandomValues`. Importers accept
   N a power of two in [2^14, 2^18], r in [1, 8], p in [1, 2], dkLen exactly 32, salt 16–64 bytes; anything else is
   rejected **before** any KDF work (a crafted file cannot make the tab allocate gigabytes). The raw derived key is
-  imported as a non-extractable WebCrypto AES-GCM key and then wiped.
+  imported as a non-extractable WebCrypto AES-GCM key and then wiped. The owned UTF-8 passphrase buffer is wiped on
+  success and on KDF or key-import failure. JavaScript strings and engine-internal copies cannot be reliably erased.
 - **AEAD.** AES-256-GCM, a fresh 12-byte IV per file, 128-bit tag appended to the ciphertext (WebCrypto layout).
 - **AAD (domain separation).** `AAD = UTF-8(DOMAIN + "\n" + canonical(header))`, where `header` is the whole file
   object **without** `ciphertext`, and `DOMAIN` is `GhostPay.stealth-keypair.v1` or `GhostPay.stealth-master.v1`.
   Every public field (including KDF parameters, salt, IV, chain, scope, count and every payment record) is therefore
-  authenticated; changing any byte of the header makes decryption fail.
+  authenticated; changing an authenticated header value makes decryption fail. JSON whitespace and object-key order
+  are canonicalized and do not change the authenticated values.
 - **Plaintext.** `canonical(body)` (see each format): lowercase hex, no whitespace. Importers require the decrypted
   plaintext to be exactly that text; anything else is rejected. Because every body has a fixed canonical length, the
   ciphertext length is fixed too (body plus the 16-byte tag: keypair 17 + 69 * count + 16 bytes, master 166 + 16 bytes)
@@ -150,7 +152,8 @@ never appears in any of them.
 
 - `derivation` `"eip5564-scheme1-adr0001"` means: S = p_view·R (33-byte compressed), s_h = keccak256(S), view tag =
   s_h[0], one-time key p_stealth = (p_spend + int(s_h)) mod n, address = keccak256(uncompressed(P_stealth)[1:])[12:].
-- `metaAddress` must equal `encodeMetaAddress(spendingPublicKey, viewingPublicKey)`.
+- `metaAddress` must equal `encodeMetaAddress(spendingPublicKey, viewingPublicKey)`; the spending and viewing public
+  keys must be distinct. Independent readers enforce this before decryption as well.
 - **Body.** `{"spendingKey": "0x<64 hex>", "viewingKey": "0x<64 hex>"}`. Each scalar is in range and its compressed
   public key equals the header key.
 - The master pair recovers every discoverable past and future scheme-1 payment to this meta-address, including
@@ -194,6 +197,14 @@ discover other stealth payments.
   result that completes after cancellation is discarded and its secrets wiped, never downloaded.
 - Nothing is downloaded or revealed automatically when a payment is discovered. Secrets are never written to
   IndexedDB/localStorage/sessionStorage, the URL, the clipboard, logs or any network request.
+- Backup generation, download initiation, user-confirmed retention, and successful recoverability verification are
+  different states. Starting a browser download is not proof of retention. The post-export verification flow requires
+  the user to select their retained file, checks it is the exact generated encrypted export, then authenticates and
+  validates every recovered key. A cancelled, failed, replaced or stale operation cannot become verified.
+- Verification without import disposes recovered private material before reporting success. It does not install
+  master keys, replace a session, or authorize a later import. A verified payment archive covers only its listed
+  addresses. A verified master file omits the invoice-signing key, so it must not mark a whole seller-session backup
+  as verified or remove the safeguards protecting the only copy of that signing key.
 - Before a payment-key export (encrypted keypair, archive or raw key) every stealth address in it is checked with
   `eth_getCode` at `latest` through the client the scan used (the user-selected RPC, or the private scan endpoint when
   one is configured; no fallback): non-empty code (a contract or EIP-7702 delegation) refuses the export; a failed or
@@ -207,6 +218,12 @@ discover other stealth payments.
 - Reference recovery: `scripts/recovery/stealth-export-recover.mjs`, implemented with `node:crypto` (scrypt,
   AES-256-GCM) and `@noble/curves`/`@noble/hashes` only, without importing any GhostPay package, so the formats are
   provably recoverable without GhostPay.
+- `--expected-chain` checks the chain identifier in payment archives, public records and raw-key files, including
+  header-only inspection. This checks the recorded chain; it is not an on-chain balance or finality check. Master
+  backups are chain-neutral, so combining them with that option is refused instead of silently ignoring it.
+- Fresh-environment acceptance copies only the reference script and its two noble dependencies into a temporary
+  directory, permits the child process to read only that directory, and opens every supported format. This verifies
+  recovery without repository files, GhostPay packages, browser state or website access.
 
 ## 9. Future migration
 

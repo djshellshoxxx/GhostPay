@@ -4,7 +4,9 @@
 // test also decrypts fresh files written by the built @ghostpay/ux-vault codec (needs `npm run build:libs`).
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import fs from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { syncBuiltinESMExports } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { test } from 'node:test';
@@ -18,6 +20,7 @@ import {
   inspectKeypairFile,
   inspectMasterFile,
   LIMITS,
+  main,
   parsePublicRecord,
   parseRawPrivateKeyText,
   serializePublicRecord,
@@ -211,6 +214,14 @@ test('tampering, wrong passphrase, wrong chain and bounds fail closed', async ()
   assert.doesNotThrow(() => inspectMasterFile(m));
 });
 
+test('master header rejects the same key in spending and viewing roles before decryption', () => {
+  const sameKeys = edit(files.master.text, (o) => {
+    o.viewingPublicKey = o.spendingPublicKey;
+    o.metaAddress = `st:eth:0x${o.spendingPublicKey.slice(2)}${o.spendingPublicKey.slice(2)}`;
+  });
+  assert.throws(() => inspectMasterFile(sameKeys), { code: 'invalidFile' });
+});
+
 test('cross-implementation: files freshly written by the built @ghostpay/ux-vault codec decrypt here', async () => {
   const portable = await import('@ghostpay/ux-vault/portable');
   const api = portable.createStealthExportApi();
@@ -334,4 +345,118 @@ test('CLI: public record and raw-key files need no passphrase; the raw key print
   const big = cli([fileOf('big.json', ' '.repeat(LIMITS.keypairFileBytes + 1))]);
   assert.equal(big.status, 1);
   assert.match(big.stderr, /tooLarge/);
+});
+
+test('CLI: expected chain is enforced for raw keys, public records and header-only inspection', () => {
+  for (const [name, text, flags] of [
+    ['chain-raw.txt', files.rawPrivateKey.text, ['--reveal-private-keys']],
+    ['chain-public.json', files.public.text, []],
+    ['chain-inspect.json', files.single.text, ['--inspect']],
+  ]) {
+    const path = fileOf(name, text);
+    const wrong = cli([path, ...flags, '--expected-chain', '1']);
+    assert.equal(wrong.status, 1, `${name}: mismatched chain accepted`);
+    assert.match(wrong.stderr, /wrongChain/);
+    assert.equal(wrong.stdout, '');
+    const right = cli([path, ...flags, '--expected-chain', String(V.chainId)]);
+    assert.equal(right.status, 0, right.stderr);
+  }
+});
+
+test('CLI: a chain-neutral master backup never silently accepts an expected-chain assertion', () => {
+  const path = fileOf('chain-master.json', files.master.text);
+  for (const flags of [[], ['--inspect']]) {
+    const result = cli([path, ...flags, '--expected-chain', String(V.chainId)], PASS);
+    assert.equal(result.status, 2);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, /chain-neutral/);
+  }
+});
+
+test('CLI: unknown options never echo their untrusted contents', () => {
+  const path = fileOf('options.json', files.single.text);
+  const marker = 'untrusted-secret-marker';
+  const result = cli([path, `--${marker}`]);
+  assert.equal(result.status, 2);
+  assert.doesNotMatch(result.stderr, new RegExp(marker));
+  assert.match(result.stderr, /unknown option/);
+});
+
+test('CLI: raw-file read buffers are wiped after successful recovery and oversized-input refusal', async (t) => {
+  const captured = new Set();
+  const original = fs.readSync;
+  t.mock.method(fs, 'readSync', (fd, buffer, ...rest) => {
+    captured.add(buffer);
+    return original(fd, buffer, ...rest);
+  });
+  syncBuiltinESMExports();
+  try {
+    const output = [];
+    const io = { stdout: { write: (text) => output.push(text) }, stderr: { write: () => {} } };
+    const raw = fileOf('wipe-raw.txt', files.rawPrivateKey.text);
+    assert.equal(await main([raw], io), 0);
+    assert.ok(!leaks(output.join('')), 'raw-file verification revealed private material');
+    const big = fileOf('wipe-oversized.txt', files.rawPrivateKey.text + ' '.repeat(LIMITS.keypairFileBytes));
+    assert.equal(await main([big], io), 1);
+  } finally {
+    t.mock.restoreAll();
+    syncBuiltinESMExports();
+  }
+  assert.equal(captured.size, 2);
+  for (const buffer of captured) assert.ok(buffer.every((byte) => byte === 0), 'owned file buffer retained plaintext');
+});
+
+test('offline recovery works in a fresh directory with no GhostPay packages or repository access', () => {
+  const isolated = mkdtempSync(join(tmpdir(), 'gp-independent-recovery-'));
+  try {
+    const script = join(isolated, 'stealth-export-recover.mjs');
+    cpSync(SCRIPT, script);
+    const vendor = join(isolated, 'node_modules', '@noble');
+    mkdirSync(vendor, { recursive: true });
+    for (const [name, entry] of [['curves', '@noble/curves/secp256k1.js'], ['hashes', '@noble/hashes/sha3.js']]) {
+      const source = dirname(fileURLToPath(import.meta.resolve(entry)));
+      cpSync(source, join(vendor, name), { recursive: true, dereference: true });
+    }
+    const run = (name, text, flags = [], input = '') => {
+      const path = join(isolated, name);
+      writeFileSync(path, text);
+      return spawnSync(process.execPath, [
+        '--experimental-permission', `--allow-fs-read=${isolated}`, script, path, ...flags,
+      ], { cwd: isolated, input, encoding: 'utf8', env: { PATH: '' } });
+    };
+    // Each invocation starts a new process, with only the export, script and two noble packages readable.
+    // No browser, original storage, GhostPay package, website, hosted recovery service or downloaded metadata exists.
+    for (const [name, text] of [
+      ['public.json', files.public.text], ['single.json', files.single.text],
+      ['archive.json', files.archive.text], ['master.json', files.master.text], ['raw.txt', files.rawPrivateKey.text],
+    ]) {
+      const result = run(name, text, [], PASS);
+      assert.equal(result.status, 0, `${name}: ${result.stderr}`);
+      assert.ok(!leaks(result.stdout) && !leaks(result.stderr), 'verification revealed private keys');
+    }
+    const archive = run('archive.json', files.archive.text, ['--reveal-private-keys', '--expected-chain', String(V.chainId)], PASS);
+    assert.equal(archive.status, 0, archive.stderr);
+    const restored = JSON.parse(archive.stdout);
+    assert.equal(restored.count, files.archive.announcements.length);
+    for (const payment of restored.payments) {
+      const expected = V.announcements.find((a) => a.expected.stealthAddress === payment.stealthAddress);
+      assert.ok(payment.privateKey === expected.expected.privateKey, 'isolated recovery changed spending authority');
+    }
+    for (const omitted of files.archive.omitted) {
+      assert.ok(!restored.payments.some((p) => p.stealthAddress === byId(omitted).expected.stealthAddress), 'archive exposed an unrelated payment');
+    }
+    const omitted = byId(files.archive.omitted[0]);
+    const master = run('master.json', files.master.text, [
+      '--scan-announcement', JSON.stringify(omitted.announcement), '--reveal-private-keys',
+    ], PASS);
+    assert.equal(master.status, 0, master.stderr);
+    const derived = JSON.parse(master.stdout).announcements[0];
+    assert.equal(derived.owned, true);
+    assert.ok(derived.privateKey === omitted.expected.privateKey, 'isolated master recovery changed spending authority');
+    for (const key of [V.seller.spendingPrivateKey, V.seller.viewingPrivateKey]) {
+      assert.ok(!master.stdout.includes(key.slice(2)), 'isolated recovery exposed master keys');
+    }
+  } finally {
+    rmSync(isolated, { recursive: true, force: true });
+  }
 });
