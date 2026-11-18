@@ -14,8 +14,9 @@ Related: `docs/SECURITY_QA_DEVOPS_PLAYBOOK.md` section 2 (pipeline, release mani
 | Workflow | Trigger | Purpose |
 |---|---|---|
 | `.github/workflows/ci.yml` | PR, push to `main` | typecheck, lint, tests (relayer anvil e2e required), web build, Playwright `e2e` job, forge fmt/build/test/`snapshot --check`/coverage (lcov artifact), NatSpec, Slither, secret scan, "all actions pinned" check |
-| `.github/workflows/nightly.yml` | 03:17 UTC daily, manual | forge fuzz at 100 000 runs, Slither, dependency audit, reproducibility diff, Echidna harnesses, Mythril (Echidna/Mythril install steps are unverified until a green nightly run; see `docs/developer/ci.md`) |
-| `.github/workflows/release.yml` | tag `v*` | tag signature verified against the pinned trust root, tests, deterministic build, SBOM, `SHA256SUMS`, manifest, provenance attestation, **draft** GitHub release |
+| `.github/workflows/nightly.yml` | 03:17 UTC daily, manual | forge fuzz at 100 000 runs, Slither, dependency audit, reproducibility diff, Echidna and Mythril through `contract-analysis.yml` (no green run of it yet; section 5) |
+| `.github/workflows/contract-analysis.yml` | PRs touching contracts or the analysis/caller workflows; called by nightly and release | Echidna 2.2.7 harnesses and Mythril 0.24.8 through the unchanged `packages/contracts/scripts/run-{echidna,mythril}.sh`, with `contract-analysis-<analyzer>-<sha>` evidence (bounded log, exit code, outcome, commits) |
+| `.github/workflows/release.yml` | tag `v*` | tag signature verified against the pinned trust root, tests, **Echidna and Mythril on the tagged commit (required)**, deterministic build, SBOM, `SHA256SUMS`, manifest, provenance attestation, **draft** GitHub release |
 
 Hosting is **intentionally not enabled**: there are no IPFS, ENS, Tor or Pages steps. `release.yml` ends with a
 commented-out, `if: false` stub documenting what an owner decision would have to cover. Do not enable it without a
@@ -39,6 +40,8 @@ One-time setup (repository settings, not versioned):
 Per release:
 
 1. Make sure `main` is green (CI and the latest nightly) and `docs/audits` open findings are acknowledged in the notes.
+   The release does not run the other nightly jobs (100 000-run fuzz, nightly Slither, dependency audit, reproducibility
+   diff), so check them there. Echidna and Mythril are not taken from nightly: the release runs them itself (step 4).
 2. Create a **signed, annotated** tag on the commit: `git tag -s v1.2.3 -m "GhostPay v1.2.3"` then
    `git push origin v1.2.3`. (`git tag -v v1.2.3` locally first.)
 3. `release.yml` runs `verify`. Its first step runs `scripts/verify-tag.sh` **taken from the default branch**, with
@@ -46,12 +49,24 @@ Per release:
    (`git verify-tag` with `gpg.ssh.allowedSignersFile`, minimum trust `fully`; an unknown key is a failure) and
    checks that the tag is annotated, names itself `$TAG`, points at the checked-out commit, and that this commit is
    reachable from the default branch. Then tests, scans and `node --test scripts/tests/release-*.test.mjs` run.
-4. Approve the `release` environment when prompted for `build`. It **re-verifies the tag** (it may have moved while
-   waiting for approval), runs `scripts/release-build.sh` with `GP_REQUIRE_RELEASE=1` (fails unless the manifest
-   channel is `release`), self-checks the output with `scripts/verify-release.sh`, and attests the artifacts.
-5. Approve again for `draft-release`. It checks that `refs/tags/$TAG` is still the tag object verified in `build`
+4. After `verify` passed, `contract-analysis` calls `.github/workflows/contract-analysis.yml` on the tagged commit
+   (`github.sha`): jobs `contract-analysis / echidna` and `contract-analysis / mythril` run the unchanged runners, which
+   fail on any Mythril issue or tool error and unless every Echidna property passes and every canary is falsified.
+   `build` needs both `verify` and `contract-analysis`, so GitHub requests the `build` approval only after both
+   succeeded. A failed or cancelled analyzer job skips `build` and `draft-release`. An analyzer that was skipped or
+   never ran leaves no evidence, which fails `build` at its evidence check (step 5) even if the call reported success.
+   There is no override input and no accepted-findings list.
+5. Approve the `release` environment when prompted for `build`. It **re-verifies the tag** (it may have moved while
+   waiting for approval), then downloads this run's `contract-analysis-echidna-<sha>` and
+   `contract-analysis-mythril-<sha>` artifacts (a missing one fails the download) and fails unless each
+   `metadata.json` names its analyzer, outcome `success`, runner exit 0, a present report, the requested commit
+   `github.sha` and a checked-out commit equal to the verified commit being built. It logs
+   `echidna passed on <commit>` and `mythril passed on <commit>`. Then it runs `scripts/release-build.sh` with
+   `GP_REQUIRE_RELEASE=1` (fails unless the manifest channel is `release`), self-checks the output with
+   `scripts/verify-release.sh`, and attests the artifacts.
+6. Approve again for `draft-release`. It checks that `refs/tags/$TAG` is still the tag object verified in `build`
    and points at the manifest commit, then creates a **draft** release. Nothing is published.
-6. Run the release-candidate procedure on a separate machine
+7. Run the release-candidate procedure on a separate machine
    (`docs/operators/release-candidate-qualification.md`). Only then publish the draft manually (human gate).
 
 Local dry run (no GitHub): `bash scripts/release-build.sh` (needs network for `npm ci`, or `GP_SKIP_INSTALL=1` after
@@ -159,8 +174,16 @@ reviewed tag, replace the SHA, update the `# vX.Y.Z` comment, run `scripts/check
 ## 5. Open gaps (not faked)
 
 - **Mutation testing, mainnet-fork tests**: no harness or config exists (audit O-07, G-14). The nightly workflow does
-  not contain placeholder steps for them. Echidna and Mythril jobs exist in `nightly.yml` but have not yet had a green
-  run on the hosted runner.
+  not contain placeholder steps for them.
+- **`contract-analysis.yml` has no green run**, so the release gate (section 2, steps 4-5) currently stops any release
+  of the analysed contract source. (Echidna passed in the older inline nightly job on `main` at `cfaebeea`, with older
+  contracts and runner; Mythril failed in all 15 nightly runs from 2026-11-03 to 2026-11-17.) Contract-analysis run
+  43981233671 on `beb525dddcca103de9eda447b55cddf7ee2f428c` failed both jobs: Echidna reported
+  `EchidnaPolicy: echidna_canary_exec_native: expected failed!, got passing`; Mythril reported issues for
+  `GhostPaySweepRelayer`, `PolicyAccount` and `PolicyAccountFactory` (11 in total). The runners have no mechanism to
+  accept a reviewed false positive; any change there is a reviewed source change, not a release option.
+- **Pages publication does not require Echidna or Mythril**: `pages.yml` (lean Pages mirror, manual dispatch on
+  `main`) has its own release gates and does not call `contract-analysis.yml`.
 - **Testnet deployment job and deployment-manifest signing** (O-08, O-13): not implemented.
 - **IPFS / ENS / Tor / Pages publication** (O-11): intentionally disabled.
 - **Release-signing key**: `.github/release-signers/allowed_signers` contains no key yet, so every release run fails
@@ -189,3 +212,7 @@ The tag-verification steps in `release.yml` (annotated-tag and default-branch fe
 `gh api` re-check in `draft-release`) are untested on a real tag push. `scripts/verify-tag.sh` was exercised locally
 for PGP and for every non-cryptographic rejection; its SSH cases need `ssh-keygen` and run in the release `verify`
 job (`node --test scripts/tests/release-*.test.mjs`).
+The release `contract-analysis` gate has not run on a tag push either (the Actions API listed no `release.yml` run on
+2026-11-18). Its job graph and the evidence check in `build` are covered offline by
+`scripts/tests/contract-analysis-workflow.test.mjs`; the reusable call and the same-run artifact download are not yet
+observed on GitHub.
