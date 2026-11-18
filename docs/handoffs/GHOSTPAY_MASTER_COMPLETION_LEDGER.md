@@ -1,5 +1,39 @@
 # GhostPay authoritative completion ledger
 
+## Current status (2026-11-18 consolidation)
+
+This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for
+`2962554d`/`beb525dd`; where it says browser or analyzer results are pending, the table below supersedes it.
+
+Consolidation candidate: branch `nodata/wizardly-allen-qwol6u`, draft PR
+[#203](https://github.com/djshellshoxxx/GhostPay/pull/203), built on unified #187 (`beb525dd`) plus main ancestry,
+Pages #192/#194–#202, specs #190/#191 and the fixes listed in
+[the consolidation record](consolidation-20261118/CANDIDATE_INTEGRATION.md). Exact final head, tree, checks and the
+proposed next action: [promotion packet](consolidation-20261118/PROMOTION_PACKET.md). Branch dispositions:
+[ledger](consolidation-20261118/BRANCH_DISPOSITION_LEDGER.md). Validation evidence:
+[matrix](consolidation-20261118/VALIDATION_MATRIX.md). Reviews: [findings](consolidation-20261118/REVIEW_FINDINGS.md).
+Next phase: [queue](consolidation-20261118/NEXT_PHASE_QUEUE.md).
+
+States are cumulative only where stated. **Implemented**: source and focused tests exist. **Integrated**: present in
+the consolidation candidate. **Automated-qualified**: required repository CI and analyzers passed on the candidate
+source. **Externally-qualified**: real deployment, wallet, device, network or independent audit evidence exists.
+**Design-blocked**: needs an owner decision before production authority. **Release-ready**: all gates for the
+stated scope passed on one source and the owner approved release. Nothing is release-ready.
+
+| Area | Implemented | Integrated | Automated-qualified | Externally-qualified | Design-blocked / owner gate |
+|---|---|---|---|---|---|
+| Static lean Pages beta (invoice, pay, scan, receipt, sweep, backup, lock, re-import) | Yes | Yes | Application CI, Pages, beta, integration, hosting and CLI qualification green on candidate `bbd24cd0` (e2e full 74 passed / 1 skipped, lean 62 passed / 3 skipped); final head in the promotion packet | No: no authenticated testnet deployment, signed manifest, dedicated origin, real wallet/device/screen-reader/native-language acceptance | ADR-0029 origin and release trust root; deployment facts |
+| Full profile (merchant embedding, BTC BIP-352, private transport, relayer observability) | Yes (per 2026-11-16 rows below) | Yes | Covered by the same CI jobs | No (live nodes, proxies, receivers, wallets) | Optional; not required by the static beta |
+| Spec 18 / requirement 3q payment-key portability | No (specification only; canonical, approved, before beta exit) | Specification integrated | No | No | Spec wording items before K03 (NEXT_PHASE_QUEUE) |
+| Contracts (Router, PolicyRouter, Sweep relayer, PolicyAccount, Factory) | Yes | Yes (source unchanged from `beb525dd`) | Foundry, coverage, Slither and static checks green; **Echidna** reachability fixed in the harness (local full budget green; CI result in the promotion packet); **Mythril red by design**: 11 records individually dispositioned and independently reviewed, no suppression | No external audit | Mythril finding-specific disposition mechanism (owner); factory fee-token freeze residual before any production scheme-2 deployment; L2 cancel-window guidance |
+| Release process | `release.yml` requires source-matched Echidna and Mythril success | Yes | Workflow tests only; never run on a real tag | No | Release signer key absent; `main` unprotected, no rulesets or `v*` tag ruleset, environment reviewers unverified |
+| Chain/deployment matrix | Strict 14-chain/9-token/4-feed matrix | Yes | Schema passes; release mode rejects 73 unverified cells (42 chain, 27 token, 4 feed) | No | Authentic deployments and provider evidence (Sepolia first, then Base Sepolia) |
+| Policy/AA, guardian recovery, milestone escrow, automatic checkout | Experimental or model-only | Retained | Model tests only | No | Each needs an accepted specification before any fund-control path |
+| Future privacy 5a–5j, 5l | No (proposed) | Specifications integrated | No | No | Owner scheduling |
+| Private security inventories (CodeQL, Dependabot, secret scanning, Sonar) | — | — | Scanner jobs pass; alert inventories not accessible (HTTP 403 / proxy) | No | Owner access or export |
+
+## 2026-11-16 ledger (history)
+
 Updated 2026-11-16. Coordinator: Caveman root. Integration branch: `codex/ghostpay-unified-completion`.
 Product checkpoint for this update: `2962554d` (local source commit; later documentation does not change that source).
 Draft integration PR: [#187](https://github.com/djshellshoxxx/GhostPay/pull/187).
