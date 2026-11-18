@@ -70,7 +70,11 @@ execution passed 48 helper/static-server/automation/parallel-review tests and 26
 tests. The reviewer also checked the cached compiler digest against official Solidity binary metadata.
 See [INDEPENDENT_REVIEW.md](security-tooling-20261118/INDEPENDENT_REVIEW.md).
 
-The later RPC, validator, download and bidi commits still require the coordinator's combined-source review.
+The reviewer extended source review through `0b67fa9f` to the RPC, validator, download and bidi changes, and
+independently confirmed that all 30 bidi files preserve their values without `String.raw` contexts. No additional
+heavy tests ran during that extension. Its documentation finding was corrected: the key-boundary advice now
+addresses exported one-time keys and separately delegated viewing keys, while acknowledging normal local
+derivation in a trusted wallet. The coordinator's combined-source qualification remains required.
 
 ## Integration constraints and remaining gates
 
