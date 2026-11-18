@@ -120,4 +120,26 @@ describe('contextual help', () => {
     expect(within(first).getByRole('tooltip').textContent).toBe('<script>untrusted()</script>');
     expect(first.querySelector('script')).toBeNull();
   });
+  it('keeps an explanation opened by focus in place until a press elsewhere has delivered its click', async () => {
+    const user = userEvent.setup();
+    let clicks = 0;
+    render(<><ContextHelp label="About keystore">Choose the encrypted file.</ContextHelp><button onClick={() => { clicks++; }}>Decrypt</button></>);
+    const tip = screen.getByRole('tooltip', { hidden: true });
+    const next = screen.getByRole('button', { name: 'Decrypt' });
+    await user.tab();
+    expect(tip.hasAttribute('hidden')).toBe(false);
+    // The press moves focus to the button, but the explanation must not collapse before the release.
+    await user.pointer({ keys: '[MouseLeft>]', target: next });
+    expect(document.activeElement).toBe(next);
+    expect(tip.hasAttribute('hidden')).toBe(false);
+    await user.pointer({ keys: '[/MouseLeft]', target: next });
+    expect(clicks).toBe(1);
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+    expect(tip.hasAttribute('hidden')).toBe(true);
+    // Keyboard blur still closes at once.
+    await user.tab({ shift: true });
+    expect(tip.hasAttribute('hidden')).toBe(false);
+    await user.tab();
+    expect(tip.hasAttribute('hidden')).toBe(true);
+  });
 });

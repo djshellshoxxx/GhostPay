@@ -23,6 +23,13 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
   const [pinned, setPinned] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const open = !dismissed && (hovered || focused || pinned);
+  // A press elsewhere moves focus at mousedown, before the release (for touch, at the compatibility mousedown after
+  // pointerup). Collapsing the in-flow explanation on that blur would move the pressed control away, so the release and
+  // its click would land elsewhere. While a press is in progress (pointerdown or mousedown until mouseup or
+  // pointercancel) the blur only marks the close as pending; it runs in a task queued at mouseup, which the browser runs
+  // after that press's click has been dispatched. Any keydown ends a press, so keyboard blur (Tab) still closes at once.
+  const pressing = useRef(false);
+  const blurPending = useRef(false);
 
   useEffect(() => {
     if (!open) return;
@@ -42,11 +49,34 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
     const onOutsideClick = (event: MouseEvent): void => {
       if (event.target instanceof Node && !root.current?.contains(event.target)) dismiss();
     };
+    const onPressStart = (): void => { pressing.current = true; };
+    const onKeyInput = (): void => { pressing.current = false; };
+    const onPressEnd = (): void => {
+      pressing.current = false;
+      if (!blurPending.current) return;
+      setTimeout(() => {
+        if (!blurPending.current) return;
+        blurPending.current = false;
+        setFocused(false);
+        setPinned(false);
+      }, 0);
+    };
+    pressing.current = false;
     document.addEventListener('keydown', onKey);
     document.addEventListener('click', onOutsideClick);
+    document.addEventListener('pointerdown', onPressStart, true);
+    document.addEventListener('mousedown', onPressStart, true);
+    document.addEventListener('keydown', onKeyInput, true);
+    document.addEventListener('mouseup', onPressEnd, true);
+    document.addEventListener('pointercancel', onPressEnd, true);
     return () => {
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('click', onOutsideClick);
+      document.removeEventListener('pointerdown', onPressStart, true);
+      document.removeEventListener('mousedown', onPressStart, true);
+      document.removeEventListener('keydown', onKeyInput, true);
+      document.removeEventListener('mouseup', onPressEnd, true);
+      document.removeEventListener('pointercancel', onPressEnd, true);
     };
   }, [open]);
 
@@ -60,9 +90,13 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
         setDismissed(false);
       }}
       onPointerLeave={() => { setHovered(false); }}
-      onFocus={() => { setFocused(true); setDismissed(false); }}
+      onFocus={() => { blurPending.current = false; setFocused(true); setDismissed(false); }}
       onBlur={(event) => {
         if (event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget)) return;
+        if (pressing.current) {
+          blurPending.current = true;
+          return;
+        }
         setFocused(false);
         setPinned(false);
       }}

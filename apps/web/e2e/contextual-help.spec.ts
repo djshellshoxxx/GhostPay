@@ -80,3 +80,56 @@ test('large QR confines keyboard focus, scrolls on short screens and preserves b
   await noHorizontalOverflow(page);
   await auditAccessibility(page, 'preferences-qr-rtl-375px');
 });
+
+// An open in-flow explanation must not swallow the click on a control below it. Collapsing it during the press (on
+// pointerdown, or on the focus change a press causes) moves that control before the release, so the release lands
+// elsewhere and the control is never activated. Seen as a lost "Decrypt and load" in the keystore re-import journey.
+for (const [how, open] of [
+  ['opened by clicking its button', async (help: ReturnType<Page['getByRole']>) => { await help.click(); }],
+  ['opened by keyboard focus', async (help: ReturnType<Page['getByRole']>) => { await help.focus(); }],
+  ['opened by hover', async (help: ReturnType<Page['getByRole']>) => { await help.hover(); }],
+] as const) {
+  test(`a control below help ${how} receives the click that closes the help`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/');
+    await page.getByRole('navigation').getByRole('button', { name: 'Seller keys', exact: true }).click();
+    await page.getByText('Import an encrypted keystore', { exact: true }).click();
+    const decrypt = page.getByRole('button', { name: 'Decrypt and load', exact: true });
+    const form = page.locator('form').filter({ has: decrypt });
+    await form.evaluate((f) => {
+      (window as unknown as { submits: number }).submits = 0;
+      f.addEventListener('submit', (event) => { event.preventDefault(); (window as unknown as { submits: number }).submits += 1; }, true);
+    });
+    const help = page.getByRole('button', { name: 'About Keystore file', exact: true });
+    const closedY = (await decrypt.boundingBox())?.y ?? 0;
+    await open(help);
+    await expect(help).toHaveAttribute('aria-expanded', 'true');
+    // The open explanation sits in the page flow above the button.
+    expect((await decrypt.boundingBox())?.y ?? 0).toBeGreaterThan(closedY);
+    await decrypt.click();
+    await expect.poll(() => page.evaluate(() => (window as unknown as { submits: number }).submits)).toBe(1);
+    await expect(help).toHaveAttribute('aria-expanded', 'false');
+  });
+}
+
+test.describe('touch', () => {
+  test.use({ hasTouch: true });
+  test('a control below help opened by a tap receives the next tap', async ({ page }) => {
+    await page.setViewportSize({ width: 412, height: 915 });
+    await page.goto('/');
+    await page.getByRole('navigation').getByRole('button', { name: 'Seller keys', exact: true }).tap();
+    await page.getByText('Import an encrypted keystore', { exact: true }).tap();
+    const decrypt = page.getByRole('button', { name: 'Decrypt and load', exact: true });
+    const form = page.locator('form').filter({ has: decrypt });
+    await form.evaluate((f) => {
+      (window as unknown as { submits: number }).submits = 0;
+      f.addEventListener('submit', (event) => { event.preventDefault(); (window as unknown as { submits: number }).submits += 1; }, true);
+    });
+    const help = page.getByRole('button', { name: 'About Keystore file', exact: true });
+    await help.tap();
+    await expect(help).toHaveAttribute('aria-expanded', 'true');
+    await decrypt.tap();
+    await expect.poll(() => page.evaluate(() => (window as unknown as { submits: number }).submits)).toBe(1);
+    await expect(help).toHaveAttribute('aria-expanded', 'false');
+  });
+});
