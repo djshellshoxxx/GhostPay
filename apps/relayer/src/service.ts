@@ -172,6 +172,8 @@ interface ChainRuntime {
   readonly budget: DailyBudget;
   readonly breaker: GuardedBreaker;
   lastBreakerState: BreakerState;
+  /** Consecutive failed quote-path gas price reads since the last good one (one number per chain). */
+  quoteRpcFailStreak: number;
   /** Sweeps whose receipt wait timed out, looked up again at the start of later jobs (L5-06), oldest first. */
   readonly pending: SentSweep[];
   readonly reverts: RevertRate;
@@ -329,6 +331,7 @@ export class RelayerService {
           mono,
         ),
         lastBreakerState: 'closed',
+        quoteRpcFailStreak: 0,
         pending: [],
         unknownSend: undefined,
         lastBalance: undefined,
@@ -737,19 +740,26 @@ export class RelayerService {
       this.quoteRpcFailure(rt);
       throw new RelayerError(503, 'rpc_unavailable');
     }
+    rt.quoteRpcFailStreak = 0; // the RPC answered, whatever the cap says
     return this.capGasPrice(rt, price);
   }
 
   /**
-   * A failed quote-path gas price read is an operational failure like an in-lane one (L5-10): it counts against the
-   * breaker, so an RPC outage that only quotes see (every sweep needs a fresh quote) still opens it and degrades
-   * `/healthz` (LF-074edb61e-1). The permit is unvalidated: a quote never takes or settles a half-open probe, which
-   * stays for a sweep. Only failures are recorded; one read serves every quote within `gas.quoteCacheSeconds`.
+   * A failed quote-path gas price read is an operational failure like an in-lane one (L5-10), so an RPC outage that
+   * only quotes see (every sweep needs a fresh quote) still opens the breaker and degrades `/healthz`
+   * (LF-074edb61e-1). Quote reads are kept out of the breaker's count window: their successes would dilute send and
+   * receipt failures, and failures alone would pile up there with no time decay, so isolated blips hours apart
+   * would open it. Instead a run of `breaker.minSamples` consecutive failed reads, with no good read in between
+   * (a failure ratio of 1), opens a closed breaker. A quote never takes or settles the half-open probe, which stays
+   * for a sweep, and never re-opens an open breaker (its cooldown is not extended). One read serves every quote
+   * within `gas.quoteCacheSeconds`.
    */
   private quoteRpcFailure(rt: ChainRuntime): void {
-    const permit = rt.breaker.tryAcquire({ validated: false });
-    if (permit === null) return;
-    permit.settle(classifyRelayOutcome('rpc_error'));
+    rt.quoteRpcFailStreak += 1;
+    if (rt.quoteRpcFailStreak < this.d.config.breaker.minSamples) return;
+    rt.quoteRpcFailStreak = 0;
+    if (rt.breaker.state !== 'closed') return;
+    rt.breaker.trip();
     this.noteBreaker(rt);
   }
 

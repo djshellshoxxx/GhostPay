@@ -387,6 +387,51 @@ describe('LF-074edb61e-1: quote-path RPC failures feed the circuit breaker', () 
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' });
   });
 
+  it('isolated gas-price blips hours apart, with good quote lookups between them, never open the breaker', async () => {
+    const s = await start(); // harness breaker: minSamples 3, failureRatio 0.5
+    for (let blip = 0; blip < 6; blip++) {
+      for (let i = 0; i < 20; i++) {
+        s.clock.ms += 3_000; // past the quote gas-price cache: each is a real lookup
+        expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
+      }
+      s.fake.rpcDown = true;
+      s.clock.ms += 3_000;
+      expect(codeOf(await call(s, 'POST', '/v1/quote', q))).toBe('rpc_unavailable');
+      s.fake.rpcDown = false;
+      s.clock.ms += 3_600_000;
+    }
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
+  });
+
+  it('a good quote lookup ends a run of failures: only consecutive failed lookups open the breaker', async () => {
+    const s = await start();
+    for (let round = 0; round < 4; round++) {
+      s.fake.rpcDown = true;
+      for (let i = 0; i < 2; i++) expect(codeOf(await call(s, 'POST', '/v1/quote', q))).toBe('rpc_unavailable');
+      s.fake.rpcDown = false;
+      s.clock.ms += 3_000;
+      expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
+      s.clock.ms += 3_000;
+    }
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
+    // A third consecutive failed lookup (harness minSamples 3) is an outage: it opens.
+    s.fake.rpcDown = true;
+    for (let i = 0; i < 3; i++) await call(s, 'POST', '/v1/quote', q);
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded', chains: [{ breaker: 'open' }] });
+  });
+
+  it('quote failures while the breaker is already open do not extend its cooldown', async () => {
+    const s = await start();
+    s.fake.rpcDown = true;
+    for (let i = 0; i < 3; i++) await call(s, 'POST', '/v1/quote', q);
+    s.clock.ms += 30_000;
+    for (let i = 0; i < 6; i++) await call(s, 'POST', '/v1/quote', q);
+    s.clock.ms += 31_000; // 61 s after it opened: past breaker.cooldownSeconds (60)
+    s.fake.rpcDown = false;
+    const p = await prepare(s);
+    expect((await call(s, 'POST', '/v1/sweep', p.body)).status).toBe(200);
+  });
+
   it('quote failures never take the half-open probe: a sweep still probes and closes the breaker', async () => {
     const s = await start();
     s.fake.rpcDown = true;
