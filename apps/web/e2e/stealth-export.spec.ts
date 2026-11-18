@@ -97,11 +97,13 @@ test('payment details: public record holds no key; encrypted keypair after vault
   // Simulate a refused anchor click once. Generated ciphertext is not a retained backup, and the key session survives.
   await page.evaluate(() => {
     const descriptor = Object.getOwnPropertyDescriptor(HTMLAnchorElement.prototype, 'click');
-    if (descriptor === undefined) throw new Error('test-only missing anchor click');
     Object.defineProperty(HTMLAnchorElement.prototype, 'click', {
-      ...descriptor,
+      configurable: true,
+      enumerable: descriptor?.enumerable ?? false,
+      writable: true,
       value: (): never => {
-        Object.defineProperty(HTMLAnchorElement.prototype, 'click', descriptor);
+        if (descriptor === undefined) Reflect.deleteProperty(HTMLAnchorElement.prototype, 'click');
+        else Object.defineProperty(HTMLAnchorElement.prototype, 'click', descriptor);
         throw new Error('test-only blocked download');
       },
     });
