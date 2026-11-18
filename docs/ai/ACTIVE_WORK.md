@@ -1,3 +1,12 @@
+# Pages privacy consolidation — 2026-11-18
+
+Worker: ChatGPT coordinator. Branch: `integration/ghostpay-privacy-20261118`.
+Base: `305ccb0d570c27a47435083059492edc819a0101` (reviewed narrow repairs staged from main).
+Owned paths: privacy changes from #222, #228, #230 and #233, their integration conflicts and focused regressions.
+Acceptance: preserve v4 checkpoint names and explicit balance-request lifecycle from #235/#231; encrypted invoice default,
+minimized receipts, per-dispatch RPC policy and session-only sweep linkage must pass combined tests and independent review.
+All publication, main merge, hosted qualification and release actions remain coordinator gated.
+
 
 # Pages idle-clock integration — 2026-11-18
 
