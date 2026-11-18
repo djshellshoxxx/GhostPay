@@ -1,3 +1,15 @@
+# Pages beta consolidation continuation — 2026-11-18
+
+Worker: ChatGPT coordinator, with independent branch archaeology, recovery/security and CI reviewers.
+Branch: `integration/ghostpay-pages-completion-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: consolidation conflicts and Pages security/privacy integration, focused regression tests,
+this registry, and `docs/handoffs/pages-completion-20261118/`.
+Recovery and dependency implementation use separate worktrees and branches. Existing remote PRs are read-only source inputs.
+Acceptance: preserve non-custodial client-side key handling and testnet restrictions; integrate only reviewed changes;
+execute focused and combined tests; obtain independent review; record source and evidence before any main merge.
+No deployment, release, branch deletion, force-push, or paid agent workflow activation is authorized.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
