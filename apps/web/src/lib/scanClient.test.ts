@@ -7,6 +7,7 @@ import { InlineWorker } from '../test/inlineWorker';
 import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
 import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+import { checkpointSlot, type ViewingKeyLender } from './scanCursorSlot';
 import { ReconciliationVault } from './reconciliationVault';
 import type { ToWorker } from './scannerCore';
 
@@ -14,6 +15,9 @@ const chain = CHAINS.find((c) => c.chainId === 84532)!;
 const hexOf = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
 const manifest = fakeManifest(84532);
 const KEY = checkpointKeyId('02aa', '03bb');
+/** Checkpoint slots are named from a viewing key (SEC-22); these key ids are synthetic, so the store borrows a fixed test key. */
+const TEST_VIEWING_KEY = new Uint8Array(32).fill(7);
+const lendTestKey: ViewingKeyLender = (_keyId, use) => use(TEST_VIEWING_KEY.slice());
 const blockHash = (n: number): string => `0x${n.toString(16).padStart(64, '0')}`;
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
@@ -859,7 +863,7 @@ describe('WEB-APP-04 / CHAIN-ADAPTERS-03: checkpoints', () => {
   it('are bound to the key set: another key (or the old key-less v1 entry) never inherits a position', () => {
     const map = new Map<string, string>();
     const st = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => void map.set(k, v), removeItem: (k: string) => void map.delete(k) };
-    const cp = localCheckpointStore(st);
+    const cp = localCheckpointStore(st, lendTestKey);
     const A = checkpointKeyId('02aa', '03bb');
     const B = checkpointKeyId('02cc', '03dd');
     expect(A).not.toBe(B);
@@ -967,7 +971,7 @@ describe('localCheckpointStore', () => {
   }
   it('round-trips a cursor with a block hash', () => {
     const st = mem();
-    const cp = localCheckpointStore(st);
+    const cp = localCheckpointStore(st, lendTestKey);
     expect(cp.load(1, KEY)).toBeUndefined();
     cp.save(1, KEY, { nextBlock: 77n, last: { number: 76n, hash: `0x${'a'.repeat(64)}` } });
     expect(cp.load(1, KEY)).toEqual({ nextBlock: 77n, last: { number: 76n, hash: `0x${'a'.repeat(64)}` } });
@@ -979,18 +983,18 @@ describe('localCheckpointStore', () => {
   });
   it('ignores corrupt data and tolerates missing or failing storage', () => {
     const st = mem();
-    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, 'not json');
-    st.setItem(`ghostpay.scan.checkpoint.v2.2.${KEY}`, JSON.stringify({ nextBlock: 'abc' }));
-    st.setItem(`ghostpay.scan.checkpoint.v2.3.${KEY}`, JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
-    const cp = localCheckpointStore(st);
+    st.setItem(checkpointSlot(TEST_VIEWING_KEY, 1, KEY), 'not json');
+    st.setItem(checkpointSlot(TEST_VIEWING_KEY, 2, KEY), JSON.stringify({ nextBlock: 'abc' }));
+    st.setItem(checkpointSlot(TEST_VIEWING_KEY, 3, KEY), JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
+    const cp = localCheckpointStore(st, lendTestKey);
     expect(cp.load(1, KEY)).toBeUndefined();
     expect(cp.load(2, KEY)).toBeUndefined();
     expect(cp.load(3, KEY)).toEqual({ nextBlock: 5n });
-    const none = localCheckpointStore(undefined);
+    const none = localCheckpointStore(undefined, lendTestKey);
     expect(none.load(1, KEY)).toBeUndefined();
     none.save(1, KEY, { nextBlock: 1n });
     none.clear(1, KEY);
-    const throwing = localCheckpointStore({ getItem: () => { throw new Error('x'); }, setItem: () => { throw new Error('x'); }, removeItem: () => { throw new Error('x'); } });
+    const throwing = localCheckpointStore({ getItem: () => { throw new Error('x'); }, setItem: () => { throw new Error('x'); }, removeItem: () => { throw new Error('x'); } }, lendTestKey);
     expect(throwing.load(1, KEY)).toBeUndefined();
     expect(() => { throwing.save(1, KEY, { nextBlock: 1n }); throwing.clear(1, KEY); }).not.toThrow();
     void vi;
@@ -1194,7 +1198,7 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
   });
   const memoryStore = (): CheckpointStore => {
     const m = new Map<string, string>();
-    return localCheckpointStore({ getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v), removeItem: (k) => void m.delete(k) });
+    return localCheckpointStore({ getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v), removeItem: (k) => void m.delete(k) }, lendTestKey);
   };
 
   /** The seller-key, worker and abort arguments every A5 run shares. */
@@ -1517,7 +1521,7 @@ describe('two-provider replay-tail checkpoint anchor', () => {
   const memStore = () => {
     const map = new Map<string, string>();
     const saves: unknown[] = [];
-    const store = localCheckpointStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => void map.set(k, v), removeItem: (k) => void map.delete(k) });
+    const store = localCheckpointStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => void map.set(k, v), removeItem: (k) => void map.delete(k) }, lendTestKey);
     const recording: CheckpointStore = { ...store, save: (id, key, cursor) => { saves.push(cursor); store.save(id, key, cursor); } };
     return { map, saves, store: recording };
   };

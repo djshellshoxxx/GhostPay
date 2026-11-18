@@ -1,3 +1,44 @@
+# Completion run 2026-11-18 (gap-fill, second coordinator) — CLOSED for new work; PR #211 open
+
+Status 2026-11-18: every lane below is integrated on `nodata/wonderful-darwin-kd1h22` (PR #211) and qualified (see
+`docs/handoffs/completion-20261118-gapfill/HANDOFF.md`). No worker is active. The owned paths stay reserved for PR #211
+until it merges or is closed. Remaining coordinator work is only the POST-209 merge (sequenced after PR #209) and the
+test-vectors README entry after PR #213. SEC-22 identifiers outside the scan cursor are unclaimed.
+
+Coordinator: Claude Code cloud session `wonderful-darwin` (integration owner of this claim only). Integration branch
+`nodata/wonderful-darwin-kd1h22`, created from `origin/main` = `5467c158` (merge of PR #203). Draft PR to `main`
+opened with this claim. Lane branches `claude/completion-20261118-gapfill/<lane>` are local-only worktrees; only this
+coordinator merges them (`--no-ff`) after independent review. Ledgers live in
+`docs/handoffs/completion-20261118-gapfill/` (not `docs/handoffs/completion-20261118/`, which belongs to PR #209).
+
+**Sequencing.** PR #209 (`claude/ghostpay-completion-audit-ot5jjm`, claimed 07:15 UTC) was claimed first and goes
+first. This run takes only security rows and gaps #209 did not claim, on paths #209 does not own. It runs no
+duplicate bug-hunt, fresh-security or missing-code finders: #209 runs lanes D/E/F across all subsystems. After #209
+lands, this branch merges `main` and resolves the `docs/ai/ACTIVE_WORK.md` insertion conflict.
+
+| Lane | Source rows | Owned paths (exclusive for this run) | Acceptance |
+|---|---|---|---|
+| G1 scheme-2 client gates | SEC-11, SEC-12 / OD-11 default, SEC-28 (policy-scheme doc line only) | `packages/policy-scheme/src/**` (+ tests), `apps/web/src/features/policy/**` (+ tests), `docs/developer/api/policy-scheme.md` | Seller policy creation and payer flows refuse or warn on assets without a limits leaf (RED-first); delay floor never below the factory `MIN_DELAY`, with any per-chain floor sourced or marked owner-gated; no contract source change |
+| G2 alt-chain secret reveal | SEC-13 / OD-02 default | `apps/web/src/components/SecretBackup.tsx` (+ tests), secret-reveal and backup code in `apps/web/src/features/{btc,solana,tron}/**` (+ tests) | No clipboard path for BTC/SOL/TRON seeds or keys (OD-02 fail-closed default); reveal stays explicit; RED-first tests; lean bundle untouched |
+| G3 storage linkability | SEC-22 | scan-cursor slot naming in `apps/web/src/lib/scanClient.ts` (+ tests) | Checkpoint slot names no longer derivable from public keys alone (RED-first); legacy slots fail closed to a rescan, never to a wrong cursor |
+| G4 UX residuals | SEC-29 / R-03, SEC-30 / R-04 | `apps/web/src/components/ContextHelp.tsx` (+ tests), new `apps/web/e2e/focus-scope.spec.ts` | Hover-leave never collapses help that a click or focus opened (RED-first); paste-submit focus pinned by a browser test |
+| G5 meta-address format drift | TB-08 | `packages/chain-solana/**`, `packages/chain-tron/**` (+ tests), new `test-vectors/meta-address-sol-tron-v1.json` | CLI and web Solana/TRON meta-address encodings agree, proven by shared vectors; or the incompatibility is recorded with evidence and an owner question |
+| G3b SEC-22 hardening (review follow-up) | SEC-22 | `apps/web/src/lib/scanClient.ts`, `apps/web/src/lib/scanCursorSlot.ts` (+ tests) | All legacy v2 cursor slots swept, not only the saved chain; slot name cached per chain and key set so the viewing key is not copied on every render; wipe on the throw path tested |
+| G5b TRON/CLI review follow-ups (done; the CLI files overlapped PR #218's earlier `packages/cli/src/**` claim, disclosed to that session; #218 goes first on CLI) | new findings from the G5 review | `packages/chain-tron/src/adapter.ts` (+ tests), `packages/cli/src/commands/chain.ts`, `packages/cli/src/payment-context.ts` (+ tests) | TRON `build()` never returns a payment the receiver cannot detect (memo bound to the transaction or fail closed); CLI reports the Solana cluster and refuses mainnet; legacy-format errors reach the user |
+| G1c policy-scheme dropped hardening | b85e0b59 items lost in merge 84c2c185 (reported by the PR #218 session's dropped-fix triage) | `packages/policy-scheme/src/**` (+ tests), `packages/policy-scheme/README.md` | Each of the five items has a RED repro (from #218's evidence at `c2369b67`) and a fix ported to the shipped `PolicyRef` ABI; README trust notes restored |
+| G6 review / H checks | all lanes | read-only | Independent review of each lane diff; affected suites, typecheck, lint, i18n, lean bundle scan at the integration head |
+
+Coordinator-only: this section, `docs/handoffs/completion-20261118-gapfill/**`, the integration merges.
+
+**Excluded (owned by other active sessions; read-only here):** every path claimed by PR #209 (lanes C1, C2, B1-B4, A,
+coordinator `package-lock.json` and `apps/web/locales/**` merges); `docs/handoffs/completion-20261118/**` (#209/#208);
+`docs/handoffs/post-consolidation-20261118/**` (PR #205); `CLAUDE.md`, `AGENTS.md`, `docs/ai/**` tooling, `.claude/**`,
+`scripts/agent/**`, `.github/workflows/**` (PR #206/#204 and #209 B4); every `chatgpt/*`, `codex/*`, `dependabot/*`
+branch and PR. Locale catalogs are touched only where a lane removes or adds a key, as a separate commit #209 can merge.
+
+Out of scope: merging to `main`, closing PRs, deleting branches/tags, deployment, signing, release publication, real
+funds, mainnet, contract source changes, new custody/authority surfaces, invented owner decisions (OD-*/OA-*).
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker

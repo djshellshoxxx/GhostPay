@@ -32,13 +32,12 @@ function computePolicyHash(policy: Policy): Hex                              // 
 function validatePolicy(policy: Policy): Policy                              // non-zero destination; MIN_DELAY <= delay <= MAX_DELAY
 function accountSalt(owner: Address, policyHash: Hex): Hex                   // keccak256(abi.encode(owner, policyHash))
 function cloneInitCodeHash(implementation: Address): Hex
-function predictAccountAddress(deployment: PolicyDeployment, owner: Address, policyHash: Hex): Address
-function predictAccountAddressFromSalt(deployment: PolicyDeployment, salt: Hex): Address   // what GhostPayPolicyRouter checks
+function predictAccountAddress(deployment: PolicyDeployment, owner: Address, policyHash: Hex): Address   // what GhostPayPolicyRouter checks
 ```
 
-`predictAccountAddress` equals `PolicyAccountFactory.predictAddress(owner, policyHash)`; `predictAccountAddressFromSalt`
-is the same CREATE2 formula starting from the salt (the router receives only the salt, see below). Pin **both** factory
-and implementation per chain (either one changes every account address).
+`predictAccountAddress` equals `PolicyAccountFactory.predictAddress(owner, policyHash)` (CREATE2 with salt
+`accountSalt(owner, policyHash)`). Pin **both** factory and implementation per chain (either one changes every account
+address).
 
 ### Limits tree (`limits.ts`)
 
@@ -62,6 +61,18 @@ Layout matches OpenZeppelin `StandardMerkleTree`: leaves sorted by hash, flat ar
 limited leaf with zero window, and **duplicate tokens** are refused. With a non-zero root a token with no leaf can
 never be withdrawn: add an `UNLIMITED` leaf (`limit = MAX_UINT256`, `windowSeconds = 0n`) for every token the account may
 receive, including the native coin (`ZERO_ADDRESS`).
+
+```ts
+function policyCoversToken(record: Pick<PolicyRecord, 'policy' | 'tree'>, token: Address | 'native'): boolean   // record.ts
+```
+
+`policyCoversToken` answers "can this policy ever withdraw `token`?" from a verified `PolicyRecord`: `true` for a zero
+`limitsRoot`, otherwise only for tokens with a leaf (`'native'` is `ZERO_ADDRESS`, addresses compared ignoring case); it
+returns `false` when the record has no tree or its root is not `limitsRoot`. The router accepts any token or native
+payment, and a meta-address carries only the spending key, viewing key and `policyHash`, so a payer without the
+recipient's record cannot run this check (audit SEC-11). The web app uses it to list, on the seller's side, the only
+assets a policy can withdraw, and on the payer's side to refuse an uncovered asset when the payee's record is loaded and
+to warn otherwise.
 
 ### Meta-address (`meta.ts`)
 
@@ -137,7 +148,6 @@ function encodeExecuteDestinationChange(account: Address): CallRequest
 function encodeCancelDestination(account: Address, id: Hex, signature: PolicySignature | Hex): CallRequest
 
 const POLICY_ROUTER_FEE_BPS = 25n;  const MAX_POLICY_ROUTER_GROSS: bigint;
-interface ExpectedPolicyRef { readonly owner: Address; readonly policyHash: Hex }
 type PolicyRouterMethod = 'payERC20' | 'payERC20WithPermit' | 'payNative' | 'payERC20WithBuffer'
 interface PolicyPaymentInput { router: Address; feeRecipient: Address; deployment: PolicyDeployment;
   payment: Pick<Scheme2Payment, 'ownerAddress' | 'accountAddress' | 'policyHash' | 'ephemeralPublicKey' | 'viewTag'>;
@@ -146,20 +156,21 @@ interface PolicyPaymentInput { router: Address; feeRecipient: Address; deploymen
 interface PolicyPayment { method: PolicyRouterMethod; tx: CallRequest; fee: bigint; net: bigint; metadata: Hex }
 function policyRouterFee(gross: bigint): bigint
 function buildPolicyPaymentTx(input: PolicyPaymentInput): PolicyPayment
-function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeployment, expected?: ExpectedPolicyRef): DecodedPolicyPayment
-   // { method, stealth, salt, ephemeralPublicKey, metadata }; throws if stealth != predictAccountAddressFromSalt(salt),
-   // and, when `expected` is given, if salt != accountSalt(expected.owner, expected.policyHash)
+function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeployment): DecodedPolicyPayment
+   // { method, stealth, owner, policyHash, ephemeralPublicKey, metadata }; throws if
+   // stealth != predictAccountAddress(deployment, owner, policyHash)
 ```
 
-The router entry points take the per-payment CREATE2 **salt** (`bytes32`, `keccak256(abi.encode(owner, policyHash))`), not
-the owner and policy hash: the seller-constant `policyHash` therefore never appears in router calldata (round-3 audit
-N-01). The router cannot see the owner any more, so `buildPolicyPaymentTx` is the only place that checks a non-zero owner;
-pass `expected` to `decodePolicyPaymentCalldata` to bind the salt to the payee's owner and policy before a wallet prompt.
+The router entry points take `PolicyRef{owner, policyHash}` (`GhostPayPolicyRouter.sol` `payERC20`, `payERC20WithPermit`,
+`payNative`, `payERC20WithBuffer`), so the seller-constant `policyHash` **is** in every router payment's calldata and links
+all payments to one meta-address (open audit finding AUD24-01; the salt-only ABI of round-3 audit N-01 is not what the
+contract implements; owner decision OD-05). Before a wallet prompt, compare the decoded `owner` and `policyHash` with the
+payee's own values: `decodePolicyPaymentCalldata` only checks that `stealth` is the predicted account for them.
 
 `encodeDeployAccount` additionally refuses `owner == destination` and `destination == account` (the contract allows the
 former; it defeats the product). With a non-zero factory `FLAT_FEE` the sender must first `approve` the factory for
 `FEE_TOKEN`. ABIs: `policyAccountAbi`, `policyAccountFactoryAbi`, `ghostPayPolicyRouterAbi` (generated by
-`npm run gen-abi -w @ghostpay/policy-scheme`; regenerated after the N-01 salt change and the factory fee waiver).
+`npm run gen-abi -w @ghostpay/policy-scheme`; regenerated after the factory fee waiver).
 
 ### Errors
 
@@ -201,10 +212,10 @@ const built = buildPolicyPaymentTx({
   router: '0x00000000000000000000000000000000000f0003', feeRecipient: '0x00000000000000000000000000000000000f0004',
   deployment, payment: pay, token: USDC, gross: 1_000_000n, deadline: 1_900_000_000n,
 });
-// built.method 'payERC20', fee 2500n, net 997500n, selector 0x95e21466
-const dec = decodePolicyPaymentCalldata(built.tx.data, deployment, { owner: pay.ownerAddress, policyHash });
+// built.method 'payERC20', fee 2500n, net 997500n, selector 0x0730d511
+const dec = decodePolicyPaymentCalldata(built.tx.data, deployment);
 dec.method;                                                       // 'payERC20'
-dec.salt === accountSalt(pay.ownerAddress, policyHash);           // true; the policy hash itself is not in built.tx.data
+dec.owner === pay.ownerAddress && dec.policyHash === policyHash;  // true; the policy hash is in built.tx.data (AUD24-01)
 
 // Seller: scan, recover owner key, deploy, withdraw
 const ann = { schemeId: SCHEME_ID, stealthAddress: pay.accountAddress, ephemeralPublicKey: bytesToHex(pay.ephemeralPublicKey), metadata: built.metadata };
@@ -229,8 +240,17 @@ catch (e) { e instanceof PolicySchemeError; /* code 'INVALID_DELAY', message 'in
 - A policy the factory rejects (delay outside `[1 h, 30 d]`, zero destination) makes payments to its account
   unrecoverable. Always `validatePolicy` before publishing a meta-address.
 - `PolicyAccountFactory.deploy` publishes the full policy pre-image in calldata, so the first deployment of any of a
-  seller's accounts reveals the `policyHash` and destination of that meta-address and links every deployed account
-  (contracts `DEVIATIONS.md` R10). Undeployed, router-paid accounts stay unlinkable.
+  seller's accounts reveals the `policyHash` and destination of that meta-address and links every deployed account.
+  Undeployed accounts are not linked by a factory deployment, but they are **not unlinkable**: the current router takes
+  `PolicyRef{owner, policyHash}` in calldata (`IGhostPayPolicyRouter.sol:18-21`, contracts `DEVIATIONS.md` R3), so
+  every router payment to one meta-address carries the same public `policyHash`, and the unsalted hash lets anyone who
+  can guess the destination, delay and limits root confirm them (PRIVACY-E2E-05, open). Anyone who holds the meta-address (every payer it was
+  shared with) can read that `policyHash` from it and find every router payment to it. The salt-only router (round-3
+  N-01) is not what the code ships; the calldata section above now describes the shipped `PolicyRef` ABI (the
+  documentation part of audit 24 F3; the ABI choice itself is owner decision OD-05).
+- `MIN_DELAY` (1 h) is the factory floor, not a safe value on a rollup: a censoring or stalled sequencer can hold back
+  the owner's `cancel` beyond a short delay. Per-chain minimum delays are an open owner decision (OD-11); neither this
+  package nor the app verifies or enforces any per-chain bound.
 - The factory may waive the flat fee (`FeeWaived`) when the fee token refuses a caller who can pay (R11); do not assume a
   fee was collected from the presence of a deployment.
 - Key theft is delayed and made visible, not prevented: the thief holds the same key and can request withdrawals to the

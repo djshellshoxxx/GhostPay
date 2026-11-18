@@ -22,7 +22,7 @@ const rng = seededRng('stealth.test');
 describe('stealth round trip', () => {
   it('sender derives, receiver detects, spend key signs for P', () => {
     const keys = generateStealthKeys(rng);
-    const meta = encodeMetaAddress(keys);
+    const meta = encodeMetaAddress({ ...keys, cluster: 'devnet' });
     const pay = deriveStealthPayment(meta, rng);
     expect(decodeAddress(pay.stealthAddress)).toEqual(pay.stealthPublicKey);
 
@@ -128,16 +128,15 @@ describe('non-detection', () => {
 });
 
 describe('degenerate cases', () => {
-  it('sharedSecretPoint clears the cofactor: a pure torsion point maps to the identity', () => {
+  it('sharedSecretPoint is the plain ADR-0017 product Z = k*Q (no cofactor) and rejects the identity', () => {
+    const Q = Point.BASE.multiply(5n);
+    expect(sharedSecretPoint(Q, 11n).equals(Point.BASE.multiply(55n))).toBe(true);
+    // Unreachable for validated inputs; torsion points never get here (decodePrimeOrderPoint rejects them).
     for (const h of ED25519_TORSION_SUBGROUP) {
-      expect(() => sharedSecretPoint(Point.fromBytes(hexToBytes(h), true), 3n)).toThrow(
+      expect(() => sharedSecretPoint(Point.fromBytes(hexToBytes(h), true), 8n)).toThrow(
         expect.objectContaining({ code: 'IDENTITY_POINT' }),
       );
     }
-    // and removes a torsion component: [8](k(Q+T)) == [8](kQ)
-    const Q = Point.BASE.multiply(5n);
-    const T = Point.fromBytes(hexToBytes(ED25519_TORSION_SUBGROUP[1] as string), true);
-    expect(sharedSecretPoint(Q.add(T), 11n).equals(sharedSecretPoint(Q, 11n))).toBe(true);
   });
 
   it('addTweak rejects the identity (h = -s)', () => {
