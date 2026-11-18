@@ -133,16 +133,16 @@
       "status": "INCOMPLETE_CAMPAIGN_EXISTING_OUTPUT_UNDER_OBSERVATION",
       "version": "2.2.7",
       "exit_code": null,
-      "result": "Worker reports Router completed 300000 calls, four safety properties passed and four required canaries falsified; Sweep corpus exists. No final overall exit or all-three-harness result has been supplied.",
+      "result": "Worker reports Router completed 300000 calls, four safety properties passed and four required canaries falsified; Sweep later reached 300005 calls and Policy remains active. No final overall exit or all-three-harness result has been supplied.",
       "observation_basis": "Worker report; no completed full-campaign result copied.",
-      "diagnostics": "Existing captured logs report failed Slither preprocessing and unconfigured-RPC/EmptyBase diagnostics. These are under read-only inspection; standalone Slither passing separately does not clear Echidna diagnostics. No diagnostic-free or completed campaign pass is asserted."
+      "diagnostics": "Both completed harnesses warn auxiliary Slither failed and fuzzing may be less effective, with unconfigured synthetic EmptyBase RPC diagnostics. These are under read-only inspection; standalone Slither passing separately does not clear Echidna diagnostics. No diagnostic-free or completed campaign pass is asserted."
     },
     {
       "name": "Mythril repository campaigns",
       "status": "NOT_EXECUTED_WORKER_INTERRUPTED",
       "version": "0.24.8",
       "exit_code": null,
-      "result": "Tool installation/probe succeeded; the full five-target campaign was never started. Worker reported an automatic possible-cybersecurity-risk interruption, after which its assignment was restricted to observing existing outputs. This is not a scanner failure result or a promise that a campaign is merely waiting to launch.",
+      "result": "Tool installation/probe succeeded; the full five-target campaign was never started. The coordinator reported an automatic possible-cybersecurity-risk interruption and narrowed this worker to existing-output observation. Retained tool logs do not identify the exact interrupted action. This is not a scanner failure result or a promise that a campaign is merely waiting to launch.",
       "required_unchanged": "900-second target timeout, depth 3 and strict finding/error gate; standalone disposition helper remains unwired."
     },
     {

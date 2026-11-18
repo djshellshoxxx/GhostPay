@@ -259,13 +259,15 @@ source boundary and filters are in [NATIVE_QUALIFICATION_20261118.md](NATIVE_QUA
   filters, including exclusion of informational/low findings and `--fail-medium`. This does not claim every possible
   detector/configuration produces zero findings.
 - **Echidna:** existing output remains under observation. The worker reports Router reached 300,000 calls, with
-  four safety properties passing and all four required canaries falsified; a Sweep corpus exists. No final overall
-  exit or all-three-harness result has been supplied. Captured output also reports failed Slither preprocessing
-  and unconfigured-RPC/`EmptyBase` diagnostics; the separate standalone Slither pass does not clear those warnings.
+  four safety properties passing and all four required canaries falsified; Sweep later reached 300,005 calls and
+  Policy remains active. No final overall exit or all-three-harness result has been supplied. Completed harnesses
+  warn that auxiliary Slither failed and fuzzing may be less effective, and report unconfigured synthetic
+  `EmptyBase` RPC diagnostics; the separate standalone Slither pass does not clear those warnings.
   No claim of a diagnostic-free campaign is made. The required three harnesses/canaries and budgets remain intact.
-- **Mythril:** installed and executable; **the full five-target campaign was never started**. The worker reported
-  an automatic possible-cybersecurity-risk interruption, after which its assignment was limited to observing
-  existing outputs. This is neither a scanner result nor a claim that a campaign is merely waiting to launch.
+- **Mythril:** installed and executable; **the full five-target campaign was never started**. The coordinator reported
+  an automatic possible-cybersecurity-risk interruption and narrowed this worker to existing-output observation.
+  This was a coordinator report; retained tool logs do not identify the exact interrupted action. This is neither
+  a scanner result nor a claim that a campaign is merely waiting to launch.
   Required 900-second target timeouts, depth 3 and the strict findings/error gate remain unchanged.
 
 The successful contract/recovery executions are bound to `ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929`; the worker
