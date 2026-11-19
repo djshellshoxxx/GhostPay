@@ -1,0 +1,51 @@
+{
+  "method": "V8 in-memory execution of canonicalize extracted from the repository source; only TypeScript annotations/assertions erased and error class supplied. Not Vitest, TypeScript compilation, coverage, lint or browser qualification.",
+  "probes": [
+    {
+      "name": "sparse arrays rejected",
+      "result": "pass"
+    },
+    {
+      "name": "extra nonenumerable/symbol keys rejected",
+      "result": "pass"
+    },
+    {
+      "name": "accessor rejected without invocation",
+      "result": "pass"
+    },
+    {
+      "name": "inherited map ignored",
+      "result": "pass"
+    },
+    {
+      "name": "Proxy get/has ignored",
+      "result": "pass"
+    },
+    {
+      "name": "snapshot survives nested mutation",
+      "result": "pass"
+    },
+    {
+      "name": "immutable/null-prototype/nonenumerable dense arrays accepted",
+      "result": "pass"
+    },
+    {
+      "name": "balanced missing index rejected",
+      "result": "pass"
+    },
+    {
+      "name": "reordered own keys accepted",
+      "result": "pass"
+    },
+    {
+      "name": "invalid length descriptors rejected",
+      "result": "pass"
+    },
+    {
+      "name": "1000 seeded ordinary JSON values preserve previous bytes",
+      "result": "pass"
+    }
+  ],
+  "passed": 11,
+  "failed": 0
+}

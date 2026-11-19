@@ -1,3 +1,24 @@
+# Isolated consolidation follow-through — 2026-11-19
+
+Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
+Branch: `codex/ghostpay-consolidation-followthrough-20261119`.
+Original base: PR #262 `c40b7581b9b996f33612186bc91960c65273cb64`; first refresh `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`.
+Qualification base: `155d009160a6e5b2c24a91705c72fc8cca6ce815`; publication base: PR #262 `c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a` (identical tree).
+All incoming claims and evidence are retained.
+Owned product paths: `packages/invoice-schema/src/json{,.test}.ts` and
+`apps/web/src/lib/scannerCore{,.test}.ts`; this own registry entry and
+`docs/consolidation/followthrough-20261119/`.
+Scope: finish #265 array rejection with descriptor snapshots and avoid redundant crypto for unsupported scanner schemes.
+The current base already integrates merchant-clock handling from #268. Preserve its two merchant files exactly;
+the former #246 alternative and its 63-case result are superseded, historical evidence only.
+Acceptance: regression-backed correction, ordinary JSON byte stability, valid-scan/replay/cancellation/progress behavior,
+and the unchanged million-log corpus/180-second limit. Run original applicable tests, coverage, typecheck and lint.
+Another coordinator owns shared integration. This branch remains isolated staging; shared tracking,
+protected integration/main, active source branches, deployment, contracts, fees and recovery policy are unchanged.
+Independent source reviews found no introduced blocker. The source-pinned handoff records actual execution:
+focused scanner and million-log passes, full invoice-suite failures, and remaining hosted/browser qualification.
+No repository-wide acceptance is inferred from focused checks.
+
 # Automation cycle 20261119T095600Z — merchant profile clock validation
 
 Worker: single ChatGPT implementation phase (no parallel independent verifier).
