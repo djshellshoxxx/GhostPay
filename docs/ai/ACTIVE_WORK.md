@@ -290,6 +290,17 @@ Run only dependency-free Node tests and source checks, obtain independent review
 and publish a draft with exact source/test pins. No real artifact, hosted CI,
 deployment, main integration, or arbitrary concurrent-filesystem immunity claim.
 
+# Pages multipart QR malformed Unicode guard — 2026-11-19
+
+- Cycle/worker: `20261119T124337Z` / single ChatGPT coordinator with sequential bug, audit and documentation phases; no parallel or independent verifier available.
+- Branch: `automation/20261119T124337Z/bug/qr-utf8-surrogate-guard`; base `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrMultipart.ts`, `apps/web/src/lib/qrMultipart.test.ts`, this isolated claim and `docs/handoffs/QR_MULTIPART_SURROGATE_20261119.md`.
+- Discovery: single QR `makeQr` rejects unpaired UTF-16 surrogates, but multipart `TextEncoder` silently replaces them with UTF-8 U+FFFD. Node 22 reproduction: `\uD800` encodes as `EF BF BD` while valid astral pairs round-trip unchanged.
+- Acceptance: test-first rejection of isolated high/low surrogates and mixed strings by `toMultipart` and `multipartIfNeeded`; valid paired Unicode text still encodes and decodes; no QR/format/protocol change for valid payloads; no dependencies added; exact-head CI and separate review before merge.
+- Coordination: inspected changed-file inventories of active PRs #238, #240, #243, #244, #246, #249–#252, #254–#256, #258, #260–#262, #264–#265, #267–#278; neither owned QR file appeared (bounded sample, not an exhaustive review of all open PRs). Broad #278 and recovery integration remain externally owned. Metadata lock generation 3 observed released at `6408563f55081ee941c2036086c025ebf63d2c96`; no shared lock acquired, no merge planned.
+
+---
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
@@ -1775,6 +1786,15 @@ Recovery qualification: implementation `bd05411b2a4c5b1b1793065bce1c10e0553cf952
 - Recovery target: the previously reviewed runtime `02760fb4f609615c6bf31592afc261d78c3dc82f`, with known helper blob `3710a28fe7e90c618d0b57da1aeed9f2a9adf599`, component blob `6da18522b825c99b4073fd238174f63a8a2b7b38`, helper-test blob `ead0a287483a65add77eb8ce1722cc05b235ec63` and component-test blob `e8d5fcb22def002ca90add99e344b4a132835c10`.
 - Acceptance: reconstruct from retained source/patch context, compare recovered blobs with those exact identities, obtain fresh focused/type/lint/build results and independent review. The previous 342-case result is historical and does not qualify the recovered candidate. Lost raw diagnostics must not be invented or described as present.
 - Boundaries: no contract, dependency, authority-module, mainnet, relayer-server or deployment changes. Coordinator owns publication of incremental commits and supplies the execution slot. Other workers' paths and histories remain untouched.
+
+## PR 279 multipart QR integrity qualification — 2026-11-19
+
+- Worker: `/root/security_review`, delegated by the final Pages coordinator.
+- Branch: `repair/ghostpay-qr-surrogates-20261119`; base `75cc6149e2fd560f26725e806b24f859f999d647`.
+- Original source: PR #279 `b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0`; five commits above main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrMultipart.ts`, its focused test, the original PR handoff, this additive claim, and `docs/handoffs/qr-surrogate-review-20261119/`. QR package source/configuration is read-only; run its complete original suite to qualify framing and Unicode compatibility.
+- Acceptance: independently run the exact upstream regression against the unchanged current helper; retain valid Unicode controls; preserve all original PR ancestry through a normal merge; run focused web QR tests, complete QR package coverage, package typecheck/build/lint and scoped web typed lint with original assertions/settings; obtain independent source review and report actual outcomes.
+- Scope: reject lossy conversion of malformed UTF-16 to multipart QR bytes. No fund-loss or key-exposure exploit is claimed. No other web feature, native-sweep source, contract, dependency, threshold, workflow, network grant, mainnet or deployment change. Coordinator owns shared integration, publication and full application gates.
 
 
 ## Recovered native authority independent source review — 2026-11-19
