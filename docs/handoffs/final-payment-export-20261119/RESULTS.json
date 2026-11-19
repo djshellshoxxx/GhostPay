@@ -92,7 +92,7 @@
     },
     {
       "id": "egress-final",
-      "source": "676093a3e802032ca5508693fd60ef08a3acc6a9",
+      "source": "ecc3013228d5d380ca61c5bd58218d5128f7f9f9",
       "command": "node --test scripts/tests/network-egress-inventory.test.mjs",
       "exit_code": 0,
       "passed": 6,
