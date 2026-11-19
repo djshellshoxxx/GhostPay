@@ -5,6 +5,8 @@ on:
       - 'packages/contracts/**'
       - 'scripts/tests/echidna-runner.test.mjs'
       - 'scripts/tests/mythril-runner.test.mjs'
+      - 'scripts/tests/mythril-evidence.test.mjs'
+      - 'scripts/tests/mythril-completeness.test.mjs'
       - 'scripts/tests/contract-analysis-workflow.test.mjs'
       - '.github/actions/setup-forge/**'
       - '.github/workflows/contract-analysis.yml'
@@ -77,6 +79,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/ghostpay-contract-analysis"
+          if [[ "$ANALYZER" == mythril ]]; then
+            export MYTHRIL_EVIDENCE_DIR="$RUNNER_TEMP/ghostpay-contract-analysis/mythril-evidence"
+          fi
           status=0
           bash "scripts/run-${ANALYZER}.sh" > "$RUNNER_TEMP/ghostpay-contract-analysis/report.log" 2>&1 || status=$?
           printf '%s\n' "$status" > "$RUNNER_TEMP/ghostpay-contract-analysis/exit-code.txt"

@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -45,3 +46,26 @@ metadata = {
     "retention": "At most the last 8 MiB; truncation applies only to the artifact, not the gate's input.",
 }
 (destination / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
+
+# Preserve complete per-target evidence beside (not instead of) the existing release metadata.
+# No truncated file may silently masquerade as the original hashed analyzer output.
+evidence = source / "mythril-evidence"
+if evidence.exists() or evidence.is_symlink():
+    if evidence.is_symlink() or not evidence.is_dir():
+        raise ValueError("Mythril evidence must be a regular directory")
+    targets = ["GhostPayRouter", "GhostPaySweepRelayer", "GhostPayPolicyRouter", "PolicyAccount", "PolicyAccountFactory"]
+    allowed = {"manifest.json", "config.json"}
+    allowed.update(f"{target}.{suffix}" for target in targets for suffix in ["stdout.json", "stderr.log", "completeness.json"])
+    files = list(evidence.iterdir())
+    total = 0
+    for item in files:
+        if item.name not in allowed or item.is_symlink() or not item.is_file():
+            raise ValueError("Unexpected Mythril evidence entry")
+        size = item.stat().st_size
+        total += size
+        if size > limit or total > 64 * 1024 * 1024:
+            raise ValueError("Mythril evidence exceeds full-file retention bound")
+    retained_evidence = destination / "mythril-evidence"
+    retained_evidence.mkdir(exist_ok=False)
+    for item in files:
+        shutil.copyfile(item, retained_evidence / item.name)
