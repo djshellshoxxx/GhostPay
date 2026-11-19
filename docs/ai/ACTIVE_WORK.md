@@ -559,3 +559,15 @@ Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
 Owned paths: root/workspace package manifests, package-lock.json, dependency tooling regressions if a defect is reproduced, and a source-pinned dependency handoff. No application source, workflows, coverage configuration, contracts or deployment changes.
 Acceptance: integrate the exact paired #210 and #236 dependency revisions; clean installation; library and web builds; relevant original coverage-enabled suites, typechecks and lints; full and production dependency audits; preserve pending browser and hosted qualification honestly. No forced peers, casts, blanket overrides or weakened gates.
 Source candidates: #210 `4d19655a2e5d93ad9378803cd4163245168aca24`; #236 `defdaa308a2d05ab407af7e42f8dc457cf52d103`.
+# Master repository reconciliation — 2026-11-18
+
+Worker: ChatGPT integration coordinator. Branch: `integration/ghostpay-master-consolidation-20261118`.
+Base: PR #238, `198aa5baff22272453733a0f3dcfcac0e0994eec`; initial main: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: integration conflicts; branch/PR census and evidence in `docs/consolidation/master-20261118/`;
+`scripts/tests/lean-core-reachability.test.mjs`, generated package map, `packages/chain-adapters/src/payments.bulkCancellation.test.ts`,
+`apps/web/e2e/app.spec.ts`, and the export-cancellation regression only if still required after recovery reconciliation.
+Independent workers own recovery reconciliation, CodeQL repairs and selected historical correctness fixes in separate worktrees.
+Acceptance: evidence-backed disposition for every branch; preserve source provenance and security invariants; fix reproduced integration
+failures; execute focused and combined qualification; merge only qualified groups under the user's master consolidation authorization.
+Do not delete branches, force-push shared history, deploy, publish releases or weaken security requirements.
+
