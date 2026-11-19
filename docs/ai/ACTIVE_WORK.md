@@ -491,3 +491,20 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+
+# Autonomous cycle integration coordination — 2026-11-19
+
+Worker: ChatGPT root coordinator, with independent branch and lock reviewer.
+Branch: `automation/20261119T073600Z/coordinator/integration-lock`.
+Base: `e454de6abfefda70d82784fafc1d8949b277c334` (observed live main).
+Owned paths: new `scripts/automation/integration-lock.mjs`, new
+`scripts/tests/integration-lock.test.mjs`, new `docs/automation/` tracking and runbook,
+and this branch-only ownership record. Other workers' product paths remain read-only.
+Acceptance: implement a durable repository-wide integration lock with atomic Git
+ref updates; prove concurrent acquisition has one winner, ownership checks fail
+closed, expired locks cannot be stolen, and release preserves append-only history.
+Run real local Git concurrency regressions and obtain independent source/test review.
+Only then establish or adopt the remote coordination ref before shared tracking or
+integration. Do not bypass required CI/review, force-push, deploy, or rewrite other branches.
+Status: implementation d3749e45633bd1825b5b773b11a9a975476e2ffe independently reviewed; 10/10 real-Git tests pass locally and independently. Two reviewer-found tag/clock issues were reproduced and fixed before remote use. Remote establishment and cycle evidence are tracked in docs/automation/CYCLE_HISTORY.md.
