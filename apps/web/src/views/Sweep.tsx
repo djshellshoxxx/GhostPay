@@ -45,6 +45,7 @@ export function Sweep(): ReactNode {
   const balanceOperation = useRef(0);
   const balanceAbort = useRef<AbortController | undefined>(undefined);
   const actionAbort = useRef<AbortController | undefined>(undefined);
+  const quoteOperation = useRef(0);
   const [quote, setQuote] = useState<SweepQuoteView | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
@@ -105,6 +106,10 @@ export function Sweep(): ReactNode {
   const currentBalanceScope = useRef(balanceScope);
   currentBalanceScope.current = balanceScope;
   const destWarning = sel === undefined || chainId === undefined ? undefined : destinationWarning(destination, sel.match.stealthAddress, chainId, loadDestLedger(browserStorage()));
+  const quoteScope = useMemo(() => ({ balanceScope, balance, destination, mode, relayerUrl: app.settings.relayerUrl, manifest, services }),
+    [balanceScope, balance, destination, mode, app.settings.relayerUrl, manifest, services]);
+  const currentQuoteScope = useRef(quoteScope);
+  currentQuoteScope.current = quoteScope;
 
   useEffect(() => {
     setBalance(undefined);
@@ -117,6 +122,11 @@ export function Sweep(): ReactNode {
     setBusy(false);
     return () => { authEpoch.current += 1; actionAbort.current?.abort(); };
   }, [balanceScope, destination, mode, app.settings.relayerUrl]);
+
+  useEffect(() => {
+    setQuote(undefined);
+    return () => { quoteOperation.current += 1; };
+  }, [quoteScope]);
 
   if (sel === undefined || chainId === undefined || tokenAddr === undefined) {
     return (
@@ -212,34 +222,55 @@ export function Sweep(): ReactNode {
   };
 
   const onQuote = (): void => {
+    const operationId = ++quoteOperation.current;
+    const balanceId = balanceOperation.current;
+    const current = (): boolean => quoteOperation.current === operationId
+      && balanceOperation.current === balanceId && currentQuoteScope.current === quoteScope;
     void guard(async (assertCurrent, signal) => {
-      const rpc = await app.getRpc(chainId, { action: 'sweep-quote', signal, allowDirectOnce: true });
-      assertCurrent();
-      await verified(rpc);
-      assertCurrent();
-      if (loaded === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
-      const dest = checkDestination(destination, target.owner, loaded);
-      const relayerContext = services.network?.authorize({ action: 'sweep-quote', category: 'relayer', endpoint: `${app.settings.relayerUrl.replace(/\/+$/, '')}/v1/quote`, signal, allowDirectOnce: true });
-      const nextQuote = await getSweepQuote(app.settings.relayerUrl, { ...target, token: tokenAddr }, dest, balance, nowSec(), loaded.feeRecipient, relayerContext?.fetchFn ?? services.fetchFn);
-      assertCurrent();
-      setQuote(nextQuote);
+      try {
+        const rpc = await app.getRpc(chainId, { action: 'sweep-quote', signal, allowDirectOnce: true });
+        assertCurrent();
+        if (!current()) return;
+        await verified(rpc);
+        assertCurrent();
+        if (!current()) return;
+        if (loaded === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
+        const dest = checkDestination(destination, target.owner, loaded);
+        const relayerContext = services.network?.authorize({ action: 'sweep-quote', category: 'relayer', endpoint: `${app.settings.relayerUrl.replace(/\/+$/, '')}/v1/quote`, signal, allowDirectOnce: true });
+        const nextQuote = await getSweepQuote(app.settings.relayerUrl, { ...target, token: tokenAddr }, dest, balance, nowSec(), loaded.feeRecipient, relayerContext?.fetchFn ?? services.fetchFn);
+        assertCurrent();
+        if (current()) setQuote(nextQuote);
+      } catch (e) {
+        // A response for a changed review context must not restore its quote or its error.
+        if (current()) throw e;
+      }
     });
   };
 
   const onRelay = (): void => {
     if (signingLocked) return;
     const ledgerUnchanged = captureDestinationLedgerGuard();
+    const balanceId = balanceOperation.current;
+    const quoteId = quoteOperation.current;
     void guard(async (assertCurrent, signal) => {
+      const assertReviewCurrent = (): void => {
+        assertCurrent();
+        if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
+          throw new UserFacingError({ key: 'sweep.vaultCancelled' });
+        }
+      };
+      assertReviewCurrent();
       const rpc = await app.getRpc(chainId, { action: 'sweep-submit', signal, allowDirectOnce: true });
-      assertCurrent();
+      assertReviewCurrent();
       await verified(rpc);
-      assertCurrent();
+      assertReviewCurrent();
       if (loaded === undefined || rpc === undefined || quote === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
       assertNoUnresolvedAttempt();
       // The order's lock is persisted before it is posted; a failed write aborts without contacting the relayer.
       const handoff: { lock?: SweepLock } = {};
       const onBeforeHandoff = (order: RelayedOrderRef): void => {
+        assertReviewCurrent();
         const lock: SweepLock = { chainId, owner: target.owner, order, status: 'unknown-after-handoff' };
         beginSweepAttempt(lock);
         handoff.lock = lock;
@@ -283,12 +314,21 @@ export function Sweep(): ReactNode {
   /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
   const sweepDirectly = (resign: boolean): void => {
     const ledgerUnchanged = captureDestinationLedgerGuard();
+    const balanceId = balanceOperation.current;
+    const quoteId = quoteOperation.current;
     void guard(async (assertCurrent, signal) => {
+      const assertReviewCurrent = (): void => {
+        assertCurrent();
+        if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
+          throw new UserFacingError({ key: 'sweep.vaultCancelled' });
+        }
+      };
+      assertReviewCurrent();
       setDryRunSkipped(false);
       const rpc = await app.getRpc(chainId, { action: 'sweep-submit', signal, allowDirectOnce: true });
-      assertCurrent();
+      assertReviewCurrent();
       await verified(rpc);
-      assertCurrent();
+      assertReviewCurrent();
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
       let replaces: (SweepLock & { readonly nonce: number }) | undefined;
@@ -303,7 +343,10 @@ export function Sweep(): ReactNode {
         res = await directSweep({
           target, manifest: loaded, destination: dest, amount: balance, rpc,
           ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
-          onBeforeHandoff: (a) => { handoff.lock = beginSweepAttempt(a, replaces); },
+          onBeforeHandoff: (a) => {
+            assertReviewCurrent();
+            handoff.lock = beginSweepAttempt(a, replaces);
+          },
         });
       } catch (e) {
         // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).
