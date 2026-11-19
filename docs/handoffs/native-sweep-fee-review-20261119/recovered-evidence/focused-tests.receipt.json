@@ -1,0 +1,55 @@
+{
+  "source": "ed95c5601b0ec127be56cad57fcb78d44954b2fb",
+  "tree": "7de0e0371f078ca5d0926b0fa1162d23dd781074",
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/workspace/scratch/246ff268d20d/GhostPay-native/node_modules/vitest/vitest.mjs",
+    "run",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=/workspace/scratch/246ff268d20d/GhostPay-native/docs/handoffs/native-sweep-fee-review-20261119/recovered-evidence/focused-tests.json",
+    "src/lib/sweep.test.ts",
+    "src/lib/sweep.reviewAuthority.test.ts",
+    "src/lib/sweep.nativeReview.test.ts",
+    "src/lib/sweepAttemptJournal.test.ts",
+    "src/state.sweep.test.ts",
+    "src/views/Sweep.test.tsx",
+    "src/views/Sweep.privacy.test.tsx",
+    "src/views/Sweep.quoteLifecycle.test.tsx",
+    "src/views/Sweep.nativeReview.test.tsx"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay-native/apps/web",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=768",
+    "NO_COLOR": "1"
+  },
+  "started": "2026-11-19T13:03:57.229927+00:00",
+  "ended": "2026-11-19T13:05:17.481459+00:00",
+  "durationSeconds": 80.252,
+  "exitCode": 0,
+  "log": {
+    "path": "docs/handoffs/native-sweep-fee-review-20261119/recovered-evidence/focused-tests.log.gz",
+    "uncompressedSha256": "fec009ee8c6dd29782770d3549ac5940b21f053d5d6aca7db2163e29d27d5e26",
+    "uncompressedBytes": 9124,
+    "storedSha256": "d2e41268292dc3a447c09b517094d0b0802ae3d74d2ba4b1a549ca9b11349cff"
+  },
+  "report": {
+    "path": "docs/handoffs/native-sweep-fee-review-20261119/recovered-evidence/focused-tests.json.gz",
+    "uncompressedSha256": "384fb8d33213b8e6bd691ff9a8cf373af26cea35b8ef083c58344c35410a3a6b",
+    "uncompressedBytes": 145555,
+    "storedSha256": "a3b451118b3e4e14a598d2c86ee6757844ab3866d7a26f988df0fbe91b9fd162"
+  },
+  "testSummary": {
+    "numTotalTestSuites": 41,
+    "numPassedTestSuites": 41,
+    "numFailedTestSuites": 0,
+    "numPendingTestSuites": 0,
+    "numTotalTests": 374,
+    "numPassedTests": 374,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTodoTests": 0,
+    "success": true
+  }
+}
