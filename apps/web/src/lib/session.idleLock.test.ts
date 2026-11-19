@@ -197,7 +197,7 @@ describe('idle lock revokes session authority before retaining or disposing keys
     } finally {
       finish.resolve();
     }
-    expect(await outcome).toMatchObject({ error: expect.objectContaining({ message: expect.stringMatching(/changed during this action/) }) });
+    expect(await outcome).toHaveProperty('error.message', expect.stringMatching(/changed during this action/));
     expect(session.hasSession()).toBe(true);
   });
 
@@ -219,7 +219,7 @@ describe('idle lock revokes session authority before retaining or disposing keys
     } finally {
       finish.resolve();
     }
-    expect(await outcome).toMatchObject({ error: expect.objectContaining({ message: expect.stringMatching(/changed during this action/) }) });
+    expect(await outcome).toHaveProperty('error.message', expect.stringMatching(/changed during this action/));
   });
 
   it('does not let a decryption started in an empty session install keys after idle', async () => {
@@ -230,7 +230,7 @@ describe('idle lock revokes session authority before retaining or disposing keys
     const pending = session.importKeystore(text, PASS);
     const outcome = pending.then((value) => ({ value }), (error: unknown) => ({ error }));
     await expire();
-    expect(await outcome).toMatchObject({ error: expect.objectContaining({ message: expect.stringMatching(/changed while the keystore was unlocking/) }) });
+    expect(await outcome).toHaveProperty('error.message', expect.stringMatching(/changed while the keystore was unlocking/));
     expect(session.hasSession()).toBe(false);
   });
 
@@ -240,7 +240,7 @@ describe('idle lock revokes session authority before retaining or disposing keys
     const pending = session.exportKeystore(PASS, COST);
     const outcome = pending.then((value) => ({ value }), (error: unknown) => ({ error }));
     await expire();
-    expect(await outcome).toMatchObject({ error: expect.objectContaining({ message: expect.stringMatching(/changed during this action/) }) });
+    expect(await outcome).toHaveProperty('error.message', expect.stringMatching(/changed during this action/));
     expect(session.hasSession()).toBe(true);
   });
 
@@ -302,7 +302,7 @@ describe('idle lock revokes session authority before retaining or disposing keys
     expect(verifiedBeforeExpiry).toThrow(/changed during this action/);
     await expect(authorizeEncryptedVault(PASS, store)).rejects.toThrow(/locked after inactivity/);
     await expect(session.verifyVaultForCurrentSession(text, PASS)).rejects.toThrow(/locked after inactivity/);
-    const rawAccess = vi.fn();
+    const rawAccess = vi.fn<(secrets: session.SessionSecrets) => void>();
     expect(() => session.withSessionSecrets(rawAccess)).toThrow(/locked after inactivity/);
     expect(rawAccess).not.toHaveBeenCalled();
     expect(() => session.revealViewingKey()).toThrow(/locked after inactivity/);
@@ -319,7 +319,7 @@ describe('idle lock revokes session authority before retaining or disposing keys
     const outcome = pending.then(() => ({ saved: true }), (error: unknown) => ({ error }));
     await expire();
     read.resolve(undefined);
-    expect(await outcome).toMatchObject({ error: expect.objectContaining({ message: expect.stringMatching(/changed during this action/) }) });
+    expect(await outcome).toHaveProperty('error.message', expect.stringMatching(/changed during this action/));
     expect(put).not.toHaveBeenCalled();
     expect(session.getSessionBackup()?.backedUp).toBe(false);
   });
@@ -335,7 +335,7 @@ describe('idle lock revokes session authority before retaining or disposing keys
     const outcome = pending.then((value) => ({ value }), (error: unknown) => ({ error }));
     await expire();
     read.resolve(text);
-    expect(await outcome).toMatchObject({ error: expect.objectContaining({ message: expect.stringMatching(/changed during this action/) }) });
+    expect(await outcome).toHaveProperty('error.message', expect.stringMatching(/changed during this action/));
     expect(session.hasSession()).toBe(false);
   });
 });
