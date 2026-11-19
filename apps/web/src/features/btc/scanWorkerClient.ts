@@ -38,9 +38,9 @@ function validateResult(r: ScanResult, p: ScanParams, providerSpentCheck: boolea
   const history = r.recoveredHistory;
   if (r.fromHeight !== p.fromHeight || p.headers === undefined || r.toHeight > p.headers.tipHeight ||
       (r.spentStatus === 'local' && r.toHeight < p.headers.tipHeight) ||
-      r.blocks.some((b) => b.height > r.toHeight || p.headers?.hashAt(b.height) !== b.hash) ||
-      r.found.some((f) => f.height > r.toHeight || p.headers?.hashAt(f.height) !== f.blockHash) ||
-      new Set(r.found.map((f) => `${f.txid}:${String(f.vout)}`)).size !== r.found.length ||
+      r.blocks.some((b: ScanResult['blocks'][number]) => b.height > r.toHeight || p.headers?.hashAt(b.height) !== b.hash) ||
+      r.found.some((f: ScanResult['found'][number]) => f.height > r.toHeight || p.headers?.hashAt(f.height) !== f.blockHash) ||
+      new Set(r.found.map((f: ScanResult['found'][number]) => `${f.txid}:${String(f.vout)}`)).size !== r.found.length ||
       (history !== undefined && (history === null || !isHeight(history.offset) || !isHeight(history.end) || !isHeight(history.total) ||
         history.offset > history.end || history.end > history.total || history.end - history.offset > (p.recoveryLimit ?? MAX_SCAN_BLOCKS))))
     throw new SilentPaymentError('INVALID_RESPONSE');
