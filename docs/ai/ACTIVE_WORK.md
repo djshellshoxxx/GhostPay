@@ -1717,3 +1717,11 @@ Acceptance: recover the eight original blobs exactly; preserve current workflow 
 Scope excludes contract/runtime/deployment changes, disposition exceptions, new release policy, dependency changes, shared integration/main promotion and all eight root-owned release documents. Earlier local implementation/evidence commits were lost with the previous executor and are historical identifiers only; this reconstruction receives new identities and fresh qualification. Original remote branches and other workers' claims remain unchanged.
 
 Recovery qualification: implementation `bd05411b2a4c5b1b1793065bce1c10e0553cf952`; fresh baseline 9 failing regressions and 2 controls; full 54-case suite passed with no failures, skips or cancellations under Node 22.23.5 / 128 MB / serial; nine syntax/diff checks passed. Exact eight-blob provenance and fresh compressed logs are in `docs/handoffs/recovered-mythril-evidence-20261119/`. Independent coordinator review, integrated-source qualification and remote preservation remain pending at this checkpoint. No native analyzer/release pass is claimed.
+
+
+## Recovered native authority independent source review — 2026-11-19
+
+Worker: `/root/provenance`, delegated read-only review by the integration coordinator.
+Reviewed immutable source: security worker `ed95c5601b0ec127be56cad57fcb78d44954b2fb`; base published PR #278 `7b4c1554382b05ac3fab48527aadf596d6b1ff7b`.
+Owned changes: this additive registry note and `docs/handoffs/recovered-native-authority-review-20261119/` only. No implementation/test modifications or runtime test execution.
+Acceptance: compare recovered helper, component and adversarial tests with the retained independently reviewed final-02760 blob identities; inspect manifest expiry, one-time confirmation, session/scope/endpoint/replacement binding, signing boundaries and post-handoff outcomes. Report lost prior execution logs as unavailable and keep source review separate from new runtime/CI qualification.

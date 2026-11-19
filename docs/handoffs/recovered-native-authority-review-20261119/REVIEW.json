@@ -1,0 +1,112 @@
+{
+  "schema": "ghostpay.independent-recovered-source-review.v1",
+  "observed_at_utc": "2026-11-19T13:04:36.669051+00:00",
+  "reviewer": "/root/provenance",
+  "reviewed_commit": "ed95c5601b0ec127be56cad57fcb78d44954b2fb",
+  "base_commit": "7b4c1554382b05ac3fab48527aadf596d6b1ff7b",
+  "historical_review_reference": "02760fb4f609615c6bf31592afc261d78c3dc82f",
+  "historical_reference_limit": "Previous commit and raw execution logs were lost with the old executor. This record uses retained source blob identities and newly inspected available Git objects; it does not claim the old commit or logs are present.",
+  "source_files": [
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "current_blob": "7148861571dc01bfc9957522d51d8a1c23a194e6"
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "current_blob": "639a3fa4e4bfb6a051fdc0cd583cfde63777e520"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "current_blob": "90b905165b9b6457585635022bc9e64dab674521"
+    },
+    {
+      "path": "apps/web/locales/ar.json",
+      "current_blob": "002ed6969ce86e9f912ea3599273bd25098705f3"
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "current_blob": "f37853282e922f1817b948d5bada66dc84c3ad34"
+    },
+    {
+      "path": "apps/web/locales/es.json",
+      "current_blob": "729c6cc17478507e8e96790a8b4630bbde23ab3e"
+    },
+    {
+      "path": "apps/web/locales/ja.json",
+      "current_blob": "0980f265a339b9f8e57bcfb9ff7be761faacffb9"
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "current_blob": "41ef8337e09f6835e50a5c53e7f5f386971bf534"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+      "current_blob": "ead0a287483a65add77eb8ce1722cc05b235ec63",
+      "previously_independently_recorded_blob": "ead0a287483a65add77eb8ce1722cc05b235ec63",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "current_blob": "3710a28fe7e90c618d0b57da1aeed9f2a9adf599",
+      "previously_independently_recorded_blob": "3710a28fe7e90c618d0b57da1aeed9f2a9adf599",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/src/views/Sweep.nativeReview.test.tsx",
+      "current_blob": "e8d5fcb22def002ca90add99e344b4a132835c10",
+      "previously_independently_recorded_blob": "e8d5fcb22def002ca90add99e344b4a132835c10",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "current_blob": "2be1f668375db2c95f6d184514350bc0913b8685"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "current_blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "previously_independently_recorded_blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "exact_match": true
+    },
+    {
+      "path": "docs/privacy/network-egress-inventory.json",
+      "current_blob": "5b4f13aead42cf0f5a4842ce78a2ddbfe77fc7b7"
+    }
+  ],
+  "prior_independently_recorded_exact_matches": 4,
+  "related_authority_sources_unchanged_from_base": {
+    "apps/web/src/lib/session.ts": true,
+    "apps/web/src/lib/networkAuthorization.ts": true,
+    "apps/web/src/lib/manifest.ts": true,
+    "apps/web/src/lib/defaultServices.ts": true,
+    "apps/web/src/state.tsx": true,
+    "apps/web/src/AppShell.tsx": true
+  },
+  "reviewed_properties": [
+    "The recovered helper and Sweep component are byte-identical to the previously reviewed corrected runtime; both adversarial test files also match.",
+    "Public manifest readback receives the native current-review guard before and after every request and again before invalid-status translation.",
+    "Both native preparation and confirmation opt into manifest request guards; original manifest validation and ERC20 behavior remain intact.",
+    "Native review identity is opaque and frozen; confirmation consumes it before any await and duplicate invocation cannot cancel an existing first confirmation.",
+    "Original session revision, latest observed finite clocks, expiry, context, selected endpoint, target/payment, manifest, balance, destination and full replacement identity remain bound.",
+    "Private fee/oracle/simulation reads are guarded before and after response; exact fresh unsigned bytes, reserve and simulation status must equal the review.",
+    "Review/session checks remain before and after local signing and before journal handoff; changed authority cannot transmit a late signature.",
+    "Replacement journal identity, compare-and-swap behavior, historical transaction hashes, and submitted/unknown outcomes after transport starts are preserved.",
+    "The manifest-expiry regression records requests outside the mocked manifest backend, expires exactly during an awaited first response, and requires no later reads, transaction or journal.",
+    "The helper regressions retain concurrent-confirmation, nested oracle expiry, pending cancellation, replacement-identity, late-signature and post-handoff assertions."
+  ],
+  "boundary_limit": "RPC client initialization through app.getRpc retains the existing action/network-authority guards and component checks before and after creation. Its internal chain-ID discovery/retries are not directly wrapped by the fee-review callback. Explicit cancellation/session/settings changes abort the grant; review expiry blocks manifest/private fee reads and signing when initialization returns.",
+  "findings": [
+    {
+      "id": "GP-NATIVE-REVIEW-MANIFEST-LIFETIME-01",
+      "historical_severity": "Low",
+      "current_disposition": "Corrected source present and independently re-inspected on the recovered candidate. No new runtime execution claimed by this review."
+    }
+  ],
+  "remaining_concrete_source_findings_in_scope": [],
+  "test_execution": {
+    "independent_runtime_runs": 0,
+    "old_logs_available": false,
+    "fresh_runtime_qualification": "Pending separate security-worker/coordinator execution at this review checkpoint. Historical test counts are not used as current evidence."
+  },
+  "verdict": "APPROVED_SCOPED_SOURCE_REVIEW",
+  "release_verdict": "BLOCKED; complete integrated-source CI, runtime/browser acceptance and external/owner requirements remain separate."
+}
