@@ -19,6 +19,16 @@ assertion and security gate; execute focused tests, lint and browser checks wher
 The root owns publication and subsequent integration after independent review. No deployment,
 main merge, remote source-branch update or unrelated feature work belongs to this lane.
 
+Status: reconciled source `3110611e4a49d2b3f426fc0b770a0823109ac3d4` was independently
+reviewed and published by the root as draft PR #260 at identical-tree remote commit
+`789e63501c1628d602006dbd324a36f8a9c50d71`. All five newly recovered regressions failed
+against the unchanged #239 runtime and passed against the reconciled runtime. The
+broader twelve-file attempt and dependency installation terminated with exit 137;
+full frozen-installation, typecheck/lint, coverage and browser qualification remain
+open. The precise frozen-cache/diagnostic-transpilation environment and the required
+#256 session-integration checks are recorded in
+`docs/handoffs/RECOVERY_RECONCILIATION_20261119.md`. No source branch or main was changed.
+
 # Spec 18 independent completion review — 2026-11-18
 
 Coordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.
