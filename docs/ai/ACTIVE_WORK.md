@@ -1153,3 +1153,11 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+## Historical G5 multichain compatibility recovery — 2026-11-19
+
+Owner: history_census, coordinated with root and independent ci_release_audit reviewer.
+Branch: `integration/ghostpay-multichain-recovery-20261119`; base `736f1056537c79dbb0d2be3cd9cf071d0470bb24`.
+Owned paths: `packages/chain-solana/**`, `packages/chain-tron/**`, the shared Solana/TRON vector generator and fixture, `packages/cli/src/commands/chain.ts`, `packages/cli/src/payment-context.ts`, their existing regression tests and focused compatibility documentation.
+Acceptance: selectively retain PR211 G5 commits e2427c20, 179a5b43, 28ce8a0b, c3d7d702, b9af22a9, 67a3c3c0, b79bb24a and 90146562. Align the existing library/CLI formats with ADR0017/0019 and the existing web implementations; preserve strict point and network validation, explicit legacy rejection, and fail-closed TRON building until its GPT1 memo is bound into signed bytes. Verify original cross-package vectors and focused library/CLI tests with exact source/dependency provenance, then obtain independent source review. No new protocol, deployment, mainnet enablement, dependency, manifest/lockfile or browser-flow changes.
