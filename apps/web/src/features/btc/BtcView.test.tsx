@@ -127,6 +127,22 @@ describe('BtcView', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/64 hexadecimal/);
   });
 
+  it('recognises spent outputs locally by default and asks the server per outpoint only when the box is ticked', async () => {
+    const { chain, user } = await setup();
+    await importSeed(user);
+    const box = screen.getByRole<HTMLInputElement>('checkbox', { name: /Also ask the server whether each found output is unspent/ });
+    expect(box.checked).toBe(false);
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    expect(screen.getByText(/Spent status: checked locally through height/).textContent).toMatch(/No optional per-output spent-status query was sent/);
+    expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(false);
+    await user.click(box);
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/Spent status: the selected Esplora server was asked about outputs not already known locally to be spent/);
+    expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(true);
+  });
+
   it('scans, reviews, requires approval, signs and broadcasts', async () => {
     const { chain, user } = await setup();
     await importSeed(user);
@@ -138,7 +154,7 @@ describe('BtcView', () => {
     expect(screen.getByText('0.0005 BTC')).toBeTruthy();
     expect(chain.requests.filter((r) => r.includes('/outspend/'))).toEqual([]);
     expect(screen.getByText(/What the Esplora server can see/)).toBeTruthy();
-    expect(screen.getByText(/Found outputs were checked against the blocks downloaded from the configured Esplora provider/).textContent)
+    expect(screen.getByText(/Outputs were read from the configured Esplora provider/).textContent)
       .toMatch(/single-provider check, not independent verification/i);
     expect(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ })).toBeTruthy();
     expect(screen.getByText('Unique in this scan')).toBeTruthy();
@@ -158,8 +174,8 @@ describe('BtcView', () => {
     await user.click(sign);
     await screen.findByText('Signed transaction');
     expect(chain.broadcasts).toHaveLength(0);
-    // Only now, for the output being swept, is the server asked whether it is spent.
-    expect(chain.requests.filter((r) => r.includes('/outspend/'))).toHaveLength(1);
+    // Local signing does not silently authorize a new disclosure of the selected outputs.
+    expect(chain.requests.filter((r) => r.includes('/outspend/'))).toHaveLength(0);
 
     await user.click(screen.getByRole('button', { name: /Broadcast to/ }));
     await screen.findByText(/The server accepted transaction/);
@@ -167,7 +183,7 @@ describe('BtcView', () => {
     expect(chain.broadcasts[0]).toMatch(/^[0-9a-f]+$/);
   });
 
-  it('asks the server about the selected output before signing and refuses one spent since the scan (mempool spends are not in the scanned blocks)', async () => {
+  it('clears an old sweep and removes a newly spent output after an explicitly authorized provider refresh', async () => {
     const { chain, user } = await setup();
     await importSeed(user);
     await user.type(screen.getByLabelText(/First block height/), '0');
@@ -178,8 +194,12 @@ describe('BtcView', () => {
     await user.click(screen.getByRole('button', { name: 'Review sweep' }));
     await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
     chain.spent.add(`${chain.blocks[3]!.txs[2]!.txid}:1`);
-    await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
-    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/already spent/i); });
+    await user.click(screen.getByRole('checkbox', { name: /Also ask the server whether each found output is unspent/ }));
+    expect(screen.queryByText('Review before signing')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/No unspent payments found/);
+    expect(chain.requests.filter((r) => r.includes('/outspend/'))).toHaveLength(1);
+    expect(screen.queryByRole('checkbox', { name: /^Sweep / })).toBeNull();
     expect(screen.queryByText('Signed transaction')).toBeNull();
   });
 

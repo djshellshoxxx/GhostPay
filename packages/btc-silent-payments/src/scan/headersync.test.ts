@@ -12,7 +12,7 @@ import {
   type HeaderSource,
   type SourceSyncResult,
 } from './headersync.js';
-import type { BlockOutputs, BlockTweaks, TweakSource } from './types.js';
+import type { BlockOutputs, BlockSpends, BlockTweaks, TweakSource } from './types.js';
 
 /** Serves a fixed list of headers (index = height). Records every request. */
 class ListHeaderSource implements HeaderSource {
@@ -261,6 +261,20 @@ describe('HeaderAnchoredTweakSource', () => {
     expect(await codeOf(s.getOutputs(5))).toBe('REORG_DETECTED');
     expect(await codeOf(s.getTweaks(21))).toBe('INVALID_INPUT');
     expect(() => new HeaderAnchoredTweakSource(inner((h) => hashes[h]!), c, { minConfirmations: 0 })).toThrow(/invalid input/);
+  });
+  it('forwards getSpends only when the inner source has it, with the same chain check', async () => {
+    const c = regtestChain();
+    c.connect(MAIN.slice(1, 21));
+    expect(new HeaderAnchoredTweakSource(inner((h) => hashes[h]!), c).getSpends).toBeUndefined();
+    const withSpends = (hashAt: (h: number) => string): TweakSource => ({
+      ...inner(hashAt),
+      getSpends: (height): Promise<BlockSpends> => Promise.resolve({ height, blockHash: hashAt(height), spends: [{ txid: 'aa'.repeat(32), vout: 0, spentBy: 'bb'.repeat(32) }] }),
+    });
+    const ok = new HeaderAnchoredTweakSource(withSpends((h) => hashes[h]!), c);
+    expect((await ok.getSpends!(5)).spends).toHaveLength(1);
+    expect(await codeOf(ok.getSpends!(21))).toBe('INVALID_INPUT');
+    const lying = new HeaderAnchoredTweakSource(withSpends((h) => (h === 5 ? 'ab'.repeat(32) : hashes[h]!)), c);
+    expect(await codeOf(lying.getSpends!(5))).toBe('REORG_DETECTED');
   });
 });
 
