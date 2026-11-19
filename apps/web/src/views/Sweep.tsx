@@ -1,13 +1,13 @@
 import { subscribeAppLock } from '../lib/appLock';
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
-import { formatUnits } from '../lib/format';
+import { formatUnits, formatUnix } from '../lib/format';
 import { captureDestinationLedgerGuard, checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
@@ -18,6 +18,12 @@ import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, resolveSweepA
 import { MAX_OTHER_HASHES, SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
+import { assertNativeSweepReview, cancelNativeSweepReview, confirmNativeDirectSweep, prepareNativeDirectSweep, type NativeDirectSweepReview } from '../lib/sweep';
+
+interface NativeReviewView {
+  readonly review: NativeDirectSweepReview;
+  readonly replaces?: SweepLock & { readonly nonce: number };
+}
 
 const ATTEMPT_TITLES: Partial<Record<string, MessageKey>> = {
   'unknown-after-handoff': 'sweep.attempt.unknown',
@@ -47,6 +53,13 @@ export function Sweep(): ReactNode {
   const actionAbort = useRef<AbortController | undefined>(undefined);
   const quoteOperation = useRef(0);
   const [quote, setQuote] = useState<SweepQuoteView | undefined>(undefined);
+  const [nativeReview, setNativeReviewState] = useState<NativeReviewView | undefined>(undefined);
+  const nativeReviewRef = useRef<NativeReviewView | undefined>(undefined);
+  const setNativeReview = useCallback((next: NativeReviewView | undefined, cancelPrevious = true): void => {
+    if (cancelPrevious && nativeReviewRef.current !== undefined) cancelNativeSweepReview(nativeReviewRef.current.review);
+    nativeReviewRef.current = next;
+    setNativeReviewState(next);
+  }, []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [hash, setHash] = useState<string | undefined>(undefined);
@@ -71,6 +84,23 @@ export function Sweep(): ReactNode {
   const resignNonce = !replacementLimitReached && !journalBroken && attempt !== undefined && attempt.order === undefined && attempt.status === 'unknown-after-handoff' ? attempt.nonce : undefined;
 
   useEffect(() => {
+    if (nativeReview === undefined) return;
+    if (nativeReview.replaces === undefined ? (attempt !== undefined && isUnresolvedAttempt(attempt)) : JSON.stringify(nativeReview.replaces) !== JSON.stringify(attempt)) {
+      setNativeReview(undefined);
+    }
+  }, [attempt, nativeReview, setNativeReview]);
+
+  useEffect(() => {
+    if (nativeReview === undefined) return;
+    const timer = setInterval(() => {
+      if (nativeReviewRef.current !== nativeReview) return;
+      try { assertNativeSweepReview(nativeReview.review); }
+      catch { setNativeReview(undefined); setError({ key: 'sweep.nativeReview.stale' }); }
+    }, 500);
+    return () => { clearInterval(timer); };
+  }, [nativeReview, setNativeReview]);
+
+  useEffect(() => {
     let live = true;
     void readEncryptedVault().then(
       (saved) => { if (live) setVaultState(saved === undefined ? 'empty' : 'saved'); },
@@ -90,9 +120,10 @@ export function Sweep(): ReactNode {
     balanceOperation.current += 1;
     setBalance(undefined);
     setQuote(undefined);
+    setNativeReview(undefined);
     balanceAbort.current?.abort();
     actionAbort.current?.abort();
-  }), []);
+  }), [setNativeReview]);
 
   const meta = sel?.match.metadata;
   const tokenAddr: Address | 'native' | undefined = meta === undefined ? undefined : meta.kind === 'native' ? 'native' : meta.token;
@@ -125,8 +156,9 @@ export function Sweep(): ReactNode {
 
   useEffect(() => {
     setQuote(undefined);
-    return () => { quoteOperation.current += 1; };
-  }, [quoteScope]);
+    setNativeReview(undefined);
+    return () => { quoteOperation.current += 1; setNativeReview(undefined); };
+  }, [quoteScope, setNativeReview]);
 
   if (sel === undefined || chainId === undefined || tokenAddr === undefined) {
     return (
@@ -163,6 +195,7 @@ export function Sweep(): ReactNode {
     };
     setBalance(undefined);
     setQuote(undefined);
+    setNativeReview(undefined);
     setError(undefined);
     void (async () => {
       try {
@@ -218,9 +251,21 @@ export function Sweep(): ReactNode {
   };
 
   /** WEB-APP-01: read the manifest back from the chain before anything is signed or requested from it. */
-  const verified = async (rpc: Awaited<ReturnType<typeof app.getRpc>>): Promise<void> => {
+  const verified = async (rpc: Awaited<ReturnType<typeof app.getRpc>>, assertCurrent?: () => void): Promise<void> => {
     if (manifest === undefined) throw new Error('state');
-    const checked = await verifyManifestForFlow(manifest, rpc);
+    // Native confirmation's fee review also bounds public contract readback, before the helper's private preflight.
+    // Once an in-flight response outlives that review, no later manifest request may be dispatched.
+    assertCurrent?.();
+    const checkedRpc = rpc === undefined || assertCurrent === undefined ? rpc : {
+      ...rpc, async request(method: string, params: readonly unknown[]) {
+        assertCurrent();
+        const result = await rpc.request(method, params);
+        assertCurrent();
+        return result;
+      },
+    };
+    const checked = await verifyManifestForFlow(manifest, checkedRpc);
+    assertCurrent?.();
     if (checked.status !== 'loaded') throw new UserFacingError(checked.status === 'invalid' ? checked.reason : { key: 'sweep.paymentsDisabledChain' });
   };
 
@@ -309,6 +354,49 @@ export function Sweep(): ReactNode {
     sweepDirectly(false);
   };
 
+  const assertNativeAttemptCurrent = (replaces: NativeReviewView['replaces']): void => {
+    if (replaces === undefined) assertNoUnresolvedAttempt();
+    else if (JSON.stringify(replaces) !== JSON.stringify(resignableLock())) throw new UserFacingError({ key: 'sweep.nativeReview.stale' });
+  };
+
+  const onPrepareNative = (resign = false): void => {
+    if (tokenAddr !== 'native' || (!resign && signingLocked)) return;
+    const balanceId = balanceOperation.current;
+    const quoteId = ++quoteOperation.current;
+    setNativeReview(undefined);
+    void guard(async (assertCurrent, signal) => {
+      let prepared: NativeDirectSweepReview | undefined;
+      let published = false;
+      const assertReviewCurrent = (): void => {
+        assertCurrent();
+        if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
+          throw new UserFacingError({ key: 'sweep.vaultCancelled' });
+        }
+      };
+      try {
+        assertReviewCurrent();
+        // Preparation gets read-only authority. Confirmation later requests its own signing/broadcast action.
+        const rpc = await app.getRpc(chainId, { action: 'sweep-quote', signal, allowDirectOnce: true });
+        assertReviewCurrent();
+        await verified(rpc, assertReviewCurrent);
+        assertReviewCurrent();
+        if (loaded === undefined || rpc === undefined || balance === undefined || balanceRpcUrl === undefined) throw new Error('state');
+        const dest = checkDestination(destination, target.owner, loaded);
+        const replaces = resign ? resignableLock() : undefined;
+        assertNativeAttemptCurrent(replaces);
+        prepared = await prepareNativeDirectSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc,
+          endpoint: balanceRpcUrl, context: quoteScope, assertReviewCurrent,
+          ...(replaces === undefined ? {} : { replacement: replaces }) }, { nowMs: services.nowMs });
+        assertReviewCurrent();
+        assertNativeAttemptCurrent(replaces);
+        setNativeReview({ review: prepared, ...(replaces === undefined ? {} : { replaces }) });
+        published = true;
+      } finally {
+        if (!published && prepared !== undefined) cancelNativeSweepReview(prepared);
+      }
+    });
+  };
+
   const onResign = (): void => {
     if (resignNonce === undefined) return;
     sweepDirectly(true);
@@ -316,21 +404,35 @@ export function Sweep(): ReactNode {
 
   /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
   const sweepDirectly = (resign: boolean): void => {
+    const selectedReview = tokenAddr === 'native' ? nativeReviewRef.current : undefined;
+    if (tokenAddr === 'native') {
+      if (selectedReview === undefined || (selectedReview.replaces !== undefined) !== resign) {
+        setError({ key: 'sweep.nativeReview.stale' }); return;
+      }
+      // Remove the public review immediately so a second click cannot begin another action. Its helper capability
+      // remains valid for this confirmation only; finally closes it even if vault/RPC initialization fails.
+      setNativeReview(undefined, false);
+    }
     const ledgerUnchanged = captureDestinationLedgerGuard();
     const balanceId = balanceOperation.current;
     const quoteId = quoteOperation.current;
     void guard(async (assertCurrent, signal) => {
+      const handoff: { lock?: SweepLock } = {};
       const assertReviewCurrent = (): void => {
         assertCurrent();
         if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
           throw new UserFacingError({ key: 'sweep.vaultCancelled' });
+        }
+        if (selectedReview !== undefined) {
+          assertNativeSweepReview(selectedReview.review);
+          if (handoff.lock === undefined) assertNativeAttemptCurrent(selectedReview.replaces);
         }
       };
       assertReviewCurrent();
       setDryRunSkipped(false);
       const rpc = await app.getRpc(chainId, { action: 'sweep-submit', signal, allowDirectOnce: true });
       assertReviewCurrent();
-      await verified(rpc);
+      await verified(rpc, selectedReview === undefined ? undefined : assertReviewCurrent);
       assertReviewCurrent();
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
@@ -340,16 +442,19 @@ export function Sweep(): ReactNode {
       // The lock is persisted before handoff; on an uncertain outcome it simply stays as begun (unknown-after-handoff).
       // A replacement takes over the recorded lock only by compare-and-swap and only with the same nonce, and the lock
       // as recorded keeps the replaced hashes.
-      const handoff: { lock?: SweepLock } = {};
       let res: DirectSweepResult;
       try {
-        res = await directSweep({
+        const input = {
           target, manifest: loaded, destination: dest, amount: balance, rpc, assertReviewCurrent,
           ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
-          onBeforeHandoff: (a) => {
+          onBeforeHandoff: (a: Parameters<typeof beginSweepAttempt>[0]) => {
             assertReviewCurrent();
             handoff.lock = beginSweepAttempt(a, replaces);
           },
+        };
+        res = selectedReview === undefined ? await directSweep(input) : await confirmNativeDirectSweep(selectedReview.review, {
+          ...input, endpoint: balanceRpcUrl ?? '', context: quoteScope,
+          ...(replaces === undefined ? {} : { replacement: replaces }),
         });
       } catch (e) {
         // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).
@@ -361,7 +466,7 @@ export function Sweep(): ReactNode {
       setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(latestT.current('sweep.announceBroadcast'));
       return true;
-    });
+    }).finally(() => { if (selectedReview !== undefined) cancelNativeSweepReview(selectedReview.review); });
   };
 
   const assertNoUnresolvedAttempt = (): void => {
@@ -420,6 +525,7 @@ export function Sweep(): ReactNode {
     authEpoch.current += 1;
     setVaultPass('');
     setError({ key: 'sweep.vaultCancelled' });
+    setNativeReview(undefined);
   };
 
   return (
@@ -500,6 +606,33 @@ export function Sweep(): ReactNode {
               </div>
             )}
           </>
+        ) : tokenAddr === 'native' ? (
+          <>
+            <button type="button" className="btn" onClick={() => { onPrepareNative(); }} disabled={busy || signingLocked || balance === undefined || balance === 0n}>{t('sweep.nativeReview.prepare')}</button>
+            {nativeReview !== undefined && (
+              <section className="panel" aria-labelledby="native-sweep-review-h">
+                <h3 id="native-sweep-review-h">{t('sweep.nativeReview.title')}</h3>
+                <dl className="details">
+                  <dt>{t('sweep.destination.label')}</dt><dd><Mono>{nativeReview.review.destination}</Mono></dd>
+                  <dt>{t('sweep.nativeReview.balance')}</dt><dd>{formatUnits(nativeReview.review.balance, 18)} {symbol}</dd>
+                  <dt>{t('sweep.nativeReview.nonce')}</dt><dd>{String(nativeReview.review.nonce)}</dd>
+                  <dt>{t('sweep.nativeReview.gasLimit')}</dt><dd>{String(nativeReview.review.gas)}</dd>
+                  <dt>{t('sweep.nativeReview.maxFeePerGas')}</dt><dd>{formatUnits(nativeReview.review.maxFeePerGas, 9)} gwei</dd>
+                  <dt>{t('sweep.nativeReview.maxPriorityFeePerGas')}</dt><dd>{formatUnits(nativeReview.review.maxPriorityFeePerGas, 9)} gwei</dd>
+                  <dt>{t('sweep.nativeReview.gasReserve')}</dt><dd>{formatUnits(nativeReview.review.maxGasCost, 18)} {symbol}</dd>
+                  <dt>{t('sweep.nativeReview.additionalReserve')}</dt><dd>{formatUnits(nativeReview.review.additionalFeeReserve, 18)} {symbol}</dd>
+                  <dt>{t('sweep.nativeReview.totalReserve')}</dt><dd>{formatUnits(nativeReview.review.totalFeeReserve, 18)} {symbol}</dd>
+                </dl>
+                <p>{t('sweep.youReceive', { amount: `${formatUnits(nativeReview.review.net, 18)} ${symbol}` })}</p>
+                <p>{t('sweep.nativeReview.expiry', { time: formatUnix(nativeReview.review.expiresAtMs / 1000) })}</p>
+                <p>{t('sweep.nativeReview.terms')}</p>
+                {nativeReview.review.simulation === 'unavailable' && <Notice kind="warn">{t('sweep.nativeReview.simulationUnavailable')}</Notice>}
+                <button type="button" className="btn" onClick={() => { setNativeReview(undefined); }}>{t('sweep.nativeReview.cancel')}</button>
+                {nativeReview.replaces !== undefined && <button type="button" className="btn btn-primary" onClick={onResign} disabled={busy || resignNonce === undefined}>{t('sweep.resign.button')}</button>}
+              </section>
+            )}
+            <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || signingLocked || nativeReview === undefined || nativeReview.replaces !== undefined}>{t('sweep.signDirect')}</button>
+          </>
         ) : (
           <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || signingLocked || balance === undefined || balance === 0n}>{t('sweep.signDirect')}</button>
         )}
@@ -507,6 +640,7 @@ export function Sweep(): ReactNode {
 
       {busy && <p role="status">{t('sweep.working')}</p>}
       {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button>}
+      {busy && vaultPhase === 'action' && tokenAddr === 'native' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.nativeReview.cancelAction')}</button>}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
       {dryRunSkipped && <Notice kind="warn">{t('sweep.dryRunUnavailable')}</Notice>}
       {journalBroken && <Notice kind="warn" title={t('sweep.journalBroken.title')}>{t('sweep.journalBroken.body')}</Notice>}
@@ -541,7 +675,9 @@ export function Sweep(): ReactNode {
               <br />
               {t('sweep.resign.hint', { nonce: String(resignNonce) })}
               <br />
-              <button type="button" className="btn" onClick={onResign} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button>
+              {tokenAddr === 'native'
+                ? <button type="button" className="btn" onClick={() => { onPrepareNative(true); }} disabled={busy || mode !== 'direct' || balance === undefined || balance === 0n}>{t('sweep.nativeReview.prepareReplacement')}</button>
+                : <button type="button" className="btn" onClick={onResign} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button>}
             </>
           )}
           {checkNote !== undefined && <><br />{displayMessage(checkNote, t)}</>}

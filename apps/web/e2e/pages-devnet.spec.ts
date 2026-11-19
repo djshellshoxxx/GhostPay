@@ -108,14 +108,14 @@ async function expectNoKeys(page: Page): Promise<void> {
   await expect(keysView(page).locator('code', { hasText: /^st:eth:0x/ })).toHaveCount(0);
 }
 
-/** Direct-sweep attempt of the currently selected payment; returns the sign button for the caller to click. */
+/** Native sweep of the selected payment; returns its fee-review button, which can fail before signing is offered. */
 async function prepareDirectSweep(page: Page, vaultPass?: string): Promise<Locator> {
   await sweepView(page).getByLabel(/Directly/).check();
   await sweepView(page).getByLabel('Destination address (your own wallet)').fill(ACCOUNTS.destination);
   if (vaultPass !== undefined) await sweepView(page).getByLabel('Vault passphrase (required for each sweep action)').fill(vaultPass);
-  const sign = sweepView(page).getByRole('button', { name: 'Sign and broadcast directly' });
-  await expect(sign).toBeEnabled();
-  return sign;
+  const prepareFees = sweepView(page).getByRole('button', { name: 'Review native sweep fees' });
+  await expect(prepareFees).toBeEnabled();
+  return prepareFees;
 }
 
 async function scanFromZero(page: Page, resume: boolean): Promise<void> {
@@ -518,7 +518,12 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
     await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
-    const sign = await prepareDirectSweep(s, VAULT_PASS);
+    const prepareFees = await prepareDirectSweep(s, VAULT_PASS);
+    await prepareFees.click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(net.sentRaw.length).toBe(rawBefore);
+    await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
+    const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
     await sign.click();
     await expect.poll(() => net.sentRaw.length, { timeout: 60_000 }).toBe(rawBefore + 1);
     const raw = net.sentRaw.at(-1) as `0x02${string}`;
