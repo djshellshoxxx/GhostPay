@@ -124,6 +124,24 @@ describe('canonicalize', () => {
       expect(() => canonicalize(v)).toThrow(JsonParseError);
     }
   });
+
+  it('rejects sparse or decorated arrays rather than silently altering signed JSON', () => {
+    const missingFirst: number[] = [];
+    missingFirst.length = 1;
+    const missingMiddle = [1];
+    missingMiddle.length = 3;
+    missingMiddle[2] = 3;
+    const extra = [1] as number[] & { extra?: number };
+    extra.extra = 2;
+    const nonenumerable = [1];
+    Object.defineProperty(nonenumerable, 'hidden', { value: 2 });
+    const symbol = [1];
+    (symbol as unknown as Record<symbol, number>)[Symbol('hidden')] = 3;
+    for (const value of [missingFirst, missingMiddle, extra, nonenumerable, symbol]) {
+      expect(() => canonicalize(value)).toThrow(JsonParseError);
+    }
+    expect(canonicalize([1, 2, { value: 3 }])).toBe('[1,2,{"value":3}]');
+  });
   it('accepts null-prototype objects', () => {
     const o = Object.create(null) as Record<string, unknown>;
     o['k'] = 1;
