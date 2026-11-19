@@ -2,6 +2,8 @@
 
 A *sweep* moves the funds of a one-time address to a wallet you choose (a direct sweep of native coin keeps back the network fee; see step 4). It is the step where GhostPay's privacy is easiest to lose.
 
+The Pages demonstration disables sweeping and all payment execution. The native-coin flow below is implemented for a separately qualified testnet build with an authenticated deployment manifest. Its source and focused tests do not establish real-browser or public-testnet acceptance. ERC-20 sweeping requires native gas and separate acceptance; no GhostPay-operated relayer is provided or required.
+
 > **Read this first.**
 >
 > 1. **The payer can follow the stealth address to your destination.** The payer knows the one-time address they paid, and anyone can watch it on a block explorer. When you sweep to wallet `W`, the chain publicly shows `payer -> one-time address -> W`. If `W` is a wallet you use for other things, the payer (and everyone else) learns it is yours, and can see its balance and other incoming payments.
@@ -14,13 +16,14 @@ The Sweep page shows the payer-follows-funds notice and a non-blocking warning f
 ## Steps
 
 1. In **Scan and receive**, choose a match and go to **Sweep**. Load your keys if the app asks.
-2. Confirm the chain, one-time address, asset and on-chain balance. If the balance is unknown, you need an RPC for that chain (and RPC reads of the address tell your RPC provider you care about it; see [Privacy limits](privacy-limits.md)).
+2. Confirm the chain, one-time address and asset. Choose **Read balance** after reviewing the RPC disclosure; each refresh needs another explicit action. RPC reads tell your chosen provider that you are interested in the address; see [Privacy limits](privacy-limits.md).
 3. Enter your **destination**. Use a fresh address you control.
 4. Choose how the network fee is paid:
    - **Through the relayer:** needs a relayer URL in Settings and a token that supports ERC-2612 `permit` (for example USDC). The relayer fee is deducted from the swept amount. You get a quote showing the fee and what you receive, then sign.
-   - **Directly:** the one-time address must already hold native coin for gas. The app signs an ordinary transfer with the stealth key and broadcasts it through your RPC. For native coin it sends the balance minus the worst-case network fee: the gas estimated for your destination at twice the current gas price and, on OP Stack chains (Base, OP), twice the L1 data fee and operator fee quoted by the chain's fee oracle. The unused part of that reserve stays at the one-time address.
-5. The stealth key is derived in memory only for the signature and never displayed or stored. Because it is signed inside the page, there is no wallet confirmation on this path: **a compromised page could sweep to an attacker.** Read the destination on screen before you sign.
-6. Keep the transaction hash and check it on a block explorer you trust.
+   - **Directly, native coin:** first prepare the fee review. Review the exact destination, balance, nonce, gas limit, maximum fee and priority fee per gas, additional chain fee reserve, total reserve and amount the destination receives. Preparation performs authorized reads without signing or broadcasting. The review expires after 60 seconds, including preparation time. Confirm only while those values remain acceptable. The unused part of the fee reserve stays at the one-time address.
+   - **Directly, ERC-20:** the one-time address needs native coin for gas. A funding transfer can link the funding wallet to that address. This flow has separate acceptance requirements and is not qualified by the native-coin review tests.
+5. Native confirmation consumes the prepared review once and repeats transaction checks before signing. Changed balance, fees, nonce, destination, session, settings or manifest require a new review; the app does not silently accept a different transaction. Cancellation or expiry revokes the review. An encrypted saved vault can ask for authentication separately during preparation and confirmation. The spending key is derived transiently for ownership checks and signing, with the helper's temporary buffer disposed afterward. JavaScript cannot guarantee erasure of every runtime copy. Because the page signs this transaction, there is no separate wallet confirmation: read the destination before you confirm.
+6. Keep the transaction hash and check its result. An uncertain broadcast is not a confirmed failure; use the recorded attempt and its reconciliation controls before attempting another sweep. A replacement transaction needs its own review and preserves the original nonce and attempt history.
 
 ## What the relayer fee covers
 
