@@ -39,3 +39,17 @@ Remote lock acquisition: `914f8ce742e4282cc318268c088c8f4285556245`, owner `2026
 generation 1, acquired 07:55:03 UTC, expiry 08:55:03 UTC. Always re-read the current control ref:
 this paragraph is historical acquisition evidence, not a live ownership grant. The final release
 transition records cycle completion and actual PR references in its metadata.
+
+## Published review queue
+
+- Importer fix: [#258](https://github.com/djshellshoxxx/GhostPay/pull/258), initial published head
+  `84398a79e18673f3e371a405931bc464e1cca99a`.
+- Lock and cycle records: [#261](https://github.com/djshellshoxxx/GhostPay/pull/261), initial published
+  head `589ba5fe14faa90ebe0bb4088393c3b26628e41a`. Subsequent documentation-only corrections preserve
+  the independently reviewed implementation/test blobs. Read each live PR head and CI before integration.
+- A second external documentation-only main advance, `a36f48da526b818a5940a7a0ed2ae7303ef17056`,
+  merged historical continuation handoff #216. It is not an implementation or release milestone for this cycle.
+
+Independent documentation QA verified all ten top-level documents and six data snapshots. Its stale
+Mythril backlog status was corrected to failed; a separate wording correction attributes transport-design
+review to the independent reviewer. Full hosted qualification remains pending for both new source PRs.

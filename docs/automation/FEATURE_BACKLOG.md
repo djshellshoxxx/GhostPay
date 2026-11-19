@@ -13,7 +13,7 @@ and known owners rather than declaring whole features complete from passing focu
 | GP-SCAN | Private seller checkpoints and discovery | #248 | Existing owner; qualify current head and resolve integration dependencies. |
 | GP-SIGNER | Selected invoice signer validation | #243 | Existing owner, stacked on #238; preserve independent caller policy. |
 | GP-SWEEP | Explicit displayed-balance consent | #252 | Narrow Pages candidate; complete current CI and review before merge. |
-| GP-MYTHRIL | Relevant contract-analysis evidence | #255 | Security gate still pending; contracts are not new Pages development scope. |
+| GP-MYTHRIL | Relevant contract-analysis evidence | #255 | Analyzer gate failed with 11 findings (8 Low, 3 Medium); existing owner retains remediation/disposition. Contracts remain outside new Pages development scope. |
 
 Keep non-Pages products, hosted services and unresolved owner decisions deferred. Signed provenance,
 external-wallet/device acceptance and independent external security review remain separate evidence

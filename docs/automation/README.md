@@ -62,7 +62,7 @@ CLI's orphan commit. Both forms are readable by the tested CLI. Never overwrite 
 creation failure, and never merge this metadata-only control branch into an application or integration
 branch. Exclude the control branch from source consolidation and branch cleanup.
 
-The coordinator independently reviewed this fallback, then confirmed the actual remote ref, commit
+A separate reviewer checked this fallback. The coordinator then confirmed the actual remote ref, commit
 parent, single-file tree and owner/generation/token/timestamps. The approved CLI `assert` also passed
 against the connector-created lock using read-only Git transport. Any future connector error remains
 unconfirmed until immutable state and current ref readback resolve it. This fallback does not override
