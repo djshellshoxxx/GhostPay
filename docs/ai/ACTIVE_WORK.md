@@ -1,3 +1,21 @@
+# Isolated consolidation follow-through — 2026-11-19
+
+Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
+Branch: `codex/ghostpay-consolidation-followthrough-20261119`.
+Base: PR #262 `c40b7581b9b996f33612186bc91960c65273cb64`; observed main `14ded337a10c140d7a9f9a9238ec038587d925bb`.
+Owned paths: `packages/invoice-schema/src/{json,merchantProfile}{,.test}.ts`,
+`apps/web/src/lib/scannerCore{,.test}.ts`, this additive registry entry and
+`docs/consolidation/followthrough-20261119/`.
+Scope: finish #265 array rejection with descriptor snapshots, selectively recover only #246's
+merchant-clock source/tests, and avoid redundant crypto for unsupported scanner schemes.
+Acceptance: regression-backed correction, ordinary JSON byte stability, existing clock error ordering,
+valid-scan/replay/cancellation/progress behavior, and the unchanged million-log corpus/180-second limit.
+Run original package and web tests, coverage, typecheck, lint and feasible build/browser checks.
+Another coordinator owns the integration lock. This branch is isolated staging only; shared tracking,
+protected integration/main, active source branches, deployment, contracts, fees and recovery policy are unchanged.
+Independent source reviews found no blocker. Execution evidence and remaining gates are recorded in the
+scoped handoff; no feature or repository-wide acceptance is inferred from partial checks.
+
 # Hosting export timestamp precision — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
