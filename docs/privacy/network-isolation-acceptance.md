@@ -17,7 +17,8 @@ active.
 | Input | Exact inspected commit | Branch / role |
 |---|---|---|
 | Initial main baseline | `dfc75ef2087fa6463ae59e0818abec01796c578d` | Original integration input |
-| [Main at publication recheck](https://github.com/djshellshoxxx/GhostPay/commit/58d89b39b27a66454ebf392bcd35d5c68b57b2f8) | `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` | Separately merged #241 and #237; no missing product delta for this task |
+| [Main at first publication recheck](https://github.com/djshellshoxxx/GhostPay/commit/58d89b39b27a66454ebf392bcd35d5c68b57b2f8) | `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` | Separately merged #241 and #237; no missing product delta for this task |
+| [Main at final source reconciliation](https://github.com/djshellshoxxx/GhostPay/commit/e454de6abfefda70d82784fafc1d8949b277c334) | `e454de6abfefda70d82784fafc1d8949b277c334` | Separately merged #242; its exact product inputs already inherited through #238 |
 | [#238](https://github.com/djshellshoxxx/GhostPay/pull/238) | `198aa5baff22272453733a0f3dcfcac0e0994eec` | `integration/ghostpay-pages-completion-20261118`; dependency baseline |
 | [#241](https://github.com/djshellshoxxx/GhostPay/pull/241) | `e8857bfa1ec93fafa9ff83f63f7430ef26a362c2` | `codex/ghostpay-browser-isolation-20261118`; reviewed transport/startup work |
 | [#222](https://github.com/djshellshoxxx/GhostPay/pull/222) | `2bc2098298d90928eb1acafad969f28316bb05fc` | `privacy/hardening-recommendations` |
@@ -53,6 +54,19 @@ change. Keep the stacked #238 target; no duplicate cherry-pick or source-branch
 edit is needed for this advance. The beta artifact work remains owned by the
 recorded `recovery_review` workstream.
 
+The later read-only reconciliation found main at `e454de6a`, after external
+merge [#242](https://github.com/djshellshoxxx/GhostPay/pull/242) at
+2026-11-19 06:54:41 UTC. Its head was
+`ab4e0da2cfe2a18adac0424896fba0b40fac81a8`. Independent ancestry checks confirm
+that its four exact inputs are already ancestors of both #238 and initial
+candidate `089a0081`: #227 idle-lock source
+`613667be4eeb132c7d21ccd06c627f9a7144d85b`, #234 signer source
+`5e9e7be70399a9818579cf87bd494e013e25d4f9`, #235 checkpoints `a5076f4d` and
+#237 logs `7109290b`. The additional #242 qualification document does not supply
+a missing product change. Keep the unchanged #238 stack target; no code
+integration, input-branch edit or duplicate cherry-pick is needed. This task
+observed the merge; it did not perform it.
+
 The task preserves the non-custodial client architecture, Pages static hosting,
 Spec 18 recovery/key export, v4 checkpoints, invoice validation, transaction
 review/signing and attempt journals. Contract changes, hosted relayer changes,
@@ -87,21 +101,21 @@ neither an unexecuted browser case nor an inherited pass is a candidate pass.
 | Section | Acceptance requirement | Owner | Baseline / current qualification status |
 |---|---|---|---|
 | 1. Establish baseline | Inspect main, the six named PRs, instructions, specifications, inventory, claims and evidence; preserve #241 | Lead + independent reviewer | Census, source pins and later main/#241/#238 head recheck complete; final task PR head and CI snapshot pending |
-| 2. Central network authorization | Distinguish local operations, RPC, indexer, relayer, approved external resources and unexpected egress; configuration alone is not authority | Policy implementer + lead | Implemented and independently source-reviewed; final strict policy passes 106/106 focused tests with central-module coverage below; whole-candidate gates pending |
+| 2. Central network authorization | Distinguish local operations, RPC, indexer, relayer, approved external resources and unexpected egress; configuration alone is not authority | Policy implementer + lead | Implemented and independently source-reviewed; latest strict policy passes 108/108 focused tests with central-module coverage below; whole-candidate gates pending |
 | 3. Own-node enforcement | Preserve selected endpoint; prevent cached/retry bypass and provider fallback; invalidate endpoint/network replacements; scope exceptions; reject unsupported configurations | Policy implementer + lead | Combined endpoint/action/revision binding source-reviewed; controlled native adapter receipt below; actual browser lifecycle qualification pending |
 | 4. Cancellation and bounds | Pre-abort, finite deadline and body, obsolete-operation cancellation, hostile fetch/stream cleanup, late-response disposal, bounded retries, fixed errors | Transport implementer | #241 retained and remaining bounded transports implemented; deadline/rollback/body/cleanup paths re-reviewed; lead consolidates final transport receipts |
 | 5. Session/reload/cross-tab | Lock, seller/network/endpoint replacement, permission revocation, reload, other-tab settings, sleep/resume and rapid cancellation cannot commit stale results | Policy implementer + lead | Combined lifecycle corrections re-reviewed; regression sources present, including real-tab cases; hosted browser qualification pending |
 | 6. Sweep consent | Explicit action and visible endpoint; no reusable blanket consent; revocation reaches cached clients/retries; no fallback; spending authority unchanged | Lead + policy implementer | Action-scoped wiring and exact balance owner/token restrictions reviewed; no-auto-read and revoked-consent browser cases collected but unexecuted locally |
 | 7. Privacy controls | Explain current mode, selected endpoint, network requirement, selection source, offline behavior, authorization failures and cancellation; retain theme/mobile/accessibility | Lead | Integrated controls and revised disclosures source-reviewed; full/lean browser and accessibility gates pending |
-| 8. Egress inventory | Maintain all relevant surfaces, destination/trigger/authorization, endpoint/redirect/metadata, bounds/errors, implications and coverage | Lead + independent reviewer | Inventory updated for authorization and bounded transports; lead consolidates final maintenance and bundle receipts |
+| 8. Egress inventory | Maintain all relevant surfaces, destination/trigger/authorization, endpoint/redirect/metadata, bounds/errors, implications and coverage | Lead + independent reviewer | Inventory updated for authorization and bounded transports; six maintenance checks and native probes pass within the recorded source boundaries below |
 | 9. Security testing | Deterministic fallback/cache/redirect/cross-tab/revocation/stale-session/stream/retry/redaction/background/offline/Sweep cases; actual destinations observed | All implementers + independent reviewer | Focused strict-policy RED-to-GREEN and controlled native evidence recorded below; twelve browser cases collected, zero browser traffic assertions executed locally |
 | 10. Independent review | Review endpoint leakage, correlation/tracking, background traffic, DNS/destinations, redirects/headers, cross-tab/cache/session races, fallback and errors; regress every confirmed defect | Independent reviewer | Bounded combined-source review complete after corrections; no unresolved feature bypass found in reviewed code; this does not clear pending runtime gates |
 | 11. Integration constraints | Preserve Pages/Tor/HTTPS capability, custody/recovery, Spec 18, signer/checkpoint/adapter/translations, release and security gates | Lead + independent reviewer | Constraint and source-boundary review complete; runtime/integration gates remain required; unrelated #238 failures remain explicit |
 | 12. Validation | Applicable transport/adapters/indexer/relayer/session tests; full web units; full/lean Chromium; Pages artifact; inventory; typecheck/lint; secret/security/integration checks | Lead | Focused policy and scoped browser-spec checks pass as recorded; remaining whole-candidate results await the final receipt and unchanged hosted gates |
 | 13. Documentation | Explain authorization, own-node, offline/external operations, provider exposure, revocation, cancellation, failures and browser/Tor limits; architecture diagram | Lead + independent reviewer | Integrated developer/user guidance and acceptance ledger written and reviewed; endpoint, browser/Tor and offline-proof limits explicitly retained |
-| 14. Deliverables | Enforced policy, endpoint/cache/lifecycle protection, bounded transports, Sweep consent, inventory/tests/review/docs, pinned evidence and reviewable PR | Lead | Source, regression cases, documentation and review ready for candidate publication; final PR and required qualification pending |
+| 14. Deliverables | Enforced policy, endpoint/cache/lifecycle protection, bounded transports, Sweep consent, inventory/tests/review/docs, pinned evidence and reviewable PR | Lead | Source, regression cases, documentation and review published in draft #251; the final schema correction and its required qualification are recorded separately |
 | 15. Definition of done | All supported browser surfaces documented; no unauthorized fallback/cache bypass; revocation blocks future dispatch; stale results refused; bounds/redaction/offline/Sweep verified; no unresolved feature blocker | Lead + independent reviewer | No unresolved source bypass found within the bounded review; runtime acceptance remains incomplete until applicable feature and release gates pass |
-| 16. Execution | Inspect latest ownership, implement only remaining behavior, reuse #241, test/review/document, commit and prepare PR | Lead | Isolated integration branch ready for commit/draft PR and hosted qualification; no source-branch edits, merge or deployment by this task |
+| 16. Execution | Inspect latest ownership, implement only remaining behavior, reuse #241, test/review/document, commit and prepare PR | Lead | Isolated integration branch and draft #251 created; consult the PR's qualification receipt for the final published child commit/head; no input-branch edits, merge or deployment by this task |
 
 ## Source findings that the implementation must close
 
@@ -175,27 +189,49 @@ HTTP redirect probes and their source hashes.
 
 ## Combined-source validation receipt
 
-Populate this table only from actual commands on an identified final source.
-If runtime changes after a result, rerun the relevant check; a documentation-only
-descendant can reference unchanged tested trees when equality is demonstrated.
+This table consolidates executed checks and their remaining limits. The
+[machine-readable validation receipt](evidence/network-isolation-completion-validation.json)
+retains commands, results and source references. If runtime changes after a
+result, rerun the relevant check; a documentation-only descendant can reference
+unchanged tested trees when equality is demonstrated.
+
+The initial published draft [#251](https://github.com/djshellshoxxx/GhostPay/pull/251)
+has head `089a0081418dcca395ce169abc36d9ef470162ef`. Its tree
+`80ad5268b3b095cd01171e8578631647f5056b2e` exactly matches local commit
+`7c7af09ff41c87f3fd5ac62f8a09cfb2202c699b`; both tree IDs were independently
+checked. The later exact-key schema correction is identified by its source/test
+hashes below. Consult the PR's final qualification receipt for its published
+child-commit SHA and hosted run links; this ledger does not guess a future SHA.
+The required gates apply to that final head. Earlier focused working-tree logs
+and the initial published tree do not establish a whole-candidate pass after
+the schema correction.
 
 | Required check | Final source / command / actual result |
 |---|---|
-| Network authorization and stale-client regressions | 106/106 focused tests across four files; reviewed `networkAuthorization.ts` SHA-256 `e6be27bee98f6e700c4b4a5490f99ce1ee9f88e51139451abe2a56a3946cd630`; focused coverage and command below. Broader candidate gates remain pending. |
-| Network transport package | Pending |
-| EVM RPC adapter package | Pending |
-| Esplora/indexer/relayer regressions | Pending |
-| BTC/Solana/TRON consumer and SDK checks | Pending |
-| Session, app lock, settings revision and cross-tab checks | Pending |
-| Full web unit suite with original coverage thresholds | Pending |
+| Network authorization and stale-client regressions | 108/108 focused tests across four files; reviewed `networkAuthorization.ts` SHA-256 `c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931`; focused coverage and command below. Broader candidate gates remain pending. |
+| Network transport package | 200/200 tests; original package coverage gate passed, exit 0. Package source and lockfile unchanged from combined input `2503d7ce` through the initial published tree; details below. |
+| EVM RPC adapter package | 562 passed, 22 existing conditional Anvil/solc/artifact cases skipped; original package coverage gate passed, exit 0. The skipped cases remain required in their configured CI environment. |
+| Esplora/indexer/relayer regressions | Focused transport/browser/native/Bitcoin selection passed 74 non-scan cases; the mixed run had 76 passes, 3 scan assertion failures and 16 filtered cases, exit 1. The scan assertions omitted the existing error-code prefix; after correction the five-case scan cancellation suite passed. Final Esplora isolation/broadcast suite passed 5/5. These are focused working-tree receipts, not a full web gate. |
+| BTC/Solana/TRON consumer and SDK checks | Solana SDK 136/136 and TRON adapter 103/103 with original coverage gates; scan-source 72/72. Selected Bitcoin i18n/native transport cases pass as above. Full chain-view/browser and public-network qualification are not implied. |
+| Session, app lock, settings revision and cross-tab checks | Existing Pay/Settings race/Scan auto-rescan/Policy scope/Sweep flows pass 138/138 across five files on the final reviewed schema source `c65e93f4`; focused coverage-disabled run, not the full coverage gate. Earlier six-file UI group passed 48/48, AppShell 3/3 at `7c7af09f`, and policy/registry/native composition 10/10 at `1960318b`. Real cross-tab browser cases remain unexecuted locally. |
+| Full web unit suite with original coverage thresholds | Unqualified: the local coverage attempt recorded five SellerKeys failures and has no complete passing suite/coverage receipt. One wrong-passphrase case subsequently passed in isolation; that does not clear the other failures or the full gate. The separate existing no-coverage configuration passed 3/3; hosted full web qualification remains required. |
 | Full Chromium suite, including real request interception | Local Chromium launch blocked by native socket denial before any test body. The new 12-case spec is collected and scoped-typed/lint checked; hosted execution pending. |
 | Lean Chromium suite, including real request interception | Pending hosted execution; repeating the same local browser launch restriction would not provide a result. |
-| Pages artifact verification / applicable Anvil browser checks | Pending |
-| Inventory maintenance, bundle guards and native destination probes | Pending |
-| Typecheck and lint | New browser spec passes unchanged lint rules and original compiler options over its import closure. Full-project checks remain unqualified locally after exit 137; hosted gates pending. |
-| Secret scanning and relevant existing security/integration checks | Pending |
+| Pages artifact verification / applicable Anvil browser checks | Included Pages static/output/server/smoke and local build-profile tests passed in the frozen Node run; this is not an executed Pages artifact browser journey. Hosted artifact build and Anvil browser qualification remain pending for the final head. |
+| Inventory maintenance, bundle guards and native destination probes | Six inventory tests and all 18 native isolation subtests plus their parent passed in the frozen Node run. Diagnostic Vite build, CSP stamping and bundle scanning completed. Whole Node command failed 3 tests, classified below; no aggregate pass is claimed. |
+| Typecheck and lint | Changed-production import-closure typecheck passed. All 28 scoped UI/helper/test files pass unchanged typed ESLint rules after the four AppShell diagnostics were corrected; transport, browser-spec and latest central-policy scoped checks also pass. Full-project attempts exited 137 or were killed; unchanged hosted full gates remain pending. |
+| Secret scanning and relevant existing security/integration checks | Final local secret scan reports no committed env files or key material. Privacy source invariants passed 34/34; i18n validation reports 0 errors and 526 warnings across four catalogs. Frozen Node script suite: 349 passed, 3 failed, 0 skipped; two inherited dependency-closure failures and one GPG fixture setup failure remain explicit below. Hosted security/integration gates are not cleared by these local results. |
 | Independent privacy review and regression re-review | Bounded combined-source review complete after the recorded corrections; no unresolved feature bypass found in reviewed paths. Latest strict-policy RED-to-GREEN evidence independently inspected. Browser runtime qualification remains pending. |
-| Final remote head/tree and required CI snapshot | Main/#241/#238 recheck recorded above. Task PR head/tree and required CI snapshot pending publication and hosted qualification. |
+| Final remote head/tree and required CI snapshot | Main/#241/#238 and the initial #251 head/tree rechecked as above. Initial CI `changes` passed and full/lean jobs were queued when the schema follow-up was prepared; Pages validation was also queued. Final head and timestamped hosted results belong to the PR's final qualification receipt. No outcome is promised or inferred. |
+
+Hosted snapshot at **2026-11-19 07:11:41 UTC**, initial head `089a0081`:
+[CI run 44474577078](https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078)
+had a successful `changes` job, queued full/lean browser jobs and queued
+`secrets-and-egress`;
+[Pages run 44474577070](https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577070)
+had both artifact build and Anvil browser jobs queued. Its publication-only
+release job was correctly skipped on a pull request. These are historical queue
+observations, not results for the final schema-corrected head.
 
 The documented commands are in [CLAUDE.md](../../CLAUDE.md), workspace package
 scripts and the unchanged CI workflows. Builds must rebuild changed libraries
@@ -203,22 +239,114 @@ before testing consumers that import their `dist` files. A browser collection
 listing, launch failure, skipped test or mocked-return-value assertion is not an
 executed network acceptance pass.
 
+### Package coverage receipts
+
+The five existing package test scripts retain their coverage includes, excludes
+and thresholds; only `--maxWorkers=1` was appended. All exited 0, for **1,073
+passes and 22 conditional skips**. The exact commands and per-package logs are
+in `bounded-package-results.jsonl` and `bounded-package-results.json` in the
+task evidence. Git comparison independently found no changes to these five
+package trees or `package-lock.json` between combined input
+`2503d7ce9ab519783dca3f0a4d6fade6459609b8` and initial PR head `089a0081`.
+The final app-policy correction does not modify those package files.
+
+| Package | Passed / skipped | Coverage: statements / branches / functions / lines |
+|---|---|---|
+| `@ghostpay/net-transport` | 200 / 0 | 97.66% / 96.20% / 96.62% / 98.01% |
+| `@ghostpay/chain-adapters` | 562 / 22 | 97.46% / 96.45% / 99.11% / 98.98% |
+| `@ghostpay/scan-source` | 72 / 0 | 98.76% / 95.82% / 100% / 100% |
+| `@ghostpay/solana-stealth` | 136 / 0 | 97.48% / 95.07% / 98.09% / 99.17% |
+| `@ghostpay/tron-adapter` | 103 / 0 | 96.98% / 93.30% / 98.92% / 99.08% |
+
+The 22 adapter skips are the existing `router.anvil`, `quote.anvil` and
+`payments.anvil` conditions. Their configured `REQUIRE_ANVIL=1` CI execution
+remains required. They are neither counted as passes nor removed from the gate.
+
+### Frozen Node suite and remaining failures
+
+At local `7c7af09ff41c87f3fd5ac62f8a09cfb2202c699b`, equal in tree to initial
+PR head `089a0081`, the following unchanged command exited **1**, with **349
+passed, 3 failed, 0 skipped, 352 total**:
+
+```sh
+node --test --test-concurrency=1 scripts/tests/*.test.mjs scripts/pages/*.test.mjs apps/web/scripts/localBuildProfile.test.mjs
+```
+
+All included Pages/profile, inventory and native isolation cases passed. The
+three failures are not waived:
+
+| Failure | Evidence and classification |
+|---|---|
+| Web workspace dependency closure | `@ghostpay/hygiene` and `@ghostpay/metadata-hardening` are outside the existing reviewed/pending lists. An isolated fixture using the exact #238 guard and all 68 app/package manifests reproduces this failure. Those inputs are unchanged in the initial #251 tree. |
+| Relayer workspace dependency closure | `@ghostpay/metadata-hardening` is outside the unchanged reviewed list. The same exact-#238 fixture reproduces this second failure. The original main inputs pass both closure checks; the introduction is attributable to the dependency baseline, not this task's network-authority delta. |
+| PGP release-tag verification fixture | Throwaway key setup fails before tag verification: `/usr/bin/gpg-agent` exits 2 with `General error` / `No agent running`. The test is unchanged from #238. The underlying agent-start cause is unestablished; this is a local fixture setup failure, not a passing verification or a demonstrated product regression. |
+
+Receipts: `frozen-node-suites.log`, `frozen-node-suites-results.json`,
+`lean-closure-pr238-baseline.log`, `lean-closure-pr238-baseline.json` and
+`lean-closure-provenance.json`. Neither dependency guard list was expanded.
+The CI script shard still exposes the inherited closure failures.
+
+### Additional scoped receipts and limits
+
+On reviewed authorization source `c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931`,
+`network-existing-flows-final.log` records **138/138 passes in five files**
+(91.34 seconds). The command from `apps/web` was:
+
+```sh
+node --max-old-space-size=640 --max-semi-space-size=8 ../../node_modules/vitest/vitest.mjs run src/views/Pay.test.tsx src/views/Settings.race.test.tsx src/views/Scan.autoRescan.test.tsx src/features/policy/PolicyView.scope.test.tsx src/views/Sweep.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism
+```
+
+This focused integration receipt does not replace full web coverage or hosted
+browser execution.
+
+`network-ui-focused-final.log` records 48/48 in six focused UI files;
+`app-shell-network-final.log` and `app-shell-final-results.json` record the
+subsequent three-case AppShell pass and same-rule lint rerun at `7c7af09f`.
+`ui-lint-batch-results.jsonl` records the other four clean batches; together the
+five batches cover all 28 requested UI/helper/test files. Original compiler
+options and complete import closures were used; only the temporary root sets
+were restricted. These do not substitute for whole-project checks.
+
+Transport receipts are `bounded-final-focused.log`,
+`scan-authorization-final.log`, `esplora-isolation-final.log`,
+`bounded-scoped-typecheck.log` and `bounded-scoped-lint-final.log`. The earlier
+111-test transport pass predates the cross-realm and final cancellation
+corrections and is retained only as historical evidence. The final focused
+scan rerun corrected expected message prefixes without changing runtime
+behavior or weakening cancellation assertions.
+
+`privacy-invariants-green.log` records 34/34 after the source guard was updated
+to the actual authorization/bounded-request boundaries. It continues to pin
+credential, referrer, redirect and cache protections. `network-i18n-final.log`
+reports four catalogs, zero errors and 526 untranslated-text warnings; that is
+not a complete localization claim. `network-secret-scan-final.log` reports no
+committed env files or key material.
+
+`web-nocov-final.log` records the existing separate no-coverage configuration's
+three tests passing. `web-full-coverage.log` remains an incomplete, failing
+local receipt; `sellerkeys-wrong-passphrase-candidate-7c7af09f.log` establishes
+only the selected case's isolated pass. Full web, full/lean browser, Pages
+artifact and unchanged hosted security gates remain required on the final head.
+
 ## Independent review of the combined working tree
 
 This review examines the new runtime wiring as well as the authorization helper.
-The findings below were identified independently from the implementation's test
-claims. Their corrections were re-read in the combined source. Executed focused
-receipts and the remaining runtime qualification are distinguished below.
+The review findings below were identified independently from the implementation's
+test claims. The later lead-reported unknown-key case is separately identified;
+its failing regression and correction were also independently inspected. All
+corrections were re-read in the combined source. Executed focused receipts and
+the remaining runtime qualification are distinguished below.
 
 | Finding | Concrete mechanism | Implementer response / qualification |
 |---|---|---|
-| Request deadline after sleep | An abort timer alone could lose to a response queued while the browser slept; a ten-minute grant idle check did not enforce the thirty-second request deadline. | Policy implementer added request wall-clock checks before/after dispatch and each body read, including clock rollback. Source re-read confirms the checks; included in the 106-test policy receipt below. |
+| Request deadline after sleep | An abort timer alone could lose to a response queued while the browser slept; a ten-minute grant idle check did not enforce the thirty-second request deadline. | Policy implementer added request wall-clock checks before/after dispatch and each body read, including clock rollback. Source re-read confirms the checks; included in the 108-test policy receipt below. |
 | Payment reauthorization after cancellation | AppContext revision changed `Pay.refreshContext` identity, causing its effect to mint a fresh preflight grant immediately after global cancellation. A pending delay could independently call the refresh callback later. | Lead made refresh identity stable, bound initial authorization to the invoice/revision, cancelled the scheduler on revocation and added an explicit review-network action. Source re-read confirms those paths; browser regressions count requests before/after cancellation and second-tab replacement. |
 | Old invoice grant survives replacement | Resetting the payment UI/flow revision did not revoke the old preflight RPC's transport grant, allowing its internal retry after fragment replacement. The first correction also retained an obsolete controller in effect cleanup after explicit renewal. | Lead added per-fragment cancellation, cleanup of the current renewed controller, and a captured fragment/revision check before runtime/buffer clients can acquire grants. Source re-read confirms these paths. A new browser case holds a renewed chain check, replaces the invoice, then requires native request cancellation before releasing the old failure. |
 | Settings overwrite and stale Test retry | An open form retained its old inputs after another tab updated Settings. Editing an input invalidated only the Test result label, leaving the old grant able to retry. | Lead added form synchronization, a saved-storage revision check before write, per-chain test controllers aborted on edit/new test/unmount, and storage-revision checks in profile/scan subforms. Source re-read confirms these changes; browser regression execution remains blocked. |
 | Scan completion after network revocation | The completion block skipped its scope assertion when aborted, then wrote old telemetry, lag, done/error state and a finished announcement. Its catch guard checked only seller-session identity. | Lead bound completion/catch writes to current network and selected key/chain scope, and final cleanup to the owning run. An immediate ref-based permission check prevents a queued automatic rescan timer from acquiring a new grant before React finishes its cancellation render. Source re-read confirms the checks; focused behavioral regression receipt pending. |
 | Deferred policy action after revocation | A policy withdrawal waiting for a browser lock could acquire it after cancellation, pass a deployment/session-only guard, then mint a new RPC grant inside its preparation callback. | Lead bound policy deployment assertions to network revision and a deployment signal, checked them before acquiring fresh clients, and added corresponding registry revision/signal guards. Source re-read confirms these paths; the five-case policy/registry lifecycle receipt and its source boundary are recorded below. |
-| Malformed preference degrades to permissive default | Snapshot validation used nullish-coalescing defaults before type validation. Present `rpcMode: null` became single-node mode and `requireProxy: null` became false. Related malformed shaping fields or custom endpoint maps could be normalized away before a new action acquired a grant. | Independently observed failing regressions: six null-field, twelve shaping/lane, and six endpoint-map cases. Policy implementer added absence-only defaults, bounds/type checks matching the saved privacy schema, and strict endpoint-map validation. Source re-read confirms those corrections; final focused suite passes 106/106. Two browser refusal cases await hosted execution. |
+| Malformed preference degrades to permissive default | Snapshot validation used nullish-coalescing defaults before type validation. Present `rpcMode: null` became single-node mode and `requireProxy: null` became false. Related malformed shaping fields or custom endpoint maps could be normalized away before a new action acquired a grant. | Independently observed failing regressions: six null-field, twelve shaping/lane, and six endpoint-map cases. Policy implementer added absence-only defaults, bounds/type checks matching the saved privacy schema, and strict endpoint-map validation. Source re-read confirms those corrections; included in the latest 108/108 focused pass. Two browser refusal cases await hosted execution. |
+| Unknown privacy key is mistaken for an absent control | Lead found that `requireProxyy: true` and `privacySetTransferss: true` survived decoding as unknown fields, while the intended controls received permissive absent-field defaults. Each reproduction authorized payment preflight and dispatched once. | Independently inspected both RED results and the correction. Exact own-key checks now match all eleven saved scan-privacy fields and all three saved lane fields before defaults. Exhaustive type-only schema links prevent silent list drift without adding runtime imports. Empty legacy records remain accepted, and the positive boundary test includes every current saved field. Both refusals pass with zero dispatch in the 108-test receipt. |
 | Alternate view navigation leaves a grant live | Backup-banner navigation bypassed AppShell's invalidating view setter. A completed scan can retain its proof RPC intentionally, so a route change must revoke that retained grant as well as an active scan controller. | Lead routed real hash/banner/error-boundary transitions through the invalidating fragment/view paths. Source re-read confirms those paths. This changes network lifecycle, not backup or recovery contents. |
 
 After the recorded corrections, the bounded independent source review found no
@@ -267,11 +395,13 @@ do not qualify full-project lint or typechecking.
 
 ### Focused policy qualification at review freeze
 
-The independently read final policy log reports **106/106 tests across four
+The independently read latest policy log reports **108/108 tests across four
 files**. Coverage measured only `src/lib/networkAuthorization.ts`: statements
-93.41%, branches 92.14%, functions 92.98%, lines 99.31%. This is **not full web
+93.50%, branches 92.21%, functions 93.22%, lines 99.32%. This is **not full web
 coverage**. Its tested and independently re-read authorization SHA-256 is
-`e6be27bee98f6e700c4b4a5490f99ce1ee9f88e51139451abe2a56a3946cd630`.
+`c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931`.
+The test source SHA-256 is
+`abd2cc29683ababdf004875bf7cdd4751050b8c403792811b1a102d14cb817c5`.
 `defaultServices.ts` remains
 `5beabcc2cf559f28af4553b367272d9d44c8ae62e87e8597a76d6f2929481c69`.
 Bitcoin budget review confirmed that the existing 64 MiB
@@ -282,14 +412,25 @@ regression checks that aggregate behavior.
 The focused command from `apps/web` was:
 
 ```sh
-npx vitest run src/lib/networkAuthorization.test.ts src/lib/defaultServices.authorization.test.ts src/lib/defaultServices.test.ts src/lib/defaultServices.networkGuard.test.ts --coverage --coverage.include=src/lib/networkAuthorization.ts --coverage.reportsDirectory=/workspace/scratch/e4cd51001ae8/network-policy-coverage --maxWorkers=1 --no-file-parallelism
+npx vitest run src/lib/networkAuthorization.test.ts src/lib/defaultServices.authorization.test.ts src/lib/defaultServices.test.ts src/lib/defaultServices.networkGuard.test.ts --coverage --coverage.include=src/lib/networkAuthorization.ts --coverage.reportsDirectory=/workspace/scratch/e4cd51001ae8/network-policy-schema-coverage --maxWorkers=1 --no-file-parallelism
 ```
 
-Earlier focused receipts also report five policy/registry lifecycle tests and
-five native adapter tests passing. Their logs were independently read; those
-executions preceded the final strict-policy correction and are not promoted to
-whole-candidate qualification. The policy/registry cases deliberately ignore
-abort in their fake RPC while verifying that old results and queued lock
+The post-publication schema receipts are
+`network-policy-unknown-schema-red-089a008.log` (two failures, each with one
+unexpected dispatch) and `network-policy-unknown-schema-green-089a008.log`
+(108 passes). This supersedes the earlier 106-test policy receipt at SHA-256
+`e6be27bee98f6e700c4b4a5490f99ce1ee9f88e51139451abe2a56a3946cd630`.
+The same-source `network-policy-unknown-schema-static-089a008.log` reports zero
+TypeScript diagnostics over the central source/test import closure and zero
+errors or warnings under the unchanged repository ESLint rules. These scoped
+checks do not replace the pending full-project gates.
+
+The independently read `network-policy-composition-1960318.log` records five
+policy/registry lifecycle tests and five native adapter tests passing together
+at commit `1960318bffa3bd8c1ec418b7aee17dddfb510a6d`. That run includes the earlier
+strict value validation but precedes the later exact-key correction, and is not
+promoted to whole-candidate qualification. The policy/registry cases deliberately
+ignore abort in their fake RPC while verifying that old results and queued lock
 callbacks cannot regain authority.
 
 `networkAuthorization.adapters.test.ts` uses actual native HTTP

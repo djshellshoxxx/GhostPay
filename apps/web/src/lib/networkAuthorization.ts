@@ -2,6 +2,8 @@ import { CHAINS, ChainAdapterError } from '@ghostpay/chain-adapters';
 import { isValidV3OnionHost, WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { subscribeAppLock } from './appLock';
 import { UserFacingError } from './errors';
+import type { ScanPrivacySettings } from './scanPrivacy';
+import type { ScanLaneSettings } from './scanSpam';
 import { captureSessionVersionGuard, subscribeSession } from './session';
 import { isRpcSessionOnly, SETTINGS_KEY } from './settings';
 
@@ -68,6 +70,13 @@ export interface NetworkAuthorityOptions {
 const SCAN_PRIVACY_STORAGE_KEY = 'ghostpay.scanPrivacy.v1';
 const SCAN_LANES_STORAGE_KEY = 'ghostpay.scanLanes.v1';
 const POLICY_KEYS = [SETTINGS_KEY, SCAN_PRIVACY_STORAGE_KEY, WEB_NETWORK_SELECTION_KEY, SCAN_LANES_STORAGE_KEY] as const;
+// Exact persisted schemas: absent known fields remain compatible with older records; unknown fields cannot be
+// mistaken for a missing privacy control. Type-only schema links keep these lists exhaustive without runtime imports.
+const SCAN_PRIVACY_FIELDS: Readonly<Record<keyof ScanPrivacySettings, true>> = {
+  transport: true, endpoints: true, requireProxy: true, windowBlocks: true, jitterMinMs: true, jitterMaxMs: true,
+  source: true, indexerUrls: true, openLaneBudget: true, padBlocks: true, bulkEvidence: true,
+};
+const SCAN_LANE_FIELDS: Readonly<Record<keyof ScanLaneSettings, true>> = { floodPerBlock: true, spamScoring: true, privacySetTransfers: true };
 const LOOPBACK = new Set(['127.0.0.1', 'localhost', '[::1]']);
 const EXCEPTIONS = new Set<NetworkAction>(['sweep-balance', 'sweep-quote', 'sweep-prepare', 'sweep-submit', 'sweep-status', 'merchant-profile']);
 const EVM_READ_METHODS = new Set(['eth_chainId', 'eth_blockNumber', 'eth_call', 'eth_estimateGas', 'eth_gasPrice', 'eth_getBalance',
@@ -131,6 +140,8 @@ function snapshot(read: () => StorageReader | undefined, observed: Set<number>):
   if (settings['relayerUrl'] !== undefined && typeof settings['relayerUrl'] !== 'string') refuse();
   const privacy = decode(raw[1] ?? null);
   const lanes = decode(raw[3] ?? null);
+  if (Object.keys(privacy).some((key) => !Object.hasOwn(SCAN_PRIVACY_FIELDS, key)) ||
+      Object.keys(lanes).some((key) => !Object.hasOwn(SCAN_LANE_FIELDS, key))) refuse();
   storedInteger(lanes, 'floodPerBlock', 1, 10_000);
   for (const key of ['spamScoring', 'privacySetTransfers']) if (lanes[key] !== undefined && typeof lanes[key] !== 'boolean') refuse();
   // These are the existing Settings/scanPrivacy bounds. Missing legacy fields retain defaults; present corrupt

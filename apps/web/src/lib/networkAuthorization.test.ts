@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { notifyAppLock } from './appLock';
+import { DEFAULT_SCAN_PRIVACY } from './scanPrivacy';
+import { DEFAULT_SCAN_LANES } from './scanSpam';
 import { clearSession } from './session';
 import { clearRpcSessionOnly, setRpcSessionOnly, SETTINGS_KEY } from './settings';
 import { createNetworkAuthority, type NetworkAction, type NetworkAuthority, type NetworkAuthorizationRequest, type BrowserNetworkRef } from './networkAuthorization';
@@ -113,6 +115,15 @@ describe('live settings, session and permissions', () => {
     const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, raw); expect(() => h.authorize()).toThrow();
   });
   it.each([
+    { key: privacyKey, record: { transport: 'local-proxy', requireProxyy: true } },
+    { key: lanesKey, record: { privacySetTransferss: true } },
+  ])('rejects unknown privacy schema keys in $key before a new non-scan action can dispatch', async ({ key, record }) => {
+    const h = harness(); h.values.set(key, JSON.stringify(record));
+    let refused = false;
+    try { await text(h.authorize({ action: 'payment-preflight' })); } catch { refused = true; }
+    expect({ refused, dispatched: h.fetcher.mock.calls.length }).toEqual({ refused: true, dispatched: 0 });
+  });
+  it.each([
     { key: privacyKey, field: 'transport', valid: { transport: 'direct', requireProxy: false } },
     { key: privacyKey, field: 'requireProxy', valid: { transport: 'direct', requireProxy: false } },
     ...['rpcMode', 'rpcProfile', 'relayerProfile', 'noticeAcknowledged'].map((field) => ({ key: WEB_NETWORK_SELECTION_KEY, field, valid: { rpcMode: 'single', rpcProfile: 'direct', relayerProfile: 'direct', noticeAcknowledged: false } })),
@@ -151,8 +162,8 @@ describe('live settings, session and permissions', () => {
   it('keeps absent legacy fields compatible and accepts normalized scan setting boundaries', () => {
     const h = harness(); h.values.set(privacyKey, '{}'); h.values.set(lanesKey, '{}'); h.authorize().assertCurrent();
     for (const upper of [false, true]) {
-      h.values.set(privacyKey, JSON.stringify({ windowBlocks: upper ? 100_000 : 0, jitterMinMs: upper ? 10_000 : 0, jitterMaxMs: upper ? 10_000 : 0, openLaneBudget: upper ? 100_000 : 1, padBlocks: upper ? 100_000 : 0, bulkEvidence: upper ? 500 : 0 }));
-      h.values.set(lanesKey, JSON.stringify({ floodPerBlock: upper ? 10_000 : 1, spamScoring: upper, privacySetTransfers: upper }));
+      h.values.set(privacyKey, JSON.stringify({ ...DEFAULT_SCAN_PRIVACY, windowBlocks: upper ? 100_000 : 0, jitterMinMs: upper ? 10_000 : 0, jitterMaxMs: upper ? 10_000 : 0, openLaneBudget: upper ? 100_000 : 1, padBlocks: upper ? 100_000 : 0, bulkEvidence: upper ? 500 : 0 }));
+      h.values.set(lanesKey, JSON.stringify({ ...DEFAULT_SCAN_LANES, floodPerBlock: upper ? 10_000 : 1, spamScoring: upper, privacySetTransfers: upper }));
       h.authorize().assertCurrent();
     }
     expect(h.fetcher).not.toHaveBeenCalled();
