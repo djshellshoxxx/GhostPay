@@ -404,7 +404,7 @@ limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
 Worker: history_review, coordinated by the pre-merge repair lead.
 Branch: `repair/ghostpay-history-pool-values-20261118-local`.
 Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
-Owned paths: `packages/pool-circuits/src/inputs.ts`, `src/helpers.test.ts`,
+Owned paths: `packages/pool-circuits/src/inputs.ts`, `src/helpers.test.ts`, `test/witness.test.ts`,
 the package `DEVIATIONS.md`, this claim and a scoped merge-readiness handoff.
 Acceptance: recover the existing historical nonzero-input guards from
 `ea1f0b244f0adf4794e55cda6dc7dbd1e5f4039c` and property regression from
