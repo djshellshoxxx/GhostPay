@@ -2490,9 +2490,12 @@
       "reference:getRpc": 6
     },
     "apps/web/src/views/Scan.tsx": {
+      "call:authorize": 2,
+      "call:createRpc": 2,
       "call:getRpc": 1,
       "call:getSecondaryRpc": 1,
-      "reference:authorize": 1,
+      "reference:authorize": 3,
+      "reference:createRpc": 2,
       "reference:fetchFn": 1,
       "reference:getRpc": 1,
       "reference:getSecondaryRpc": 1
