@@ -1,0 +1,15 @@
+{
+  "QUALIFICATION.md": "b2c69ba50b1248c2dc86e75fbeff79e5bf0396a632594b586fa847d2f3a8980a",
+  "RESULTS.json": "29f6ba6984a99bace615c7d1082d8f4dd8921369541ffcdf3e0d3e0bd10bf2b7",
+  "SOURCE.json": "102a76b09c7a15b45ea725376f7576693575eb7daa2354987394ce56d19581ba",
+  "evidence/checkpoint-final.log.gz": "67057f3047cbf649d6971d1140dba4f23d35746e8689d8121de6de0798308678",
+  "evidence/clock-green.log.gz": "9a3cb008ad2faec6b59faaf4b2990215f18685d4d769f8a519b4fbc9736ca81e",
+  "evidence/clock-red-ready.log.gz": "4e257b58bbc0db289e61328a019671087a410091cf115c4b7733e35532ca522a",
+  "evidence/clock-red.log.gz": "d58f442dc7009030105219e3cdb99a1759052d11b5f8052890eeaf2eba62cc6a",
+  "evidence/egress-final.log.gz": "a30909ec0d224d4d7bdb7ef885cd66238e47c7e55406b04d4a5004625dca386a",
+  "evidence/export-red.log.gz": "2e809bc23513c0b9eabb0a084eee05521b16f374240ed30c8794500b82d7f209",
+  "evidence/export-scan-green.log.gz": "b221603966f66e717daa6016cb0ca826372523543aba6c20182a80bc6b2eeead",
+  "evidence/integration-blobs.json": "d5bc39886ab1aee0f1b1d465b3990ae5638dde594d767e14a6b833017be6329d",
+  "evidence/typed-lint-green.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+  "evidence/typed-lint.log.gz": "f39cda593db2e5f7c2b2362d51cccf347dc1f3e5ed7c94099e04aa77e7e1138a"
+}

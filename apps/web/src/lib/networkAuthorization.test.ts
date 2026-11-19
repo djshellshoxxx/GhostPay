@@ -86,6 +86,44 @@ describe('per-action browser authorization', () => {
   });
 });
 
+describe('payment-key-export action boundaries', () => {
+  it('permits only chain identity and the exact bound address at latest, without unrelated dispatch', async () => {
+    const h = harness(); const grant = h.authorize({ action: 'payment-key-export', scope: owner });
+    expect(await text(grant, rpc, jsonRpc('eth_chainId'))).toBe('ok');
+    expect(await text(grant, rpc, jsonRpc('eth_getCode', [owner, 'latest']))).toBe('ok');
+    const refused: readonly (readonly [string, readonly unknown[]])[] = [
+      ['eth_chainId', [owner]], ['eth_getCode', [token, 'latest']], ['eth_getCode', [owner, '0x1']],
+      ['eth_getCode', [owner, 'latest', 'extra']], ['eth_getCode', [owner]], ['eth_getBalance', [owner, 'latest']],
+      ['eth_call', [{ to: owner }, 'latest']], ['eth_blockNumber', []], ['eth_sendRawTransaction', ['0x01']],
+    ];
+    for (const [method, params] of refused) await expect(text(grant, rpc, jsonRpc(method, params))).rejects.toThrow();
+    await expect(text(grant, rpc, { method: 'POST', body: JSON.stringify({ method: 'eth_chainId' }) })).rejects.toThrow();
+    expect(h.fetcher).toHaveBeenCalledTimes(2);
+  });
+  it('copies the address binding and rejects malformed or missing bindings before egress', async () => {
+    const h = harness(); const request: NetworkAuthorizationRequest = { action: 'payment-key-export', category: 'rpc', endpoint: rpc, network: evm, scope: owner };
+    const mutable = { ...request }; const grant = h.authority.authorize(mutable); mutable.scope = token;
+    await expect(text(grant, rpc, jsonRpc('eth_getCode', [token, 'latest']))).rejects.toThrow();
+    expect(await text(grant, rpc, jsonRpc('eth_getCode', [owner, 'latest']))).toBe('ok');
+    for (const scope of [undefined, '', 'not-an-address']) {
+      const invalid = h.authorize({ action: 'payment-key-export', ...(scope === undefined ? {} : { scope }) });
+      await expect(text(invalid, rpc, jsonRpc('eth_chainId'))).rejects.toThrow();
+    }
+    expect(h.fetcher).toHaveBeenCalledTimes(1);
+  });
+  it('accepts the selected private scan endpoint, refuses a secondary/fallback endpoint, and never grants a direct exception', () => {
+    const h = harness();
+    h.authorize({ action: 'payment-key-export', scope: owner, endpoint: 'https://127.0.0.1:8545' }).assertCurrent();
+    for (const endpoint of ['http://localhost:8545', 'https://fallback.test/']) expect(() => h.authorize({ action: 'payment-key-export', scope: owner, endpoint })).toThrow();
+    expect(() => h.authorize({ action: 'payment-key-export', scope: owner, allowDirectOnce: true })).toThrow();
+    h.values.set(privacyKey, JSON.stringify({ transport: 'local-proxy', requireProxy: true, endpoints: { '84532': 'http://127.0.0.1:8545/private' } }));
+    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ ...DEFAULT_WEB_NETWORK_SELECTION, rpcMode: 'own-node', noticeAcknowledged: true }));
+    h.authorize({ action: 'payment-key-export', scope: owner, endpoint: 'http://127.0.0.1:8545/private' }).assertCurrent();
+    expect(() => h.authorize({ action: 'payment-key-export', scope: owner })).toThrow();
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+});
+
 describe('live settings, session and permissions', () => {
   it.each([SETTINGS_KEY, privacyKey, WEB_NETWORK_SELECTION_KEY, 'ghostpay.scanLanes.v1'])('refuses stale cached contexts after %s changes before the event', async (key) => {
     const h = harness(); const grant = h.authorize(); h.values.set(key, JSON.stringify(key === WEB_NETWORK_SELECTION_KEY ? { rpcMode: 'single' } : { endpoints: {} }));
@@ -224,6 +262,94 @@ describe('live settings, session and permissions', () => {
   it('rejects already-aborted actions and rapidly cancelled attempts without any dispatch', async () => {
     const h = harness(); for (let i = 0; i < 20; i++) { const grant = h.authorize(); grant.cancel(); await expect(text(grant)).rejects.toThrow(); }
     const stop = new AbortController(); stop.abort(); expect(() => h.authorize({ signal: stop.signal })).toThrow(); expect(h.fetcher).not.toHaveBeenCalled();
+  });
+});
+
+describe('network authorization clock validity', () => {
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -1])('refuses an invalid issuance clock %s without network access or retained timers', (invalid) => {
+    vi.useFakeTimers();
+    const h = harness({ nowMs: () => invalid });
+    expect(() => h.authorize()).toThrow();
+    expect(h.fetcher).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -1])('permanently revokes an issued grant on clock %s', async (invalid) => {
+    let now = 1000;
+    const h = harness({ nowMs: () => now });
+    const grant = h.authorize();
+    now = invalid;
+    expect(() => grant.assertCurrent()).toThrow();
+    expect(grant.signal.aborted).toBe(true);
+    now = 1000;
+    await expect(text(grant)).rejects.toThrow();
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+
+  it('remints a throwing clock without exposing its cause or contacting the network', () => {
+    const h = harness({ nowMs: () => { throw new Error('private clock detail'); } });
+    let failure: unknown;
+    try { h.authorize(); } catch (error) { failure = error; }
+    expect(failure).toMatchObject({ name: 'UserFacingError' });
+    expect(String(failure)).not.toContain('private clock detail');
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+
+  it('accepts epoch zero and does not refresh the idle deadline when only checking authority', () => {
+    let now = 0;
+    const h = harness({ nowMs: () => now, contextIdleMs: 100 });
+    const grant = h.authorize();
+    now = 99;
+    grant.assertCurrent();
+    now = 100;
+    expect(() => grant.assertCurrent()).toThrow();
+    expect(grant.signal.aborted).toBe(true);
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+
+  it('rejects rollback from the latest observed clock before any new dispatch', async () => {
+    let now = 1000;
+    const h = harness({ nowMs: () => now });
+    const grant = h.authorize();
+    now = 1500;
+    grant.assertCurrent();
+    now = 1400;
+    await expect(text(grant)).rejects.toThrow();
+    expect(grant.signal.aborted).toBe(true);
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+
+  it('rejects an invalid clock while a response header is pending and discards the late body', async () => {
+    let now = 1000;
+    const h = harness({ nowMs: () => now });
+    let resolve!: (response: Response) => void;
+    h.fetcher.mockImplementationOnce(() => new Promise<Response>((done) => { resolve = done; }));
+    const grant = h.authorize();
+    const pending = text(grant);
+    const rejected = expect(pending).rejects.toThrow();
+    now = Number.NaN;
+    const response = new Response('must never be released');
+    const cancel = vi.spyOn(response.body!, 'cancel');
+    resolve(response);
+    await rejected;
+    expect(grant.signal.aborted).toBe(true);
+    expect(cancel).toHaveBeenCalled();
+  });
+
+  it('rejects an invalid clock while reading a body without waiting for delayed timers', async () => {
+    let now = 1000;
+    const h = harness({ nowMs: () => now });
+    let control!: ReadableStreamDefaultController<Uint8Array>;
+    h.fetcher.mockResolvedValueOnce(new Response(new ReadableStream<Uint8Array>({ start(next) { control = next; } })));
+    const grant = h.authorize();
+    const response = await grant.fetchFn(rpc, jsonRpc());
+    const pending = response.text();
+    const rejected = expect(pending).rejects.toThrow();
+    now = Number.NaN;
+    control.enqueue(new TextEncoder().encode('must never be released'));
+    control.close();
+    await rejected;
+    expect(grant.signal.aborted).toBe(true);
   });
 });
 

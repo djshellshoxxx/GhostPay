@@ -9,7 +9,7 @@ import { captureSessionVersionGuard, subscribeSession } from './session';
 import { isRpcSessionOnly, SETTINGS_KEY } from './settings';
 
 /** Actions are granted at their existing user interaction, never by merely configuring an endpoint. */
-export type NetworkAction = 'settings-check' | 'scan' | 'payment-preflight' | 'payment-status'
+export type NetworkAction = 'settings-check' | 'scan' | 'payment-key-export' | 'payment-preflight' | 'payment-status'
   | 'sweep-balance' | 'sweep-quote' | 'sweep-prepare' | 'sweep-submit' | 'sweep-status'
   | 'registry-read' | 'registry-publish' | 'policy' | 'btc-scan' | 'btc-sweep'
   | 'solana-scan' | 'solana-sweep' | 'tron-scan' | 'tron-sweep' | 'merchant-profile' | 'release-hash';
@@ -23,7 +23,7 @@ export interface NetworkAuthorizationRequest {
   readonly network?: BrowserNetworkRef;
   readonly signal?: AbortSignal;
   readonly match?: 'exact' | 'prefix';
-  /** Non-secret identity of the reviewed action; never persisted or transmitted. */
+  /** Non-secret action binding kept in memory. Its public values may appear in the authorized protocol request. */
   readonly scope?: string;
   readonly balance?: { readonly owner: string; readonly token: string };
   /** An explicit, visible one-action disclosure exception. It cannot override own-node mode. */
@@ -83,7 +83,7 @@ const EXCEPTIONS = new Set<NetworkAction>(['sweep-balance', 'sweep-quote', 'swee
 const EVM_READ_METHODS = new Set(['eth_chainId', 'eth_blockNumber', 'eth_call', 'eth_estimateGas', 'eth_gasPrice', 'eth_getBalance',
   'eth_getBlockByNumber', 'eth_getCode', 'eth_getLogs', 'eth_getTransactionByHash', 'eth_getTransactionCount', 'eth_getTransactionReceipt', 'net_version']);
 const ACTIONS: Readonly<Record<NetworkAction, readonly NetworkCategory[]>> = {
-  'settings-check': ['rpc'], scan: ['rpc', 'indexer'], 'payment-preflight': ['rpc'], 'payment-status': ['rpc'],
+  'settings-check': ['rpc'], scan: ['rpc', 'indexer'], 'payment-key-export': ['rpc'], 'payment-preflight': ['rpc'], 'payment-status': ['rpc'],
   'sweep-balance': ['rpc'], 'sweep-quote': ['rpc', 'relayer'], 'sweep-prepare': ['rpc'], 'sweep-submit': ['rpc', 'relayer'], 'sweep-status': ['rpc'],
   'registry-read': ['rpc'], 'registry-publish': ['rpc'], policy: ['rpc'], 'btc-scan': ['rpc', 'indexer'], 'btc-sweep': ['rpc', 'indexer'],
   'solana-scan': ['rpc'], 'solana-sweep': ['rpc'], 'tron-scan': ['rpc'], 'tron-sweep': ['rpc'],
@@ -225,6 +225,7 @@ function checkSelection(request: NetworkAuthorizationRequest, selected: URL, cur
     permitted.push(secondary, selectedValue(current.scan, 'endpoints', chainId));
     if (secondary === undefined && isRpcSessionOnly('secondary', chainId, selected.href)) permitted.push(selected.href);
   }
+  if (request.action === 'payment-key-export') permitted.push(selectedValue(current.scan, 'endpoints', chainId));
   if (!permitted.some((value) => sameEndpoint(value, selected))) refuse();
 }
 function checkEvmMethod(request: NetworkAuthorizationRequest, body: string): void {
@@ -234,6 +235,15 @@ function checkEvmMethod(request: NetworkAuthorizationRequest, body: string): voi
   if (typeof rpcMethod !== 'string') refuse();
   if (!EVM_READ_METHODS.has(rpcMethod) && !(rpcMethod === 'eth_sendRawTransaction' && request.action === 'sweep-submit')) refuse();
   if (request.action === 'settings-check' && rpcMethod !== 'eth_chainId') refuse();
+  if (request.action === 'payment-key-export') {
+    const address = request.scope;
+    const params = message['params'];
+    if (typeof address !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(address) || !Array.isArray(params)) refuse();
+    if (rpcMethod === 'eth_chainId') {
+      if (params.length !== 0) refuse();
+    } else if (rpcMethod !== 'eth_getCode' || params.length !== 2 || typeof params[0] !== 'string' ||
+        params[0].toLowerCase() !== address.toLowerCase() || params[1] !== 'latest') refuse();
+  }
   if (request.action === 'sweep-balance') {
     const balance = request.balance;
     if (balance === undefined || !/^0x[0-9a-fA-F]{40}$/.test(balance.owner) ||
@@ -307,7 +317,7 @@ export function createNetworkAuthority(options: NetworkAuthorityOptions = {}): N
     const sessionGuard = captureSessionVersionGuard();
     const issuedRevision = revision;
     const controller = new AbortController();
-    let lastUsed = now();
+    let lastObserved: number | undefined;
     let idleTimer: ReturnType<typeof setTimeout> | undefined;
     const cancel = (): void => {
       clearTimeout(idleTimer);
@@ -315,13 +325,26 @@ export function createNetworkAuthority(options: NetworkAuthorityOptions = {}): N
       active.delete(cancel);
       controller.abort();
     };
+    // Browser timers can be delayed through suspension. Every sampled clock must remain valid and monotonic,
+    // including samples between the initial authority check, dispatch and response-body reads. An invalid sample
+    // permanently revokes this grant; a later valid clock cannot resurrect it. Reading authority does not renew idle.
+    const sampleTime = (): number => {
+      let value: number;
+      try { value = now(); } catch { cancel(); return refuse(); }
+      if (!Number.isFinite(value) || value < 0 || (lastObserved !== undefined && value < lastObserved)) {
+        cancel(); return refuse();
+      }
+      lastObserved = value;
+      return value;
+    };
+    let lastUsed = sampleTime();
     const armIdle = (): void => {
       clearTimeout(idleTimer);
       idleTimer = setTimeout(cancel, idleMs);
     };
     const assertCurrent = (): void => {
       try {
-        const currentTime = now();
+        const currentTime = sampleTime();
         if (disposed || controller.signal.aborted || request.signal?.aborted === true || revision !== issuedRevision ||
             currentTime < lastUsed || currentTime - lastUsed >= idleMs) return refuse();
         sessionGuard();
@@ -357,7 +380,7 @@ export function createNetworkAuthority(options: NetworkAuthorityOptions = {}): N
       for (const name of headers.keys()) {
         if (!['accept', 'content-type', 'x-grpc-web'].includes(name.toLowerCase()) && !(name.toLowerCase() === 'tron-pro-api-key' && request.network?.kind === 'tron')) refuse();
       }
-      lastUsed = now();
+      lastUsed = sampleTime();
       armIdle();
       const started = lastUsed;
       const stop = new AbortController();
@@ -388,7 +411,7 @@ export function createNetworkAuthority(options: NetworkAuthorityOptions = {}): N
       };
       const assertRequest = (): void => {
         assertCurrent();
-        const currentTime = now();
+        const currentTime = sampleTime();
         if (stop.signal.aborted || currentTime < started || currentTime - started >= timeoutMs) refuse();
       };
       const finish = (): void => {

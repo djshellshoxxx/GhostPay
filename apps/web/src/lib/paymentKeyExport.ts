@@ -45,8 +45,10 @@ export interface StealthExportFile {
   readonly type: 'application/json' | 'text/plain';
 }
 
-/** The RPC used for the `eth_getCode` check: the one the scan used for this chain, never a fallback. */
-export type ExportRpc = Pick<RpcClient, 'chainId' | 'request'>;
+/** A code-check client bound to the scan's endpoint; an export's cancellation is independent of the scan's lifetime. */
+export interface ExportRpc extends Pick<RpcClient, 'chainId'> {
+  request(method: string, params: readonly unknown[], signal?: AbortSignal): Promise<unknown>;
+}
 
 export interface SecretExportOptions {
   /** The operation: aborting it cancels the export and discards its result. */
@@ -111,10 +113,10 @@ function requireRpc(rpc: ExportRpc | undefined, chainId: number): ExportRpc {
  * Formats section 7: the address must hold no code at `latest` (no contract, no EIP-7702 delegation), checked through the
  * scan's RPC. Any failure or malformed answer refuses the export (fail closed); a cancellation reported meanwhile wins.
  */
-async function assertPlainAccount(rpc: ExportRpc, address: string, check: () => void): Promise<void> {
+async function assertPlainAccount(rpc: ExportRpc, address: string, check: () => void, signal?: AbortSignal): Promise<void> {
   let code: unknown;
   try {
-    code = await rpc.request('eth_getCode', [address, 'latest']);
+    code = await rpc.request('eth_getCode', [address, 'latest'], signal);
   } catch {
     check();
     throw new UserFacingError({ key: 'error.paymentKeyExport.codeCheckFailed' });
@@ -195,7 +197,7 @@ async function exportOnePayment(match: ScanMatch, credential: SecretExportCreden
   const rpc = requireRpc(options.rpc, match.chainId);
   beforeAuth();
   const still = await authorize(credential, options.signal, check);
-  await assertPlainAccount(rpc, match.stealthAddress, still);
+  await assertPlainAccount(rpc, match.stealthAddress, still, options.signal);
   const payment = verifiedPayment(match, new Date());
   try {
     const text = await seal(payment);
@@ -235,7 +237,7 @@ export async function exportPaymentArchive(matches: readonly ScanMatch[], scope:
   requireNewPassphrase(passphrase);
   const distinct = distinctPayments(matches);
   const still = await authorize(credential, options.signal, check);
-  for (const m of distinct) await assertPlainAccount(rpc, m.stealthAddress, still);
+  for (const m of distinct) await assertPlainAccount(rpc, m.stealthAddress, still, options.signal);
   const payments: VerifiedStealthPayment[] = [];
   try {
     const exportedAt = new Date();
