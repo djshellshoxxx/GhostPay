@@ -1,0 +1,8 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-asset-coverage/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  23:41:03
+   Duration  5.99s (environment 34%, transform 30%, import 27%, tests 8%)

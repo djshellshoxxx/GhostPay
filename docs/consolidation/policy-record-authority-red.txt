@@ -1,0 +1,33 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-asset-coverage/apps/web
+
+ ❯ src/features/policy/PolicyPay.authority.test.tsx (2 tests | 1 failed) 1553ms
+   ❯ PolicyPay record authority while a wallet reply is pending (2)
+     × refuses an asset excluded by the newly … 1329ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/policy/PolicyPay.authority.test.tsx > PolicyPay record authority while a wallet reply is pending > refuses an asset excluded by the newly …
+AssertionError: expected [ { …(2) } ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/features/policy/PolicyPay.authority.test.tsx:112:82
+    110|     await act(async () => {});
+    111|     expect(screen.getByLabelText('Imported policy records').textConten…
+    112|     expect(wallet.calls.filter((call) => call.method === 'eth_sendTran…
+       |                                                                                  ^
+    113|     if (sends === 0) {
+    114|       expect(screen.getByText(/Blocked: the payee's policy record load…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  23:26:42
+   Duration  15.23s (transform 51%, import 21%, environment 17%, tests 11%)
