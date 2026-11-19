@@ -1,0 +1,17 @@
+{
+  "phase": "RED",
+  "source_commit": "003c2bc7f57df4a243ec87f7ca112c6a3d2e8a5c",
+  "started_at_utc": "2026-11-19T12:53:58.898801+00:00",
+  "elapsed_seconds": 2.222468621999724,
+  "command_argv": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "--max-old-space-size=128",
+    "--test",
+    "--test-concurrency=1",
+    "--test-name-pattern=accepts complete|preserves the default|rejects (duplicate success key|duplicate error key|duplicate nested issue key|missing completeness|internal execution timeout|internal creation timeout|hidden report exception|logged error|missing serialized report)",
+    "scripts/tests/mythril-runner.test.mjs"
+  ],
+  "exit_code": 1,
+  "fixture_compatibility": "Only for the original runner, provide MYTHRIL_COMPLETENESS_FILE as a temporary unused output path so the new upstream mock can emit sidecar bytes without crashing. The original gate never reads this file. No source, assertion or gate is changed. First diagnostic without this environment variable is retained separately and is not treated as defect reproduction.",
+  "scope": "Original published runner plus recovered original upstream tests. Selected regressions and controls only; unselected cases are not a pass."
+}

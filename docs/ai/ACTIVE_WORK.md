@@ -1755,3 +1755,15 @@ work; both retain the same unrepaired policy fixture blob as this base. This
 worker makes no web/runtime/lint-site, dependency, threshold, workflow, contract,
 main, lease, #264/#270/#272 or other-owner branch changes. The root coordinator
 owns later integration and qualification.
+
+## Recovered fail-closed Mythril evidence backport — 2026-11-19
+
+Worker: `/root/provenance`, delegated by the final Pages integration coordinator.
+Branch: `repair/ghostpay-analyzer-recovered-20261119`.
+Base: published PR #278 `7b4c1554382b05ac3fab48527aadf596d6b1ff7b`.
+Source: read-only PR #255 `ea47fa75eabb0be2045081ffeb120fc2bfae67ab`.
+Owned paths: `packages/contracts/scripts/{run-mythril.sh,mythril-compat.py,capture-mythril-evidence.py,collect-analysis-report.py}`; `scripts/tests/{mythril-runner.test.mjs,mythril-completeness.test.mjs,mythril-evidence.test.mjs,contract-analysis-workflow.test.mjs}`; exactly two path triggers and three evidence-environment lines in `.github/workflows/contract-analysis.yml`; this additive claim; `docs/handoffs/recovered-mythril-evidence-20261119/`.
+Acceptance: recover the eight original blobs exactly; preserve current workflow semantics and strict analyzer failure behavior; execute all 54 dependency-free runner/completeness/evidence/workflow regressions with Node 22 and a 128 MB heap; retain fresh raw compressed evidence and independently review the result before integration. Native Mythril, Echidna and contract campaigns are not authorized or claimed by this scoped run.
+Scope excludes contract/runtime/deployment changes, disposition exceptions, new release policy, dependency changes, shared integration/main promotion and all eight root-owned release documents. Earlier local implementation/evidence commits were lost with the previous executor and are historical identifiers only; this reconstruction receives new identities and fresh qualification. Original remote branches and other workers' claims remain unchanged.
+
+Recovery qualification: implementation `bd05411b2a4c5b1b1793065bce1c10e0553cf952`; fresh baseline 9 failing regressions and 2 controls; full 54-case suite passed with no failures, skips or cancellations under Node 22.23.5 / 128 MB / serial; nine syntax/diff checks passed. Exact eight-blob provenance and fresh compressed logs are in `docs/handoffs/recovered-mythril-evidence-20261119/`. Independent coordinator review, integrated-source qualification and remote preservation remain pending at this checkpoint. No native analyzer/release pass is claimed.
