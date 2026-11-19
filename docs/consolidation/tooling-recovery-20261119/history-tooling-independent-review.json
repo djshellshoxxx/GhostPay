@@ -1,0 +1,120 @@
+{
+  "reviewer": "history_census; independent of tooling author ci_release_audit",
+  "scope": "Read-only source and saved evidence inspection; no tests,install,build,registry request or deployment executed by this reviewer",
+  "worktree": "/workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery",
+  "claim": "74eaa0801f74104c3be5d5fb26366711a1af63e6",
+  "base": "0d0f4211f54131448212952da2b413dbb90ae243",
+  "observed_head": "cdcb2cd0bee094d5a28dc53e758ccb8be9a63fcf",
+  "source_blobs": [
+    {
+      "path": ".github/workflows/nightly.yml",
+      "reviewed_blob": "82c0af909e7e63a8db7a59f8e51e19519a11a922",
+      "source_commit": "d06877e2508badf8adbd028983c6039805e5f0e6",
+      "source_blob": "82c0af909e7e63a8db7a59f8e51e19519a11a922",
+      "exact_source": true,
+      "sha256": "9cbdfac5ec6f332ff355fdf98a3ffcf9a2b7060b05784230585dcfed9738fcdf"
+    },
+    {
+      "path": "scripts/tests/nightly-workflow.test.mjs",
+      "reviewed_blob": "55b1fe69f0e9abfd1988f2a6db4883b0d1db35e7",
+      "source_commit": "d06877e2508badf8adbd028983c6039805e5f0e6",
+      "source_blob": "55b1fe69f0e9abfd1988f2a6db4883b0d1db35e7",
+      "exact_source": true,
+      "sha256": "6c0c89729e7fe7f50a2698bb0b26ea28f983cd07b5ed528742e298135cbfa893"
+    },
+    {
+      "path": "deploy/.env.example",
+      "reviewed_blob": "603a8b88bb01bd7ef4f9eb3084d18baccfa2c163",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "603a8b88bb01bd7ef4f9eb3084d18baccfa2c163",
+      "exact_source": true,
+      "sha256": "992a5dce5af1e3e803962a5e5eb8baf0f3cdd8ee641b3caf6e201cda2107071d"
+    },
+    {
+      "path": "deploy/README.md",
+      "reviewed_blob": "c5f8050ff01130a898bb0d153442a43eb53d5ef4",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "39f5200827f319c3bb20e7b0eedf20c3bde19b3b",
+      "exact_source": false,
+      "sha256": "288962fd2a7629b7c623ec17ed584bfb9825dd03797023e8848679eaaeffdbec"
+    },
+    {
+      "path": "deploy/docker-compose.yml",
+      "reviewed_blob": "3af4da3af6bb1ea5a1cafc608582a14be3e14dfa",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "3af4da3af6bb1ea5a1cafc608582a14be3e14dfa",
+      "exact_source": true,
+      "sha256": "d581b75469296e9ab96e11f117061d44f072442934f1a6263c494f8bfe6f9ee4"
+    },
+    {
+      "path": "deploy/nginx/security-headers.conf",
+      "reviewed_blob": "0d0d038002874390fa2ecceae99554eb07e33f12",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "0d0d038002874390fa2ecceae99554eb07e33f12",
+      "exact_source": true,
+      "sha256": "391dca2469c7560d2b1be0d3553a3351f12df53926bec2df0ffff1504b053969"
+    },
+    {
+      "path": "deploy/selftest.sh",
+      "reviewed_blob": "230900fea266c86f7db1b89f46df43ed89e16fb9",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "230900fea266c86f7db1b89f46df43ed89e16fb9",
+      "exact_source": true,
+      "sha256": "7512f5d5ab2d105eb03fe8880e57c79ff46b354748a68b3027129b6440b2f549"
+    },
+    {
+      "path": "deploy/tor/Dockerfile",
+      "reviewed_blob": "8f8edfb3320230ef48ca9c79e40f430bd63da88a",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "8f8edfb3320230ef48ca9c79e40f430bd63da88a",
+      "exact_source": true,
+      "sha256": "8addc0036f5b3c08ad0530cac446029053a38bf8f12688e7b50165b544b5a2d1"
+    }
+  ],
+  "unchanged_native_and_other_nightly_jobs": {
+    "fuzz": true,
+    "dependency-audit": true,
+    "reproducibility": true,
+    "contract-analysis": true
+  },
+  "unchanged_held_paths": {
+    ".github/workflows/release.yml": true,
+    ".github/dependabot.yml": true
+  },
+  "strict_slither_command": "slither . --filter-paths \"lib|test|script\" --fail-medium --exclude-informational --exclude-low",
+  "registry_artifact_hashes_recomputed": [
+    {
+      "file": "nginxinc_nginx-unprivileged-tag.json",
+      "sha256": "65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+      "url": "https://registry-1.docker.io/v2/nginxinc/nginx-unprivileged/manifests/1.27-alpine",
+      "retrieved_at_utc": "2026-11-19T07:55:50.748710+00:00"
+    },
+    {
+      "file": "nginxinc_nginx-unprivileged-pin.json",
+      "sha256": "65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+      "url": "https://registry-1.docker.io/v2/nginxinc/nginx-unprivileged/manifests/sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+      "retrieved_at_utc": "2026-11-19T07:55:50.748710+00:00"
+    },
+    {
+      "file": "library_debian-tag.json",
+      "sha256": "734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+      "url": "https://registry-1.docker.io/v2/library/debian/manifests/bookworm-20261104-slim",
+      "retrieved_at_utc": "2026-11-19T07:55:50.748381+00:00"
+    },
+    {
+      "file": "library_debian-pin.json",
+      "sha256": "734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+      "url": "https://registry-1.docker.io/v2/library/debian/manifests/sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+      "retrieved_at_utc": "2026-11-19T07:55:50.748381+00:00"
+    }
+  ],
+  "review_result": "No blocking source finding in the selected8-path runtime/test/doc delta. Exact source identities apply only to these blobs.",
+  "limits": [
+    "Workflow guard tests and selfhost selftest were author-run and logs independently read, not rerun.",
+    "Registry manifests were author-retrieved; all4 saved byte hashes and headers independently matched to both original pins.",
+    "No live Docker/Compose/image startup,HSTS deployment,scheduled hosted run or native analyzer campaign qualification.",
+    "Release435c4da1 is deliberately held because it removes existing REQUIRE_ANVIL requirements for some release suites; DockerDependabot34cdaa34 is held as new recurring automation."
+  ],
+  "qualified_source_commit": "cdcb2cd0bee094d5a28dc53e758ccb8be9a63fcf",
+  "all_reviewed_blobs_match_final_commit": true
+}

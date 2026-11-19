@@ -1,0 +1,294 @@
+[
+  {
+    "repository": "nginxinc/nginx-unprivileged",
+    "tag": "1.27-alpine",
+    "selected_pin": "65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+    "retrieved_at_utc": "2026-11-19T07:55:50.748710+00:00",
+    "reads": [
+      {
+        "url": "https://registry-1.docker.io/v2/nginxinc/nginx-unprivileged/manifests/1.27-alpine",
+        "requested_ref": "1.27-alpine",
+        "file": "nginxinc_nginx-unprivileged-tag.json",
+        "sha256": "65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+        "response_headers": {
+          "date": "Thu, 19 Nov 2026 07:55:46 GMT",
+          "content-type": "application/vnd.oci.image.index.v1+json",
+          "docker-content-digest": "sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0"
+        },
+        "matches_selected_pin": true,
+        "mediaType": "application/vnd.oci.image.index.v1+json",
+        "platforms": [
+          {
+            "architecture": "amd64",
+            "os": "linux"
+          },
+          {
+            "architecture": "arm",
+            "os": "linux",
+            "variant": "v6"
+          },
+          {
+            "architecture": "arm",
+            "os": "linux",
+            "variant": "v7"
+          },
+          {
+            "architecture": "arm64",
+            "os": "linux"
+          },
+          {
+            "architecture": "386",
+            "os": "linux"
+          },
+          {
+            "architecture": "ppc64le",
+            "os": "linux"
+          },
+          {
+            "architecture": "riscv64",
+            "os": "linux"
+          },
+          {
+            "architecture": "s390x",
+            "os": "linux"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          }
+        ]
+      },
+      {
+        "url": "https://registry-1.docker.io/v2/nginxinc/nginx-unprivileged/manifests/sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+        "requested_ref": "sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+        "file": "nginxinc_nginx-unprivileged-pin.json",
+        "sha256": "65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+        "response_headers": {
+          "date": "Thu, 19 Nov 2026 07:55:50 GMT",
+          "content-type": "application/vnd.oci.image.index.v1+json",
+          "docker-content-digest": "sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0"
+        },
+        "matches_selected_pin": true,
+        "mediaType": "application/vnd.oci.image.index.v1+json",
+        "platforms": [
+          {
+            "architecture": "amd64",
+            "os": "linux"
+          },
+          {
+            "architecture": "arm",
+            "os": "linux",
+            "variant": "v6"
+          },
+          {
+            "architecture": "arm",
+            "os": "linux",
+            "variant": "v7"
+          },
+          {
+            "architecture": "arm64",
+            "os": "linux"
+          },
+          {
+            "architecture": "386",
+            "os": "linux"
+          },
+          {
+            "architecture": "ppc64le",
+            "os": "linux"
+          },
+          {
+            "architecture": "riscv64",
+            "os": "linux"
+          },
+          {
+            "architecture": "s390x",
+            "os": "linux"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "repository": "library/debian",
+    "tag": "bookworm-20261104-slim",
+    "selected_pin": "734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+    "retrieved_at_utc": "2026-11-19T07:55:50.748381+00:00",
+    "reads": [
+      {
+        "url": "https://registry-1.docker.io/v2/library/debian/manifests/bookworm-20261104-slim",
+        "requested_ref": "bookworm-20261104-slim",
+        "file": "library_debian-tag.json",
+        "sha256": "734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+        "response_headers": {
+          "date": "Thu, 19 Nov 2026 07:55:46 GMT",
+          "content-type": "application/vnd.oci.image.index.v1+json",
+          "docker-content-digest": "sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc"
+        },
+        "matches_selected_pin": true,
+        "mediaType": "application/vnd.oci.image.index.v1+json",
+        "platforms": [
+          {
+            "architecture": "amd64",
+            "os": "linux"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "arm",
+            "os": "linux",
+            "variant": "v7"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "arm64",
+            "os": "linux",
+            "variant": "v8"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "386",
+            "os": "linux"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "ppc64le",
+            "os": "linux"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          }
+        ]
+      },
+      {
+        "url": "https://registry-1.docker.io/v2/library/debian/manifests/sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+        "requested_ref": "sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+        "file": "library_debian-pin.json",
+        "sha256": "734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+        "response_headers": {
+          "date": "Thu, 19 Nov 2026 07:55:50 GMT",
+          "content-type": "application/vnd.oci.image.index.v1+json",
+          "docker-content-digest": "sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc"
+        },
+        "matches_selected_pin": true,
+        "mediaType": "application/vnd.oci.image.index.v1+json",
+        "platforms": [
+          {
+            "architecture": "amd64",
+            "os": "linux"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "arm",
+            "os": "linux",
+            "variant": "v7"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "arm64",
+            "os": "linux",
+            "variant": "v8"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "386",
+            "os": "linux"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          },
+          {
+            "architecture": "ppc64le",
+            "os": "linux"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown"
+          }
+        ]
+      }
+    ]
+  }
+]

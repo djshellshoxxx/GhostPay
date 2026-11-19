@@ -1,0 +1,238 @@
+{
+  "schema": 1,
+  "created_at_utc": "2026-11-19T08:10:26.428870+00:00",
+  "branch": "integration/ghostpay-tooling-recovery-20261119",
+  "base": "0d0f4211f54131448212952da2b413dbb90ae243",
+  "claim": "74eaa0801f74104c3be5d5fb26366711a1af63e6",
+  "nightly_commit": "44e9fd14e07b3658aa8819ed2844d463dfa07515",
+  "selfhost_commit": "cdcb2cd0bee094d5a28dc53e758ccb8be9a63fcf",
+  "original_pr209": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+  "selected_paths": [
+    {
+      "path": ".github/workflows/nightly.yml",
+      "source_commit": "d06877e2508badf8adbd028983c6039805e5f0e6",
+      "source_blob": "82c0af909e7e63a8db7a59f8e51e19519a11a922",
+      "candidate_blob": "82c0af909e7e63a8db7a59f8e51e19519a11a922",
+      "exact_source_blob": true
+    },
+    {
+      "path": "deploy/.env.example",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "603a8b88bb01bd7ef4f9eb3084d18baccfa2c163",
+      "candidate_blob": "603a8b88bb01bd7ef4f9eb3084d18baccfa2c163",
+      "exact_source_blob": true
+    },
+    {
+      "path": "deploy/README.md",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "39f5200827f319c3bb20e7b0eedf20c3bde19b3b",
+      "candidate_blob": "c5f8050ff01130a898bb0d153442a43eb53d5ef4",
+      "exact_source_blob": false
+    },
+    {
+      "path": "deploy/docker-compose.yml",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "3af4da3af6bb1ea5a1cafc608582a14be3e14dfa",
+      "candidate_blob": "3af4da3af6bb1ea5a1cafc608582a14be3e14dfa",
+      "exact_source_blob": true
+    },
+    {
+      "path": "deploy/nginx/security-headers.conf",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "0d0d038002874390fa2ecceae99554eb07e33f12",
+      "candidate_blob": "0d0d038002874390fa2ecceae99554eb07e33f12",
+      "exact_source_blob": true
+    },
+    {
+      "path": "deploy/selftest.sh",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "230900fea266c86f7db1b89f46df43ed89e16fb9",
+      "candidate_blob": "230900fea266c86f7db1b89f46df43ed89e16fb9",
+      "exact_source_blob": true
+    },
+    {
+      "path": "deploy/tor/Dockerfile",
+      "source_commit": "fd5c9009234c08e53d3618134aceaa9438ca4e34",
+      "source_blob": "8f8edfb3320230ef48ca9c79e40f430bd63da88a",
+      "candidate_blob": "8f8edfb3320230ef48ca9c79e40f430bd63da88a",
+      "exact_source_blob": true
+    },
+    {
+      "path": "scripts/tests/nightly-workflow.test.mjs",
+      "source_commit": "d06877e2508badf8adbd028983c6039805e5f0e6",
+      "source_blob": "55b1fe69f0e9abfd1988f2a6db4883b0d1db35e7",
+      "candidate_blob": "55b1fe69f0e9abfd1988f2a6db4883b0d1db35e7",
+      "exact_source_blob": true
+    }
+  ],
+  "retained_boundaries": [
+    {
+      "path": ".github/workflows/release.yml",
+      "base_blob": "3c1c276cb45d5b7a337372733ac51ad7ce57158b",
+      "candidate_blob": "3c1c276cb45d5b7a337372733ac51ad7ce57158b",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/contract-analysis.yml",
+      "base_blob": "ab4b881de3f586869d1efbaec32799d9082193fd",
+      "candidate_blob": "ab4b881de3f586869d1efbaec32799d9082193fd",
+      "unchanged": true
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "base_blob": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+      "candidate_blob": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "base_blob": "5e7081f57d6a8a50c86f4efe333f967107c32e66",
+      "candidate_blob": "5e7081f57d6a8a50c86f4efe333f967107c32e66",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "base_blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+      "candidate_blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/verify-tag.sh",
+      "base_blob": "a85a4c2805e5c39cf08b6c4bfbf1e7f98fc47701",
+      "candidate_blob": "a85a4c2805e5c39cf08b6c4bfbf1e7f98fc47701",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/verify-release.sh",
+      "base_blob": "27c0734b8ceb55b909f3a3633161ff7155c1f874",
+      "candidate_blob": "27c0734b8ceb55b909f3a3633161ff7155c1f874",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "base_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "candidate_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "base_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "candidate_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "unchanged": true
+    }
+  ],
+  "tests": {
+    "nightly_red": {
+      "pass": 1,
+      "fail": 4,
+      "exit": 1,
+      "seconds": 21.61
+    },
+    "nightly_green": {
+      "pass": 5,
+      "fail": 0,
+      "skip": 0,
+      "exit": 0,
+      "seconds": 9.98
+    },
+    "selfhost_red": {
+      "pin_failures": 3,
+      "exit": 1,
+      "seconds": 20.34
+    },
+    "selfhost_green": {
+      "exit": 0,
+      "seconds": 74.32
+    },
+    "adjacent_workflow_harness": {
+      "outcome": "timeout",
+      "cap_seconds": 160,
+      "terminal_verdict": false,
+      "child_stdout_retained": false
+    },
+    "action_pins": {
+      "references": 120,
+      "exit": 0
+    },
+    "secrets": {
+      "exit": 0
+    },
+    "headers": {
+      "exit": 0
+    },
+    "shell_syntax": {
+      "files": [
+        "deploy/selfhost.sh",
+        "deploy/selftest.sh"
+      ],
+      "exit": 0
+    }
+  },
+  "runtime": {
+    "node": "v24.22.3",
+    "dependencies_installed_for_this_lane": false,
+    "node_heap_megabytes": 256
+  },
+  "held_sources": [
+    {
+      "commit": "435c4da131d346b3e2b0f93e1831a03a852eab8d",
+      "reason": "Removes REQUIRE_ANVIL from release workspaces and changes mandatory missing-fixture failures to skips; no gate relaxation authorized."
+    },
+    {
+      "commit": "34cdaa34c22f25b4c9a55ff6b4d4a2560c02450f",
+      "reason": "Adds new weekly Docker and Docker Compose update automation; new recurring automation excluded by coordinator instruction."
+    }
+  ],
+  "log_hashes": [
+    {
+      "path": "tooling-nightly-green.log",
+      "sha256": "b5181a4156dc21eeefeb004cc9381d9f7f0de9fea8323e7b17f7352f08613502",
+      "bytes": 592
+    },
+    {
+      "path": "tooling-shell-syntax.log",
+      "sha256": "11ba0525d248c3a45568adfa4fcdc0b26555309956b7853c4b1216036a4d6852",
+      "bytes": 68
+    },
+    {
+      "path": "tooling-secrets.log",
+      "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "bytes": 50
+    },
+    {
+      "path": "tooling-workflow-adjacent-timeout.log",
+      "sha256": "edc214ceacb08a96587042165d6340dab68a96d3c6e8317bdbdfb1a692e3e65e",
+      "bytes": 546
+    },
+    {
+      "path": "tooling-action-pins.log",
+      "sha256": "29d6cf1a888f41daf950c8b11421820fc7aed8bb93aed2bceea20ed89da6a7e4",
+      "bytes": 85
+    },
+    {
+      "path": "tooling-selfhost-green.log",
+      "sha256": "d3f1ab66dca6ae3246b0c9334cf187d568fc46d013183f355de626d79e84ec57",
+      "bytes": 22
+    },
+    {
+      "path": "tooling-nightly-red.log",
+      "sha256": "4f7cc4527434fc00cd171ed9974d713d42e95ae3adcd74aa05482b97f0f0d4d3",
+      "bytes": 4539
+    },
+    {
+      "path": "tooling-selfhost-red.log",
+      "sha256": "dd23d75b111ea21d928c2804aeaf580209a64f64f2d27559365e7217eaf1dc7b",
+      "bytes": 330
+    },
+    {
+      "path": "tooling-headers.log",
+      "sha256": "17a074e97bb88a115da81d526219a7b94325494ea6b10df0b69dc98efc382de5",
+      "bytes": 112
+    }
+  ],
+  "limits": [
+    "No actual nightly, native analyzer, browser or Anvil suite execution in this lane.",
+    "No container layer/image pull, Compose rendering, build, startup, live-TLS check, deployment or remote mutation.",
+    "No adjacent harness success claim. Full applicable hosted checks and current-head integration review remain required."
+  ]
+}
