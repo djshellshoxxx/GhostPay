@@ -75,6 +75,22 @@ These are bounded source findings. The coordinator owns their actual regression 
 combined qualification. Export RPC grants, session guards, vault reauthentication and key
 boxing were also inspected; no additional reproducible defect was established in that scope.
 
+## Independent review of #261 metadata coordination helper
+
+[LOCK_261_REVIEW.json](LOCK_261_REVIEW.json) pins the two extracted source/test blobs.
+No introduced blocker was found within the documented cooperative-lock model. Each
+transition has the exact observed remote lock head as parent; competing transitions
+become siblings rejected by an ordinary nonforce push. Remote destinations, immutable
+reads, state validation, ownership/expiry checks and explicit tag isolation are intact.
+The ten original tests use real bare Git repositories, a simultaneous-push barrier,
+main-ref invariants and an annotated-tag side-effect check. Their execution belongs to
+the coordinator, not this source review.
+
+This metadata token is coordination identity, not adversarial authentication. The helper
+does not automatically prevent an arbitrary writer from updating main; integration must
+still assert ownership before shared mutation and check exact target heads, CI and review.
+No live remote lock transition was performed by this worker.
+
 ## Fresh Mythril evidence: gate remains failed
 
 [Workflow 44539518235](https://github.com/djshellshoxxx/GhostPay/actions/runs/44539518235),
