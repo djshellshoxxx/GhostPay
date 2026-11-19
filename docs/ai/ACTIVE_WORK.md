@@ -1,3 +1,24 @@
+# Spec 18 complementary recovery reconciliation — 2026-11-19 UTC
+
+Worker: ChatGPT `pages_features`, coordinated by the comprehensive branch-audit root.
+Branch: `integration/ghostpay-recovery-reconciled-20261119`.
+Base: PR #239 at `4a1b181c89e02ee564b5568d4b4b8d689f5e42c5`.
+Read-only source: PR #240 at `38d69832ddc58ec27a19c00dbe3c89347c577495`.
+Both source heads were read from GitHub immediately before this claim. Main was observed at
+`e454de6abfefda70d82784fafc1d8949b277c334`; #238 ancestry is preserved by this base.
+
+Owned paths: the complementary BOM-byte refusal in `StealthExportRecovery` and
+`StealthExportVerification` and their tests; event-time `AppShell` before-unload protection
+and its tests; the corresponding Spec 18 and sweep browser acceptance cases; this claim
+and a new source-pinned reconciliation handoff. The source branches remain unchanged.
+
+Acceptance: preserve #239's atomic session replacement, retryable generated downloads,
+passphrase-verification state invalidation, real-KDF test synchronization and sealing barrier;
+recover #240's actual-byte refusals and event-time external-copy checks; retain every existing
+assertion and security gate; execute focused tests, lint and browser checks where available.
+The root owns publication and subsequent integration after independent review. No deployment,
+main merge, remote source-branch update or unrelated feature work belongs to this lane.
+
 # Spec 18 independent completion review — 2026-11-18
 
 Coordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.
