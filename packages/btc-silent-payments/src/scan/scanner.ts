@@ -233,9 +233,15 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
       const sp = await source.getSpends(height, signal);
       if (sp.height !== height || sp.blockHash !== tw.blockHash) return fail('REORG_DETECTED');
       if (!Array.isArray(sp.spends) || sp.spends.length > MAX_SPENDS_PER_BLOCK) return fail('INVALID_RESPONSE');
+      const unique = new Map<string, BlockSpend>();
       for (const sIn of sp.spends) {
         checkSpendBounds(sIn);
         const id = `${sIn.txid}:${sIn.vout}`;
+        const prior = unique.get(id);
+        if (prior !== undefined && prior.spentBy !== sIn.spentBy) return fail('INVALID_RESPONSE');
+        unique.set(id, sIn);
+      }
+      for (const [id, sIn] of unique) {
         if (!watch.has(id) && !seenOutpoints.has(id)) continue;
         if (isAborted(signal)) return;
         await p.onSpend({ txid: sIn.txid, vout: sIn.vout, spentBy: sIn.spentBy, height, blockHash: tw.blockHash });
