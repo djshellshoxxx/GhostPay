@@ -17,7 +17,50 @@ without a completed result. The execution environment became unavailable during 
 cycle, so reconstruct and review exact owned patches through the authorized connector.
 Do not overwrite #262, main, another worker's branch, workflows, dependencies or gates.
 Integration lock owner: `20261119T100000Z-11e5ddb9da60-root`; release after publication.
-Status: source integration in progress; applicable exact-source checks remain required.
+Status: source integrated for PR #269; applicable exact-source checks remain required.
+
+# Payment export authorization completion — 2026-11-19
+
+Worker: `feature_verification`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-export-authorization-20261119`.
+Base: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).
+Owned paths: `apps/web/src/views/Scan.tsx`, its focused stealth-export integration tests,
+`apps/web/src/lib/paymentKeyExport.ts`, new `paymentExportRpc.ts` and tests,
+`apps/web/src/lib/networkAuthorization.ts` and focused action-policy tests,
+`docs/privacy/network-egress-inventory.json`, this additive claim, and
+`docs/handoffs/payment-export-authorization-20261119/`.
+Acceptance: reproduce an explicit payment-key export failing after its scan grant expires
+or is cancelled; obtain fresh, bounded authority only after an explicit export action,
+bound to the original verified scan endpoint and chain. Preserve session and live-settings
+checks, forbid fallback and unrelated RPC methods, propagate export cancellation, and
+dispose each export authorization. Execute RED/GREEN integration regressions and independent
+source review. Also normalize two existing Scan promise rejections identified in hosted
+lint, preserving Error values and cancellation precedence. The coordinator owns integration
+into continuation PR #269; this isolated source branch does not change #262, #269 or main.
+No cryptographic-format, dependency, release-gate or deployment changes.
+Status: confirmed two-case behavioral RED; initial repair reached both expected downloads,
+then failed only an exact canonical-URL assertion. Final GREEN and inventory-runner validation
+remain pending after executor interruptions. Source reconstructed from the exact base and
+recorded patches when the workspace became unavailable; local claim/test commits remain
+provenance, not claimed identical remote commit IDs. Details are in the scoped qualification.
+
+# Private scan lint and rejection boundaries — 2026-11-19
+
+Worker: `branches`, delegated by the continuation coordinator.
+Branch: `codex/ghostpay-private-scan-lint-20261119`.
+Base: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).
+Owned paths: `apps/web/src/lib/privateScanLifecycle.test.ts`,
+`apps/web/src/lib/scanClient.ts`, `apps/web/src/lib/scanClient.test.ts`,
+`apps/web/src/views/Scan.privateCheckpoint.test.tsx`, this additive claim,
+and a scoped qualification handoff. The feature worker owns `views/Scan.tsx`.
+Acceptance: repair the inherited diagnostics identified by PR #248 lint job
+`135425979082` without suppression or rule changes; retain mock assertions,
+checkpoint promises and scan behavior; preserve Error identity and cancellation
+precedence while replacing non-Error rejection causes with a fixed safe Error.
+Add focused boundary regressions, obtain independent review, and run the bounded
+original-config checks only after the coordinator grants the execution slot.
+Other feature branches remain unchanged. No dependency, configuration, threshold,
+remote publication, merge, deployment or release changes.
 
 # Private checkpoint browser assertion repair — 2026-11-19
 
@@ -33,6 +76,29 @@ file (blob `db9e79a1337f1d8bcc423d0fc28c51e36975ee23`) already failed both full 
 hosted browser jobs for PR #248 because the receipt repeats the payment address.
 Obtain independent review and execute the available browser checks; record unavailable
 or interrupted execution honestly. No runtime, storage, dependency, workflow or threshold changes.
+
+# Canonical array repair integration — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-canonical-array-integration-20261119`.
+Base: `e74ddd26b75912d770e05d51f0b9229756adc649` (root remains frozen during coverage).
+Owned paths: `packages/invoice-schema/src/json.ts`, `json.test.ts`, this additive
+claim, upstream PR #265 provenance, and `docs/consolidation/canonical-array-20261119/`.
+Acceptance: preserve PR #265 head `c591b54078febcf24cba01b29bc173b2fac1f9cb` history
+where merge-compatible; reproduce its checked-in regression against frozen baseline;
+retain the reviewed own-key validation and every assertion, with bounded dense-array
+controls and an explicitly documented cosmetic JSDoc correction if needed. Run
+bounded original package tests and relevant package-only checks, obtain independent
+privacy-worker review, and record failures/limits without weakening checks. Scope is
+sparse/decorated inert arrays, not arbitrary hostile accessors/proxies or a demonstrated
+signature exploit. No root checkout, other PR head, dependency, threshold, workflow,
+mainnet, deployment or remote mutation. Root owns later integration and consumer gates.
+Status: original PR ancestry retained via `7b264276`; reviewed product
+`0f8dca27613fe9952cdb772cb10d05ced0f2b455`. Actual upstream Vitest baseline: 10 passed,
+1 failed. Focused JSON/schema/signing/receipt selection: 200 passed in four files.
+Package typecheck, typed lint and build passed. Privacy-worker source review found
+no introduced blocker. Full package coverage and root consumer/release gates are not
+claimed. Evidence: `docs/consolidation/canonical-array-20261119/QUALIFICATION.md`.
 
 # Hosting export timestamp precision — 2026-11-19
 
@@ -1459,3 +1525,12 @@ strict provider/genesis validation, receipt integrity and all authority/outcome
 assertions; implement the smallest correction, run focused original-config
 tests and obtain independent worker review. No root checkout mutation,
 dependency upgrade, mainnet request, deployment or remote write.
+
+## 2026-11-19T08:36Z — isolated JSON canonicalization correctness repair
+
+- Worker: ChatGPT single sequential development/audit phase, cycle `20261119T083600Z`; no concurrent subagent and no independent review claimed.
+- Branch: `automation/20261119T083600Z/bug/json-canonical-array`, exact base `14ded337a10c140d7a9f9a9238ec038587d925bb` (main observed at branch creation).
+- Owned paths: `packages/invoice-schema/src/json.ts`, `packages/invoice-schema/src/json.test.ts`, and this own-branch claim only. Other owners' heads, docs/automation ledgers, contract, CLI and deployment code remain untouched.
+- Finding: the exported `canonicalize` array code uses `Array.map` (which skips holes); a sparse array can silently canonicalize to a different array or invalid JSON. Reject unsupported sparse/extra-property array input rather than returning unrepresentative signed/serialized bytes.
+- Acceptance: failing regression against baseline for holes and non-index/symbol own properties; minimal dense-array-preserving validation; regressions green, existing tests and TypeScript/lint when feasible; exact-head hosted CI, independent reviewer and lock-aware integration required before any merge.
+- Conflicts/dependencies: PR #262/#264 touch `receipts.ts` but not the two owned `json*.ts` files at inspected heads; those large candidates remain active. PR #258/#261 CI is pending. Integration lock ref is released at observed `3ae60de55add2763aa7d7a44033d11b96df13adb`; no shared integration authorized by this task.

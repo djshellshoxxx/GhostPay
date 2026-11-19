@@ -10,6 +10,8 @@ import { StealthExportArchive } from '../components/StealthExportArchive';
 import { StealthExportPayment } from '../components/StealthExportPayment';
 import { useManifest } from '../components/Disclosure';
 import { verifyManifestState } from '../lib/manifest';
+import { createPaymentExportRpc } from '../lib/paymentExportRpc';
+import type { ExportRpc } from '../lib/paymentKeyExport';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
@@ -138,9 +140,8 @@ export function Scan(): ReactNode {
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
-  // The client the scan of `scope` used (user-selected RPC or private scan endpoint); spec 18 exports check eth_getCode
-  // through it and through nothing else.
-  const [scanRpc, setScanRpc] = useState<{ readonly scope: NonNullable<typeof scanOwner>; readonly rpc: RpcClient } | undefined>(undefined);
+  // Retain the verified scan endpoint for explicit exports, without retaining the scan's cancelled/expired authority.
+  const [scanRpc, setScanRpc] = useState<{ readonly scope: NonNullable<typeof scanOwner>; readonly rpc: ExportRpc } | undefined>(undefined);
   const [autoRescan, setAutoRescan] = useState(false);
   // A queued timer must not mint fresh authority after revocation, even before React commits the stopped state.
   const autoNetworkRevision = useRef<number | undefined>(undefined);
@@ -396,9 +397,9 @@ export function Scan(): ReactNode {
         void Promise.resolve().then(() => { assertScopeCurrent(); return work(); }).then((value) => {
           if (settled) { discard?.(value); return; }
           try { assertScopeCurrent(); }
-          catch (cause) { discard?.(value); finish(() => { reject(cause); }); return; }
+          catch (cause) { discard?.(value); finish(() => { reject(cause instanceof Error ? cause : new Error('scan-action-failed')); }); return; }
           finish(() => { resolve(value); });
-        }, (cause: unknown) => { finish(() => { reject(cause); }); });
+        }, (cause: unknown) => { finish(() => { reject(cause instanceof Error ? cause : new Error('scan-action-failed')); }); });
       });
     };
     void (async () => {
@@ -487,7 +488,12 @@ export function Scan(): ReactNode {
         const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep, assertCurrent: assertScopeCurrent, signal: ctl.signal });
         assertScopeCurrent();
         setScanOwner(scope);
-        setScanRpc({ scope, rpc });
+        const exportEndpoint = plan.endpoint ?? selectedSettings.rpcUrls[String(chainId)];
+        if (exportEndpoint === undefined) throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
+        setScanRpc({ scope, rpc: createPaymentExportRpc(chain, exportEndpoint, services, () => {
+          // A cancelled scan can retain valid matches. Its session, endpoint and policy still must be the same.
+          if (!scopeStillSelected() || scanPreferenceSnapshot() !== preferencesAtStart) throw new UserFacingError({ key: 'error.network.authorizationRefused' });
+        }) });
         let found: ScanMatch[] = [...seed];
         let quarantined: ScanMatch[] = [];
         let publishQueued = false;
@@ -815,7 +821,7 @@ function describe(m: ScanMatch, chainId: number, t: T): string {
   return token === undefined ? t('scan.match.unlistedToken', { amount: m.metadata.netAmount.toString(), token: m.metadata.token }) : `${formatUnits(m.metadata.netAmount, token.decimals)} ${token.symbol}`;
 }
 
-function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined; readonly exportRpc: RpcClient | undefined }): ReactNode {
+function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined; readonly exportRpc: ExportRpc | undefined }): ReactNode {
   const t = useScanT();
   const latestT = useLatestScanT(t);
   const app = useApp();

@@ -511,31 +511,38 @@
       "id": "evm-scan-verification",
       "flows": [
         "evm-scan",
-        "payment-evidence"
+        "payment-evidence",
+        "payment-key-export"
       ],
       "sourcePaths": [
         "apps/web/src/lib/scanClient.ts",
         "packages/chain-adapters/src/payments.ts",
         "packages/chain-adapters/src/verify.ts",
         "apps/web/src/lib/networkAuthorization.ts",
-        "apps/web/src/lib/defaultServices.ts"
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/lib/paymentExportRpc.ts",
+        "apps/web/src/lib/paymentKeyExport.ts"
       ],
       "symbols": [
         "verifyPayment",
-        "createClient.request"
+        "createClient.request",
+        "createPaymentExportRpc",
+        "assertPlainAccount"
       ],
-      "trigger": "Local matching triggers payment/receipt/header verification.",
-      "destination": "The scan RPC and, when enabled, an independent secondary RPC.",
+      "trigger": "Local matching triggers payment/receipt/header verification. An explicit secret payment-key export after re-authentication separately verifies chain identity and reads the matched address code.",
+      "destination": "The scan RPC and, when enabled for scan verification, an independent secondary RPC. Payment-key export uses only the original verified scan endpoint, including a selected custom private endpoint.",
       "transport": "json-rpc-http",
       "sensitiveData": [
         "matched transaction hashes",
         "matched stealth-address relationships",
-        "receipt and timing interest"
+        "receipt and timing interest",
+        "exported payment address and account-code interest"
       ],
       "automatic": true,
-      "authorization": "Verification reads remain within the user-started scan capability. They can disclose match-specific interest; bulk evidence settings reduce some query-selection leakage without implying unlinkability.",
+      "authorization": "Scan verification reads remain within the user-started scan capability. Explicit secret export after re-authentication obtains a fresh payment-key-export capability for eth_chainId with no parameters and eth_getCode for one exact address at latest; it never revives cancelled or expired scan authority. Opening details and public-record export remain offline.",
       "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
-      "failureBehavior": "Malformed or inconsistent evidence stays unverified; no payment success is inferred from a matching announcement alone.",
+      "failureBehavior": "Malformed or inconsistent evidence stays unverified; no payment success is inferred from a matching announcement alone. Secret export refuses contract/delegation code, changed seller/session/scan preferences, a wrong chain, cancellation or unavailable code checks without endpoint fallback.",
       "profile": [
         "full",
         "lean"
@@ -546,22 +553,26 @@
         "apps/web/src/lib/networkAuthorization.test.ts",
         "apps/web/src/lib/defaultServices.authorization.test.ts",
         "apps/web/src/AppShell.network.test.tsx",
-        "apps/web/e2e/network-authorization.spec.ts"
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/lib/paymentExportRpc.test.ts",
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/views/Scan.stealthExport.authorization.test.tsx"
       ],
       "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
       "authority": {
         "boundary": "application-action",
         "actions": [
-          "scan"
+          "scan",
+          "payment-key-export"
         ],
         "category": "rpc",
         "endpointMatch": "exact",
-        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+        "lifetime": "Scan authority stays bound to its session, settings revision, idle expiry and caller cancellation. Each explicit export code check gets independent authority bound to the original scan scope and export AbortSignal; it is disposed after success or failure."
       },
-      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "endpointSelection": "Only the original normalized scan endpoint and chain are accepted for payment-key export. The current seller/session and complete scan/network preference snapshot must still match before granting authority and after awaited work. Export cannot select a replacement, secondary or fallback provider.",
       "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
       "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
-      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. The scan caller signal reaches custom RPC setup, indexer source/transport and queued-window/jitter checks. UI guards capture chain/key/signer/network revision and stop autorescan on revocation before new work is queued.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. The scan caller signal reaches custom RPC setup, indexer source/transport and queued-window/jitter checks. UI guards capture chain/key/signer/network revision and stop autorescan on revocation before new work is queued. Payment-key export forwards its own operation signal independently of scan cancellation; setup and code-query cancellation reject late responses and dispose the export grant.",
       "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
       "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
       "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
@@ -2013,19 +2024,19 @@
         "clearSession",
         "notifyAppLock"
       ],
-      "trigger": "User generates/imports/unlocks/exports local key material or idle lock fires.",
+      "trigger": "User generates/imports/unlocks/backs up local seller key material or idle lock fires. The separate payment-key-export account-code read is cataloged under evm-scan-verification.",
       "destination": "None; local memory/files/encrypted persistence.",
       "transport": "none",
       "sensitiveData": [],
       "automatic": true,
       "authorization": "Explicit unlock/export; automatic idle locking is local.",
-      "privatePath": "Local-only operation; no transport alternative is needed. This work does not change or qualify the actively owned spec-18 recovery feature.",
+      "privatePath": "Local seller-key operations need no transport alternative. Explicit secret payment-key export performs the separately cataloged original-endpoint account-code check; this local-only record does not claim that payment-key export performs zero RPC.",
       "failureBehavior": "Preserve essential encrypted storage, recoverability and session guards. OS/download/extension leakage and best-effort JavaScript zeroization are outside network isolation.",
       "profile": [
         "full",
         "lean"
       ],
-      "ownership": "Recovery/keypair export ownership excluded from implementation.",
+      "ownership": "Local seller-key/recovery behavior preserved; payment-key export authorization is owned by the scoped feature-completion claim.",
       "status": "zero-egress",
       "testPaths": [
         "apps/web/src/privacyInvariants.test.ts"
@@ -2444,6 +2455,12 @@
       "call:fetchFn": 1,
       "reference:authorize": 1,
       "reference:fetchFn": 2
+    },
+    "apps/web/src/lib/paymentExportRpc.ts": {
+      "call:authorize": 1,
+      "call:createRpc": 1,
+      "reference:authorize": 1,
+      "reference:createRpc": 1
     },
     "apps/web/src/lib/relayerClient.ts": {
       "call:boundedRequest": 1,
