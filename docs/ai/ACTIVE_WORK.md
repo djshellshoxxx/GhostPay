@@ -1,3 +1,17 @@
+# Merchant key-pin strict JSON hardening — 2026-11-19 cycle 20261119T183817Z
+
+- Worker: one ChatGPT operator (sequential source, test, and audit phases; no independent subordinate).
+- Task branch: `automation/20261119T183817Z/bug/merchant-pin-duplicate-json`.
+- Base `main` SHA: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned files: `apps/web/src/lib/merchantIdentity.ts`, `apps/web/src/lib/merchantIdentity.test.ts` and an isolated handoff `docs/handoffs/MERCHANT_PIN_STRICT_JSON_20261119.md`.
+- Finding: ambiguous persisted signer-pin JSON (duplicate `v` or `signer` members) is accepted by `JSON.parse` as its final key value, despite the trusted-pin fail-closed contract. This is defensive local-storage validation; no remote compromise or fund-loss exploit claimed.
+- Acceptance: reject duplicate-key and forbidden-key pin records as `unavailable`, never silently treat them as `absent`; valid persisted pins continue to be read, saved and removed; regression committed before source repair.
+- Dependencies: reuse existing exported `parseStrictJson` (invoice-schema), no protocol/schema changes.
+- Ownership check: open PRs including #238, #246, #262, #264, #278 and all current work listed through #281 inspected for these two files; none claimed them. Recheck heads before integration.
+- Integration metadata ref remains outside this branch. No shared ledger or protected-branch update authorized from this worker.
+
+---
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
