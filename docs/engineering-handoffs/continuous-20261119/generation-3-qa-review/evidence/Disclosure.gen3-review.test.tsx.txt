@@ -1,0 +1,103 @@
+// @vitest-environment jsdom
+// Independent Generation 3 review probe. The retained evidence copy is outside the product test tree.
+import { act, render, screen, waitFor } from '@testing-library/react';
+import { StrictMode, type ReactNode } from 'react';
+import { expect, it, vi } from 'vitest';
+import type { ManifestState } from '../lib/manifest';
+import { ServicesContext, type Services } from '../lib/services';
+import { backedManifest } from '../test/manifestChain';
+import { makeServices } from '../test/render';
+import { useManifest } from './Disclosure';
+
+function Status({ chainId, label }: { readonly chainId: number | undefined; readonly label: string }): ReactNode {
+  const manifest = useManifest(chainId);
+  return <output aria-label={label}>{manifest?.status ?? 'loading'}</output>;
+}
+
+function view(services: Services, chainId: number | undefined, label = 'manifest'): ReactNode {
+  return <ServicesContext.Provider value={services}><Status chainId={chainId} label={label} /></ServicesContext.Provider>;
+}
+
+function deferred(): { readonly promise: Promise<ManifestState>; readonly resolve: (state: ManifestState) => void; readonly reject: (reason: Error) => void } {
+  let resolve!: (state: ManifestState) => void;
+  let reject!: (reason: Error) => void;
+  const promise = new Promise<ManifestState>((accept, refuse) => { resolve = accept; reject = refuse; });
+  return { promise, resolve, reject };
+}
+
+const loaded: ManifestState = { status: 'loaded', manifest: backedManifest(84532) };
+
+it('stable same-chain services preserve the loaded result and do not repeat the loader on ordinary rerenders', async () => {
+  const loadManifest = vi.fn<Services['loadManifest']>().mockResolvedValue(loaded);
+  const services = makeServices({ loadManifest });
+  const rendered = render(view(services, undefined));
+  await act(async () => { await Promise.resolve(); });
+  expect(loadManifest).not.toHaveBeenCalled();
+  rendered.rerender(view(services, 84532));
+  await screen.findByText('loaded');
+  rendered.rerender(view(services, 84532, 'ordinary rerender'));
+  expect(screen.getByRole('status').textContent).toBe('loaded');
+  await act(async () => { await Promise.resolve(); });
+  expect(loadManifest).toHaveBeenCalledTimes(1);
+  expect(loadManifest).toHaveBeenCalledWith(84532);
+});
+
+it('returning to a prior services object has a new generation and ignores both retired success and failure', async () => {
+  const firstA = deferred();
+  const firstB = deferred();
+  const nextA = deferred();
+  const loadA = vi.fn<Services['loadManifest']>().mockReturnValueOnce(firstA.promise).mockReturnValueOnce(nextA.promise);
+  const loadB = vi.fn<Services['loadManifest']>().mockReturnValueOnce(firstB.promise);
+  const serviceA = makeServices({ loadManifest: loadA });
+  const serviceB = makeServices({ loadManifest: loadB });
+  const rendered = render(view(serviceA, 84532));
+  await waitFor(() => { expect(loadA).toHaveBeenCalledTimes(1); });
+  rendered.rerender(view(serviceB, 84532));
+  await waitFor(() => { expect(loadB).toHaveBeenCalledTimes(1); });
+  rendered.rerender(view(serviceA, 84532));
+  await waitFor(() => { expect(loadA).toHaveBeenCalledTimes(2); });
+  expect(screen.getByRole('status').textContent).toBe('loading');
+  await act(async () => { nextA.resolve({ status: 'invalid', reason: 'current generation' }); await nextA.promise; });
+  expect(screen.getByRole('status').textContent).toBe('invalid');
+  await act(async () => {
+    firstA.resolve(loaded);
+    firstB.reject(new Error('retired loader details must not become visible'));
+    await firstA.promise;
+    await firstB.promise.catch(() => undefined);
+  });
+  expect(screen.getByRole('status').textContent).toBe('invalid');
+});
+
+it('StrictMode effect replay retires its first completion while preserving the active loaded generation', async () => {
+  const retired = deferred();
+  const current = deferred();
+  const loadManifest = vi.fn<Services['loadManifest']>().mockReturnValueOnce(retired.promise).mockReturnValueOnce(current.promise);
+  const services = makeServices({ loadManifest });
+  const strict = (label: string): ReactNode => <StrictMode>{view(services, 84532, label)}</StrictMode>;
+  const rendered = render(strict('first render'));
+  await waitFor(() => { expect(loadManifest).toHaveBeenCalledTimes(2); });
+  await act(async () => { current.resolve(loaded); await current.promise; });
+  expect(screen.getByRole('status').textContent).toBe('loaded');
+  await act(async () => { retired.resolve({ status: 'absent' }); await retired.promise; });
+  expect(screen.getByRole('status').textContent).toBe('loaded');
+  rendered.rerender(strict('ordinary rerender'));
+  await act(async () => { await Promise.resolve(); });
+  expect(loadManifest).toHaveBeenCalledTimes(2);
+  expect(screen.getByRole('status').textContent).toBe('loaded');
+});
+
+it('an unmounted loader cannot supply a fresh mount with the same services and chain', async () => {
+  const retired = deferred();
+  const current = deferred();
+  const loadManifest = vi.fn<Services['loadManifest']>().mockReturnValueOnce(retired.promise).mockReturnValueOnce(current.promise);
+  const services = makeServices({ loadManifest });
+  const rendered = render(view(services, 84532));
+  await waitFor(() => { expect(loadManifest).toHaveBeenCalledTimes(1); });
+  rendered.unmount();
+  render(view(services, 84532));
+  await waitFor(() => { expect(loadManifest).toHaveBeenCalledTimes(2); });
+  await act(async () => { retired.resolve(loaded); await retired.promise; });
+  expect(screen.getByRole('status').textContent).toBe('loading');
+  await act(async () => { current.resolve({ status: 'absent' }); await current.promise; });
+  expect(screen.getByRole('status').textContent).toBe('absent');
+});
