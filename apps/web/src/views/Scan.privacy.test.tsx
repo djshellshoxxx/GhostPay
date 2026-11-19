@@ -48,7 +48,7 @@ describe('Scan privacy (spec 10)', () => {
     await user.type(screen.getByLabelText('Start block'), '1234');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     await waitFor(() => { expect(windows).toBe(1); });
-    await user.click(screen.getByRole('button', { name: 'Cancel', exact: true }));
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
     release();
     await waitFor(() => { expect(screen.getByText(/Cancelled\./)).toBeTruthy(); });
     expect(windows).toBe(1);
