@@ -1,5 +1,6 @@
 import {
   armSessionVault,
+  captureSessionBackupGuard,
   captureSessionGuard,
   captureSessionVersionGuard,
   exportKeystore,
@@ -256,7 +257,7 @@ export async function readEncryptedVault(store: KeyVaultStore = activeStore()): 
  * vault is involved; a store that cannot be read counts as no vault, because a record the keys are tied to is held in memory.
  */
 export async function authorizeKeyExport(vaultPassphrase: string, store: KeyVaultStore = activeStore()): Promise<(() => void) | undefined> {
-  const unchanged = captureSessionGuard();
+  const unchanged = captureSessionBackupGuard();
   const loaded = getSessionPublic();
   let record = sessionVaultRecord();
   if (record === undefined) {
@@ -317,7 +318,7 @@ export async function requireSecretExportAuthorization(credential: SecretExportC
 
 /** Saves the loaded keys as the browser vault; keys already tied to a vault need that vault's passphrase first (L1-02). */
 export async function saveEncryptedVault(passphrase: string, options: KeystoreOptions = {}, store: KeyVaultStore = activeStore(), vaultPassphrase = ''): Promise<void> {
-  const unchanged = captureSessionGuard();
+  const unchanged = captureSessionBackupGuard();
   if (await store.get() !== undefined) throw new UserFacingError({ key: 'error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving' });
   unchanged();
   if (sessionVaultRecord() !== undefined) {
@@ -364,7 +365,8 @@ export async function unlockEncryptedVault(passphrase: string, store: KeyVaultSt
  * replaced in storage (L1-02); otherwise any saved vault must hold the loaded keys and accept the passphrase.
  */
 export async function authorizeEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore()): Promise<(() => void) | undefined> {
-  const unchanged = captureSessionVersionGuard();
+  // An empty vault may be inspected without a seller session, but a retained sole copy has no spending authority.
+  const unchanged = getSessionPublic() === undefined ? captureSessionVersionGuard() : captureSessionGuard();
   const armed = sessionVaultRecord();
   const ciphertext = armed ?? await store.get();
   unchanged();
