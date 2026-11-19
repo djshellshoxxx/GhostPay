@@ -1,0 +1,12 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-multichain-recovery/packages/chain-solana
+
+
+ Test Files  11 passed (11)
+      Tests  111 passed (111)
+   Start at  23:49:05
+   Duration  126.55s (tests 87%, import 7%, transform 6%)
+
+    Isolate  11 workers spawned · ~939ms startup each (spawn + environment, per file)
+             at least ~9.39s faster with isolate: false — reuses workers across files instead of one per file
+

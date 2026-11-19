@@ -1,0 +1,12 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-multichain-recovery/packages/chain-tron
+
+
+ Test Files  6 passed (6)
+      Tests  54 passed (54)
+   Start at  23:51:26
+   Duration  33.98s (tests 55%, import 36%, transform 8%, worker 1%)
+
+    Isolate  6 workers spawned · ~1.31s startup each (spawn + environment, per file)
+             at least ~6.57s faster with isolate: false — reuses workers across files instead of one per file
+
