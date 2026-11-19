@@ -763,3 +763,21 @@ checks with paired prepare/send regressions. Retain current experimental/disable
 contract runtime, dependency versions and v4 checkpoints. Separate asset-coverage UI and multichain format changes
 remain outside this group. No local test/install workload during coordinator's resource limit; hosted combined
 qualification and independent crypto/custody review remain required before promotion.
+
+# Existing policy asset coverage and focus recovery — 2026-11-19
+
+Worker: CI/release review lane, now acting as the scoped recovery author; integration lead provides independent review.
+Branch: `integration/ghostpay-policy-assets-reconciled-20261119`.
+Base: `af9355ae2c1a37969304a89a58d57d76f2132493` (combined recovery plus PR #243 signer completion).
+Owned paths: `packages/policy-scheme/src/{record.ts,index.ts,client.test.ts}`;
+`apps/web/src/features/policy/{PolicyAssetCoverage.test.tsx,PolicyCreate.tsx,PolicyPay.tsx,create.ts,pay.ts,policy.logic.test.ts}`;
+the policy coverage/delay entries in the four existing locale catalogs and `apps/web/src/i18n/securityKeys.ts`;
+`docs/developer/api/policy-scheme.md` for the paired coverage/ABI clarification;
+`apps/web/e2e/focus-scope.spec.ts` in a separate commit; this claim and source-pinned reconciliation receipts.
+Acceptance: recover the proven-leaf asset coverage predicate, seller disclosure, unknown/known payer checks and
+recheck before wallet submission from PR #211, keeping the existing R/metadata binding, canonical signing,
+unchanged delay floor, deployment/session checks and all recovery/signer locale entries. Preserve full/lean
+focus behavior with the original standalone regression. No protocol, contract, dependency, CI threshold or
+network change. Heavy local validation is deferred by the coordinator after repeated resource exits 137;
+record source checks honestly and require independent review plus exact combined-head hosted qualification.
+Original PR #211 and its branch remain read-only. Larger multichain and secret-clipboard decisions are separate.
