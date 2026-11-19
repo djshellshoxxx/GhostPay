@@ -28,6 +28,8 @@ confirmed behavioral issue received a regression before its correction.
 | Borrowed wallet mismatch | A second expiry observation could switch the holder after capturing its guard | Capture holder and revision together before opening temporaries |
 | Observer exception | One throwing listener could prevent remaining lock/clear observers running | Failure-isolated session/custody notifications, including final disposal |
 | Recovery form lifetime | New recovery passphrases could remain indefinitely after the first suspension | Re-arm only transient cleanup on subsequent input, preserving suspended authority and custody-decision identity |
+| Cached checkpoint authority (integration finding) | #242's cached private slot used a retained public-session token, avoiding the expiry-aware key lender | Both new regressions failed before correction. The token now checks active authority before reuse; all 38 checkpoint/privacy/session tests pass. v4 derivation, storage and scan behavior are unchanged. |
+| Checkpoint lender holder change | A second deadline observation could replace the wallet after its key ID was matched | Both regressions failed before correction. Retain and recheck the matched public snapshot after borrowing, refuse changed holders, wipe the refused temporary, and return `undefined` when expiry refuses the loan. Final checkpoint/privacy/session run: 40/40 passed. |
 
 ## Preserved boundaries
 
