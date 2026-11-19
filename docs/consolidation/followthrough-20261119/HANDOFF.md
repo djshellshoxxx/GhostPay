@@ -1,70 +1,80 @@
-# GhostPay isolated consolidation follow-through — 2026-11-19
+# GhostPay isolated follow-through — 2026-11-19
 
 ## Scope and source
 
-Original base: PR #262, `c40b7581b9b996f33612186bc91960c65273cb64`.
-Refresh base: PR #262, `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`, tree `c58843c86dae5164eab259d3440aba01406bd593`.
-The refresh retains all incoming canonical-array claims, documentation, evidence and two additional regression controls. The JSON runtime is byte-identical to the runtime used for the 22-case corrected run.
-This branch stages three reviewed Pages-related repairs. It does not update an active coordinator branch or claim protected-main readiness.
+This draft adds two Pages-related repairs to PR #262:
 
-1. **Canonical arrays:** retain #265's sparse/decorated-array regression, then snapshot own data descriptors before recursion. Reject accessor elements without invoking them. Do not call an input's map implementation or traverse its get/has traps. Ordinary dense arrays retain their canonical bytes; frozen, sealed, null-prototype and nonenumerable-index dense arrays remain supported. Object canonicalization is unchanged. This is a public programmatic-input correctness repair; no remote signature bypass or fund loss was demonstrated.
-2. **Merchant clocks:** selectively recover the exact two merchant-profile files from #246 `509a800439f2feb6173b20d2543746c3d74e9a42`. Invalid runtime clocks fail at the existing expiry boundary. Size, format and signature error precedence and all finite-number behavior remain intact. Do not import #246's unrelated security/contract changes or #268's broader negative-clock/error-order changes.
-3. **Scanner work avoidance:** use core-crypto's existing unsupported-scheme predicate before repeated announcement crypto. Valid scheme-1 and omitted runtime scheme behavior still use existing crypto; counting, progress, cancellation and memo behavior retain their shared paths. The original million-log corpus, assertions and 180-second timeout are unchanged. A full-corpus speedup has not yet been measured.
+1. **Canonical arrays:** snapshot own data descriptors before recursion. Reject sparse/decorated/accessor arrays without invoking element getters; do not call an input's map override or traverse its get/has traps. Ordinary dense arrays retain their canonical bytes, including frozen, sealed, null-prototype and nonenumerable-index variants. Object canonicalization is unchanged.
+2. **Scanner work avoidance:** use core-crypto's existing unsupported-scheme predicate before repeated announcement crypto. Scheme 1 and an omitted runtime scheme retain existing behavior. Scanned counts, progress, cancellation and replay/memo behavior keep their shared paths. The million-log corpus, assertions and 180-second timeout are unchanged.
 
-## Verification so far
+Original base: `c40b7581b9b996f33612186bc91960c65273cb64`.
+First refresh: `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`.
+Qualification base: `155d009160a6e5b2c24a91705c72fc8cca6ce815`.
+Publication base: `c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a`, with the **identical** tree `e585d1dec43844bd18167f213c246994ea6c4397`.
+Previous tested candidate: `fefcd57fb2397685a361dcbb9b9cf705efbfc17b`.
+The current refresh preserves all incoming claims/evidence and the four JSON/scanner blobs tested at that previous candidate.
 
-| Check | Actual result |
+| Product file | Preserved blob |
 | --- | --- |
-| JSON regressions on unchanged candidate runtime | 11 failed / 11 passed, 22 total, original Vitest configuration |
-| Canonicalizer source probes | 11 coordinator probe groups passed, including 1,000 seeded ordinary-JSON byte comparisons; independent reviewer also passed 11 source-probe groups |
-| JSON focused corrected-source run | **22 passed**, zero failures, exit 0; 244.82 seconds under heavy environment pressure |
-| Refreshed JSON test union | Preserves both new upstream controls; 24 cases by source enumeration, **not rerun** after the environment disconnected again |
-| Merchant regressions on unchanged candidate runtime | 26 failed / 37 passed, 63 total, exit 1 |
-| Merchant regressions on exact recovered runtime | 63 passed, zero failures or skips, exit 0 |
-| Merchant package typecheck | Passed, exit 0 on the merchant worker snapshot |
-| JSON package typecheck | Passed before the interrupted lint attempt; final combined/refresh typecheck remains required |
-| Original typed lint attempts | Exited 137 under local resource pressure; a later direct invocation was interrupted, not passed |
-| Scanner focused regressions and unchanged million-log corpus | Pending execution |
-| Combined package coverage, final web typecheck/lint/build/browser | Pending execution |
-| Independent source review | No introduced source blocker identified in the canonical, merchant or scanner changes; execution gates remain separate |
+| JSON runtime | `8ed01592d487c356a72d51e240e5cc63fb470a3a` |
+| JSON tests, including both added upstream controls | `813286cc5317177fffcd5e7eac0a1907a45e5f9e` |
+| Scanner runtime | `3ad466bae0d7d19187260e0696c0d29fb6a71293` |
+| Scanner tests | `64d9d0d95a66da023f2968faa7bd97c7dbe66605` |
+| Unchanged million-log corpus | `77ce0bd28772235418d9e241b0da84028068035f` |
 
-The source probes execute extracted TypeScript functions after erasing only type syntax; they are not Vitest, compiler, coverage or browser qualification. Fresh tests must qualify the combined source, not inherit results from the broad integration or other branches.
+## Merchant-clock conflict resolution
 
-The execution environment disconnected during dependency setup and later recovered. Exact-lock invoice-scoped installation succeeded after reducing the Node heap. Shared filesystem exhaustion required moving only this task's downloaded dependencies to temporary storage and restoring normal node_modules layout. Setup failures and interrupted checks are not test passes. The execution environment disconnected again after the 22-case JSON pass. Further local checks could not be completed, so the source and regression work was preserved through the authorized GitHub connection.
+The newer coordinator base already imports PR #268's merchant-clock implementation. It rejects nonfinite or negative clocks at API entry with `format`. This differs from our earlier selective #246 port, which returned `expired` at the expiry check and preserved negative finite values and prior error precedence.
 
-## Provenance and integration disposition
+Keep the coordinator's two merchant files **exactly**. They are not part of this draft's remaining product delta:
+
+- Runtime: `a4269dec888518799aa4b3e8cc82d2ff9cc21d77`.
+- Tests: `a1299d9ceedefeefb5784d287d556008531af02f`.
+
+The alternate #246 implementation's 63-case pass remains historical/source-pinned evidence. It is not acceptance for the retained #268 behavior. No mechanical union of the contradictory policies or assertions is attempted.
+
+## Verification
+
+| Check | Actual outcome and boundary |
+| --- | --- |
+| JSON original-runtime regression | 11 failed / 11 passed, 22 total, original Vitest configuration |
+| JSON prior corrected focused run | 22 passed, exit 0; the final 24-case file also participated in the later full suite |
+| Supplemental canonicalizer probes | 11 coordinator groups, including 1,000 seeded ordinary-JSON byte comparisons; independent reviewer separately passed 11 groups |
+| Scanner original-runtime regressions | 2 expected failures / 1 passed / 18 filtered; observed 258 vs expected 1 crypto call, and 128 vs expected 0 before cancellation |
+| Scanner corrected complete file | 21/21 passed on `fefcd57f`, exit 0; no skips |
+| Unchanged million-log corpus | 1/1 passed on `fefcd57f`, exit 0, 65.62 seconds; original 180,000 ms deadline and assertions |
+| Full invoice-schema coverage command | **Failed** on `fefcd57f`: 855 passed / 3 timed out, 858 total; 13/14 files passed; exit 1; 852.72 seconds |
+| Core/invoice/chain-adapter dependency builds | Passed on `fefcd57f`, exit 0 |
+| Refreshed JSON/current-base merchant selection | **32/32 passed** (24 JSON, 8 merchant), zero skips, exit 0; exact input blobs recorded |
+| Refreshed invoice TypeScript | **Passed**, direct original `tsc -p tsconfig.json --noEmit`, exit 0 in 3.765 seconds with a 256 MiB heap limit |
+| Refreshed original typed lint | Incomplete: invoice/scanner processes were killed at both 512 and 256 MiB settings, before rule diagnostics |
+| Refreshed production web build path | Incomplete: address-safety dependency compiled, then BTC dependency TypeScript was killed with exit 137; web build was not reached |
+| Independent source review | No introduced blocker identified in the two remaining product changes; semantic merchant conflict resolved by preserving the coordinator base |
+
+The full invoice run failed the existing passphrase cases for re-encrypted altered invoices, authenticated malformed plaintext, and NFKC-equivalent passphrases. Each exhausted the unchanged 60,000 ms deadline. No final coverage percentage/threshold report was produced. Coverage thresholds remain 95/90/95/95 and **unqualified**. Deadline exhaustion is established; its ultimate resource/performance cause is not.
+
+The scanner corpus has no matching baseline timing from this environment, so its result establishes deadline compliance without a quantified speedup claim. Supplemental extracted-function probes do not replace Vitest, compiler, coverage or browser qualification.
+
+See `EXECUTION_EVIDENCE.md` and `receipt.json` for exact commands, source boundaries and sanitized log hashes. Full spy argument/buffer dumps are intentionally excluded.
+
+The refreshed checks ran before publication on a working-tree overlay. The containing commit preserves the six recorded JSON/scanner/merchant blobs, original lockfile and configurations exactly. The execution environment disconnected after the final build attempt and subsequently reconnected; no interrupted check is relabeled as passed.
+
+## Integration disposition
 
 - #238 is already an ancestor of #262.
-- #256's strongest idle/session behavior and final test correction are documented as represented in #262. Do not bulk import it again solely because Git ancestry diverges.
-- #267's three hosting source/test blobs already match #262.
-- #264 is a separate broad integration, diverging from #262. It is not bulk merged here.
-- #265 source reference: `c591b54078febcf24cba01b29bc173b2fac1f9cb`; the final array algorithm deliberately closes the remaining getter/map/Proxy traversal weaknesses.
-- Merchant runtime blob: `35af2b07417916eca4d10e1e4f5584e171ece1dd`.
-- Merchant regression blob: `31d40e8871a4d1a89c525d3361cb2922431c5c4b`.
-- Unchanged scanner fuzz blob: `77ce0bd28772235418d9e241b0da84028068035f`.
+- #256's strongest idle/session behavior and final test correction are documented as represented in #262; do not duplicate solely because ancestry diverges.
+- #267's three hosting source/test blobs already match the integration candidate.
+- #264 is a separate broad integration and is not bulk merged here.
+- #265's original sparse/decorated-array repair is retained and extended; both later upstream JSON controls are preserved exactly.
+- #268's merchant implementation and all incoming ownership/evidence remain unchanged.
 
-Another coordinator's integration lock was held when this isolated branch was prepared. Shared tracking, protected integration/main, other workers' branches, deployment, release tags, fees, custody and guardian policy are unchanged.
+Only this isolated task branch is refreshed with a normal two-parent merge. Another coordinator owns shared integration. Shared tracking, protected integration/main, other workers' branches, contracts, fee recipients, recovery/guardian policy, deployments and releases are outside this work.
 
-## Remaining qualification
+## Remaining gates
 
-Run with the repository's original configuration and exact lockfile, using bounded serial workers where necessary:
+1. Resolve and rerun original full invoice-schema tests/coverage without weakening assertions, timeouts or thresholds.
+2. Complete applicable instrumented web tests, nocov acceptance, full/lean static artifact and browser qualification.
+3. Recheck live base/head and required hosted checks before integration; PR metadata can expose a stale base SHA, so compare the live branch ref.
+4. Preserve strict Mythril. The fresh #255 artifact at source `ea47fa75eabb0be2045081ffeb120fc2bfae67ab` completed analysis with **11 findings (3 medium, 8 low)**. It was not an infrastructure timeout. This application-only draft neither changes contracts nor approves those findings. [Artifact](https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066945/artifacts/14509646188).
 
-- Invoice-schema full tests with existing coverage thresholds; build, typecheck and typed lint.
-- Scanner regressions, existing scanner cases and the unchanged million-log corpus, then complete applicable web tests/coverage and nocov acceptance.
-- Rebuild affected libraries before full and lean static builds; verify Pages artifact and browser flows.
-- Recheck current source/head and required hosted checks before any integration.
-- Preserve strict Mythril. Fresh #255 artifact at source `ea47fa75eabb0be2045081ffeb120fc2bfae67ab` contains 11 findings (3 medium, 8 low), not a timeout. This application-only work neither changes contracts nor approves findings. Artifact: https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066945/artifacts/14509646188
-
-Do not merge or claim release readiness while these applicable gates remain unresolved.
-
-## Refresh verification
-
-Only three paths overlapped when #262 advanced: the additive ownership registry and the two JSON files.
-The refreshed tree uses the complete new base, then adds this branch's reviewed deltas. It preserves:
-
-- `rejects a missing array index even when an extra key balances the count`;
-- `preserves empty and frozen dense array bytes`;
-- the common sparse/decorated-array regression exactly once;
-- every incoming canonical-array receipt and ownership section.
-
-The refreshed JSON runtime is exactly identical to the corrected runtime already exercised by the focused 22-case run and independent source probes. Additional inherited tests still require execution as part of final-source qualification. No passing result from an older source is relabeled as a full final-source pass.
+Do not merge or claim release readiness while applicable gates remain unresolved.

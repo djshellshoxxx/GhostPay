@@ -151,9 +151,11 @@ export function signMerchantProfile(body: MerchantProfileBody, signingKey: Uint8
  * Never throws. A valid result means the holder of `signer` signed these exact fields; it does not identify the merchant.
  *
  * @param input JSON text (size-checked in UTF-8 bytes) or an already parsed object.
- * @param nowSec Current finite Unix time in seconds (fractional values allowed). Invalid runtime clocks fail as expired.
+ * @param nowSec Current unix time in seconds.
  */
 export function verifyMerchantProfile(input: unknown, nowSec: number): ProfileResult {
+  // A non-finite or negative clock must never bypass signed-profile expiry.
+  if (!Number.isFinite(nowSec) || nowSec < 0) return { ok: false, reason: 'format' };
   let raw: unknown = input;
   if (typeof input === 'string') {
     if (utf8ToBytes(input).byteLength > MAX_PROFILE_BYTES) return { ok: false, reason: 'size' };
@@ -178,6 +180,6 @@ export function verifyMerchantProfile(input: unknown, nowSec: number): ProfileRe
     return { ok: false, reason: 'signature' };
   }
   if (!valid) return { ok: false, reason: 'signature' };
-  if (!Number.isFinite(nowSec) || p.exp <= nowSec) return { ok: false, reason: 'expired' };
+  if (p.exp <= nowSec) return { ok: false, reason: 'expired' };
   return { ok: true, profile: p };
 }

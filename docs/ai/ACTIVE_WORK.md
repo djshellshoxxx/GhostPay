@@ -2,20 +2,45 @@
 
 Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
 Branch: `codex/ghostpay-consolidation-followthrough-20261119`.
-Original base: PR #262 `c40b7581b9b996f33612186bc91960c65273cb64`; observed main `14ded337a10c140d7a9f9a9238ec038587d925bb`.
-Refresh base: PR #262 `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`; all incoming claims and tests are retained.
-Owned paths: `packages/invoice-schema/src/{json,merchantProfile}{,.test}.ts`,
-`apps/web/src/lib/scannerCore{,.test}.ts`, this additive registry entry and
+Original base: PR #262 `c40b7581b9b996f33612186bc91960c65273cb64`; first refresh `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`.
+Qualification base: `155d009160a6e5b2c24a91705c72fc8cca6ce815`; publication base: PR #262 `c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a` (identical tree).
+All incoming claims and evidence are retained.
+Owned product paths: `packages/invoice-schema/src/json{,.test}.ts` and
+`apps/web/src/lib/scannerCore{,.test}.ts`; this own registry entry and
 `docs/consolidation/followthrough-20261119/`.
-Scope: finish #265 array rejection with descriptor snapshots, selectively recover only #246's
-merchant-clock source/tests, and avoid redundant crypto for unsupported scanner schemes.
-Acceptance: regression-backed correction, ordinary JSON byte stability, existing clock error ordering,
-valid-scan/replay/cancellation/progress behavior, and the unchanged million-log corpus/180-second limit.
-Run original package and web tests, coverage, typecheck, lint and feasible build/browser checks.
-Another coordinator owns the integration lock. This branch is isolated staging only; shared tracking,
+Scope: finish #265 array rejection with descriptor snapshots and avoid redundant crypto for unsupported scanner schemes.
+The current base already integrates merchant-clock handling from #268. Preserve its two merchant files exactly;
+the former #246 alternative and its 63-case result are superseded, historical evidence only.
+Acceptance: regression-backed correction, ordinary JSON byte stability, valid-scan/replay/cancellation/progress behavior,
+and the unchanged million-log corpus/180-second limit. Run original applicable tests, coverage, typecheck and lint.
+Another coordinator owns shared integration. This branch remains isolated staging; shared tracking,
 protected integration/main, active source branches, deployment, contracts, fees and recovery policy are unchanged.
-Independent source reviews found no blocker. Execution evidence and remaining gates are recorded in the
-scoped handoff; no feature or repository-wide acceptance is inferred from partial checks.
+Independent source reviews found no introduced blocker. The source-pinned handoff records actual execution:
+focused scanner and million-log passes, full invoice-suite failures, and remaining hosted/browser qualification.
+No repository-wide acceptance is inferred from focused checks.
+
+# Automation cycle 20261119T095600Z — merchant profile clock validation
+
+Worker: single ChatGPT implementation phase (no parallel independent verifier).
+Branch: `automation/20261119T095600Z/bug/merchant-profile-clock`.
+Base main SHA: `14ded337a10c140d7a9f9a9238ec038587d925bb`.
+Owned source: `packages/invoice-schema/src/merchantProfile.ts`, `packages/invoice-schema/src/merchantProfile.test.ts`; cycle-specific handoff only.
+Finding: GP-AUD-208-01 in draft PR #266; signed profile may bypass expiry when caller provides NaN/undefined.
+Acceptance: valid signed profile rejects invalid clocks deterministically; finite valid clocks preserve existing expiry boundaries; test is committed before implementation; run available checks and report unexecuted checks. Do not alter cryptographic signature or invoice formats.
+Dependencies: audit #266; PR #265 owns separate json canonicalization. No shared integration lock acquired or merges authorized from this worker.
+
+---
+
+# Merchant profile invalid-clock integration — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator; independent source review by `privacy_completion`.
+Branch: `codex/ghostpay-merchant-clock-integration-20261119`.
+Base: `3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33`.
+Upstream: PR #268 at `ddfc8cfafa44b09103ced821f160c1d37fdfe552`; preserve its original source and ancestry, without changing its remote branch.
+Owned paths: `packages/invoice-schema/src/merchantProfile.ts`, `packages/invoice-schema/src/merchantProfile.test.ts`, this additive claim, and `docs/consolidation/merchant-clock-20261119/` evidence.
+Acceptance: run the exact upstream regression against unchanged baseline source, retain the finite/nonnegative verification-clock guard and existing expiry/signature behavior, run bounded original-config package checks, and obtain an independent exact-source review.
+Scope: malformed verification clocks at the existing public API. No production exploit, clock-control, signature-bypass, full-workspace, coverage or deployment claim is implied. Do not change compiler/lint/coverage settings, signing formats, dependencies or adjacent feature paths.
+Coordination: root holds expensive work while these bounded checks execute. Root remains responsible for final integration, rebuilt consumer outputs, publication and hosted qualification.
 
 # Canonical array repair integration — 2026-11-19
 
