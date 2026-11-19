@@ -419,7 +419,7 @@ test('secret-leak guard: no exported private key in requests, console, URL/histo
 // Timers cannot fire inside the scrypt loop (noble yields with scheduler.yield, whose continuations run before other
 // tasks), so the idle lock is made due while the export's AES-GCM step after the KDF is held; a wipe click, an input
 // event, is delivered between scrypt chunks and lands inside the export KDF itself.
-test('the idle lock while the export is still deriving and encrypting discards the result: no download, keys stay loaded', async ({ context, page }) => {
+test('the idle lock while the export is still deriving and encrypting discards the result and suspends retained keys until recovery', async ({ context, page }) => {
   await context.clock.install();
   await installCryptoProbe(context);
   const state: MockNetworkState = {};
@@ -427,7 +427,7 @@ test('the idle lock while the export is still deriving and encrypting discards t
   await configureRpc(page);
   await page.goto('/');
   const meta = await generateKeys(page);
-  // A downloaded but unverified keystore keeps the keys loaded through the idle lock, so the panel stays mounted.
+  // A downloaded but unverified keystore retains the sole key copy for backup, while idle expiry revokes its authority.
   const keystore = await downloadKeystore(page);
   const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 120, index: 1, caller: FAKE_ROUTER });
   state.logs = [mine.log];
@@ -454,14 +454,41 @@ test('the idle lock while the export is still deriving and encrypting discards t
   await page.waitForTimeout(5_000);
   expect(downloads.names).toEqual([]);
   await expect(okNotice(page, 'Encrypted keypair generated; download initiated. Keep and verify the saved file.')).toHaveCount(0);
-  await expect(details).toBeVisible();
-  await expect(details.getByLabel('Passphrase of the keystore backup file')).toHaveValue('');
-  await expect(details.getByLabel('New passphrase for the export file (at least 14 characters)')).toHaveValue('');
+  await expect(details).toHaveCount(0);
+  await expect(page.getByLabel('Passphrase of the keystore backup file')).toHaveCount(0);
+  await expect(page.getByLabel('New passphrase for the export file (at least 14 characters)')).toHaveCount(0);
+  await expect(nav(page).getByRole('button', { name: 'Scan and receive', exact: true })).toBeDisabled();
+  await expect(nav(page).getByRole('button', { name: 'Create invoice', exact: true })).toBeDisabled();
+  await expect(keysView(page).getByRole('button', { name: 'Download encrypted keystore', exact: true })).toBeVisible();
+  await expect(keysView(page).getByRole('button', { name: 'Generate new keys', exact: true })).toHaveCount(0);
 
-  // Control: the same export without a lock produces the file.
-  await useKeystore(details, keystore);
-  await fillNewPassphrase(details);
-  const enc = await download(page, () => details.getByTestId('stealth-export-encrypted').click());
+  // Backup verification is allowed while suspended, but it must not silently restore signing/scanning authority.
+  await nav(page).getByRole('button', { name: 'Seller keys', exact: true }).click();
+  const backup = { name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') };
+  await keysView(page).getByLabel('Downloaded keystore file', { exact: true }).setInputFiles(backup);
+  await keysView(page).getByLabel('Keystore passphrase', { exact: true }).fill(KEYSTORE_PASS);
+  await keysView(page).getByRole('button', { name: 'Verify backup', exact: true }).click();
+  await expect(keysView(page).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible({ timeout: 60_000 });
+  await expect(nav(page).getByRole('button', { name: 'Scan and receive', exact: true })).toBeDisabled();
+  expect(downloads.names).toEqual([]);
+
+  // Positive control: explicit recovery of the verified backup and a fresh scan make the same export possible again.
+  await keysView(page).getByRole('button', { name: 'Wipe keys from memory', exact: true }).click();
+  await expect(keysView(page).getByRole('button', { name: 'Generate new keys', exact: true })).toBeVisible();
+  const importFile = keysView(page).getByLabel('Keystore file', { exact: true });
+  if (!(await importFile.isVisible())) await keysView(page).getByText('Import an encrypted keystore', { exact: true }).click();
+  await importFile.setInputFiles(backup);
+  await keysView(page).getByLabel('Passphrase', { exact: true }).fill(KEYSTORE_PASS);
+  await keysView(page).getByRole('button', { name: 'Decrypt and load', exact: true }).click();
+  await expect(keysView(page).getByText('Keystore decrypted; keys are in memory.', { exact: true })).toBeVisible({ timeout: 60_000 });
+  await expect(keysView(page).locator('code', { hasText: /^st:eth:0x/ })).toHaveText(meta);
+  const restored = await openDetails(await scanOnePayment(page, mine.stealthAddress));
+  await restored.getByRole('radio', { name: 'Use my keystore backup file' }).check();
+  await expect(restored.getByLabel('Passphrase of the keystore backup file')).toHaveValue('');
+  await expect(restored.getByLabel('New passphrase for the export file (at least 14 characters)')).toHaveValue('');
+  await useKeystore(restored, keystore);
+  await fillNewPassphrase(restored);
+  const enc = await download(page, () => restored.getByTestId('stealth-export-encrypted').click());
   expect(enc.name).toBe('ghostpay-stealth-keypair.json');
   expect(downloads.names).toEqual(['ghostpay-stealth-keypair.json']);
 });
