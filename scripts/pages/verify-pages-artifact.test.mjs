@@ -1,6 +1,7 @@
 // node --test scripts/pages/verify-pages-artifact.test.mjs
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -73,4 +74,18 @@ test('enforces required Pages files and exact build source', (t) => {
   assert.ok(verifyPagesArtifact(site, sums, { expectedCommit: 'short' }).problems.some((p) => p.includes('full 40-hex')));
   unlinkSync(join(site, '.nojekyll'));
   assert.ok(verifyPagesArtifact(site, sums).problems.some((p) => p.includes('required Pages file missing')));
+});
+
+test('CLI verifies a source-pinned artifact and exits nonzero for tampering or incorrect usage', (t) => {
+  const { site, sums } = fixture(t);
+  const script = new URL('./verify-pages-artifact.mjs', import.meta.url);
+  const run = (...args) => spawnSync(process.execPath, [script.pathname, ...args], { encoding: 'utf8' });
+  const good = run(site, sums, '--expect-commit', COMMIT);
+  assert.equal(good.status, 0, good.stderr);
+  assert.match(good.stdout, /4 files match/);
+  writeFileSync(join(site, 'index.html'), '<script>tamper</script>');
+  const bad = run(site, sums, '--expect-commit', COMMIT);
+  assert.equal(bad.status, 1);
+  assert.match(bad.stderr, /SHA-256 mismatch/);
+  assert.equal(run().status, 2);
 });
