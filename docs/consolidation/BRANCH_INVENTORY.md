@@ -487,3 +487,124 @@ The source evidence is [historical deleted heads](https://github.com/djshellshox
 This documentation task validates JSON parsing, 278 unique branch rows, 267 unique original PR rows, complete per-branch dispositions, matching source pins, original state totals, and source/API ancestry agreement. The discovered multiple-merge-base cases were resolved with `git merge-base --all`; no mismatch was hidden. The exact-source lane reproduction is a separate bounded check, not a recovery/browser/product-suite pass.
 
 The source census remains read-only. The publication branch modifies this inventory, its two JSON files and the previously recorded `ACTIVE_WORK.md` claim. Root will append `FEATURE_MATRIX.md`, `RECOVERED_WORK.md`, `SECURITY_AUDIT.md`, `TEST_RESULTS.md`, `MAIN_MERGE_LOG.md`, `REMAINING_WORK.md` and `HANDOFF.md` after an explicit expected-head handoff. The census writer then ceases writes. Main promotion, source integration, deployment and release are separate actions subject to the active owner and applicable gates.
+
+
+---
+
+# Branch census addendum — 2026-11-19 11:01 UTC
+
+This is a later snapshot. The original census remains **278 branches / 267 PRs** at 10:15 UTC and main `14ded337`. The new ref snapshot contains **285 branches**, seven additions, three advanced original nonmain heads, and no missing original branches. Main is `8f56376427c96881f49590920ff0bf8543ec81b4`. Check runs were observed by 11:05 UTC; later bounded comparison/file-list reads are timestamped in the companion JSON.
+
+## New branches
+
+| Branch | Pinned head | PR / carrier | Disposition and next action |
+|---|---|---|---|
+| `automation/20261119T104800Z/bug/jitter-expiry-rollback` | `a4c6f945adef0438bfd0b347fb7c11057e3973ce` | [#274](https://github.com/djshellshoxxx/GhostPay/pull/274) | **active-isolated-source-requires-qualification**. Preserve the source branch. Obtain independent source review and original repository tests, lint/build and exact-head CI, then reconcile with current main under the integration lease. Do not duplicate its claimed jitter work. |
+| `codex/ghostpay-consolidation-followthrough-20261119` | `fefcd57fb2397685a361dcbb9b9cf705efbfc17b` | [#270](https://github.com/djshellshoxxx/GhostPay/pull/270) | **active-broad-continuation-requires-qualification**. Preserve PR270 and its source pins. Its current tail changes canonical-array tests/evidence, not the reviewed runtime relative to previously recorded2557186. Qualify the broad candidate without duplicating active source claims. |
+| `codex/ghostpay-consolidation-records-20261119` | `b05a71f2859adef19f51f89d1855535b0bb80b53` | [#273](https://github.com/djshellshoxxx/GhostPay/pull/273) | **owned-consolidation-records-in-progress**. Root alone appends the seven consolidation records and reviewed documentation recovery. Keep the278-branch original snapshot intact and attach this later delta with its own pins. |
+| `codex/ghostpay-export-authorization-20261119` | `b0abb726c138ad1df2f03b7b102c9bd9de318887` | Contained in [#269](https://github.com/djshellshoxxx/GhostPay/pull/269) | **source-contained-in-unmerged-pr269**. Preserve as source provenance; continue qualification through PR269 rather than creating a duplicate port. Final GREEN and network-egress inventory validation remain unverified in its own claim. |
+| `codex/ghostpay-private-scan-lint-20261119` | `1b010ec910d04df105fd662cc360629cb0a2f5dd` | Contained in [#269](https://github.com/djshellshoxxx/GhostPay/pull/269) | **source-contained-in-unmerged-pr269**. Preserve source and test-first provenance. Qualify the cancellation-preserving rejection repair in PR269. Do not suppress diagnostics or duplicate this active source lane. |
+| `integration/ghostpay-adapter-qualification-20261119` | `429a4de80b9ec53177b17d89d18ce8ec91a08814` | [#271](https://github.com/djshellshoxxx/GhostPay/pull/271) | **owned-candidate-awaiting-combined-head-ci**. Qualify exact combined head429a4de after additive main reconciliation. Merge only under the coordinator lease and required gates. |
+| `review/ghostpay-sweep-quote-lifecycle-20261119` | `63ff40d57af879a3d82166450f63aadb7bf0d5ff` | [#272](https://github.com/djshellshoxxx/GhostPay/pull/272) | **owned-candidate-awaiting-combined-head-ci**. Qualify exact combined head63ff40d, now targeted to main, retaining252 ancestry and142-test source. Cancelled jobs are not passes. |
+
+## Advanced original nonmain branches
+
+| Branch | Original head → observed head | Disposition / evidence |
+|---|---|---|
+| `automation/ghostpay-integration-lock` | `4e8d72888552285df57b9386c03f7e1b1509aa05` → `409799b04c736203a42353059a966fa9cb3c01c0` | **coordination-only-held-lock**. Two commits after the original head, one changed JSON file. Current owner/status verified from commit patch; expires2026-11-19T11:52:16Z at this snapshot. |
+| `codex/ghostpay-feature-consolidation-20261119` | `c40b7581b9b996f33612186bc91960c65273cb64` → `c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a` | **active-broad-integration-new-head-requires-qualification**. 21commits ahead of originalc40,22changed paths: four invoice-schema runtime/test files plus evidence/claims. Ten commits beyond previously observedcb7 add merchant-clock source/test/evidence. Broad main comparison returns300file cap, so file list is not exhaustive. |
+| `codex/ghostpay-private-checkpoint-browser-20261119` | `f9195f3f030e36125473753347d4be3357ac667e` → `683f8587b8de45448f14aab0539cb07a5f21bce3` | **active-expanded-continuation-requires-qualification**. 19commits and26changed paths after originalf919. Both export and lint source heads are ancestors, with their reviewed scoped product blobs retained. Current head is240ahead1behindmain8f; 300file-cap broad diff is incomplete. |
+
+## Source claims and preservation
+
+- The export source owns Scan.tsx, paymentKeyExport, the new paymentExportRpc wrapper, networkAuthorization, focused tests and the egress inventory. Its claim says final GREEN and inventory validation remain unverified after an executor outage.
+- The private-scan lint source owns scanClient and its focused rejection/cancellation tests; Scan.tsx belongs to the separate export worker. Its publication claims no runtime, typecheck or lint pass.
+- Both source heads are verified ancestors of PR269 at `683f8587b8de45448f14aab0539cb07a5f21bce3`. Complete comparisons show their scoped application/test files retained unchanged. Preserve these source branches and qualify their carrier; do not create duplicate ports.
+- PR274 owns only jitter.ts, jitter.test.ts and its handoff/claim. It is a new isolated candidate, with author source-identity Node and isolated TypeScript evidence. Independent source review, repository tests/lint/build and hosted qualification remain pending.
+- PR271 tree `bc5087c6ed74c047c99fee2ccc7c2e217b8450bd` and PR272 tree `6f204f08a0dda98f3d9c6428afec080de7dd0df5` received independent additive-merge review: each resolved claim equals the independently reconstructed parent insertion union; every other changed file equals main8f. This is source-preservation review, not a substitute for combined-head CI.
+
+## Exact-head check-run snapshot
+
+| Source | Counts at observation | Qualification |
+|---|---|---|
+| [#262](https://github.com/djshellshoxxx/GhostPay/pull/262) | 1 in_progress, 12 queued, 1 skipped | Incomplete; no new exact-head GREEN claim |
+| [#269](https://github.com/djshellshoxxx/GhostPay/pull/269) | 1 skipped, 7 queued, 1 success | Incomplete; no new exact-head GREEN claim |
+| [#270](https://github.com/djshellshoxxx/GhostPay/pull/270) | 1 skipped, 9 queued, 1 success | Incomplete; no new exact-head GREEN claim |
+| [#271](https://github.com/djshellshoxxx/GhostPay/pull/271) | 1 skipped, 10 queued, 1 in_progress | Incomplete; no new exact-head GREEN claim |
+| [#272](https://github.com/djshellshoxxx/GhostPay/pull/272) | 11 queued, 1 skipped, 3 cancelled | Incomplete; no new exact-head GREEN claim |
+| [#273](https://github.com/djshellshoxxx/GhostPay/pull/273) | 3 queued | Incomplete; no new exact-head GREEN claim |
+| [#274](https://github.com/djshellshoxxx/GhostPay/pull/274) | 3 queued | Incomplete; no new exact-head GREEN claim |
+| export-source | 0 check runs | Incomplete; no new exact-head GREEN claim |
+| lint-source | 0 check runs | Incomplete; no new exact-head GREEN claim |
+
+The three cancelled PR272 jobs are the Windows, macOS and Ubuntu CLI matrix at workflow run44510549048. Cancellation is not a pass; no failure cause or intentional-skip classification is inferred.
+
+## Main, PR state, and tags
+
+Main advanced by PR257 to `8f56376427c96881f49590920ff0bf8543ec81b4`, retaining both originalmain14ded and source4f14 parents. The fresh GitHub listing reports PR257 merged at10:52:59 UTC and PR245/247 merged at10:53:01 through retained ancestry. The original census PR states remain historical; do not call them current.
+
+Root separately reports `git ls-remote --tags origin` completed with exit0 and empty output: zero remote tags were observed. This is stronger than the independently observed empty local tag list. No new tag or release was created.
+
+## Evidence and limits
+
+- Ref snapshot: `latest-live-refs-20261119.txt`, 26,391bytes, SHA256 `7c3ad9ef34b232ca5f4d891e491a504a718d18112729cb8f978839974208d0bf`.
+- The companion JSON contains all285 observed branch heads, ten branch dispositions, exact comparison metadata, nearby PR state changes, source claims and source-pinned check-run URLs.
+- The newest30PR listing maps additions through274. It is not a fresh exhaustive all-PR census.
+- Broad main comparisons for262/269/270 reach the300file API cap and are not exhaustive. Scoped comparisons used for source preservation and changed tails are below that cap.
+- Ancestry/patch retention does not establish all features complete. Earlier source approvals and tests do not automatically transfer to new heads. The current integration lease remains owned by root; this reviewer made no repository mutation.
+
+
+
+## Later qualification evidence in this checkpoint
+
+The addendum above is a fixed observation, not a live dashboard. Subsequent independent #274 execution passed its original 13 tests and reproduced 2 failures on baseline; scoped lint was interrupted. TEST_RESULTS.md and HANDOFF.md preserve that later evidence, the new current-main candidate heads, and any subsequent policy-fixture publication. The containing commit of this file identifies the final documentation source.
+
+
+---
+
+# Branch census addendum — 2026-11-19 11:18 UTC
+
+The final ref observation contains **287 branches**, versus 285 at 11:01: two new branches, two advanced nonmain heads, and no missing branches. All original 278 branches remain. This delta preserves the earlier snapshots and their qualification limits. GitHub reads completed by **2026-11-19 11:22:09 UTC**.
+
+## New and advanced source dispositions
+
+| Branch / PR | Pinned head | Disposition |
+|---|---|---|
+| `chatgpt/ghostpay-pages-artifact-integrity-20261119` / [#276](https://github.com/djshellshoxxx/GhostPay/pull/276) | `52fe7da6b6a0b3fecc8040b5ef95cd30110721e5` | **active-isolated-artifact-verifier-requires-review-and-qualification**. Preserve the branch, resolve the missing scope registration before further edits, complete assigned independent review and original hosted gates, reconcile current main and qualify a real artifact with an independently trusted checksum manifest. Do not treat hash equality as publisher authentication. |
+| `repair/ghostpay-270-policy-fixture-20261119` / [#275](https://github.com/djshellshoxxx/GhostPay/pull/275) | `dc821780e05483d1b35062a74b07be7ed9ca2f1c` | **owned-source-approved-fixture-repair-with-blocked-execution-gates**. Retain the exact fixture-only hunk and current735parent. Obtain a stable exact-lock environment and unchanged original unit/coverage/type/lint plus REQUIRE_ANVIL=1 gates. Keep strict production proof, encoder, signing and contract checks unchanged; no GREEN or merge-ready claim. |
+| `codex/ghostpay-feature-consolidation-20261119` / [#262](https://github.com/djshellshoxxx/GhostPay/pull/262) | `ec81ab8e560a3786152d373a58a6dd422f92232b` | **active-broad-integration-documentation-only-refresh**. Preserve the audit/main ancestry and inherited source limitations. Re-read exact-head hosted gates; this documentation-only refresh does not qualify the broader candidate or resolve its known security/acceptance gaps. |
+| `codex/ghostpay-consolidation-followthrough-20261119` / [#270](https://github.com/djshellshoxxx/GhostPay/pull/270) | `73545f63112910d46002718354ab5e99f8652e1f` | **active-followthrough-with-explicit-merchant-policy-refresh**. Preserve the explicit coordinator-base policy choice and unchanged JSON/scanner blobs; do not mechanically union contradictory merchant assertions or label 63 historical cases as current acceptance. Resolve the separately documented completed full-suite failure and exact-head gates. |
+
+## Source and qualification details
+
+- **#276:** exactly three added files: standalone Pages-artifact verifier, its tests and a handoff. No workflow invocation is added. The author reports five Node 22.16.0 fixture groups on exact blobs; independent source/runtime review is assigned to clock_hosting_review. A real fresh artifact and applicable hosted qualification remain separate. Full ACTIVE_WORK contains no artifact-specific claim and is unchanged from main8f; the handoff's scope statement does not establish prior registry ownership.
+- **#275:** directly parented to current #270 at 73545f63, not the older fef snapshot. Exactly three files; the only test change is the historical six-addition/two-deletion hunk. Root/PR evidence records independent approval of blob 463e440907ba7884e0026f43fd3b9be2d1a1bae3 and retention of all three negative checks. Syntax transform/whitespace/hunk validation passed. Unit/coverage/type/lint/native execution is unqualified after setup exit 137 and ENOSPC (228); no GREEN or merge readiness is claimed.
+- **#262:** c7e09bc7→ec81ab8e adds only the ten audit-ledger lines brought by current main. Ordered parents are c7e09bc7 and c977b5d6; application/workflow/dependency source is unchanged by this tail. Broader feature/security qualification remains required.
+- **#270:** fefcd57f→73545f63 is eleven commits/fourteen paths. The four JSON/scanner source/test blobs remain unchanged. Merchant files now exactly preserve #268/coordinator-base blobs a4269dec888518799aa4b3e8cc82d2ff9cc21d77 and a1299d9ceedefeefb5784d287d556008531af02f. The selected API-entry format-error policy rejects nonfinite/negative clocks; earlier #246 expiry-boundary/expired semantics and its 63-case success are historical. New evidence reports 32/32 refreshed JSON+merchant and invoice TypeScript success; lint/build remain incomplete.
+
+## Newly retrieved completed full-suite failure
+
+[Execution evidence at exact 73545f63](https://github.com/djshellshoxxx/GhostPay/blob/73545f63112910d46002718354ab5e99f8652e1f/docs/consolidation/followthrough-20261119/EXECUTION_EVIDENCE.md) (blob`e27b13363e0e005168f3aead68c55eea0bc5c43d`), section **Historical fefcd57 invoice-schema coverage run failed**, records an original-config run on historical `fefcd57fb2397685a361dcbb9b9cf705efbfc17b`: **855 passed, 3 failed, 858 total; 13/14 files passed; exit 1; 852.72 seconds**.
+
+The three existing passphrase cases exhausted the unchanged 60,000 ms deadline: altered-invoice signature verification 61,139 ms; authenticated malformed plaintext 62,006 ms; NFKC-equivalent passphrases 60,002 ms. No coverage-percentage/threshold report was produced. Raw log SHA256: `e2a6819cc3d49c5250277801a41aeceb188c88fac9851302346501e58f398d05`.
+
+This is a distinct completed failing run, not root's earlier interrupted optional run, not the later 32/32 focused selection, and not refreshed full-source qualification. Deadline exhaustion is established; its ultimate cause remains unresolved. Keep all timeouts and coverage thresholds unchanged.
+
+## Main update observed
+
+Main advanced externally from `8f56376427c96881f49590920ff0bf8543ec81b4` to `c977b5d6723f6822c3b5d86cd6b231712c53c395` through [PR #266](https://github.com/djshellshoxxx/GhostPay/pull/266), merged at **2026-11-19T11:16:01Z**. Tree: `2634456ffa35681e799f71b72bb907f946a77618`; ordered parents: `8f56376427c96881f49590920ff0bf8543ec81b4`, `75dc9d3b29e3449b56e13889496c3771ec7c2f93`.
+
+The complete diff is ten added lines in `docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md`; application source is unchanged. Root's lock ref remains 409799b0 in this observation. This addendum does not infer the external actor or coordination cause. Root is preserving c977 as the current-main parent/source in #273; do not attribute #266 to the earlier #257 merge operation.
+
+## Exact-head check-run snapshot
+
+| PR | Counts observed | Interpretation |
+|---|---|---|
+| [#262](https://github.com/djshellshoxxx/GhostPay/pull/262) | 1 skipped, 13 queued | Not fully qualified; cancelled/pending jobs are not passes |
+| [#270](https://github.com/djshellshoxxx/GhostPay/pull/270) | 8 queued, 1 skipped | Not fully qualified; cancelled/pending jobs are not passes |
+| [#275](https://github.com/djshellshoxxx/GhostPay/pull/275) | 1 skipped, 10 queued | Not fully qualified; cancelled/pending jobs are not passes |
+| [#276](https://github.com/djshellshoxxx/GhostPay/pull/276) | 18 cancelled, 5 queued, 1 skipped | Not fully qualified; cancelled/pending jobs are not passes |
+
+These complete check-run pages exclude legacy combined statuses. Job matrices can expand later; re-read exact heads and latest attempts before integration. The companion JSON retains each job URL and the exact observation boundaries.
+
+Ref evidence: `final-live-refs-20261119.txt`, 26,590 bytes, SHA256 `a6ebc752024db49f86636a8dfd9eb3145643e53a1492c5283f1b0f0ee3bda342`. All work by this census reviewer was read-only; no remote/source mutation or duplicate #276 test run occurred.

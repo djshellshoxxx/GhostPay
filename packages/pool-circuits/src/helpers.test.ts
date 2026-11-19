@@ -192,6 +192,38 @@ describe('buildRagequitInputs', () => {
   });
 });
 
+describe('positive pool input values', () => {
+  const withdraw = (value: bigint, withdrawnValue: bigint): Parameters<typeof buildWithdrawInputs>[0] => ({
+    chainId: 31337,
+    note: { ...note, value },
+    withdrawnValue,
+    newNullifier: 33n,
+    newSecret: 44n,
+    context: 5n,
+    statePath: treeWith([commitment(value, note.label, precommitment(note.nullifier, note.secret))]).path(0),
+  });
+
+  it('refuses a zero withdrawal from a positive note', () => {
+    expect(code(() => buildWithdrawInputs(withdraw(note.value, 0n)))).toBe('OUT_OF_RANGE');
+  });
+
+  it('refuses a zero-value existing note', () => {
+    expect(code(() => buildWithdrawInputs(withdraw(0n, 0n)))).toBe('OUT_OF_RANGE');
+    expect(code(() => buildWithdrawInputs(withdraw(0n, 1n)))).toBe('OUT_OF_RANGE');
+  });
+
+  it('refuses a zero-value ragequit', () => {
+    expect(code(() => buildRagequitInputs(31337, { ...note, value: 0n }))).toBe('OUT_OF_RANGE');
+  });
+
+  it.each([1n, VALUE_LIMIT - 1n])('allows full withdrawal and ragequit at positive boundary %s', (value) => {
+    const w = buildWithdrawInputs(withdraw(value, value));
+    expect(w.existingValue).toBe(value.toString());
+    expect(w.withdrawnValue).toBe(value.toString());
+    expect(buildRagequitInputs(31337, { ...note, value }).value).toBe(value.toString());
+  });
+});
+
 describe('toVerifierCalldata', () => {
   const proof: SnarkjsProof = {
     pi_a: ['1', '2', '1'],
@@ -241,7 +273,7 @@ describe('properties', () => {
             newSecret: 44n,
             context: 1n,
           };
-          if (w > v) expect(code(() => buildWithdrawInputs(args))).toBe('OUT_OF_RANGE');
+          if (w > v || w === 0n) expect(code(() => buildWithdrawInputs(args))).toBe('OUT_OF_RANGE');
           else expect(buildWithdrawInputs(args).existingValue).toBe(v.toString());
         },
       ),
