@@ -20,7 +20,7 @@ describe('TM14 stored network policy fails closed without provider substitution'
   });
 
   it('refuses an unreadable stored selection instead of choosing a provider policy', () => {
-    expect(() => loadNetworkSelection({ getItem: () => { throw new Error('fixture-private-path'); } } as unknown as Storage)).toThrow(/network profile/i);
+    expect(() => loadNetworkSelection({ getItem: () => { throw new Error('fixture-private-path'); } })).toThrow(/network profile/i);
   });
 
   it.each(['rpcProfile', 'relayerProfile', 'rpcMode', 'noticeAcknowledged'])('refuses a truncated saved policy missing %s', (missing) => {

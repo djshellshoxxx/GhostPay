@@ -128,7 +128,7 @@ describe('Bitcoin spentness qualification regressions', () => {
 
   it('stops optional checks between outputs when an injected client completes after abort', async () => {
     const f = await fixture(); appendBlocks(f.chain.blocks, [[coinbase(5), paymentTx(505, f.wallet, SEED_B, 40_000)]]); await f.sync();
-    const abort = new AbortController(); const check = vi.spyOn(f.client, 'isUnspent').mockImplementation(async () => { abort.abort(); return true; });
+    const abort = new AbortController(); const check = vi.spyOn(f.client, 'isUnspent').mockImplementation(() => { abort.abort(); return Promise.resolve(true); });
     await expect(scanForPayments({ ...f, fromHeight: 1, providerSpentCheck: true, signal: abort.signal })).rejects.toMatchObject({ code: 'ABORTED' });
     expect(check).toHaveBeenCalledTimes(1);
   });

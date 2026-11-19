@@ -58,7 +58,7 @@ describe('TM14 network selection (default unchanged)', () => {
     expect(() => loadNetworkSelection(store('{not json'))).toThrow(/network profile/i);
     expect(() => loadNetworkSelection(store(JSON.stringify({ rpcProfile: 'tor-socks' })))).toThrow(/network profile/i);
     expect(() => loadNetworkSelection(store(JSON.stringify({ rpcMode: 'own-node' })))).toThrow(/invalid or unavailable/i);
-    expect(() => loadNetworkSelection({ getItem: () => { throw new Error('blocked'); } } as unknown as Storage)).toThrow(/network profile/i);
+    expect(() => loadNetworkSelection({ getItem: () => { throw new Error('blocked'); } })).toThrow(/network profile/i);
     expect(loadNetworkSelection(store(own)).rpcMode).toBe('own-node');
   });
 
