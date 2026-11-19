@@ -1,3 +1,20 @@
+# Canonical array repair integration — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-canonical-array-integration-20261119`.
+Base: `e74ddd26b75912d770e05d51f0b9229756adc649` (root remains frozen during coverage).
+Owned paths: `packages/invoice-schema/src/json.ts`, `json.test.ts`, this additive
+claim, upstream PR #265 provenance, and `docs/consolidation/canonical-array-20261119/`.
+Acceptance: preserve PR #265 head `c591b54078febcf24cba01b29bc173b2fac1f9cb` history
+where merge-compatible; reproduce its checked-in regression against frozen baseline;
+retain the reviewed own-key validation and every assertion, with bounded dense-array
+controls and an explicitly documented cosmetic JSDoc correction if needed. Run
+bounded original package tests and relevant package-only checks, obtain independent
+privacy-worker review, and record failures/limits without weakening checks. Scope is
+sparse/decorated inert arrays, not arbitrary hostile accessors/proxies or a demonstrated
+signature exploit. No root checkout, other PR head, dependency, threshold, workflow,
+mainnet, deployment or remote mutation. Root owns later integration and consumer gates.
+
 # Hosting export timestamp precision — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
