@@ -124,7 +124,27 @@ describe('chain and operator inspection', () => {
     keys.spendSecret.fill(0); keys.viewSecret.fill(0);
     const io = makeIo({ 'address.txt': canonical });
     expect(await execute('chain recipient inspect', io, ['--family', family, '--in', 'address.txt', ...(family === 'bitcoin' ? ['--network', 'testnet'] : [])])).toBe(0);
-    expect(stdoutJson(io)).toMatchObject({ family, valid: true, canonical, paymentVerified: false, identityVerified: false });
+    expect(stdoutJson(io)).toMatchObject({ family, valid: true, canonical, paymentVerified: false, identityVerified: false,
+      network: family === 'evm' ? null : family === 'solana' ? 'devnet' : 'testnet' });
+  });
+
+  it.each(['devnet', 'testnet', 'localnet'] as const)('reports the decoded Solana %s cluster of a public recipient', async (cluster) => {
+    const keys = solanaKeys();
+    const canonical = solanaMeta({ ...keys, cluster });
+    keys.spendSecret.fill(0); keys.viewSecret.fill(0);
+    const io = makeIo({ 'address.txt': canonical });
+    expect(await execute('chain recipient inspect', io, ['--family', 'solana', '--in', 'address.txt'])).toBe(0);
+    expect(stdoutJson(io)).toMatchObject({ family: 'solana', valid: true, canonical, network: cluster });
+  });
+
+  it('refuses a Solana mainnet recipient because experimental chains are testnet-only', async () => {
+    const keys = solanaKeys();
+    const io = makeIo({ 'address.txt': solanaMeta({ ...keys, cluster: 'mainnet' }) });
+    keys.spendSecret.fill(0); keys.viewSecret.fill(0);
+    const refused = execute('chain recipient inspect', io, ['--family', 'solana', '--in', 'address.txt']);
+    await expect(refused).rejects.toMatchObject({ kind: 'unsupported', code: 'CHAIN_DISABLED', exitCode: 5 });
+    await expect(refused).rejects.toThrow(/mainnet recipients are refused/);
+    expect(io.out).toHaveLength(0);
   });
   it('lists actual enabled testnets and keeps mainnets and experimental families explicitly gated', async () => {
     const io = makeIo();
