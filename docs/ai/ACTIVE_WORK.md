@@ -526,3 +526,22 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+## Sweep quote and relayed signing lifecycle correction — 2026-11-19
+
+Worker: independent ChatGPT review agent, coordinated by the main consolidation agent.
+Branch: `review/ghostpay-sweep-quote-lifecycle-20261119`.
+Base: `4085622463411d3ba27f4efb7b73a70575170535` (PR #252).
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.quoteLifecycle.test.tsx`,
+and `docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md`.
+Acceptance: prevent stale quotes and stale relayed submissions after a balance,
+recipient, payment, provider, session, mode, manifest or transport change; retain
+submitted and uncertain-outcome evidence after irreversible handoff; preserve
+explicit balance consent and existing vault, session, fee and journal guards.
+The original stale quote was reproduced against exact source. The full component
+regressions, typecheck, lint and hosted checks remain qualification gates.
+The execution environment became unavailable during dependency setup. The
+reconstructed candidate is an unqualified draft, not a completed acceptance claim.
+Existing #231/#252 and broad #262/#264 remain unchanged. Main integration belongs
+to the root coordinator. No deployment, release or real transaction is authorized
+by this worker claim.
