@@ -399,6 +399,7 @@ source after checking the pinned upstream filter, retained logs and unchanged up
 dependency, build, upload or rerun. Hosted artifact existence remains unverified; early failures can still
 precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
 limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
+
 # Historical pool input guard recovery — 2026-11-18
 
 Worker: history_review, coordinated by the pre-merge repair lead.
@@ -415,3 +416,10 @@ changes the two owned source/test paths. The existing pool circuit constraints,
 proof artifacts, contracts, crypto, dependencies, deployment and security gates
 remain outside this scope. The coordinator owns publication and integration.
 
+Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
+regressions (4 failed / 15 passed before correction; 19/19 after), package
+typecheck/lint/build, secret scan and action pins passing. Available full package
+coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existing
+artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
+also passes all 19 helper tests. See the source-pinned handoff under
+`docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
