@@ -161,7 +161,7 @@ describe('canonicalize', () => {
       enumerable: true,
       get: () => {
         calls++;
-        delete value[1];
+        Reflect.deleteProperty(value, '1');
         return 1;
       },
     });
@@ -189,7 +189,7 @@ describe('canonicalize', () => {
     const value: unknown[] = [null, 2];
     value[0] = {
       get first() {
-        delete value[1];
+        Reflect.deleteProperty(value, '1');
         return 1;
       },
     };
