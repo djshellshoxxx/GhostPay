@@ -1,0 +1,948 @@
+﻿2026-11-18T23:44:53.1770880Z Current runner version: '2.338.2'
+2026-11-18T23:44:53.1798437Z ##[group]Runner Image Provisioner
+2026-11-18T23:44:53.1799337Z Hosted Compute Agent
+2026-11-18T23:44:53.1799895Z Version: 20261103.629
+2026-11-18T23:44:53.1800459Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T23:44:53.1801200Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T23:44:53.1801802Z Worker ID: {9e3e5919-8725-46f8-acad-d1c1f08c6526}
+2026-11-18T23:44:53.1802537Z Region: northcentralus
+2026-11-18T23:44:53.1803101Z Cloud: Azure
+2026-11-18T23:44:53.1803560Z ##[endgroup]
+2026-11-18T23:44:53.1805517Z ##[group]Operating System
+2026-11-18T23:44:53.1806084Z Ubuntu
+2026-11-18T23:44:53.1806619Z 26.04.1
+2026-11-18T23:44:53.1807125Z LTS
+2026-11-18T23:44:53.1807578Z ##[endgroup]
+2026-11-18T23:44:53.1808152Z ##[group]Runner Image
+2026-11-18T23:44:53.1808688Z Image: ubuntu-26.04
+2026-11-18T23:44:53.1809275Z Version: 20261111.196.1
+2026-11-18T23:44:53.1810480Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T23:44:53.1811975Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T23:44:53.1812852Z ##[endgroup]
+2026-11-18T23:44:53.1813980Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T23:44:53.1816284Z Contents: read
+2026-11-18T23:44:53.1816881Z Metadata: read
+2026-11-18T23:44:53.1817386Z ##[endgroup]
+2026-11-18T23:44:53.1819346Z Secret source: Actions
+2026-11-18T23:44:53.1820299Z Cache mode: write
+2026-11-18T23:44:53.1821344Z Prepare workflow directory
+2026-11-18T23:44:53.2098391Z Prepare all required actions
+2026-11-18T23:44:53.2131559Z Getting action download info
+2026-11-18T23:44:53.4364557Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T23:44:53.5248725Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-18T23:44:53.5718577Z Download action repository 'foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf' (SHA:dba66c27052e63476d886f22216e119ba7e615bf)
+2026-11-18T23:44:53.9581722Z Complete job name: Pages artifact on anvil (browser)
+2026-11-18T23:44:54.0176466Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T23:44:54.0176998Z with:
+2026-11-18T23:44:54.0177259Z   persist-credentials: false
+2026-11-18T23:44:54.0177554Z   fetch-depth: 1
+2026-11-18T23:44:54.0177826Z   repository: djshellshoxxx/GhostPay
+2026-11-18T23:44:54.0179830Z   token: ***
+2026-11-18T23:44:54.0180078Z   ssh-strict: true
+2026-11-18T23:44:54.0180339Z   ssh-user: git
+2026-11-18T23:44:54.0180587Z   clean: true
+2026-11-18T23:44:54.0180846Z   sparse-checkout-cone-mode: true
+2026-11-18T23:44:54.0181152Z   fetch-tags: false
+2026-11-18T23:44:54.0181412Z   show-progress: true
+2026-11-18T23:44:54.0181674Z   lfs: false
+2026-11-18T23:44:54.0181913Z   submodules: false
+2026-11-18T23:44:54.0182171Z   set-safe-directory: true
+2026-11-18T23:44:54.0182485Z   allow-unsafe-pr-checkout: false
+2026-11-18T23:44:54.0182853Z ##[endgroup]
+2026-11-18T23:44:54.2328903Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T23:44:54.2330631Z ##[group]Getting Git version info
+2026-11-18T23:44:54.2331073Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:44:54.2331649Z [command]/usr/bin/git version
+2026-11-18T23:44:54.2366202Z git version 2.56.1
+2026-11-18T23:44:54.2369298Z ##[endgroup]
+2026-11-18T23:44:54.2383579Z Temporarily overriding HOME='/home/runner/work/_temp/b1bf6aa4-75d2-4085-aff4-48313881e11d' before making global git config changes
+2026-11-18T23:44:54.2385321Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:44:54.2386813Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:44:54.2662535Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:44:54.2663517Z ##[group]Determining repository object format
+2026-11-18T23:44:54.2664417Z ##[endgroup]
+2026-11-18T23:44:54.2664838Z ##[group]Initializing the repository
+2026-11-18T23:44:54.2665503Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:44:54.3248937Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T23:44:54.3250054Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T23:44:54.3253192Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T23:44:54.3254039Z hint: call:
+2026-11-18T23:44:54.3254547Z hint:
+2026-11-18T23:44:54.3255318Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T23:44:54.3256185Z hint:
+2026-11-18T23:44:54.3256771Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T23:44:54.3257586Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T23:44:54.3258226Z hint:
+2026-11-18T23:44:54.3258656Z hint: 	git branch -m <name>
+2026-11-18T23:44:54.3259084Z hint:
+2026-11-18T23:44:54.3259609Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T23:44:54.3260544Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T23:44:54.3269917Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:44:54.3316345Z ##[endgroup]
+2026-11-18T23:44:54.3317048Z ##[group]Disabling automatic garbage collection
+2026-11-18T23:44:54.3319166Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T23:44:54.3349848Z ##[endgroup]
+2026-11-18T23:44:54.3350450Z ##[group]Setting up auth
+2026-11-18T23:44:54.3350797Z Removing SSH command configuration
+2026-11-18T23:44:54.3354083Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:44:54.3382757Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:44:54.3739283Z Removing HTTP extra header
+2026-11-18T23:44:54.3744404Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:44:54.3775814Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:44:54.4003989Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:44:54.4008694Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:44:54.4037333Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:44:54.4262735Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T23:44:54.4295964Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config
+2026-11-18T23:44:54.4323499Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config
+2026-11-18T23:44:54.4353259Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config
+2026-11-18T23:44:54.4381575Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config
+2026-11-18T23:44:54.4407892Z ##[endgroup]
+2026-11-18T23:44:54.4408345Z ##[group]Fetching the repository
+2026-11-18T23:44:54.4412873Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +24bc65f525ec9f19a670e6e5600b071c03edbd56:refs/remotes/pull/239/merge
+2026-11-18T23:44:55.6811547Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:44:55.6812804Z  * [new ref]         24bc65f525ec9f19a670e6e5600b071c03edbd56 -> pull/239/merge
+2026-11-18T23:44:55.6816902Z ##[endgroup]
+2026-11-18T23:44:55.6817689Z ##[group]Determining the checkout info
+2026-11-18T23:44:55.6819466Z ##[endgroup]
+2026-11-18T23:44:55.6821011Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T23:44:55.6868321Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T23:44:55.6898596Z ##[group]Checking out the ref
+2026-11-18T23:44:55.6900151Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/239/merge
+2026-11-18T23:44:55.9220978Z Note: switching to 'refs/remotes/pull/239/merge'.
+2026-11-18T23:44:55.9225629Z 
+2026-11-18T23:44:55.9226226Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T23:44:55.9227700Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T23:44:55.9229126Z state without impacting any branches by switching back to a branch.
+2026-11-18T23:44:55.9229954Z 
+2026-11-18T23:44:55.9230533Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T23:44:55.9231710Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T23:44:55.9232319Z 
+2026-11-18T23:44:55.9232593Z   git switch -c <new-branch-name>
+2026-11-18T23:44:55.9233038Z 
+2026-11-18T23:44:55.9233316Z Or undo this operation with:
+2026-11-18T23:44:55.9233763Z 
+2026-11-18T23:44:55.9234068Z   git switch -
+2026-11-18T23:44:55.9234507Z 
+2026-11-18T23:44:55.9235186Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T23:44:55.9235939Z 
+2026-11-18T23:44:55.9236799Z HEAD is now at 24bc65f Merge 07a7497d1a0cb39fb6904e5c50f8a52db2285820 into 198aa5baff22272453733a0f3dcfcac0e0994eec
+2026-11-18T23:44:55.9239837Z ##[endgroup]
+2026-11-18T23:44:55.9280291Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T23:44:55.9305700Z 24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:44:55.9313005Z ##[group]Removing auth
+2026-11-18T23:44:55.9314152Z Removing SSH command configuration
+2026-11-18T23:44:55.9315576Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:44:55.9344331Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:44:55.9579643Z Removing HTTP extra header
+2026-11-18T23:44:55.9581814Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:44:55.9609475Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:44:55.9837941Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:44:55.9839927Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:44:55.9862331Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:44:55.9863972Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:44:55.9865984Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:44:55.9867438Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:44:55.9870594Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:44:55.9894435Z /home/runner/work/_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config
+2026-11-18T23:44:55.9934576Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-9788981c\-f031\-4f63\-abc6\-3c4341607509\.config
+2026-11-18T23:44:55.9939212Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:44:55.9958418Z /home/runner/work/_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config
+2026-11-18T23:44:55.9971212Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-9788981c\-f031\-4f63\-abc6\-3c4341607509\.config
+2026-11-18T23:44:56.0000370Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:44:56.0020549Z /github/runner_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config
+2026-11-18T23:44:56.0027994Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-9788981c\-f031\-4f63\-abc6\-3c4341607509\.config
+2026-11-18T23:44:56.0060128Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:44:56.0083756Z /github/runner_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config
+2026-11-18T23:44:56.0089406Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-9788981c\-f031\-4f63\-abc6\-3c4341607509\.config
+2026-11-18T23:44:56.0118487Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:44:56.0346694Z Removing credentials config '/home/runner/work/_temp/git-credentials-9788981c-f031-4f63-abc6-3c4341607509.config'
+2026-11-18T23:44:56.0356087Z ##[endgroup]
+2026-11-18T23:44:56.0611219Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-18T23:44:56.0612125Z with:
+2026-11-18T23:44:56.0612650Z   node-version: 22
+2026-11-18T23:44:56.0613195Z   cache: npm
+2026-11-18T23:44:56.0613740Z   check-latest: false
+2026-11-18T23:44:56.0618194Z   token: ***
+2026-11-18T23:44:56.0618773Z   package-manager-cache: true
+2026-11-18T23:44:56.0619406Z ##[endgroup]
+2026-11-18T23:44:56.1509245Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-18T23:44:56.2217402Z ##[group]Environment details
+2026-11-18T23:44:56.4493851Z node: v22.23.4
+2026-11-18T23:44:56.4494255Z npm: 10.9.9
+2026-11-18T23:44:56.4494481Z yarn: 1.22.22
+2026-11-18T23:44:56.4495774Z ##[endgroup]
+2026-11-18T23:44:56.4506168Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache
+2026-11-18T23:44:56.5242084Z /home/runner/.npm
+2026-11-18T23:44:56.6422387Z Cache hit for: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:44:57.7943546Z Received 134217728 of 247554651 (54.2%), 127.9 MBs/sec
+2026-11-18T23:44:58.1379307Z Received 247554651 of 247554651 (100.0%), 175.7 MBs/sec
+2026-11-18T23:44:58.1379917Z Cache Size: ~236 MB (247554651 B)
+2026-11-18T23:44:58.1429766Z [command]/usr/bin/tar -xf /home/runner/work/_temp/7360ac2d-d7ed-47ad-80d9-8264cdedf54f/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:44:58.4906062Z Cache restored successfully
+2026-11-18T23:44:58.5013630Z Cache restored from key: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:44:58.5279730Z ##[group]Run npm ci --ignore-scripts
+2026-11-18T23:44:58.5280021Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-18T23:44:58.5359837Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:58.5360029Z ##[endgroup]
+2026-11-18T23:45:01.9652959Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-18T23:45:03.3598820Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-18T23:45:05.9817428Z 
+2026-11-18T23:45:05.9818526Z added 721 packages, and audited 790 packages in 7s
+2026-11-18T23:45:05.9818761Z 
+2026-11-18T23:45:05.9819288Z 157 packages are looking for funding
+2026-11-18T23:45:05.9819494Z   run `npm fund` for details
+2026-11-18T23:45:05.9951502Z 
+2026-11-18T23:45:05.9952261Z 17 low severity vulnerabilities
+2026-11-18T23:45:05.9952459Z 
+2026-11-18T23:45:05.9952618Z To address issues that do not require attention, run:
+2026-11-18T23:45:05.9952926Z   npm audit fix
+2026-11-18T23:45:05.9953032Z 
+2026-11-18T23:45:05.9953203Z To address all issues possible (including breaking changes), run:
+2026-11-18T23:45:05.9953457Z   npm audit fix --force
+2026-11-18T23:45:05.9953575Z 
+2026-11-18T23:45:05.9953700Z Some issues need review, and may require choosing
+2026-11-18T23:45:05.9953901Z a different dependency.
+2026-11-18T23:45:05.9953994Z 
+2026-11-18T23:45:05.9954069Z Run `npm audit` for details.
+2026-11-18T23:45:06.1121258Z ##[group]Run rm -rf packages/*/dist
+2026-11-18T23:45:06.1121490Z [36;1mrm -rf packages/*/dist[0m
+2026-11-18T23:45:06.1121656Z [36;1mnpm run build:libs[0m
+2026-11-18T23:45:06.1166591Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:45:06.1166774Z ##[endgroup]
+2026-11-18T23:45:06.1883416Z 
+2026-11-18T23:45:06.1883842Z > ghostpay@0.1.0 build:libs
+2026-11-18T23:45:06.1884262Z > node scripts/build-workspaces.mjs --libraries
+2026-11-18T23:45:06.1884483Z 
+2026-11-18T23:45:06.3025488Z 
+2026-11-18T23:45:06.3026259Z > @ghostpay/address-safety@0.1.0 build
+2026-11-18T23:45:06.3026678Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:06.3026853Z 
+2026-11-18T23:45:07.5645846Z 
+2026-11-18T23:45:07.5646692Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:45:07.5647143Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:07.5647314Z 
+2026-11-18T23:45:08.5783396Z 
+2026-11-18T23:45:08.5784215Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:45:08.5784535Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:08.5784730Z 
+2026-11-18T23:45:09.3834881Z 
+2026-11-18T23:45:09.3835763Z > @ghostpay/chain-adapters@0.1.0 build
+2026-11-18T23:45:09.3836492Z > npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:09.3836927Z 
+2026-11-18T23:45:09.4960086Z 
+2026-11-18T23:45:09.4960919Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:45:09.4961397Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:09.4961575Z 
+2026-11-18T23:45:10.4034327Z 
+2026-11-18T23:45:10.4035316Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:45:10.4035929Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:10.4036107Z 
+2026-11-18T23:45:13.5396983Z 
+2026-11-18T23:45:13.5397862Z > @ghostpay/amount-blur@0.1.0 build
+2026-11-18T23:45:13.5398210Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:13.5398326Z 
+2026-11-18T23:45:14.4014441Z 
+2026-11-18T23:45:14.4015613Z > @ghostpay/btc-family@0.1.0 build
+2026-11-18T23:45:14.4016661Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:14.4016847Z 
+2026-11-18T23:45:15.2169263Z 
+2026-11-18T23:45:15.2169980Z > @ghostpay/btc-payjoin@0.1.0 build
+2026-11-18T23:45:15.2170390Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:15.2170499Z 
+2026-11-18T23:45:16.5544417Z 
+2026-11-18T23:45:16.5545369Z > @ghostpay/btc-silent-payments@0.1.0 build
+2026-11-18T23:45:16.5545793Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:16.5545914Z 
+2026-11-18T23:45:18.1226795Z 
+2026-11-18T23:45:18.1229819Z > @ghostpay/chain-evm-extra@0.1.0 build
+2026-11-18T23:45:18.1230123Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:18.1230277Z 
+2026-11-18T23:45:19.0029796Z 
+2026-11-18T23:45:19.0030535Z > @ghostpay/chain-solana@0.1.0 build
+2026-11-18T23:45:19.0030924Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:19.0031037Z 
+2026-11-18T23:45:19.7698741Z 
+2026-11-18T23:45:19.7699525Z > @ghostpay/chain-tron@0.1.0 build
+2026-11-18T23:45:19.7699973Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:19.7700146Z 
+2026-11-18T23:45:20.4574129Z 
+2026-11-18T23:45:20.4574831Z > @ghostpay/i18n@0.1.0 build
+2026-11-18T23:45:20.4575490Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:20.4575650Z 
+2026-11-18T23:45:21.3144660Z 
+2026-11-18T23:45:21.3145642Z > @ghostpay/merchant-hooks@0.1.0 build
+2026-11-18T23:45:21.3146299Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:21.3147205Z 
+2026-11-18T23:45:21.4255560Z 
+2026-11-18T23:45:21.4256303Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:45:21.4256615Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:21.4256728Z 
+2026-11-18T23:45:22.9415679Z 
+2026-11-18T23:45:22.9416554Z > @ghostpay/merchant-billing@0.1.0 build
+2026-11-18T23:45:22.9417035Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:22.9417206Z 
+2026-11-18T23:45:23.7696794Z 
+2026-11-18T23:45:23.7697541Z > @ghostpay/merchant-ledger@0.1.0 build
+2026-11-18T23:45:23.7698219Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:23.7698581Z 
+2026-11-18T23:45:23.8761947Z 
+2026-11-18T23:45:23.8763165Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:45:23.8763487Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:23.8763600Z 
+2026-11-18T23:45:25.1554482Z 
+2026-11-18T23:45:25.1555452Z > @ghostpay/merchant-multisig@0.1.0 build
+2026-11-18T23:45:25.1555857Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:25.1556059Z 
+2026-11-18T23:45:25.8669751Z 
+2026-11-18T23:45:25.8670512Z > @ghostpay/qr-exchange@0.1.0 build
+2026-11-18T23:45:25.8671067Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:25.8671182Z 
+2026-11-18T23:45:26.6354372Z 
+2026-11-18T23:45:26.6355266Z > @ghostpay/sandbox@0.1.0 build
+2026-11-18T23:45:26.6355696Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:26.6355869Z 
+2026-11-18T23:45:27.3745345Z 
+2026-11-18T23:45:27.3746088Z > @ghostpay/ux-vault@0.1.0 build
+2026-11-18T23:45:27.3746633Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:27.3746793Z 
+2026-11-18T23:45:28.6214308Z 
+2026-11-18T23:45:28.6214953Z > @ghostpay/cli@0.1.0 build
+2026-11-18T23:45:28.6215483Z > tsc -p tsconfig.build.json && node stamp-build.mjs
+2026-11-18T23:45:28.6215716Z 
+2026-11-18T23:45:30.7676781Z 
+2026-11-18T23:45:30.7677525Z > @ghostpay/confidential-amounts@0.1.0 build
+2026-11-18T23:45:30.7677978Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:30.7678157Z 
+2026-11-18T23:45:33.9317385Z 
+2026-11-18T23:45:33.9318112Z > @ghostpay/donation@0.1.0 build
+2026-11-18T23:45:33.9318537Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:33.9318701Z 
+2026-11-18T23:45:35.2031230Z 
+2026-11-18T23:45:35.2031926Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:45:35.2032327Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:35.2032500Z 
+2026-11-18T23:45:35.7547892Z 
+2026-11-18T23:45:35.7548600Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:45:35.7549079Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:35.7549289Z 
+2026-11-18T23:45:35.8636820Z 
+2026-11-18T23:45:35.8637505Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:45:35.8637889Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:35.8638003Z 
+2026-11-18T23:45:37.8103763Z 
+2026-11-18T23:45:37.8104558Z > @ghostpay/external-pools-privacypools@0.1.0 build
+2026-11-18T23:45:37.8105194Z > npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:37.8105415Z 
+2026-11-18T23:45:37.9124495Z 
+2026-11-18T23:45:37.9125310Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:45:37.9125734Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:37.9125941Z 
+2026-11-18T23:45:38.0146772Z 
+2026-11-18T23:45:38.0147201Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:45:38.0147445Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:38.0147556Z 
+2026-11-18T23:45:41.4621788Z 
+2026-11-18T23:45:41.4622497Z > @ghostpay/external-pools-railgun@0.1.0 build
+2026-11-18T23:45:41.4623032Z > npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:41.4623245Z 
+2026-11-18T23:45:41.5647433Z 
+2026-11-18T23:45:41.5648150Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:45:41.5648839Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:41.5649163Z 
+2026-11-18T23:45:41.6669794Z 
+2026-11-18T23:45:41.6670497Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:45:41.6694196Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:41.6694890Z 
+2026-11-18T23:45:44.7334445Z 
+2026-11-18T23:45:44.7335161Z > @ghostpay/hops@0.1.0 build
+2026-11-18T23:45:44.7335502Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:44.7335614Z 
+2026-11-18T23:45:45.9136140Z 
+2026-11-18T23:45:45.9136802Z > @ghostpay/hygiene@0.1.0 build
+2026-11-18T23:45:45.9137160Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:45.9137278Z 
+2026-11-18T23:45:47.1824436Z 
+2026-11-18T23:45:47.1825182Z > @ghostpay/metadata-hardening@0.1.0 build
+2026-11-18T23:45:47.1825483Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:47.1825600Z 
+2026-11-18T23:45:48.6047189Z 
+2026-11-18T23:45:48.6047860Z > @ghostpay/net-harness@0.1.0 build
+2026-11-18T23:45:48.6048301Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:48.6048469Z 
+2026-11-18T23:45:49.4786152Z 
+2026-11-18T23:45:49.4786856Z > @ghostpay/net-transport@0.1.0 build
+2026-11-18T23:45:49.4787292Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:49.4787464Z 
+2026-11-18T23:45:50.5847771Z 
+2026-11-18T23:45:50.5848615Z > @ghostpay/ops-monitor@0.1.0 build
+2026-11-18T23:45:50.5849104Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:50.5849289Z 
+2026-11-18T23:45:51.8066754Z 
+2026-11-18T23:45:51.8067469Z > @ghostpay/relayer-guard@0.1.0 build
+2026-11-18T23:45:51.8067917Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:51.8068086Z 
+2026-11-18T23:45:52.7075439Z 
+2026-11-18T23:45:52.7076146Z > @ghostpay/payer-sponsor@0.1.0 build
+2026-11-18T23:45:52.7076579Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:52.7076748Z 
+2026-11-18T23:45:54.5566701Z 
+2026-11-18T23:45:54.5567408Z > @ghostpay/payment-uri@0.1.0 build
+2026-11-18T23:45:54.5567836Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:54.5568011Z 
+2026-11-18T23:45:55.4442093Z 
+2026-11-18T23:45:55.4442794Z > @ghostpay/pir-two-server@0.1.0 build
+2026-11-18T23:45:55.4443210Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:55.4443327Z 
+2026-11-18T23:45:56.3764843Z 
+2026-11-18T23:45:56.3765606Z > @ghostpay/plugin-api@0.1.0 build
+2026-11-18T23:45:56.3765982Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:56.3766135Z 
+2026-11-18T23:45:57.0380546Z 
+2026-11-18T23:45:57.0381500Z > @ghostpay/policy-scheme@0.1.0 build
+2026-11-18T23:45:57.0382074Z > npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:57.0382373Z 
+2026-11-18T23:45:57.1400816Z 
+2026-11-18T23:45:57.1401527Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:45:57.1401968Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:57.1402144Z 
+2026-11-18T23:45:59.5624246Z 
+2026-11-18T23:45:59.5624955Z > @ghostpay/pool-circuits@0.1.0 build
+2026-11-18T23:45:59.5625549Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:59.5625726Z 
+2026-11-18T23:46:00.3155799Z 
+2026-11-18T23:46:00.3156467Z > @ghostpay/pool-prover@0.1.0 build
+2026-11-18T23:46:00.3156910Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:00.3157116Z 
+2026-11-18T23:46:01.0875791Z 
+2026-11-18T23:46:01.0876459Z > @ghostpay/pool-sdk@0.1.0 build
+2026-11-18T23:46:01.0876887Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:01.0877063Z 
+2026-11-18T23:46:02.8974882Z 
+2026-11-18T23:46:02.8975714Z > @ghostpay/pool-relayer@0.1.0 build
+2026-11-18T23:46:02.8976080Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:02.8976189Z 
+2026-11-18T23:46:06.2024708Z 
+2026-11-18T23:46:06.2025475Z > @ghostpay/privacy-pipeline@0.1.0 build
+2026-11-18T23:46:06.2025764Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:06.2025876Z 
+2026-11-18T23:46:07.4629203Z 
+2026-11-18T23:46:07.4629908Z > @ghostpay/privacy-profiles@0.1.0 build
+2026-11-18T23:46:07.4630365Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:07.4630543Z 
+2026-11-18T23:46:08.5055226Z 
+2026-11-18T23:46:08.5055905Z > @ghostpay/scan-source@0.1.0 build
+2026-11-18T23:46:08.5056542Z > npm run build -w @ghostpay/pir-two-server --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:46:08.5056874Z 
+2026-11-18T23:46:08.6129274Z 
+2026-11-18T23:46:08.6129929Z > @ghostpay/pir-two-server@0.1.0 build
+2026-11-18T23:46:08.6130227Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:08.6130334Z 
+2026-11-18T23:46:10.4038222Z 
+2026-11-18T23:46:10.4038914Z > @ghostpay/sdk@0.1.0 build
+2026-11-18T23:46:10.4039895Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:10.4040064Z 
+2026-11-18T23:46:11.0812846Z 
+2026-11-18T23:46:11.0813568Z > @ghostpay/solana-stealth@0.1.0 build
+2026-11-18T23:46:11.0813940Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:11.0814053Z 
+2026-11-18T23:46:12.2882479Z 
+2026-11-18T23:46:12.2883169Z > @ghostpay/tron-adapter@0.1.0 build
+2026-11-18T23:46:12.2883707Z > npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:46:12.2883943Z 
+2026-11-18T23:46:12.3960529Z 
+2026-11-18T23:46:12.3961234Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:46:12.3961681Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:12.3961856Z 
+2026-11-18T23:46:14.0123104Z 
+2026-11-18T23:46:14.0124207Z > @ghostpay/tx-review@0.1.0 build
+2026-11-18T23:46:14.0124677Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:14.0124865Z 
+2026-11-18T23:46:15.1582869Z 
+2026-11-18T23:46:15.1583559Z > @ghostpay/ux-connect@0.1.0 build
+2026-11-18T23:46:15.1584002Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:15.1584211Z 
+2026-11-18T23:46:15.8709739Z 
+2026-11-18T23:46:15.8710447Z > @ghostpay/ux-core@0.1.0 build
+2026-11-18T23:46:15.8710909Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:15.8711080Z 
+2026-11-18T23:46:16.7027659Z 
+2026-11-18T23:46:16.7028177Z > @ghostpay/ux-export@0.1.0 build
+2026-11-18T23:46:16.7028492Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:16.7028601Z 
+2026-11-18T23:46:17.3710370Z 
+2026-11-18T23:46:17.3710994Z > @ghostpay/ux-fees@0.1.0 build
+2026-11-18T23:46:17.3711371Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:17.3711493Z 
+2026-11-18T23:46:18.0411737Z 
+2026-11-18T23:46:18.0412393Z > @ghostpay/ux-fiat@0.1.0 build
+2026-11-18T23:46:18.0412769Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:18.0412949Z 
+2026-11-18T23:46:18.6048313Z 
+2026-11-18T23:46:18.6048998Z > @ghostpay/ux-flow@0.1.0 build
+2026-11-18T23:46:18.6049433Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:18.6049604Z 
+2026-11-18T23:46:19.2210935Z 
+2026-11-18T23:46:19.2211617Z > @ghostpay/ux-guide@0.1.0 build
+2026-11-18T23:46:19.2212066Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:19.2212244Z 
+2026-11-18T23:46:19.8379235Z 
+2026-11-18T23:46:19.8379755Z > @ghostpay/ux-i18n@0.1.0 build
+2026-11-18T23:46:19.8380039Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:19.8380153Z 
+2026-11-18T23:46:20.2708877Z 
+2026-11-18T23:46:20.2709534Z > @ghostpay/ux-intake@0.1.0 build
+2026-11-18T23:46:20.2709929Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:20.2710040Z 
+2026-11-18T23:46:20.9147466Z 
+2026-11-18T23:46:20.9148039Z > @ghostpay/ux-links@0.1.0 build
+2026-11-18T23:46:20.9148319Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:20.9148431Z 
+2026-11-18T23:46:21.5286476Z 
+2026-11-18T23:46:21.5287145Z > @ghostpay/ux-notify@0.1.0 build
+2026-11-18T23:46:21.5287542Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:21.5287663Z 
+2026-11-18T23:46:22.2016999Z 
+2026-11-18T23:46:22.2017576Z > @ghostpay/ux-presets@0.1.0 build
+2026-11-18T23:46:22.2017882Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:22.2017990Z 
+2026-11-18T23:46:22.8170465Z 
+2026-11-18T23:46:22.8171149Z > @ghostpay/ux-privacy@0.1.0 build
+2026-11-18T23:46:22.8171563Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:22.8171733Z 
+2026-11-18T23:46:23.3833149Z 
+2026-11-18T23:46:23.3833789Z > @ghostpay/ux-receipts@0.1.0 build
+2026-11-18T23:46:23.3834234Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:23.3834407Z 
+2026-11-18T23:46:23.9851966Z 
+2026-11-18T23:46:23.9852659Z > @ghostpay/ux-sandbox@0.1.0 build
+2026-11-18T23:46:23.9853089Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:23.9853252Z 
+2026-11-18T23:46:24.4365624Z 
+2026-11-18T23:46:24.4366335Z > @ghostpay/ux-schedule@0.1.0 build
+2026-11-18T23:46:24.4366770Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:24.4366945Z 
+2026-11-18T23:46:24.9521802Z ##[group]Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf
+2026-11-18T23:46:24.9522052Z with:
+2026-11-18T23:46:24.9522180Z   version: v1.8.5
+2026-11-18T23:46:24.9522308Z   cache: false
+2026-11-18T23:46:24.9522430Z   network: ethereum
+2026-11-18T23:46:24.9522614Z   cache-key: acceptance-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:46:24.9523002Z   cache-restore-keys: acceptance-
+2026-11-18T23:46:24.9523157Z ##[endgroup]
+2026-11-18T23:46:25.0380107Z Installing Foundry (version: v1.8.5)
+2026-11-18T23:46:25.0381729Z Downloading foundryup installer from foundry-rs/foundryup@a27902ef04dcb43061fabf343365cb5afc95fc48...
+2026-11-18T23:46:25.0807205Z Running foundryup installer...
+2026-11-18T23:46:25.5175103Z Running: foundryup --install 1.8.5
+2026-11-18T23:46:28.0494297Z Added /home/runner/.foundry/bin to PATH
+2026-11-18T23:46:28.0494760Z Cache not requested, not restoring cache
+2026-11-18T23:46:28.0495625Z Running: forge --version
+2026-11-18T23:46:28.0558310Z forge Version: 1.8.5
+2026-11-18T23:46:28.0558583Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:46:28.0558893Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:46:28.0559115Z Build Profile: dist
+2026-11-18T23:46:28.0564359Z Running: cast --version
+2026-11-18T23:46:28.0646015Z cast Version: 1.8.5
+2026-11-18T23:46:28.0646385Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:46:28.0646830Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:46:28.0647055Z Build Profile: dist
+2026-11-18T23:46:28.0654817Z Running: anvil --version
+2026-11-18T23:46:28.0689222Z anvil Version: 1.8.5
+2026-11-18T23:46:28.0689546Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:46:28.0689956Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:46:28.0690167Z Build Profile: dist
+2026-11-18T23:46:28.0692666Z Running: chisel --version
+2026-11-18T23:46:28.0726848Z chisel Version: 1.8.5
+2026-11-18T23:46:28.0727166Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:46:28.0727435Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:46:28.0727647Z Build Profile: dist
+2026-11-18T23:46:28.0851646Z ##[group]Run forge build
+2026-11-18T23:46:28.0851832Z [36;1mforge build[0m
+2026-11-18T23:46:28.0897339Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:46:28.0897501Z ##[endgroup]
+2026-11-18T23:46:28.4780562Z Compiling 117 files with Solc 0.8.28
+2026-11-18T23:46:41.2557179Z Solc 0.8.28 finished in 12.78s
+2026-11-18T23:46:41.2924249Z Compiler run successful with warnings:
+2026-11-18T23:46:41.2925130Z Warning (3628): This contract has a payable fallback function, but no receive ether function. Consider adding a receive ether function.
+2026-11-18T23:46:41.2925567Z   --> test/audit/Router.audit.t.sol:27:1:
+2026-11-18T23:46:41.2925774Z    |
+2026-11-18T23:46:41.2925944Z 27 | contract PhantomPermitToken is ERC20 {
+2026-11-18T23:46:41.2926207Z    | ^ (Relevant source part starts here and spans across multiple lines).
+2026-11-18T23:46:41.2926499Z Note: The payable fallback function is defined here.
+2026-11-18T23:46:41.2926717Z   --> test/audit/Router.audit.t.sol:34:5:
+2026-11-18T23:46:41.2926965Z    |
+2026-11-18T23:46:41.2927119Z 34 |     fallback() external payable {}
+2026-11-18T23:46:41.2927297Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-18T23:46:41.2927424Z 
+2026-11-18T23:46:41.2927732Z Warning (3628): This contract has a payable fallback function, but no receive ether function. Consider adding a receive ether function.
+2026-11-18T23:46:41.2928094Z   --> test/audit/Router.audit.t.sol:38:1:
+2026-11-18T23:46:41.2928260Z    |
+2026-11-18T23:46:41.2928395Z 38 | contract BombReceiver {
+2026-11-18T23:46:41.2928627Z    | ^ (Relevant source part starts here and spans across multiple lines).
+2026-11-18T23:46:41.2928911Z Note: The payable fallback function is defined here.
+2026-11-18T23:46:41.2929126Z   --> test/audit/Router.audit.t.sol:52:5:
+2026-11-18T23:46:41.2929281Z    |
+2026-11-18T23:46:41.2929425Z 52 |     fallback() external payable {
+2026-11-18T23:46:41.2929671Z    |     ^ (Relevant source part starts here and spans across multiple lines).
+2026-11-18T23:46:41.2929845Z 
+2026-11-18T23:46:41.2931040Z Warning (5159): "selfdestruct" has been deprecated. Note that, starting from the Cancun hard fork, the underlying opcode no longer deletes the code and data associated with an account and only transfers its Ether to the beneficiary, unless executed in the same transaction in which the contract was created (see EIP-6780). Any use in newly deployed contracts is strongly discouraged even if the new behavior is taken into account. Future changes to the EVM might further reduce the functionality of the opcode.
+2026-11-18T23:46:41.2932337Z   --> test/audit/Policy.audit.t.sol:44:9:
+2026-11-18T23:46:41.2932497Z    |
+2026-11-18T23:46:41.2932640Z 44 |         selfdestruct(target);
+2026-11-18T23:46:41.2932808Z    |         ^^^^^^^^^^^^
+2026-11-18T23:46:41.2932894Z 
+2026-11-18T23:46:41.4336036Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+2026-11-18T23:46:41.4336785Z     ╭▸ test/audit/Policy.audit.t.sol:112:17
+2026-11-18T23:46:41.4336981Z     │
+2026-11-18T23:46:41.4337240Z 112 │         vm.warp(block.timestamp + 1 days);
+2026-11-18T23:46:41.4337554Z     │         ────────━━━━━━━━━━━━━━━────────── `vm.warp` changes this environment here
+2026-11-18T23:46:41.4337792Z     │
+2026-11-18T23:46:41.4338009Z     ├ help: capture it with `vm.getBlockTimestamp()` instead
+2026-11-18T23:46:41.4338419Z     ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+2026-11-18T23:46:41.4338723Z 
+2026-11-18T23:46:41.4339080Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+2026-11-18T23:46:41.4339597Z     ╭▸ test/audit/Policy.audit.t.sol:257:17
+2026-11-18T23:46:41.4339861Z     │
+2026-11-18T23:46:41.4340154Z 257 │         vm.warp(block.timestamp + DELAY);
+2026-11-18T23:46:41.4340621Z     │         ────────━━━━━━━━━━━━━━━───────── `vm.warp` changes this environment here
+2026-11-18T23:46:41.4340945Z     │
+2026-11-18T23:46:41.4341259Z     ├ help: capture it with `vm.getBlockTimestamp()` instead
+2026-11-18T23:46:41.4342478Z     ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+2026-11-18T23:46:41.4342766Z 
+2026-11-18T23:46:41.4343135Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+2026-11-18T23:46:41.4343649Z     ╭▸ test/audit/Policy.audit.t.sol:277:17
+2026-11-18T23:46:41.4343906Z     │
+2026-11-18T23:46:41.4344401Z 277 │         vm.warp(block.timestamp + 2 * DELAY); // both mature; destination change executes first
+2026-11-18T23:46:41.4345101Z     │         ────────━━━━━━━━━━━━━━━───────────── `vm.warp` changes this environment here
+2026-11-18T23:46:41.4345427Z     │
+2026-11-18T23:46:41.4345741Z     ├ help: capture it with `vm.getBlockTimestamp()` instead
+2026-11-18T23:46:41.4346257Z     ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+2026-11-18T23:46:41.4346537Z 
+2026-11-18T23:46:41.4346879Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+2026-11-18T23:46:41.4347386Z     ╭▸ test/audit/Policy.audit.t.sol:302:34
+2026-11-18T23:46:41.4347612Z     │
+2026-11-18T23:46:41.4347883Z 302 │         uint256 endOfBucket = (((block.timestamp + DELAY) / W) + 1) * W - 1;
+2026-11-18T23:46:41.4348179Z     │                                  ━━━━━━━━━━━━━━━
+2026-11-18T23:46:41.4348353Z     ‡
+2026-11-18T23:46:41.4348524Z 306 │         vm.warp(endOfBucket);
+2026-11-18T23:46:41.4348778Z     │         ──────────────────── `vm.warp` changes this environment here
+2026-11-18T23:46:41.4348971Z     │
+2026-11-18T23:46:41.4349170Z     ├ help: capture it with `vm.getBlockTimestamp()` instead
+2026-11-18T23:46:41.4349493Z     ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+2026-11-18T23:46:41.4349674Z 
+2026-11-18T23:46:41.4349887Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+2026-11-18T23:46:41.4350200Z     ╭▸ test/audit/Policy.audit.t.sol:361:17
+2026-11-18T23:46:41.4350366Z     │
+2026-11-18T23:46:41.4350544Z 361 │         vm.warp(block.timestamp + 1 days);
+2026-11-18T23:46:41.4350842Z     │         ────────━━━━━━━━━━━━━━━────────── `vm.warp` changes this environment here
+2026-11-18T23:46:41.4351201Z     │
+2026-11-18T23:46:41.4351399Z     ├ help: capture it with `vm.getBlockTimestamp()` instead
+2026-11-18T23:46:41.4351721Z     ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+2026-11-18T23:46:41.4351899Z 
+2026-11-18T23:46:41.4361510Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+2026-11-18T23:46:41.4362068Z     ╭▸ test/echidna/EchidnaPolicyReachability.t.sol:107:17
+2026-11-18T23:46:41.4362369Z     │
+2026-11-18T23:46:41.4362665Z 107 │         vm.warp(block.timestamp + DELAY - 1);
+2026-11-18T23:46:41.4363074Z     │         ────────━━━━━━━━━━━━━━━───────────── `vm.warp` changes this environment here
+2026-11-18T23:46:41.4363278Z     │
+2026-11-18T23:46:41.4363503Z     ├ help: capture it with `vm.getBlockTimestamp()` instead
+2026-11-18T23:46:41.4363831Z     ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+2026-11-18T23:46:41.4364015Z 
+2026-11-18T23:46:41.4364228Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+2026-11-18T23:46:41.4364585Z    ╭▸ test/echidna/EchidnaPolicyReachability.t.sol:43:17
+2026-11-18T23:46:41.4364779Z    │
+2026-11-18T23:46:41.4364976Z 43 │         vm.warp(block.timestamp + timeDelay);
+2026-11-18T23:46:41.4365425Z    │         ────────━━━━━━━━━━━━━━━───────────── `vm.warp` changes this environment here
+2026-11-18T23:46:41.4365634Z    │
+2026-11-18T23:46:41.4365837Z    ├ help: capture it with `vm.getBlockTimestamp()` instead
+2026-11-18T23:46:41.4366156Z    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+2026-11-18T23:46:41.4366336Z 
+2026-11-18T23:46:41.4366533Z warning[environment-read-across-mutation]: `block.number` may be reused across `vm.roll`
+2026-11-18T23:46:41.4366871Z    ╭▸ test/echidna/EchidnaPolicyReachability.t.sol:44:17
+2026-11-18T23:46:41.4367060Z    │
+2026-11-18T23:46:41.4367395Z 44 │         vm.roll(block.number + blockDelay);
+2026-11-18T23:46:41.4367688Z    │         ────────━━━━━━━━━━━━────────────── `vm.roll` changes this environment here
+2026-11-18T23:46:41.4367900Z    │
+2026-11-18T23:46:41.4368124Z    ├ help: capture it with `vm.getBlockNumber()` instead
+2026-11-18T23:46:41.4368573Z    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+2026-11-18T23:46:41.4368754Z 
+2026-11-18T23:46:41.4600096Z ##[group]Run ./node_modules/.bin/playwright install --with-deps chromium
+2026-11-18T23:46:41.4600446Z [36;1m./node_modules/.bin/playwright install --with-deps chromium[0m
+2026-11-18T23:46:41.4644305Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:46:41.4644471Z ##[endgroup]
+2026-11-18T23:46:41.7713243Z Installing dependencies...
+2026-11-18T23:46:41.7779360Z Switching to root user to install dependencies...
+2026-11-18T23:46:41.8583808Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-18T23:46:41.8877452Z Get:6 https://packages.microsoft.com/ubuntu/26.04/prod resolute InRelease [3964 B]
+2026-11-18T23:46:41.9167304Z Hit:2 http://azure.archive.ubuntu.com/ubuntu resolute InRelease
+2026-11-18T23:46:41.9196732Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute-updates InRelease [137 kB]
+2026-11-18T23:46:41.9224112Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute-backports InRelease [137 kB]
+2026-11-18T23:46:41.9247528Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute-security InRelease [137 kB]
+2026-11-18T23:46:41.9383981Z Get:7 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main amd64 Packages [165 kB]
+2026-11-18T23:46:41.9540451Z Get:8 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main arm64 Packages [151 kB]
+2026-11-18T23:46:41.9618117Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 Packages [874 kB]
+2026-11-18T23:46:41.9685999Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main Translation-en [196 kB]
+2026-11-18T23:46:41.9708340Z Get:11 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe amd64v3 Packages [393 kB]
+2026-11-18T23:46:41.9709373Z Get:12 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe Translation-en [124 kB]
+2026-11-18T23:46:41.9830864Z Get:13 http://azure.archive.ubuntu.com/ubuntu resolute-security/main amd64v3 Packages [721 kB]
+2026-11-18T23:46:41.9871584Z Get:14 http://azure.archive.ubuntu.com/ubuntu resolute-security/main Translation-en [158 kB]
+2026-11-18T23:46:41.9880347Z Get:15 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe amd64v3 Packages [221 kB]
+2026-11-18T23:46:41.9901347Z Get:16 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe Translation-en [72.7 kB]
+2026-11-18T23:46:41.9909961Z Get:17 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted amd64v3 Packages [590 kB]
+2026-11-18T23:46:41.9940377Z Get:18 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted Translation-en [122 kB]
+2026-11-18T23:46:43.9207616Z Fetched 4203 kB in 0s (13.6 MB/s)
+2026-11-18T23:46:44.3492056Z Reading package lists...
+2026-11-18T23:46:44.3729546Z Reading package lists...
+2026-11-18T23:46:44.4889601Z Building dependency tree...
+2026-11-18T23:46:44.4894972Z Reading state information...
+2026-11-18T23:46:44.5132909Z libasound2t64 is already the newest version (1.2.15.3-1ubuntu1.1).
+2026-11-18T23:46:44.5133366Z libasound2t64 set to manually installed.
+2026-11-18T23:46:44.5133825Z libatk-bridge2.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-18T23:46:44.5134249Z libatk-bridge2.0-0t64 set to manually installed.
+2026-11-18T23:46:44.5134660Z libatk1.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-18T23:46:44.5135196Z libatk1.0-0t64 set to manually installed.
+2026-11-18T23:46:44.5135583Z libatspi2.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-18T23:46:44.5135969Z libatspi2.0-0t64 set to manually installed.
+2026-11-18T23:46:44.5136306Z libcairo2 is already the newest version (1.18.4-3).
+2026-11-18T23:46:44.5136631Z libcairo2 set to manually installed.
+2026-11-18T23:46:44.5137003Z libcups2t64 is already the newest version (2.4.16-1ubuntu1.3).
+2026-11-18T23:46:44.5137370Z libcups2t64 set to manually installed.
+2026-11-18T23:46:44.5137730Z libdbus-1-3 is already the newest version (1.16.2-2ubuntu4).
+2026-11-18T23:46:44.5138080Z libdbus-1-3 set to manually installed.
+2026-11-18T23:46:44.5138399Z libdrm2 is already the newest version (2.4.131-1).
+2026-11-18T23:46:44.5139311Z libdrm2 set to manually installed.
+2026-11-18T23:46:44.5139653Z libgbm1 is already the newest version (26.0.8-1ubuntu0.3).
+2026-11-18T23:46:44.5139992Z libgbm1 set to manually installed.
+2026-11-18T23:46:44.5140376Z libglib2.0-0t64 is already the newest version (2.88.0-1ubuntu0.1).
+2026-11-18T23:46:44.5141018Z libglib2.0-0t64 set to manually installed.
+2026-11-18T23:46:44.5141470Z libnspr4 is already the newest version (2:4.38.2-1ubuntu1).
+2026-11-18T23:46:44.5142085Z libnspr4 set to manually installed.
+2026-11-18T23:46:44.5142503Z libnss3 is already the newest version (2:3.120-1ubuntu2.2).
+2026-11-18T23:46:44.5143031Z libnss3 set to manually installed.
+2026-11-18T23:46:44.5143450Z libpango-1.0-0 is already the newest version (1.57.0-1).
+2026-11-18T23:46:44.5143868Z libpango-1.0-0 set to manually installed.
+2026-11-18T23:46:44.5144395Z libx11-6 is already the newest version (2:1.8.13-1ubuntu0.1).
+2026-11-18T23:46:44.5144814Z libx11-6 set to manually installed.
+2026-11-18T23:46:44.5145418Z libxcb1 is already the newest version (1.17.0-2ubuntu1).
+2026-11-18T23:46:44.5145818Z libxcb1 set to manually installed.
+2026-11-18T23:46:44.5159127Z libxcomposite1 is already the newest version (1:0.4.6-1build1).
+2026-11-18T23:46:44.5159517Z libxcomposite1 set to manually installed.
+2026-11-18T23:46:44.5159867Z libxdamage1 is already the newest version (1:1.1.7-1).
+2026-11-18T23:46:44.5160241Z libxdamage1 set to manually installed.
+2026-11-18T23:46:44.5160595Z libxext6 is already the newest version (2:1.3.4-1build3).
+2026-11-18T23:46:44.5160930Z libxext6 set to manually installed.
+2026-11-18T23:46:44.5161318Z libxfixes3 is already the newest version (1:6.0.0-2build2).
+2026-11-18T23:46:44.5161660Z libxfixes3 set to manually installed.
+2026-11-18T23:46:44.5162327Z libxkbcommon0 is already the newest version (1.13.1-1).
+2026-11-18T23:46:44.5162671Z libxkbcommon0 set to manually installed.
+2026-11-18T23:46:44.5163031Z libxrandr2 is already the newest version (2:1.5.4-1build1).
+2026-11-18T23:46:44.5163382Z libxrandr2 set to manually installed.
+2026-11-18T23:46:44.5163747Z xvfb is already the newest version (2:21.1.22-1ubuntu1.3).
+2026-11-18T23:46:44.5164192Z fonts-noto-color-emoji is already the newest version (2.051-1build1).
+2026-11-18T23:46:44.5164656Z libfontconfig1 is already the newest version (2.17.1-3ubuntu1).
+2026-11-18T23:46:44.5165134Z libfontconfig1 set to manually installed.
+2026-11-18T23:46:44.5165544Z libfreetype6 is already the newest version (2.14.2+dfsg-1ubuntu0.2).
+2026-11-18T23:46:44.5165923Z libfreetype6 set to manually installed.
+2026-11-18T23:46:44.5166313Z fonts-liberation is already the newest version (1:2.1.5-3build1).
+2026-11-18T23:46:44.5166699Z fonts-liberation set to manually installed.
+2026-11-18T23:46:44.5522228Z Solving dependencies...
+2026-11-18T23:46:44.6187487Z The following additional packages will be installed:
+2026-11-18T23:46:44.6188039Z   xfonts-encodings xfonts-utils
+2026-11-18T23:46:44.6190282Z Recommended packages:
+2026-11-18T23:46:44.6190527Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-11-18T23:46:44.6362067Z The following NEW packages will be installed:
+2026-11-18T23:46:44.6362743Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-11-18T23:46:44.6365216Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-11-18T23:46:44.6365479Z   xfonts-utils
+2026-11-18T23:46:44.6553523Z 0 upgraded, 9 newly installed, 0 to remove and 32 not upgraded.
+2026-11-18T23:46:44.6553916Z Need to get 21.9 MB of archives.
+2026-11-18T23:46:44.6554310Z After this operation, 80.2 MB of additional disk space will be used.
+2026-11-18T23:46:44.6554763Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-18T23:46:44.7022816Z Get:2 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-ipafont-gothic all 00303-23ubuntu1 [3703 kB]
+2026-11-18T23:46:45.2441037Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 fonts-freefont-ttf all 20211204+svn4273-4build1 [5656 kB]
+2026-11-18T23:46:46.0857664Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-tlwg-loma-otf all 1:0.7.3-1build1 [106 kB]
+2026-11-18T23:46:46.1167807Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-unifont all 1:16.0.04-1build1 [3169 kB]
+2026-11-18T23:46:46.7844378Z Get:6 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-wqy-zenhei all 0.9.45-8build1 [7863 kB]
+2026-11-18T23:46:48.4789304Z Get:7 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 xfonts-encodings all 1:1.0.5-0ubuntu3 [576 kB]
+2026-11-18T23:46:48.6118070Z Get:8 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 xfonts-utils amd64 1:7.7+7build1 [97.3 kB]
+2026-11-18T23:46:48.6402711Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 xfonts-cyrillic all 1:1.0.5+nmu1build1 [384 kB]
+2026-11-18T23:46:48.7408495Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 xfonts-scalable all 1:1.0.3-1.3build1 [304 kB]
+2026-11-18T23:46:49.0260691Z Fetched 21.9 MB in 4s (5268 kB/s)
+2026-11-18T23:46:49.0441094Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-11-18T23:46:49.0671935Z (Reading database ... 
+2026-11-18T23:46:49.0672341Z (Reading database ... 5%
+2026-11-18T23:46:49.0672762Z (Reading database ... 10%
+2026-11-18T23:46:49.0673048Z (Reading database ... 15%
+2026-11-18T23:46:49.0673301Z (Reading database ... 20%
+2026-11-18T23:46:49.0673538Z (Reading database ... 25%
+2026-11-18T23:46:49.0673718Z (Reading database ... 30%
+2026-11-18T23:46:49.0673880Z (Reading database ... 35%
+2026-11-18T23:46:49.0674032Z (Reading database ... 40%
+2026-11-18T23:46:49.0674182Z (Reading database ... 45%
+2026-11-18T23:46:49.0674332Z (Reading database ... 50%
+2026-11-18T23:46:49.1104052Z (Reading database ... 55%
+2026-11-18T23:46:49.3097395Z (Reading database ... 60%
+2026-11-18T23:46:49.4510700Z (Reading database ... 65%
+2026-11-18T23:46:49.6054046Z (Reading database ... 70%
+2026-11-18T23:46:49.7665332Z (Reading database ... 75%
+2026-11-18T23:46:49.9052946Z (Reading database ... 80%
+2026-11-18T23:46:50.0588606Z (Reading database ... 85%
+2026-11-18T23:46:50.1602832Z (Reading database ... 90%
+2026-11-18T23:46:50.3202909Z (Reading database ... 95%
+2026-11-18T23:46:50.3203278Z (Reading database ... 100%
+2026-11-18T23:46:50.3203692Z (Reading database ... 213946 files and directories currently installed.)
+2026-11-18T23:46:50.3240550Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-23ubuntu1_all.deb ...
+2026-11-18T23:46:50.3327673Z Unpacking fonts-ipafont-gothic (00303-23ubuntu1) ...
+2026-11-18T23:46:50.4208303Z Selecting previously unselected package fonts-freefont-ttf.
+2026-11-18T23:46:50.4318976Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-4build1_all.deb ...
+2026-11-18T23:46:50.4324377Z Unpacking fonts-freefont-ttf (20211204+svn4273-4build1) ...
+2026-11-18T23:46:50.5299788Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-11-18T23:46:50.5411266Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1build1_all.deb ...
+2026-11-18T23:46:50.5416747Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1build1) ...
+2026-11-18T23:46:50.5616969Z Selecting previously unselected package fonts-unifont.
+2026-11-18T23:46:50.5725318Z Preparing to unpack .../3-fonts-unifont_1%3a16.0.04-1build1_all.deb ...
+2026-11-18T23:46:50.5730667Z Unpacking fonts-unifont (1:16.0.04-1build1) ...
+2026-11-18T23:46:50.7630446Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-11-18T23:46:50.7743822Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8build1_all.deb ...
+2026-11-18T23:46:50.7862827Z Unpacking fonts-wqy-zenhei (0.9.45-8build1) ...
+2026-11-18T23:46:50.9365515Z Selecting previously unselected package xfonts-encodings.
+2026-11-18T23:46:50.9479002Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu3_all.deb ...
+2026-11-18T23:46:50.9484663Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu3) ...
+2026-11-18T23:46:50.9738445Z Selecting previously unselected package xfonts-utils.
+2026-11-18T23:46:50.9849150Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+7build1_amd64v3.deb ...
+2026-11-18T23:46:50.9854904Z Unpacking xfonts-utils (1:7.7+7build1) ...
+2026-11-18T23:46:51.0136637Z Selecting previously unselected package xfonts-cyrillic.
+2026-11-18T23:46:51.0243786Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1build1_all.deb ...
+2026-11-18T23:46:51.0253163Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1build1) ...
+2026-11-18T23:46:51.0522294Z Selecting previously unselected package xfonts-scalable.
+2026-11-18T23:46:51.0636054Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3build1_all.deb ...
+2026-11-18T23:46:51.0642375Z Unpacking xfonts-scalable (1:1.0.3-1.3build1) ...
+2026-11-18T23:46:51.1014670Z Setting up fonts-wqy-zenhei (0.9.45-8build1) ...
+2026-11-18T23:46:51.1138015Z Setting up fonts-freefont-ttf (20211204+svn4273-4build1) ...
+2026-11-18T23:46:51.1151892Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1build1) ...
+2026-11-18T23:46:51.1167001Z Setting up xfonts-encodings (1:1.0.5-0ubuntu3) ...
+2026-11-18T23:46:51.1181557Z Setting up fonts-ipafont-gothic (00303-23ubuntu1) ...
+2026-11-18T23:46:51.1229775Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-11-18T23:46:51.1242305Z Setting up fonts-unifont (1:16.0.04-1build1) ...
+2026-11-18T23:46:51.1257389Z Setting up xfonts-utils (1:7.7+7build1) ...
+2026-11-18T23:46:51.1303244Z Setting up xfonts-cyrillic (1:1.0.5+nmu1build1) ...
+2026-11-18T23:46:51.1663223Z Setting up xfonts-scalable (1:1.0.3-1.3build1) ...
+2026-11-18T23:46:51.1992437Z Processing triggers for man-db (2.13.1-1build1) ...
+2026-11-18T23:46:51.2009691Z Not building database; man-db/auto-update is not 'true'.
+2026-11-18T23:46:51.2020842Z Processing triggers for fontconfig (2.17.1-3ubuntu1) ...
+2026-11-18T23:46:51.8155151Z 
+2026-11-18T23:46:51.8155987Z Running kernel seems to be up-to-date.
+2026-11-18T23:46:51.8156259Z 
+2026-11-18T23:46:51.8156350Z Restarting services...
+2026-11-18T23:46:51.8234912Z 
+2026-11-18T23:46:51.8235640Z Service restarts being deferred:
+2026-11-18T23:46:51.8237546Z  systemctl restart hosted-compute-agent.service
+2026-11-18T23:46:51.8237799Z 
+2026-11-18T23:46:51.8238564Z No containers need to be restarted.
+2026-11-18T23:46:51.8238737Z 
+2026-11-18T23:46:51.8238923Z No user sessions are running outdated binaries.
+2026-11-18T23:46:51.8239087Z 
+2026-11-18T23:46:51.8239318Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-18T23:46:52.6450907Z Downloading Chrome for Testing 159.0.8154.6 (playwright chromium v1255) from https://cdn.playwright.dev/builds/cft/159.0.8154.6/linux64/chrome-linux64.zip
+2026-11-18T23:46:52.9962935Z |                                                                                |   0% of 199.3 MiB
+2026-11-18T23:46:53.1729084Z |■■■■■■■■                                                                        |  10% of 199.3 MiB
+2026-11-18T23:46:53.3206701Z |■■■■■■■■■■■■■■■■                                                                |  20% of 199.3 MiB
+2026-11-18T23:46:53.4449659Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 199.3 MiB
+2026-11-18T23:46:53.5585866Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 199.3 MiB
+2026-11-18T23:46:53.6810073Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 199.3 MiB
+2026-11-18T23:46:53.7849405Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 199.3 MiB
+2026-11-18T23:46:53.9327779Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 199.3 MiB
+2026-11-18T23:46:54.0706807Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 199.3 MiB
+2026-11-18T23:46:54.3115347Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 199.3 MiB
+2026-11-18T23:46:54.4389099Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 199.3 MiB
+2026-11-18T23:46:56.2034141Z Chrome for Testing 159.0.8154.6 (playwright chromium v1255) downloaded to /home/runner/.cache/ms-playwright/chromium-1255
+2026-11-18T23:46:56.2036731Z Downloading FFmpeg (playwright ffmpeg v1013) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1013/ffmpeg-linux.zip
+2026-11-18T23:46:56.4398357Z |                                                                                |   0% of 2.2 MiB
+2026-11-18T23:46:56.4430560Z |■■■■■■■■                                                                        |  10% of 2.2 MiB
+2026-11-18T23:46:56.4449169Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.2 MiB
+2026-11-18T23:46:56.4464964Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.2 MiB
+2026-11-18T23:46:56.4474578Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.2 MiB
+2026-11-18T23:46:56.4483707Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.2 MiB
+2026-11-18T23:46:56.4490175Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.2 MiB
+2026-11-18T23:46:56.4496192Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.2 MiB
+2026-11-18T23:46:56.4502725Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.2 MiB
+2026-11-18T23:46:56.4507715Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.2 MiB
+2026-11-18T23:46:56.4513314Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.2 MiB
+2026-11-18T23:46:56.4960447Z FFmpeg (playwright ffmpeg v1013) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1013
+2026-11-18T23:46:56.4962539Z Downloading Chrome Headless Shell 159.0.8154.6 (playwright chromium-headless-shell v1255) from https://cdn.playwright.dev/builds/cft/159.0.8154.6/linux64/chrome-headless-shell-linux64.zip
+2026-11-18T23:46:56.7767619Z |                                                                                |   0% of 125.7 MiB
+2026-11-18T23:46:56.9179683Z |■■■■■■■■                                                                        |  10% of 125.7 MiB
+2026-11-18T23:46:56.9930882Z |■■■■■■■■■■■■■■■■                                                                |  20% of 125.7 MiB
+2026-11-18T23:46:57.0726072Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 125.7 MiB
+2026-11-18T23:46:57.1760447Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 125.7 MiB
+2026-11-18T23:46:57.2496576Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 125.7 MiB
+2026-11-18T23:46:57.3297986Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 125.7 MiB
+2026-11-18T23:46:57.4100670Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 125.7 MiB
+2026-11-18T23:46:57.5389719Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 125.7 MiB
+2026-11-18T23:46:57.7025731Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 125.7 MiB
+2026-11-18T23:46:57.8111792Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 125.7 MiB
+2026-11-18T23:46:59.0656216Z Chrome Headless Shell 159.0.8154.6 (playwright chromium-headless-shell v1255) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1255
+2026-11-18T23:46:59.0818521Z ##[group]Run bash scripts/beta/browser-devnet.sh
+2026-11-18T23:46:59.0818768Z [36;1mbash scripts/beta/browser-devnet.sh[0m
+2026-11-18T23:46:59.0862602Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:46:59.0862768Z env:
+2026-11-18T23:46:59.0862908Z   BROWSER_DEVNET_MODE: pages
+2026-11-18T23:46:59.0863058Z ##[endgroup]
+2026-11-18T23:46:59.1053875Z == anvil on http://127.0.0.1:8546
+2026-11-18T23:46:59.3324734Z == deploy (script/devnet/DeployDevnet.s.sol, isolated forge out/cache/broadcast)
+2026-11-18T23:47:02.1405894Z == switch the local chain to Base Sepolia id (84532) and stub the OP fee oracle
+2026-11-18T23:47:02.1569254Z == sign the devnet manifest with the public Playwright test key
+2026-11-18T23:47:02.4581297Z devnet manifest signed for chain 84532: /tmp/ghostpay-browser-devnet.pEp95F/deployments (router 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512)
+2026-11-18T23:47:02.4707174Z == playwright (GitHub Pages artifact on http://localhost:4175/GhostPay/ against http://127.0.0.1:8546)
+2026-11-18T23:47:03.3884461Z [WebServer] manifests: testnet chains 84532
+2026-11-18T23:47:03.4186171Z [WebServer] == build apps/web (lean profile, relative base) at 24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:47:16.9509157Z [WebServer] == assemble Pages site
+2026-11-18T23:47:16.9855107Z [WebServer] == verify site
+2026-11-18T23:47:17.0613344Z [WebServer] Pages site verified: 16 files; DEVELOPMENT BUILD (not release evidence): TESTNET: payments enabled only on the listed testnet chains
+2026-11-18T23:47:17.0699132Z [WebServer] build-pages: OK -> /tmp/ghostpay-browser-devnet.pEp95F/pages/site (evidence in /tmp/ghostpay-browser-devnet.pEp95F/pages/evidence)
+2026-11-18T23:47:17.1081775Z [WebServer] serve-pages: /tmp/ghostpay-browser-devnet.pEp95F/pages/site at http://127.0.0.1:4175/GhostPay/ (no security headers, like GitHub Pages)
+2026-11-18T23:47:18.0337104Z 
+2026-11-18T23:47:18.0337717Z Running 16 tests using 1 worker
+2026-11-18T23:47:18.0337906Z 
+2026-11-18T23:47:18.9862836Z   ✓   1 e2e/pages-devnet.spec.ts:135:1 › Pages RPC proxy preserves upstream HTTP failure status (215ms)
+2026-11-18T23:47:19.3890520Z   ✓   2 e2e/pages-devnet.spec.ts:214:3 › GitHub Pages artifact on a real devnet › a. the artifact loads under /GhostPay/: served bytes = SHA256SUMS, lean navigation only, enforced meta CSP, build-info commit = git HEAD (304ms)
+2026-11-18T23:47:22.3238500Z   ✓   3 e2e/pages-devnet.spec.ts:279:3 › GitHub Pages artifact on a real devnet › b. seller: keys, encrypted keystore download, vault passphrase, signed registered invoice whose link lives under /GhostPay/ and opens on Pay (2.9s)
+2026-11-18T23:47:26.1036187Z   ✓   4 e2e/pages-devnet.spec.ts:357:3 › GitHub Pages artifact on a real devnet › c. buyer: connect the test wallet, review, explicit confirm, native ETH payment pending -> included, duplicate blocked after reload (3.8s)
+2026-11-18T23:47:26.2269894Z   ✓   5 e2e/pages-devnet.spec.ts:427:3 › GitHub Pages artifact on a real devnet › c2. ERC-20 on this devnet: the lean build offers only the canonical Base Sepolia USDC/EURC, which DeployDevnet does not deploy, and no gas-buffer control (finding, not faked) (118ms)
+2026-11-18T23:47:28.8730048Z   ✓   6 e2e/pages-devnet.spec.ts:447:3 › GitHub Pages artifact on a real devnet › d. seller: scan finds the payment (pending, then final), receipt bound to the invoice, ledger entry, direct sweep on chain, second sweep refused (2.6s)
+2026-11-18T23:47:31.8490682Z   ✓   7 e2e/pages-devnet.spec.ts:561:3 › GitHub Pages artifact on a real devnet › e. restart the seller browser process: vault unlock (wrong passphrase refused first) restores keys, invoice registry, ledger and scan checkpoint from disk (3.0s)
+2026-11-18T23:47:34.5840818Z   ✓   8 e2e/pages-devnet.spec.ts:637:3 › GitHub Pages artifact on a real devnet › f. restore in a brand-new profile: damaged and wrong-passphrase backups refused, then the downloaded backup restores the keys; rescan shows the payment once, already swept (2.7s)
+2026-11-18T23:47:34.6403902Z pages devnet: 211 requests across the journey (7 distinct /GhostPay/ paths, 166 RPC calls); no foreign origin; nothing outside /GhostPay/
+2026-11-18T23:47:34.6916196Z pages devnet: 2 real anvil transactions asserted on chain: 0xbd0c15d41dc3061944f0e78d62f9f5d4e4ae23d262aadcfff60b53e5f24586cb, 0x42c22fc4ddfc40ffa8baa6856b449b2268e0352ac840fd764d29bfaa8b29c27b
+2026-11-18T23:47:34.6958305Z   ✓   9 e2e/pages-devnet.spec.ts:725:3 › GitHub Pages artifact on a real devnet › a (whole journey). every request of every page and worker went only to the site under /GhostPay/ or the routed devnet RPC (53ms)
+2026-11-18T23:48:17.0918173Z   ✓  10 e2e/pages-devnet.spec.ts:753:3 › GitHub Pages artifact: refusals › a same-nonce wallet cancellation never becomes a payment confirmation or permits a duplicate retry (42.4s)
+2026-11-18T23:48:17.2939067Z   ✓  11 e2e/pages-devnet.spec.ts:823:3 › GitHub Pages artifact: refusals › the Home release check stays inside /GhostPay/ and shows the served entry script hash (196ms)
+2026-11-18T23:48:18.0068814Z   ✓  12 e2e/pages-devnet.spec.ts:841:3 › GitHub Pages artifact: refusals › g. a tampered invoice fragment (amount changed after signing) is refused on the Pay view; nothing reaches the wallet (707ms)
+2026-11-18T23:48:18.8990204Z   ✓  13 e2e/pages-devnet.spec.ts:874:3 › GitHub Pages artifact: refusals › g. Settings refuses invalid RPC endpoints (plain http, embedded credentials, not a URL) without changing the saved RPC or contacting them (886ms)
+2026-11-18T23:48:20.6547452Z   ✓  14 e2e/pages-devnet.spec.ts:916:3 › GitHub Pages artifact: refusals › g. RPC unavailable: payment preparation and scanning show an error, the app keeps working and nothing is marked paid or sent (1.7s)
+2026-11-18T23:48:22.5550426Z   ✓  15 e2e/pages-devnet.spec.ts:975:3 › GitHub Pages artifact: refusals › g. wallet rejection: the user rejects in the wallet, the app says so and the invoice stays unpaid on chain (1.9s)
+2026-11-18T23:48:24.7981337Z   ✓  16 e2e/pages-devnet.spec.ts:1017:3 › GitHub Pages artifact: refusals › g. an expired invoice (shortest UI expiry, 1 hour) is refused at review and at send by the browser clock, and by the router on chain (2.2s)
+2026-11-18T23:48:24.8501081Z 
+2026-11-18T23:48:24.8504734Z   16 passed (1.4m)
+2026-11-18T23:48:24.8759959Z browser-devnet: PASS (pages)
+2026-11-18T23:48:24.9000561Z Post job cleanup.
+2026-11-18T23:48:24.9820659Z Cache not requested, not saving cache
+2026-11-18T23:48:24.9920101Z Post job cleanup.
+2026-11-18T23:48:25.0725967Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c, not saving cache.
+2026-11-18T23:48:25.0852541Z Post job cleanup.
+2026-11-18T23:48:25.1479214Z [command]/usr/bin/git version
+2026-11-18T23:48:25.1517180Z git version 2.56.1
+2026-11-18T23:48:25.1541660Z Temporarily overriding HOME='/home/runner/work/_temp/a9af4b2e-1567-4329-a086-603084141bf6' before making global git config changes
+2026-11-18T23:48:25.1542469Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:48:25.1545315Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:48:25.1577755Z Removing SSH command configuration
+2026-11-18T23:48:25.1582761Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:48:25.1615708Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:48:25.1875735Z Removing HTTP extra header
+2026-11-18T23:48:25.1881043Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:48:25.1922938Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:48:25.2187374Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:48:25.2192622Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:48:25.2225363Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:48:25.2608094Z Cleaning up orphan processes
+

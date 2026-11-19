@@ -1,0 +1,1536 @@
+﻿2026-11-18T23:52:07.4594102Z Current runner version: '2.338.2'
+2026-11-18T23:52:07.4618304Z ##[group]Runner Image Provisioner
+2026-11-18T23:52:07.4619123Z Hosted Compute Agent
+2026-11-18T23:52:07.4619713Z Version: 20261103.629
+2026-11-18T23:52:07.4620304Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T23:52:07.4620980Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T23:52:07.4621876Z Worker ID: {e49ba72f-99e8-4d49-96e1-af7e875c7e1b}
+2026-11-18T23:52:07.4622535Z Region: westus3
+2026-11-18T23:52:07.4623024Z Cloud: Azure
+2026-11-18T23:52:07.4623600Z ##[endgroup]
+2026-11-18T23:52:07.4625255Z ##[group]Operating System
+2026-11-18T23:52:07.4625965Z Ubuntu
+2026-11-18T23:52:07.4626460Z 26.04.1
+2026-11-18T23:52:07.4626910Z LTS
+2026-11-18T23:52:07.4627429Z ##[endgroup]
+2026-11-18T23:52:07.4627924Z ##[group]Runner Image
+2026-11-18T23:52:07.4628475Z Image: ubuntu-26.04
+2026-11-18T23:52:07.4629020Z Version: 20261111.196.1
+2026-11-18T23:52:07.4630282Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T23:52:07.4631870Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T23:52:07.4632800Z ##[endgroup]
+2026-11-18T23:52:07.4633871Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T23:52:07.4635786Z Contents: read
+2026-11-18T23:52:07.4636329Z Metadata: read
+2026-11-18T23:52:07.4636849Z ##[endgroup]
+2026-11-18T23:52:07.4638939Z Secret source: Actions
+2026-11-18T23:52:07.4639759Z Cache mode: write
+2026-11-18T23:52:07.4640436Z Prepare workflow directory
+2026-11-18T23:52:07.5009862Z Prepare all required actions
+2026-11-18T23:52:07.5058132Z Getting action download info
+2026-11-18T23:52:07.8040178Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T23:52:07.9161005Z Download action repository 'foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf' (SHA:dba66c27052e63476d886f22216e119ba7e615bf)
+2026-11-18T23:52:08.6851896Z Complete job name: ts-test (rest-2)
+2026-11-18T23:52:08.7860668Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T23:52:08.7862165Z with:
+2026-11-18T23:52:08.7862710Z   persist-credentials: false
+2026-11-18T23:52:08.7863321Z   repository: djshellshoxxx/GhostPay
+2026-11-18T23:52:08.7867491Z   token: ***
+2026-11-18T23:52:08.7867973Z   ssh-strict: true
+2026-11-18T23:52:08.7868473Z   ssh-user: git
+2026-11-18T23:52:08.7868961Z   clean: true
+2026-11-18T23:52:08.7869470Z   sparse-checkout-cone-mode: true
+2026-11-18T23:52:08.7870111Z   fetch-depth: 1
+2026-11-18T23:52:08.7870596Z   fetch-tags: false
+2026-11-18T23:52:08.7871105Z   show-progress: true
+2026-11-18T23:52:08.7871851Z   lfs: false
+2026-11-18T23:52:08.7872342Z   submodules: false
+2026-11-18T23:52:08.7872868Z   set-safe-directory: true
+2026-11-18T23:52:08.7873454Z   allow-unsafe-pr-checkout: false
+2026-11-18T23:52:08.7874379Z ##[endgroup]
+2026-11-18T23:52:09.0412489Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T23:52:09.0416368Z ##[group]Getting Git version info
+2026-11-18T23:52:09.0417943Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:52:09.0420292Z [command]/usr/bin/git version
+2026-11-18T23:52:09.0421579Z git version 2.56.1
+2026-11-18T23:52:09.0429500Z ##[endgroup]
+2026-11-18T23:52:09.0440835Z Temporarily overriding HOME='/home/runner/work/_temp/a4b7fd1f-6eff-4f26-a278-56445680f034' before making global git config changes
+2026-11-18T23:52:09.0442690Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:52:09.0447002Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:52:09.0520557Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:52:09.0523561Z ##[group]Determining repository object format
+2026-11-18T23:52:09.0525558Z ##[endgroup]
+2026-11-18T23:52:09.0526409Z ##[group]Initializing the repository
+2026-11-18T23:52:09.0531322Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:52:09.0641322Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T23:52:09.0642921Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T23:52:09.0644597Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T23:52:09.0645587Z hint: call:
+2026-11-18T23:52:09.0646418Z hint:
+2026-11-18T23:52:09.0648446Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T23:52:09.0650045Z hint:
+2026-11-18T23:52:09.0651554Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T23:52:09.0653786Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T23:52:09.0655375Z hint:
+2026-11-18T23:52:09.0656349Z hint: 	git branch -m <name>
+2026-11-18T23:52:09.0657412Z hint:
+2026-11-18T23:52:09.0658830Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T23:52:09.0661405Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T23:52:09.0666361Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:52:09.0715969Z ##[endgroup]
+2026-11-18T23:52:09.0718236Z ##[group]Disabling automatic garbage collection
+2026-11-18T23:52:09.0720363Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T23:52:09.0747639Z ##[endgroup]
+2026-11-18T23:52:09.0749903Z ##[group]Setting up auth
+2026-11-18T23:52:09.0751478Z Removing SSH command configuration
+2026-11-18T23:52:09.0754848Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:52:09.0789863Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:52:09.1145754Z Removing HTTP extra header
+2026-11-18T23:52:09.1150927Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:52:09.1183574Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:52:09.1465724Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:52:09.1471517Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:52:09.1501327Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:52:09.1718253Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T23:52:09.1752161Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config
+2026-11-18T23:52:09.1776661Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config
+2026-11-18T23:52:09.1805103Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config
+2026-11-18T23:52:09.1828524Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config
+2026-11-18T23:52:09.1853743Z ##[endgroup]
+2026-11-18T23:52:09.1854630Z ##[group]Fetching the repository
+2026-11-18T23:52:09.1860060Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +24bc65f525ec9f19a670e6e5600b071c03edbd56:refs/remotes/pull/239/merge
+2026-11-18T23:52:10.1497167Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:52:10.1502364Z  * [new ref]         24bc65f525ec9f19a670e6e5600b071c03edbd56 -> pull/239/merge
+2026-11-18T23:52:10.1509160Z ##[endgroup]
+2026-11-18T23:52:10.1511977Z ##[group]Determining the checkout info
+2026-11-18T23:52:10.1514955Z ##[endgroup]
+2026-11-18T23:52:10.1516952Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T23:52:10.1556853Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T23:52:10.1583753Z ##[group]Checking out the ref
+2026-11-18T23:52:10.1586599Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/239/merge
+2026-11-18T23:52:10.3984362Z Note: switching to 'refs/remotes/pull/239/merge'.
+2026-11-18T23:52:10.3985416Z 
+2026-11-18T23:52:10.3986278Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T23:52:10.3988526Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T23:52:10.3990939Z state without impacting any branches by switching back to a branch.
+2026-11-18T23:52:10.3993166Z 
+2026-11-18T23:52:10.3994504Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T23:52:10.3997707Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T23:52:10.3999623Z 
+2026-11-18T23:52:10.4000459Z   git switch -c <new-branch-name>
+2026-11-18T23:52:10.4001719Z 
+2026-11-18T23:52:10.4002275Z Or undo this operation with:
+2026-11-18T23:52:10.4003093Z 
+2026-11-18T23:52:10.4003590Z   git switch -
+2026-11-18T23:52:10.4004254Z 
+2026-11-18T23:52:10.4005302Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T23:52:10.4007049Z 
+2026-11-18T23:52:10.4008842Z HEAD is now at 24bc65f Merge 07a7497d1a0cb39fb6904e5c50f8a52db2285820 into 198aa5baff22272453733a0f3dcfcac0e0994eec
+2026-11-18T23:52:10.4015437Z ##[endgroup]
+2026-11-18T23:52:10.4061038Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T23:52:10.4085156Z 24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:10.4094232Z ##[group]Removing auth
+2026-11-18T23:52:10.4096488Z Removing SSH command configuration
+2026-11-18T23:52:10.4099738Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:52:10.4132144Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:52:10.4365679Z Removing HTTP extra header
+2026-11-18T23:52:10.4371683Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:52:10.4404326Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:52:10.4635117Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:52:10.4638358Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:52:10.4662377Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:52:10.4664786Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:52:10.4666739Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:52:10.4668401Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:52:10.4674074Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:52:10.4695557Z /home/runner/work/_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config
+2026-11-18T23:52:10.4709027Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-060069f9\-e2e1\-44f3\-80be\-6f8ce0ca699f\.config
+2026-11-18T23:52:10.4738501Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:52:10.4757534Z /home/runner/work/_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config
+2026-11-18T23:52:10.4773176Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-060069f9\-e2e1\-44f3\-80be\-6f8ce0ca699f\.config
+2026-11-18T23:52:10.4800951Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:52:10.4819498Z /github/runner_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config
+2026-11-18T23:52:10.4828288Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-060069f9\-e2e1\-44f3\-80be\-6f8ce0ca699f\.config
+2026-11-18T23:52:10.4862310Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:52:10.4880535Z /github/runner_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config
+2026-11-18T23:52:10.4889374Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-060069f9\-e2e1\-44f3\-80be\-6f8ce0ca699f\.config
+2026-11-18T23:52:10.4916665Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:52:10.5133986Z Removing credentials config '/home/runner/work/_temp/git-credentials-060069f9-e2e1-44f3-80be-6f8ce0ca699f.config'
+2026-11-18T23:52:10.5141599Z ##[endgroup]
+2026-11-18T23:52:10.5537028Z Prepare all required actions
+2026-11-18T23:52:10.5538729Z Getting action download info
+2026-11-18T23:52:10.7007667Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-18T23:52:10.7520436Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-11-18T23:52:10.9567806Z ##[group]Run ./.github/actions/setup-node-libs
+2026-11-18T23:52:10.9568948Z with:
+2026-11-18T23:52:10.9569726Z   save-cache: true
+2026-11-18T23:52:10.9570565Z ##[endgroup]
+2026-11-18T23:52:10.9643054Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__self.__actions_setup-node]
+2026-11-18T23:52:10.9797692Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-18T23:52:10.9799047Z with:
+2026-11-18T23:52:10.9799804Z   node-version: 22
+2026-11-18T23:52:10.9800625Z   cache: npm
+2026-11-18T23:52:10.9801602Z   package-manager-cache: true
+2026-11-18T23:52:10.9802564Z   check-latest: false
+2026-11-18T23:52:10.9810358Z   token: ***
+2026-11-18T23:52:10.9811220Z ##[endgroup]
+2026-11-18T23:52:11.1058746Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-18T23:52:11.1970540Z ##[group]Environment details
+2026-11-18T23:52:11.5228969Z node: v22.23.4
+2026-11-18T23:52:11.5229660Z npm: 10.9.9
+2026-11-18T23:52:11.5230093Z yarn: 1.22.22
+2026-11-18T23:52:11.5230983Z ##[endgroup]
+2026-11-18T23:52:11.5251309Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache
+2026-11-18T23:52:11.6274490Z /home/runner/.npm
+2026-11-18T23:52:11.8583677Z Cache hit for: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:52:13.0832481Z Received 50331648 of 247554651 (20.3%), 48.0 MBs/sec
+2026-11-18T23:52:14.0803517Z Received 234971739 of 247554651 (94.9%), 112.0 MBs/sec
+2026-11-18T23:52:14.1491819Z Received 247554651 of 247554651 (100.0%), 114.1 MBs/sec
+2026-11-18T23:52:14.1552217Z Cache Size: ~236 MB (247554651 B)
+2026-11-18T23:52:14.1610050Z [command]/usr/bin/tar -xf /home/runner/work/_temp/538f4d07-995b-489e-8446-2bc24f9b8f66/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:52:14.4653481Z Cache restored successfully
+2026-11-18T23:52:14.4732905Z Cache restored from key: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:52:14.4865225Z ##[end-action id=__self.__actions_setup-node;outcome=success;conclusion=success;duration_ms=3521]
+2026-11-18T23:52:14.4868016Z ##[start-action display=Run npm ci --ignore-scripts;id=__self.__run]
+2026-11-18T23:52:14.4900048Z ##[group]Run npm ci --ignore-scripts
+2026-11-18T23:52:14.4900485Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-18T23:52:14.4940142Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-18T23:52:14.4940543Z ##[endgroup]
+2026-11-18T23:52:19.3692160Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-18T23:52:21.9845716Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-18T23:52:25.6709069Z 
+2026-11-18T23:52:25.6710254Z added 721 packages, and audited 790 packages in 11s
+2026-11-18T23:52:25.6710881Z 
+2026-11-18T23:52:25.6711400Z 157 packages are looking for funding
+2026-11-18T23:52:25.6712100Z   run `npm fund` for details
+2026-11-18T23:52:25.6883017Z 
+2026-11-18T23:52:25.6883966Z 17 low severity vulnerabilities
+2026-11-18T23:52:25.6911908Z 
+2026-11-18T23:52:25.6925249Z To address issues that do not require attention, run:
+2026-11-18T23:52:25.6951921Z   npm audit fix
+2026-11-18T23:52:25.6981630Z 
+2026-11-18T23:52:25.6990663Z To address all issues possible (including breaking changes), run:
+2026-11-18T23:52:25.7000255Z   npm audit fix --force
+2026-11-18T23:52:25.7000664Z 
+2026-11-18T23:52:25.7000985Z Some issues need review, and may require choosing
+2026-11-18T23:52:25.7001927Z a different dependency.
+2026-11-18T23:52:25.7002198Z 
+2026-11-18T23:52:25.7002349Z Run `npm audit` for details.
+2026-11-18T23:52:25.7557947Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=11268]
+2026-11-18T23:52:25.7560991Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs]
+2026-11-18T23:52:26.4722890Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-11-18T23:52:26.4723267Z with:
+2026-11-18T23:52:26.4723489Z   path: packages/*/dist
+2026-11-18T23:52:26.4723934Z   key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:52:26.4724417Z   enableCrossOsArchive: false
+2026-11-18T23:52:26.4724679Z   fail-on-cache-miss: false
+2026-11-18T23:52:26.4724918Z   lookup-only: false
+2026-11-18T23:52:26.4725149Z   save-always: false
+2026-11-18T23:52:26.4725363Z ##[endgroup]
+2026-11-18T23:52:26.8096081Z Cache hit for: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:52:27.6785666Z Received 2029151 of 2029151 (100.0%), 3.0 MBs/sec
+2026-11-18T23:52:27.6786453Z Cache Size: ~2 MB (2029151 B)
+2026-11-18T23:52:27.6815207Z [command]/usr/bin/tar -xf /home/runner/work/_temp/846e0ad6-c392-4c6e-b4d2-544dd7430be5/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:52:27.7334716Z Cache restored successfully
+2026-11-18T23:52:27.7502146Z Cache restored from key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:52:27.7571601Z ##[end-action id=__self.libs;outcome=success;conclusion=success;duration_ms=2000]
+2026-11-18T23:52:27.7576946Z ##[start-action display=Run actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs-restore]
+2026-11-18T23:52:27.7587590Z ##[end-action id=__self.libs-restore;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:52:27.7589607Z ##[start-action display=Run npm run build:libs;id=__self.__run_2]
+2026-11-18T23:52:27.7595735Z ##[end-action id=__self.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:52:27.7652591Z ##[group]Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf
+2026-11-18T23:52:27.7653014Z with:
+2026-11-18T23:52:27.7653236Z   version: v1.8.5
+2026-11-18T23:52:27.7653463Z   network: ethereum
+2026-11-18T23:52:27.7653674Z   cache: true
+2026-11-18T23:52:27.7653960Z   cache-key: ts-test-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:27.7654441Z   cache-restore-keys: ts-test-
+2026-11-18T23:52:27.7654713Z ##[endgroup]
+2026-11-18T23:52:27.8898299Z Installing Foundry (version: v1.8.5)
+2026-11-18T23:52:27.8901875Z Downloading foundryup installer from foundry-rs/foundryup@a27902ef04dcb43061fabf343365cb5afc95fc48...
+2026-11-18T23:52:27.9729937Z Running foundryup installer...
+2026-11-18T23:52:29.0466260Z Running: foundryup --install 1.8.5
+2026-11-18T23:52:31.9610012Z Added /home/runner/.foundry/bin to PATH
+2026-11-18T23:52:31.9611096Z Primary key: linux-foundry-chain-fork-ts-test-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:31.9619483Z Restore keys: linux-foundry-chain-fork-ts-test-
+2026-11-18T23:52:32.1648815Z Cache hit for restore-key: linux-foundry-chain-fork-ts-test-relayer-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:32.6200322Z Received 26213 of 26213 (100.0%), 0.1 MBs/sec
+2026-11-18T23:52:32.6200823Z Cache Size: ~0 MB (26213 B)
+2026-11-18T23:52:32.6319049Z [command]/usr/bin/tar -xf /home/runner/work/_temp/0887aa41-341a-4939-bf9d-642cb854823b/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:52:32.6366793Z Cache restored successfully
+2026-11-18T23:52:32.6370730Z Cache restored from key: linux-foundry-chain-fork-ts-test-relayer-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:32.6371966Z Running: forge --version
+2026-11-18T23:52:32.6430478Z forge Version: 1.8.5
+2026-11-18T23:52:32.6431046Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:52:32.6431743Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:52:32.6432186Z Build Profile: dist
+2026-11-18T23:52:32.6435271Z Running: cast --version
+2026-11-18T23:52:32.6521354Z cast Version: 1.8.5
+2026-11-18T23:52:32.6521890Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:52:32.6522384Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:52:32.6522742Z Build Profile: dist
+2026-11-18T23:52:32.6528714Z Running: anvil --version
+2026-11-18T23:52:32.6560654Z anvil Version: 1.8.5
+2026-11-18T23:52:32.6561400Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:52:32.6562020Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:52:32.6562671Z Build Profile: dist
+2026-11-18T23:52:32.6563578Z Running: chisel --version
+2026-11-18T23:52:32.6593931Z chisel Version: 1.8.5
+2026-11-18T23:52:32.6594560Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:52:32.6595194Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:52:32.6595827Z Build Profile: dist
+2026-11-18T23:52:32.7096649Z ##[group]Run set -euo pipefail
+2026-11-18T23:52:32.7097242Z [36;1mset -euo pipefail[0m
+2026-11-18T23:52:32.7097661Z [36;1mcase "$GROUP" in[0m
+2026-11-18T23:52:32.7098052Z [36;1m  core-crypto) npm test -w packages/core-crypto ;;[0m
+2026-11-18T23:52:32.7098531Z [36;1m  btc-silent-payments) npm test -w packages/btc-silent-payments ;;[0m
+2026-11-18T23:52:32.7098933Z [36;1m  web)[0m
+2026-11-18T23:52:32.7099457Z [36;1m    anvil_bin="$(command -v anvil)"[0m
+2026-11-18T23:52:32.7100018Z [36;1m    solc_bin="$HOME/.svm/0.8.28/solc-0.8.28"[0m
+2026-11-18T23:52:32.7100363Z [36;1m    test -x "$anvil_bin"[0m
+2026-11-18T23:52:32.7100637Z [36;1m    test -x "$solc_bin"[0m
+2026-11-18T23:52:32.7101051Z [36;1m    ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test -w apps/web[0m
+2026-11-18T23:52:32.7101686Z [36;1m    ;;[0m
+2026-11-18T23:52:32.7101927Z [36;1m  confidential-contracts)[0m
+2026-11-18T23:52:32.7102242Z [36;1m    anvil_bin="$(command -v anvil)"[0m
+2026-11-18T23:52:32.7102598Z [36;1m    test -x "$anvil_bin"[0m
+2026-11-18T23:52:32.7102964Z [36;1m    ANVIL_BIN="$anvil_bin" npm test -w packages/confidential-contracts[0m
+2026-11-18T23:52:32.7103341Z [36;1m    ;;[0m
+2026-11-18T23:52:32.7103548Z [36;1m  rest-*)[0m
+2026-11-18T23:52:32.7103790Z [36;1m    shard="${GROUP#rest-}"[0m
+2026-11-18T23:52:32.7104049Z [36;1m    args=()[0m
+2026-11-18T23:52:32.7104519Z [36;1m    while IFS= read -r w; do args+=(-w "$w"); done < <([0m
+2026-11-18T23:52:32.7104919Z [36;1m      npm query '.workspace' | jq -r '.[].location' | sort \[0m
+2026-11-18T23:52:32.7105577Z [36;1m        | grep -vxE 'packages/core-crypto|packages/btc-silent-payments|packages/confidential-contracts|apps/web|apps/relayer' \[0m
+2026-11-18T23:52:32.7106204Z [36;1m        | awk -v shard="$shard" '(NR - 1) % 3 == shard'[0m
+2026-11-18T23:52:32.7106512Z [36;1m    )[0m
+2026-11-18T23:52:32.7106748Z [36;1m    echo "$GROUP: ${args[*]}"[0m
+2026-11-18T23:52:32.7107024Z [36;1m    anvil_args=()[0m
+2026-11-18T23:52:32.7107283Z [36;1m    other_args=()[0m
+2026-11-18T23:52:32.7107550Z [36;1m    needs_contract_artifacts=false[0m
+2026-11-18T23:52:32.7107950Z [36;1m    for ((i = 0; i < ${#args[@]}; i += 2)); do[0m
+2026-11-18T23:52:32.7108313Z [36;1m      workspace="${args[$((i + 1))]}"[0m
+2026-11-18T23:52:32.7108817Z [36;1m      if [[ "$workspace" == "packages/chain-adapters" || "$workspace" == "packages/policy-scheme" ]]; then[0m
+2026-11-18T23:52:32.7109492Z [36;1m        needs_contract_artifacts=true[0m
+2026-11-18T23:52:32.7110186Z [36;1m        anvil_args+=(-w "$workspace")[0m
+2026-11-18T23:52:32.7110478Z [36;1m      else[0m
+2026-11-18T23:52:32.7110725Z [36;1m        other_args+=(-w "$workspace")[0m
+2026-11-18T23:52:32.7111007Z [36;1m      fi[0m
+2026-11-18T23:52:32.7111428Z [36;1m    done[0m
+2026-11-18T23:52:32.7111918Z [36;1m    if [[ "$needs_contract_artifacts" == true ]]; then[0m
+2026-11-18T23:52:32.7112547Z [36;1m      (cd packages/contracts && forge build)[0m
+2026-11-18T23:52:32.7113346Z [36;1m      anvil_bin="$(command -v anvil)"[0m
+2026-11-18T23:52:32.7113977Z [36;1m      solc_bin="$HOME/.svm/0.8.28/solc-0.8.28"[0m
+2026-11-18T23:52:32.7114532Z [36;1m      test -x "$anvil_bin"[0m
+2026-11-18T23:52:32.7114962Z [36;1m      test -x "$solc_bin"[0m
+2026-11-18T23:52:32.7115707Z [36;1m      ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test "${anvil_args[@]}" --if-present[0m
+2026-11-18T23:52:32.7116593Z [36;1m    fi[0m
+2026-11-18T23:52:32.7117201Z [36;1m    if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi[0m
+2026-11-18T23:52:32.7117953Z [36;1m    if [ "$shard" = 0 ]; then[0m
+2026-11-18T23:52:32.7119108Z [36;1m      node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs scripts/agent/*.test.mjs scripts/recovery/*.test.mjs[0m
+2026-11-18T23:52:32.7120276Z [36;1m    fi[0m
+2026-11-18T23:52:32.7120650Z [36;1m    ;;[0m
+2026-11-18T23:52:32.7121017Z [36;1mesac[0m
+2026-11-18T23:52:32.7160111Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:52:32.7160421Z env:
+2026-11-18T23:52:32.7160647Z   GROUP: rest-2
+2026-11-18T23:52:32.7160889Z ##[endgroup]
+2026-11-18T23:52:33.4197475Z rest-2: -w packages/btc-family -w packages/chain-evm-extra -w packages/cli -w packages/external-pools -w packages/hops -w packages/invoice-schema -w packages/merchant-ledger -w packages/net-harness -w packages/payer-sponsor -w packages/plugin-api -w packages/pool-prover -w packages/privacy-pipeline -w packages/relayer-guard -w packages/sdk -w packages/tron-adapter -w packages/ux-core -w packages/ux-fiat -w packages/ux-i18n -w packages/ux-notify -w packages/ux-receipts -w packages/ux-vault
+2026-11-18T23:52:33.6261058Z 
+2026-11-18T23:52:33.6261954Z > @ghostpay/btc-family@0.1.0 test
+2026-11-18T23:52:33.6262552Z > vitest run --coverage
+2026-11-18T23:52:33.6262823Z 
+2026-11-18T23:52:34.0251812Z 
+2026-11-18T23:52:34.0255485Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/btc-family[39m
+2026-11-18T23:52:34.0256131Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-18T23:52:34.0256352Z 
+2026-11-18T23:52:34.5633639Z  [32m✓[39m src/primitives.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+2026-11-18T23:52:34.8143627Z  [32m✓[39m src/adapter.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 254[2mms[22m[39m
+2026-11-18T23:52:35.0539749Z  [32m✓[39m src/address.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 242[2mms[22m[39m
+2026-11-18T23:52:35.2482904Z  [32m✓[39m src/inputs.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+2026-11-18T23:52:35.6393621Z  [32m✓[39m src/keys.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 195[2mms[22m[39m
+2026-11-18T23:52:35.8113064Z  [32m✓[39m src/params.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-11-18T23:52:35.9869842Z  [32m✓[39m src/adapter-types.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-11-18T23:52:39.0283778Z  [32m✓[39m src/chain-flow.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 4573[2mms[22m[39m
+2026-11-18T23:52:39.0285192Z    [32m✓[39m send -> scan -> spend per chain (eligible input types only) [2m(9)[22m
+2026-11-18T23:52:39.0302600Z      [33m[2m✓[22m[39m bitcoin mainnet[33m 534[2mms[22m[39m
+2026-11-18T23:52:39.0303725Z      [33m[2m✓[22m[39m bitcoin testnet[33m 486[2mms[22m[39m
+2026-11-18T23:52:39.0304724Z      [33m[2m✓[22m[39m litecoin testnet[33m 377[2mms[22m[39m
+2026-11-18T23:52:39.0306266Z      [33m[2m✓[22m[39m property: random keys and labels round-trip on Litecoin testnet and Dogecoin-as-testnet[33m 1508[2mms[22m[39m
+2026-11-18T23:52:39.0307527Z    [32m✓[39m sender guards [2m(6)[22m
+2026-11-18T23:52:39.0308746Z      [33m[2m✓[22m[39m no inputs, empty outpoints, zero key sum and K_max overflow fail closed[33m 1103[2mms[22m[39m
+2026-11-18T23:52:41.7708902Z  [32m✓[39m src/vectors.test.ts [2m([22m[2m58 tests[22m[2m)[22m[33m 6499[2mms[22m[39m
+2026-11-18T23:52:41.7710336Z    [32m✓[39m BIP-352 official send_and_receive_test_vectors.json [2m(58)[22m
+2026-11-18T23:52:41.7712090Z      [32m✓[39m Maximum per-group recipient limit K_max is exceeded (2324 matches): sending fails, receiver doesn't scan beyond limit [2m(2)[22m
+2026-11-18T23:52:41.7713322Z        [33m[2m✓[22m[39m sending[33m 567[2mms[22m[39m
+2026-11-18T23:52:41.7714209Z        [33m[2m✓[22m[39m receiving[33m 4266[2mms[22m[39m
+2026-11-18T23:52:41.8604436Z 
+2026-11-18T23:52:41.8609610Z [2m Test Files [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+2026-11-18T23:52:41.8610649Z [2m      Tests [22m [1m[32m162 passed[39m[22m[90m (162)[39m
+2026-11-18T23:52:41.8611604Z [2m   Start at [22m 23:52:34
+2026-11-18T23:52:41.8616092Z [2m   Duration [22m 7.83s[2m (tests 89%, import 7%, transform 3%, worker 1%)[22m
+2026-11-18T23:52:41.8627027Z 
+2026-11-18T23:52:41.8647091Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-18T23:52:41.8674041Z ------------------|---------|----------|---------|---------|--------------------
+2026-11-18T23:52:41.8675024Z File              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s  
+2026-11-18T23:52:41.8675914Z ------------------|---------|----------|---------|---------|--------------------
+2026-11-18T23:52:41.8679893Z All files         |   96.75 |    94.04 |     100 |   99.78 |                    
+2026-11-18T23:52:41.8680762Z  adapter-types.ts |       0 |        0 |       0 |       0 |                    
+2026-11-18T23:52:41.8683462Z  adapter.ts       |     100 |    88.88 |     100 |     100 | 112-114            
+2026-11-18T23:52:41.8684298Z  address.ts       |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:41.8685116Z  bech32m.ts       |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:41.8685898Z  bip32.ts         |   93.75 |       90 |     100 |     100 | 34,65              
+2026-11-18T23:52:41.8686688Z  ecc.ts           |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:41.8687432Z  errors.ts        |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:41.8688228Z  inputs.ts        |   98.57 |     98.7 |     100 |     100 | 26                 
+2026-11-18T23:52:41.8689024Z  keys.ts          |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:41.8690117Z  labels.ts        |   93.93 |    85.71 |     100 |     100 | 30-55              
+2026-11-18T23:52:41.8690943Z  params.ts        |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:41.8691967Z  receiver.ts      |   91.35 |    81.63 |     100 |     100 | ...164,173,212-239 
+2026-11-18T23:52:41.8692786Z  rng.ts           |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:41.8693546Z  scan.ts          |     100 |    97.22 |     100 |     100 | 99                 
+2026-11-18T23:52:41.8694244Z  secret.ts        |   96.55 |      100 |     100 |      96 | 29                 
+2026-11-18T23:52:41.8695084Z  sender.ts        |   91.93 |    79.16 |     100 |     100 | 76,149-160         
+2026-11-18T23:52:41.8695810Z  tx.ts            |   98.36 |    97.72 |     100 |     100 | 94                 
+2026-11-18T23:52:41.8696583Z ------------------|---------|----------|---------|---------|--------------------
+2026-11-18T23:52:41.9203957Z 
+2026-11-18T23:52:41.9204651Z > @ghostpay/chain-evm-extra@0.1.0 test
+2026-11-18T23:52:41.9205110Z > vitest run --coverage
+2026-11-18T23:52:41.9205287Z 
+2026-11-18T23:52:42.2758361Z 
+2026-11-18T23:52:42.2762192Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/chain-evm-extra[39m
+2026-11-18T23:52:42.2763374Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-18T23:52:42.2763752Z 
+2026-11-18T23:52:42.5910474Z  [32m✓[39m src/cli-lib.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-11-18T23:52:42.5923431Z  [32m✓[39m src/chains.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-11-18T23:52:42.6172980Z  [32m✓[39m src/verify.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+2026-11-18T23:52:42.7586009Z  [32m✓[39m src/rpc-response-correlation.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-11-18T23:52:43.0871365Z  [32m✓[39m src/address.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 135[2mms[22m[39m
+2026-11-18T23:52:43.1374361Z 
+2026-11-18T23:52:43.1378362Z [2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+2026-11-18T23:52:43.1379244Z [2m      Tests [22m [1m[32m44 passed[39m[22m[90m (44)[39m
+2026-11-18T23:52:43.1379825Z [2m   Start at [22m 23:52:42
+2026-11-18T23:52:43.1383406Z [2m   Duration [22m 856ms[2m (import 33%, tests 30%, transform 28%, worker 9%)[22m
+2026-11-18T23:52:43.1393363Z 
+2026-11-18T23:52:43.1410253Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-18T23:52:43.1429668Z -------------------|---------|----------|---------|---------|--------------------
+2026-11-18T23:52:43.1430610Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s  
+2026-11-18T23:52:43.1431359Z -------------------|---------|----------|---------|---------|--------------------
+2026-11-18T23:52:43.1434501Z All files          |    96.5 |       94 |   97.05 |   99.42 |                    
+2026-11-18T23:52:43.1436095Z  address.ts        |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:43.1437135Z  chains.ts         |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:43.1438192Z  cli-lib.ts        |   97.14 |    93.75 |     100 |     100 | 43,128,133,141-144 
+2026-11-18T23:52:43.1438953Z  hex.ts            |     100 |      100 |     100 |     100 |                    
+2026-11-18T23:52:43.1439810Z  manifest-check.ts |   89.18 |    89.18 |      75 |     100 | 43-45,50           
+2026-11-18T23:52:43.1440562Z  verify.ts         |   97.18 |    94.73 |     100 |   98.11 | 149                
+2026-11-18T23:52:43.1441537Z -------------------|---------|----------|---------|---------|--------------------
+2026-11-18T23:52:43.1652836Z 
+2026-11-18T23:52:43.1653424Z > @ghostpay/cli@0.1.0 test
+2026-11-18T23:52:43.1653967Z > vitest run --coverage
+2026-11-18T23:52:43.1654240Z 
+2026-11-18T23:52:43.5387737Z 
+2026-11-18T23:52:43.5391771Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/cli[39m
+2026-11-18T23:52:43.5393276Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-18T23:52:43.5393654Z 
+2026-11-18T23:52:45.2256664Z  [32m✓[39m src/payment-commands.test.ts [2m([22m[2m67 tests[22m[2m)[22m[33m 413[2mms[22m[39m
+2026-11-18T23:52:46.0702092Z  [32m✓[39m src/cli.test.ts [2m([22m[2m32 tests[22m[2m)[22m[33m 329[2mms[22m[39m
+2026-11-18T23:52:48.1601701Z  [32m✓[39m src/scan-commands.test.ts [2m([22m[2m55 tests[22m[2m)[22m[33m 1377[2mms[22m[39m
+2026-11-18T23:54:39.1812794Z  [32m✓[39m src/backup-command.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 110069[2mms[22m[39m
+2026-11-18T23:54:39.1814319Z    [33m[2m✓[22m[39m authenticates a GUI keystore and shows only counts[33m 1852[2mms[22m[39m
+2026-11-18T23:54:39.1816025Z    [33m[2m✓[22m[39m detects wrong credentials and ciphertext modification with the same safe authentication error[33m 3885[2mms[22m[39m
+2026-11-18T23:54:39.1818000Z    [33m[2m✓[22m[39m dry-runs restoration without writing and requires explicit approval before a new encrypted copy[33m 3178[2mms[22m[39m
+2026-11-18T23:54:39.1819694Z    [33m[2m✓[22m[39m preserves existing files and refuses forced restoration[33m 1509[2mms[22m[39m
+2026-11-18T23:54:39.1821239Z    [33m[2m✓[22m[39m does not leave partial outputs when publication fails[33m 1722[2mms[22m[39m
+2026-11-18T23:54:39.1822731Z    [33m[2m✓[22m[39m creates a GUI-compatible keystore from protected independent keys[33m 24182[2mms[22m[39m
+2026-11-18T23:54:39.1824203Z    [33m[2m✓[22m[39m rekeys a valid backup without changing any seller key[33m 38107[2mms[22m[39m
+2026-11-18T23:54:39.1825777Z    [33m[2m✓[22m[39m authenticates and restores GPA archives without printing labels or opaque history[33m 2625[2mms[22m[39m
+2026-11-18T23:54:39.1827383Z    [33m[2m✓[22m[39m handles address-book backups using the existing authenticated schema[33m 349[2mms[22m[39m
+2026-11-18T23:54:39.1829129Z    [33m[2m✓[22m[39m restores and rekeys binary address books without exposing contacts or accepting wrong credentials[33m 995[2mms[22m[39m
+2026-11-18T23:54:39.1830923Z    [33m[2m✓[22m[39m rekeys GPA archives while retaining duplicate tags and opaque encrypted history[33m 28158[2mms[22m[39m
+2026-11-18T23:54:39.1832821Z    [33m[2m✓[22m[39m rejects a weak replacement passphrase and ambiguous secret sources before publishing any backup[33m 1868[2mms[22m[39m
+2026-11-18T23:54:47.3493412Z  [32m✓[39m src/exchange-security.test.ts [2m([22m[2m59 tests[22m[2m)[22m[33m 7348[2mms[22m[39m
+2026-11-18T23:54:47.3533191Z    [32m✓[39m QR parsing and format boundaries [2m(18)[22m
+2026-11-18T23:54:47.3542526Z      [33m[2m✓[22m[39m retains an encrypted invoice envelope through decode and never inserts a passphrase into output[33m 6475[2mms[22m[39m
+2026-11-18T23:54:50.5881888Z  [32m✓[39m src/receipt-create.test.ts [2m([22m[2m48 tests[22m[2m)[22m[33m 124517[2mms[22m[39m
+2026-11-18T23:54:50.5883137Z    [32m✓[39m receipt creation from current owned canonical payment evidence [2m(48)[22m
+2026-11-18T23:54:50.5884478Z      [33m[2m✓[22m[39m creates the full-GUI manual-digest attestation without claiming an invoice binding[33m 3730[2mms[22m[39m
+2026-11-18T23:54:50.5885961Z      [33m[2m✓[22m[39m rejects missing receipt mode inputs before reading files, credentials or RPC[33m 1234[2mms[22m[39m
+2026-11-18T23:54:50.5887380Z      [33m[2m✓[22m[39m rejects both receipt mode inputs before reading files, credentials or RPC[33m 1119[2mms[22m[39m
+2026-11-18T23:54:50.5888806Z      [33m[2m✓[22m[39m rejects malformed receipt mode inputs before reading files, credentials or RPC[33m 1120[2mms[22m[39m
+2026-11-18T23:54:50.5890418Z      [33m[2m✓[22m[39m rejects uppercase receipt mode inputs before reading files, credentials or RPC[33m 1105[2mms[22m[39m
+2026-11-18T23:54:50.5892435Z      [33m[2m✓[22m[39m rejects invoice-passphrase-file receipt mode inputs before reading files, credentials or RPC[33m 1131[2mms[22m[39m
+2026-11-18T23:54:50.5894808Z      [33m[2m✓[22m[39m rejects invoice-passphrase-env receipt mode inputs before reading files, credentials or RPC[33m 1758[2mms[22m[39m
+2026-11-18T23:54:50.5896715Z      [33m[2m✓[22m[39m rejects invoice-passphrase-stdin receipt mode inputs before reading files, credentials or RPC[33m 1199[2mms[22m[39m
+2026-11-18T23:54:50.5898339Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for unapproved evidence[33m 1910[2mms[22m[39m
+2026-11-18T23:54:50.5899815Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for offline evidence[33m 1668[2mms[22m[39m
+2026-11-18T23:54:50.5911604Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for wrong-owner evidence[33m 3207[2mms[22m[39m
+2026-11-18T23:54:50.5913488Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for missing-expected evidence[33m 1302[2mms[22m[39m
+2026-11-18T23:54:50.5914940Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for pending evidence[33m 3079[2mms[22m[39m
+2026-11-18T23:54:50.5916376Z      [33m[2m✓[22m[39m keeps manual-digest creation closed for reorganized evidence[33m 3483[2mms[22m[39m
+2026-11-18T23:54:50.5917949Z      [33m[2m✓[22m[39m labels the human manual digest as unmatched and preserves immutable publication[33m 5054[2mms[22m[39m
+2026-11-18T23:54:50.5919635Z      [33m[2m✓[22m[39m creates the exact GUI signed format after live verification and ownership binding[33m 3705[2mms[22m[39m
+2026-11-18T23:54:50.5921273Z      [33m[2m✓[22m[39m requires explicit --approve before publishing a signature[33m 1665[2mms[22m[39m
+2026-11-18T23:54:50.5922659Z      [33m[2m✓[22m[39m requires explicit --online before publishing a signature[33m 1563[2mms[22m[39m
+2026-11-18T23:54:50.5924007Z      [33m[2m✓[22m[39m requires explicit --out before publishing a signature[33m 1277[2mms[22m[39m
+2026-11-18T23:54:50.5925579Z      [33m[2m✓[22m[39m supports a passphrase-protected signed invoice with a separate keystore credential[33m 8340[2mms[22m[39m
+2026-11-18T23:54:50.5927384Z      [33m[2m✓[22m[39m signs an owned ERC20 transfer with a mismatching scan hint and matching secondary provider[33m 3633[2mms[22m[39m
+2026-11-18T23:54:50.5928929Z      [33m[2m✓[22m[39m rejects invalid creation clock 0 before live verification[33m 1526[2mms[22m[39m
+2026-11-18T23:54:50.5930315Z      [33m[2m✓[22m[39m rejects invalid creation clock NaN before live verification[33m 1132[2mms[22m[39m
+2026-11-18T23:54:50.5932224Z      [33m[2m✓[22m[39m rejects invalid creation clock Infinity before live verification[33m 1407[2mms[22m[39m
+2026-11-18T23:54:50.5933646Z      [33m[2m✓[22m[39m refuses unsigned invoices before signing or network access[33m 1827[2mms[22m[39m
+2026-11-18T23:54:50.5935032Z      [33m[2m✓[22m[39m refuses invalid-signature invoices before signing or network access[33m 1939[2mms[22m[39m
+2026-11-18T23:54:50.5936354Z      [33m[2m✓[22m[39m refuses expired invoices before signing or network access[33m 1970[2mms[22m[39m
+2026-11-18T23:54:50.5937502Z      [33m[2m✓[22m[39m refuses fiat invoices before signing or network access[33m 1570[2mms[22m[39m
+2026-11-18T23:54:50.5938957Z      [33m[2m✓[22m[39m refuses other-signer invoices before signing or network access[33m 3033[2mms[22m[39m
+2026-11-18T23:54:50.5940597Z      [33m[2m✓[22m[39m refuses other-recipient invoices before signing or network access[33m 3805[2mms[22m[39m
+2026-11-18T23:54:50.5942379Z      [33m[2m✓[22m[39m refuses other-chain invoices before signing or network access[33m 1521[2mms[22m[39m
+2026-11-18T23:54:50.5943746Z      [33m[2m✓[22m[39m refuses other-asset invoices before signing or network access[33m 1967[2mms[22m[39m
+2026-11-18T23:54:50.5945002Z      [33m[2m✓[22m[39m refuses other-amount invoices before signing or network access[33m 1884[2mms[22m[39m
+2026-11-18T23:54:50.5946435Z      [33m[2m✓[22m[39m refuses a canonical payment to a recipient not owned by the authenticated seller[33m 3316[2mms[22m[39m
+2026-11-18T23:54:50.5948102Z      [33m[2m✓[22m[39m refuses pending evidence without publishing a receipt[33m 3350[2mms[22m[39m
+2026-11-18T23:54:50.5949397Z      [33m[2m✓[22m[39m refuses reorganized evidence without publishing a receipt[33m 2676[2mms[22m[39m
+2026-11-18T23:54:50.5950816Z      [33m[2m✓[22m[39m refuses failed-provider evidence without publishing a receipt[33m 2220[2mms[22m[39m
+2026-11-18T23:54:50.5952328Z      [33m[2m✓[22m[39m refuses late-reorg evidence without publishing a receipt[33m 3860[2mms[22m[39m
+2026-11-18T23:54:50.5953670Z      [33m[2m✓[22m[39m refuses secondary evidence without publishing a receipt[33m 3109[2mms[22m[39m
+2026-11-18T23:54:50.5955021Z      [33m[2m✓[22m[39m refuses a invoice.json source changed during live verification[33m 3898[2mms[22m[39m
+2026-11-18T23:54:50.5956287Z      [33m[2m✓[22m[39m refuses a claim.json source changed during live verification[33m 3783[2mms[22m[39m
+2026-11-18T23:54:50.5957703Z      [33m[2m✓[22m[39m refuses a seller.json source changed during live verification[33m 2885[2mms[22m[39m
+2026-11-18T23:54:50.5959151Z      [33m[2m✓[22m[39m refuses a reorganization first visible during the final source reread[33m 2714[2mms[22m[39m
+2026-11-18T23:54:50.5960753Z      [33m[2m✓[22m[39m binds decryption to the captured keystore even if its contents change and change back[33m 1311[2mms[22m[39m
+2026-11-18T23:54:50.5962322Z      [33m[2m✓[22m[39m validates expected payment facts before contacting the provider[33m 1959[2mms[22m[39m
+2026-11-18T23:54:50.5963790Z      [33m[2m✓[22m[39m classifies a transaction lookup failure as a network error, without signing[33m 3473[2mms[22m[39m
+2026-11-18T23:54:50.5965454Z      [33m[2m✓[22m[39m rechecks invoice expiry after the live review and requires repeatable inputs[33m 3234[2mms[22m[39m
+2026-11-18T23:54:50.5967042Z      [33m[2m✓[22m[39m rejects wrong keystore credentials and preserves existing or failed outputs[33m 6857[2mms[22m[39m
+2026-11-18T23:54:52.0358069Z  [32m✓[39m src/cli2.test.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 526[2mms[22m[39m
+2026-11-18T23:54:53.0422893Z  [32m✓[39m src/chain-commands.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 208[2mms[22m[39m
+2026-11-18T23:54:54.3408657Z  [32m✓[39m src/receipt-parity.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 483[2mms[22m[39m
+2026-11-18T23:54:55.0662866Z  [32m✓[39m src/node-io-faults.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+2026-11-18T23:54:56.5997876Z  [32m✓[39m src/qr-parity.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 747[2mms[22m[39m
+2026-11-18T23:54:57.3552998Z  [32m✓[39m src/binary-io.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+2026-11-18T23:55:03.3790645Z  [32m✓[39m src/reconcile-command.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 137630[2mms[22m[39m
+2026-11-18T23:55:03.3794222Z    [33m[2m✓[22m[39m creates and registers the same signed fixed-amount invoice format as the GUI[33m 5191[2mms[22m[39m
+2026-11-18T23:55:03.3795567Z    [33m[2m✓[22m[39m rejects a modified invoice signature before registration[33m 3907[2mms[22m[39m
+2026-11-18T23:55:03.3797118Z    [33m[2m✓[22m[39m proposes without changing state and confirms only the reviewed current seller-owned payment[33m 4664[2mms[22m[39m
+2026-11-18T23:55:03.3798338Z    [33m[2m✓[22m[39m requires explicit approval before any live confirmation request[33m 2968[2mms[22m[39m
+2026-11-18T23:55:03.3799192Z    [33m[2m✓[22m[39m rejects expired and modified proposal context without publishing state[33m 11230[2mms[22m[39m
+2026-11-18T23:55:03.3800127Z    [33m[2m✓[22m[39m binds confirmation to the reviewed deployment manifest and secondary-provider requirement[33m 10836[2mms[22m[39m
+2026-11-18T23:55:03.3801270Z    [33m[2m✓[22m[39m rejects a current observation unrelated to the seller despite valid canonical payment evidence[33m 3036[2mms[22m[39m
+2026-11-18T23:55:03.3803591Z    [33m[2m✓[22m[39m accepts fully derived deep-scan ownership when only the public view-tag hint is wrong[33m 3858[2mms[22m[39m
+2026-11-18T23:55:03.3805388Z    [33m[2m✓[22m[39m classifies provider failure during authenticated context construction as a network error[33m 2943[2mms[22m[39m
+2026-11-18T23:55:03.3807090Z    [33m[2m✓[22m[39m rejects duplicate current observations and refuses an unbounded context[33m 5476[2mms[22m[39m
+2026-11-18T23:55:03.3808780Z    [33m[2m✓[22m[39m does not publish confirmations after provider failure or canonical reorganization[33m 14993[2mms[22m[39m
+2026-11-18T23:55:03.3810701Z    [33m[2m✓[22m[39m rejects a mixed-fork context when a reorg happens between two individually verified payments at one height[33m 2827[2mms[22m[39m
+2026-11-18T23:55:03.3812620Z    [33m[2m✓[22m[39m rejects an implausible chain head first reported by the final review guard[33m 3287[2mms[22m[39m
+2026-11-18T23:55:03.3814121Z    [33m[2m✓[22m[39m detects a source changed while current evidence is being read[33m 3617[2mms[22m[39m
+2026-11-18T23:55:03.3815653Z    [33m[2m✓[22m[39m keeps the original state and does not leave a partial successor on failed writes[33m 5478[2mms[22m[39m
+2026-11-18T23:55:03.3817385Z    [33m[2m✓[22m[39m reimports identical history idempotently while retaining imported-history provenance[33m 4922[2mms[22m[39m
+2026-11-18T23:55:03.3819096Z    [33m[2m✓[22m[39m archives and exports seller receipts without making them payment evidence[33m 2731[2mms[22m[39m
+2026-11-18T23:55:03.3820648Z    [33m[2m✓[22m[39m rejects a valid invoice and a signed receipt from another seller signer[33m 4590[2mms[22m[39m
+2026-11-18T23:55:03.3822394Z    [33m[2m✓[22m[39m lists proposals offline without turning stored evidence into current verification[33m 6276[2mms[22m[39m
+2026-11-18T23:55:03.3824072Z    [33m[2m✓[22m[39m requires exact live matching context before exporting a confirmable proposal[33m 5026[2mms[22m[39m
+2026-11-18T23:55:03.3825766Z    [33m[2m✓[22m[39m requires repeatable source and observation files and refuses cross-chain evidence[33m 6624[2mms[22m[39m
+2026-11-18T23:55:03.3827508Z    [33m[2m✓[22m[39m rejects a reviewed record absent from current evidence and a changed provider endpoint[33m 8785[2mms[22m[39m
+2026-11-18T23:55:03.3829276Z    [33m[2m✓[22m[39m fails final review if observations change or canonical finality disappears during work[33m 10053[2mms[22m[39m
+2026-11-18T23:55:03.3831286Z    [33m[2m✓[22m[39m rejects wrong archive formats and seller scopes before changing any local state[33m 2891[2mms[22m[39m
+2026-11-18T23:55:03.3833127Z    [33m[2m✓[22m[39m dry-runs imports without publication and rejects missing approval, wrong formats and scope changes[33m 1398[2mms[22m[39m
+2026-11-18T23:55:05.0352812Z  [32m✓[39m src/merchant-refund.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 688[2mms[22m[39m
+2026-11-18T23:55:11.0577433Z  [32m✓[39m src/qr-local-config.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 5122[2mms[22m[39m
+2026-11-18T23:55:11.0582861Z    [32m✓[39m encrypted keystore and safe settings QR parity [2m(7)[22m
+2026-11-18T23:55:11.0584979Z      [33m[2m✓[22m[39m transfers the GUI encrypted envelope through actual SVG decoding without decrypting or authenticating it[33m 2411[2mms[22m[39m
+2026-11-18T23:55:11.0587404Z      [33m[2m✓[22m[39m requires backup verify for ciphertext authentication and rejects passphrase flags on a transfer[33m 1514[2mms[22m[39m
+2026-11-18T23:55:11.9341774Z  [32m✓[39m src/merchant.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-11-18T23:55:12.8021526Z  [32m✓[39m src/registry-command.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-11-18T23:55:28.7771570Z  [32m✓[39m src/reconcile-time.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 15039[2mms[22m[39m
+2026-11-18T23:55:28.7774135Z    [33m[2m✓[22m[39m binds a late scan to the canonical payment time and persists that time after confirmation[33m 4018[2mms[22m[39m
+2026-11-18T23:55:28.7776351Z    [33m[2m✓[22m[39m never exports a confirmable proposal from missing or late canonical time (undefined)[33m 2304[2mms[22m[39m
+2026-11-18T23:55:28.7778516Z    [33m[2m✓[22m[39m never exports a confirmable proposal from missing or late canonical time (1800003600)[33m 2207[2mms[22m[39m
+2026-11-18T23:55:28.7780750Z    [33m[2m✓[22m[39m refuses an independent provider with missing or conflicting canonical time (undefined)[33m 3051[2mms[22m[39m
+2026-11-18T23:55:28.7783063Z    [33m[2m✓[22m[39m refuses an independent provider with missing or conflicting canonical time (1800000001)[33m 3452[2mms[22m[39m
+2026-11-18T23:55:29.7134341Z  [32m✓[39m src/history-command.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+2026-11-18T23:55:36.3015541Z  [32m✓[39m src/invoice-parity.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 38241[2mms[22m[39m
+2026-11-18T23:55:36.3017301Z    [32m✓[39m protected invoice envelopes and caller expectations [2m(7)[22m
+2026-11-18T23:55:36.3018373Z      [33m[2m✓[22m[39m creates a passphrase-protected link from a private input and verifies it without exposing the passphrase[33m 38116[2mms[22m[39m
+2026-11-18T23:55:36.8694894Z  [32m✓[39m src/reconcile-frontrun.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 6277[2mms[22m[39m
+2026-11-18T23:55:36.8697043Z    [33m[2m✓[22m[39m F1: accepts a front-run and the genuine router observation for one (S, E); the genuine payment keeps its exact proposal[33m 2664[2mms[22m[39m
+2026-11-18T23:55:36.8723294Z    [33m[2m✓[22m[39m F1: still refuses the exact same router observation supplied twice[33m 3611[2mms[22m[39m
+2026-11-18T23:55:37.4648504Z  [32m✓[39m src/operator-commands.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 286[2mms[22m[39m
+2026-11-18T23:55:43.7526393Z  [32m✓[39m src/b0-receipt-recovery.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 5237[2mms[22m[39m
+2026-11-18T23:55:43.7533580Z    [33m[2m✓[22m[39m retains a live-verified signed receipt through encrypted offline recovery without promoting historical proof[33m 5235[2mms[22m[39m
+2026-11-18T23:55:44.7061608Z  [32m✓[39m src/node-io.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 134[2mms[22m[39m
+2026-11-18T23:55:49.5155068Z  [32m✓[39m src/recovery-auth-negative.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 3849[2mms[22m[39m
+2026-11-18T23:55:49.5162299Z    [33m[2m✓[22m[39m fails closed on a wrong viewing key or tampered encrypted receipt archive without publishing recovery[33m 3847[2mms[22m[39m
+2026-11-18T23:55:49.7993657Z  [32m✓[39m src/passphrase.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-11-18T23:55:50.7393121Z  [32m✓[39m src/merchant-subscription.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-11-18T23:55:51.6623374Z  [32m✓[39m src/node-io-regression.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+2026-11-18T23:55:52.6542742Z  [32m✓[39m src/settings-command.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+2026-11-18T23:55:53.3812324Z  [32m✓[39m src/rpc-concurrent-budget.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-11-18T23:55:54.3561856Z  [32m✓[39m src/operator-io.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-11-18T23:55:55.0815719Z  [32m✓[39m src/seller-parity.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-11-18T23:55:55.9705251Z  [32m✓[39m src/reconcile-local.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 67673[2mms[22m[39m
+2026-11-18T23:55:55.9707245Z    [33m[2m✓[22m[39m records a fresh seller-owned payment without requiring or confirming an invoice match[33m 3437[2mms[22m[39m
+2026-11-18T23:55:55.9709246Z    [33m[2m✓[22m[39m does not promote a signed receipt when canonical RPC evidence is unavailable[33m 5176[2mms[22m[39m
+2026-11-18T23:55:55.9711502Z    [33m[2m✓[22m[39m clears observations while retaining invoice registrations and archived receipts[33m 3813[2mms[22m[39m
+2026-11-18T23:55:55.9713372Z    [33m[2m✓[22m[39m removes only the selected invoice registration from a new encrypted successor[33m 1794[2mms[22m[39m
+2026-11-18T23:55:55.9715181Z    [33m[2m✓[22m[39m removes only the selected archived receipt without treating it as payment evidence[33m 1628[2mms[22m[39m
+2026-11-18T23:55:55.9717224Z    [33m[2m✓[22m[39m keeps manual annotations explicitly unverified and rejects conflicting annotations on repeated records[33m 6885[2mms[22m[39m
+2026-11-18T23:55:55.9719175Z    [33m[2m✓[22m[39m requires explicit approval and an exact current record for any manual annotation[33m 3633[2mms[22m[39m
+2026-11-18T23:55:55.9720979Z    [33m[2m✓[22m[39m does not record duplicate evidence or publish after a late canonical reorganization[33m 7768[2mms[22m[39m
+2026-11-18T23:55:55.9722790Z    [33m[2m✓[22m[39m never promotes restored observations without fresh live evidence[33m 5715[2mms[22m[39m
+2026-11-18T23:55:55.9724633Z    [33m[2m✓[22m[39m classifies transaction-provider failures as network errors without persisting an observation[33m 3244[2mms[22m[39m
+2026-11-18T23:55:55.9726714Z    [33m[2m✓[22m[39m preserves reorg tombstones through clearing and old-backup imports and refuses resurrection by record[33m 5900[2mms[22m[39m
+2026-11-18T23:55:55.9728616Z    [33m[2m✓[22m[39m retains saturated read-only state even after every observation is cleared[33m 5003[2mms[22m[39m
+2026-11-18T23:55:55.9730631Z    [33m[2m✓[22m[39m supports approved all-invoice and all-receipt cleanup without affecting observations or the other collection[33m 6685[2mms[22m[39m
+2026-11-18T23:55:55.9732762Z    [33m[2m✓[22m[39m requires approved exact cleanup selectors and does not overwrite existing output files[33m 1705[2mms[22m[39m
+2026-11-18T23:55:55.9734672Z    [33m[2m✓[22m[39m rejects nonrepeatable or concurrently changed cleanup sources and interrupted writes[33m 5280[2mms[22m[39m
+2026-11-18T23:55:56.1667492Z  [32m✓[39m src/secret-errors.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-11-18T23:55:56.1965278Z  [32m✓[39m src/args.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-11-18T23:55:57.0432935Z  [32m✓[39m src/build-info-command.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 61[2mms[22m[39m
+2026-11-18T23:56:18.3093464Z  [32m✓[39m src/backup-generate.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 40407[2mms[22m[39m
+2026-11-18T23:56:18.3094616Z    [32m✓[39m encrypted seller key generation [2m(5)[22m
+2026-11-18T23:56:18.3096293Z      [33m[2m✓[22m[39m generates three independent keys using the GUI-compatible encrypted keystore without disclosing secrets[33m 31832[2mms[22m[39m
+2026-11-18T23:56:18.3098356Z      [33m[2m✓[22m[39m requires a new explicit encrypted output and preserves existing files[33m 8561[2mms[22m[39m
+2026-11-18T23:56:18.7849958Z 
+2026-11-18T23:56:18.7856564Z [2m Test Files [22m [1m[32m37 passed[39m[22m[90m (37)[39m
+2026-11-18T23:56:18.7860123Z [2m      Tests [22m [1m[32m570 passed[39m[22m[90m (570)[39m
+2026-11-18T23:56:18.7860614Z [2m   Start at [22m 23:52:43
+2026-11-18T23:56:18.7864605Z [2m   Duration [22m 215.24s[2m (tests 95%, import 4%, transform 1%)[22m
+2026-11-18T23:56:18.7876802Z 
+2026-11-18T23:56:18.7903542Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-18T23:56:18.7948365Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:56:18.7949391Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-18T23:56:18.7950346Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:56:18.7954429Z All files          |   98.61 |    97.33 |   99.07 |   99.49 |                   
+2026-11-18T23:56:18.7955699Z  src               |   99.05 |    97.15 |   99.15 |    99.7 |                   
+2026-11-18T23:56:18.7956644Z   args.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7957514Z   backup-data.ts   |   98.18 |    98.36 |   94.44 |     100 | 98                
+2026-11-18T23:56:18.7958339Z   build-info.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7959147Z   ctx.ts           |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7959918Z   hex.ts           |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7960609Z   io.ts            |     100 |       50 |     100 |     100 | 72                
+2026-11-18T23:56:18.7961880Z   node-io.ts       |   97.43 |    88.88 |     100 |   98.92 | 113               
+2026-11-18T23:56:18.7964057Z   ...nt-context.ts |     100 |    99.02 |     100 |     100 | 25                
+2026-11-18T23:56:18.7964899Z   payment-input.ts |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7965746Z   ...le-session.ts |      98 |    97.14 |     100 |     100 | 62-76             
+2026-11-18T23:56:18.7966507Z   run.ts           |   98.78 |    94.73 |     100 |   98.48 | 104               
+2026-11-18T23:56:18.7967281Z   scan-report.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7968063Z   secrets.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7968834Z   version.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7969649Z  src/commands      |   98.37 |    97.44 |   99.03 |   99.37 |                   
+2026-11-18T23:56:18.7970441Z   backup.ts        |   99.16 |    97.72 |     100 |     100 | 92                
+2026-11-18T23:56:18.7971313Z   batch.ts         |   95.65 |    88.88 |     100 |    97.5 | 128               
+2026-11-18T23:56:18.7971923Z   chain.ts         |   99.06 |    98.63 |     100 |     100 | 65                
+2026-11-18T23:56:18.7972700Z   doctor.ts        |   90.74 |    82.14 |     100 |     100 | 81-101            
+2026-11-18T23:56:18.7973469Z   export.ts        |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7974185Z   history.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7974793Z   i18n.ts          |   96.42 |    96.87 |     100 |      96 | 52                
+2026-11-18T23:56:18.7975527Z   invoice.ts       |     100 |    99.34 |     100 |     100 | 200               
+2026-11-18T23:56:18.7976583Z   ...ant-refund.ts |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7977439Z   merchant.ts      |   97.72 |    98.24 |   93.75 |   96.87 | 21,114            
+2026-11-18T23:56:18.7978249Z   operator.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7979040Z   payment.ts       |    97.1 |       93 |     100 |     100 | 22,33,36,51-55,84 
+2026-11-18T23:56:18.7979795Z   qr.ts            |   98.81 |    99.28 |     100 |   99.23 | 138               
+2026-11-18T23:56:18.7980560Z   receipt.ts       |    98.6 |    98.65 |     100 |   99.17 | 174               
+2026-11-18T23:56:18.7981097Z   reconcile.ts     |   99.54 |      100 |   97.14 |     100 |                   
+2026-11-18T23:56:18.7981738Z   registry.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7982195Z   sandbox.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7982637Z   scan.ts          |   93.54 |     88.4 |     100 |   97.46 | 72,100            
+2026-11-18T23:56:18.7983074Z   seller.ts        |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7983503Z   split.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7983920Z   sub.ts           |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7984461Z   types.ts         |       0 |        0 |       0 |       0 |                   
+2026-11-18T23:56:18.7984893Z   webhook.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:56:18.7985391Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:56:18.8518441Z 
+2026-11-18T23:56:18.8519039Z > @ghostpay/external-pools@0.1.0 test
+2026-11-18T23:56:18.8519432Z > vitest run --coverage
+2026-11-18T23:56:18.8519587Z 
+2026-11-18T23:56:19.2157068Z 
+2026-11-18T23:56:19.2161009Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/external-pools[39m
+2026-11-18T23:56:19.2162384Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-18T23:56:19.2162752Z 
+2026-11-18T23:56:19.8859753Z  [32m✓[39m src/basics.test.ts [2m([22m[2m48 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+2026-11-18T23:56:25.4269921Z  [32m✓[39m src/mock.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 5543[2mms[22m[39m
+2026-11-18T23:56:25.4271281Z    [32m✓[39m MockPoolAdapter acceptance A1 [2m(6)[22m
+2026-11-18T23:56:25.4272571Z      [33m[2m✓[22m[39m enter, age, exit to a fresh D, delete the vault and recover the same note ids[33m 2590[2mms[22m[39m
+2026-11-18T23:56:25.4275372Z      [33m[2m✓[22m[39m recovery marks the scope incomplete when the indexer fails and blocks planning (EP-VAULT-4)[33m 1090[2mms[22m[39m
+2026-11-18T23:56:25.4277586Z      [33m[2m✓[22m[39m recovery keeps an existing note and ignores deposits of other depositors[33m 1084[2mms[22m[39m
+2026-11-18T23:56:25.4279247Z    [32m✓[39m MockPoolAdapter validation [2m(7)[22m
+2026-11-18T23:56:25.4280374Z      [33m[2m✓[22m[39m exhausts deposit indexes[33m 676[2mms[22m[39m
+2026-11-18T23:56:25.6221804Z  [32m✓[39m src/testkit.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+2026-11-18T23:56:25.6737411Z  [32m✓[39m src/reader.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 5123[2mms[22m[39m
+2026-11-18T23:56:48.0820226Z  [32m✓[39m src/vault.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 28218[2mms[22m[39m
+2026-11-18T23:56:48.0823085Z    [32m✓[39m Vault (EP-VAULT-1..6) [2m(11)[22m
+2026-11-18T23:56:48.0824446Z      [33m[2m✓[22m[39m round-trips notes with bigint and bytes, rounds createdAt, and never stores plaintext[33m 1279[2mms[22m[39m
+2026-11-18T23:56:48.0825989Z      [33m[2m✓[22m[39m lists notes ordered by block then id[33m 1116[2mms[22m[39m
+2026-11-18T23:56:48.0827945Z      [33m[2m✓[22m[39m rejects wrong passphrase and short passphrase, bad kdf, duplicate create[33m 3301[2mms[22m[39m
+2026-11-18T23:56:48.0829233Z      [33m[2m✓[22m[39m locks: further use throws VAULT_LOCKED[33m 1092[2mms[22m[39m
+2026-11-18T23:56:48.0830447Z      [33m[2m✓[22m[39m detects malformed headers and tampered or swapped records[33m 1076[2mms[22m[39m
+2026-11-18T23:56:48.0831937Z      [33m[2m✓[22m[39m rejects structurally invalid stored notes[33m 1084[2mms[22m[39m
+2026-11-18T23:56:48.0833458Z      [33m[2m✓[22m[39m refuses to move a note backwards but allows lost-sync, and finishes terminal notes[33m 2147[2mms[22m[39m
+2026-11-18T23:56:48.0834974Z      [33m[2m✓[22m[39m keeps the S1 signer reference while a note is live (EP-VAULT-3)[33m 1069[2mms[22m[39m
+2026-11-18T23:56:48.0836422Z      [33m[2m✓[22m[39m blocks deposits into an incomplete scope and persists it (EP-VAULT-4)[33m 2139[2mms[22m[39m
+2026-11-18T23:56:48.0837910Z      [33m[2m✓[22m[39m caches proof inputs (EP-VAULT-5) and exports/imports an encrypted bundle[33m 3219[2mms[22m[39m
+2026-11-18T23:56:48.0839522Z      [33m[2m✓[22m[39m never leaks stored plaintext through error messages (EP-VAULT-1 canary)[33m 1064[2mms[22m[39m
+2026-11-18T23:56:48.0840581Z    [32m✓[39m Vault note shape validation [2m(9)[22m
+2026-11-18T23:56:48.0841631Z      [33m[2m✓[22m[39m rejects stored note with not an object[33m 1072[2mms[22m[39m
+2026-11-18T23:56:48.0842643Z      [33m[2m✓[22m[39m rejects stored note with bad route[33m 1069[2mms[22m[39m
+2026-11-18T23:56:48.0843960Z      [33m[2m✓[22m[39m rejects stored note with bad asset[33m 1075[2mms[22m[39m
+2026-11-18T23:56:48.0845042Z      [33m[2m✓[22m[39m rejects stored note with bad state[33m 1064[2mms[22m[39m
+2026-11-18T23:56:48.0846142Z      [33m[2m✓[22m[39m rejects stored note with bad depositor[33m 1072[2mms[22m[39m
+2026-11-18T23:56:48.0847156Z      [33m[2m✓[22m[39m rejects stored note with no adapterData[33m 1065[2mms[22m[39m
+2026-11-18T23:56:48.0848273Z      [33m[2m✓[22m[39m rejects stored note with amount not bigint[33m 1073[2mms[22m[39m
+2026-11-18T23:56:48.0849326Z      [33m[2m✓[22m[39m rejects a malformed index record[33m 1064[2mms[22m[39m
+2026-11-18T23:56:48.0850321Z      [33m[2m✓[22m[39m rejects plaintext that is not JSON[33m 1070[2mms[22m[39m
+2026-11-18T23:56:48.1760465Z 
+2026-11-18T23:56:48.1764458Z [2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+2026-11-18T23:56:48.1765730Z [2m      Tests [22m [1m[32m93 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (94)[39m
+2026-11-18T23:56:48.1766258Z [2m   Start at [22m 23:56:19
+2026-11-18T23:56:48.1769419Z [2m   Duration [22m 28.95s[2m (tests 95%, import 4%, transform 1%)[22m
+2026-11-18T23:56:48.1778882Z 
+2026-11-18T23:56:48.1796923Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-18T23:56:48.1831808Z -------------------|---------|----------|---------|---------|-----------------------------
+2026-11-18T23:56:48.1832661Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s           
+2026-11-18T23:56:48.1833236Z -------------------|---------|----------|---------|---------|-----------------------------
+2026-11-18T23:56:48.1836862Z All files          |   99.12 |    96.26 |    99.3 |     100 |                             
+2026-11-18T23:56:48.1838236Z  src               |   99.38 |    96.75 |     100 |     100 |                             
+2026-11-18T23:56:48.1839383Z   accounting.ts    |     100 |    95.23 |     100 |     100 | 17                          
+2026-11-18T23:56:48.1840033Z   codehash.ts      |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1840582Z   errors.ts        |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1841421Z   guard.ts         |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1841915Z   hex.ts           |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1843121Z   info.ts          |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1843798Z   linter.ts        |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1844524Z   manifest-data.ts |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1845314Z   manifest.ts      |     100 |    97.59 |     100 |     100 | 110,121                     
+2026-11-18T23:56:48.1846064Z   planner.ts       |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1846800Z   recovery.ts      |     100 |    83.33 |     100 |     100 | 46                          
+2026-11-18T23:56:48.1847567Z   registry.ts      |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1848296Z   testkit.ts       |     100 |    96.42 |     100 |     100 | 105                         
+2026-11-18T23:56:48.1848979Z   timing.ts        |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1849658Z   types.ts         |       0 |        0 |       0 |       0 |                             
+2026-11-18T23:56:48.1850492Z   vault.ts         |   98.61 |    95.12 |     100 |     100 | 144,223,308,318,369-371,479 
+2026-11-18T23:56:48.1851552Z   viem-reader.ts   |     100 |      100 |     100 |     100 |                             
+2026-11-18T23:56:48.1852290Z  src/adapters/mock |   98.48 |    94.49 |   97.05 |     100 |                             
+2026-11-18T23:56:48.1852800Z   adapter.ts       |   99.06 |    98.38 |   94.73 |     100 | 101                         
+2026-11-18T23:56:48.1853275Z   index.ts         |       0 |        0 |       0 |       0 |                             
+2026-11-18T23:56:48.1853731Z   ledger.ts        |    97.8 |    89.36 |     100 |     100 | 71,119,122-123,165          
+2026-11-18T23:56:48.1854278Z -------------------|---------|----------|---------|---------|-----------------------------
+2026-11-18T23:56:48.2356782Z 
+2026-11-18T23:56:48.2357454Z > @ghostpay/hops@0.1.0 test
+2026-11-18T23:56:48.2357815Z > vitest run --coverage
+2026-11-18T23:56:48.2357987Z 
+2026-11-18T23:56:48.5884237Z 
+2026-11-18T23:56:48.5888218Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/hops[39m
+2026-11-18T23:56:48.5889315Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-18T23:56:48.5889695Z 
+2026-11-18T23:56:49.7981719Z  [32m✓[39m src/machine.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 127[2mms[22m[39m
+2026-11-18T23:56:50.3013196Z  [32m✓[39m src/execute.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 618[2mms[22m[39m
+2026-11-18T23:56:50.3040521Z    [32m✓[39m runHopLeg [2m(7)[22m
+2026-11-18T23:56:50.3053252Z      [33m[2m✓[22m[39m 3-leg run: fees exact, final balance matches ladder, nonces unique, each owner signed[33m 336[2mms[22m[39m
+2026-11-18T23:56:50.3824397Z  [32m✓[39m src/plan.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 703[2mms[22m[39m
+2026-11-18T23:56:51.1746396Z  [32m✓[39m src/store.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+2026-11-18T23:56:52.0583646Z  [32m✓[39m src/handoff.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+2026-11-18T23:56:52.1697185Z  [32m✓[39m src/rand.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 940[2mms[22m[39m
+2026-11-18T23:56:52.1698530Z    [32m✓[39m randomDelayMs [2m(4)[22m
+2026-11-18T23:56:52.1699903Z      [33m[2m✓[22m[39m chi-square uniformity at fixed seed (HOP-REQ-4)[33m 787[2mms[22m[39m
+2026-11-18T23:56:52.7096742Z  [32m✓[39m src/labels.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+2026-11-18T23:57:02.9188457Z  [32m✓[39m src/follower.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 12373[2mms[22m[39m
+2026-11-18T23:57:02.9189499Z    [32m✓[39m AT-HOP-NEG-1: an analyst follows every hop (negative PoC) [2m(3)[22m
+2026-11-18T23:57:02.9190775Z      [33m[2m✓[22m[39m recovers D for 100 % of 200 randomized single-user plans in <= k steps[33m 11260[2mms[22m[39m
+2026-11-18T23:57:02.9192467Z      [33m[2m✓[22m[39m crowd: a tracer that knows S1 is unaffected by c concurrent plans; amount-only tracer degrades as 1/c (informational)[33m 1110[2mms[22m[39m
+2026-11-18T23:57:03.0047262Z 
+2026-11-18T23:57:03.0051815Z [2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+2026-11-18T23:57:03.0052819Z [2m      Tests [22m [1m[32m57 passed[39m[22m[90m (57)[39m
+2026-11-18T23:57:03.0053637Z [2m   Start at [22m 23:56:48
+2026-11-18T23:57:03.0058315Z [2m   Duration [22m 14.41s[2m (tests 73%, import 23%, transform 4%, worker 1%)[22m
+2026-11-18T23:57:03.0069424Z 
+2026-11-18T23:57:03.0088875Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-18T23:57:03.0112406Z ------------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:57:03.0113569Z File              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-18T23:57:03.0114652Z ------------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:57:03.0119149Z All files         |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0120160Z  execute.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0121670Z  guard.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0122896Z  handoff.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0123699Z  labels.ts        |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0124479Z  machine.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0125475Z  plan.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0126287Z  rand.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0127194Z  relayerSelect.ts |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0128087Z  store.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0128922Z  types.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:57:03.0129846Z ------------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:57:03.0392573Z 
+2026-11-18T23:57:03.0393296Z > @ghostpay/invoice-schema@0.1.0 test
+2026-11-18T23:57:03.0393800Z > vitest run --coverage
+2026-11-18T23:57:03.0393985Z 
+2026-11-18T23:57:03.4049051Z 
+2026-11-18T23:57:03.4053099Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/invoice-schema[39m
+2026-11-18T23:57:03.4054295Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-18T23:57:03.4054679Z 
+2026-11-18T23:57:04.9787874Z  [32m✓[39m src/schema.test.ts [2m([22m[2m94 tests[22m[2m)[22m[33m 1048[2mms[22m[39m
+2026-11-18T23:57:04.9789190Z    [32m✓[39m createInvoice [2m(6)[22m
+2026-11-18T23:57:04.9790444Z      [33m[2m✓[22m[39m nonces are unique over 2000 draws from the real CSPRNG[33m 997[2mms[22m[39m
+2026-11-18T23:57:08.9959505Z  [32m✓[39m src/envelope.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 5111[2mms[22m[39m
+2026-11-18T23:57:08.9961052Z    [32m✓[39m encrypted fragments (AES-256-GCM, ADR-0005) [2m(11)[22m
+2026-11-18T23:57:08.9962632Z      [33m[2m✓[22m[39m key and GCM nonce are unique per encryption (300 encodes)[33m 1478[2mms[22m[39m
+2026-11-18T23:57:08.9963847Z    [32m✓[39m size boundary (16 KiB decoded) [2m(3)[22m
+2026-11-18T23:57:08.9965067Z      [33m[2m✓[22m[39m exactly 16384 decoded bytes parses; 16385 fails closed[33m 2750[2mms[22m[39m
+2026-11-18T23:57:41.7778387Z  [32m✓[39m src/pinnedSigner.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 32497[2mms[22m[39m
+2026-11-18T23:57:41.7780059Z    [32m✓[39m opt-in trusted-signer parsing (restored from PR #218) [2m(13)[22m
+2026-11-18T23:57:41.7782122Z      [33m[2m✓[22m[39m prompts without trusting a passphrase header, then enforces the decrypted signer[33m 15008[2mms[22m[39m
+2026-11-18T23:57:41.7784041Z      [33m[2m✓[22m[39m also rejects an invalid invoice signature after successful passphrase decryption[33m 17063[2mms[22m[39m
+2026-11-18T23:57:43.0036364Z  [32m✓[39m src/sign.test.ts [2m([22m[2m42 tests[22m[2m)[22m[33m 930[2mms[22m[39m
+2026-11-18T23:57:43.0039151Z    [32m✓[39m signature rejection [2m(5)[22m
+2026-11-18T23:57:43.0040395Z      [33m[2m✓[22m[39m flipping any single signature bit invalidates it[33m 602[2mms[22m[39m
+2026-11-18T23:57:43.4872994Z  [32m✓[39m src/receipts.test.ts [2m([22m[2m51 tests[22m[2m)[22m[32m 261[2mms[22m[39m
+2026-11-18T23:57:47.3983499Z  [32m✓[39m src/fuzz.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 3666[2mms[22m[39m
+2026-11-18T23:57:47.4010206Z    [32m✓[39m parser fuzzing [2m(9)[22m
+2026-11-18T23:57:47.4018461Z      [33m[2m✓[22m[39m random strings (any unicode) as the whole fragment and as the payload[33m 788[2mms[22m[39m
+2026-11-18T23:57:47.4020615Z      [33m[2m✓[22m[39m invalid unicode in text fields is rejected by the schema, not silently repaired[33m 319[2mms[22m[39m
+2026-11-18T23:57:47.4022766Z      [33m[2m✓[22m[39m arbitrary valid memo text survives plain and encrypted round trips unchanged[33m 1858[2mms[22m[39m
+2026-11-18T23:57:48.9773266Z  [32m✓[39m src/text-hygiene.test.ts [2m([22m[2m427 tests[22m[2m)[22m[33m 1227[2mms[22m[39m
+2026-11-18T23:57:48.9781965Z    [32m✓[39m S3-12 forbidden characters in free text [2m(427)[22m
+2026-11-18T23:57:48.9783952Z      [33m[2m✓[22m[39m fuzz: arbitrary unicode never throws anything but SchemaError, and accepted text has no forbidden characters[33m 1046[2mms[22m[39m
+2026-11-18T23:57:49.4323836Z  [32m✓[39m src/merchantProfile.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 226[2mms[22m[39m
+2026-11-18T23:57:49.6085505Z  [32m✓[39m src/json.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-11-18T23:57:49.8739756Z  [32m✓[39m src/expiry.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-11-18T23:57:50.1432983Z  [32m✓[39m src/base64url.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-11-18T23:58:31.4433150Z  [32m✓[39m src/independent.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 86164[2mms[22m[39m
+2026-11-18T23:58:31.4434450Z    [32m✓[39m invoice signature vs a curve-independent ECDSA verifier [2m(4)[22m
+2026-11-18T23:58:31.4435816Z      [33m[2m✓[22m[39m 20 package signatures verify under the reference (low-s, 64-byte r||s)[33m 977[2mms[22m[39m
+2026-11-18T23:58:31.4437517Z      [33m[2m✓[22m[39m cross-chain replay: the signature binds chainId (verification for another chain fails in both)[33m 335[2mms[22m[39m
+2026-11-18T23:58:31.4439130Z    [32m✓[39m A256GCM and A256GCM-PW envelopes vs node:crypto (OpenSSL) [2m(3)[22m
+2026-11-18T23:58:31.4440634Z      [33m[2m✓[22m[39m A256GCM-PW: package output opens with OpenSSL scrypt + AES-GCM[33m 3809[2mms[22m[39m
+2026-11-18T23:58:31.4442654Z      [33m[2m✓[22m[39m A256GCM-PW: an OpenSSL-made envelope parses; every single-byte AAD, tag or ciphertext change fails closed[33m 78744[2mms[22m[39m
+2026-11-18T23:58:31.4444048Z    [32m✓[39m versioning and KDF bounds from untrusted links [2m(2)[22m
+2026-11-18T23:58:31.4445436Z      [33m[2m✓[22m[39m absurd scrypt N/r/p are refused quickly (no KDF run), including max-safe-integer values[33m 2153[2mms[22m[39m
+2026-11-19T00:00:12.7253091Z  [32m✓[39m src/passphrase.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 188811[2mms[22m[39m
+2026-11-19T00:00:12.7254594Z    [32m✓[39m passphrase-protected links (A256GCM-PW, ADR-0020) [2m(21)[22m
+2026-11-19T00:00:12.7255506Z      [33m[2m✓[22m[39m round trips; only alg, chainId, signer and KDF header are in clear[33m 9733[2mms[22m[39m
+2026-11-19T00:00:12.7256882Z      [33m[2m✓[22m[39m matches an independent scrypt + AES-GCM implementation with the documented AAD[33m 7251[2mms[22m[39m
+2026-11-19T00:00:12.7257807Z      [33m[2m✓[22m[39m default cost is 2^17 and round trips[33m 25859[2mms[22m[39m
+2026-11-19T00:00:12.7258529Z      [33m[2m✓[22m[39m salt and nonce are fresh per encode[33m 5387[2mms[22m[39m
+2026-11-19T00:00:12.7259456Z      [33m[2m✓[22m[39m openFragment reports needsPassphrase without KDF work, then opens with it[33m 4361[2mms[22m[39m
+2026-11-19T00:00:12.7260535Z      [33m[2m✓[22m[39m parseFragment without a passphrase throws PassphraseRequiredError[33m 2191[2mms[22m[39m
+2026-11-19T00:00:12.7261740Z      [33m[2m✓[22m[39m wrong passphrase yields one generic typed error[33m 4367[2mms[22m[39m
+2026-11-19T00:00:12.7262757Z      [33m[2m✓[22m[39m tampering any authenticated field gives the same WrongPassphraseError (no oracle)[33m 30496[2mms[22m[39m
+2026-11-19T00:00:12.7263660Z      [33m[2m✓[22m[39m truncated ciphertext fails closed[33m 4301[2mms[22m[39m
+2026-11-19T00:00:12.7264615Z      [33m[2m✓[22m[39m KDF parameters outside the allow-list are refused before any derivation (no DoS)[33m 2160[2mms[22m[39m
+2026-11-19T00:00:12.7265610Z      [33m[2m✓[22m[39m structural problems are typed schema/base64 errors[33m 2158[2mms[22m[39m
+2026-11-19T00:00:12.7266565Z      [33m[2m✓[22m[39m downgrade: re-labelling a PW envelope as A256GCM or none is rejected[33m 2154[2mms[22m[39m
+2026-11-19T00:00:12.7267810Z      [33m[2m✓[22m[39m signature still covers the plaintext: a re-encrypted altered invoice is invalid-signature[33m 8183[2mms[22m[39m
+2026-11-19T00:00:12.7269040Z      [33m[2m✓[22m[39m authentic but malformed plaintext gives typed errors (reachable only with the passphrase)[33m 40652[2mms[22m[39m
+2026-11-19T00:00:12.7270110Z      [33m[2m✓[22m[39m unicode: NFKC-equivalent passphrases open the same link[33m 17211[2mms[22m[39m
+2026-11-19T00:00:12.7271107Z      [33m[2m✓[22m[39m passphrase policy: length in code points, byte cap, lone surrogates, type[33m 2196[2mms[22m[39m
+2026-11-19T00:00:12.7272278Z      [33m[2m✓[22m[39m encode option conflicts are refused[33m 4353[2mms[22m[39m
+2026-11-19T00:00:12.7273126Z      [33m[2m✓[22m[39m refuses an invalid signature and oversize invoices at encode[33m 2195[2mms[22m[39m
+2026-11-19T00:00:12.7274110Z      [33m[2m✓[22m[39m missing Web Crypto is UnsupportedError, not a wrong-passphrase error[33m 4333[2mms[22m[39m
+2026-11-19T00:00:12.7274838Z    [32m✓[39m passphrase internals [2m(2)[22m
+2026-11-19T00:00:12.7275692Z      [33m[2m✓[22m[39m derivePassphraseKey refuses disallowed parameters and salts (defence in depth)[33m 4082[2mms[22m[39m
+2026-11-19T00:00:12.7276444Z    [32m✓[39m passphrase fuzzing [2m(3)[22m
+2026-11-19T00:00:12.7277216Z      [33m[2m✓[22m[39m passphraseToBytes: policy error or NFKC UTF-8 bytes; NFKC-idempotent[33m 685[2mms[22m[39m
+2026-11-19T00:00:12.7278198Z      [33m[2m✓[22m[39m structurally mutated PW envelopes fail closed with typed errors[33m 2318[2mms[22m[39m
+2026-11-19T00:00:12.7279165Z      [33m[2m✓[22m[39m random ciphertext bytes never open and never throw untyped errors[33m 2141[2mms[22m[39m
+2026-11-19T00:00:12.8761882Z 
+2026-11-19T00:00:12.8773225Z [2m Test Files [22m [1m[32m13 passed[39m[22m[90m (13)[39m
+2026-11-19T00:00:12.8792564Z [2m      Tests [22m [1m[32m731 passed[39m[22m[90m (731)[39m
+2026-11-19T00:00:12.8793422Z [2m   Start at [22m 23:57:03
+2026-11-19T00:00:12.8794172Z [2m   Duration [22m 189.46s[2m (tests 99%)[22m
+2026-11-19T00:00:12.8811813Z 
+2026-11-19T00:00:12.8836291Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:12.8875188Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:12.8875860Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:12.8876380Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:12.8880771Z All files          |   98.09 |    97.77 |     100 |   99.26 |                   
+2026-11-19T00:00:12.8881882Z  base64url.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:12.8883902Z  envelope.ts       |   98.57 |    97.52 |     100 |   99.44 | 545               
+2026-11-19T00:00:12.8884369Z  errors.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:12.8885212Z  expiry.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:12.8886371Z  json.ts           |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:12.8887585Z  ...hantProfile.ts |   89.36 |    91.66 |     100 |   97.22 | 170,178           
+2026-11-19T00:00:12.8888135Z  passphrase.ts     |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:12.8889523Z  receipts.ts       |   99.07 |    99.04 |     100 |   98.66 | 99                
+2026-11-19T00:00:12.8890772Z  schema.ts         |   99.37 |    99.21 |     100 |     100 | 361               
+2026-11-19T00:00:12.8891419Z  sign.ts           |   94.44 |      100 |     100 |   93.75 | 110               
+2026-11-19T00:00:12.8892011Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:12.9194133Z 
+2026-11-19T00:00:12.9194726Z > @ghostpay/merchant-ledger@0.1.0 test
+2026-11-19T00:00:12.9195115Z > vitest run --coverage
+2026-11-19T00:00:12.9195290Z 
+2026-11-19T00:00:13.2877023Z 
+2026-11-19T00:00:13.2881058Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/merchant-ledger[39m
+2026-11-19T00:00:13.2882962Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:13.2883565Z 
+2026-11-19T00:00:13.5470356Z  [32m✓[39m src/ledger.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-11-19T00:00:13.5870589Z 
+2026-11-19T00:00:13.5875335Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+2026-11-19T00:00:13.5876360Z [2m      Tests [22m [1m[32m27 passed[39m[22m[90m (27)[39m
+2026-11-19T00:00:13.5877168Z [2m   Start at [22m 00:00:13
+2026-11-19T00:00:13.5883190Z [2m   Duration [22m 294ms[2m (transform 62%, import 15%, tests 14%, worker 9%)[22m
+2026-11-19T00:00:13.5893010Z 
+2026-11-19T00:00:13.5909755Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:13.5927988Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:13.5929452Z File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:13.5930327Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:13.5934724Z All files     |     100 |    99.31 |     100 |     100 |                   
+2026-11-19T00:00:13.5936165Z  csv.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:13.5937131Z  decimal.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:13.5938382Z  errors.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:13.5939622Z  export.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:13.5940714Z  reconcile.ts |     100 |    97.77 |     100 |     100 | 139               
+2026-11-19T00:00:13.5941715Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:13.6140181Z 
+2026-11-19T00:00:13.6140773Z > @ghostpay/net-harness@0.1.0 test
+2026-11-19T00:00:13.6141781Z > vitest run --coverage
+2026-11-19T00:00:13.6142065Z 
+2026-11-19T00:00:13.9792991Z 
+2026-11-19T00:00:13.9797105Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/net-harness[39m
+2026-11-19T00:00:13.9798961Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:13.9799560Z 
+2026-11-19T00:00:17.5648249Z  [32m✓[39m src/harness.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 3282[2mms[22m[39m
+2026-11-19T00:00:17.5649225Z    [32m✓[39m socks5 server [2m(11)[22m
+2026-11-19T00:00:17.5650268Z      [33m[2m✓[22m[39m misbehaviours[33m 2108[2mms[22m[39m
+2026-11-19T00:00:17.5650998Z    [32m✓[39m connect proxy [2m(3)[22m
+2026-11-19T00:00:17.5652107Z      [33m[2m✓[22m[39m loopback literal targets work; others get 502; bad line 400; forced status[33m 305[2mms[22m[39m
+2026-11-19T00:00:17.5652802Z      [33m[2m✓[22m[39m malformed and huge replies[33m 602[2mms[22m[39m
+2026-11-19T00:00:17.6131453Z 
+2026-11-19T00:00:17.6135672Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+2026-11-19T00:00:17.6136676Z [2m      Tests [22m [1m[32m27 passed[39m[22m[90m (27)[39m
+2026-11-19T00:00:17.6137397Z [2m   Start at [22m 00:00:13
+2026-11-19T00:00:17.6141596Z [2m   Duration [22m 3.63s[2m (tests 95%, transform 4%, import 1%)[22m
+2026-11-19T00:00:17.6151070Z 
+2026-11-19T00:00:17.6168606Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:17.6198025Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:17.6199057Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:17.6199981Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:17.6203499Z All files          |   96.13 |    90.52 |   96.96 |   99.11 |                   
+2026-11-19T00:00:17.6204578Z  src               |    96.1 |    90.52 |   96.96 |    99.1 |                   
+2026-11-19T00:00:17.6206401Z   connectProxy.ts  |   97.01 |       92 |      90 |     100 | 50-59             
+2026-11-19T00:00:17.6207329Z   httpEcho.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:17.6208610Z   loopback.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:17.6209334Z   ohttp.ts         |     100 |    91.66 |     100 |     100 | 143               
+2026-11-19T00:00:17.6210134Z   ...edResolver.ts |     100 |     87.5 |     100 |     100 | 37                
+2026-11-19T00:00:17.6213210Z   socks5Server.ts  |   92.77 |    88.18 |      95 |   98.06 | 219,263-264       
+2026-11-19T00:00:17.6214199Z  src/test          |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:17.6214996Z   tlsFixture.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:17.6215882Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:17.6467432Z 
+2026-11-19T00:00:17.6467993Z > @ghostpay/payer-sponsor@0.1.0 test
+2026-11-19T00:00:17.6468528Z > vitest run --coverage
+2026-11-19T00:00:17.6468693Z 
+2026-11-19T00:00:18.0123943Z 
+2026-11-19T00:00:18.0127726Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/payer-sponsor[39m
+2026-11-19T00:00:18.0128889Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:18.0129268Z 
+2026-11-19T00:00:18.9826894Z  [2m[90m↓[39m[22m src/e2e.anvil.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m4 skipped[39m[2m)[22m
+2026-11-19T00:00:18.9831524Z  [32m✓[39m src/freshWallet/freshWallet.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 310[2mms[22m[39m
+2026-11-19T00:00:19.6587789Z  [32m✓[39m src/sponsor/http.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+2026-11-19T00:00:19.6709476Z  [32m✓[39m src/erc4337/erc4337.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 124[2mms[22m[39m
+2026-11-19T00:00:19.9403156Z  [32m✓[39m src/sponsor/service.test.ts [2m([22m[2m28 tests[22m[2m)[22m[33m 1081[2mms[22m[39m
+2026-11-19T00:00:20.3059777Z  [32m✓[39m src/relay/intent.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 150[2mms[22m[39m
+2026-11-19T00:00:20.3165760Z  [32m✓[39m src/sponsor/misc.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 168[2mms[22m[39m
+2026-11-19T00:00:20.5493186Z  [32m✓[39m src/eip7702/intent.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 106[2mms[22m[39m
+2026-11-19T00:00:20.8483098Z  [32m✓[39m src/routerTargets.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-11-19T00:00:20.9123434Z  [32m✓[39m src/modes.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-11-19T00:00:21.1373246Z  [32m✓[39m src/chainGuard.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-11-19T00:00:21.3359286Z  [32m✓[39m src/manifest.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+2026-11-19T00:00:21.4309616Z  [32m✓[39m src/sponsor/workerB.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 310[2mms[22m[39m
+2026-11-19T00:00:21.5504656Z  [32m✓[39m src/vectors.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 37[2mms[22m[39m
+2026-11-19T00:00:21.6673302Z 
+2026-11-19T00:00:21.6678025Z [2m Test Files [22m [1m[32m13 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (14)[39m
+2026-11-19T00:00:21.6679119Z [2m      Tests [22m [1m[32m135 passed[39m[22m[2m | [22m[33m4 skipped[39m[90m (139)[39m
+2026-11-19T00:00:21.6680001Z [2m   Start at [22m 00:00:18
+2026-11-19T00:00:21.6683810Z [2m   Duration [22m 3.65s[2m (import 57%, tests 31%, transform 10%, worker 3%)[22m
+2026-11-19T00:00:21.6694839Z 
+2026-11-19T00:00:21.6695771Z [2m    Isolate [22m [33m14 workers spawned[39m[2m · ~120ms startup each (spawn + environment, per file)[22m
+2026-11-19T00:00:21.6696873Z [2m            [22m [2mat least ~440ms faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+2026-11-19T00:00:21.6697643Z 
+2026-11-19T00:00:21.6716002Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:21.6745734Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:21.6746712Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:21.6747644Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:21.6752326Z All files          |   99.28 |    98.04 |   99.37 |   99.57 |                   
+2026-11-19T00:00:21.6753128Z  src               |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6753922Z   chainGuard.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6754730Z   errors.ts        |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6755522Z   manifest.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6756328Z   modes.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6757148Z   routerTargets.ts |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6757957Z   util.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6758755Z  src/eip7702       |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6759540Z   intent.ts        |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6760321Z  src/erc4337       |   98.75 |    97.72 |     100 |     100 |                   
+2026-11-19T00:00:21.6761228Z   account.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6762034Z   paymaster.ts     |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6762864Z   userop.ts        |    97.5 |    95.45 |     100 |     100 | 159               
+2026-11-19T00:00:21.6763695Z  src/freshWallet   |    97.8 |    96.55 |     100 |   97.29 |                   
+2026-11-19T00:00:21.6764534Z   derive.ts        |   91.66 |    88.88 |     100 |    90.9 | 45-47             
+2026-11-19T00:00:21.6765370Z   fundingPlan.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6766147Z   hygiene.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6766894Z   lint.ts          |     100 |    96.77 |     100 |     100 | 46                
+2026-11-19T00:00:21.6767641Z   types.ts         |       0 |        0 |       0 |       0 |                   
+2026-11-19T00:00:21.6768355Z  src/relay         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6768787Z   intent.ts        |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6769237Z  src/sponsor       |   99.33 |    97.46 |    98.8 |   99.72 |                   
+2026-11-19T00:00:21.6769678Z   http.ts          |     100 |    88.23 |     100 |     100 | 102,134-135       
+2026-11-19T00:00:21.6770092Z   keys.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6770510Z   log.ts           |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6770926Z   service.ts       |   98.98 |    98.12 |   97.22 |   99.58 | 449               
+2026-11-19T00:00:21.6771555Z   types.ts         |       0 |        0 |       0 |       0 |                   
+2026-11-19T00:00:21.6771994Z   viemChain.ts     |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6772429Z   wire.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:21.6772917Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:21.7291340Z 
+2026-11-19T00:00:21.7291941Z > @ghostpay/plugin-api@0.1.0 test
+2026-11-19T00:00:21.7292294Z > vitest run --coverage
+2026-11-19T00:00:21.7292463Z 
+2026-11-19T00:00:22.1153052Z 
+2026-11-19T00:00:22.1156888Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/plugin-api[39m
+2026-11-19T00:00:22.1158537Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:22.1159138Z 
+2026-11-19T00:00:22.4063957Z  [32m✓[39m src/lifecycle.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-11-19T00:00:22.4098365Z  [32m✓[39m src/sandbox.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+2026-11-19T00:00:22.5653124Z  [32m✓[39m src/manifest.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-11-19T00:00:22.5872131Z  [32m✓[39m src/registry.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 142[2mms[22m[39m
+2026-11-19T00:00:22.6349071Z 
+2026-11-19T00:00:22.6355322Z [2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+2026-11-19T00:00:22.6356453Z [2m      Tests [22m [1m[32m45 passed[39m[22m[90m (45)[39m
+2026-11-19T00:00:22.6357271Z [2m   Start at [22m 00:00:22
+2026-11-19T00:00:22.6360271Z [2m   Duration [22m 513ms[2m (transform 38%, tests 30%, import 21%, worker 11%)[22m
+2026-11-19T00:00:22.6370842Z 
+2026-11-19T00:00:22.6388144Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:22.6412975Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:22.6413601Z File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:22.6414094Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:22.6417688Z All files    |   98.52 |    97.36 |   98.46 |   99.13 |                   
+2026-11-19T00:00:22.6419388Z  errors.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:22.6420554Z  manifest.ts |   97.22 |     90.9 |     100 |   96.96 | 111               
+2026-11-19T00:00:22.6421484Z  privacy.ts  |   96.87 |    96.42 |     100 |   96.29 | 42                
+2026-11-19T00:00:22.6423580Z  registry.ts |   98.87 |    97.16 |   96.42 |   99.33 | 189               
+2026-11-19T00:00:22.6424751Z  sandbox.ts  |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:22.6426224Z  validate.ts |   95.65 |    95.12 |     100 |     100 | 24,42             
+2026-11-19T00:00:22.6426820Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:22.6696733Z 
+2026-11-19T00:00:22.6697449Z > @ghostpay/pool-prover@0.1.0 test
+2026-11-19T00:00:22.6697828Z > vitest run --coverage
+2026-11-19T00:00:22.6697998Z 
+2026-11-19T00:00:23.0395967Z 
+2026-11-19T00:00:23.0399831Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/pool-prover[39m
+2026-11-19T00:00:23.0400520Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:23.0400746Z 
+2026-11-19T00:00:23.4199542Z  [32m✓[39m src/prover.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 153[2mms[22m[39m
+2026-11-19T00:00:23.4525892Z 
+2026-11-19T00:00:23.4530549Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+2026-11-19T00:00:23.4531858Z [2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+2026-11-19T00:00:23.4532615Z [2m   Start at [22m 00:00:23
+2026-11-19T00:00:23.4538864Z [2m   Duration [22m 408ms[2m (tests 60%, transform 20%, import 14%, worker 5%)[22m
+2026-11-19T00:00:23.4548663Z 
+2026-11-19T00:00:23.4563452Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:23.4579910Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:23.4580918Z File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:23.4582001Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:23.4586359Z All files     |   98.61 |    95.31 |     100 |     100 |                   
+2026-11-19T00:00:23.4587631Z  prover.ts    |   98.61 |    95.31 |     100 |     100 | 135,192,219       
+2026-11-19T00:00:23.4588637Z  snarkjs.d.ts |       0 |        0 |       0 |       0 |                   
+2026-11-19T00:00:23.4590017Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:23.5119547Z 
+2026-11-19T00:00:23.5120034Z > @ghostpay/privacy-pipeline@0.1.0 test
+2026-11-19T00:00:23.5120416Z > vitest run --coverage
+2026-11-19T00:00:23.5120573Z 
+2026-11-19T00:00:23.8659687Z 
+2026-11-19T00:00:23.8663990Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/privacy-pipeline[39m
+2026-11-19T00:00:23.8665177Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:23.8665545Z 
+2026-11-19T00:00:24.3303410Z  [32m✓[39m src/chainRules.test.ts [2m([22m[2m132 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+2026-11-19T00:00:24.3585771Z  [32m✓[39m src/plan.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+2026-11-19T00:00:24.7173069Z  [32m✓[39m src/validate.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+2026-11-19T00:00:25.4761613Z  [32m✓[39m src/serialize.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 460[2mms[22m[39m
+2026-11-19T00:00:25.8733432Z  [32m✓[39m src/executor.test.ts [2m([22m[2m41 tests[22m[2m)[22m[33m 1556[2mms[22m[39m
+2026-11-19T00:00:25.8753038Z    [32m✓[39m crash injection: exactly one submit per intent key (PL-5, EX-3) [2m(2)[22m
+2026-11-19T00:00:25.8763138Z      [33m[2m✓[22m[39m dying before or after any persisted transition, then resuming, never double-submits[33m 1175[2mms[22m[39m
+2026-11-19T00:00:26.1887159Z  [32m✓[39m src/machine.test.ts [2m([22m[2m367 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+2026-11-19T00:00:26.4214025Z  [32m✓[39m src/build.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+2026-11-19T00:00:26.7190730Z  [32m✓[39m src/matrix.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-11-19T00:00:27.0170632Z  [32m✓[39m src/honesty.test.ts [2m([22m[2m46 tests[22m[2m)[22m[32m 93[2mms[22m[39m
+2026-11-19T00:00:27.2414239Z  [32m✓[39m src/specrefs.test.ts [2m([22m[2m55 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-11-19T00:00:27.3755381Z  [32m✓[39m src/properties.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 2746[2mms[22m[39m
+2026-11-19T00:00:27.3756663Z    [32m✓[39m P-5 summary monotonicity / P-6 crowd non-addition [2m(2)[22m
+2026-11-19T00:00:27.3758061Z      [33m[2m✓[22m[39m appending a step never lowers cost, latency, trust or reveals (shape fingerprint excluded)[33m 521[2mms[22m[39m
+2026-11-19T00:00:27.3759308Z    [32m✓[39m P-9 reducer closure and crash/resume idempotency [2m(3)[22m
+2026-11-19T00:00:27.3761592Z      [33m[2m✓[22m[39m random crash points on random seller pipelines never double-submit and resume to completion[33m 812[2mms[22m[39m
+2026-11-19T00:00:34.9256021Z  [32m✓[39m src/presets.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 9242[2mms[22m[39m
+2026-11-19T00:00:34.9257105Z    [32m✓[39m presets (PL-11, PP-12) [2m(9)[22m
+2026-11-19T00:00:34.9258268Z      [33m[2m✓[22m[39m every template validates ok (modulo acks) for every generated context[33m 9225[2mms[22m[39m
+2026-11-19T00:00:35.1167196Z 
+2026-11-19T00:00:35.1173902Z [2m Test Files [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+2026-11-19T00:00:35.1177429Z [2m      Tests [22m [1m[32m747 passed[39m[22m[90m (747)[39m
+2026-11-19T00:00:35.1178197Z [2m   Start at [22m 00:00:23
+2026-11-19T00:00:35.1182544Z [2m   Duration [22m 11.24s[2m (tests 90%, transform 4%, import 4%, worker 1%)[22m
+2026-11-19T00:00:35.1193133Z 
+2026-11-19T00:00:35.1221666Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:35.1267252Z ---------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:35.1268263Z File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:35.1269132Z ---------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:35.1273942Z All files      |   99.34 |    97.07 |    99.7 |    99.5 |                   
+2026-11-19T00:00:35.1298706Z  analyze.ts    |   98.55 |    97.77 |     100 |   98.38 | 54                
+2026-11-19T00:00:35.1299590Z  build.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:35.1300444Z  chainRules.ts |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:35.1301437Z  errors.ts     |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:35.1304345Z  executor.ts   |   98.58 |     92.7 |   98.21 |   99.01 | 470,595,680       
+2026-11-19T00:00:35.1305161Z  guard.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:35.1305935Z  hash.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:35.1306975Z  join.ts       |     100 |    97.95 |     100 |     100 | 44                
+2026-11-19T00:00:35.1309039Z  layers.ts     |   98.57 |     94.5 |     100 |   98.48 | 45                
+2026-11-19T00:00:35.1310048Z  machine.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:35.1310948Z  matrix.ts     |   97.87 |    97.43 |     100 |     100 | 81                
+2026-11-19T00:00:35.1311881Z  plan.ts       |     100 |    95.45 |     100 |     100 | 94                
+2026-11-19T00:00:35.1312665Z  ports.ts      |       0 |        0 |       0 |       0 |                   
+2026-11-19T00:00:35.1313588Z  presets.ts    |     100 |    92.72 |     100 |     100 | 189,198-199,209   
+2026-11-19T00:00:35.1314442Z  profile.ts    |     100 |    98.22 |     100 |     100 | 72,142,198        
+2026-11-19T00:00:35.1322306Z  serialize.ts  |   99.42 |    99.03 |     100 |   99.31 | 267               
+2026-11-19T00:00:35.1323382Z  steps.ts      |   99.54 |    98.57 |     100 |    99.5 | 156               
+2026-11-19T00:00:35.1324465Z  summary.ts    |     100 |    95.38 |     100 |     100 | 94,118,162        
+2026-11-19T00:00:35.1325542Z  types.ts      |       0 |        0 |       0 |       0 |                   
+2026-11-19T00:00:35.1326538Z  validate.ts   |   99.06 |     95.5 |     100 |     100 | 62,106,116        
+2026-11-19T00:00:35.1327522Z ---------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:35.1887216Z 
+2026-11-19T00:00:35.1887856Z > @ghostpay/relayer-guard@0.1.0 test
+2026-11-19T00:00:35.1888285Z > vitest run --coverage
+2026-11-19T00:00:35.1888446Z 
+2026-11-19T00:00:35.5630261Z 
+2026-11-19T00:00:35.5634525Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/relayer-guard[39m
+2026-11-19T00:00:35.5635702Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:35.5636076Z 
+2026-11-19T00:00:35.9353990Z  [32m✓[39m src/breaker.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+2026-11-19T00:00:35.9466427Z  [32m✓[39m src/limiter.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-11-19T00:00:36.2111813Z  [32m✓[39m src/secrets.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-11-19T00:00:36.2119891Z  [32m✓[39m src/ip.test.ts [2m([22m[2m45 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+2026-11-19T00:00:37.0098592Z  [32m✓[39m src/challenge.test.ts [2m([22m[2m55 tests[22m[2m)[22m[33m 1111[2mms[22m[39m
+2026-11-19T00:00:37.0112529Z    [32m✓[39m normalizeAnswer [2m(4)[22m
+2026-11-19T00:00:37.0113237Z      [33m[2m✓[22m[39m is idempotent and never throws (property)[33m 556[2mms[22m[39m
+2026-11-19T00:00:37.1249306Z 
+2026-11-19T00:00:37.1255408Z [2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+2026-11-19T00:00:37.1256530Z [2m      Tests [22m [1m[32m167 passed[39m[22m[90m (167)[39m
+2026-11-19T00:00:37.1257275Z [2m   Start at [22m 00:00:35
+2026-11-19T00:00:37.1261626Z [2m   Duration [22m 1.56s[2m (tests 65%, transform 19%, import 11%, worker 4%)[22m
+2026-11-19T00:00:37.1271828Z 
+2026-11-19T00:00:37.1292506Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:37.1315561Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:37.1316807Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:37.1317310Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:37.1321106Z All files          |   98.62 |    94.14 |   99.25 |   99.19 |                   
+2026-11-19T00:00:37.1323482Z  breaker.ts        |   99.04 |    98.68 |     100 |     100 | 134               
+2026-11-19T00:00:37.1324315Z  challenge-bank.ts |     100 |    94.44 |     100 |     100 | 30,170            
+2026-11-19T00:00:37.1325952Z  challenge.ts      |    97.9 |    94.15 |     100 |   99.39 | 482               
+2026-11-19T00:00:37.1326754Z  client.ts         |     100 |       92 |     100 |     100 | 74,79             
+2026-11-19T00:00:37.1327359Z  errors.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:37.1328107Z  ip.ts             |   98.57 |    86.48 |   93.33 |   98.24 | 137               
+2026-11-19T00:00:37.1329080Z  limiter.ts        |   98.34 |    95.93 |     100 |   98.78 | 183-184           
+2026-11-19T00:00:37.1330482Z  secrets.ts        |   97.77 |    94.73 |     100 |   97.43 | 63                
+2026-11-19T00:00:37.1331421Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:37.1618894Z 
+2026-11-19T00:00:37.1619499Z > @ghostpay/sdk@0.1.0 test
+2026-11-19T00:00:37.1620039Z > vitest run --coverage
+2026-11-19T00:00:37.1620317Z 
+2026-11-19T00:00:37.5321080Z 
+2026-11-19T00:00:37.5325199Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/sdk[39m
+2026-11-19T00:00:37.5325833Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:37.5326055Z 
+2026-11-19T00:00:37.9714246Z  [32m✓[39m src/merchant.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+2026-11-19T00:00:38.0188621Z  [32m✓[39m src/schemas.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-11-19T00:00:38.4028004Z  [32m✓[39m src/verify.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 397[2mms[22m[39m
+2026-11-19T00:00:38.4142490Z  [32m✓[39m src/react.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+2026-11-19T00:00:38.4593090Z  [32m✓[39m src/client.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 142[2mms[22m[39m
+2026-11-19T00:00:38.6103442Z  [32m✓[39m src/events.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-11-19T00:00:38.6665291Z  [32m✓[39m src/errors.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-11-19T00:00:38.7550415Z  [32m✓[39m src/builder.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+2026-11-19T00:00:38.8264857Z 
+2026-11-19T00:00:38.8269412Z [2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+2026-11-19T00:00:38.8270929Z [2m      Tests [22m [1m[32m54 passed[39m[22m[90m (54)[39m
+2026-11-19T00:00:38.8272296Z [2m   Start at [22m 00:00:37
+2026-11-19T00:00:38.8275941Z [2m   Duration [22m 1.29s[2m (tests 35%, import 34%, transform 24%, worker 7%)[22m
+2026-11-19T00:00:38.8285677Z 
+2026-11-19T00:00:38.8303906Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:38.8325245Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:38.8326238Z File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:38.8327084Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:38.8331775Z All files    |   99.63 |    97.81 |     100 |     100 |                   
+2026-11-19T00:00:38.8333861Z  builder.ts  |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:38.8334664Z  client.ts   |     100 |    89.47 |     100 |     100 | 56-71             
+2026-11-19T00:00:38.8335450Z  errors.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:38.8336242Z  events.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:38.8337396Z  merchant.ts |   98.97 |    98.73 |     100 |     100 | 97                
+2026-11-19T00:00:38.8338193Z  react.ts    |     100 |     87.5 |     100 |     100 | 54                
+2026-11-19T00:00:38.8338951Z  schemas.ts  |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:38.8339658Z  verify.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:38.8340438Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:38.8569455Z 
+2026-11-19T00:00:38.8570089Z > @ghostpay/tron-adapter@0.1.0 test
+2026-11-19T00:00:38.8570730Z > vitest run --coverage
+2026-11-19T00:00:38.8571005Z 
+2026-11-19T00:00:39.2168618Z 
+2026-11-19T00:00:39.2172394Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/tron-adapter[39m
+2026-11-19T00:00:39.2173517Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:39.2173890Z 
+2026-11-19T00:00:39.5792986Z  [32m✓[39m src/rpc.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+2026-11-19T00:00:39.8831825Z  [32m✓[39m src/tx.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+2026-11-19T00:00:40.2242973Z  [32m✓[39m src/stealth.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 153[2mms[22m[39m
+2026-11-19T00:00:40.3583070Z  [32m✓[39m src/scan.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 430[2mms[22m[39m
+2026-11-19T00:00:40.3982910Z  [32m✓[39m src/adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+2026-11-19T00:00:40.5346550Z  [32m✓[39m src/address.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 92[2mms[22m[39m
+2026-11-19T00:00:40.5446814Z  [32m✓[39m src/fees.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-11-19T00:00:40.5783091Z  [32m✓[39m src/adapter-types.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-11-19T00:00:40.6452077Z 
+2026-11-19T00:00:40.6457499Z [2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+2026-11-19T00:00:40.6458802Z [2m      Tests [22m [1m[32m74 passed[39m[22m[90m (74)[39m
+2026-11-19T00:00:40.6459811Z [2m   Start at [22m 00:00:39
+2026-11-19T00:00:40.6465112Z [2m   Duration [22m 1.42s[2m (import 44%, tests 34%, transform 17%, worker 5%)[22m
+2026-11-19T00:00:40.6474905Z 
+2026-11-19T00:00:40.6493875Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:40.6517331Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:40.6518558Z File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:40.6519053Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:40.6523055Z All files    |   97.29 |    93.64 |   98.79 |    99.5 |                   
+2026-11-19T00:00:40.6524120Z  adapter.ts  |   97.43 |     92.1 |     100 |     100 | 168,199-202       
+2026-11-19T00:00:40.6525377Z  address.ts  |   97.29 |     91.3 |     100 |     100 | 33,60             
+2026-11-19T00:00:40.6526146Z  errors.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:40.6526866Z  fees.ts     |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:40.6527584Z  meta.ts     |   95.12 |       90 |     100 |     100 | 104,145           
+2026-11-19T00:00:40.6528100Z  protobuf.ts |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:40.6528819Z  rpc.ts      |   98.03 |    97.67 |   93.33 |   98.73 | 175               
+2026-11-19T00:00:40.6529724Z  scan.ts     |    98.8 |    96.33 |     100 |     100 | 68-69,127,132     
+2026-11-19T00:00:40.6531089Z  tx.ts       |   94.81 |    84.14 |     100 |      99 | 208               
+2026-11-19T00:00:40.6531953Z -------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:40.6796087Z 
+2026-11-19T00:00:40.6796650Z > @ghostpay/ux-core@0.1.0 test
+2026-11-19T00:00:40.6797085Z > vitest run --coverage
+2026-11-19T00:00:40.6797518Z 
+2026-11-19T00:00:41.0467804Z 
+2026-11-19T00:00:41.0471094Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/ux-core[39m
+2026-11-19T00:00:41.0471912Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:41.0472130Z 
+2026-11-19T00:00:42.2513039Z  [32m✓[39m src/theme.test.ts [2m([22m[2m25 tests[22m[2m)[22m[33m 879[2mms[22m[39m
+2026-11-19T00:00:42.2542291Z    [32m✓[39m cssFor (injection-proof output) [2m(4)[22m
+2026-11-19T00:00:42.2543944Z      [33m[2m✓[22m[39m property: for arbitrary token strings output is either refused or contains only safe characters[33m 840[2mms[22m[39m
+2026-11-19T00:00:42.3660263Z  [32m✓[39m src/store.test.ts [2m([22m[2m29 tests[22m[2m)[22m[33m 986[2mms[22m[39m
+2026-11-19T00:00:42.3662144Z    [32m✓[39m sealed collections (T-2, T-3, T-4) [2m(10)[22m
+2026-11-19T00:00:42.3663541Z      [33m[2m✓[22m[39m property: any JSON-safe value round-trips sealed[33m 912[2mms[22m[39m
+2026-11-19T00:00:42.3829609Z  [32m✓[39m src/palette.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 1000[2mms[22m[39m
+2026-11-19T00:00:42.3831090Z    [32m✓[39m rank [2m(6)[22m
+2026-11-19T00:00:42.3832669Z      [33m[2m✓[22m[39m property: regex metacharacters and arbitrary text never throw[33m 895[2mms[22m[39m
+2026-11-19T00:00:42.5710789Z  [32m✓[39m src/netstate.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 79[2mms[22m[39m
+2026-11-19T00:00:42.6307827Z  [32m✓[39m src/errors.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+2026-11-19T00:00:42.7157602Z 
+2026-11-19T00:00:42.7163072Z [2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+2026-11-19T00:00:42.7164622Z [2m      Tests [22m [1m[32m119 passed[39m[22m[90m (119)[39m
+2026-11-19T00:00:42.7165367Z [2m   Start at [22m 00:00:41
+2026-11-19T00:00:42.7170035Z [2m   Duration [22m 1.66s[2m (tests 82%, transform 11%, import 5%, worker 3%)[22m
+2026-11-19T00:00:42.7184539Z 
+2026-11-19T00:00:42.7210508Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:42.7249560Z -------------|---------|----------|---------|---------|-------------------------
+2026-11-19T00:00:42.7250683Z File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s       
+2026-11-19T00:00:42.7251552Z -------------|---------|----------|---------|---------|-------------------------
+2026-11-19T00:00:42.7255433Z All files    |     100 |    97.79 |     100 |     100 |                         
+2026-11-19T00:00:42.7257298Z  errors.ts   |     100 |      100 |     100 |     100 |                         
+2026-11-19T00:00:42.7258836Z  netstate.ts |     100 |    95.55 |     100 |     100 | 123,198,231,243         
+2026-11-19T00:00:42.7260395Z  palette.ts  |     100 |    96.82 |     100 |     100 | ...,298,328,476,497,540 
+2026-11-19T00:00:42.7262581Z  store.ts    |     100 |    98.68 |     100 |     100 | 550,572                 
+2026-11-19T00:00:42.7263819Z  theme.ts    |     100 |      100 |     100 |     100 |                         
+2026-11-19T00:00:42.7264550Z -------------|---------|----------|---------|---------|-------------------------
+2026-11-19T00:00:42.7593854Z 
+2026-11-19T00:00:42.7594483Z > @ghostpay/ux-fiat@0.1.0 test
+2026-11-19T00:00:42.7594882Z > vitest run --coverage
+2026-11-19T00:00:42.7595046Z 
+2026-11-19T00:00:43.1226021Z 
+2026-11-19T00:00:43.1229571Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/ux-fiat[39m
+2026-11-19T00:00:43.1230701Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:43.1231053Z 
+2026-11-19T00:00:43.4311776Z  [32m✓[39m src/fiat.test.ts [2m([22m[2m48 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+2026-11-19T00:00:43.4738852Z 
+2026-11-19T00:00:43.4743684Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+2026-11-19T00:00:43.4744700Z [2m      Tests [22m [1m[32m48 passed[39m[22m[90m (48)[39m
+2026-11-19T00:00:43.4745450Z [2m   Start at [22m 00:00:43
+2026-11-19T00:00:43.4751741Z [2m   Duration [22m 346ms[2m (transform 55%, tests 20%, import 17%, worker 7%)[22m
+2026-11-19T00:00:43.4761581Z 
+2026-11-19T00:00:43.4778841Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:43.4800363Z ------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:43.4802017Z File        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:43.4802885Z ------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:43.4806958Z All files   |     100 |    99.31 |     100 |     100 |                   
+2026-11-19T00:00:43.4809077Z  convert.ts |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:43.4810487Z  decimal.ts |     100 |    96.92 |     100 |     100 | 76,94             
+2026-11-19T00:00:43.4813200Z  format.ts  |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:43.4814283Z  rate.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:43.4815076Z  types.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:43.4815799Z  view.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:43.4816559Z ------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:43.5060345Z 
+2026-11-19T00:00:43.5060942Z > @ghostpay/ux-i18n@0.1.0 test
+2026-11-19T00:00:43.5061557Z > vitest run --coverage
+2026-11-19T00:00:43.5061761Z 
+2026-11-19T00:00:43.8693565Z 
+2026-11-19T00:00:43.8697185Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/ux-i18n[39m
+2026-11-19T00:00:43.8697805Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:43.8698027Z 
+2026-11-19T00:00:44.1709425Z  [32m✓[39m src/compat.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-11-19T00:00:44.1837628Z 
+2026-11-19T00:00:44.1842632Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+2026-11-19T00:00:44.1843659Z [2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+2026-11-19T00:00:44.1844391Z [2m   Start at [22m 00:00:43
+2026-11-19T00:00:44.1849967Z [2m   Duration [22m 310ms[2m (transform 75%, import 15%, worker 7%, tests 3%)[22m
+2026-11-19T00:00:44.1860120Z 
+2026-11-19T00:00:44.1871359Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:44.1879559Z ----------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:44.1880654Z File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:44.1882070Z ----------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:44.1885930Z All files |       0 |        0 |       0 |       0 |                   
+2026-11-19T00:00:44.1886741Z ----------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:44.2118734Z 
+2026-11-19T00:00:44.2119279Z > @ghostpay/ux-notify@0.1.0 test
+2026-11-19T00:00:44.2119916Z > vitest run --coverage
+2026-11-19T00:00:44.2120241Z 
+2026-11-19T00:00:44.5836056Z 
+2026-11-19T00:00:44.5840119Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/ux-notify[39m
+2026-11-19T00:00:44.5842001Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:44.5842623Z 
+2026-11-19T00:00:44.9150700Z  [32m✓[39m src/manifest.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+2026-11-19T00:00:44.9773318Z  [32m✓[39m src/notification.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+2026-11-19T00:00:45.1093075Z  [32m✓[39m src/reminder-bridge.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-11-19T00:00:45.1930245Z  [32m✓[39m src/redact.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-11-19T00:00:45.6082479Z  [32m✓[39m src/cache-policy.test.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 736[2mms[22m[39m
+2026-11-19T00:00:45.6083354Z    [32m✓[39m classifyRequest [2m(7)[22m
+2026-11-19T00:00:45.6084793Z      [33m[2m✓[22m[39m property: anything with a fragment, API path or sensitive key is never cacheable[33m 717[2mms[22m[39m
+2026-11-19T00:00:45.6999829Z 
+2026-11-19T00:00:45.7004751Z [2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+2026-11-19T00:00:45.7005904Z [2m      Tests [22m [1m[32m79 passed[39m[22m[90m (79)[39m
+2026-11-19T00:00:45.7006631Z [2m   Start at [22m 00:00:44
+2026-11-19T00:00:45.7010369Z [2m   Duration [22m 1.11s[2m (tests 62%, transform 20%, import 12%, worker 6%)[22m
+2026-11-19T00:00:45.7020831Z 
+2026-11-19T00:00:45.7040317Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:45.7062256Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:45.7063181Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:45.7063796Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:45.7067777Z All files          |   99.81 |    99.15 |   98.88 |   99.76 |                   
+2026-11-19T00:00:45.7069727Z  cache-policy.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:45.7070536Z  common.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:45.7072626Z  manifest.ts       |     100 |    98.93 |     100 |     100 | 109,229           
+2026-11-19T00:00:45.7074268Z  notification.ts   |   99.56 |    99.55 |   97.29 |   99.49 | 332               
+2026-11-19T00:00:45.7075007Z  redact.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:45.7075719Z  ...nder-bridge.ts |     100 |    96.07 |     100 |     100 | 92                
+2026-11-19T00:00:45.7076531Z  urlsafety.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:45.7077131Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:45.7332999Z 
+2026-11-19T00:00:45.7333763Z > @ghostpay/ux-receipts@0.1.0 test
+2026-11-19T00:00:46.1052562Z > vitest run --coverage
+2026-11-19T00:00:46.1052886Z 
+2026-11-19T00:00:46.1052900Z 
+2026-11-19T00:00:46.1055913Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/ux-receipts[39m
+2026-11-19T00:00:46.1057027Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:46.1057390Z 
+2026-11-19T00:00:46.4597779Z  [32m✓[39m src/core.test.ts [2m([22m[2m45 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+2026-11-19T00:00:46.4638524Z  [32m✓[39m src/receipt.test.ts [2m([22m[2m72 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+2026-11-19T00:00:46.5198876Z 
+2026-11-19T00:00:46.5204641Z [2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+2026-11-19T00:00:46.5206540Z [2m      Tests [22m [1m[32m117 passed[39m[22m[90m (117)[39m
+2026-11-19T00:00:46.5209239Z [2m   Start at [22m 00:00:46
+2026-11-19T00:00:46.5215781Z [2m   Duration [22m 409ms[2m (transform 46%, tests 33%, import 16%, worker 6%)[22m
+2026-11-19T00:00:46.5231253Z 
+2026-11-19T00:00:46.5256328Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:00:46.5281698Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:46.5283006Z File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:00:46.5283745Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:46.5287066Z All files     |   99.74 |    98.19 |   98.07 |   99.66 |                   
+2026-11-19T00:00:46.5288863Z  address.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5289441Z  amount.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5289992Z  canonical.ts |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5290555Z  digest.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5291807Z  disclose.ts  |     100 |    98.78 |     100 |     100 | 81                
+2026-11-19T00:00:46.5292987Z  errors.ts    |      80 |      100 |      50 |      80 | 34                
+2026-11-19T00:00:46.5293899Z  parse.ts     |     100 |    98.79 |     100 |     100 | 49                
+2026-11-19T00:00:46.5295708Z  render.ts    |     100 |    77.27 |     100 |     100 | 43-51             
+2026-11-19T00:00:46.5296655Z  secrets.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5297200Z  types.ts     |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5297911Z  validate.ts  |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5298597Z  verify.ts    |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5299228Z  warnings.ts  |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:00:46.5299853Z --------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:00:46.5570111Z 
+2026-11-19T00:00:46.5570730Z > @ghostpay/ux-vault@0.1.0 test
+2026-11-19T00:00:46.5571648Z > vitest run --coverage
+2026-11-19T00:00:46.5571929Z 
+2026-11-19T00:00:46.9192085Z 
+2026-11-19T00:00:46.9196119Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/ux-vault[39m
+2026-11-19T00:00:46.9197224Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-19T00:00:46.9197611Z 
+2026-11-19T00:00:47.4442774Z  [32m✓[39m src/schema.test.ts [2m([22m[2m39 tests[22m[2m)[22m[32m 102[2mms[22m[39m
+2026-11-19T00:00:47.4843224Z  [32m✓[39m src/vault.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 146[2mms[22m[39m
+2026-11-19T00:00:47.7453913Z  [32m✓[39m src/contacts.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+2026-11-19T00:00:48.8614570Z  [32m✓[39m src/reconciliation-amounts.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 109[2mms[22m[39m
+2026-11-19T00:00:49.2693612Z  [32m✓[39m src/envelope.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 178[2mms[22m[39m
+2026-11-19T00:00:49.4491546Z  [32m✓[39m src/confusables.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-11-19T00:00:53.2432619Z  [32m✓[39m src/keystore-portable-memory.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 3331[2mms[22m[39m
+2026-11-19T00:00:53.2433346Z    [32m✓[39m portable keystore temporary passphrase bytes [2m(4)[22m
+2026-11-19T00:00:53.2434154Z      [33m[2m✓[22m[39m wipes KDF input after real encryption and decryption without changing the format[33m 3323[2mms[22m[39m
+2026-11-19T00:01:06.2298690Z  [32m✓[39m src/stealth-export-portable.property.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 17900[2mms[22m[39m
+2026-11-19T00:01:06.2299941Z    [32m✓[39m stealth export properties [2m(7)[22m
+2026-11-19T00:01:06.2323251Z      [33m[2m✓[22m[39m parse(serialize(record)) is the identity, and the text never holds the key[33m 1781[2mms[22m[39m
+2026-11-19T00:01:06.2325411Z      [33m[2m✓[22m[39m refuses a record whose public key belongs to any other scalar[33m 866[2mms[22m[39m
+2026-11-19T00:01:06.2327258Z      [33m[2m✓[22m[39m a random edit of a public record never yields a different key binding[33m 977[2mms[22m[39m
+2026-11-19T00:01:06.2329222Z      [33m[2m✓[22m[39m a random edit of an encrypted archive never yields different content or keys[33m 7830[2mms[22m[39m
+2026-11-19T00:01:06.2331300Z      [33m[2m✓[22m[39m a random edit of a master backup never yields different content or keys[33m 5448[2mms[22m[39m
+2026-11-19T00:01:06.2333576Z      [33m[2m✓[22m[39m every derived payment of a random seller is exportable, deep scan included, and the key controls the address[33m 863[2mms[22m[39m
+2026-11-19T00:02:53.7070507Z  [32m✓[39m src/stealth-export-portable.test.ts [2m([22m[2m58 tests[22m[2m)[22m[33m 125298[2mms[22m[39m
+2026-11-19T00:02:53.7071991Z    [32m✓[39m reference vectors (test-vectors/stealth-export.json) [2m(18)[22m
+2026-11-19T00:02:53.7073703Z      [33m[2m✓[22m[39m encrypts the single keypair file byte for byte from injected salt and IV[33m 1709[2mms[22m[39m
+2026-11-19T00:02:53.7075275Z      [33m[2m✓[22m[39m encrypts the three-entry archive byte for byte, whatever the input order[33m 1884[2mms[22m[39m
+2026-11-19T00:02:53.7076613Z      [33m[2m✓[22m[39m encrypts the master backup byte for byte[33m 1511[2mms[22m[39m
+2026-11-19T00:02:53.7078028Z      [33m[2m✓[22m[39m decrypts the single file, the archive and the master backup to the exact keys[33m 5842[2mms[22m[39m
+2026-11-19T00:02:53.7079708Z      [33m[2m✓[22m[39m refuses keypair-bad-001 with error.stealthExport.wrongPassphraseOrModified[33m 1891[2mms[22m[39m
+2026-11-19T00:02:53.7081407Z      [33m[2m✓[22m[39m refuses keypair-bad-002 with error.stealthExport.keyDoesNotMatch[33m 1562[2mms[22m[39m
+2026-11-19T00:02:53.7082926Z      [33m[2m✓[22m[39m refuses keypair-bad-003 with error.stealthExport.invalidFile[33m 1853[2mms[22m[39m
+2026-11-19T00:02:53.7084389Z      [33m[2m✓[22m[39m refuses keypair-bad-004 with error.stealthExport.invalidFile[33m 1659[2mms[22m[39m
+2026-11-19T00:02:53.7085840Z      [33m[2m✓[22m[39m refuses keypair-bad-005 with error.stealthExport.invalidFile[33m 1089[2mms[22m[39m
+2026-11-19T00:02:53.7087440Z      [33m[2m✓[22m[39m refuses keypair-bad-007 with error.stealthExport.wrongPassphraseOrModified[33m 1092[2mms[22m[39m
+2026-11-19T00:02:53.7089083Z      [33m[2m✓[22m[39m refuses master-bad-002 with error.stealthExport.masterKeysDoNotMatch[33m 1079[2mms[22m[39m
+2026-11-19T00:02:53.7090689Z      [33m[2m✓[22m[39m refuses master-bad-003 with error.stealthExport.wrongPassphraseOrModified[33m 1077[2mms[22m[39m
+2026-11-19T00:02:53.7092057Z      [33m[2m✓[22m[39m recovers a historic payment omitted from the payment archive from the master backup alone[33m 2145[2mms[22m[39m
+2026-11-19T00:02:53.7092787Z    [32m✓[39m ghostpay-stealth-keypair-v1 files [2m(9)[22m
+2026-11-19T00:02:53.7093579Z      [33m[2m✓[22m[39m round-trips each scope with fresh randomness and never exposes the keys in plaintext[33m 4389[2mms[22m[39m
+2026-11-19T00:02:53.7094375Z      [33m[2m✓[22m[39m uses the production scrypt profile by default[33m 8677[2mms[22m[39m
+2026-11-19T00:02:53.7095147Z      [33m[2m✓[22m[39m fails closed on a wrong passphrase, with the same diagnostic as tampering[33m 1107[2mms[22m[39m
+2026-11-19T00:02:53.7095972Z      [33m[2m✓[22m[39m authenticates every header field: a flip of any field is refused[33m 18988[2mms[22m[39m
+2026-11-19T00:02:53.7096967Z      [33m[2m✓[22m[39m binds valid-looking header changes through the AAD[33m 19054[2mms[22m[39m
+2026-11-19T00:02:53.7097853Z      [33m[2m✓[22m[39m refuses ciphertext truncation or extension before the KDF and any ciphertext flip after it[33m 3376[2mms[22m[39m
+2026-11-19T00:02:53.7098933Z      [33m[2m✓[22m[39m checks every decrypted scalar against its record and imports atomically, wiping every secret and the plaintext[33m 7733[2mms[22m[39m
+2026-11-19T00:02:53.7099669Z    [32m✓[39m K05 bulk export rules [2m(6)[22m
+2026-11-19T00:02:53.7100355Z      [33m[2m✓[22m[39m collapses replays of one address to the earliest locator and ignores input order[33m 4400[2mms[22m[39m
+2026-11-19T00:02:53.7101492Z      [33m[2m✓[22m[39m refuses a conflict, mixed chains, scope mismatches and more than the maximum count[33m 3126[2mms[22m[39m
+2026-11-19T00:02:53.7103038Z      [33m[2m✓[22m[39m exports and imports the maximum archive within the file size limit[33m 9003[2mms[22m[39m
+2026-11-19T00:02:53.7104379Z      [33m[2m✓[22m[39m wipes the encryption plaintext after sealing[33m 2199[2mms[22m[39m
+2026-11-19T00:02:53.7105382Z    [32m✓[39m ghostpay-stealth-master-v1 backups [2m(5)[22m
+2026-11-19T00:02:53.7106678Z      [33m[2m✓[22m[39m round-trips fresh master keys with the documented header and no signing key[33m 2150[2mms[22m[39m
+2026-11-19T00:02:53.7108317Z      [33m[2m✓[22m[39m authenticates every master header field and fails closed on a wrong passphrase[33m 7585[2mms[22m[39m
+2026-11-19T00:02:53.7110038Z      [33m[2m✓[22m[39m rejects out-of-range body scalars and wipes every decrypted secret[33m 3337[2mms[22m[39m
+2026-11-19T00:02:53.7111325Z    [32m✓[39m format separation, routing and diagnostics [2m(6)[22m
+2026-11-19T00:02:53.7112682Z      [33m[2m✓[22m[39m wipes the temporary KDF passphrase bytes after success and every failure[33m 1088[2mms[22m[39m
+2026-11-19T00:02:53.7114211Z      [33m[2m✓[22m[39m never opens one format as another, even with the right passphrase[33m 2154[2mms[22m[39m
+2026-11-19T00:02:53.7115664Z      [33m[2m✓[22m[39m keeps diagnostics free of keys, passphrases and file contents[33m 2179[2mms[22m[39m
+2026-11-19T00:03:11.8152363Z  [32m✓[39m src/portable-parity.test.ts [2m([22m[2m148 tests[22m[2m)[22m[33m 137514[2mms[22m[39m
+2026-11-19T00:03:11.8162656Z    [32m✓[39m keystore [2m(13)[22m
+2026-11-19T00:03:11.8174814Z      [33m[2m✓[22m[39m round-trips and writes versioned JSON without plaintext keys[33m 2230[2mms[22m[39m
+2026-11-19T00:03:11.8176401Z      [33m[2m✓[22m[39m uses the production cost by default[33m 18455[2mms[22m[39m
+2026-11-19T00:03:11.8177532Z      [33m[2m✓[22m[39m produces different ciphertext each time (fresh salt and IV)[33m 2172[2mms[22m[39m
+2026-11-19T00:03:11.8178335Z      [33m[2m✓[22m[39m rejects a wrong passphrase[33m 2164[2mms[22m[39m
+2026-11-19T00:03:11.8179125Z      [33m[2m✓[22m[39m rejects tampered public metadata (it is authenticated)[33m 2165[2mms[22m[39m
+2026-11-19T00:03:11.8179910Z      [33m[2m✓[22m[39m rejects tampered ciphertext[33m 2159[2mms[22m[39m
+2026-11-19T00:03:11.8180764Z      [33m[2m✓[22m[39m validates structure strictly on import (no attacker-chosen cost)[33m 1087[2mms[22m[39m
+2026-11-19T00:03:11.8182290Z      [33m[2m✓[22m[39m rejects unknown envelope, KDF and metadata fields before derivation[33m 1079[2mms[22m[39m
+2026-11-19T00:03:11.8183345Z      [33m[2m✓[22m[39m rejects authenticated public metadata that differs from the decrypted keys[33m 2217[2mms[22m[39m
+2026-11-19T00:03:11.8184282Z      [33m[2m✓[22m[39m rejects a decrypted body with malformed keys[33m 2180[2mms[22m[39m
+2026-11-19T00:03:11.8184952Z    [32m✓[39m L1-06: guessable passphrases [2m(5)[22m
+2026-11-19T00:03:11.8185816Z      [33m[2m✓[22m[39m keeps accepted Unicode backups interoperable with their normalized passphrase[33m 4454[2mms[22m[39m
+2026-11-19T00:03:11.8186622Z    [32m✓[39m encrypted reconciliation vault [2m(28)[22m
+2026-11-19T00:03:11.8187878Z      [33m[2m✓[22m[39m rejects duplicate envelope fields and handles a large bounded ciphertext without regex stack overflow[33m 545[2mms[22m[39m
+2026-11-19T00:03:11.8189013Z      [33m[2m✓[22m[39m rejects malformed decrypted schemas, duplicate identities, foreign scope and record overflow without activating[33m 931[2mms[22m[39m
+2026-11-19T00:03:11.8190073Z      [33m[2m✓[22m[39m accepts bounded record collections then refuses a new record past the cap atomically[33m 3845[2mms[22m[39m
+2026-11-19T00:03:11.8191082Z      [33m[2m✓[22m[39m durably invalidates and becomes explicitly read-only when one reorg exceeds the tombstone cap[33m 2538[2mms[22m[39m
+2026-11-19T00:03:11.8192323Z      [33m[2m✓[22m[39m persists a saturated cutoff across cumulative reorg observations at the capacity boundary[33m 791[2mms[22m[39m
+2026-11-19T00:03:11.8193287Z      [33m[2m✓[22m[39m warns when individually writable backup histories would saturate the combined vault[33m 755[2mms[22m[39m
+2026-11-19T00:03:11.8194040Z    [32m✓[39m encrypted invoice registration and local matching [2m(19)[22m
+2026-11-19T00:03:11.8194637Z      [33m[2m✓[22m[39m bounds registrations atomically[33m 3551[2mms[22m[39m
+2026-11-19T00:03:11.8195221Z    [32m✓[39m encrypted backups with registrations and receipts [2m(2)[22m
+2026-11-19T00:03:11.8195957Z      [33m[2m✓[22m[39m refuses imports that would exceed the registration or archive bounds[33m 1761[2mms[22m[39m
+2026-11-19T00:03:11.8196646Z    [32m✓[39m archive round trip [2m(6)[22m
+2026-11-19T00:03:11.8197244Z      [33m[2m✓[22m[39m exports and re-imports 1 tag(s) into a fresh profile[33m 2229[2mms[22m[39m
+2026-11-19T00:03:11.8197976Z      [33m[2m✓[22m[39m exports and re-imports 1000 tag(s) into a fresh profile[33m 4716[2mms[22m[39m
+2026-11-19T00:03:11.8198777Z      [33m[2m✓[22m[39m uses the production scrypt profile by default and records it in the header[33m 8826[2mms[22m[39m
+2026-11-19T00:03:11.8199581Z      [33m[2m✓[22m[39m carries scan-history vault texts in a combined backup[33m 3324[2mms[22m[39m
+2026-11-19T00:03:11.8200402Z      [33m[2m✓[22m[39m matches an independent node:crypto implementation of the documented format[33m 2260[2mms[22m[39m
+2026-11-19T00:03:11.8201025Z    [32m✓[39m archive failure modes [2m(5)[22m
+2026-11-19T00:03:11.8201728Z      [33m[2m✓[22m[39m wrong passphrase fails with no write[33m 2184[2mms[22m[39m
+2026-11-19T00:03:11.8202697Z      [33m[2m✓[22m[39m every byte of the file is authenticated or bounds-checked: flipping any single bit is rejected, with no partial write[33m 13203[2mms[22m[39m
+2026-11-19T00:03:11.8203728Z      [33m[2m✓[22m[39m rejects truncation, extension, empty input and oversize before any key derivation[33m 3318[2mms[22m[39m
+2026-11-19T00:03:11.8204684Z      [33m[2m✓[22m[39m rejects hostile KDF parameters without allocating (N too large, r/p zero or huge)[33m 1104[2mms[22m[39m
+2026-11-19T00:03:11.8205622Z      [33m[2m✓[22m[39m strict schema: authentic archives with unknown fields or extra keys are rejected[33m 4390[2mms[22m[39m
+2026-11-19T00:03:11.8206236Z    [32m✓[39m import semantics [2m(3)[22m
+2026-11-19T00:03:11.8207020Z      [33m[2m✓[22m[39m merge keeps the newest updatedAt and reports conflicts; replace makes the local set equal to the archive[33m 3342[2mms[22m[39m
+2026-11-19T00:03:11.8208081Z      [33m[2m✓[22m[39m rejects a stale preview after any change, lock or second apply, and a forged preview object[33m 4382[2mms[22m[39m
+2026-11-19T00:03:11.8208900Z      [33m[2m✓[22m[39m a failing atomic commit leaves the store unchanged[33m 2191[2mms[22m[39m
+2026-11-19T00:03:11.8209409Z    [32m✓[39m key rotation [2m(5)[22m
+2026-11-19T00:03:11.8210061Z      [33m[2m✓[22m[39m archives made before a rotation still import with their own passphrase[33m 2193[2mms[22m[39m
+2026-11-19T00:03:11.8210694Z    [32m✓[39m locked vault and XSS-while-locked [2m(3)[22m
+2026-11-19T00:03:11.8211566Z      [33m[2m✓[22m[39m every read, export, import and rotation path refuses while locked[33m 1092[2mms[22m[39m
+2026-11-19T00:03:11.8212549Z      [33m[2m✓[22m[39m script with full access to the vault object and the raw store while locked learns no plaintext or key material[33m 1094[2mms[22m[39m
+2026-11-19T00:03:11.8213348Z    [32m✓[39m tag archive vectors (test-vectors/tags.json) [2m(18)[22m
+2026-11-19T00:03:11.8213980Z      [33m[2m✓[22m[39m tags-001 decodes to the documented contents[33m 1081[2mms[22m[39m
+2026-11-19T00:03:11.8214650Z      [33m[2m✓[22m[39m tags-002 decodes to the documented contents[33m 1095[2mms[22m[39m
+2026-11-19T00:03:11.8215291Z      [33m[2m✓[22m[39m tags-003 decodes to the documented contents[33m 1108[2mms[22m[39m
+2026-11-19T00:03:11.8215936Z      [33m[2m✓[22m[39m tags-004 decodes to the documented contents[33m 1078[2mms[22m[39m
+2026-11-19T00:03:11.8216582Z      [33m[2m✓[22m[39m tags-005 decodes to the documented contents[33m 8662[2mms[22m[39m
+2026-11-19T00:03:11.8217233Z      [33m[2m✓[22m[39m tags-bad-001 is refused with the auth message[33m 1092[2mms[22m[39m
+2026-11-19T00:03:11.8217884Z      [33m[2m✓[22m[39m tags-bad-002 is refused with the auth message[33m 1085[2mms[22m[39m
+2026-11-19T00:03:11.8218529Z      [33m[2m✓[22m[39m tags-bad-003 is refused with the auth message[33m 1082[2mms[22m[39m
+2026-11-19T00:03:11.8219256Z      [33m[2m✓[22m[39m tags-bad-004 is refused with the auth message[33m 1107[2mms[22m[39m
+2026-11-19T00:03:11.8219904Z      [33m[2m✓[22m[39m tags-bad-005 is refused with the auth message[33m 557[2mms[22m[39m
+2026-11-19T00:03:11.8220567Z      [33m[2m✓[22m[39m tags-bad-010 is refused with the format message[33m 1088[2mms[22m[39m
+2026-11-19T00:03:11.8221317Z      [33m[2m✓[22m[39m tags-bad-011 is refused with the version message[33m 1083[2mms[22m[39m
+2026-11-19T00:03:11.8221998Z      [33m[2m✓[22m[39m tags-bad-012 is refused with the format message[33m 1084[2mms[22m[39m
+2026-11-19T00:03:12.0094017Z 
+2026-11-19T00:03:12.0100406Z [2m Test Files [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+2026-11-19T00:03:12.0103476Z [2m      Tests [22m [1m[32m353 passed[39m[22m[90m (353)[39m
+2026-11-19T00:03:12.0104258Z [2m   Start at [22m 00:00:46
+2026-11-19T00:03:12.0108365Z [2m   Duration [22m 145.08s[2m (tests 98%, import 1%, transform 1%)[22m
+2026-11-19T00:03:12.0119265Z 
+2026-11-19T00:03:12.0142853Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-19T00:03:12.0189884Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:03:12.0190927Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-19T00:03:12.0192074Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:03:12.0196380Z All files          |      97 |    94.24 |    99.5 |   98.89 |                   
+2026-11-19T00:03:12.0198517Z  backup.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0199356Z  bytes.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0200217Z  confusables.ts    |     100 |    98.14 |     100 |     100 | 168               
+2026-11-19T00:03:12.0201816Z  contacts.ts       |     100 |    98.68 |     100 |     100 | 213               
+2026-11-19T00:03:12.0202698Z  envelope.ts       |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0203529Z  errors.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0205759Z  ...re-portable.ts |   97.73 |    94.33 |     100 |   98.73 | 389,437           
+2026-11-19T00:03:12.0207120Z  merge.ts          |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0207899Z  ...able-errors.ts |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0209142Z  portable.ts       |       0 |        0 |       0 |       0 |                   
+2026-11-19T00:03:12.0209972Z  ...ion-amounts.ts |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0213851Z  ...on-portable.ts |   93.35 |    91.36 |   99.18 |   96.88 | ...1073,1093-1095 
+2026-11-19T00:03:12.0214697Z  schema.ts         |     100 |    96.29 |     100 |     100 | 107,111           
+2026-11-19T00:03:12.0215522Z  search.ts         |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0216432Z  seller-scope.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-19T00:03:12.0219200Z  ...rt-portable.ts |   99.14 |    98.22 |   98.83 |   99.71 | 161               
+2026-11-19T00:03:12.0220207Z  ...ve-portable.ts |   88.48 |    82.35 |     100 |      99 | 247               
+2026-11-19T00:03:12.0221370Z  vault.ts          |     100 |    95.08 |     100 |     100 | 104,207,230       
+2026-11-19T00:03:12.0222212Z -------------------|---------|----------|---------|---------|-------------------
+2026-11-19T00:03:12.0836726Z Post job cleanup.
+2026-11-19T00:03:12.2253894Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --files-from manifest.txt --use-compress-program zstdmt
+2026-11-19T00:03:12.4409101Z Failed to save: Unable to reserve cache with key linux-foundry-chain-fork-ts-test-24bc65f525ec9f19a670e6e5600b071c03edbd56, another job may be creating this cache.
+2026-11-19T00:03:12.4568882Z Post job cleanup.
+2026-11-19T00:03:12.4573230Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__4b7cefaf-7e64-4b92-83c3-26fbd7d64e44.libs]
+2026-11-19T00:03:13.1640305Z Post job cleanup.
+2026-11-19T00:03:13.2953030Z Cache hit occurred on the primary key libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2, not saving cache.
+2026-11-19T00:03:13.3000963Z ##[end-action id=__4b7cefaf-7e64-4b92-83c3-26fbd7d64e44.libs;outcome=success;conclusion=success;duration_ms=842]
+2026-11-19T00:03:13.3004032Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__4b7cefaf-7e64-4b92-83c3-26fbd7d64e44.__actions_setup-node]
+2026-11-19T00:03:13.3048085Z Post job cleanup.
+2026-11-19T00:03:13.4175107Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c, not saving cache.
+2026-11-19T00:03:13.4223968Z ##[end-action id=__4b7cefaf-7e64-4b92-83c3-26fbd7d64e44.__actions_setup-node;outcome=success;conclusion=success;duration_ms=121]
+2026-11-19T00:03:13.4329075Z Post job cleanup.
+2026-11-19T00:03:13.5243506Z [command]/usr/bin/git version
+2026-11-19T00:03:13.5283180Z git version 2.56.1
+2026-11-19T00:03:13.5314728Z Temporarily overriding HOME='/home/runner/work/_temp/9b6fe6f4-b2ca-47df-b035-241442097610' before making global git config changes
+2026-11-19T00:03:13.5316251Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-19T00:03:13.5317646Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-19T00:03:13.5350883Z Removing SSH command configuration
+2026-11-19T00:03:13.5359107Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-19T00:03:13.5394658Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-19T00:03:13.5657904Z Removing HTTP extra header
+2026-11-19T00:03:13.5665470Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-19T00:03:13.5700947Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-19T00:03:13.5979325Z Removing includeIf entries pointing to credentials config files
+2026-11-19T00:03:13.5987201Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-19T00:03:13.6020617Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-19T00:03:13.6430477Z Cleaning up orphan processes

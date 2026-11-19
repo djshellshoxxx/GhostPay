@@ -3,8 +3,10 @@
 **Status:** Normative format reference for [spec 18](18-stealth-keypair-export.md). Implementation status is recorded in
 the feature ledger, not here. Where this document and spec 18 differ, spec 18 governs and this document must be fixed.
 
-**Scope:** ERC-5564 scheme-1 EVM one-time addresses only (secp256k1, ADR-0001 hashing). No Bitcoin BIP-352, ERC-4337,
-EIP-7702 or policy/contract account is ever exported in these formats.
+**Scope:** ERC-5564 scheme-1 EVM one-time addresses only (secp256k1, ADR-0001 hashing). GhostPay checks for empty
+account code before exporting payment private keys. Recovery for Bitcoin BIP-352, ERC-4337,
+EIP-7702-delegated and policy/contract accounts remains outside this feature's scope; these formats do not specify
+their authorization or recovery procedures.
 
 These formats are deliberately independent of the legacy seller keystore (`v: 1`, `GhostPay.keystore.v1` AAD domain,
 `packages/ux-vault/src/keystore-portable.ts`). They never reuse or reinterpret that schema, and the invoice-signing key
@@ -55,6 +57,10 @@ never appears in any of them.
 ```
 
 - `chainId` is a positive safe integer: the chain the scan found the announcement on (S3-15: never relabelled).
+- The chain label records scan provenance. It is authenticated inside an encrypted file; standalone public records and raw-key
+  files carry no authentication. Neither the private scalar nor its EVM address derivation includes a chain ID:
+  the same key derives the same address on EVM networks using these address rules. An expected-chain check enforces
+  import context without restricting the key's signing authority to that chain.
 - `publicKey.encoding` is the literal `"secp256k1-compressed"`; `value` is the 33-byte compressed point of the one-time
   key. A parser checks it is a valid curve point **and** that `keccak256(uncompressed(value)[1:])[12:]` equals
   `stealthAddress`. So even a public-only file is internally consistent.
@@ -210,6 +216,10 @@ discover other stealth payments.
   one is configured; no fallback): non-empty code (a contract or EIP-7702 delegation) refuses the export; a failed or
   malformed check refuses it too (fail closed). One refused address refuses the whole archive. The master backup names
   no stealth address and has no such check.
+- This code check defines the supported export path; it does not assess future account state or account-specific
+  recovery authority. An exported key may retain authority after delegation:
+  [EIP-7702 allows delegated EOAs to originate transactions](https://eips.ethereum.org/EIPS/eip-7702#transaction-origination).
+  No delegated-account or contract-account recovery path is qualified by this feature.
 
 ## 8. Reference vectors and independent recovery
 

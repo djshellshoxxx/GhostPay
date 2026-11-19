@@ -1,0 +1,143 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/a264c19c9f94/GhostPay/apps/web
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/components/StealthExportVerification.test.tsx (14 tests | 2 failed) 1802ms
+   ❯ saved Spec 18 export verification (14)
+     × distinguishes a generated file from an initiated download and retries without claiming retention 45ms
+     × editing the passphrase clears a previous successful verification before checking the new input 133ms
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/lib/session.atomicity.test.ts (4 tests | 3 failed) 333ms
+   ❯ atomic seller-key replacement (4)
+     × preserves the original keys and disposes staged keys when replacement box 1 fails 131ms
+     × preserves the original keys and disposes staged keys when replacement box 2 fails 102ms
+     × preserves the original keys and disposes staged keys when replacement box 3 fails 96ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > distinguishes a generated file from an initiated download and retries without claiming retention
+AssertionError: expected 'File generated; download initiated. R…' to contain 'File generated; download has not star…'
+
+Expected: "File generated; download has not started."
+Received: "File generated; download initiated. Retention and recoverability are not yet confirmed."
+
+ ❯ src/components/StealthExportVerification.test.tsx:41:21
+     39|     const announce = vi.fn();
+     40|     const view = render(<StealthExportVerification file={generated} an…
+     41|     expect(state()).toContain('File generated; download has not starte…
+       |                     ^
+     42|     expect(state()).not.toContain('download initiated');
+     43|     expect(submit().disabled).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > editing the passphrase clears a previous successful verification before checking the new input
+AssertionError: expected 'Saved backup verified. This exact exp…' not to contain 'Saved backup verified.'
+
+Expected: "Saved backup verified."
+Received: "Saved backup verified. This exact exported file decrypted successfully and its keys match their public identities."
+
+ ❯ src/components/StealthExportVerification.test.tsx:153:25
+    151|     await waitFor(() => { expect(state()).toContain('Saved backup veri…
+    152|     await user.type(screen.getByLabelText('Passphrase of the saved bac…
+    153|     expect(state()).not.toContain('Saved backup verified.');
+       |                         ^
+    154|     expect(state()).toContain('Recoverability is not yet verified.');
+    155|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/lib/session.atomicity.test.ts > atomic seller-key replacement > preserves the original keys and disposes staged keys when replacement box 1 fails
+AssertionError: expected { …(4) } to be { …(4) } // Object.is equality
+
+- Expected
++ Received
+
+  {
+-   "metaAddress": "st:eth:0x02dac27c9e39969e2db0a83283777ed09d841a61d132623f0c8f664690e839c629035dafbe4427d00798747a15b2ec97f54234173686896b1467b7f3511f52e01a32",
+-   "signerPublicKey": "02ed61034b95b29bc2e8d83a306626f769892da9dd5d016a9033294d94269a9eaf",
+-   "spendingPublicKey": "02dac27c9e39969e2db0a83283777ed09d841a61d132623f0c8f664690e839c629",
+-   "viewingPublicKey": "035dafbe4427d00798747a15b2ec97f54234173686896b1467b7f3511f52e01a32",
++   "metaAddress": "st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
++   "signerPublicKey": "0341b0fc862349f3629a10cc48ceb1e2393d3e9ec664850055697d1211b0ea318b",
++   "spendingPublicKey": "034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
++   "viewingPublicKey": "02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
+  }
+
+ ❯ src/lib/session.atomicity.test.ts:32:34
+     30|     try {
+     31|       expect(() => opened.keys.install()).toThrow('simulated allocatio…
+     32|       expect(getSessionPublic()).toBe(before);
+       |                                  ^
+     33|       expect(getSessionBackup()).toBe(custody);
+     34|       expect(unchanged).not.toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/lib/session.atomicity.test.ts > atomic seller-key replacement > preserves the original keys and disposes staged keys when replacement box 2 fails
+AssertionError: expected { …(4) } to be { …(4) } // Object.is equality
+
+- Expected
++ Received
+
+  {
+-   "metaAddress": "st:eth:0x0260c870be625bf5a3094e5c02f8794bd084cf0ee7e5cace3c34a86856395b4915039eaa1e625a1646f414ec3cf99a088602144837a26e92fa0c390cbb7111b4c0f2",
+-   "signerPublicKey": "038b7b2478afc8cd2b8d48d7a98c89a022761e70b54763a35ce93b83aee0173c14",
+-   "spendingPublicKey": "0260c870be625bf5a3094e5c02f8794bd084cf0ee7e5cace3c34a86856395b4915",
+-   "viewingPublicKey": "039eaa1e625a1646f414ec3cf99a088602144837a26e92fa0c390cbb7111b4c0f2",
++   "metaAddress": "st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
++   "signerPublicKey": "025e28b2d750b536f9e63eb1ded8f311fa6cf15488df53e86f4b95a57deb401aee",
++   "spendingPublicKey": "034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
++   "viewingPublicKey": "02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
+  }
+
+ ❯ src/lib/session.atomicity.test.ts:32:34
+     30|     try {
+     31|       expect(() => opened.keys.install()).toThrow('simulated allocatio…
+     32|       expect(getSessionPublic()).toBe(before);
+       |                                  ^
+     33|       expect(getSessionBackup()).toBe(custody);
+     34|       expect(unchanged).not.toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/lib/session.atomicity.test.ts > atomic seller-key replacement > preserves the original keys and disposes staged keys when replacement box 3 fails
+AssertionError: expected { …(4) } to be { …(4) } // Object.is equality
+
+- Expected
++ Received
+
+  {
+-   "metaAddress": "st:eth:0x03ccd90b401d30bc9429d0b012831808a6953934e115a95fdebb539fff4f86ce45026f66f2f43bbaa0a2b282125948cfe45a6ce7962a73e4e535254310d23dbe61d2",
+-   "signerPublicKey": "03daa7e29aa809aa50705de86e3a6a43f1be72beca8084d3032316320af4a4ff1a",
+-   "spendingPublicKey": "03ccd90b401d30bc9429d0b012831808a6953934e115a95fdebb539fff4f86ce45",
+-   "viewingPublicKey": "026f66f2f43bbaa0a2b282125948cfe45a6ce7962a73e4e535254310d23dbe61d2",
++   "metaAddress": "st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
++   "signerPublicKey": "0310751072fe4feaf31bdf861f1525001743dfb4604f7c2d0a76d34e256e17d2c5",
++   "spendingPublicKey": "034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
++   "viewingPublicKey": "02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
+  }
+
+ ❯ src/lib/session.atomicity.test.ts:32:34
+     30|     try {
+     31|       expect(() => opened.keys.install()).toThrow('simulated allocatio…
+     32|       expect(getSessionPublic()).toBe(before);
+       |                                  ^
+     33|       expect(getSessionBackup()).toBe(custody);
+     34|       expect(unchanged).not.toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  5 failed | 13 passed (18)
+   Start at  15:01:51
+   Duration  3.82s (tests 60%, transform 17%, import 16%, environment 8%)
+
+    Isolate  2 workers spawned · ~255ms startup each (spawn + environment, per file)
+             at least ~255ms faster with isolate: false — reuses workers across files instead of one per file
+

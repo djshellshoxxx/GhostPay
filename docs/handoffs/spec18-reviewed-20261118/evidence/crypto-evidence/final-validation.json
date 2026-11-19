@@ -1,0 +1,50 @@
+[
+  {
+    "name": "core-crypto-coverage",
+    "command": [
+      "npm",
+      "test",
+      "-w",
+      "packages/core-crypto",
+      "--",
+      "--maxWorkers=1"
+    ],
+    "started_utc": "2026-11-18T23:08:00.629690+00:00",
+    "seconds": 45.15887387099792,
+    "exit_code": 0,
+    "max_rss_kib": 144320,
+    "source": "7c1e710a0a4bd38928b3b74814ba4b0ec4865305",
+    "rss_note": "RUSAGE_CHILDREN maximum from this harness start through this command, including earlier commands; not aggregate simultaneous process-tree RSS or an independent per-command measurement."
+  },
+  {
+    "name": "standalone-recovery-final",
+    "command": [
+      "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+      "--test",
+      "--test-concurrency=1",
+      "scripts/recovery/stealth-export-recover.test.mjs"
+    ],
+    "started_utc": "2026-11-18T23:08:45.789080+00:00",
+    "seconds": 4.8906002060102765,
+    "exit_code": 0,
+    "max_rss_kib": 492252,
+    "source": "7c1e710a0a4bd38928b3b74814ba4b0ec4865305",
+    "rss_note": "RUSAGE_CHILDREN maximum from this harness start through this command, including earlier commands; not aggregate simultaneous process-tree RSS or an independent per-command measurement."
+  },
+  {
+    "name": "ux-vault-typecheck",
+    "command": [
+      "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "packages/ux-vault/tsconfig.json",
+      "--noEmit"
+    ],
+    "started_utc": "2026-11-18T23:08:50.680100+00:00",
+    "seconds": 3.445734271008405,
+    "exit_code": 0,
+    "max_rss_kib": 492252,
+    "source": "7c1e710a0a4bd38928b3b74814ba4b0ec4865305",
+    "rss_note": "RUSAGE_CHILDREN maximum from this harness start through this command, including earlier commands; not aggregate simultaneous process-tree RSS or an independent per-command measurement."
+  }
+]

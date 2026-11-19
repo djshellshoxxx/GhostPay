@@ -1,0 +1,1237 @@
+﻿2026-11-18T23:44:42.0606975Z Current runner version: '2.338.2'
+2026-11-18T23:44:42.0631903Z ##[group]Runner Image Provisioner
+2026-11-18T23:44:42.0632801Z Hosted Compute Agent
+2026-11-18T23:44:42.0633271Z Version: 20261103.629
+2026-11-18T23:44:42.0633855Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T23:44:42.0634486Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T23:44:42.0635072Z Worker ID: {fb450719-6ebb-49a4-b776-fc6eb4ea67e0}
+2026-11-18T23:44:42.0635703Z Region: westus3
+2026-11-18T23:44:42.0636157Z Cloud: Azure
+2026-11-18T23:44:42.0636635Z ##[endgroup]
+2026-11-18T23:44:42.0638137Z ##[group]Operating System
+2026-11-18T23:44:42.0638645Z Ubuntu
+2026-11-18T23:44:42.0639192Z 26.04.1
+2026-11-18T23:44:42.0639617Z LTS
+2026-11-18T23:44:42.0640294Z ##[endgroup]
+2026-11-18T23:44:42.0640755Z ##[group]Runner Image
+2026-11-18T23:44:42.0641259Z Image: ubuntu-26.04
+2026-11-18T23:44:42.0641774Z Version: 20261111.196.1
+2026-11-18T23:44:42.0642827Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T23:44:42.0644120Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T23:44:42.0644886Z ##[endgroup]
+2026-11-18T23:44:42.0645884Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T23:44:42.0647536Z Contents: read
+2026-11-18T23:44:42.0648135Z Metadata: read
+2026-11-18T23:44:42.0648595Z ##[endgroup]
+2026-11-18T23:44:42.0650684Z Secret source: Actions
+2026-11-18T23:44:42.0651503Z Cache mode: write
+2026-11-18T23:44:42.0652141Z Prepare workflow directory
+2026-11-18T23:44:42.0942369Z Prepare all required actions
+2026-11-18T23:44:42.0985445Z Getting action download info
+2026-11-18T23:44:42.3943145Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T23:44:42.5024796Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-18T23:44:42.5671912Z Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-11-18T23:44:42.6965795Z Download action repository 'actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d' (SHA:45bfe0192ca1faeb007ade9deae92b16b8254a0d)
+2026-11-18T23:44:43.1855366Z Download action repository 'actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9' (SHA:fc324d3547104276b827a68afc52ff2a11cc49c9)
+2026-11-18T23:44:43.5188317Z Getting action download info
+2026-11-18T23:44:43.6447151Z Download action repository 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f' (SHA:bbbca2ddaa5d8feaa63e36b76fdaad77386f024f)
+2026-11-18T23:44:43.7771428Z Complete job name: Build and verify the Pages site
+2026-11-18T23:44:43.8536950Z ##[group]Run if [ "$EVENT" = workflow_dispatch ] && [ "$REF" = refs/heads/main ] && [ "$DEPLOY" = true ]; then
+2026-11-18T23:44:43.8537846Z [36;1mif [ "$EVENT" = workflow_dispatch ] && [ "$REF" = refs/heads/main ] && [ "$DEPLOY" = true ]; then[0m
+2026-11-18T23:44:43.8538458Z [36;1m  echo "publish=true" >> "$GITHUB_OUTPUT"[0m
+2026-11-18T23:44:43.8538878Z [36;1melse[0m
+2026-11-18T23:44:43.8539255Z [36;1m  echo "publish=false" >> "$GITHUB_OUTPUT"[0m
+2026-11-18T23:44:43.8539665Z [36;1mfi[0m
+2026-11-18T23:44:43.8590249Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:43.8590846Z env:
+2026-11-18T23:44:43.8591200Z   EVENT: pull_request
+2026-11-18T23:44:43.8591570Z   REF: refs/pull/239/merge
+2026-11-18T23:44:43.8591942Z   DEPLOY: 
+2026-11-18T23:44:43.8592296Z ##[endgroup]
+2026-11-18T23:44:43.8896206Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T23:44:43.8896740Z with:
+2026-11-18T23:44:43.8897102Z   persist-credentials: false
+2026-11-18T23:44:43.8897487Z   fetch-depth: 1
+2026-11-18T23:44:43.8897856Z   repository: djshellshoxxx/GhostPay
+2026-11-18T23:44:43.8900333Z   token: ***
+2026-11-18T23:44:43.8900678Z   ssh-strict: true
+2026-11-18T23:44:43.8901027Z   ssh-user: git
+2026-11-18T23:44:43.8901605Z   clean: true
+2026-11-18T23:44:43.8901963Z   sparse-checkout-cone-mode: true
+2026-11-18T23:44:43.8902375Z   fetch-tags: false
+2026-11-18T23:44:43.8902724Z   show-progress: true
+2026-11-18T23:44:43.8903079Z   lfs: false
+2026-11-18T23:44:43.8903406Z   submodules: false
+2026-11-18T23:44:43.8903773Z   set-safe-directory: true
+2026-11-18T23:44:43.8904184Z   allow-unsafe-pr-checkout: false
+2026-11-18T23:44:43.8904566Z ##[endgroup]
+2026-11-18T23:44:44.1616205Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T23:44:44.1618053Z ##[group]Getting Git version info
+2026-11-18T23:44:44.1618676Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:44:44.1619664Z [command]/usr/bin/git version
+2026-11-18T23:44:44.1620395Z git version 2.56.1
+2026-11-18T23:44:44.1630132Z ##[endgroup]
+2026-11-18T23:44:44.1640571Z Temporarily overriding HOME='/home/runner/work/_temp/af637d6b-8947-43be-878d-c76277b54fa1' before making global git config changes
+2026-11-18T23:44:44.1641970Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:44:44.1645268Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:44:44.1718418Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:44:44.1719576Z ##[group]Determining repository object format
+2026-11-18T23:44:44.1720372Z ##[endgroup]
+2026-11-18T23:44:44.1720953Z ##[group]Initializing the repository
+2026-11-18T23:44:44.1721462Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:44:44.1856265Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T23:44:44.1857418Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T23:44:44.1858316Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T23:44:44.1859212Z hint: call:
+2026-11-18T23:44:44.1859777Z hint:
+2026-11-18T23:44:44.1860637Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T23:44:44.1861381Z hint:
+2026-11-18T23:44:44.1862047Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T23:44:44.1862873Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T23:44:44.1863606Z hint:
+2026-11-18T23:44:44.1864355Z hint: 	git branch -m <name>
+2026-11-18T23:44:44.1865119Z hint:
+2026-11-18T23:44:44.1865955Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T23:44:44.1867314Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T23:44:44.1878117Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:44:44.1932417Z ##[endgroup]
+2026-11-18T23:44:44.1933092Z ##[group]Disabling automatic garbage collection
+2026-11-18T23:44:44.1936125Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T23:44:44.1970761Z ##[endgroup]
+2026-11-18T23:44:44.1972243Z ##[group]Setting up auth
+2026-11-18T23:44:44.1973214Z Removing SSH command configuration
+2026-11-18T23:44:44.1976405Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:44:44.2014523Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:44:44.2498551Z Removing HTTP extra header
+2026-11-18T23:44:44.2503973Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:44:44.2533902Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:44:44.2781645Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:44:44.2786490Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:44:44.2816713Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:44:44.3062612Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T23:44:44.3099126Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config
+2026-11-18T23:44:44.3131414Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config
+2026-11-18T23:44:44.3178137Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config
+2026-11-18T23:44:44.3207319Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config
+2026-11-18T23:44:44.3235159Z ##[endgroup]
+2026-11-18T23:44:44.3235955Z ##[group]Fetching the repository
+2026-11-18T23:44:44.3241902Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +24bc65f525ec9f19a670e6e5600b071c03edbd56:refs/remotes/pull/239/merge
+2026-11-18T23:44:46.1439557Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:44:46.1440934Z  * [new ref]         24bc65f525ec9f19a670e6e5600b071c03edbd56 -> pull/239/merge
+2026-11-18T23:44:46.1443574Z ##[endgroup]
+2026-11-18T23:44:46.1444380Z ##[group]Determining the checkout info
+2026-11-18T23:44:46.1445374Z ##[endgroup]
+2026-11-18T23:44:46.1449273Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T23:44:46.1502762Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T23:44:46.1533547Z ##[group]Checking out the ref
+2026-11-18T23:44:46.1537388Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/239/merge
+2026-11-18T23:44:46.4024569Z Note: switching to 'refs/remotes/pull/239/merge'.
+2026-11-18T23:44:46.4025030Z 
+2026-11-18T23:44:46.4025288Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T23:44:46.4025703Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T23:44:46.4026100Z state without impacting any branches by switching back to a branch.
+2026-11-18T23:44:46.4026406Z 
+2026-11-18T23:44:46.4026598Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T23:44:46.4026971Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T23:44:46.4027188Z 
+2026-11-18T23:44:46.4027283Z   git switch -c <new-branch-name>
+2026-11-18T23:44:46.4027447Z 
+2026-11-18T23:44:46.4027557Z Or undo this operation with:
+2026-11-18T23:44:46.4027760Z 
+2026-11-18T23:44:46.4027858Z   git switch -
+2026-11-18T23:44:46.4028012Z 
+2026-11-18T23:44:46.4028203Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T23:44:46.4028464Z 
+2026-11-18T23:44:46.4028751Z HEAD is now at 24bc65f Merge 07a7497d1a0cb39fb6904e5c50f8a52db2285820 into 198aa5baff22272453733a0f3dcfcac0e0994eec
+2026-11-18T23:44:46.4038278Z ##[endgroup]
+2026-11-18T23:44:46.4086679Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T23:44:46.4110463Z 24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:44:46.4118151Z ##[group]Removing auth
+2026-11-18T23:44:46.4118787Z Removing SSH command configuration
+2026-11-18T23:44:46.4121087Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:44:46.4148177Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:44:46.4401664Z Removing HTTP extra header
+2026-11-18T23:44:46.4402479Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:44:46.4431427Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:44:46.4679203Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:44:46.4679705Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:44:46.4701627Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:44:46.4702274Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:44:46.4702806Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:44:46.4703250Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:44:46.4709346Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:44:46.4730336Z /home/runner/work/_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config
+2026-11-18T23:44:46.4738993Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-08d25f27\-245a\-4b86\-8355\-2ad45cde936f\.config
+2026-11-18T23:44:46.4773466Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:44:46.4794224Z /home/runner/work/_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config
+2026-11-18T23:44:46.4801842Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-08d25f27\-245a\-4b86\-8355\-2ad45cde936f\.config
+2026-11-18T23:44:46.4836624Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:44:46.4856365Z /github/runner_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config
+2026-11-18T23:44:46.4862637Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-08d25f27\-245a\-4b86\-8355\-2ad45cde936f\.config
+2026-11-18T23:44:46.4896191Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:44:46.4916971Z /github/runner_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config
+2026-11-18T23:44:46.4923220Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-08d25f27\-245a\-4b86\-8355\-2ad45cde936f\.config
+2026-11-18T23:44:46.4953049Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:44:46.5195263Z Removing credentials config '/home/runner/work/_temp/git-credentials-08d25f27-245a-4b86-8355-2ad45cde936f.config'
+2026-11-18T23:44:46.5204465Z ##[endgroup]
+2026-11-18T23:44:46.5334352Z ##[group]Run bash scripts/check-actions-pinned.sh
+2026-11-18T23:44:46.5334698Z [36;1mbash scripts/check-actions-pinned.sh[0m
+2026-11-18T23:44:46.5380409Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:46.5380641Z ##[endgroup]
+2026-11-18T23:44:46.6601346Z OK: 113 'uses:' reference(s) checked, all pinned to full SHAs with version comments.
+2026-11-18T23:44:46.6701239Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-18T23:44:46.6701584Z with:
+2026-11-18T23:44:46.6701766Z   node-version: 22
+2026-11-18T23:44:46.6701939Z   cache: npm
+2026-11-18T23:44:46.6702110Z   check-latest: false
+2026-11-18T23:44:46.6704070Z   token: ***
+2026-11-18T23:44:46.6704254Z   package-manager-cache: true
+2026-11-18T23:44:46.6704456Z ##[endgroup]
+2026-11-18T23:44:46.7757032Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-18T23:44:47.5670784Z ##[group]Environment details
+2026-11-18T23:44:48.9652262Z node: v22.23.4
+2026-11-18T23:44:48.9652634Z npm: 10.9.9
+2026-11-18T23:44:48.9652873Z yarn: 1.22.22
+2026-11-18T23:44:48.9653473Z ##[endgroup]
+2026-11-18T23:44:48.9653999Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache
+2026-11-18T23:44:49.1968379Z /home/runner/.npm
+2026-11-18T23:44:49.4200061Z Cache hit for: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:44:50.6331452Z Received 67108864 of 247554651 (27.1%), 64.0 MBs/sec
+2026-11-18T23:44:51.6382529Z Received 243360347 of 247554651 (98.3%), 116.0 MBs/sec
+2026-11-18T23:44:51.6581893Z Received 247554651 of 247554651 (100.0%), 116.6 MBs/sec
+2026-11-18T23:44:51.6582621Z Cache Size: ~236 MB (247554651 B)
+2026-11-18T23:44:51.6632128Z [command]/usr/bin/tar -xf /home/runner/work/_temp/9081f069-b42a-4c07-906c-fcf2a2cb1692/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:44:52.0136589Z Cache restored successfully
+2026-11-18T23:44:52.0239756Z Cache restored from key: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:44:52.0651987Z ##[group]Run npm ci --ignore-scripts
+2026-11-18T23:44:52.0652294Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-18T23:44:52.0707392Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:52.0707630Z ##[endgroup]
+2026-11-18T23:44:57.1437944Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-18T23:44:59.3846132Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-18T23:45:03.1790883Z 
+2026-11-18T23:45:03.1791853Z added 721 packages, and audited 790 packages in 11s
+2026-11-18T23:45:03.1792251Z 
+2026-11-18T23:45:03.1792464Z 157 packages are looking for funding
+2026-11-18T23:45:03.1792859Z   run `npm fund` for details
+2026-11-18T23:45:03.2124279Z 
+2026-11-18T23:45:03.2125744Z 17 low severity vulnerabilities
+2026-11-18T23:45:03.2126240Z 
+2026-11-18T23:45:03.2140907Z To address issues that do not require attention, run:
+2026-11-18T23:45:03.2141573Z   npm audit fix
+2026-11-18T23:45:03.2141915Z 
+2026-11-18T23:45:03.2142485Z To address all issues possible (including breaking changes), run:
+2026-11-18T23:45:03.2143179Z   npm audit fix --force
+2026-11-18T23:45:03.2143528Z 
+2026-11-18T23:45:03.2143967Z Some issues need review, and may require choosing
+2026-11-18T23:45:03.2144587Z a different dependency.
+2026-11-18T23:45:03.2144938Z 
+2026-11-18T23:45:03.2145253Z Run `npm audit` for details.
+2026-11-18T23:45:03.3386683Z ##[group]Run npm ls --all --omit=dev > /dev/null
+2026-11-18T23:45:03.3387158Z [36;1mnpm ls --all --omit=dev > /dev/null[0m
+2026-11-18T23:45:03.3444143Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:45:03.3444476Z ##[endgroup]
+2026-11-18T23:45:03.8305839Z ##[group]Run rm -rf packages/*/dist
+2026-11-18T23:45:03.8306137Z [36;1mrm -rf packages/*/dist[0m
+2026-11-18T23:45:03.8306364Z [36;1mnpm run build:libs[0m
+2026-11-18T23:45:03.8350804Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:45:03.8351032Z ##[endgroup]
+2026-11-18T23:45:03.9197521Z 
+2026-11-18T23:45:03.9197997Z > ghostpay@0.1.0 build:libs
+2026-11-18T23:45:03.9198550Z > node scripts/build-workspaces.mjs --libraries
+2026-11-18T23:45:03.9198854Z 
+2026-11-18T23:45:04.0694096Z 
+2026-11-18T23:45:04.0694726Z > @ghostpay/address-safety@0.1.0 build
+2026-11-18T23:45:04.0695258Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:04.0695476Z 
+2026-11-18T23:45:05.4667719Z 
+2026-11-18T23:45:05.4668478Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:45:05.4668981Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:05.4669211Z 
+2026-11-18T23:45:06.6253009Z 
+2026-11-18T23:45:06.6254714Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:45:06.6255287Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:06.6255639Z 
+2026-11-18T23:45:07.6023722Z 
+2026-11-18T23:45:07.6024548Z > @ghostpay/chain-adapters@0.1.0 build
+2026-11-18T23:45:07.6025557Z > npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:07.6026599Z 
+2026-11-18T23:45:07.7340770Z 
+2026-11-18T23:45:07.7341480Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:45:07.7342009Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:07.7342234Z 
+2026-11-18T23:45:08.7685808Z 
+2026-11-18T23:45:08.7686533Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:45:08.7687055Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:08.7687276Z 
+2026-11-18T23:45:11.8557182Z 
+2026-11-18T23:45:11.8557799Z > @ghostpay/amount-blur@0.1.0 build
+2026-11-18T23:45:11.8558166Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:11.8558328Z 
+2026-11-18T23:45:12.8616603Z 
+2026-11-18T23:45:12.8617286Z > @ghostpay/btc-family@0.1.0 build
+2026-11-18T23:45:12.8617793Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:12.8617947Z 
+2026-11-18T23:45:13.7759731Z 
+2026-11-18T23:45:13.7760847Z > @ghostpay/btc-payjoin@0.1.0 build
+2026-11-18T23:45:13.7761614Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:13.7762004Z 
+2026-11-18T23:45:15.2465317Z 
+2026-11-18T23:45:15.2466161Z > @ghostpay/btc-silent-payments@0.1.0 build
+2026-11-18T23:45:15.2466728Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:15.2470652Z 
+2026-11-18T23:45:16.8570761Z 
+2026-11-18T23:45:16.8571501Z > @ghostpay/chain-evm-extra@0.1.0 build
+2026-11-18T23:45:16.8571882Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:16.8572045Z 
+2026-11-18T23:45:17.9043198Z 
+2026-11-18T23:45:17.9043939Z > @ghostpay/chain-solana@0.1.0 build
+2026-11-18T23:45:17.9044473Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:17.9044713Z 
+2026-11-18T23:45:18.7425726Z 
+2026-11-18T23:45:18.7428096Z > @ghostpay/chain-tron@0.1.0 build
+2026-11-18T23:45:18.7428467Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:18.7428628Z 
+2026-11-18T23:45:19.5364723Z 
+2026-11-18T23:45:19.5365426Z > @ghostpay/i18n@0.1.0 build
+2026-11-18T23:45:19.5365882Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:19.5366038Z 
+2026-11-18T23:45:20.5800439Z 
+2026-11-18T23:45:20.5801181Z > @ghostpay/merchant-hooks@0.1.0 build
+2026-11-18T23:45:20.5801972Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:20.5802445Z 
+2026-11-18T23:45:20.7168851Z 
+2026-11-18T23:45:20.7169565Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:45:20.7170158Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:20.7170314Z 
+2026-11-18T23:45:22.4983221Z 
+2026-11-18T23:45:22.4983941Z > @ghostpay/merchant-billing@0.1.0 build
+2026-11-18T23:45:22.4984403Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:22.4984564Z 
+2026-11-18T23:45:23.4277890Z 
+2026-11-18T23:45:23.4278667Z > @ghostpay/merchant-ledger@0.1.0 build
+2026-11-18T23:45:23.4279515Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:23.5577804Z 
+2026-11-18T23:45:23.5577824Z 
+2026-11-18T23:45:23.5579036Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:45:23.5579599Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:23.5579835Z 
+2026-11-18T23:45:25.1327966Z 
+2026-11-18T23:45:25.1328723Z > @ghostpay/merchant-multisig@0.1.0 build
+2026-11-18T23:45:25.1329461Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:25.1329692Z 
+2026-11-18T23:45:25.9984350Z 
+2026-11-18T23:45:25.9985053Z > @ghostpay/qr-exchange@0.1.0 build
+2026-11-18T23:45:25.9985569Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:25.9985807Z 
+2026-11-18T23:45:26.9132703Z 
+2026-11-18T23:45:26.9133274Z > @ghostpay/sandbox@0.1.0 build
+2026-11-18T23:45:26.9133631Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:26.9133780Z 
+2026-11-18T23:45:27.7107964Z 
+2026-11-18T23:45:27.7108657Z > @ghostpay/ux-vault@0.1.0 build
+2026-11-18T23:45:27.7109824Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:27.7110231Z 
+2026-11-18T23:45:29.0450993Z 
+2026-11-18T23:45:29.0451570Z > @ghostpay/cli@0.1.0 build
+2026-11-18T23:45:29.0452165Z > tsc -p tsconfig.build.json && node stamp-build.mjs
+2026-11-18T23:45:29.0452494Z 
+2026-11-18T23:45:31.5323135Z 
+2026-11-18T23:45:31.5323998Z > @ghostpay/confidential-amounts@0.1.0 build
+2026-11-18T23:45:31.5324353Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:31.5324506Z 
+2026-11-18T23:45:35.2710885Z 
+2026-11-18T23:45:35.2711529Z > @ghostpay/donation@0.1.0 build
+2026-11-18T23:45:35.2711880Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:35.2712042Z 
+2026-11-18T23:45:36.7143523Z 
+2026-11-18T23:45:36.7144198Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:45:36.7144718Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:36.7144958Z 
+2026-11-18T23:45:37.3646205Z 
+2026-11-18T23:45:37.3646903Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:45:37.3647452Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:37.3647744Z 
+2026-11-18T23:45:37.4998902Z 
+2026-11-18T23:45:37.4999542Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:45:37.5000059Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:37.5000252Z 
+2026-11-18T23:45:39.6759791Z 
+2026-11-18T23:45:39.6760543Z > @ghostpay/external-pools-privacypools@0.1.0 build
+2026-11-18T23:45:39.6761107Z > npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:39.6761388Z 
+2026-11-18T23:45:39.8075413Z 
+2026-11-18T23:45:39.8076309Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:45:39.8078562Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:39.8078848Z 
+2026-11-18T23:45:39.9376190Z 
+2026-11-18T23:45:39.9376761Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:45:39.9377132Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:39.9377290Z 
+2026-11-18T23:45:44.1294693Z 
+2026-11-18T23:45:44.1295373Z > @ghostpay/external-pools-railgun@0.1.0 build
+2026-11-18T23:45:44.1295924Z > npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:44.1296211Z 
+2026-11-18T23:45:44.2593517Z 
+2026-11-18T23:45:44.2594227Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:45:44.2595074Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:45:44.2595496Z 
+2026-11-18T23:45:44.3917068Z 
+2026-11-18T23:45:44.3917682Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:45:44.3918088Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:44.3918235Z 
+2026-11-18T23:45:48.1163525Z 
+2026-11-18T23:45:48.1164182Z > @ghostpay/hops@0.1.0 build
+2026-11-18T23:45:48.1164670Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:48.1164923Z 
+2026-11-18T23:45:49.5470447Z 
+2026-11-18T23:45:49.5471119Z > @ghostpay/hygiene@0.1.0 build
+2026-11-18T23:45:49.5471638Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:49.5471876Z 
+2026-11-18T23:45:51.1380074Z 
+2026-11-18T23:45:51.1380808Z > @ghostpay/metadata-hardening@0.1.0 build
+2026-11-18T23:45:51.1381317Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:51.1381545Z 
+2026-11-18T23:45:52.9300845Z 
+2026-11-18T23:45:52.9301476Z > @ghostpay/net-harness@0.1.0 build
+2026-11-18T23:45:52.9301848Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:52.9302006Z 
+2026-11-18T23:45:54.0328956Z 
+2026-11-18T23:45:54.0329715Z > @ghostpay/net-transport@0.1.0 build
+2026-11-18T23:45:54.0330464Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:54.0330706Z 
+2026-11-18T23:45:55.4006743Z 
+2026-11-18T23:45:55.4007529Z > @ghostpay/ops-monitor@0.1.0 build
+2026-11-18T23:45:55.4008054Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:55.4008326Z 
+2026-11-18T23:45:56.9339573Z 
+2026-11-18T23:45:56.9340347Z > @ghostpay/relayer-guard@0.1.0 build
+2026-11-18T23:45:56.9340713Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:56.9340874Z 
+2026-11-18T23:45:58.0250798Z 
+2026-11-18T23:45:58.0251485Z > @ghostpay/payer-sponsor@0.1.0 build
+2026-11-18T23:45:58.0251869Z > tsc -p tsconfig.build.json
+2026-11-18T23:45:58.0252032Z 
+2026-11-18T23:46:00.3308276Z 
+2026-11-18T23:46:00.3308964Z > @ghostpay/payment-uri@0.1.0 build
+2026-11-18T23:46:00.3309503Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:00.3309742Z 
+2026-11-18T23:46:01.4062419Z 
+2026-11-18T23:46:01.4063128Z > @ghostpay/pir-two-server@0.1.0 build
+2026-11-18T23:46:01.4063680Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:01.4063910Z 
+2026-11-18T23:46:02.5305557Z 
+2026-11-18T23:46:02.5306284Z > @ghostpay/plugin-api@0.1.0 build
+2026-11-18T23:46:02.5306784Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:02.5307462Z 
+2026-11-18T23:46:03.3349767Z 
+2026-11-18T23:46:03.3350586Z > @ghostpay/policy-scheme@0.1.0 build
+2026-11-18T23:46:03.3351240Z > npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:46:03.3351525Z 
+2026-11-18T23:46:03.4680882Z 
+2026-11-18T23:46:03.4681599Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:46:03.4682125Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:03.4682370Z 
+2026-11-18T23:46:06.3168770Z 
+2026-11-18T23:46:06.3169508Z > @ghostpay/pool-circuits@0.1.0 build
+2026-11-18T23:46:06.3170203Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:06.3170442Z 
+2026-11-18T23:46:07.1921301Z 
+2026-11-18T23:46:07.1922001Z > @ghostpay/pool-prover@0.1.0 build
+2026-11-18T23:46:07.1922526Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:07.1922780Z 
+2026-11-18T23:46:08.1687978Z 
+2026-11-18T23:46:08.1688583Z > @ghostpay/pool-sdk@0.1.0 build
+2026-11-18T23:46:08.1688930Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:08.1689091Z 
+2026-11-18T23:46:10.3644646Z 
+2026-11-18T23:46:10.3645368Z > @ghostpay/pool-relayer@0.1.0 build
+2026-11-18T23:46:10.3645913Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:10.3646146Z 
+2026-11-18T23:46:14.3222155Z 
+2026-11-18T23:46:14.3222925Z > @ghostpay/privacy-pipeline@0.1.0 build
+2026-11-18T23:46:14.3223474Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:14.3223716Z 
+2026-11-18T23:46:15.8383113Z 
+2026-11-18T23:46:15.8383831Z > @ghostpay/privacy-profiles@0.1.0 build
+2026-11-18T23:46:15.8384304Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:15.8384462Z 
+2026-11-18T23:46:17.0934949Z 
+2026-11-18T23:46:17.0935690Z > @ghostpay/scan-source@0.1.0 build
+2026-11-18T23:46:17.0936519Z > npm run build -w @ghostpay/pir-two-server --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:46:17.0936986Z 
+2026-11-18T23:46:17.2241221Z 
+2026-11-18T23:46:17.2241947Z > @ghostpay/pir-two-server@0.1.0 build
+2026-11-18T23:46:17.2242401Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:17.2242550Z 
+2026-11-18T23:46:19.3449563Z 
+2026-11-18T23:46:19.3450427Z > @ghostpay/sdk@0.1.0 build
+2026-11-18T23:46:19.3450948Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:19.3451173Z 
+2026-11-18T23:46:20.1168299Z 
+2026-11-18T23:46:20.1169056Z > @ghostpay/solana-stealth@0.1.0 build
+2026-11-18T23:46:20.1169582Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:20.1169818Z 
+2026-11-18T23:46:21.6172425Z 
+2026-11-18T23:46:21.6173173Z > @ghostpay/tron-adapter@0.1.0 build
+2026-11-18T23:46:21.6173995Z > npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:46:21.6174434Z 
+2026-11-18T23:46:21.7496806Z 
+2026-11-18T23:46:21.7497470Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:46:21.7497982Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:21.7498224Z 
+2026-11-18T23:46:23.6990100Z 
+2026-11-18T23:46:23.6991180Z > @ghostpay/tx-review@0.1.0 build
+2026-11-18T23:46:23.6991550Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:23.6991706Z 
+2026-11-18T23:46:25.1042676Z 
+2026-11-18T23:46:25.1043423Z > @ghostpay/ux-connect@0.1.0 build
+2026-11-18T23:46:25.1044005Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:25.1044235Z 
+2026-11-18T23:46:25.8941473Z 
+2026-11-18T23:46:25.8942168Z > @ghostpay/ux-core@0.1.0 build
+2026-11-18T23:46:25.8942669Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:25.8942897Z 
+2026-11-18T23:46:26.8400555Z 
+2026-11-18T23:46:26.8402284Z > @ghostpay/ux-export@0.1.0 build
+2026-11-18T23:46:26.8402807Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:26.8403051Z 
+2026-11-18T23:46:27.6213689Z 
+2026-11-18T23:46:27.6214309Z > @ghostpay/ux-fees@0.1.0 build
+2026-11-18T23:46:27.6214699Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:27.6214845Z 
+2026-11-18T23:46:28.4121778Z 
+2026-11-18T23:46:28.4122499Z > @ghostpay/ux-fiat@0.1.0 build
+2026-11-18T23:46:28.4123007Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:28.4123244Z 
+2026-11-18T23:46:29.1113434Z 
+2026-11-18T23:46:29.1114078Z > @ghostpay/ux-flow@0.1.0 build
+2026-11-18T23:46:29.1114509Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:29.1114656Z 
+2026-11-18T23:46:29.8594897Z 
+2026-11-18T23:46:29.8596211Z > @ghostpay/ux-guide@0.1.0 build
+2026-11-18T23:46:29.8596724Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:29.8596960Z 
+2026-11-18T23:46:30.5992652Z 
+2026-11-18T23:46:30.5993303Z > @ghostpay/ux-i18n@0.1.0 build
+2026-11-18T23:46:30.5993728Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:30.5993876Z 
+2026-11-18T23:46:31.1346092Z 
+2026-11-18T23:46:31.1346791Z > @ghostpay/ux-intake@0.1.0 build
+2026-11-18T23:46:31.1347306Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:31.1347540Z 
+2026-11-18T23:46:31.9273784Z 
+2026-11-18T23:46:31.9274424Z > @ghostpay/ux-links@0.1.0 build
+2026-11-18T23:46:31.9274823Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:31.9274978Z 
+2026-11-18T23:46:32.6950261Z 
+2026-11-18T23:46:32.6950968Z > @ghostpay/ux-notify@0.1.0 build
+2026-11-18T23:46:32.6951394Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:32.6951552Z 
+2026-11-18T23:46:33.5228815Z 
+2026-11-18T23:46:33.5229480Z > @ghostpay/ux-presets@0.1.0 build
+2026-11-18T23:46:33.5230085Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:33.5230355Z 
+2026-11-18T23:46:34.3096934Z 
+2026-11-18T23:46:34.3097550Z > @ghostpay/ux-privacy@0.1.0 build
+2026-11-18T23:46:34.3098034Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:34.3098252Z 
+2026-11-18T23:46:34.9864241Z 
+2026-11-18T23:46:34.9864939Z > @ghostpay/ux-receipts@0.1.0 build
+2026-11-18T23:46:34.9865449Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:34.9865686Z 
+2026-11-18T23:46:35.7235216Z 
+2026-11-18T23:46:35.7235868Z > @ghostpay/ux-sandbox@0.1.0 build
+2026-11-18T23:46:35.7236276Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:35.7236428Z 
+2026-11-18T23:46:36.2506649Z 
+2026-11-18T23:46:36.2507313Z > @ghostpay/ux-schedule@0.1.0 build
+2026-11-18T23:46:36.2507846Z > tsc -p tsconfig.build.json
+2026-11-18T23:46:36.2508079Z 
+2026-11-18T23:46:36.8788868Z ##[group]Run node --test scripts/pages/*.test.mjs
+2026-11-18T23:46:36.8789308Z [36;1mnode --test scripts/pages/*.test.mjs[0m
+2026-11-18T23:46:36.8835602Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:46:36.8836022Z ##[endgroup]
+2026-11-18T23:46:36.9341372Z TAP version 13
+2026-11-18T23:46:37.0051933Z # Subtest: the mirror banner link opens a new tab without an opener or referrer
+2026-11-18T23:46:37.0056634Z ok 1 - the mirror banner link opens a new tab without an opener or referrer
+2026-11-18T23:46:37.0057412Z   ---
+2026-11-18T23:46:37.0057876Z   duration_ms: 3.182061
+2026-11-18T23:46:37.0058399Z   type: 'test'
+2026-11-18T23:46:37.0058816Z   ...
+2026-11-18T23:46:37.0059560Z # Subtest: build-pages hands the declared origin to the Vite build for the runtime origin guard
+2026-11-18T23:46:37.0060831Z ok 2 - build-pages hands the declared origin to the Vite build for the runtime origin guard
+2026-11-18T23:46:37.0069623Z   ---
+2026-11-18T23:46:37.0070356Z   duration_ms: 0.372488
+2026-11-18T23:46:37.0070983Z   type: 'test'
+2026-11-18T23:46:37.0071447Z   ...
+2026-11-18T23:46:37.0072024Z # Subtest: the publishing workflow fails when the deployed page_url origin differs from the declared origin
+2026-11-18T23:46:37.0072835Z ok 3 - the publishing workflow fails when the deployed page_url origin differs from the declared origin
+2026-11-18T23:46:37.0073359Z   ---
+2026-11-18T23:46:37.0073660Z   duration_ms: 15.328908
+2026-11-18T23:46:37.0074090Z   type: 'test'
+2026-11-18T23:46:37.0074424Z   ...
+2026-11-18T23:46:37.0075081Z # Subtest: a publishing run attests the SHA256SUMS of the Pages artifact before deploying
+2026-11-18T23:46:37.0075947Z ok 4 - a publishing run attests the SHA256SUMS of the Pages artifact before deploying
+2026-11-18T23:46:37.0076650Z   ---
+2026-11-18T23:46:37.0077066Z   duration_ms: 3.747202
+2026-11-18T23:46:37.0077484Z   type: 'test'
+2026-11-18T23:46:37.0077855Z   ...
+2026-11-18T23:46:37.0271142Z # Subtest: base handling
+2026-11-18T23:46:37.0291105Z     # Subtest: the base serves index.html
+2026-11-18T23:46:37.0353177Z     ok 1 - the base serves index.html
+2026-11-18T23:46:37.0366518Z       ---
+2026-11-18T23:46:37.0366978Z       duration_ms: 18.182475
+2026-11-18T23:46:37.0367378Z       type: 'test'
+2026-11-18T23:46:37.0367698Z       ...
+2026-11-18T23:46:37.0368239Z     # Subtest: the base without its trailing slash redirects to it (like Pages)
+2026-11-18T23:46:37.0369515Z     ok 2 - the base without its trailing slash redirects to it (like Pages)
+2026-11-18T23:46:37.0370247Z       ---
+2026-11-18T23:46:37.0371150Z       duration_ms: 2.661294
+2026-11-18T23:46:37.0371548Z       type: 'test'
+2026-11-18T23:46:37.0373879Z       ...
+2026-11-18T23:46:37.0374806Z     # Subtest: a directory serves its index.html, and redirects without its slash
+2026-11-18T23:46:37.0375578Z     ok 3 - a directory serves its index.html, and redirects without its slash
+2026-11-18T23:46:37.0376221Z       ---
+2026-11-18T23:46:37.0376591Z       duration_ms: 6.291383
+2026-11-18T23:46:37.0377004Z       type: 'test'
+2026-11-18T23:46:37.0377397Z       ...
+2026-11-18T23:46:37.0377862Z     # Subtest: a query string never selects another file
+2026-11-18T23:46:37.0378472Z     ok 4 - a query string never selects another file
+2026-11-18T23:46:37.0378958Z       ---
+2026-11-18T23:46:37.0379334Z       duration_ms: 2.090414
+2026-11-18T23:46:37.0379766Z       type: 'test'
+2026-11-18T23:46:37.0380341Z       ...
+2026-11-18T23:46:37.0380728Z     # Subtest: outside the base is 404: /
+2026-11-18T23:46:37.0381237Z     ok 5 - outside the base is 404: /
+2026-11-18T23:46:37.0381685Z       ---
+2026-11-18T23:46:37.0382072Z       duration_ms: 1.316336
+2026-11-18T23:46:37.0382472Z       type: 'test'
+2026-11-18T23:46:37.0382834Z       ...
+2026-11-18T23:46:37.0383278Z     # Subtest: outside the base is 404: /index.html
+2026-11-18T23:46:37.0383829Z     ok 6 - outside the base is 404: /index.html
+2026-11-18T23:46:37.0384312Z       ---
+2026-11-18T23:46:37.0384684Z       duration_ms: 1.192565
+2026-11-18T23:46:37.0385103Z       type: 'test'
+2026-11-18T23:46:37.0385982Z       ...
+2026-11-18T23:46:37.0386460Z     # Subtest: outside the base is 404: /help.html
+2026-11-18T23:46:37.0387017Z     ok 7 - outside the base is 404: /help.html
+2026-11-18T23:46:37.0387488Z       ---
+2026-11-18T23:46:37.0387859Z       duration_ms: 1.124073
+2026-11-18T23:46:37.0388273Z       type: 'test'
+2026-11-18T23:46:37.0388649Z       ...
+2026-11-18T23:46:37.0389112Z     # Subtest: outside the base is 404: /build-info.json
+2026-11-18T23:46:37.0389701Z     ok 8 - outside the base is 404: /build-info.json
+2026-11-18T23:46:37.0390341Z       ---
+2026-11-18T23:46:37.0390707Z       duration_ms: 2.027583
+2026-11-18T23:46:37.0391112Z       type: 'test'
+2026-11-18T23:46:37.0391491Z       ...
+2026-11-18T23:46:37.0391980Z     # Subtest: outside the base is 404: /assets/app.js
+2026-11-18T23:46:37.0392576Z     ok 9 - outside the base is 404: /assets/app.js
+2026-11-18T23:46:37.0393079Z       ---
+2026-11-18T23:46:37.0393458Z       duration_ms: 1.828309
+2026-11-18T23:46:37.0393868Z       type: 'test'
+2026-11-18T23:46:37.0394246Z       ...
+2026-11-18T23:46:37.0394684Z     # Subtest: outside the base is 404: /ghostpay/
+2026-11-18T23:46:37.0395270Z     ok 10 - outside the base is 404: /ghostpay/
+2026-11-18T23:46:37.0395883Z       ---
+2026-11-18T23:46:37.0396378Z       duration_ms: 1.504203
+2026-11-18T23:46:37.0396936Z       type: 'test'
+2026-11-18T23:46:37.0397444Z       ...
+2026-11-18T23:46:37.0398053Z     # Subtest: outside the base is 404: /GhostPayX/
+2026-11-18T23:46:37.0398798Z     ok 11 - outside the base is 404: /GhostPayX/
+2026-11-18T23:46:37.0399278Z       ---
+2026-11-18T23:46:37.0399649Z       duration_ms: 0.911671
+2026-11-18T23:46:37.0400158Z       type: 'test'
+2026-11-18T23:46:37.0400548Z       ...
+2026-11-18T23:46:37.0401003Z     # Subtest: outside the base is 404: /GhostPay.html
+2026-11-18T23:46:37.0401547Z     ok 12 - outside the base is 404: /GhostPay.html
+2026-11-18T23:46:37.0402036Z       ---
+2026-11-18T23:46:37.0402415Z       duration_ms: 0.938501
+2026-11-18T23:46:37.0402863Z       type: 'test'
+2026-11-18T23:46:37.0403246Z       ...
+2026-11-18T23:46:37.0403814Z     # Subtest: outside the base is 404: /other/GhostPay/index.html
+2026-11-18T23:46:37.0460600Z     ok 13 - outside the base is 404: /other/GhostPay/index.html
+2026-11-18T23:46:37.0480737Z       ---
+2026-11-18T23:46:37.0490489Z       duration_ms: 1.030476
+2026-11-18T23:46:37.0520532Z       type: 'test'
+2026-11-18T23:46:37.0520951Z       ...
+2026-11-18T23:46:37.0521346Z     # Subtest: normalizeBase
+2026-11-18T23:46:37.0521799Z     ok 14 - normalizeBase
+2026-11-18T23:46:37.0522197Z       ---
+2026-11-18T23:46:37.0522510Z       duration_ms: 1.983277
+2026-11-18T23:46:37.0522949Z       type: 'test'
+2026-11-18T23:46:37.0523315Z       ...
+2026-11-18T23:46:37.0523861Z     # Subtest: a root base serves the site at /
+2026-11-18T23:46:37.0560794Z     ok 15 - a root base serves the site at /
+2026-11-18T23:46:37.0630651Z       ---
+2026-11-18T23:46:37.0680949Z       duration_ms: 7.36283
+2026-11-18T23:46:37.0704283Z       type: 'test'
+2026-11-18T23:46:37.0730710Z       ...
+2026-11-18T23:46:37.0780786Z     1..15
+2026-11-18T23:46:37.0810818Z ok 5 - base handling
+2026-11-18T23:46:37.0862098Z   ---
+2026-11-18T23:46:37.0921446Z   duration_ms: 59.956082
+2026-11-18T23:46:37.0930942Z   type: 'suite'
+2026-11-18T23:46:37.0965983Z   ...
+2026-11-18T23:46:37.0990645Z # Subtest: MIME types and allowlist
+2026-11-18T23:46:37.0991287Z     # Subtest: /GhostPay/index.html -> text/html; charset=utf-8
+2026-11-18T23:46:37.0991823Z     ok 1 - /GhostPay/index.html -> text/html; charset=utf-8
+2026-11-18T23:46:37.0992201Z       ---
+2026-11-18T23:46:37.0992454Z       duration_ms: 7.162525
+2026-11-18T23:46:37.0992763Z       type: 'test'
+2026-11-18T23:46:37.0993011Z       ...
+2026-11-18T23:46:37.0993440Z     # Subtest: /GhostPay/assets/app.js -> text/javascript; charset=utf-8
+2026-11-18T23:46:37.0994028Z     ok 2 - /GhostPay/assets/app.js -> text/javascript; charset=utf-8
+2026-11-18T23:46:37.0994460Z       ---
+2026-11-18T23:46:37.0994716Z       duration_ms: 3.233886
+2026-11-18T23:46:37.0995426Z       type: 'test'
+2026-11-18T23:46:37.0995696Z       ...
+2026-11-18T23:46:37.0996081Z     # Subtest: /GhostPay/assets/app.css -> text/css; charset=utf-8
+2026-11-18T23:46:37.0996650Z     ok 3 - /GhostPay/assets/app.css -> text/css; charset=utf-8
+2026-11-18T23:46:37.0997039Z       ---
+2026-11-18T23:46:37.0997299Z       duration_ms: 1.546445
+2026-11-18T23:46:37.0997598Z       type: 'test'
+2026-11-18T23:46:37.0997852Z       ...
+2026-11-18T23:46:37.0998193Z     # Subtest: /GhostPay/assets/logo.svg -> image/svg+xml
+2026-11-18T23:46:37.0998668Z     ok 4 - /GhostPay/assets/logo.svg -> image/svg+xml
+2026-11-18T23:46:37.0999105Z       ---
+2026-11-18T23:46:37.0999355Z       duration_ms: 1.75355
+2026-11-18T23:46:37.0999650Z       type: 'test'
+2026-11-18T23:46:37.1000046Z       ...
+2026-11-18T23:46:37.1000502Z     # Subtest: /GhostPay/build-info.json -> application/json; charset=utf-8
+2026-11-18T23:46:37.1001144Z     ok 5 - /GhostPay/build-info.json -> application/json; charset=utf-8
+2026-11-18T23:46:37.1001601Z       ---
+2026-11-18T23:46:37.1001900Z       duration_ms: 1.714522
+2026-11-18T23:46:37.1002201Z       type: 'test'
+2026-11-18T23:46:37.1002463Z       ...
+2026-11-18T23:46:37.1002814Z     # Subtest: /GhostPay/assets/font.woff2 -> font/woff2
+2026-11-18T23:46:37.1003282Z     ok 6 - /GhostPay/assets/font.woff2 -> font/woff2
+2026-11-18T23:46:37.1003646Z       ---
+2026-11-18T23:46:37.1003877Z       duration_ms: 1.780289
+2026-11-18T23:46:37.1004155Z       type: 'test'
+2026-11-18T23:46:37.1004400Z       ...
+2026-11-18T23:46:37.1004786Z     # Subtest: /GhostPay/robots.txt -> text/plain; charset=utf-8
+2026-11-18T23:46:37.1005327Z     ok 7 - /GhostPay/robots.txt -> text/plain; charset=utf-8
+2026-11-18T23:46:37.1005692Z       ---
+2026-11-18T23:46:37.1005947Z       duration_ms: 1.238061
+2026-11-18T23:46:37.1006241Z       type: 'test'
+2026-11-18T23:46:37.1006498Z       ...
+2026-11-18T23:46:37.1006853Z     # Subtest: /GhostPay/assets/icon.png -> image/png
+2026-11-18T23:46:37.1007327Z     ok 8 - /GhostPay/assets/icon.png -> image/png
+2026-11-18T23:46:37.1007692Z       ---
+2026-11-18T23:46:37.1007937Z       duration_ms: 0.924189
+2026-11-18T23:46:37.1008242Z       type: 'test'
+2026-11-18T23:46:37.1008487Z       ...
+2026-11-18T23:46:37.1008830Z     # Subtest: /GhostPay/favicon.ico -> image/x-icon
+2026-11-18T23:46:37.1009583Z     ok 9 - /GhostPay/favicon.ico -> image/x-icon
+2026-11-18T23:46:37.1010089Z       ---
+2026-11-18T23:46:37.1010339Z       duration_ms: 4.239436
+2026-11-18T23:46:37.1010635Z       type: 'test'
+2026-11-18T23:46:37.1010887Z       ...
+2026-11-18T23:46:37.1011345Z     # Subtest: the extension is matched case-insensitively, the file name exactly
+2026-11-18T23:46:37.1012045Z     ok 10 - the extension is matched case-insensitively, the file name exactly
+2026-11-18T23:46:37.1012518Z       ---
+2026-11-18T23:46:37.1012769Z       duration_ms: 2.096344
+2026-11-18T23:46:37.1013065Z       type: 'test'
+2026-11-18T23:46:37.1013333Z       ...
+2026-11-18T23:46:37.1013836Z     # Subtest: not an allowlisted published file -> 404: /GhostPay/assets/app.js.map
+2026-11-18T23:46:37.1014567Z     ok 11 - not an allowlisted published file -> 404: /GhostPay/assets/app.js.map
+2026-11-18T23:46:37.1015072Z       ---
+2026-11-18T23:46:37.1015332Z       duration_ms: 2.06665
+2026-11-18T23:46:37.1015627Z       type: 'test'
+2026-11-18T23:46:37.1015902Z       ...
+2026-11-18T23:46:37.1016441Z     # Subtest: not an allowlisted published file -> 404: /GhostPay/assets/module.mjs
+2026-11-18T23:46:37.1017195Z     ok 12 - not an allowlisted published file -> 404: /GhostPay/assets/module.mjs
+2026-11-18T23:46:37.1017692Z       ---
+2026-11-18T23:46:37.1017964Z       duration_ms: 1.734982
+2026-11-18T23:46:37.1018262Z       type: 'test'
+2026-11-18T23:46:37.1018519Z       ...
+2026-11-18T23:46:37.1018955Z     # Subtest: not an allowlisted published file -> 404: /GhostPay/.nojekyll
+2026-11-18T23:46:37.1019601Z     ok 13 - not an allowlisted published file -> 404: /GhostPay/.nojekyll
+2026-11-18T23:46:37.1059635Z       ---
+2026-11-18T23:46:37.1060352Z       duration_ms: 1.717296
+2026-11-18T23:46:37.1060717Z       type: 'test'
+2026-11-18T23:46:37.1060998Z       ...
+2026-11-18T23:46:37.1061444Z     # Subtest: not an allowlisted published file -> 404: /GhostPay/Makefile
+2026-11-18T23:46:37.1062114Z     ok 14 - not an allowlisted published file -> 404: /GhostPay/Makefile
+2026-11-18T23:46:37.1062600Z       ---
+2026-11-18T23:46:37.1062852Z       duration_ms: 1.7541
+2026-11-18T23:46:37.1063154Z       type: 'test'
+2026-11-18T23:46:37.1063410Z       ...
+2026-11-18T23:46:37.1063862Z     # Subtest: not an allowlisted published file -> 404: /GhostPay/missing.html
+2026-11-18T23:46:37.1064556Z     ok 15 - not an allowlisted published file -> 404: /GhostPay/missing.html
+2026-11-18T23:46:37.1065020Z       ---
+2026-11-18T23:46:37.1065271Z       duration_ms: 1.804254
+2026-11-18T23:46:37.1065567Z       type: 'test'
+2026-11-18T23:46:37.1065827Z       ...
+2026-11-18T23:46:37.1066250Z     # Subtest: not an allowlisted published file -> 404: /GhostPay/assets/
+2026-11-18T23:46:37.1066883Z     ok 16 - not an allowlisted published file -> 404: /GhostPay/assets/
+2026-11-18T23:46:37.1067320Z       ---
+2026-11-18T23:46:37.1067569Z       duration_ms: 1.535558
+2026-11-18T23:46:37.1067860Z       type: 'test'
+2026-11-18T23:46:37.1068113Z       ...
+2026-11-18T23:46:37.1068529Z     # Subtest: HEAD answers like GET without a body; other methods are 405
+2026-11-18T23:46:37.1069150Z     ok 17 - HEAD answers like GET without a body; other methods are 405
+2026-11-18T23:46:37.1069585Z       ---
+2026-11-18T23:46:37.1069828Z       duration_ms: 2.199505
+2026-11-18T23:46:37.1070247Z       type: 'test'
+2026-11-18T23:46:37.1070475Z       ...
+2026-11-18T23:46:37.1070940Z     # Subtest: no security headers are sent (GitHub Pages cannot send them)
+2026-11-18T23:46:37.1071523Z     ok 18 - no security headers are sent (GitHub Pages cannot send them)
+2026-11-18T23:46:37.1072016Z       ---
+2026-11-18T23:46:37.1072272Z       duration_ms: 4.786231
+2026-11-18T23:46:37.1072577Z       type: 'test'
+2026-11-18T23:46:37.1072833Z       ...
+2026-11-18T23:46:37.1073065Z     1..18
+2026-11-18T23:46:37.1073338Z ok 6 - MIME types and allowlist
+2026-11-18T23:46:37.1073621Z   ---
+2026-11-18T23:46:37.1073859Z   duration_ms: 44.161519
+2026-11-18T23:46:37.1074128Z   type: 'suite'
+2026-11-18T23:46:37.1074353Z   ...
+2026-11-18T23:46:37.1161085Z # Subtest: path traversal and symlinks
+2026-11-18T23:46:37.1179667Z     # Subtest: refused: /GhostPay/../secret.txt
+2026-11-18T23:46:37.1190903Z     ok 1 - refused: /GhostPay/../secret.txt
+2026-11-18T23:46:37.1191277Z       ---
+2026-11-18T23:46:37.1191529Z       duration_ms: 5.065631
+2026-11-18T23:46:37.1191837Z       type: 'test'
+2026-11-18T23:46:37.1192083Z       ...
+2026-11-18T23:46:37.1192390Z     # Subtest: refused: /GhostPay/%2e%2e/secret.txt
+2026-11-18T23:46:37.1192801Z     ok 2 - refused: /GhostPay/%2e%2e/secret.txt
+2026-11-18T23:46:37.1193133Z       ---
+2026-11-18T23:46:37.1193381Z       duration_ms: 1.199114
+2026-11-18T23:46:37.1193662Z       type: 'test'
+2026-11-18T23:46:37.1193905Z       ...
+2026-11-18T23:46:37.1194258Z     # Subtest: refused: /GhostPay/%2E%2E/secret.txt
+2026-11-18T23:46:37.1194681Z     ok 3 - refused: /GhostPay/%2E%2E/secret.txt
+2026-11-18T23:46:37.1195017Z       ---
+2026-11-18T23:46:37.1195271Z       duration_ms: 0.792696
+2026-11-18T23:46:37.1195590Z       type: 'test'
+2026-11-18T23:46:37.1195849Z       ...
+2026-11-18T23:46:37.1196146Z     # Subtest: refused: /GhostPay/..%2fsecret.txt
+2026-11-18T23:46:37.1196588Z     ok 4 - refused: /GhostPay/..%2fsecret.txt
+2026-11-18T23:46:37.1196923Z       ---
+2026-11-18T23:46:37.1197172Z       duration_ms: 5.16662
+2026-11-18T23:46:37.1197468Z       type: 'test'
+2026-11-18T23:46:37.1197719Z       ...
+2026-11-18T23:46:37.1198024Z     # Subtest: refused: /GhostPay/..%2Fsecret.txt
+2026-11-18T23:46:37.1198432Z     ok 5 - refused: /GhostPay/..%2Fsecret.txt
+2026-11-18T23:46:37.1198762Z       ---
+2026-11-18T23:46:37.1199012Z       duration_ms: 2.553816
+2026-11-18T23:46:37.1199321Z       type: 'test'
+2026-11-18T23:46:37.1199569Z       ...
+2026-11-18T23:46:37.1210560Z     # Subtest: refused: /GhostPay/assets/..%2f..%2fsecret.txt
+2026-11-18T23:46:37.1211332Z     ok 6 - refused: /GhostPay/assets/..%2f..%2fsecret.txt
+2026-11-18T23:46:37.1211900Z       ---
+2026-11-18T23:46:37.1212228Z       duration_ms: 3.235859
+2026-11-18T23:46:37.1212587Z       type: 'test'
+2026-11-18T23:46:37.1212906Z       ...
+2026-11-18T23:46:37.1217995Z     # Subtest: refused: /GhostPay/%2e%2e%2fsecret.txt
+2026-11-18T23:46:37.1219375Z     ok 7 - refused: /GhostPay/%2e%2e%2fsecret.txt
+2026-11-18T23:46:37.1219850Z       ---
+2026-11-18T23:46:37.1221073Z       duration_ms: 0.7818
+2026-11-18T23:46:37.1221649Z       type: 'test'
+2026-11-18T23:46:37.1221919Z       ...
+2026-11-18T23:46:37.1263646Z     # Subtest: refused: /GhostPay/..%5csecret.txt
+2026-11-18T23:46:37.1264166Z     ok 8 - refused: /GhostPay/..%5csecret.txt
+2026-11-18T23:46:37.1264538Z       ---
+2026-11-18T23:46:37.1264791Z       duration_ms: 1.887887
+2026-11-18T23:46:37.1265089Z       type: 'test'
+2026-11-18T23:46:37.1265344Z       ...
+2026-11-18T23:46:37.1265732Z     # Subtest: refused: /GhostPay/assets%5c..%5c..%5csecret.txt
+2026-11-18T23:46:37.1266846Z     ok 9 - refused: /GhostPay/assets%5c..%5c..%5csecret.txt
+2026-11-18T23:46:37.1267233Z       ---
+2026-11-18T23:46:37.1267476Z       duration_ms: 0.837732
+2026-11-18T23:46:37.1267771Z       type: 'test'
+2026-11-18T23:46:37.1268025Z       ...
+2026-11-18T23:46:37.1268328Z     # Subtest: refused: /GhostPay/%00index.html
+2026-11-18T23:46:37.1268809Z     ok 10 - refused: /GhostPay/%00index.html
+2026-11-18T23:46:37.1269218Z       ---
+2026-11-18T23:46:37.1269465Z       duration_ms: 0.778205
+2026-11-18T23:46:37.1269741Z       type: 'test'
+2026-11-18T23:46:37.1270144Z       ...
+2026-11-18T23:46:37.1280525Z     # Subtest: refused: /GhostPay/index.html%00.js
+2026-11-18T23:46:37.1280989Z     ok 11 - refused: /GhostPay/index.html%00.js
+2026-11-18T23:46:37.1281340Z       ---
+2026-11-18T23:46:37.1281593Z       duration_ms: 0.833446
+2026-11-18T23:46:37.1281873Z       type: 'test'
+2026-11-18T23:46:37.1282124Z       ...
+2026-11-18T23:46:37.1293016Z     # Subtest: refused: /GhostPay/%
+2026-11-18T23:46:37.1294746Z     ok 12 - refused: /GhostPay/%
+2026-11-18T23:46:37.1295278Z       ---
+2026-11-18T23:46:37.1295680Z       duration_ms: 2.969218
+2026-11-18T23:46:37.1296144Z       type: 'test'
+2026-11-18T23:46:37.1296914Z       ...
+2026-11-18T23:46:37.1305805Z     # Subtest: refused: /GhostPay/%zz
+2026-11-18T23:46:37.1307490Z     ok 13 - refused: /GhostPay/%zz
+2026-11-18T23:46:37.1308008Z       ---
+2026-11-18T23:46:37.1308403Z       duration_ms: 1.255167
+2026-11-18T23:46:37.1308830Z       type: 'test'
+2026-11-18T23:46:37.1309205Z       ...
+2026-11-18T23:46:37.1322865Z     # Subtest: refused: /GhostPay//etc/passwd
+2026-11-18T23:46:37.1323511Z     ok 14 - refused: /GhostPay//etc/passwd
+2026-11-18T23:46:37.1324017Z       ---
+2026-11-18T23:46:37.1324415Z       duration_ms: 1.188458
+2026-11-18T23:46:37.1324861Z       type: 'test'
+2026-11-18T23:46:37.1325254Z       ...
+2026-11-18T23:46:37.1328629Z     # Subtest: refused: /GhostPay/%2fetc%2fpasswd
+2026-11-18T23:46:37.1332465Z     ok 15 - refused: /GhostPay/%2fetc%2fpasswd
+2026-11-18T23:46:37.1333002Z       ---
+2026-11-18T23:46:37.1333391Z       duration_ms: 0.660431
+2026-11-18T23:46:37.1333835Z       type: 'test'
+2026-11-18T23:46:37.1334218Z       ...
+2026-11-18T23:46:37.1343317Z     # Subtest: refused: /GhostPay/assets/../../secret.txt
+2026-11-18T23:46:37.1345063Z     ok 16 - refused: /GhostPay/assets/../../secret.txt
+2026-11-18T23:46:37.1345596Z       ---
+2026-11-18T23:46:37.1345996Z       duration_ms: 1.679059
+2026-11-18T23:46:37.1346461Z       type: 'test'
+2026-11-18T23:46:37.1346879Z       ...
+2026-11-18T23:46:37.1372138Z     # Subtest: a symlinked file is refused, even to an allowlisted extension
+2026-11-18T23:46:37.1373755Z     ok 17 - a symlinked file is refused, even to an allowlisted extension
+2026-11-18T23:46:37.1374317Z       ---
+2026-11-18T23:46:37.1374708Z       duration_ms: 2.781291
+2026-11-18T23:46:37.1375155Z       type: 'test'
+2026-11-18T23:46:37.1375542Z       ...
+2026-11-18T23:46:37.1414902Z     # Subtest: a symlinked directory is never followed
+2026-11-18T23:46:37.1425363Z     ok 18 - a symlinked directory is never followed
+2026-11-18T23:46:37.1425922Z       ---
+2026-11-18T23:46:37.1426333Z       duration_ms: 2.330789
+2026-11-18T23:46:37.1426785Z       type: 'test'
+2026-11-18T23:46:37.1427227Z       ...
+2026-11-18T23:46:37.1427834Z     # Subtest: resolveRequest keeps every decision inside the root
+2026-11-18T23:46:37.1428549Z     ok 19 - resolveRequest keeps every decision inside the root
+2026-11-18T23:46:37.1429075Z       ---
+2026-11-18T23:46:37.1429447Z       duration_ms: 0.822109
+2026-11-18T23:46:37.1430008Z       type: 'test'
+2026-11-18T23:46:37.1430393Z       ...
+2026-11-18T23:46:37.1430999Z     # Subtest: the site directory itself may not be a dangling or non-directory path
+2026-11-18T23:46:37.1431830Z     ok 20 - the site directory itself may not be a dangling or non-directory path
+2026-11-18T23:46:37.1432426Z       ---
+2026-11-18T23:46:37.1432811Z       duration_ms: 0.255295
+2026-11-18T23:46:37.1433229Z       type: 'test'
+2026-11-18T23:46:37.1433607Z       ...
+2026-11-18T23:46:37.1433952Z     1..20
+2026-11-18T23:46:37.1434385Z ok 7 - path traversal and symlinks
+2026-11-18T23:46:37.1434840Z   ---
+2026-11-18T23:46:37.1435209Z   duration_ms: 49.169225
+2026-11-18T23:46:37.1435626Z   type: 'suite'
+2026-11-18T23:46:37.1436003Z   ...
+2026-11-18T23:46:37.1484973Z # Subtest: 404 page
+2026-11-18T23:46:37.1485802Z     # Subtest: a site 404.html is served with status 404 inside the base only
+2026-11-18T23:46:37.1486591Z     ok 1 - a site 404.html is served with status 404 inside the base only
+2026-11-18T23:46:37.1487168Z       ---
+2026-11-18T23:46:37.1487556Z       duration_ms: 5.414154
+2026-11-18T23:46:37.1487995Z       type: 'test'
+2026-11-18T23:46:37.1488376Z       ...
+2026-11-18T23:46:37.1528060Z     1..1
+2026-11-18T23:46:37.1528550Z ok 8 - 404 page
+2026-11-18T23:46:37.1528947Z   ---
+2026-11-18T23:46:37.1529330Z   duration_ms: 5.560629
+2026-11-18T23:46:37.1529786Z   type: 'suite'
+2026-11-18T23:46:37.1530372Z   ...
+2026-11-18T23:46:37.9932699Z # Subtest: a caught root render error fails smoke at the walk checkpoint even if navigation remains usable
+2026-11-18T23:46:37.9933790Z ok 9 - a caught root render error fails smoke at the walk checkpoint even if navigation remains usable
+2026-11-18T23:46:37.9934701Z   ---
+2026-11-18T23:46:37.9935010Z   duration_ms: 148.371856
+2026-11-18T23:46:37.9935380Z   type: 'test'
+2026-11-18T23:46:37.9935675Z   ...
+2026-11-18T23:46:37.9936956Z # Subtest: a uncaught root render error fails smoke at the initial checkpoint even if navigation remains usable
+2026-11-18T23:46:37.9938251Z ok 10 - a uncaught root render error fails smoke at the initial checkpoint even if navigation remains usable
+2026-11-18T23:46:37.9938806Z   ---
+2026-11-18T23:46:37.9939185Z   duration_ms: 122.681873
+2026-11-18T23:46:37.9939676Z   type: 'test'
+2026-11-18T23:46:37.9940058Z   ...
+2026-11-18T23:46:37.9941508Z # Subtest: a recoverable root render error fails smoke at the invoice checkpoint even if navigation remains usable
+2026-11-18T23:46:37.9943016Z ok 11 - a recoverable root render error fails smoke at the invoice checkpoint even if navigation remains usable
+2026-11-18T23:46:37.9943608Z   ---
+2026-11-18T23:46:37.9950466Z   duration_ms: 137.857
+2026-11-18T23:46:37.9950859Z   type: 'test'
+2026-11-18T23:46:37.9951110Z   ...
+2026-11-18T23:46:37.9951608Z # Subtest: render-error payload text never enters smoke failure output
+2026-11-18T23:46:37.9952236Z ok 12 - render-error payload text never enters smoke failure output
+2026-11-18T23:46:37.9952700Z   ---
+2026-11-18T23:46:37.9952960Z   duration_ms: 112.776347
+2026-11-18T23:46:37.9953245Z   type: 'test'
+2026-11-18T23:46:37.9953484Z   ...
+2026-11-18T23:46:37.9954056Z # Subtest: unrelated console text is neither copied nor treated as a root render failure
+2026-11-18T23:46:37.9954851Z ok 13 - unrelated console text is neither copied nor treated as a root render failure
+2026-11-18T23:46:37.9955346Z   ---
+2026-11-18T23:46:37.9955769Z   duration_ms: 106.955465
+2026-11-18T23:46:37.9955961Z   type: 'test'
+2026-11-18T23:46:37.9956131Z   ...
+2026-11-18T23:46:37.9956626Z # Subtest: non-error console messages do not enter the root-render failure collection
+2026-11-18T23:46:37.9957342Z ok 14 - non-error console messages do not enter the root-render failure collection
+2026-11-18T23:46:37.9957810Z   ---
+2026-11-18T23:46:37.9958045Z   duration_ms: 98.982687
+2026-11-18T23:46:37.9958325Z   type: 'test'
+2026-11-18T23:46:37.9958555Z   ...
+2026-11-18T23:46:37.9958984Z # Subtest: the existing pageerror failure gate remains active
+2026-11-18T23:46:37.9965019Z ok 15 - the existing pageerror failure gate remains active
+2026-11-18T23:46:37.9965711Z   ---
+2026-11-18T23:46:37.9966169Z   duration_ms: 98.052639
+2026-11-18T23:46:37.9966639Z   type: 'test'
+2026-11-18T23:46:37.9967038Z   ...
+2026-11-18T23:46:37.9967668Z # Subtest: the existing requestfailed failure gate remains active
+2026-11-18T23:46:37.9968468Z ok 16 - the existing requestfailed failure gate remains active
+2026-11-18T23:46:37.9968999Z   ---
+2026-11-18T23:46:37.9969265Z   duration_ms: 94.917538
+2026-11-18T23:46:37.9969565Z   type: 'test'
+2026-11-18T23:46:37.9969807Z   ...
+2026-11-18T23:46:37.9970368Z # Subtest: the existing request failure gate remains active
+2026-11-18T23:46:37.9970941Z ok 17 - the existing request failure gate remains active
+2026-11-18T23:46:37.9971321Z   ---
+2026-11-18T23:46:37.9971569Z   duration_ms: 95.465283
+2026-11-18T23:46:37.9971850Z   type: 'test'
+2026-11-18T23:46:37.9972088Z   ...
+2026-11-18T23:46:38.0037190Z # Subtest: permits a document and assets within the published project base
+2026-11-18T23:46:38.0037961Z ok 18 - permits a document and assets within the published project base
+2026-11-18T23:46:38.0038408Z   ---
+2026-11-18T23:46:38.0038661Z   duration_ms: 0.955005
+2026-11-18T23:46:38.0038936Z   type: 'test'
+2026-11-18T23:46:38.0039194Z   ...
+2026-11-18T23:46:38.0039530Z # Subtest: rejects same-origin requests that escape the Pages project base
+2026-11-18T23:46:38.0040141Z ok 19 - rejects same-origin requests that escape the Pages project base
+2026-11-18T23:46:38.0040453Z   ---
+2026-11-18T23:46:38.0040627Z   duration_ms: 0.265751
+2026-11-18T23:46:38.0040818Z   type: 'test'
+2026-11-18T23:46:38.0040992Z   ...
+2026-11-18T23:46:38.0050728Z # Subtest: rejects requests on other origins including sibling subdomains
+2026-11-18T23:46:38.0061304Z ok 20 - rejects requests on other origins including sibling subdomains
+2026-11-18T23:46:38.0061625Z   ---
+2026-11-18T23:46:38.0061800Z   duration_ms: 0.250238
+2026-11-18T23:46:38.0061993Z   type: 'test'
+2026-11-18T23:46:38.0062168Z   ...
+2026-11-18T23:46:38.0062441Z # Subtest: retains the existing data and blob URL exemptions
+2026-11-18T23:46:38.0062805Z ok 21 - retains the existing data and blob URL exemptions
+2026-11-18T23:46:38.0063056Z   ---
+2026-11-18T23:46:38.0063232Z   duration_ms: 0.159124
+2026-11-18T23:46:38.0063425Z   type: 'test'
+2026-11-18T23:46:38.0063589Z   ...
+2026-11-18T23:46:38.0063922Z # Subtest: deployedOriginProblem accepts only the exact declared origin
+2026-11-18T23:46:38.0064354Z ok 22 - deployedOriginProblem accepts only the exact declared origin
+2026-11-18T23:46:38.0064635Z   ---
+2026-11-18T23:46:38.0064803Z   duration_ms: 0.78154
+2026-11-18T23:46:38.0064985Z   type: 'test'
+2026-11-18T23:46:38.0065148Z   ...
+2026-11-18T23:46:38.0065492Z # Subtest: smoke.mjs --expect-origin fails before any request when the origins differ
+2026-11-18T23:46:38.0065990Z ok 23 - smoke.mjs --expect-origin fails before any request when the origins differ
+2026-11-18T23:46:38.0066473Z   ---
+2026-11-18T23:46:38.0066751Z   duration_ms: 404.736933
+2026-11-18T23:46:38.0067108Z   type: 'test'
+2026-11-18T23:46:38.0067415Z   ...
+2026-11-18T23:46:38.0067983Z # Subtest: the walk covers exactly the lean views, in navigation order, with their English labels
+2026-11-18T23:46:38.0068730Z ok 24 - the walk covers exactly the lean views, in navigation order, with their English labels
+2026-11-18T23:46:38.0069154Z   ---
+2026-11-18T23:46:38.0069727Z   duration_ms: 5.169554
+2026-11-18T23:46:38.0070147Z   type: 'test'
+2026-11-18T23:46:38.0070404Z   ...
+2026-11-18T23:46:38.0070896Z # Subtest: unvisitedViews reports every lean view the walk could not reach
+2026-11-18T23:46:38.0071581Z ok 25 - unvisitedViews reports every lean view the walk could not reach
+2026-11-18T23:46:38.0072042Z   ---
+2026-11-18T23:46:38.0072296Z   duration_ms: 0.178793
+2026-11-18T23:46:38.0072584Z   type: 'test'
+2026-11-18T23:46:38.0072841Z   ...
+2026-11-18T23:46:38.0073331Z # Subtest: the fixture invoice is a GhostPay fragment with no secret material
+2026-11-18T23:46:38.0074047Z ok 26 - the fixture invoice is a GhostPay fragment with no secret material
+2026-11-18T23:46:38.0074489Z   ---
+2026-11-18T23:46:38.0074734Z   duration_ms: 0.387791
+2026-11-18T23:46:38.0075016Z   type: 'test'
+2026-11-18T23:46:38.0075251Z   ...
+2026-11-18T23:46:38.0075754Z # Subtest: readFixtureFragment refuses anything that is not an invoice fragment
+2026-11-18T23:46:38.0076501Z ok 27 - readFixtureFragment refuses anything that is not an invoice fragment
+2026-11-18T23:46:38.0076805Z   ---
+2026-11-18T23:46:38.0076965Z   duration_ms: 0.348352
+2026-11-18T23:46:38.0077152Z   type: 'test'
+2026-11-18T23:46:38.0077310Z   ...
+2026-11-18T23:46:38.0077766Z # Subtest: the fixture invoice carries a valid signature over a testnet invoice (parsed by the app's own schema package)
+2026-11-18T23:46:38.0078451Z ok 28 - the fixture invoice carries a valid signature over a testnet invoice (parsed by the app's own schema package)
+2026-11-18T23:46:38.0078837Z   ---
+2026-11-18T23:46:38.0079005Z   duration_ms: 50.541012
+2026-11-18T23:46:38.0079190Z   type: 'test'
+2026-11-18T23:46:38.0079358Z   ...
+2026-11-18T23:46:38.0079769Z # Subtest: smoke.mjs walks every lean view and opens the fixture invoice, failing on any request outside the site
+2026-11-18T23:46:38.0080852Z ok 29 - smoke.mjs walks every lean view and opens the fixture invoice, failing on any request outside the site
+2026-11-18T23:46:38.0081255Z   ---
+2026-11-18T23:46:38.0081448Z   duration_ms: 0.458874
+2026-11-18T23:46:38.0081642Z   type: 'test'
+2026-11-18T23:46:38.0081819Z   ...
+2026-11-18T23:46:38.0082174Z # Subtest: the review text the walk waits for is the Pay review title and the fixture memo
+2026-11-18T23:46:38.0082716Z ok 30 - the review text the walk waits for is the Pay review title and the fixture memo
+2026-11-18T23:46:38.0083282Z   ---
+2026-11-18T23:46:38.0083453Z   duration_ms: 10.924489
+2026-11-18T23:46:38.0083655Z   type: 'test'
+2026-11-18T23:46:38.0083834Z   ...
+2026-11-18T23:46:38.0084158Z # Subtest: a minimal lean site passes and SHA256SUMS lists every file sorted
+2026-11-18T23:46:38.0084604Z ok 31 - a minimal lean site passes and SHA256SUMS lists every file sorted
+2026-11-18T23:46:38.0084912Z   ---
+2026-11-18T23:46:38.0085074Z   duration_ms: 7.326987
+2026-11-18T23:46:38.0085271Z   type: 'test'
+2026-11-18T23:46:38.0085451Z   ...
+2026-11-18T23:46:38.0085744Z # Subtest: missing .nojekyll, index.html or build-info.json fails
+2026-11-18T23:46:38.0086178Z ok 32 - missing .nojekyll, index.html or build-info.json fails
+2026-11-18T23:46:38.0086446Z   ---
+2026-11-18T23:46:38.0086640Z   duration_ms: 2.164889
+2026-11-18T23:46:38.0086823Z   type: 'test'
+2026-11-18T23:46:38.0086996Z   ...
+2026-11-18T23:46:38.0087385Z # Subtest: source maps, _headers, lean evidence, unknown extensions and symlinks are refused
+2026-11-18T23:46:38.0087944Z ok 33 - source maps, _headers, lean evidence, unknown extensions and symlinks are refused
+2026-11-18T23:46:38.0088294Z   ---
+2026-11-18T23:46:38.0088475Z   duration_ms: 2.112557
+2026-11-18T23:46:38.0088655Z   type: 'test'
+2026-11-18T23:46:38.0088828Z   ...
+2026-11-18T23:46:38.0089089Z # Subtest: index.html without the mirror banner fails
+2026-11-18T23:46:38.0089438Z ok 34 - index.html without the mirror banner fails
+2026-11-18T23:46:38.0089690Z   ---
+2026-11-18T23:46:38.0090018Z   duration_ms: 1.134709
+2026-11-18T23:46:38.0090237Z   type: 'test'
+2026-11-18T23:46:38.0090424Z   ...
+2026-11-18T23:46:38.0090888Z # Subtest: commit and manifest digest must match the approved build
+2026-11-18T23:46:38.0091355Z ok 35 - commit and manifest digest must match the approved build
+2026-11-18T23:46:38.0091639Z   ---
+2026-11-18T23:46:38.0091810Z   duration_ms: 1.191193
+2026-11-18T23:46:38.0092002Z   type: 'test'
+2026-11-18T23:46:38.0092187Z   ...
+2026-11-18T23:46:38.0092509Z # Subtest: HTML: CSP is required and script-src must be self or none
+2026-11-18T23:46:38.0092925Z ok 36 - HTML: CSP is required and script-src must be self or none
+2026-11-18T23:46:38.0093198Z   ---
+2026-11-18T23:46:38.0093360Z   duration_ms: 0.30607
+2026-11-18T23:46:38.0093542Z   type: 'test'
+2026-11-18T23:46:38.0093731Z   ...
+2026-11-18T23:46:38.0094137Z # Subtest: HTML: inline scripts, handlers, <base> and absolute or external resource references are refused
+2026-11-18T23:46:38.0094968Z ok 37 - HTML: inline scripts, handlers, <base> and absolute or external resource references are refused
+2026-11-18T23:46:38.0095586Z   ---
+2026-11-18T23:46:38.0095872Z   duration_ms: 0.44193
+2026-11-18T23:46:38.0096183Z   type: 'test'
+2026-11-18T23:46:38.0096451Z   ...
+2026-11-18T23:46:38.0096758Z # Subtest: HTML: commented CSP is not an active browser policy
+2026-11-18T23:46:38.0097244Z ok 38 - HTML: commented CSP is not an active browser policy
+2026-11-18T23:46:38.0097503Z   ---
+2026-11-18T23:46:38.0097686Z   duration_ms: 0.114619
+2026-11-18T23:46:38.0097877Z   type: 'test'
+2026-11-18T23:46:38.0098037Z   ...
+2026-11-18T23:46:38.0098398Z # Subtest: HTML: external script and image refs are refused regardless of attribute quoting
+2026-11-18T23:46:38.0098908Z ok 39 - HTML: external script and image refs are refused regardless of attribute quoting
+2026-11-18T23:46:38.0099224Z   ---
+2026-11-18T23:46:38.0099387Z   duration_ms: 0.23796
+2026-11-18T23:46:38.0099565Z   type: 'test'
+2026-11-18T23:46:38.0099732Z   ...
+2026-11-18T23:46:38.0100302Z # Subtest: HTML: comments cannot introduce fake scripts and single-quoted blank targets require noopener
+2026-11-18T23:46:38.0100909Z ok 40 - HTML: comments cannot introduce fake scripts and single-quoted blank targets require noopener
+2026-11-18T23:46:38.0101265Z   ---
+2026-11-18T23:46:38.0101432Z   duration_ms: 0.412396
+2026-11-18T23:46:38.0101619Z   type: 'test'
+2026-11-18T23:46:38.0101782Z   ...
+2026-11-18T23:46:38.0102135Z # Subtest: secret-shaped strings and public anvil keys are refused; curve constants are not
+2026-11-18T23:46:38.0102870Z ok 41 - secret-shaped strings and public anvil keys are refused; curve constants are not
+2026-11-18T23:46:38.0103422Z   ---
+2026-11-18T23:46:38.0103688Z   duration_ms: 0.112856
+2026-11-18T23:46:38.0118276Z   type: 'test'
+2026-11-18T23:46:38.0118495Z   ...
+2026-11-18T23:46:38.0118848Z # Subtest: lean report: wrong profile, missing workers and excluded modules fail
+2026-11-18T23:46:38.0119325Z ok 42 - lean report: wrong profile, missing workers and excluded modules fail
+2026-11-18T23:46:38.0119635Z   ---
+2026-11-18T23:46:38.0119810Z   duration_ms: 1.036735
+2026-11-18T23:46:38.0120184Z   type: 'test'
+2026-11-18T23:46:38.0120354Z   ...
+2026-11-18T23:46:38.0120681Z # Subtest: manifests: testnets only; mainnet chain ids fail closed
+2026-11-18T23:46:38.0121097Z ok 43 - manifests: testnets only; mainnet chain ids fail closed
+2026-11-18T23:46:38.0121528Z   ---
+2026-11-18T23:46:38.0121766Z   duration_ms: 0.424204
+2026-11-18T23:46:38.0122022Z   type: 'test'
+2026-11-18T23:46:38.0122255Z   ...
+2026-11-18T23:46:38.0122892Z # Subtest: HTML: comment and script scanning is spec-shaped and fails closed (no single-pass regex bypass)
+2026-11-18T23:46:38.0123855Z ok 44 - HTML: comment and script scanning is spec-shaped and fails closed (no single-pass regex bypass)
+2026-11-18T23:46:38.0124430Z   ---
+2026-11-18T23:46:38.0124677Z   duration_ms: 0.77496
+2026-11-18T23:46:38.0124939Z   type: 'test'
+2026-11-18T23:46:38.0125200Z   ...
+2026-11-18T23:46:38.0125580Z # Subtest: the lean report is checked against the shared exclusion list
+2026-11-18T23:46:38.0126095Z ok 45 - the lean report is checked against the shared exclusion list
+2026-11-18T23:46:38.0126441Z   ---
+2026-11-18T23:46:38.0126779Z   duration_ms: 0.343085
+2026-11-18T23:46:38.0126979Z   type: 'test'
+2026-11-18T23:46:38.0127143Z   ...
+2026-11-18T23:46:38.0127295Z 1..45
+2026-11-18T23:46:38.0127447Z # tests 95
+2026-11-18T23:46:38.0127611Z # suites 4
+2026-11-18T23:46:38.0127769Z # pass 95
+2026-11-18T23:46:38.0127918Z # fail 0
+2026-11-18T23:46:38.0128089Z # cancelled 0
+2026-11-18T23:46:38.0128249Z # skipped 0
+2026-11-18T23:46:38.0128402Z # todo 0
+2026-11-18T23:46:38.0128570Z # duration_ms 1086.285509
+2026-11-18T23:46:38.0175226Z ##[group]Run bash scripts/pages/build-pages.sh "$RUNNER_TEMP/pages"
+2026-11-18T23:46:38.0175642Z [36;1mbash scripts/pages/build-pages.sh "$RUNNER_TEMP/pages"[0m
+2026-11-18T23:46:38.0220013Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:46:38.0220243Z env:
+2026-11-18T23:46:38.0220448Z   GP_COMMIT: 24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:46:38.0220716Z   GHOSTPAY_RELEASE_PUBKEYS: 
+2026-11-18T23:46:38.0220957Z   GHOSTPAY_PAGES_DEPLOYMENTS_DIR: apps/web/deployments
+2026-11-18T23:46:38.0221270Z   GHOSTPAY_PAGES_ORIGIN: https://djshellshoxxx.github.io
+2026-11-18T23:46:38.0221548Z   GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN: 
+2026-11-18T23:46:38.0221772Z ##[endgroup]
+2026-11-18T23:46:38.2285435Z manifests: none (payments disabled on every chain)
+2026-11-18T23:46:38.2351750Z == build apps/web (lean profile, relative base) at 24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:46:55.9148597Z == assemble Pages site
+2026-11-18T23:46:55.9550421Z == verify site
+2026-11-18T23:46:56.0468339Z Pages site verified: 16 files; DEMO: payments disabled on every chain (no deployment manifest)
+2026-11-18T23:46:56.0559242Z build-pages: OK -> /home/runner/work/_temp/pages/site (evidence in /home/runner/work/_temp/pages/evidence)
+2026-11-18T23:46:56.0602344Z ##[group]Run bash scripts/scan-secrets.sh
+2026-11-18T23:46:56.0602641Z [36;1mbash scripts/scan-secrets.sh[0m
+2026-11-18T23:46:56.0647099Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:46:56.0647319Z ##[endgroup]
+2026-11-18T23:46:56.2119274Z OK: no committed env files or key material found.
+2026-11-18T23:46:56.2160629Z ##[group]Run set -euo pipefail
+2026-11-18T23:46:56.2160945Z [36;1mset -euo pipefail[0m
+2026-11-18T23:46:56.2161144Z [36;1m{[0m
+2026-11-18T23:46:56.2161331Z [36;1m  echo '### GitHub Pages site'[0m
+2026-11-18T23:46:56.2161690Z [36;1m  echo '```json'; cat "$RUNNER_TEMP/pages/evidence/pages-evidence.json"; echo '```'[0m
+2026-11-18T23:46:56.2162325Z [36;1m  echo '### SHA256SUMS of served files (compare from a separate machine)'[0m
+2026-11-18T23:46:56.2162706Z [36;1m  echo '```'; cat "$RUNNER_TEMP/pages/evidence/SHA256SUMS"; echo '```'[0m
+2026-11-18T23:46:56.2163003Z [36;1m} >> "$GITHUB_STEP_SUMMARY"[0m
+2026-11-18T23:46:56.2208225Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:46:56.2208445Z ##[endgroup]
+2026-11-18T23:46:56.2378120Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+2026-11-18T23:46:56.2378448Z with:
+2026-11-18T23:46:56.2378687Z   name: pages-site-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:46:56.2378961Z   include-hidden-files: true
+2026-11-18T23:46:56.2379175Z   path: /home/runner/work/_temp/pages
+2026-11-18T23:46:56.2379393Z   if-no-files-found: error
+2026-11-18T23:46:56.2379584Z   retention-days: 14
+2026-11-18T23:46:56.2379773Z   compression-level: 6
+2026-11-18T23:46:56.2380208Z   overwrite: false
+2026-11-18T23:46:56.2380395Z   archive: true
+2026-11-18T23:46:56.2380564Z ##[endgroup]
+2026-11-18T23:46:56.3633428Z With the provided path, there will be 20 files uploaded
+2026-11-18T23:46:56.3637885Z Artifact name is valid!
+2026-11-18T23:46:56.3638405Z Root directory input is valid!
+2026-11-18T23:46:56.7413705Z Uploading artifact: pages-site-24bc65f525ec9f19a670e6e5600b071c03edbd56.zip
+2026-11-18T23:46:56.7444373Z Beginning upload of artifact content to blob storage
+2026-11-18T23:46:57.3512810Z Uploaded bytes 761153
+2026-11-18T23:46:57.4148554Z Finished uploading artifact content to blob storage!
+2026-11-18T23:46:57.4149804Z SHA256 digest of uploaded artifact is a83f99e526ec37e23a00c5f4617365236e8fa4d9fb1d7c70c793f1913d6dc357
+2026-11-18T23:46:57.4150741Z Finalizing artifact upload
+2026-11-18T23:46:57.9409275Z Artifact pages-site-24bc65f525ec9f19a670e6e5600b071c03edbd56 successfully finalized. Artifact ID 14483530418
+2026-11-18T23:46:57.9410870Z Artifact pages-site-24bc65f525ec9f19a670e6e5600b071c03edbd56 has been successfully uploaded! Final size is 761153 bytes. Artifact ID is 14483530418
+2026-11-18T23:46:57.9413675Z Artifact download URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44423317214/artifacts/14483530418
+2026-11-18T23:46:57.9613082Z Post job cleanup.
+2026-11-18T23:46:58.0526287Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c, not saving cache.
+2026-11-18T23:46:58.0640539Z Post job cleanup.
+2026-11-18T23:46:58.1360903Z [command]/usr/bin/git version
+2026-11-18T23:46:58.1396341Z git version 2.56.1
+2026-11-18T23:46:58.1429149Z Temporarily overriding HOME='/home/runner/work/_temp/58895c83-3a67-4b42-a779-bd319d5fcacb' before making global git config changes
+2026-11-18T23:46:58.1430414Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:46:58.1434066Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:46:58.1467526Z Removing SSH command configuration
+2026-11-18T23:46:58.1473277Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:46:58.1507918Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:46:58.1778341Z Removing HTTP extra header
+2026-11-18T23:46:58.1784574Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:46:58.1819307Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:46:58.2085129Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:46:58.2090996Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:46:58.2120457Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:46:58.2486448Z Evaluate and set job outputs
+2026-11-18T23:46:58.2491408Z Set output 'publish'
+2026-11-18T23:46:58.2492952Z Cleaning up orphan processes
+

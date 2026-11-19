@@ -54,6 +54,19 @@ all assertions, the global test deadline and every gate; no synthetic success or
 Acceptance: focused 14-case file and the existing 13-file feature selection execute,
 with separate source review and a fresh hosted full-web result still required.
 
+Final status: Spec 18 feature acceptance complete on local `8461dbdf`, published
+`07a7497d1a0cb39fb6904e5c50f8a52db2285820` (identical tree
+`6febc03ffd521fe9ac00ac10275f9ff625db509c`). Final hosted web coverage passes
+3,000 tests with one existing BTC regtest skip; the separate nocov phase passes 3/3.
+Vault 353/353, core crypto 76/76, all eight Spec 18 browser cases in each profile,
+Pages Anvil 16/16, typechecking, source builds and production dependency audit pass.
+Independent offline recovery passes 22/22 and synthetic Foundry spending passes 1/1.
+All twenty threats are reviewed with no unresolved feature blocker. Draft PR #239
+is stacked on the unchanged #238 base. Inherited owner-review/package-map gates,
+chain-adapter lint and hostile-text navigation remain failed; release/device limits
+remain explicit. Final report and raw evidence: `docs/handoffs/spec18-reviewed-20261118/`.
+The final handoff commit changes documentation/evidence only. No merge or deployment.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:

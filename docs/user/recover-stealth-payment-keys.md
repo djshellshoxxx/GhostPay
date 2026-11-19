@@ -15,7 +15,7 @@ Current source, executed checks and remaining acceptance gates are recorded in t
 | Reference recovery script (`scripts/recovery/stealth-export-recover.mjs`) | Implemented; tested against the reference vectors and against files freshly written by the GhostPay codec |
 | Raw private key in an independent EVM wallet tool | Passed with workflow-pinned Foundry 1.8.5 `cast` and Anvil (`scripts/recovery/raw-key-anvil.test.mjs`): the synthetic key reproduced its address and signed a successful transfer on a loopback chain. No public network or real funds. |
 | Recovery outside a GhostPay checkout | Passed in fresh Node 22.23.5 processes with only the script, its two noble dependencies and test exports readable. All five file types opened; archive and master recovery reproduced the expected private keys. |
-| Loading an export in a freshly opened GhostPay page | Implemented and covered by local UI regressions; actual desktop and mobile browser acceptance is **pending**. jsdom tests do not qualify a browser. |
+| Loading an export in a freshly opened GhostPay page | Eight Spec 18 journeys passed in each full/lean Chromium profile at source `07a7497d`, including a fresh session and a mobile viewport; the Pages Anvil journey passed 16/16. Full product gate results are tracked in the completion report; viewport emulation is not native-device acceptance. |
 | Import into third-party wallets, hardware wallets or phones | **Pending: not exercised.** No wallet, device or browser beyond the rows above has been tested |
 
 ## Which file do I have?
@@ -68,8 +68,9 @@ that boundary. Encrypting the private-key body protects its stored key material 
 
 1. Work offline if you can: disconnect the network, or use a machine you trust that is not shared.
 2. Copy the export file to that machine. Keep the original where it was.
-3. Have the passphrase ready. Wrong passphrase and a modified file give the **same** error on purpose, so the error
-   cannot tell you which one happened.
+3. Have the passphrase ready. A wrong passphrase and an authentication failure give the **same** error on purpose,
+   so that error cannot tell you which one happened. Malformed or unsupported files can be refused earlier with a
+   specific format or version error.
 4. Decide where any revealed key will go *before* you reveal it. Do not put it in a notes app, cloud folder, chat or
    clipboard manager.
 
@@ -104,8 +105,20 @@ after moving storage. Payment-key archives recover only their listed addresses. 
 spending and viewing keys, but never the invoice-signing key. Keep the older full seller keystore backup if you need
 to preserve that signing key; verifying a Spec 18 file does not waive full-session backup safeguards.
 
-Status: this in-app import has not yet passed its desktop and mobile browser acceptance. Until that is recorded, use
-Option B to check a file independently.
+### Restore the master spending and viewing keys
+
+Select `ghostpay-stealth-master.json`, enter its passphrase, and choose **Open export**. Review the recovered
+meta-address before choosing **Load these spending and viewing keys**. If another wallet is loaded, review the
+replacement details and choose **Replace the loaded keys** only for the intended backup. An existing saved or verified
+copy does not skip that confirmation. Cancelling leaves the current keys in place; locking or changing the selected
+file invalidates pending recovery and confirmation.
+
+Restoring the master pair creates a **new invoice-signing key**. The master file never contains the old signing key
+and cannot preserve the new one. Use the full seller-keystore backup after restoration if you need to preserve the
+new signer. Verifying a Spec 18 file does not mark the complete three-key seller session as backed up.
+
+Status: source-specific Chromium passes and the remaining full product gates are recorded in the completion
+report. Native mobile browsers, Safari, hardware wallets and named third-party wallet apps remain untested.
 
 ## Option B: the reference recovery script
 
@@ -189,6 +202,11 @@ differs from the computed one is still yours when the address matches.
 The raw key (from `ghostpay-stealth-private-key.txt`, or revealed with the script) is an ordinary 32-byte EVM private
 key: `0x` and 64 lowercase hex digits. It is **not** a seed phrase or recovery phrase.
 
+The chain label records where the payment was found. It is authenticated in an encrypted export; standalone public records
+and raw-key files have no authentication. The private key itself is not restricted to that chain: the same key
+derives the same address on EVM networks using the same address rules. Select the intended network and check the
+account's current state before using it; exposing the key can also affect that address on other chains.
+
 1. In a wallet that supports private-key (EOA) import, choose its import-private-key option and paste the key.
 2. Check that the wallet shows exactly the `Address:` from the file (it is EIP-55 checksummed: compare all 42
    characters).
@@ -199,8 +217,12 @@ What this does **not** do:
 
 - A general wallet cannot find your other stealth payments. Each one-time address needs its own key, and only
   scheme-compatible tooling (GhostPay or the reference script with the master pair) can find and derive them.
-- The key controls a plain EOA only. It cannot authorize funds held by a contract account, an ERC-4337 account, an
-  EIP-7702 delegation or a GhostPay policy account. GhostPay refuses to export keys for those.
+- GhostPay exports scheme-1 payment private keys only when its export-time code check returns empty. Recovery for
+  ERC-4337, EIP-7702-delegated, policy and other contract accounts is outside this feature's supported scope. Their
+  authority must be evaluated from the account's design and current state. In particular,
+  [EIP-7702 permits delegated EOAs to originate transactions](https://eips.ethereum.org/EIPS/eip-7702#transaction-origination),
+  so protect an exported key even if its address is later delegated. This guide supplies no recovery procedure for
+  those account models.
 - External wallet and device acceptance is **pending: not exercised**. The only independent tool tested is Foundry
   `cast` on a local test chain.
 
