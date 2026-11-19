@@ -22,7 +22,8 @@ function changeResponse(chain: ReturnType<typeof mockTron>, path: string, change
 
 describe('TRON untrusted-node and wallet boundaries', () => {
   it('refuses an omitted genesis and case-insensitive mainnet identity', async () => {
-    await expect(checkNetwork(reply({ block: [] }))).rejects.toThrow(/first block/);
+    // The strict range parser rejects the missing height before the view's genesis identity check.
+    await expect(checkNetwork(reply({ block: [] }))).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
     const chain = mockTron(walletA());
     chain.genesis = MAINNET_GENESIS.toUpperCase();
     await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn))).rejects.toThrow(/mainnet/);
