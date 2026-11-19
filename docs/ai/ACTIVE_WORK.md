@@ -15,6 +15,13 @@ exact toolchain is available. Preserve loopback-only behavior and all existing t
 and security gates. Record any unsupported tooling peers and remaining broad upgrade
 gates explicitly. Root owns publication; no push, merge, deployment or paid automation.
 
+Status: scoped source/test repair completed at `3d7889af94c398517e10c09100de3aa305d11206`
+and independently reviewed at that exact head. Package build, typecheck, lint and all 28
+tests with unchanged coverage thresholds pass. The full major-dependency candidate is
+not qualified: web compiler-API compatibility and dependent/full CI remain outstanding.
+Evidence and the precise TypeScript 7 compatibility probe are recorded in
+`docs/handoffs/PR87_SOCKS_COMPATIBILITY_20261119.md`.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
