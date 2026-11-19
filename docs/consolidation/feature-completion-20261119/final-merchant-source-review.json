@@ -1,0 +1,239 @@
+{
+  "schema": 1,
+  "observed_at": "2026-11-19T10:47:11.588208+00:00",
+  "reviewer": "/root/privacy_completion",
+  "source_head": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "source_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+  "previous_candidate": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+  "reviewed_product": "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+  "worker_evidence_head": "2afa8ffe22bebfd448b749fd60e0f96d96c9f14f",
+  "upstream_head": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+  "published_source": {
+    "commit": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+    "tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+    "url": "https://github.com/djshellshoxxx/GhostPay/commit/155d009160a6e5b2c24a91705c72fc8cca6ce815",
+    "native_commit_tree_independently_verified": true,
+    "parents": [
+      "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+      "ac8d2646d507036f0713a4afd4769d81ada644e3"
+    ],
+    "published_ancestry_check": "Coordinator reported original main/268 ancestry verified; local candidate ancestry independently checked below."
+  },
+  "verdict": "No introduced source blocker in the merged bounded clock-validation correction.",
+  "source_checks": [
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "blob": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+      "sha256": "7253a236747cc04abf5d04f5b9152fca90f7075b1857d4416dff390b53c4ce1a",
+      "bytes": 7671,
+      "exact_reviewed_product": true,
+      "exact_upstream": true
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+      "blob": "a1299d9ceedefeefb5784d287d556008531af02f",
+      "sha256": "a4e379d2f71ace6da597170c74ef95ea31c0be93c933668fc7e8635820ffb005",
+      "bytes": 4622,
+      "exact_reviewed_product": true,
+      "exact_upstream": true
+    }
+  ],
+  "only_non_documentation_changed_paths": [
+    "packages/invoice-schema/src/merchantProfile.ts",
+    "packages/invoice-schema/src/merchantProfile.test.ts"
+  ],
+  "unchanged_configuration": [
+    {
+      "path": "package.json",
+      "blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "package-lock.json",
+      "blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "eslint.config.js",
+      "blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "blob": "92bceed2e93389bf7d0033909d6c9d1773d52ff4",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.json",
+      "blob": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.build.json",
+      "blob": "7cd92421109e2b1988a7e547ec0860610aa5460a",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "packages/invoice-schema/vitest.config.ts",
+      "blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "apps/web/package.json",
+      "blob": "a61b1551353e02de0bc2e2775d1e45cec1cd72fd",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "blob": "6500e86eb5839bfa98d0193c88615e7a3c13039d",
+      "unchanged_from_3ab": true
+    }
+  ],
+  "prior_canonical_source_and_tests_unchanged": true,
+  "apps_tree_unchanged_from_3ab": "2ae0fe621ba0a9f1dcaf501c88e53ce3cedc07c0",
+  "contract_and_deployment_identity": [
+    {
+      "path": "packages/contracts",
+      "git_tree": "0828bcdcd80b0f99dc7a4e6402e9015dc069622a",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "packages/confidential-contracts",
+      "git_tree": "5e16369cf4cb925bc836db104dc1e35ee529de7d",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "packages/payer-hiding-contracts",
+      "git_tree": "d392d5298fb106658a02619c2e88265807bcc251",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "packages/pool-contracts",
+      "git_tree": "443d026dc21ed272dee89dc4790b77c2fa2c80c3",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "deploy",
+      "git_tree": "8e385dee911f196880ee9bd7c24f17f5b48fba00",
+      "unchanged_from_3ab": true
+    },
+    {
+      "path": "deployments",
+      "git_tree": "cd5fc827fd917c1574800f3cf593075e7d70b9ca",
+      "unchanged_from_3ab": true
+    }
+  ],
+  "local_ancestry_verified": [
+    "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+    "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "84398a79e18673f3e371a405931bc464e1cca99a",
+    "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+    "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+    "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+    "2afa8ffe22bebfd448b749fd60e0f96d96c9f14f"
+  ],
+  "registry": {
+    "exact_worker_registry_blob": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+    "all_prior_3ab_bytes_retained_contiguously": true,
+    "prior_3ab_bytes": 125923,
+    "worker_claim_bytes_retained": 127304,
+    "exact_upstream_claim_prefix_bytes": 971,
+    "total_bytes": 128275
+  },
+  "semantic_review": [
+    "Rejects nonfinite, negative and runtime nonnumber nowSec values without numeric coercion before parsing or signature work.",
+    "Retains finite nonnegative/fractional clocks, existing format result type and exp <= nowSec expiry equality.",
+    "Signature domain, schema, canonical bytes and cryptographic verification logic remain unchanged.",
+    "The original tests use a real signed profile, cover five invalid clock inputs in one case and retain valid/expiry-equality controls."
+  ],
+  "worker_packet_files_blob_identical": [
+    "docs/consolidation/merchant-clock-20261119/QUALIFICATION.md",
+    "docs/consolidation/merchant-clock-20261119/build.txt",
+    "docs/consolidation/merchant-clock-20261119/green.log.gz",
+    "docs/consolidation/merchant-clock-20261119/lint.txt",
+    "docs/consolidation/merchant-clock-20261119/receipt.json",
+    "docs/consolidation/merchant-clock-20261119/red.log.gz",
+    "docs/consolidation/merchant-clock-20261119/typecheck.txt"
+  ],
+  "artifact_checks": [
+    {
+      "name": "red",
+      "stored_sha256": "de865f94b4dd6c1f05d0daf008c5ae40f5fe9d8ffdd0f8b9260a3d9e3c24b1a5",
+      "raw_sha256": "080ac084e27e637ee906f165bd322d9c5826e9d5c1f714542f024680a8d354bf",
+      "raw_bytes": 2310
+    },
+    {
+      "name": "green",
+      "stored_sha256": "5066ff9f68a4291a72a70409c3c25015fc6991894db643933df0926f7003fb99",
+      "raw_sha256": "82dfad8b1bbd20b6c6bc6dd5ca76a5a734eaf9121353c53c02e415c69ec6fab1",
+      "raw_bytes": 1480
+    },
+    {
+      "name": "typecheck",
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "name": "lint",
+      "stored_sha256": "202a87a00ef76091d8a32984349b989f52b738f07047864bf3713d162d3dcc74",
+      "raw_sha256": "202a87a00ef76091d8a32984349b989f52b738f07047864bf3713d162d3dcc74",
+      "raw_bytes": 175
+    },
+    {
+      "name": "build",
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    }
+  ],
+  "execution_attribution": {
+    "baseline": "Author original-config Vitest: 8 tests, 7 passed/1 expected failure; 1.28 s. The loop is one failing case.",
+    "focused_green": "Author original-config five-file merchant/JSON/schema/sign/receipt selection: 208 passed; 9.74 s, exit 0.",
+    "static_and_build": "Author serial Node22.23.4 package typecheck, typed src lint and production build exited 0; commands and terminal statuses recorded in worker receipt. Reviewer read/hash-checked logs, no replay.",
+    "root_build": "Coordinator reported direct Node22 rebuild exit 0 and compiled-input comparison 18/254 with zero mismatches; those are coordinator-owned checks, not executed by this source review."
+  },
+  "limits": [
+    "The guard checks clock value validity; it does not establish that a finite supplied clock is correct or trusted.",
+    "No remote clock-control, production exploit, signing bypass or key compromise was demonstrated.",
+    "Focused author tests do not establish full-package coverage or satisfaction of unchanged95/90/95/95 thresholds.",
+    "No new combined web/browser, release, hosted CI or original monolithic/partitioned lint pass is claimed by this review.",
+    "This review ran only source/metadata/artifact checks and ESLint file/config discovery, with no lint, test, TypeScript program or build."
+  ],
+  "lint_discovery": {
+    "source_head": "9b8e502498388405d5f03da170e7c51574bc06a6",
+    "source_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+    "node": "v22.23.4",
+    "selected_count": 497,
+    "src_count": 455,
+    "e2e_count": 42,
+    "test_spec_count": 292,
+    "partitions": 21,
+    "selection_sha256": "293c110b6816d6e1632bd141c25bba3e1611fc084ff065612e781bf55faa0eb4",
+    "selected_paths_bytes_and_configs_identical_to_3ab": true,
+    "exit_code": 0,
+    "artifact_sha256": {
+      "web-lint-manifest.json": "2c56938927e85393167a3d44108063f01ecbe64b9749a0f6224d16bbff468d5b",
+      "web-lint-manifest.mjs": "8be69d74da0dc8d2b8e6f3ea0011c2ea915ef2e930fe2ce5e5027f44b9934808",
+      "web-lint-files.txt": "293c110b6816d6e1632bd141c25bba3e1611fc084ff065612e781bf55faa0eb4",
+      "web-lint-partition-plan.md": "40a237c67935cbae79e5763b1c0a710b9f80c7ecbc9bba96b644a5aa1bdd4b78"
+    },
+    "qualification": "Discovery only; no files linted."
+  },
+  "historical_3ab_lint_archive": {
+    "path": "evidence/web-lint-partitions-3ab",
+    "all_14_files_unchanged": true,
+    "independent_review_sha256": "256b531fb958b7199dd9bce1766209cfc475670e5928d408c56cf48edb26004c",
+    "outcome": "Child SIGKILL, no eslint.json, zero verifiable files. No retry or reinterpretation."
+  }
+}

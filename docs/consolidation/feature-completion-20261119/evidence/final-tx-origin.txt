@@ -1,0 +1,1 @@
+OK: no tx.origin in 40 Solidity source file(s).

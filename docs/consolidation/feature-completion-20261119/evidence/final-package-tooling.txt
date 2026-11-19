@@ -1,0 +1,20 @@
+✔ table cells escape backslashes before pipes and collapse whitespace (3.422025ms)
+✔ a library change reaches every transitive dependent (2.172735ms)
+✔ a leaf change affects only itself (0.494447ms)
+✔ docs and markdown changes trigger nothing (0.427351ms)
+✔ root config forces the full suite (0.450855ms)
+✔ contracts change adds forge project and its TS consumers that exist (0.448621ms)
+✔ other forge projects do not pull in contract consumers (0.259958ms)
+✔ prefix match does not confuse similarly named workspaces (0.368832ms)
+✔ node script tests and unmapped paths are reported (0.359153ms)
+✔ buildsNeeded lists built dependencies in dependency order, skipping ones without build (0.878387ms)
+✔ topoOrder detects cycles (0.805219ms)
+✔ real repo: graph loads, is acyclic, and the committed package map is current (9.306422ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 213.239145

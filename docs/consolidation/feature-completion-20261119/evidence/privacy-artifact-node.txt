@@ -1,0 +1,512 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:12) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: parseProfile defaults to full and rejects anything else
+ok 1 - parseProfile defaults to full and rejects anything else
+  ---
+  duration_ms: 1.731748
+  type: 'test'
+  ...
+# Subtest: selectAppEntry only redirects ./App from main.tsx in lean
+ok 2 - selectAppEntry only redirects ./App from main.tsx in lean
+  ---
+  duration_ms: 0.678433
+  type: 'test'
+  ...
+# Subtest: copyPublicFiltered drops only embed SDKs and keeps every other byte
+ok 3 - copyPublicFiltered drops only embed SDKs and keeps every other byte
+  ---
+  duration_ms: 390.423292
+  type: 'test'
+  ...
+# Subtest: copyPublicFiltered refuses symlinks without following them
+ok 4 - copyPublicFiltered refuses symlinks without following them
+  ---
+  duration_ms: 3937.695966
+  type: 'test'
+  ...
+# Subtest: writeReportExclusive requires an absolute path and never overwrites
+ok 5 - writeReportExclusive requires an absolute path and never overwrites
+  ---
+  duration_ms: 1.662758
+  type: 'test'
+  ...
+# Subtest: collectChunkModules fails honestly without module metadata
+ok 6 - collectChunkModules fails honestly without module metadata
+  ---
+  duration_ms: 0.583244
+  type: 'test'
+  ...
+# Subtest: incomplete or nonfinite rendered lengths cannot become exclusion evidence
+ok 7 - incomplete or nonfinite rendered lengths cannot become exclusion evidence
+  ---
+  duration_ms: 305.005974
+  type: 'test'
+  ...
+# Subtest: valid zero-length modules are kept as not rendered, distinct from absent evidence
+ok 8 - valid zero-length modules are kept as not rendered, distinct from absent evidence
+  ---
+  duration_ms: 0.354916
+  type: 'test'
+  ...
+# Subtest: a symlink public ROOT is refused instead of reading outside it
+ok 9 - a symlink public ROOT is refused instead of reading outside it
+  ---
+  duration_ms: 9900.692422
+  type: 'test'
+  ...
+# Subtest: module report cannot be emitted inside the resolved web output (relative and absolute outDir)
+ok 10 - module report cannot be emitted inside the resolved web output (relative and absolute outDir)
+  ---
+  duration_ms: 5194.947902
+  type: 'test'
+  ...
+# Subtest: full and lean both build Help and Privacy through the app bundler entry set
+ok 11 - full and lean both build Help and Privacy through the app bundler entry set
+  ---
+  duration_ms: 1305.272654
+  type: 'test'
+  ...
+# Subtest: HTML entry wiring preserves explicit bundler inputs and stays out of Worker builds
+ok 12 - HTML entry wiring preserves explicit bundler inputs and stays out of Worker builds
+  ---
+  duration_ms: 1004.216596
+  type: 'test'
+  ...
+# Subtest: standalone document entries keep their explicit styles without inheriting the app-only print CSS
+ok 13 - standalone document entries keep their explicit styles without inheriting the app-only print CSS
+  ---
+  duration_ms: 213.186714
+  type: 'test'
+  ...
+# Subtest: lean entry redirection is bound to the configured web root, not another main.tsx
+ok 14 - lean entry redirection is bound to the configured web root, not another main.tsx
+  ---
+  duration_ms: 76.208685
+  type: 'test'
+  ...
+# Subtest: lean rejects rendered optional features even when no external report was requested
+ok 15 - lean rejects rendered optional features even when no external report was requested
+  ---
+  duration_ms: 16.392083
+  type: 'test'
+  ...
+# Subtest: lean requires real nonempty chunk-module facts without a report flag
+ok 16 - lean requires real nonempty chunk-module facts without a report flag
+  ---
+  duration_ms: 35.690537
+  type: 'test'
+  ...
+# Subtest: shared embed notification is admitted but embedding startup exports fail
+ok 17 - shared embed notification is admitted but embedding startup exports fail
+  ---
+  duration_ms: 0.688892
+  type: 'test'
+  ...
+# Subtest: lean Worker hook rejects deferred modules and captures actual module facts
+ok 18 - lean Worker hook rejects deferred modules and captures actual module facts
+  ---
+  duration_ms: 0.252233
+  type: 'test'
+  ...
+# Subtest: lean final output refuses missing Worker proof
+ok 19 - lean final output refuses missing Worker proof
+  ---
+  duration_ms: 58.50769
+  type: 'test'
+  ...
+# Subtest: lean emitted evidence contains actual app/Worker facts with source-relative ids
+ok 20 - lean emitted evidence contains actual app/Worker facts with source-relative ids
+  ---
+  duration_ms: 406.349534
+  type: 'test'
+  ...
+# Subtest: lean refuses a newly added uninspected executable public asset
+ok 21 - lean refuses a newly added uninspected executable public asset
+  ---
+  duration_ms: 32.164213
+  type: 'test'
+  ...
+# Subtest: external evidence is rechecked against the actual output override
+ok 22 - external evidence is rechecked against the actual output override
+  ---
+  duration_ms: 0.652534
+  type: 'test'
+  ...
+# Subtest: nonempty lean chunks cannot omit all module provenance
+ok 23 - nonempty lean chunks cannot omit all module provenance
+  ---
+  duration_ms: 0.50663
+  type: 'test'
+  ...
+# Subtest: a later-emitted executable asset must also have Worker module proof
+ok 24 - a later-emitted executable asset must also have Worker module proof
+  ---
+  duration_ms: 1.174352
+  type: 'test'
+  ...
+# Subtest: unreported public HTML remains rejected, including Help and Privacy filenames
+ok 25 - unreported public HTML remains rejected, including Help and Privacy filenames
+  ---
+  duration_ms: 3956.803161
+  type: 'test'
+  ...
+# Subtest: bundler-reported Help and Privacy HTML are admitted at their stable URLs
+ok 26 - bundler-reported Help and Privacy HTML are admitted at their stable URLs
+  ---
+  duration_ms: 5.480438
+  type: 'test'
+  ...
+# Subtest: stale unreported output code is refused without deleting it
+ok 27 - stale unreported output code is refused without deleting it
+  ---
+  duration_ms: 0.649929
+  type: 'test'
+  ...
+# Subtest: unreported stale HTML and HTM output is refused without deleting it
+ok 28 - unreported stale HTML and HTM output is refused without deleting it
+  ---
+  duration_ms: 0.893236
+  type: 'test'
+  ...
+# Subtest: actual bundle-reported index HTML remains admitted
+ok 29 - actual bundle-reported index HTML remains admitted
+  ---
+  duration_ms: 1181.474717
+  type: 'test'
+  ...
+# Subtest: final writeBundle HTML metadata admits HTML emitted after generateBundle
+ok 30 - final writeBundle HTML metadata admits HTML emitted after generateBundle
+  ---
+  duration_ms: 1.206623
+  type: 'test'
+  ...
+# Subtest: final reported HTML does not admit an unrelated stale HTML file
+ok 31 - final reported HTML does not admit an unrelated stale HTML file
+  ---
+  duration_ms: 1.3864
+  type: 'test'
+  ...
+# Subtest: final bundle metadata rechecks late executable assets and deferred app modules
+ok 32 - final bundle metadata rechecks late executable assets and deferred app modules
+  ---
+  duration_ms: 702.90582
+  type: 'test'
+  ...
+# Subtest: lean final output refuses absent final bundle metadata
+ok 33 - lean final output refuses absent final bundle metadata
+  ---
+  duration_ms: 404.54747
+  type: 'test'
+  ...
+# (node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: browser transport boundaries against controlled native HTTP endpoints
+    # Subtest: solana: native HTTP redirect never reaches the second server
+    ok 1 - solana: native HTTP redirect never reaches the second server
+      ---
+      duration_ms: 234.207958
+      type: 'test'
+      ...
+    # Subtest: solana: HTTP refusal does not echo response data or retry
+    ok 2 - solana: HTTP refusal does not echo response data or retry
+      ---
+      duration_ms: 67.423434
+      type: 'test'
+      ...
+    # Subtest: tron: native HTTP redirect never reaches the second server
+    ok 3 - tron: native HTTP redirect never reaches the second server
+      ---
+      duration_ms: 28.023755
+      type: 'test'
+      ...
+    # Subtest: tron: HTTP refusal does not echo response data or retry
+    ok 4 - tron: HTTP refusal does not echo response data or retry
+      ---
+      duration_ms: 20.605874
+      type: 'test'
+      ...
+    # Subtest: netTransport: native HTTP redirect never reaches the second server
+    ok 5 - netTransport: native HTTP redirect never reaches the second server
+      ---
+      duration_ms: 45.670289
+      type: 'test'
+      ...
+    # Subtest: netTransport: HTTP refusal does not echo response data or retry
+    ok 6 - netTransport: HTTP refusal does not echo response data or retry
+      ---
+      duration_ms: 21.133673
+      type: 'test'
+      ...
+    # Subtest: release: native HTTP redirect never reaches the second server
+    ok 7 - release: native HTTP redirect never reaches the second server
+      ---
+      duration_ms: 17.127782
+      type: 'test'
+      ...
+    # Subtest: release: HTTP refusal does not echo response data or retry
+    ok 8 - release: HTTP refusal does not echo response data or retry
+      ---
+      duration_ms: 20.320048
+      type: 'test'
+      ...
+    # Subtest: solana: a real stalled response body settles its deadline
+    ok 9 - solana: a real stalled response body settles its deadline
+      ---
+      duration_ms: 2045.137838
+      type: 'test'
+      ...
+    # Subtest: tron: a real stalled response body settles its deadline
+    ok 10 - tron: a real stalled response body settles its deadline
+      ---
+      duration_ms: 2107.681972
+      type: 'test'
+      ...
+    # Subtest: netTransport: a real stalled response body settles its deadline
+    ok 11 - netTransport: a real stalled response body settles its deadline
+      ---
+      duration_ms: 2007.541445
+      type: 'test'
+      ...
+    # Subtest: solana: malformed native RPC data produces a fixed error
+    ok 12 - solana: malformed native RPC data produces a fixed error
+      ---
+      duration_ms: 28.439767
+      type: 'test'
+      ...
+    # Subtest: tron: malformed native RPC data produces a fixed error
+    ok 13 - tron: malformed native RPC data produces a fixed error
+      ---
+      duration_ms: 35.755533
+      type: 'test'
+      ...
+    # Subtest: solana-stealth: injected fetch cannot reuse an exported error with private details
+    ok 14 - solana-stealth: injected fetch cannot reuse an exported error with private details
+      ---
+      duration_ms: 28.995429
+      type: 'test'
+      ...
+    # Subtest: solana-stealth: injected stream cannot reuse an exported error with private details
+    ok 15 - solana-stealth: injected stream cannot reuse an exported error with private details
+      ---
+      duration_ms: 32.40309
+      type: 'test'
+      ...
+    # Subtest: tron-adapter: injected fetch cannot reuse an exported error with private details
+    ok 16 - tron-adapter: injected fetch cannot reuse an exported error with private details
+      ---
+      duration_ms: 186.247341
+      type: 'test'
+      ...
+    # Subtest: tron-adapter: injected stream cannot reuse an exported error with private details
+    ok 17 - tron-adapter: injected stream cannot reuse an exported error with private details
+      ---
+      duration_ms: 1.446674
+      type: 'test'
+      ...
+    # Subtest: release: throwing reader cleanup cannot replace a successful hash with private error text
+    ok 18 - release: throwing reader cleanup cannot replace a successful hash with private error text
+      ---
+      duration_ms: 240.022132
+      type: 'test'
+      ...
+    1..18
+ok 34 - browser transport boundaries against controlled native HTTP endpoints
+  ---
+  duration_ms: 10212.275912
+  type: 'test'
+  ...
+# Source SHA-256: {"packages/chain-adapters/src/rpc.ts":"8b3bcd3dedc02dee95a83bbc0bdd750a272018df472765a67f53abb5f84b73d8","packages/chain-adapters/src/errors.ts":"b9acba56845b2da257d9244d56aacb72b842430638f84dbf10a465c642915bee","packages/solana-stealth/src/rpc.ts":"62bb6b2a0a9e08933cc2b9cd61397e80726c3a57fa6eef4e18fe8747aea04181","packages/solana-stealth/src/errors.ts":"934f606a7d2b452ef9af6b21062594644e301b2d00b4997e4e0b1de7889aa8b6","packages/tron-adapter/src/rpc.ts":"ad4e29810d26901242a7842399ff73b30a1b8347ea0e9d118e28693bef677d0c","packages/tron-adapter/src/errors.ts":"e12a7283b44c61abea2a439fe28ece437961c0535fb1c8bd64fffcf320a3e349","packages/net-transport/src/fetchTransport.ts":"51bf75966b97f9d64757a0ec80a98b71b37968a578c02a78fb72fe1816d86d40","packages/net-transport/src/errors.ts":"6b88e15ea8162c8bf775147b89ab54b58f4b4558ff6968cfca76476d6329c479","apps/web/src/lib/release.ts":"dce1b02fa429d287a99b67c1958c7080de15d2b658d3dbc401c269a7f5231035"}
+# (node:14) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: TM5 normalizes and deduplicates HTTPS/WSS origins without widening them
+ok 35 - TM5 normalizes and deduplicates HTTPS/WSS origins without widening them
+  ---
+  duration_ms: 20.52966
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://*.example.org"
+ok 36 - TM5 refuses unsafe or non-origin configuration case "https://*.example.org"
+  ---
+  duration_ms: 1.339913
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org;data:"
+ok 37 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org;data:"
+  ---
+  duration_ms: 13.338365
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org'x"
+ok 38 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org'x"
+  ---
+  duration_ms: 2.572454
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org\\"x"
+ok 39 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org\\"x"
+  ---
+  duration_ms: 0.937629
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https:rpc.example.org"
+ok 40 - TM5 refuses unsafe or non-origin configuration case "https:rpc.example.org"
+  ---
+  duration_ms: 0.530425
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.exa\\nmple.org"
+ok 41 - TM5 refuses unsafe or non-origin configuration case "https://rpc.exa\\nmple.org"
+  ---
+  duration_ms: 0.25012
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org\\\\"
+ok 42 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org\\\\"
+  ---
+  duration_ms: 0.177623
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org/?api_key=fixture"
+ok 43 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org/?api_key=fixture"
+  ---
+  duration_ms: 0.338395
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://user:fixture@rpc.example.org"
+ok 44 - TM5 refuses unsafe or non-origin configuration case "https://user:fixture@rpc.example.org"
+  ---
+  duration_ms: 0.427652
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org/v2/fixture"
+ok 45 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org/v2/fixture"
+  ---
+  duration_ms: 0.182893
+  type: 'test'
+  ...
+# Subtest: TM5 direct helper input cannot inject CSP or HTML syntax
+ok 46 - TM5 direct helper input cannot inject CSP or HTML syntax
+  ---
+  duration_ms: 0.258014
+  type: 'test'
+  ...
+# Subtest: TM5 requires the Pages HTML artifact even when _headers is present
+ok 47 - TM5 requires the Pages HTML artifact even when _headers is present
+  ---
+  duration_ms: 32.264077
+  type: 'test'
+  ...
+# Subtest: TM5 validates the broad development profile too
+ok 48 - TM5 validates the broad development profile too
+  ---
+  duration_ms: 1130.225313
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 49 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 95.224848
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 50 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 86.963115
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 51 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 116.397607
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 52 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 110.432538
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 53 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 85.656384
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 54 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 92.24139
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 55 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 57.305854
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 56 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 92.810253
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 57 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 97.619178
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 58 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 108.203495
+  type: 'test'
+  ...
+# Subtest: TM5 duplicate connect-src directives fail artifact qualification
+ok 59 - TM5 duplicate connect-src directives fail artifact qualification
+  ---
+  duration_ms: 74.602367
+  type: 'test'
+  ...
+# Subtest: TM5 report-only headers cannot substitute for an enforced header profile
+ok 60 - TM5 report-only headers cannot substitute for an enforced header profile
+  ---
+  duration_ms: 73.015906
+  type: 'test'
+  ...
+# Subtest: TM5 rewrites and validates real shipped HTML/header templates, idempotently
+ok 61 - TM5 rewrites and validates real shipped HTML/header templates, idempotently
+  ---
+  duration_ms: 132.208935
+  type: 'test'
+  ...
+# Subtest: TM5 Pages builder preserves CSP configuration and runs it before bundle scanning
+ok 62 - TM5 Pages builder preserves CSP configuration and runs it before bundle scanning
+  ---
+  duration_ms: 11.556464
+  type: 'test'
+  ...
+# Subtest: TM5 nginx generation preserves standard and embedding header boundaries
+ok 63 - TM5 nginx generation preserves standard and embedding header boundaries
+  ---
+  duration_ms: 7.332423
+  type: 'test'
+  ...
+# Subtest: TM5 meta CSP must precede resource or script execution in generated HTML
+ok 64 - TM5 meta CSP must precede resource or script execution in generated HTML
+  ---
+  duration_ms: 44.081811
+  type: 'test'
+  ...
+1..64
+# tests 82
+# suites 0
+# pass 82
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 167740.86492

@@ -1,0 +1,73 @@
+{
+  "observed_utc": "2026-11-19T11:05:31.175336+00:00",
+  "main": "8f56376427c96881f49590920ff0bf8543ec81b4",
+  "prs": [
+    {
+      "number": 245,
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-11-19T10:53:01Z",
+      "merge_commit_sha": "22f96b1b08e92b6fa259b9db164482651ddc20db",
+      "head": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/pull/245",
+      "head_is_ancestor_of_main": true,
+      "product_blobs": [
+        {
+          "path": "packages/pool-circuits/src/inputs.ts",
+          "head_blob": "3a82b848c11d98a7d4afe66050a15ef8003cedbe",
+          "main_blob": "3a82b848c11d98a7d4afe66050a15ef8003cedbe",
+          "equal": true
+        },
+        {
+          "path": "packages/pool-circuits/src/helpers.test.ts",
+          "head_blob": "10b1f67f7c880e9da5fb86845b55a7b25bc89d2c",
+          "main_blob": "10b1f67f7c880e9da5fb86845b55a7b25bc89d2c",
+          "equal": true
+        },
+        {
+          "path": "packages/pool-circuits/test/witness.test.ts",
+          "head_blob": "3cdd17fb07acdb5fe4424cc06312d37a2cc2b773",
+          "main_blob": "3cdd17fb07acdb5fe4424cc06312d37a2cc2b773",
+          "equal": true
+        },
+        {
+          "path": "packages/pool-circuits/DEVIATIONS.md",
+          "head_blob": "bff54456013a8f6a578752a68078b99c185505a9",
+          "main_blob": "bff54456013a8f6a578752a68078b99c185505a9",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "number": 247,
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-11-19T10:53:01Z",
+      "merge_commit_sha": "cfc4a66a49811dfc0f0f58b6e512d1b3098f1304",
+      "head": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/pull/247",
+      "head_is_ancestor_of_main": true,
+      "product_blobs": [
+        {
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "head_blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+          "main_blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+          "equal": true
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.d.mts",
+          "head_blob": "340d3eec2eecdbc4f1cd726905a081008f7daac7",
+          "main_blob": "340d3eec2eecdbc4f1cd726905a081008f7daac7",
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/scanBundle.test.ts",
+          "head_blob": "a694b8763fc5deb418f65d7ff3a6f13e9295d3ee",
+          "main_blob": "a694b8763fc5deb418f65d7ff3a6f13e9295d3ee",
+          "equal": true
+        }
+      ]
+    }
+  ],
+  "action": "No close or branch-deletion mutation needed or performed; GitHub already reports both merged following PR257. Entire current source heads are retained in main."
+}

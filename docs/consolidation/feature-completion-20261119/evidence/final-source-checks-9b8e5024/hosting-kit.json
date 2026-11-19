@@ -1,0 +1,21 @@
+{
+  "label": "hosting-kit",
+  "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "exit_code": 0,
+  "wall_seconds": 10.333,
+  "cwd": "/workspace/scratch/13855ecc035c/GhostPay/tools/portable-hosting-kit",
+  "argv": [
+    "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "--test",
+    "--test-concurrency=4",
+    "test/**/*.test.mjs"
+  ],
+  "node": "22.23.4",
+  "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+  "log": "hosting-kit.txt",
+  "post_source_validation_error": null,
+  "qualification": "PASSED",
+  "bytes": 67413,
+  "sha256": "9d4652dbf5dc37d25f17d2892fb990e2051e1f5f51447f025223364b7cef3ac8"
+}

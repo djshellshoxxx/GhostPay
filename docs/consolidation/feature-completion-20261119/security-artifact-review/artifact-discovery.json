@@ -1,0 +1,155 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "mythril_run_id": 44476066945,
+  "mythril_artifacts": [
+    {
+      "id": 14509646188,
+      "name": "contract-analysis-mythril-ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "size_in_bytes": 54042,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/artifacts/14509646188",
+      "archive_download_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/artifacts/14509646188/zip",
+      "expired": false,
+      "created_at": "2026-11-19T07:56:47Z",
+      "expires_at": "2026-12-03T07:56:46Z",
+      "updated_at": "2026-11-19T07:56:47Z",
+      "digest": "sha256:f26634aa26eb718a808bb0cb755d30a29eaf3a2eb9eafa735de33f5b1c78e9e7",
+      "workflow_run": {
+        "id": 44476066945,
+        "repository_id": 1428055628,
+        "head_repository_id": 1428055628,
+        "head_branch": "integration/ghostpay-mythril-security-closure-20261118",
+        "head_sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab"
+      }
+    },
+    {
+      "id": 14506559374,
+      "name": "contract-analysis-echidna-ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "size_in_bytes": 12401,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/artifacts/14506559374",
+      "archive_download_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/artifacts/14506559374/zip",
+      "expired": false,
+      "created_at": "2026-11-19T07:19:56Z",
+      "expires_at": "2026-12-03T07:19:55Z",
+      "updated_at": "2026-11-19T07:19:56Z",
+      "digest": "sha256:0457593c5724a0de697e3f34f5715840d03dfd1bdfacbd88b8db4eddda6e49c1",
+      "workflow_run": {
+        "id": 44476066945,
+        "repository_id": 1428055628,
+        "head_repository_id": 1428055628,
+        "head_branch": "integration/ghostpay-mythril-security-closure-20261118",
+        "head_sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab"
+      }
+    }
+  ],
+  "codeql_run_id": 44487024101,
+  "codeql_artifacts": [],
+  "download_file": {
+    "file_name": "ghostpay-pr255-mythril-14509646188.zip",
+    "mime_type": "application/zip"
+  },
+  "observed_at": "2026-11-19T10:02:15.161229+00:00",
+  "archive": {
+    "file": "mythril-14509646188.zip",
+    "sha256": "f26634aa26eb718a808bb0cb755d30a29eaf3a2eb9eafa735de33f5b1c78e9e7",
+    "bytes": 54042,
+    "members": [
+      {
+        "name": "metadata.json",
+        "bytes": 532,
+        "compressed_bytes": 315
+      },
+      {
+        "name": "mythril-evidence/GhostPayPolicyRouter.completeness.json",
+        "bytes": 186,
+        "compressed_bytes": 117
+      },
+      {
+        "name": "mythril-evidence/GhostPayPolicyRouter.stderr.log",
+        "bytes": 353,
+        "compressed_bytes": 230
+      },
+      {
+        "name": "mythril-evidence/GhostPayPolicyRouter.stdout.json",
+        "bytes": 47,
+        "compressed_bytes": 46
+      },
+      {
+        "name": "mythril-evidence/GhostPayRouter.stderr.log",
+        "bytes": 353,
+        "compressed_bytes": 230
+      },
+      {
+        "name": "mythril-evidence/GhostPayRouter.completeness.json",
+        "bytes": 186,
+        "compressed_bytes": 117
+      },
+      {
+        "name": "mythril-evidence/GhostPayRouter.stdout.json",
+        "bytes": 47,
+        "compressed_bytes": 46
+      },
+      {
+        "name": "mythril-evidence/GhostPaySweepRelayer.completeness.json",
+        "bytes": 186,
+        "compressed_bytes": 117
+      },
+      {
+        "name": "mythril-evidence/GhostPaySweepRelayer.stderr.log",
+        "bytes": 353,
+        "compressed_bytes": 230
+      },
+      {
+        "name": "mythril-evidence/GhostPaySweepRelayer.stdout.json",
+        "bytes": 15165,
+        "compressed_bytes": 4416
+      },
+      {
+        "name": "mythril-evidence/PolicyAccount.completeness.json",
+        "bytes": 186,
+        "compressed_bytes": 117
+      },
+      {
+        "name": "mythril-evidence/PolicyAccount.stderr.log",
+        "bytes": 353,
+        "compressed_bytes": 230
+      },
+      {
+        "name": "mythril-evidence/PolicyAccount.stdout.json",
+        "bytes": 47245,
+        "compressed_bytes": 7541
+      },
+      {
+        "name": "mythril-evidence/PolicyAccountFactory.completeness.json",
+        "bytes": 186,
+        "compressed_bytes": 117
+      },
+      {
+        "name": "mythril-evidence/PolicyAccountFactory.stderr.log",
+        "bytes": 353,
+        "compressed_bytes": 230
+      },
+      {
+        "name": "mythril-evidence/PolicyAccountFactory.stdout.json",
+        "bytes": 218692,
+        "compressed_bytes": 6393
+      },
+      {
+        "name": "mythril-evidence/config.json",
+        "bytes": 208,
+        "compressed_bytes": 146
+      },
+      {
+        "name": "mythril-evidence/manifest.json",
+        "bytes": 58696,
+        "compressed_bytes": 13528
+      },
+      {
+        "name": "report.log",
+        "bytes": 283170,
+        "compressed_bytes": 16502
+      }
+    ]
+  },
+  "handling": "Downloaded advertised advertised reusable-file URL; ZIP inspected as data only; no members executed; temporary download URL deliberately omitted.",
+  "temporaryTransportReferencesOmitted": true
+}

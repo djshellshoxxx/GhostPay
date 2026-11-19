@@ -1,0 +1,1891 @@
+{"source_local": "9b8e502498388405d5f03da170e7c51574bc06a6", "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815", "node": "22.23.4", "cwd": "/workspace/scratch/13855ecc035c/GhostPay/tools/portable-hosting-kit", "argv": ["/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node", "--test", "--test-concurrency=4", "test/**/*.test.mjs"], "NODE_OPTIONS": "--max-old-space-size=768 --max-semi-space-size=32", "GP_COMMIT": "9b8e502498388405d5f03da170e7c51574bc06a6", "GHOSTPAY_LOCAL_BUILD_PROFILE": null}
+(node:185) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:192) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: i2pd: http server tunnel section with inport 80, router-relative keys and privacy options
+ok 1 - i2pd: http server tunnel section with inport 80, router-relative keys and privacy options
+  ---
+  duration_ms: 4.624753
+  type: 'test'
+  ...
+# Subtest: i2pd: no inline comments (boost INI has none) and custom inport
+ok 2 - i2pd: no inline comments (boost INI has none) and custom inport
+  ---
+  duration_ms: 8.877651
+  type: 'test'
+  ...
+# Subtest: i2pd: unknown public origin -> no hostoverride, with a warning
+ok 3 - i2pd: unknown public origin -> no hostoverride, with a warning
+  ---
+  duration_ms: 0.59194
+  type: 'test'
+  ...
+# Subtest: Java I2P: split-format i2ptunnel.config.d file without tunnel.N. prefixes
+ok 4 - Java I2P: split-format i2ptunnel.config.d file without tunnel.N. prefixes
+  ---
+  duration_ms: 1.302182
+  type: 'test'
+  ...
+# Subtest: Java I2P: "\#" in the mirror label cannot truncate or inject properties
+ok 5 - Java I2P: "\#" in the mirror label cannot truncate or inject properties
+  ---
+  duration_ms: 0.965361
+  type: 'test'
+  ...
+# Subtest: i2pd and Java I2P outputs differ in format (not renamed strings)
+ok 6 - i2pd and Java I2P outputs differ in format (not renamed strings)
+  ---
+  duration_ms: 5.524123
+  type: 'test'
+  ...
+# Subtest: unix-socket listeners are unsupported by both routers
+ok 7 - unix-socket listeners are unsupported by both routers
+  ---
+  duration_ms: 1.38123
+  type: 'test'
+  ...
+# Subtest: management ports of the selected router are refused; others warn; 7658 (Java eepsite) is allowed
+ok 8 - management ports of the selected router are refused; others warn; 7658 (Java eepsite) is allowed
+  ---
+  duration_ms: 6.86193
+  type: 'test'
+  ...
+# Subtest: key files are router-relative, safe and persistent
+ok 9 - key files are router-relative, safe and persistent
+  ---
+  duration_ms: 1.335685
+  type: 'test'
+  ...
+# Subtest: forbidden roots: router dir and resolved key path must stay outside
+ok 10 - forbidden roots: router dir and resolved key path must stay outside
+  ---
+  duration_ms: 5.914873
+  type: 'test'
+  ...
+# Subtest: wrong transport, router, tunnel name and target are refused
+ok 11 - wrong transport, router, tunnel name and target are refused
+  ---
+  duration_ms: 1.077411
+  type: 'test'
+  ...
+# Subtest: compose-service target points at web:8080 and warns that the router must share the network
+ok 12 - compose-service target points at web:8080 and warns that the router must share the network
+  ---
+  duration_ms: 0.747723
+  type: 'test'
+  ...
+# Subtest: deterministic output
+ok 13 - deterministic output
+  ---
+  duration_ms: 1.580925
+  type: 'test'
+  ...
+# Subtest: review fix: router identity/state files cannot be used as tunnel keys
+ok 14 - review fix: router identity/state files cannot be used as tunnel keys
+  ---
+  duration_ms: 0.715121
+  type: 'test'
+  ...
+# Subtest: review fix: characters special in .properties / INI never reach a generated value or comment
+ok 15 - review fix: characters special in .properties / INI never reach a generated value or comment
+  ---
+  duration_ms: 12.73136
+  type: 'test'
+  ...
+# (node:193) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: tor --verify-config accepts every generated torrc and creates no directories or keys
+ok 16 - tor --verify-config accepts every generated torrc and creates no directories or keys # SKIP tor binary not found on PATH
+  ---
+  duration_ms: 7.061565
+  type: 'test'
+  ...
+# Subtest: i2pd parses the generated tunnel file (no-network namespace, temp datadir, killed immediately)
+ok 17 - i2pd parses the generated tunnel file (no-network namespace, temp datadir, killed immediately) # SKIP i2pd binary not found on PATH
+  ---
+  duration_ms: 0.440466
+  type: 'test'
+  ...
+# Subtest: docker compose config accepts the tor sidecar override (never up/build/pull)
+ok 18 - docker compose config accepts the tor sidecar override (never up/build/pull) # SKIP docker compose not available
+  ---
+  duration_ms: 0.234921
+  type: 'test'
+  ...
+# Subtest: Java I2P runtime validation
+ok 19 - Java I2P runtime validation # SKIP Java I2P is not installed in this environment and has no non-activating config check; the i2ptunnel.config.d format is validated against the official spec and i2p.i2p source only (see i2p.test.mjs)
+  ---
+  duration_ms: 0.305172
+  type: 'test'
+  ...
+# (node:199) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: system mode: fragment with v3 service, loopback target and DoS defenses
+ok 20 - system mode: fragment with v3 service, loopback target and DoS defenses
+  ---
+  duration_ms: 7.180939
+  type: 'test'
+  ...
+# Subtest: no profile ever enables single-hop / non-anonymous mode or a client/control port
+ok 21 - no profile ever enables single-hop / non-anonymous mode or a client/control port
+  ---
+  duration_ms: 1.647911
+  type: 'test'
+  ...
+# Subtest: ipv6 loopback and unix-socket listeners map to tor target syntax
+ok 22 - ipv6 loopback and unix-socket listeners map to tor target syntax
+  ---
+  duration_ms: 1.735465
+  type: 'test'
+  ...
+# Subtest: dedicated mode: complete torrc with SocksPort 0, ControlPort 0 and its own DataDirectory
+ok 23 - dedicated mode: complete torrc with SocksPort 0, ControlPort 0 and its own DataDirectory
+  ---
+  duration_ms: 0.545253
+  type: 'test'
+  ...
+# Subtest: container mode: web:8080 target, digest-pinned Dockerfile, compose override on site_internal + egress
+ok 24 - container mode: web:8080 target, digest-pinned Dockerfile, compose override on site_internal + egress
+  ---
+  duration_ms: 0.723818
+  type: 'test'
+  ...
+# Subtest: container mode accepts an operator digest and refuses an unpinned image
+ok 25 - container mode accepts an operator digest and refuses an unpinned image
+  ---
+  duration_ms: 1.033007
+  type: 'test'
+  ...
+# Subtest: powDefense: disable (with warning), custom rates, and tor's burst >= rate rule
+ok 26 - powDefense: disable (with warning), custom rates, and tor's burst >= rate rule
+  ---
+  duration_ms: 0.793439
+  type: 'test'
+  ...
+# Subtest: wrong transport and malformed host configs are refused
+ok 27 - wrong transport and malformed host configs are refused
+  ---
+  duration_ms: 0.859301
+  type: 'test'
+  ...
+# Subtest: HiddenServiceDir must be absolute, normalized and injection-free
+ok 28 - HiddenServiceDir must be absolute, normalized and injection-free
+  ---
+  duration_ms: 4.1794
+  type: 'test'
+  ...
+# Subtest: identity directories may not overlap site, export or archive roots
+ok 29 - identity directories may not overlap site, export or archive roots
+  ---
+  duration_ms: 1.567629
+  type: 'test'
+  ...
+# Subtest: Tor management ports are refused as targets; other stacks' ports only warn
+ok 30 - Tor management ports are refused as targets; other stacks' ports only warn
+  ---
+  duration_ms: 0.807895
+  type: 'test'
+  ...
+# Subtest: network-namespace topology rules
+ok 31 - network-namespace topology rules
+  ---
+  duration_ms: 0.626034
+  type: 'test'
+  ...
+# Subtest: system mode warns when HiddenServiceDir is outside the AppArmor-allowed /var/lib/tor
+ok 32 - system mode warns when HiddenServiceDir is outside the AppArmor-allowed /var/lib/tor
+  ---
+  duration_ms: 0.238858
+  type: 'test'
+  ...
+# Subtest: generator is deterministic and pure (creates nothing on disk)
+ok 33 - generator is deterministic and pure (creates nothing on disk)
+  ---
+  duration_ms: 1.498971
+  type: 'test'
+  ...
+# Subtest: review fix: unix targets may not be tor's own control/SOCKS sockets or live in tor state directories
+ok 34 - review fix: unix targets may not be tor's own control/SOCKS sockets or live in tor state directories
+  ---
+  duration_ms: 1.726127
+  type: 'test'
+  ...
+# (node:200) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: demo and GhostPay render in Chromium under their CSP (preview, root and subpath)
+ok 35 - demo and GhostPay render in Chromium under their CSP (preview, root and subpath) # SKIP set HK_BROWSER_TESTS=1 (needs a Playwright Chromium build)
+  ---
+  duration_ms: 1.102208
+  type: 'test'
+  ...
+# (node:228) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: accepts a clearnet config and round-trips deterministically
+ok 36 - accepts a clearnet config and round-trips deterministically
+  ---
+  duration_ms: 5.641009
+  type: 'test'
+  ...
+# Subtest: validates real and generated v3 onion addresses, rejects bad checksums
+ok 37 - validates real and generated v3 onion addresses, rejects bad checksums
+  ---
+  duration_ms: 2.6496
+  type: 'test'
+  ...
+# Subtest: i2p origins: plain http b32 only (b33 and https unsupported by the generated profiles)
+ok 38 - i2p origins: plain http b32 only (b33 and https unsupported by the generated profiles)
+  ---
+  duration_ms: 0.581301
+  type: 'test'
+  ...
+# Subtest: rejects plain-http clearnet, paths, credentials and onion hosts on clearnet
+ok 39 - rejects plain-http clearnet, paths, credentials and onion hosts on clearnet
+  ---
+  duration_ms: 0.610414
+  type: 'test'
+  ...
+# Subtest: listeners must stay on loopback or a unix socket
+ok 40 - listeners must stay on loopback or a unix socket
+  ---
+  duration_ms: 0.889278
+  type: 'test'
+  ...
+# Subtest: base paths
+ok 41 - base paths
+  ---
+  duration_ms: 0.689484
+  type: 'test'
+  ...
+# Subtest: secrets and application trust settings are refused with a specific reason
+ok 42 - secrets and application trust settings are refused with a specific reason
+  ---
+  duration_ms: 4.355549
+  type: 'test'
+  ...
+# Subtest: onionLocation only for clearnet and must be a valid onion
+ok 43 - onionLocation only for clearnet and must be a valid onion
+  ---
+  duration_ms: 0.781987
+  type: 'test'
+  ...
+# Subtest: defaults are valid for every transport
+ok 44 - defaults are valid for every transport
+  ---
+  duration_ms: 1.14644
+  type: 'test'
+  ...
+# (node:234) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: kit onion validation agrees with @ghostpay/net-transport
+ok 45 - kit onion validation agrees with @ghostpay/net-transport
+  ---
+  duration_ms: 141.960369
+  type: 'test'
+  ...
+# (node:241) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: interactive: re-asks on invalid answers and returns a validated config
+ok 46 - interactive: re-asks on invalid answers and returns a validated config
+  ---
+  duration_ms: 67.819637
+  type: 'test'
+  ...
+# Subtest: interactive: clearnet asks for Onion-Location and accepts unix sockets
+ok 47 - interactive: clearnet asks for Onion-Location and accepts unix sockets
+  ---
+  duration_ms: 11.31117
+  type: 'test'
+  ...
+# Subtest: interactive: running out of input is a usage error, not a half config
+ok 48 - interactive: running out of input is a usage error, not a half config
+  ---
+  duration_ms: 3.788405
+  type: 'test'
+  ...
+# Subtest: non-interactive uses flags and still validates
+ok 49 - non-interactive uses flags and still validates
+  ---
+  duration_ms: 1.303504
+  type: 'test'
+  ...
+# (node:251) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: writeFileAtomic creates and replaces files and leaves no temporaries
+ok 50 - writeFileAtomic creates and replaces files and leaves no temporaries
+  ---
+  duration_ms: 59.177743
+  type: 'test'
+  ...
+# Subtest: commitFilesAtomic: a failure at any fs call leaves previous files byte-identical and no temporaries
+ok 51 - commitFilesAtomic: a failure at any fs call leaves previous files byte-identical and no temporaries
+  ---
+  duration_ms: 163.345687
+  type: 'test'
+  ...
+# Subtest: commitFilesAtomic: when no previous files existed, a failure leaves nothing behind
+ok 52 - commitFilesAtomic: when no previous files existed, a failure leaves nothing behind
+  ---
+  duration_ms: 43.074421
+  type: 'test'
+  ...
+# Subtest: commitFilesAtomic refuses to replace a directory
+ok 53 - commitFilesAtomic refuses to replace a directory
+  ---
+  duration_ms: 4.809921
+  type: 'test'
+  ...
+# Subtest: replaceDirAtomic swaps a built directory into place; failures restore the old one
+ok 54 - replaceDirAtomic swaps a built directory into place; failures restore the old one
+  ---
+  duration_ms: 30.631312
+  type: 'test'
+  ...
+# Subtest: replaceDirAtomic refuses to replace a file
+ok 55 - replaceDirAtomic refuses to replace a file
+  ---
+  duration_ms: 3.236131
+  type: 'test'
+  ...
+# Subtest: createDirAtomic: never replaces an existing target; a failure at any fs call leaves nothing behind
+ok 56 - createDirAtomic: never replaces an existing target; a failure at any fs call leaves nothing behind
+  ---
+  duration_ms: 29.280137
+  type: 'test'
+  ...
+# (node:259) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: sorts keys by UTF-16 code units and emits no whitespace (RFC 8785)
+ok 57 - sorts keys by UTF-16 code units and emits no whitespace (RFC 8785)
+  ---
+  duration_ms: 2.259016
+  type: 'test'
+  ...
+# Subtest: escapes strings like ECMAScript JSON.stringify
+ok 58 - escapes strings like ECMAScript JSON.stringify
+  ---
+  duration_ms: 1.996735
+  type: 'test'
+  ...
+# Subtest: accepts safe integers only; rejects everything outside the subset
+ok 59 - accepts safe integers only; rejects everything outside the subset
+  ---
+  duration_ms: 0.731912
+  type: 'test'
+  ...
+# (node:271) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: sha256Hex and sha256File agree with a known vector
+ok 60 - sha256Hex and sha256File agree with a known vector
+  ---
+  duration_ms: 43.52227
+  type: 'test'
+  ...
+# Subtest: reads refuse symlinks and special files, and detect size changes
+ok 61 - reads refuse symlinks and special files, and detect size changes
+  ---
+  duration_ms: 23.87524
+  type: 'test'
+  ...
+# Subtest: writeFileAtomic falls back to copying the backup where hard links are unsupported
+ok 62 - writeFileAtomic falls back to copying the backup where hard links are unsupported
+  ---
+  duration_ms: 25.994816
+  type: 'test'
+  ...
+# (node:279) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: content digest is sha256 over canonical { entrypoint, files } sorted by UTF-8 path
+ok 63 - content digest is sha256 over canonical { entrypoint, files } sorted by UTF-8 path
+  ---
+  duration_ms: 15.326146
+  type: 'test'
+  ...
+# Subtest: buildManifest produces the v1 layout with sorted lists and no wall-clock time
+ok 64 - buildManifest produces the v1 layout with sorted lists and no wall-clock time
+  ---
+  duration_ms: 10.16191
+  type: 'test'
+  ...
+# Subtest: serialize is deterministic (2-space indent, trailing newline) and parse round-trips
+ok 65 - serialize is deterministic (2-space indent, trailing newline) and parse round-trips
+  ---
+  duration_ms: 7.114254
+  type: 'test'
+  ...
+# Subtest: buildManifest rejects invalid input with E_USAGE
+ok 66 - buildManifest rejects invalid input with E_USAGE
+  ---
+  duration_ms: 7.962003
+  type: 'test'
+  ...
+# Subtest: parseManifest is strict
+ok 67 - parseManifest is strict
+  ---
+  duration_ms: 32.633858
+  type: 'test'
+  ...
+# (node:287) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: packages the layout: site/, manifest, extra files, SHA256SUMS (not itself) and a sidecar
+ok 68 - packages the layout: site/, manifest, extra files, SHA256SUMS (not itself) and a sidecar
+  ---
+  duration_ms: 163.246273
+  type: 'test'
+  ...
+# Subtest: packaging never touches the input directory
+ok 69 - packaging never touches the input directory
+  ---
+  duration_ms: 82.396264
+  type: 'test'
+  ...
+# Subtest: deterministic: identical bytes regardless of mtimes, modes, creation order and absolute path
+ok 70 - deterministic: identical bytes regardless of mtimes, modes, creation order and absolute path
+  ---
+  duration_ms: 355.16653
+  type: 'test'
+  ...
+# Subtest: python zipfile reads a packaged archive; extracted bytes equal the input
+ok 71 - python zipfile reads a packaged archive; extracted bytes equal the input
+  ---
+  duration_ms: 210.42243
+  type: 'test'
+  ...
+# Subtest: refuses a report with errors
+ok 72 - refuses a report with errors
+  ---
+  duration_ms: 48.220345
+  type: 'test'
+  ...
+# Subtest: refuses a hand-built report that smuggles a disallowed or misplaced entry
+ok 73 - refuses a hand-built report that smuggles a disallowed or misplaced entry
+  ---
+  duration_ms: 68.072424
+  type: 'test'
+  ...
+# Subtest: refuses an outFile inside the site directory (also via a symlinked parent)
+ok 74 - refuses an outFile inside the site directory (also via a symlinked parent)
+  ---
+  duration_ms: 59.068118
+  type: 'test'
+  ...
+# Subtest: refuses extra files under site/ or named SHA256SUMS / HOSTING-MANIFEST.json, and bad appId/label
+ok 75 - refuses extra files under site/ or named SHA256SUMS / HOSTING-MANIFEST.json, and bad appId/label
+  ---
+  duration_ms: 68.556715
+  type: 'test'
+  ...
+# Subtest: detects a file that changed between validation and packaging
+ok 76 - detects a file that changed between validation and packaging
+  ---
+  duration_ms: 55.803546
+  type: 'test'
+  ...
+# Subtest: interrupted writes: a failure at any fs call leaves the previous archive and sidecar intact, no temporaries
+ok 77 - interrupted writes: a failure at any fs call leaves the previous archive and sidecar intact, no temporaries
+  ---
+  duration_ms: 1877.744712
+  type: 'test'
+  ...
+# Subtest: coreutils sha256sum accepts the sidecar and SHA256SUMS formats
+ok 78 - coreutils sha256sum accepts the sidecar and SHA256SUMS formats
+  ---
+  duration_ms: 157.269635
+  type: 'test'
+  ...
+# (node:299) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: accepts ordinary portable paths
+ok 79 - accepts ordinary portable paths
+  ---
+  duration_ms: 7.292728
+  type: 'test'
+  ...
+# Subtest: rejects traversal, absolute, drive and backslash paths
+ok 80 - rejects traversal, absolute, drive and backslash paths
+  ---
+  duration_ms: 0.396273
+  type: 'test'
+  ...
+# Subtest: rejects non-NFC, control, bidi, replacement and lone-surrogate characters
+ok 81 - rejects non-NFC, control, bidi, replacement and lone-surrogate characters
+  ---
+  duration_ms: 0.301986
+  type: 'test'
+  ...
+# Subtest: rejects URL-special and Windows-invalid characters, reserved names, trailing dot/space
+ok 82 - rejects URL-special and Windows-invalid characters, reserved names, trailing dot/space
+  ---
+  duration_ms: 0.696556
+  type: 'test'
+  ...
+# Subtest: enforces byte-length and depth limits
+ok 83 - enforces byte-length and depth limits
+  ---
+  duration_ms: 0.358062
+  type: 'test'
+  ...
+# Subtest: collisionKey folds case and Unicode normalization
+ok 84 - collisionKey folds case and Unicode normalization
+  ---
+  duration_ms: 0.39977
+  type: 'test'
+  ...
+# Subtest: compareUtf8 orders by UTF-8 bytes, not UTF-16 code units
+ok 85 - compareUtf8 orders by UTF-8 bytes, not UTF-16 code units
+  ---
+  duration_ms: 0.253256
+  type: 'test'
+  ...
+# Subtest: isInside is strict and lexical
+ok 86 - isInside is strict and lexical
+  ---
+  duration_ms: 0.631424
+  type: 'test'
+  ...
+# Subtest: "$" is rejected (it starts an nginx variable)
+ok 87 - "$" is rejected (it starts an nginx variable)
+  ---
+  duration_ms: 1.339623
+  type: 'test'
+  ...
+# (node:307) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: poc3: extractArchive refuses when <destDir>/<topDir> already exists and leaves it untouched
+ok 88 - poc3: extractArchive refuses when <destDir>/<topDir> already exists and leaves it untouched
+  ---
+  duration_ms: 136.310764
+  type: 'test'
+  ...
+# Subtest: poc3 race: a directory created at the target while extracting is never replaced
+ok 89 - poc3 race: a directory created at the target while extracting is never replaced
+  ---
+  duration_ms: 46.419543
+  type: 'test'
+  ...
+# Subtest: extractArchive into a fresh destination still works and leaves no temporaries
+ok 90 - extractArchive into a fresh destination still works and leaves no temporaries
+  ---
+  duration_ms: 22.633521
+  type: 'test'
+  ...
+# Subtest: poc1: a symlink entry with made-by host 0 fails verification
+ok 91 - poc1: a symlink entry with made-by host 0 fails verification
+  ---
+  duration_ms: 6.064678
+  type: 'test'
+  ...
+# Subtest: poc1: a symlink entry with made-by host 2 fails verification
+ok 92 - poc1: a symlink entry with made-by host 2 fails verification
+  ---
+  duration_ms: 6.375127
+  type: 'test'
+  ...
+# Subtest: poc1: a symlink entry with made-by host 3 fails verification
+ok 93 - poc1: a symlink entry with made-by host 3 fails verification
+  ---
+  duration_ms: 12.188441
+  type: 'test'
+  ...
+# Subtest: poc1: a symlink entry with made-by host 5 fails verification
+ok 94 - poc1: a symlink entry with made-by host 5 fails verification
+  ---
+  duration_ms: 4.730813
+  type: 'test'
+  ...
+# Subtest: poc1: a symlink entry with made-by host 10 fails verification
+ok 95 - poc1: a symlink entry with made-by host 10 fails verification
+  ---
+  duration_ms: 15.875386
+  type: 'test'
+  ...
+# Subtest: poc1: a symlink entry with made-by host 16 fails verification
+ok 96 - poc1: a symlink entry with made-by host 16 fails verification
+  ---
+  duration_ms: 5.343172
+  type: 'test'
+  ...
+# Subtest: poc1: a symlink entry with made-by host 19 fails verification
+ok 97 - poc1: a symlink entry with made-by host 19 fails verification
+  ---
+  duration_ms: 3.162672
+  type: 'test'
+  ...
+# Subtest: poc1: a symlink entry with made-by host 30 fails verification
+ok 98 - poc1: a symlink entry with made-by host 30 fails verification
+  ---
+  duration_ms: 4.030499
+  type: 'test'
+  ...
+# Subtest: special files, setuid/setgid/sticky bits and type/name mismatches are rejected for every host
+ok 99 - special files, setuid/setgid/sticky bits and type/name mismatches are rejected for every host
+  ---
+  duration_ms: 2.867575
+  type: 'test'
+  ...
+# Subtest: poc4: a same-size rewrite after validation is refused
+ok 100 - poc4: a same-size rewrite after validation is refused
+  ---
+  duration_ms: 13.105551
+  type: 'test'
+  ...
+# Subtest: poc4: a rewrite that restores size and mtime is caught by ctime/inode identity
+ok 101 - poc4: a rewrite that restores size and mtime is caught by ctime/inode identity
+  ---
+  duration_ms: 9.046027
+  type: 'test'
+  ...
+# Subtest: poc4: secrets in the exact bytes read by packageSite are refused even if metadata looks unchanged
+ok 102 - poc4: secrets in the exact bytes read by packageSite are refused even if metadata looks unchanged
+  ---
+  duration_ms: 7.437109
+  type: 'test'
+  ...
+# Subtest: poc4b: a parent directory swapped for a symlink after validation is not followed
+ok 103 - poc4b: a parent directory swapped for a symlink after validation is not followed
+  ---
+  duration_ms: 15.463545
+  type: 'test'
+  ...
+# Subtest: packageSite refuses report entries that validateSite did not inventory in this process
+ok 104 - packageSite refuses report entries that validateSite did not inventory in this process
+  ---
+  duration_ms: 10.046934
+  type: 'test'
+  ...
+# Subtest: poc2: an archive with only directory entries fails verification with E_ARCHIVE
+ok 105 - poc2: an archive with only directory entries fails verification with E_ARCHIVE
+  ---
+  duration_ms: 9.677531
+  type: 'test'
+  ...
+# Subtest: poc9: raw entry names never reach error messages unescaped
+ok 106 - poc9: raw entry names never reach error messages unescaped
+  ---
+  duration_ms: 1178.388977
+  type: 'test'
+  ...
+# Subtest: poc9: finding messages about on-disk names are escaped
+ok 107 - poc9: finding messages about on-disk names are escaped
+  ---
+  duration_ms: 8.453155
+  type: 'test'
+  ...
+# Subtest: poc9: provenance label and notes are restricted (build and parse)
+ok 108 - poc9: provenance label and notes are restricted (build and parse)
+  ---
+  duration_ms: 3.373037
+  type: 'test'
+  ...
+# Subtest: packageSite refuses a label outside [A-Za-z0-9._-] early
+ok 109 - packageSite refuses a label outside [A-Za-z0-9._-] early
+  ---
+  duration_ms: 5.468657
+  type: 'test'
+  ...
+# Subtest: r2 C2: a site file or directory named with "$" is rejected by validation
+ok 110 - r2 C2: a site file or directory named with "$" is rejected by validation
+  ---
+  duration_ms: 22.618783
+  type: 'test'
+  ...
+# Subtest: r2 C2: readZip rejects an entry named with "$"
+ok 111 - r2 C2: readZip rejects an entry named with "$"
+  ---
+  duration_ms: 0.855414
+  type: 'test'
+  ...
+# (node:320) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: a clean site validates with sorted entries, entrypoint and trust-sensitive files
+ok 112 - a clean site validates with sorted entries, entrypoint and trust-sensitive files
+  ---
+  duration_ms: 123.179475
+  type: 'test'
+  ...
+# Subtest: the input directory may be given through a symlink; it is resolved once
+ok 113 - the input directory may be given through a symlink; it is resolved once
+  ---
+  duration_ms: 40.564676
+  type: 'test'
+  ...
+# Subtest: symlinks anywhere (file, directory, inside or outside) and special files are errors, never followed
+ok 114 - symlinks anywhere (file, directory, inside or outside) and special files are errors, never followed
+  ---
+  duration_ms: 76.915131
+  type: 'test'
+  ...
+# Subtest: case and Unicode-normalization collisions are errors (files and directories)
+ok 115 - case and Unicode-normalization collisions are errors (files and directories)
+  ---
+  duration_ms: 97.227138
+  type: 'test'
+  ...
+# Subtest: a lone NFD name is rejected as not NFC
+ok 116 - a lone NFD name is rejected as not NFC
+  ---
+  duration_ms: 67.699948
+  type: 'test'
+  ...
+# Subtest: unsafe names on disk become path findings
+ok 117 - unsafe names on disk become path findings
+  ---
+  duration_ms: 104.582714
+  type: 'test'
+  ...
+# Subtest: allowlist, deny reasons and hidden paths
+ok 118 - allowlist, deny reasons and hidden paths
+  ---
+  duration_ms: 122.148441
+  type: 'test'
+  ...
+# Subtest: source maps are allowed when allowSourceMaps is set
+ok 119 - source maps are allowed when allowSourceMaps is set
+  ---
+  duration_ms: 36.797948
+  type: 'test'
+  ...
+# Subtest: heuristic content scan: PEM key in JS, magic prefixes in binary files, tokens in JSON
+ok 120 - heuristic content scan: PEM key in JS, magic prefixes in binary files, tokens in JSON
+  ---
+  duration_ms: 139.937585
+  type: 'test'
+  ...
+# Subtest: trust-sensitive detection is informational and content is never rewritten
+ok 121 - trust-sensitive detection is informational and content is never rewritten
+  ---
+  duration_ms: 276.07298
+  type: 'test'
+  ...
+# Subtest: entrypoint must exist and be HTML; default index.html; overridable
+ok 122 - entrypoint must exist and be HTML; default index.html; overridable
+  ---
+  duration_ms: 61.813276
+  type: 'test'
+  ...
+# Subtest: global bounds throw E_LIMIT; per-file size and depth are findings
+ok 123 - global bounds throw E_LIMIT; per-file size and depth are findings
+  ---
+  duration_ms: 48.681691
+  type: 'test'
+  ...
+# Subtest: bounds trigger early: a huge directory is not walked to the end
+ok 124 - bounds trigger early: a huge directory is not walked to the end
+  ---
+  duration_ms: 727.756
+  type: 'test'
+  ...
+# Subtest: validation never modifies the input
+ok 125 - validation never modifies the input
+  ---
+  duration_ms: 64.357649
+  type: 'test'
+  ...
+# Subtest: a file swapped for a symlink after the walk is caught when its content is read
+ok 126 - a file swapped for a symlink after the walk is caught when its content is read
+  ---
+  duration_ms: 41.763872
+  type: 'test'
+  ...
+# (node:331) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: a packaged archive verifies; authenticity is not established without an expected value
+ok 127 - a packaged archive verifies; authenticity is not established without an expected value
+  ---
+  duration_ms: 187.065236
+  type: 'test'
+  ...
+# Subtest: authenticity is established only by a matching expected digest or archive sha256
+ok 128 - authenticity is established only by a matching expected digest or archive sha256
+  ---
+  duration_ms: 98.523441
+  type: 'test'
+  ...
+# Subtest: archive tampering: changed, missing and unexpected files are reported separately
+ok 129 - archive tampering: changed, missing and unexpected files are reported separately
+  ---
+  duration_ms: 57.274946
+  type: 'test'
+  ...
+# Subtest: editing the manifest is caught by SHA256SUMS
+ok 130 - editing the manifest is caught by SHA256SUMS
+  ---
+  duration_ms: 69.226813
+  type: 'test'
+  ...
+# Subtest: a fully consistent forgery verifies structurally but fails against the expected digest
+ok 131 - a fully consistent forgery verifies structurally but fails against the expected digest
+  ---
+  duration_ms: 43.513764
+  type: 'test'
+  ...
+# Subtest: editing SHA256SUMS is detected (hash mismatch, malformed, self-listing, missing)
+ok 132 - editing SHA256SUMS is detected (hash mismatch, malformed, self-listing, missing)
+  ---
+  duration_ms: 78.187087
+  type: 'test'
+  ...
+# Subtest: flipped archive bytes are detected
+ok 133 - flipped archive bytes are detected
+  ---
+  duration_ms: 42.875416
+  type: 'test'
+  ...
+# Subtest: an archive that is not a kit archive (forged but disallowed content) fails verification
+ok 134 - an archive that is not a kit archive (forged but disallowed content) fails verification
+  ---
+  duration_ms: 42.533766
+  type: 'test'
+  ...
+# Subtest: verifyDirectory reports changed, missing and unexpected files and refuses symlinks
+ok 135 - verifyDirectory reports changed, missing and unexpected files and refuses symlinks
+  ---
+  duration_ms: 375.310194
+  type: 'test'
+  ...
+# Subtest: extractArchive refuses a tampered archive or an existing target without creating or changing anything
+ok 136 - extractArchive refuses a tampered archive or an existing target without creating or changing anything
+  ---
+  duration_ms: 100.015067
+  type: 'test'
+  ...
+# Subtest: verification limits: an archive larger than the limits allow is refused before parsing
+ok 137 - verification limits: an archive larger than the limits allow is refused before parsing
+  ---
+  duration_ms: 29.449676
+  type: 'test'
+  ...
+# Subtest: the top-level directory must be <appId>-<label> from the manifest; a symlinked archive path is fine
+ok 138 - the top-level directory must be <appId>-<label> from the manifest; a symlinked archive path is fine
+  ---
+  duration_ms: 59.930206
+  type: 'test'
+  ...
+# (node:350) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: crc32 matches known vectors and zlib
+ok 139 - crc32 matches known vectors and zlib
+  ---
+  duration_ms: 2.934654
+  type: 'test'
+  ...
+# Subtest: createZip is deterministic, sorted, and round-trips through readZip
+ok 140 - createZip is deterministic, sorted, and round-trips through readZip
+  ---
+  duration_ms: 11.818777
+  type: 'test'
+  ...
+# Subtest: header fields: fixed DOS time, Unix mode 0644, UTF-8 flag, store when deflate is not smaller
+ok 141 - header fields: fixed DOS time, Unix mode 0644, UTF-8 flag, store when deflate is not smaller
+  ---
+  duration_ms: 1.980896
+  type: 'test'
+  ...
+# Subtest: createZip refuses unsafe or colliding names
+ok 142 - createZip refuses unsafe or colliding names
+  ---
+  duration_ms: 1.241398
+  type: 'test'
+  ...
+# Subtest: python zipfile reads our deflate archive identically
+ok 143 - python zipfile reads our deflate archive identically
+  ---
+  duration_ms: 144.077701
+  type: 'test'
+  ...
+# Subtest: python zipfile reads our store archive identically
+ok 144 - python zipfile reads our store archive identically
+  ---
+  duration_ms: 104.125778
+  type: 'test'
+  ...
+# Subtest: readZip accepts an archive written by python zipfile (store and deflate, directory entry)
+ok 145 - readZip accepts an archive written by python zipfile (store and deflate, directory entry)
+  ---
+  duration_ms: 112.32192
+  type: 'test'
+  ...
+# Subtest: the adversarial builder produces acceptable archives by default (baseline)
+ok 146 - the adversarial builder produces acceptable archives by default (baseline)
+  ---
+  duration_ms: 1.795588
+  type: 'test'
+  ...
+# Subtest: readZip rejects: parent traversal
+ok 147 - readZip rejects: parent traversal
+  ---
+  duration_ms: 8.758427
+  type: 'test'
+  ...
+# Subtest: readZip rejects: leading traversal
+ok 148 - readZip rejects: leading traversal
+  ---
+  duration_ms: 0.823184
+  type: 'test'
+  ...
+# Subtest: readZip rejects: absolute name
+ok 149 - readZip rejects: absolute name
+  ---
+  duration_ms: 0.466595
+  type: 'test'
+  ...
+# Subtest: readZip rejects: drive letter
+ok 150 - readZip rejects: drive letter
+  ---
+  duration_ms: 0.449753
+  type: 'test'
+  ...
+# Subtest: readZip rejects: backslash name
+ok 151 - readZip rejects: backslash name
+  ---
+  duration_ms: 0.354064
+  type: 'test'
+  ...
+# Subtest: readZip rejects: NFD name
+ok 152 - readZip rejects: NFD name
+  ---
+  duration_ms: 0.656582
+  type: 'test'
+  ...
+# Subtest: readZip rejects: duplicate names
+ok 153 - readZip rejects: duplicate names
+  ---
+  duration_ms: 6.436001
+  type: 'test'
+  ...
+# Subtest: readZip rejects: case collision
+ok 154 - readZip rejects: case collision
+  ---
+  duration_ms: 1.11981
+  type: 'test'
+  ...
+# Subtest: readZip rejects: file used as directory
+ok 155 - readZip rejects: file used as directory
+  ---
+  duration_ms: 0.407594
+  type: 'test'
+  ...
+# Subtest: readZip rejects: symlink entry
+ok 156 - readZip rejects: symlink entry
+  ---
+  duration_ms: 0.675507
+  type: 'test'
+  ...
+# Subtest: readZip rejects: device entry
+ok 157 - readZip rejects: device entry
+  ---
+  duration_ms: 0.279735
+  type: 'test'
+  ...
+# Subtest: readZip rejects: encrypted entry
+ok 158 - readZip rejects: encrypted entry
+  ---
+  duration_ms: 0.356018
+  type: 'test'
+  ...
+# Subtest: readZip rejects: data descriptor
+ok 159 - readZip rejects: data descriptor
+  ---
+  duration_ms: 1.027286
+  type: 'test'
+  ...
+# Subtest: readZip rejects: unknown flag
+ok 160 - readZip rejects: unknown flag
+  ---
+  duration_ms: 1.624356
+  type: 'test'
+  ...
+# Subtest: readZip rejects: non-ASCII name without UTF-8 flag
+ok 161 - readZip rejects: non-ASCII name without UTF-8 flag
+  ---
+  duration_ms: 0.340238
+  type: 'test'
+  ...
+# Subtest: readZip rejects: invalid UTF-8 name
+ok 162 - readZip rejects: invalid UTF-8 name
+  ---
+  duration_ms: 0.294763
+  type: 'test'
+  ...
+# Subtest: readZip rejects: ZIP64 marker in EOCD
+ok 163 - readZip rejects: ZIP64 marker in EOCD
+  ---
+  duration_ms: 0.296897
+  type: 'test'
+  ...
+# Subtest: readZip rejects: ZIP64 locator before EOCD
+ok 164 - readZip rejects: ZIP64 locator before EOCD
+  ---
+  duration_ms: 0.344306
+  type: 'test'
+  ...
+# Subtest: readZip rejects: ZIP64 sizes
+ok 165 - readZip rejects: ZIP64 sizes
+  ---
+  duration_ms: 0.417433
+  type: 'test'
+  ...
+# Subtest: readZip rejects: ZIP64 version needed
+ok 166 - readZip rejects: ZIP64 version needed
+  ---
+  duration_ms: 0.335871
+  type: 'test'
+  ...
+# Subtest: readZip rejects: extra field (zip64 / alternate name)
+ok 167 - readZip rejects: extra field (zip64 / alternate name)
+  ---
+  duration_ms: 0.306054
+  type: 'test'
+  ...
+# Subtest: readZip rejects: multi-disk EOCD
+ok 168 - readZip rejects: multi-disk EOCD
+  ---
+  duration_ms: 0.341421
+  type: 'test'
+  ...
+# Subtest: readZip rejects: multi-disk entry
+ok 169 - readZip rejects: multi-disk entry
+  ---
+  duration_ms: 6.797459
+  type: 'test'
+  ...
+# Subtest: readZip rejects: unknown method
+ok 170 - readZip rejects: unknown method
+  ---
+  duration_ms: 0.479299
+  type: 'test'
+  ...
+# Subtest: readZip rejects: local/central CRC mismatch
+ok 171 - readZip rejects: local/central CRC mismatch
+  ---
+  duration_ms: 0.368722
+  type: 'test'
+  ...
+# Subtest: readZip rejects: local/central name mismatch
+ok 172 - readZip rejects: local/central name mismatch
+  ---
+  duration_ms: 0.451196
+  type: 'test'
+  ...
+# Subtest: readZip rejects: local/central method mismatch
+ok 173 - readZip rejects: local/central method mismatch
+  ---
+  duration_ms: 0.457979
+  type: 'test'
+  ...
+# Subtest: readZip rejects: local extra field
+ok 174 - readZip rejects: local extra field
+  ---
+  duration_ms: 0.379292
+  type: 'test'
+  ...
+# Subtest: readZip rejects: overlapping entries (second local header hidden inside the first entry data)
+ok 175 - readZip rejects: overlapping entries (second local header hidden inside the first entry data)
+  ---
+  duration_ms: 0.41547
+  type: 'test'
+  ...
+# Subtest: readZip rejects: two central entries sharing one local record
+ok 176 - readZip rejects: two central entries sharing one local record
+  ---
+  duration_ms: 0.476734
+  type: 'test'
+  ...
+# Subtest: readZip rejects: hidden local record in a gap
+ok 177 - readZip rejects: hidden local record in a gap
+  ---
+  duration_ms: 0.358452
+  type: 'test'
+  ...
+# Subtest: readZip rejects: prepended data
+ok 178 - readZip rejects: prepended data
+  ---
+  duration_ms: 8.865728
+  type: 'test'
+  ...
+# Subtest: readZip rejects: trailing data
+ok 179 - readZip rejects: trailing data
+  ---
+  duration_ms: 0.364393
+  type: 'test'
+  ...
+# Subtest: readZip rejects: archive comment
+ok 180 - readZip rejects: archive comment
+  ---
+  duration_ms: 0.391123
+  type: 'test'
+  ...
+# Subtest: readZip rejects: entry comment
+ok 181 - readZip rejects: entry comment
+  ---
+  duration_ms: 0.311935
+  type: 'test'
+  ...
+# Subtest: readZip rejects: CRC mismatch
+ok 182 - readZip rejects: CRC mismatch
+  ---
+  duration_ms: 0.337543
+  type: 'test'
+  ...
+# Subtest: readZip rejects: stored size mismatch
+ok 183 - readZip rejects: stored size mismatch
+  ---
+  duration_ms: 0.306736
+  type: 'test'
+  ...
+# Subtest: readZip rejects: deflated output shorter than declared
+ok 184 - readZip rejects: deflated output shorter than declared
+  ---
+  duration_ms: 0.43688
+  type: 'test'
+  ...
+# Subtest: readZip rejects: inflation beyond declared size (zip bomb)
+ok 185 - readZip rejects: inflation beyond declared size (zip bomb)
+  ---
+  duration_ms: 178.25374
+  type: 'test'
+  ...
+# Subtest: readZip rejects: bytes hidden after the end of the deflate stream
+ok 186 - readZip rejects: bytes hidden after the end of the deflate stream
+  ---
+  duration_ms: 2.086373
+  type: 'test'
+  ...
+# Subtest: readZip rejects: truncated deflate data
+ok 187 - readZip rejects: truncated deflate data
+  ---
+  duration_ms: 1.137223
+  type: 'test'
+  ...
+# Subtest: readZip rejects: declared size beyond maxFileBytes (checked before inflating)
+ok 188 - readZip rejects: declared size beyond maxFileBytes (checked before inflating)
+  ---
+  duration_ms: 2.255801
+  type: 'test'
+  ...
+# Subtest: readZip rejects: declared total beyond maxTotalBytes
+ok 189 - readZip rejects: declared total beyond maxTotalBytes
+  ---
+  duration_ms: 5.171239
+  type: 'test'
+  ...
+# Subtest: readZip rejects: too many files
+ok 190 - readZip rejects: too many files
+  ---
+  duration_ms: 2.610617
+  type: 'test'
+  ...
+# Subtest: readZip rejects: too many entries
+ok 191 - readZip rejects: too many entries
+  ---
+  duration_ms: 0.561142
+  type: 'test'
+  ...
+# Subtest: readZip rejects: more than one top-level directory
+ok 192 - readZip rejects: more than one top-level directory
+  ---
+  duration_ms: 0.452559
+  type: 'test'
+  ...
+# Subtest: readZip rejects: file at the top level
+ok 193 - readZip rejects: file at the top level
+  ---
+  duration_ms: 0.327474
+  type: 'test'
+  ...
+# Subtest: readZip rejects: directory entry with data
+ok 194 - readZip rejects: directory entry with data
+  ---
+  duration_ms: 0.353212
+  type: 'test'
+  ...
+# Subtest: readZip rejects: directory name with regular-file mode bits
+ok 195 - readZip rejects: directory name with regular-file mode bits
+  ---
+  duration_ms: 7.303559
+  type: 'test'
+  ...
+# Subtest: readZip rejects: empty archive
+ok 196 - readZip rejects: empty archive
+  ---
+  duration_ms: 0.382858
+  type: 'test'
+  ...
+# Subtest: readZip rejects: not a zip
+ok 197 - readZip rejects: not a zip
+  ---
+  duration_ms: 0.216966
+  type: 'test'
+  ...
+# Subtest: readZip rejects: truncated archive
+ok 198 - readZip rejects: truncated archive
+  ---
+  duration_ms: 0.262533
+  type: 'test'
+  ...
+# Subtest: readZip rejects: central directory offset out of range
+ok 199 - readZip rejects: central directory offset out of range
+  ---
+  duration_ms: 0.280206
+  type: 'test'
+  ...
+# Subtest: readZip rejects: entry count larger than central directory
+ok 200 - readZip rejects: entry count larger than central directory
+  ---
+  duration_ms: 0.442801
+  type: 'test'
+  ...
+# Subtest: singleTopDir can be disabled for generic use
+ok 201 - singleTopDir can be disabled for generic use
+  ---
+  duration_ms: 0.397546
+  type: 'test'
+  ...
+# (node:356) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: demo site is deterministic, relative and CSP-clean
+ok 202 - demo site is deterministic, relative and CSP-clean
+  ---
+  duration_ms: 7.191363
+  type: 'test'
+  ...
+# Subtest: writeDemoSite refuses a non-empty directory
+ok 203 - writeDemoSite refuses a non-empty directory
+  ---
+  duration_ms: 59.169712
+  type: 'test'
+  ...
+# Subtest: mirror overlay carries the digest and authenticity caveat; reserved dir collisions detected
+ok 204 - mirror overlay carries the digest and authenticity caveat; reserved dir collisions detected
+  ---
+  duration_ms: 1.371722
+  type: 'test'
+  ...
+# (node:376) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: termSafe neutralises terminal control and bidi characters
+ok 205 - termSafe neutralises terminal control and bidi characters
+  ---
+  duration_ms: 2.338706
+  type: 'test'
+  ...
+# Subtest: metadataWarnings flags top-level files the kit never writes
+ok 206 - metadataWarnings flags top-level files the kit never writes
+  ---
+  duration_ms: 1.331998
+  type: 'test'
+  ...
+# Subtest: --git-dir does not execute repository-configured fsmonitor commands (review finding 4)
+ok 207 - --git-dir does not execute repository-configured fsmonitor commands (review finding 4)
+  ---
+  duration_ms: 295.648685
+  type: 'test'
+  ...
+# Subtest: --git-dir does not run clean filters selected by the repository (review pass 2, finding 4 bypass)
+ok 208 - --git-dir does not run clean filters selected by the repository (review pass 2, finding 4 bypass)
+  ---
+  duration_ms: 1283.934467
+  type: 'test'
+  ...
+# Subtest: --license-file goes through the inclusion policy and secret scan (review finding 10)
+ok 209 - --license-file goes through the inclusion policy and secret scan (review finding 10)
+  ---
+  duration_ms: 141.638525
+  type: 'test'
+  ...
+# Subtest: verify output: digest match is scoped to site files; injected names are escaped (review findings 7, 8)
+ok 210 - verify output: digest match is scoped to site files; injected names are escaped (review findings 7, 8)
+  ---
+  duration_ms: 90.39282
+  type: 'test'
+  ...
+# Subtest: container profile is a self-contained stack; Tor container override validates with docker compose config
+ok 211 - container profile is a self-contained stack; Tor container override validates with docker compose config
+  ---
+  duration_ms: 300.741115
+  type: 'test'
+  ...
+# Subtest: validate refuses a _headers file that strips CSP/nosniff from SVG before anything is packaged (review pass 2)
+ok 212 - validate refuses a _headers file that strips CSP/nosniff from SVG before anything is packaged (review pass 2)
+  ---
+  duration_ms: 75.381891
+  type: 'test'
+  ...
+# Subtest: profile writes nested output directories (nginx/, tor/, i2p/)
+ok 213 - profile writes nested output directories (nginx/, tor/, i2p/)
+  ---
+  duration_ms: 79.118013
+  type: 'test'
+  ...
+# Subtest: profile and preview of an archive enforce --expect-sha256 and --expect-digest (audit L7-M3)
+ok 214 - profile and preview of an archive enforce --expect-sha256 and --expect-digest (audit L7-M3)
+  ---
+  duration_ms: 194.995492
+  type: 'test'
+  ...
+# Subtest: commands refuse options they do not use; documented usages still work (audit L7-M3 hardening)
+ok 215 - commands refuse options they do not use; documented usages still work (audit L7-M3 hardening)
+  ---
+  duration_ms: 62.034512
+  type: 'test'
+  ...
+# Subtest: an unpacked directory is copied before it is verified and used (audit L7-L5)
+ok 216 - an unpacked directory is copied before it is verified and used (audit L7-L5)
+  ---
+  duration_ms: 262.995961
+  type: 'test'
+  ...
+# Subtest: profile refuses an --out inside or containing an unpacked-directory input (review E-R1)
+ok 217 - profile refuses an --out inside or containing an unpacked-directory input (review E-R1)
+  ---
+  duration_ms: 260.422509
+  type: 'test'
+  ...
+# Subtest: --git-dir refuses filter drivers assigned through $GIT_DIR/info/attributes (audit L7-L2)
+ok 218 - --git-dir refuses filter drivers assigned through $GIT_DIR/info/attributes (audit L7-L2)
+  ---
+  duration_ms: 1164.142673
+  type: 'test'
+  ...
+# Subtest: --git-dir does not descend into submodules, whose own config could run filters (audit L7-L2)
+ok 219 - --git-dir does not descend into submodules, whose own config could run filters (audit L7-L2)
+  ---
+  duration_ms: 1389.937736
+  type: 'test'
+  ...
+# Subtest: profile --with static warns that static/www carries no _headers (audit L7-M1)
+ok 220 - profile --with static warns that static/www carries no _headers (audit L7-M1)
+  ---
+  duration_ms: 219.790555
+  type: 'test'
+  ...
+# (node:397) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: demo runs the whole workflow and leaves inert profiles
+ok 221 - demo runs the whole workflow and leaves inert profiles
+  ---
+  duration_ms: 1193.236288
+  type: 'test'
+  ...
+# Subtest: package -> verify; tampering and expected digests
+ok 222 - package -> verify; tampering and expected digests
+  ---
+  duration_ms: 246.376656
+  type: 'test'
+  ...
+# Subtest: package refuses secrets and leaves the input and any previous archive untouched
+ok 223 - package refuses secrets and leaves the input and any previous archive untouched
+  ---
+  duration_ms: 204.091637
+  type: 'test'
+  ...
+# Subtest: preview serves the verified archive on loopback with headers, deep links and 404s
+ok 224 - preview serves the verified archive on loopback with headers, deep links and 404s
+  ---
+  duration_ms: 417.263868
+  type: 'test'
+  ...
+# Subtest: profile: config validation, shared-origin guard, output-dir guard, onion and i2p
+ok 225 - profile: config validation, shared-origin guard, output-dir guard, onion and i2p
+  ---
+  duration_ms: 1375.581401
+  type: 'test'
+  ...
+# Subtest: wizard: non-interactive writes a validated config; dry-run writes nothing
+ok 226 - wizard: non-interactive writes a validated config; dry-run writes nothing
+  ---
+  duration_ms: 5.106428
+  type: 'test'
+  ...
+# Subtest: usage errors and help
+ok 227 - usage errors and help
+  ---
+  duration_ms: 0.668734
+  type: 'test'
+  ...
+# Subtest: real GhostPay apps/web/dist: validate, package, verify, preview
+ok 228 - real GhostPay apps/web/dist: validate, package, verify, preview
+  ---
+  duration_ms: 673.67936
+  type: 'test'
+  ...
+# (node:409) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: classifies scripts, fonts, telemetry, rpc, relays, wallet services and namespaces
+ok 229 - classifies scripts, fonts, telemetry, rpc, relays, wallet services and namespaces
+  ---
+  duration_ms: 6.406996
+  type: 'test'
+  ...
+# Subtest: output is deterministic and lists each file once per URL
+ok 230 - output is deterministic and lists each file once per URL
+  ---
+  duration_ms: 3.221963
+  type: 'test'
+  ...
+# Subtest: a clean same-origin site has no references
+ok 231 - a clean same-origin site has no references
+  ---
+  duration_ms: 0.387406
+  type: 'test'
+  ...
+# (node:427) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Tor path trimming keeps normalized values, refusals and the existing input bound
+ok 232 - Tor path trimming keeps normalized values, refusals and the existing input bound
+  ---
+  duration_ms: 2.447852
+  type: 'test'
+  ...
+# Subtest: header-name inventory keeps ordinal punctuation order
+ok 233 - header-name inventory keeps ordinal punctuation order
+  ---
+  duration_ms: 3.750584
+  type: 'test'
+  ...
+# Subtest: static export retains ordinal non-ASCII ordering without changing bytes
+ok 234 - static export retains ordinal non-ASCII ordering without changing bytes
+  ---
+  duration_ms: 106.42033
+  type: 'test'
+  ...
+# (node:443) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: relative literals preserve context, legacy quotes and later matches
+ok 235 - relative literals preserve context, legacy quotes and later matches
+  ---
+  duration_ms: 4.711887
+  type: 'test'
+  ...
+# Subtest: ordinal sorting preserves UTF-16 behavior rather than locale or UTF-8 order
+ok 236 - ordinal sorting preserves UTF-16 behavior rather than locale or UTF-8 order
+  ---
+  duration_ms: 2.746722
+  type: 'test'
+  ...
+# Subtest: container temporary state belongs to private uid/gid101 tmpfs
+ok 237 - container temporary state belongs to private uid/gid101 tmpfs
+  ---
+  duration_ms: 1.301031
+  type: 'test'
+  ...
+# Subtest: nullish transport configuration stays absent while malformed values refuse
+ok 238 - nullish transport configuration stays absent while malformed values refuse
+  ---
+  duration_ms: 1.084414
+  type: 'test'
+  ...
+# (node:450) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: compose labels retain edge trimming, fallback and trim-before-truncation semantics
+ok 239 - compose labels retain edge trimming, fallback and trim-before-truncation semantics
+  ---
+  duration_ms: 1.749841
+  type: 'test'
+  ...
+# Subtest: nginx absent transport hints agree while malformed non-null hints refuse
+ok 240 - nginx absent transport hints agree while malformed non-null hints refuse
+  ---
+  duration_ms: 18.273995
+  type: 'test'
+  ...
+# (node:459) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: compose file: pinned image, frozen names, loopback publish, hardening, no secrets
+ok 241 - compose file: pinned image, frozen names, loopback publish, hardening, no secrets
+  ---
+  duration_ms: 58.317831
+  type: 'test'
+  ...
+# Subtest: container profile: ::1 publish, unix and non-loopback listeners refused
+ok 242 - container profile: ::1 publish, unix and non-loopback listeners refused
+  ---
+  duration_ms: 47.483961
+  type: 'test'
+  ...
+# Subtest: container nginx.conf passes nginx -t
+ok 243 - container nginx.conf passes nginx -t # SKIP nginx binary absent
+  ---
+  duration_ms: 0.269335
+  type: 'test'
+  ...
+# Subtest: container run (opt-in)
+ok 244 - container run (opt-in) # SKIP opt-in: set HK_DOCKER_TESTS=1 (needs a Docker daemon, docker compose and access to Docker Hub)
+  ---
+  duration_ms: 0.321753
+  type: 'suite'
+  ...
+# (node:466) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: root base path, clearnet https + Onion-Location
+    # Subtest: root: preview and nginx agree on status, kit headers, validators and bodies
+    ok 1 - root: preview and nginx agree on status, kit headers, validators and bodies # SKIP nginx binary not found at /usr/sbin/nginx (set HK_NGINX_BIN); the differential test needs a real nginx
+      ---
+      duration_ms: 0.734738
+      type: 'test'
+      ...
+    # Subtest: root: spot checks against the normative semantics
+    ok 2 - root: spot checks against the normative semantics # SKIP nginx binary not found at /usr/sbin/nginx (set HK_NGINX_BIN); the differential test needs a real nginx
+      ---
+      duration_ms: 0.168456
+      type: 'test'
+      ...
+    1..2
+ok 245 - root base path, clearnet https + Onion-Location
+  ---
+  duration_ms: 3.43399
+  type: 'suite'
+  ...
+# Subtest: subpath /mirror/app/, onion
+    # Subtest: subpath: preview and nginx agree on status, kit headers, validators and bodies
+    ok 1 - subpath: preview and nginx agree on status, kit headers, validators and bodies # SKIP nginx binary not found at /usr/sbin/nginx (set HK_NGINX_BIN); the differential test needs a real nginx
+      ---
+      duration_ms: 0.226725
+      type: 'test'
+      ...
+    # Subtest: subpath: spot checks against the normative semantics
+    ok 2 - subpath: spot checks against the normative semantics # SKIP nginx binary not found at /usr/sbin/nginx (set HK_NGINX_BIN); the differential test needs a real nginx
+      ---
+      duration_ms: 0.882044
+      type: 'test'
+      ...
+    1..2
+ok 246 - subpath /mirror/app/, onion
+  ---
+  duration_ms: 3.266667
+  type: 'suite'
+  ...
+# (node:483) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: listeners: loopback TCP and unix sockets only
+ok 247 - listeners: loopback TCP and unix sockets only
+  ---
+  duration_ms: 3.304217
+  type: 'test'
+  ...
+# Subtest: refuses weak headers, uninterpolatable values and bad roots
+ok 248 - refuses weak headers, uninterpolatable values and bad roots
+  ---
+  duration_ms: 11.171915
+  type: 'test'
+  ...
+# Subtest: structure: headers only at server level with "always"; no add_header inside any block
+ok 249 - structure: headers only at server level with "always"; no add_header inside any block
+  ---
+  duration_ms: 6.374015
+  type: 'test'
+  ...
+# Subtest: nginx -t accepts generated configs (root, subpath, IPv6, unix socket, GhostPay _headers)
+ok 250 - nginx -t accepts generated configs (root, subpath, IPv6, unix socket, GhostPay _headers) # SKIP nginx binary absent
+  ---
+  duration_ms: 0.183895
+  type: 'test'
+  ...
+# Subtest: runs fully unprivileged (as nobody) from a writable runtime directory
+ok 251 - runs fully unprivileged (as nobody) from a writable runtime directory # SKIP nginx binary absent
+  ---
+  duration_ms: 0.294763
+  type: 'test'
+  ...
+# Subtest: serves over a unix socket listener
+ok 252 - serves over a unix socket listener # SKIP nginx binary absent
+  ---
+  duration_ms: 0.155822
+  type: 'test'
+  ...
+# Subtest: R2-A: every add_header line is well-formed and each required header appears exactly once
+ok 253 - R2-A: every add_header line is well-formed and each required header appears exactly once
+  ---
+  duration_ms: 20.045838
+  type: 'test'
+  ...
+# Subtest: R2-D: profiles refuse a policy that detaches CSP or nosniff for SVG/XML
+ok 254 - R2-D: profiles refuse a policy that detaches CSP or nosniff for SVG/XML
+  ---
+  duration_ms: 2.15402
+  type: 'test'
+  ...
+# (node:489) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: exports byte-identical servable files under www/ with source mtimes
+ok 255 - exports byte-identical servable files under www/ with source mtimes
+  ---
+  duration_ms: 209.73009
+  type: 'test'
+  ...
+# Subtest: preserves submillisecond second boundary source timestamp under www/
+ok 256 - preserves submillisecond second boundary source timestamp under www/
+  ---
+  duration_ms: 11.225444
+  type: 'test'
+  ...
+# Subtest: preserves epoch source timestamp under www/
+ok 257 - preserves epoch source timestamp under www/
+  ---
+  duration_ms: 39.42575
+  type: 'test'
+  ...
+# Subtest: preserves pre-epoch source timestamp under www/
+ok 258 - preserves pre-epoch source timestamp under www/
+  ---
+  duration_ms: 14.008024
+  type: 'test'
+  ...
+# Subtest: exports byte-identical servable files under www/mirror/app/ with source mtimes
+ok 259 - exports byte-identical servable files under www/mirror/app/ with source mtimes
+  ---
+  duration_ms: 126.925352
+  type: 'test'
+  ...
+# Subtest: preserves submillisecond second boundary source timestamp under www/mirror/app/
+ok 260 - preserves submillisecond second boundary source timestamp under www/mirror/app/
+  ---
+  duration_ms: 22.363395
+  type: 'test'
+  ...
+# Subtest: preserves epoch source timestamp under www/mirror/app/
+ok 261 - preserves epoch source timestamp under www/mirror/app/
+  ---
+  duration_ms: 32.065031
+  type: 'test'
+  ...
+# Subtest: preserves pre-epoch source timestamp under www/mirror/app/
+ok 262 - preserves pre-epoch source timestamp under www/mirror/app/
+  ---
+  duration_ms: 19.719345
+  type: 'test'
+  ...
+# Subtest: refuses symlinks without leaving a partial export
+ok 263 - refuses symlinks without leaving a partial export
+  ---
+  duration_ms: 38.081205
+  type: 'test'
+  ...
+# Subtest: refuses nested site/output directories and weak headers
+ok 264 - refuses nested site/output directories and weak headers
+  ---
+  duration_ms: 32.399148
+  type: 'test'
+  ...
+# Subtest: overlay files are added when servable and not colliding
+ok 265 - overlay files are added when servable and not colliding
+  ---
+  duration_ms: 25.708188
+  type: 'test'
+  ...
+# (node:509) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: GhostPay's real apps/web/public/_headers parses and satisfies the required headers
+ok 266 - GhostPay's real apps/web/public/_headers parses and satisfies the required headers
+  ---
+  duration_ms: 21.178973
+  type: 'test'
+  ...
+# Subtest: the kit default header file parses and satisfies the required headers
+ok 267 - the kit default header file parses and satisfies the required headers
+  ---
+  duration_ms: 1.473353
+  type: 'test'
+  ...
+# Subtest: Cloudflare documented example: every matching rule contributes; repeated headers join with ", "
+ok 268 - Cloudflare documented example: every matching rule contributes; repeated headers join with ", "
+  ---
+  duration_ms: 0.727375
+  type: 'test'
+  ...
+# Subtest: detach removes headers set by earlier (more pervasive) rules; detach runs before the same rule sets
+ok 269 - detach removes headers set by earlier (more pervasive) rules; detach runs before the same rule sets
+  ---
+  duration_ms: 0.58665
+  type: 'test'
+  ...
+# Subtest: splat matching: greedy, any characters including "/", anchored, at most one
+ok 270 - splat matching: greedy, any characters including "/", anchored, at most one
+  ---
+  duration_ms: 0.491622
+  type: 'test'
+  ...
+# Subtest: unsupported or malformed _headers input fails closed with E_HEADERS
+ok 271 - unsupported or malformed _headers input fails closed with E_HEADERS
+  ---
+  duration_ms: 3.234297
+  type: 'test'
+  ...
+# Subtest: checkRequiredHeaders reports missing headers, CSP directives and a wrong nosniff value
+ok 272 - checkRequiredHeaders reports missing headers, CSP directives and a wrong nosniff value
+  ---
+  duration_ms: 1.049769
+  type: 'test'
+  ...
+# Subtest: transport headers: HSTS only for clearnet https, Onion-Location only when configured
+ok 273 - transport headers: HSTS only for clearnet https, Onion-Location only when configured
+  ---
+  duration_ms: 0.661651
+  type: 'test'
+  ...
+# Subtest: kitResponseHeaders: Cache-Control default, transport headers never override site rules
+ok 274 - kitResponseHeaders: Cache-Control default, transport headers never override site rules
+  ---
+  duration_ms: 1.382233
+  type: 'test'
+  ...
+# Subtest: profiles also require the security headers on "/" (error responses for invalid or outside requests)
+ok 275 - profiles also require the security headers on "/" (error responses for invalid or outside requests)
+  ---
+  duration_ms: 1.906436
+  type: 'test'
+  ...
+# Subtest: R2-A: header names are restricted to [A-Za-z0-9-]+ (a quote could break nginx tokenization)
+ok 276 - R2-A: header names are restricted to [A-Za-z0-9-]+ (a quote could break nginx tokenization)
+  ---
+  duration_ms: 1.342789
+  type: 'test'
+  ...
+# Subtest: R2-D: CSP and nosniff cannot be detached, and are required on scriptable types, every path and "/"
+ok 277 - R2-D: CSP and nosniff cannot be detached, and are required on scriptable types, every path and "/"
+  ---
+  duration_ms: 1.529218
+  type: 'test'
+  ...
+# Subtest: R2-C: CSP values must actually restrict
+ok 278 - R2-C: CSP values must actually restrict
+  ---
+  duration_ms: 2.595258
+  type: 'test'
+  ...
+# Subtest: R2-E: "$" in a header value is reported (E_UNSUPPORTED) before any profile is generated
+ok 279 - R2-E: "$" in a header value is reported (E_UNSUPPORTED) before any profile is generated
+  ---
+  duration_ms: 0.759995
+  type: 'test'
+  ...
+# Subtest: the demo site _headers passes the strengthened checks
+ok 280 - the demo site _headers passes the strengthened checks
+  ---
+  duration_ms: 6.296079
+  type: 'test'
+  ...
+# Subtest: R3: effective script sources may only be self, explicit hosts and hashes
+ok 281 - R3: effective script sources may only be self, explicit hosts and hashes
+  ---
+  duration_ms: 19.573963
+  type: 'test'
+  ...
+# Subtest: R3: Referrer-Policy must be one of the non-leaking values
+ok 282 - R3: Referrer-Policy must be one of the non-leaking values
+  ---
+  duration_ms: 1.778035
+  type: 'test'
+  ...
+# Subtest: R3: a later rule cannot append a non-nosniff value to X-Content-Type-Options
+ok 283 - R3: a later rule cannot append a non-nosniff value to X-Content-Type-Options
+  ---
+  duration_ms: 0.460403
+  type: 'test'
+  ...
+# (node:522) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: refuses non-loopback hosts
+ok 284 - refuses non-loopback hosts
+  ---
+  duration_ms: 17.358337
+  type: 'test'
+  ...
+# Subtest: refuses a header policy weaker than required
+ok 285 - refuses a header policy weaker than required
+  ---
+  duration_ms: 5.088003
+  type: 'test'
+  ...
+# Subtest: serves only listed regular files: no symlinks, no listings, no unlisted files, no logging
+ok 286 - serves only listed regular files: no symlinks, no listings, no unlisted files, no logging
+  ---
+  duration_ms: 68.028233
+  type: 'test'
+  ...
+# Subtest: injected createServer and fs; I/O failures answer 500 with the security headers
+ok 287 - injected createServer and fs; I/O failures answer 500 with the security headers
+  ---
+  duration_ms: 9.962646
+  type: 'test'
+  ...
+# Subtest: IPv6 loopback and base path mismatch
+ok 288 - IPv6 loopback and base path mismatch
+  ---
+  duration_ms: 3.222264
+  type: 'test'
+  ...
+# Subtest: HTTP dates and conditional decisions follow nginx
+ok 289 - HTTP dates and conditional decisions follow nginx
+  ---
+  duration_ms: 0.998723
+  type: 'test'
+  ...
+# (node:530) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: normative routing at the root
+ok 290 - normative routing at the root
+  ---
+  duration_ms: 5.489135
+  type: 'test'
+  ...
+# Subtest: normative routing at a subpath
+ok 291 - normative routing at a subpath
+  ---
+  duration_ms: 0.766127
+  type: 'test'
+  ...
+# Subtest: entrypoint other than index.html: "/" falls back to it
+ok 292 - entrypoint other than index.html: "/" falls back to it
+  ---
+  duration_ms: 0.295554
+  type: 'test'
+  ...
+# Subtest: router construction validates base path, entrypoint and file list
+ok 293 - router construction validates base path, entrypoint and file list
+  ---
+  duration_ms: 1.425544
+  type: 'test'
+  ...
+# Subtest: request-target helpers
+ok 294 - request-target helpers
+  ---
+  duration_ms: 0.899306
+  type: 'test'
+  ...
+# Subtest: nginx UTF-8 validity regex agrees with decodeURIComponent
+ok 295 - nginx UTF-8 validity regex agrees with decodeURIComponent
+  ---
+  duration_ms: 717.930305
+  type: 'test'
+  ...
+# (node:542) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: content types come from the allowlist and carry utf-8 for text
+ok 296 - content types come from the allowlist and carry utf-8 for text
+  ---
+  duration_ms: 1.556339
+  type: 'test'
+  ...
+# Subtest: deny rules name secrets and runtime state precisely
+ok 297 - deny rules name secrets and runtime state precisely
+  ---
+  duration_ms: 2.041609
+  type: 'test'
+  ...
+# Subtest: hashed code chunks with sensitive-sounding names are not rejected by name
+ok 298 - hashed code chunks with sensitive-sounding names are not rejected by name
+  ---
+  duration_ms: 0.543308
+  type: 'test'
+  ...
+1..298
+# tests 299
+# suites 3
+# pass 286
+# fail 0
+# cancelled 0
+# skipped 13
+# todo 0
+# duration_ms 10072.43568

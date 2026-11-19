@@ -1,0 +1,191 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-11-19T10:25:45.094400+00:00",
+  "reviewer": "/root/privacy_completion",
+  "verdict": "BLOCKED: no verifiable lint results; historical attempt retained unchanged.",
+  "source_head": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+  "source_tree": "c58843c86dae5164eab259d3440aba01406bd593",
+  "manifest_sha256": "2a31fbf503a8b6ba9149dfb6477d65606cfaa6a3b5caaf6268699881cf31d8a9",
+  "driver_sha256": "fb2ba508ef706d7815897684d5a9813753449f930f995784602b1f612d28f724",
+  "node": "v22.23.4",
+  "node_flags": [
+    "--max-old-space-size=768",
+    "--max-semi-space-size=32"
+  ],
+  "input_identity_sha256": "e3b1b089aa8cb19f2dd2f13e7f2bcd8894dd2184b946ae35481f53f158a16511",
+  "checks": {
+    "recorded_session_before_after_inputs_byte_values_equal": true,
+    "recorded_identity_recomputed_from_inputs": true,
+    "manifest_selected_file_hashes_equal_recorded_inputs": true,
+    "requested_24_files_match_partition_3": true,
+    "original_config_and_cwd_unchanged": true,
+    "exact_cli_matches_reviewed_driver": true,
+    "raw_artifact_bytes_and_hashes_verified": true,
+    "all_existing_output_files_preserved": true,
+    "no_eslint_result_file_created": true,
+    "no_retry_remaining_partition_or_driver_execution_by_reviewer": true
+  },
+  "execution": {
+    "argv": [
+      "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+      "--max-old-space-size=768",
+      "--max-semi-space-size=32",
+      "../../node_modules/eslint/bin/eslint.js",
+      "--config",
+      "../../eslint.config.js",
+      "--format",
+      "json",
+      "--output-file",
+      "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/eslint.json",
+      "src/AppShell.frameGuard.test.tsx",
+      "src/AppShell.i18n.test.tsx",
+      "src/AppShell.idleClock.test.tsx",
+      "src/AppShell.network.test.tsx",
+      "src/AppShell.tsx",
+      "src/buildScripts.test.ts",
+      "src/components/BackupPanel.test.tsx",
+      "src/components/BackupPanel.tsx",
+      "src/components/CameraImporter.behavior.test.tsx",
+      "src/components/CameraImporter.i18n.test.tsx",
+      "src/components/CameraImporter.lifecycle.test.tsx",
+      "src/components/CameraImporter.multipart.test.tsx",
+      "src/components/CameraImporter.test.tsx",
+      "src/components/CameraImporter.tsx",
+      "src/components/CameraImporter.visibility.test.tsx",
+      "src/components/Common.test.tsx",
+      "src/components/Common.tsx",
+      "src/components/ContextHelp.test.tsx",
+      "src/components/ContextHelp.tsx",
+      "src/components/Disclosure.tsx",
+      "src/components/ErrorBoundary.test.tsx",
+      "src/components/ErrorBoundary.tsx",
+      "src/components/InvoicePaymentSummary.test.tsx",
+      "src/components/InvoicePaymentSummary.tsx"
+    ],
+    "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+    "finished_at": "2026-11-19T10:20:16.248895+00:00",
+    "interrupted_by": null,
+    "launch_error": null,
+    "pid": 31,
+    "resource_usage": {
+      "block_inputs": 15508712,
+      "block_outputs": 16,
+      "involuntary_context_switches": 48274,
+      "major_page_faults": 2411,
+      "max_rss_kib": 404932,
+      "minor_page_faults": 115185,
+      "rss_scope": "this child; Linux wait4 ru_maxrss",
+      "system_seconds": 28.951536,
+      "user_seconds": 12.36965,
+      "voluntary_context_switches": 14436
+    },
+    "returncode": -9,
+    "shell_exit_code": 137,
+    "started_at": "2026-11-19T10:17:10.915506+00:00",
+    "termination_signal": 9,
+    "wall_seconds": 185.33335843499663
+  },
+  "driver_exit_code": {
+    "value": 2,
+    "source": "Coordinator terminal session 91413; reviewer verified child outcome from immutable receipt."
+  },
+  "json_error": "FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/eslint.json'",
+  "input_error": null,
+  "aggregate": {
+    "qualification": "BLOCKED_OR_FAILED",
+    "updated_at": "2026-11-19T10:20:29.716100+00:00",
+    "processed_files": 0,
+    "successful_files": 0,
+    "error_count": null,
+    "warning_count": null,
+    "unexecuted_partitions": 20
+  },
+  "stderr": "(node:31) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+  "cause": "Unknown. SIGKILL and wait4 resource values do not establish OOM or an ESLint/source defect.",
+  "limits": [
+    "The child may have done internal work, but no per-file ESLint JSON was emitted; none of the 24 requested files can count as qualified.",
+    "Error and warning totals are unknown, not zero. No exhaustive partitioned lint or original monolithic lint pass is claimed.",
+    "Input/source binding is historical at 3ab. This attempt must not be relabeled as qualification for a later source head.",
+    "Independent review inspected and hashed the artifacts; it did not execute ESLint or reconstruct results."
+  ],
+  "artifacts": [
+    {
+      "path": "aggregate.json",
+      "source": "/workspace/scratch/13855ecc035c/web-lint-partitions/aggregate.json",
+      "bytes": 5018,
+      "sha256": "00d9545428220f0aea48bb06f94d3e908529a76e21509c02b5032c836e7bd4c3"
+    },
+    {
+      "path": "driver.lock",
+      "source": "/workspace/scratch/13855ecc035c/web-lint-partitions/driver.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "partition-003/receipt.json",
+      "source": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/receipt.json",
+      "bytes": 644681,
+      "sha256": "5e41e37ab9d66142c420d2a8d39f351feef562d452e71fc46370b814f356c87e"
+    },
+    {
+      "path": "partition-003/started.json",
+      "source": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/started.json",
+      "bytes": 1504,
+      "sha256": "bd28e3fe925111e238668f513c44f5acf3eb131ed68b5a167c6be807bf21f438"
+    },
+    {
+      "path": "partition-003/stderr.txt",
+      "source": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/stderr.txt",
+      "bytes": 175,
+      "sha256": "aa335058ef01f0bbaebf878c7d9ae4560746f7ab51d95a8027c9de3c0258189d"
+    },
+    {
+      "path": "partition-003/stdout.txt",
+      "source": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "session.json",
+      "source": "/workspace/scratch/13855ecc035c/web-lint-partitions/session.json",
+      "bytes": 315338,
+      "sha256": "dd0872bb07a0441c84e57bb72d76dc9d5d47ec229059cb53482b29dfd6d93dc2"
+    },
+    {
+      "path": "run-web-lint-partitions.py",
+      "source": "/workspace/scratch/13855ecc035c/run-web-lint-partitions.py",
+      "bytes": 27097,
+      "sha256": "fb2ba508ef706d7815897684d5a9813753449f930f995784602b1f612d28f724"
+    },
+    {
+      "path": "web-lint-manifest.json",
+      "source": "/workspace/scratch/13855ecc035c/GhostPay/docs/consolidation/feature-completion-20261119/evidence/web-lint-manifest.json",
+      "bytes": 201255,
+      "sha256": "2a31fbf503a8b6ba9149dfb6477d65606cfaa6a3b5caaf6268699881cf31d8a9"
+    },
+    {
+      "path": "web-lint-manifest.mjs",
+      "source": "/workspace/scratch/13855ecc035c/GhostPay/docs/consolidation/feature-completion-20261119/evidence/web-lint-manifest.mjs",
+      "bytes": 6489,
+      "sha256": "8be69d74da0dc8d2b8e6f3ea0011c2ea915ef2e930fe2ce5e5027f44b9934808"
+    },
+    {
+      "path": "web-lint-files.txt",
+      "source": "/workspace/scratch/13855ecc035c/GhostPay/docs/consolidation/feature-completion-20261119/evidence/web-lint-files.txt",
+      "bytes": 15748,
+      "sha256": "293c110b6816d6e1632bd141c25bba3e1611fc084ff065612e781bf55faa0eb4"
+    },
+    {
+      "path": "web-lint-partition-plan.md",
+      "source": "/workspace/scratch/13855ecc035c/GhostPay/docs/consolidation/feature-completion-20261119/evidence/web-lint-partition-plan.md",
+      "bytes": 6446,
+      "sha256": "1b2d48a2797ac5e5f00cff3619ea6586f0b6e9dc461ab97a02a1ce53b547a0cc"
+    },
+    {
+      "path": "final-serial-web-lint.txt",
+      "source": "/workspace/scratch/13855ecc035c/GhostPay/docs/consolidation/feature-completion-20261119/evidence/final-serial-web-lint.txt",
+      "bytes": 875,
+      "sha256": "06b8f674561c1c89c32080d86de079adec6b09b00819261ec94e43ad63ae32d9"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "profile": "lean",
+  "source_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+  "node": "22.23.4",
+  "local_artifact_only": true,
+  "scope": "Vite production bundling, CSP application and artifact scan",
+  "typecheck_prerequisite_qualified": true,
+  "files": [
+    {
+      "file": "_headers",
+      "bytes": 1761,
+      "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08"
+    },
+    {
+      "file": "assets/ar-Bq0By-cq.js",
+      "bytes": 341781,
+      "sha256": "edc75c32c2f4e36518cb3721b092a2e2e9c338ff370d7eb99ea07a83c31fdb84"
+    },
+    {
+      "file": "assets/es-5R4rvGHV.js",
+      "bytes": 284838,
+      "sha256": "b5f50d2afe382786865d4057b0b18e29171f52819f69fa0abc9675105d191cef"
+    },
+    {
+      "file": "assets/index-CBoRkLgw.js",
+      "bytes": 1454895,
+      "sha256": "39647914cff0e4fd7dfdb520ed8ac931ee1f9615e6384ac0db6597191d269d0b"
+    },
+    {
+      "file": "assets/ja-DxGb5ItK.js",
+      "bytes": 334266,
+      "sha256": "7bcf48e07d1fbd377da98c7492422d5355713a5649913bdfcf191a664fa2dc26"
+    },
+    {
+      "file": "assets/jsQR-DMfxOdIb.js",
+      "bytes": 129986,
+      "sha256": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869"
+    },
+    {
+      "file": "assets/rolldown-runtime-XKyaHtl9.js",
+      "bytes": 726,
+      "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+    },
+    {
+      "file": "assets/scanner.worker-DKkGvTTt.js",
+      "bytes": 62136,
+      "sha256": "5649f2a7e434e9133ea7cba51819b2e15bccf2d6d821e62a76901f2a2a9eb345"
+    },
+    {
+      "file": "assets/style-sbKVpGL7.css",
+      "bytes": 11944,
+      "sha256": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c"
+    },
+    {
+      "file": "build-info.json",
+      "bytes": 178,
+      "sha256": "7bb50d6ce84858dc79555b2f1a910e69fab169259e93d102502dbf885ce28e43"
+    },
+    {
+      "file": "deployments/README.md",
+      "bytes": 861,
+      "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+    },
+    {
+      "file": "favicon.svg",
+      "bytes": 332,
+      "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+    },
+    {
+      "file": "ghostpay-lean-build.json",
+      "bytes": 107621,
+      "sha256": "5232bcb6378254f100de6b15a87f8959668e206fa17b49a614d43fd1565e401c"
+    },
+    {
+      "file": "help.css",
+      "bytes": 3283,
+      "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+    },
+    {
+      "file": "help.html",
+      "bytes": 16886,
+      "sha256": "82c05445eaadafedba4bbbc7d9955d39aeeafe4bcbfebc10344ccaf3c9f02e92"
+    },
+    {
+      "file": "index.html",
+      "bytes": 3402,
+      "sha256": "8fc64c5687f126b1bbba47d95363eb71350b15a1693b95be8395e1b16c5a5f11"
+    },
+    {
+      "file": "privacy.html",
+      "bytes": 8062,
+      "sha256": "225e0d81fbd8d5d2ccf68945ae189d38c77535393b538f293db0db6b211c7e70"
+    }
+  ]
+}

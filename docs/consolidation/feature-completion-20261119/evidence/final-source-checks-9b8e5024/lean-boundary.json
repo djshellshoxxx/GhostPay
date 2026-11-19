@@ -1,0 +1,21 @@
+{
+  "label": "lean-boundary",
+  "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "exit_code": 0,
+  "wall_seconds": 0.339,
+  "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+  "argv": [
+    "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "--input-type=module",
+    "-e",
+    "import{readFileSync}from'node:fs';import{checkLeanReport}from'../../scripts/pages/verify-pages-site.mjs';const r=JSON.parse(readFileSync('dist/ghostpay-lean-build.json','utf8'));const problems=checkLeanReport(r);console.log(JSON.stringify({chunks:r.chunks.length,workers:r.workers.length,problems}));if(problems.length)process.exitCode=1;"
+  ],
+  "node": "22.23.4",
+  "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+  "log": "lean-boundary.txt",
+  "post_source_validation_error": null,
+  "qualification": "PASSED",
+  "bytes": 1070,
+  "sha256": "73e4d9c87142fd7e8222d955a5d3462fc511eba1ef79329b25cbae2fbc9e9f0a"
+}

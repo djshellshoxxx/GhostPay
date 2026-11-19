@@ -1,0 +1,19 @@
+(node:26) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+src/lib/invoiceVerification.test.ts(39,56): error TS2345: Argument of type '"JSON" | "SCHEMA" | "NON_CANONICAL" | "UNSUPPORTED" | "INVALID_SIGNATURE" | "UNTRUSTED_SIGNER" | "MISSING_SIGNATURE" | "VERIFICATION_UNAVAILABLE" | "PASSPHRASE" | "PASSPHRASE_REQUIRED"' is not assignable to parameter of type 'InvoiceErrorCode'.
+  Type '"MISSING_SIGNATURE"' is not assignable to type 'InvoiceErrorCode'.
+src/lib/invoiceVerification.ts(23,10): error TS2678: Type '"MISSING_SIGNATURE"' is not comparable to type 'InvoiceErrorCode'.
+src/lib/invoiceVerification.ts(27,10): error TS2678: Type '"VERIFICATION_UNAVAILABLE"' is not comparable to type 'InvoiceErrorCode'.
+src/lib/manifest.test.ts(8,10): error TS2305: Module '"../../scripts/scan-bundle.mjs"' has no exported member 'stripComments'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /workspace/scratch/13855ecc035c/GhostPay/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/13855ecc035c/GhostPay/apps/web
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit

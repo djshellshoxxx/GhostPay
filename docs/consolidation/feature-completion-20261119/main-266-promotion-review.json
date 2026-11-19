@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "source": "Native GitHub metadata and local fetched Git object verification",
+  "reviewed_main_before": "8f56376427c96881f49590920ff0bf8543ec81b4",
+  "observed_main_after": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "pr_number": 266,
+  "pr_head": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+  "pr_title": "docs(audit): rotation 208 merchant-profile expiry clock review",
+  "reviewed_files": [
+    {
+      "sha": "bdd43ff933f2e458e121575e64cbf24c06204d68",
+      "filename": "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md",
+      "status": "modified",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "blob_url": "https://github.com/djshellshoxxx/GhostPay/blob/75dc9d3b29e3449b56e13889496c3771ec7c2f93/docs%2Faudits%2FCHATGPT_RANDOM_AUDIT_LEDGER.md",
+      "raw_url": "https://github.com/djshellshoxxx/GhostPay/raw/75dc9d3b29e3449b56e13889496c3771ec7c2f93/docs%2Faudits%2FCHATGPT_RANDOM_AUDIT_LEDGER.md",
+      "contents_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/contents/docs%2Faudits%2FCHATGPT_RANDOM_AUDIT_LEDGER.md?ref=75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "patch": "@@ -1,5 +1,15 @@\n # ChatGPT randomized source audit ledger — GhostPay\n \n+## November 19, 2026 UTC — rotation 208: merchant-profile expiry clock boundary (READ-ONLY)\n+\n+- **Identity and isolation:** One ChatGPT assistant performed this distinct read-only audit after a separate `json.ts` fix lane. No parallel second reviewer or security certification. Source baseline current-main observation `14ded337a10c140d7a9f9a9238ec038587d925bb`; audit branch `automation/20261119T083600Z/audit/merchant-clock` owns only this ledger entry. Lock metadata observed released at `3ae60de55add2763aa7d7a44033d11b96df13adb`; no integration attempted. Active #262/#264 broad consolidations, recovery #260 and new #265 remain separate.\n+- **Reproducible selection:** Last ledger blob `a54f3fa7572206040b05cde859b5732860cde438`, prior rotation 207, and three previously non-primary-reviewed export modules sorted `packages/invoice-schema/src/envelope.ts,packages/invoice-schema/src/merchantProfile.ts,packages/invoice-schema/src/sign.ts`. FNV-1a32 over `14ded337a10c140d7a9f9a9238ec038587d925bb|a54f3fa7572206040b05cde859b5732860cde438|rotation208|packages/invoice-schema/src/envelope.ts,packages/invoice-schema/src/merchantProfile.ts,packages/invoice-schema/src/sign.ts` yielded unsigned seed **275333962**, index **1/3**, selecting [`packages/invoice-schema/src/merchantProfile.ts`](https://github.com/djshellshoxxx/GhostPay/blob/14ded337a10c140d7a9f9a9238ec038587d925bb/packages/invoice-schema/src/merchantProfile.ts) blob `a75124bb35d2c319e6936097ef6b4048ac59ec76`. Coverage-first pseudorandom subset, not uniform whole-repository sampling.\n+- **Trust-boundary review:** `parseShape` (lines 88–133) checks signature fields, merchant-id key binding, array and template limits, HTTPS origins and signed expiry; `verifyMerchantProfile` (156–183) handles strict JSON size, signature verification and the expiry predicate. Followed `apps/web/src/lib/merchantTemplate.ts` (blob `045efb594a73a610662e8f5d45a6b270de0e589e`) lines 56 and 68, which call the verifier with injected `nowSeconds()`, rechecking after asynchronous custody work. Read `packages/invoice-schema/src/merchantProfile.test.ts` (blob `0ee33da251a01df95d7aafae9d3118feb1fd9d82`): valid/tampered signature, origin, profile expiry, input-size, unknown keys, duplicate templates and single-char fuzz coverage. Existing tests inspected; not executed.\n+- **GP-AUD-208-01 — confirmed source-path correctness gap, conditional exploitability:** `verifyMerchantProfile` does not validate `nowSec`; line **181** only checks `p.exp <= nowSec`. For `Number.NaN`, `undefined` or `-Infinity`, this comparison evaluates false and can return `{ ok: true, profile: p }` for an otherwise valid signed **expired** profile. Independent Node 22 arithmetic reproduction: `1700001000 <= NaN` and `1700001000 <= undefined` both false; the same expiration guard is present in source. The full signed-profile verifier was **not** executed with these clocks; no browser exploit or real-world occurrence is established. Severity **Low** (fail-open expiry if a caller passes an invalid clock), confidence **high** for source logic and **unverified** end-to-end exploitability. No private material or security bypass proven for normal finite `Date.now()` callers.\n+- **Proposed repair and regression:** Require `Number.isSafeInteger(nowSec)` and a non-negative valid Unix-seconds range, returning a generic `{ok:false,reason:'format'}` or an approved explicit time-rejection reason, before accepting a profile; decide the stable public error policy from existing tests. Add a test using a valid signed profile whose `exp` is in the past and clock values `NaN`, `undefined` coerced through JS, `Infinity`, `-Infinity`, and a fractional clock. Keep valid boundary `now === exp` expired. No change to cryptography, policies or broad integration without a fresh owner claim and test-first repair. Track finding GP-AUD-208-01 until actually regression-tested and independently reviewed; not resolved by this audit.\n+- **Other findings:** No independently reproduced additional flaw in signed merchant-id derivation, domain separation or structured template/origin limits during bounded inspection. This is **not** a full security audit. No code change, GitHub review approval, main merge, deployment, release, CI gate waiver or real funds occurred in the audit phase. Next rotation prioritize previously unreviewed `envelope.ts` and `sign.ts`, selecting again from current source and current ledger blob.\n+\n+\n ## November 19, 2026 UTC — rotation 207: invoice-schema public export surface and receipt trust boundary (READ-ONLY)\n \n - **Preflight and owners:** Inspected previous rotation 206, source-pinned handoff, merged zero-Codex specification, repository AI instructions, open PR/owner map, recent main commits, and exact-head workflow runs. Default `main` is `dfc75ef2087fa6463ae59e0818abec01796c578d`: [application CI 44292693611](https://github.com/djshellshoxxx/GhostPay/actions/runs/44292693611) 24/24 passed. Previous audit [44460457160](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460457160), docs [44460540316](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460540316), and handoff [44460617232](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460617232) all completed successful **scoped** CI. Owner [#238](https://github.com/djshellshoxxx/GhostPay/pull/238) remains app/Mythril failed; sibling [#239](https://github.com/djshellshoxxx/GhostPay/pull/239)/[#240](https://github.com/djshellshoxxx/GhostPay/pull/240) app failed; independently [#241](https://github.com/djshellshoxxx/GhostPay/pull/241) app green but unmerged. All those workflow runs had completed at inspection. Did not edit their branches/files."
+    }
+  ],
+  "exact_head_checks": [
+    {
+      "id": 135488434507,
+      "name": "ts-test",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488434507"
+    },
+    {
+      "id": 135488434406,
+      "name": "contracts-static",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488434406"
+    },
+    {
+      "id": 135488434340,
+      "name": "contracts-test",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488434340"
+    },
+    {
+      "id": 135488434319,
+      "name": "contracts-slither",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488434319"
+    },
+    {
+      "id": 135488434258,
+      "name": "contracts-extra",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488434258"
+    },
+    {
+      "id": 135488434252,
+      "name": "ts-typecheck",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488434252"
+    },
+    {
+      "id": 135488434080,
+      "name": "ts-check",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488434080"
+    },
+    {
+      "id": 135488434019,
+      "name": "e2e",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488434019"
+    },
+    {
+      "id": 135488433908,
+      "name": "lean-candidate",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488433908"
+    },
+    {
+      "id": 135488433700,
+      "name": "ts-lint",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488433700"
+    },
+    {
+      "id": 135488433290,
+      "name": "contracts-coverage",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488433290"
+    },
+    {
+      "id": 135488432900,
+      "name": "ts-test-relayer",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488432900"
+    },
+    {
+      "id": 135488431845,
+      "name": "contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488431845"
+    },
+    {
+      "id": 135488431682,
+      "name": "typescript",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135488431682"
+    },
+    {
+      "id": 135467310343,
+      "name": "CodeQL",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/runs/135467310343"
+    },
+    {
+      "id": 135443051026,
+      "name": "secrets-and-egress",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135443051026"
+    },
+    {
+      "id": 135443050627,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490041149/job/135443050627"
+    },
+    {
+      "id": 135443042126,
+      "name": "Analyze (actions)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490035882/job/135443042126"
+    },
+    {
+      "id": 135443042092,
+      "name": "Analyze (javascript-typescript)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490035882/job/135443042092"
+    },
+    {
+      "id": 135443041825,
+      "name": "Analyze (python)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44490035882/job/135443041825"
+    }
+  ],
+  "commit_status": {
+    "state": "success",
+    "statuses": [
+      {
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/statuses/75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+        "avatar_url": "https://avatars.githubusercontent.com/oa/358121?v=4",
+        "id": 59345046879,
+        "node_id": "SC_kwDOVR5mTM8AAAAN0T2NXw",
+        "state": "success",
+        "description": "No manifest changes detected in 1 project",
+        "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/25325713-75da-4937-884f-9eb1c1881f08",
+        "context": "security/snyk (djshellshoxxx)",
+        "created_at": "2026-11-19T08:43:44Z",
+        "updated_at": "2026-11-19T08:43:44Z"
+      }
+    ],
+    "sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+    "total_count": 1,
+    "repository": {
+      "id": 1428055628,
+      "node_id": "R_kgDOVR5mTA",
+      "name": "GhostPay",
+      "full_name": "djshellshoxxx/GhostPay",
+      "private": false,
+      "owner": {
+        "login": "djshellshoxxx",
+        "id": 127660907,
+        "node_id": "U_kgDOB5vzaw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/127660907?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/djshellshoxxx",
+        "html_url": "https://github.com/djshellshoxxx",
+        "followers_url": "https://api.github.com/users/djshellshoxxx/followers",
+        "following_url": "https://api.github.com/users/djshellshoxxx/following{/other_user}",
+        "gists_url": "https://api.github.com/users/djshellshoxxx/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/djshellshoxxx/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/djshellshoxxx/subscriptions",
+        "organizations_url": "https://api.github.com/users/djshellshoxxx/orgs",
+        "repos_url": "https://api.github.com/users/djshellshoxxx/repos",
+        "events_url": "https://api.github.com/users/djshellshoxxx/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/djshellshoxxx/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/djshellshoxxx/GhostPay",
+      "description": "Get paid on-chain without revealing your wallet",
+      "fork": false,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay",
+      "forks_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/forks",
+      "keys_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/teams",
+      "hooks_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/hooks",
+      "issue_events_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/events",
+      "assignees_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/tags",
+      "blobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/languages",
+      "stargazers_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/stargazers",
+      "contributors_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/contributors",
+      "subscribers_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/subscribers",
+      "subscription_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/subscription",
+      "commits_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/merges",
+      "archive_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/downloads",
+      "issues_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/labels{/name}",
+      "releases_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/deployments"
+    },
+    "commit_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/75dc9d3b29e3449b56e13889496c3771ec7c2f93/status"
+  },
+  "merge": {
+    "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  },
+  "candidate_local": "5814248636ac115d51fd0e3f35ee00d51554a90f",
+  "candidate_published": "ec81ab8e560a3786152d373a58a6dd422f92232b",
+  "candidate_tree": "79a12b5e1d375307808565e8262c3ce114c27a3e",
+  "changed_paths_since_tested_9b8": [
+    "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md"
+  ],
+  "runtime_changed_paths": 0,
+  "qualification_limits": [
+    "Documentation-only audit retains its dated baseline and conditional arithmetic proof; it is not a runtime repair or vulnerability certification.",
+    "Original 9b8e5024/155d0091 command results remain pinned to their actual execution source.",
+    "Root marked PR266 ready and performed normal expected-head merge after all observed applicable gates completed; no force or protection bypass.",
+    "Fresh discovered-payment export repair is a separate in-progress workstream, not included in the completed 9b8 source checks."
+  ]
+}

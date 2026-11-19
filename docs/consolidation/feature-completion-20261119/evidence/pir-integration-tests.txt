@@ -1,0 +1,41 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay/packages/pir-two-server
+      Coverage enabled with v8
+
+(node:40) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:64) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:76) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  4 passed (4)
+      Tests  62 passed (62)
+   Start at  00:00:20
+   Duration  32.89s (tests 89%, transform 7%, import 3%, worker 1%)
+
+    Isolate  4 workers spawned · ~678ms startup each (spawn + environment, per file)
+             at least ~2.03s faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+-------------|---------|----------|---------|---------|-------------------
+File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------|---------|----------|---------|---------|-------------------
+All files    |   99.15 |    93.33 |   98.76 |   99.74 |                   
+ http.ts     |   94.73 |    84.84 |   92.85 |   98.07 | 42                
+ manifest.ts |     100 |    97.41 |     100 |     100 | 62,85             
+ pages.ts    |   99.11 |    96.55 |     100 |     100 | 171,188           
+ rand.ts     |     100 |    80.95 |     100 |     100 | 39                
+ xor.ts      |     100 |    70.96 |     100 |     100 | 36-63,77          
+-------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 99.15% ( 469/473 )
+Branches     : 93.33% ( 322/345 )
+Functions    : 98.76% ( 80/81 )
+Lines        : 99.74% ( 396/397 )
+================================================================================

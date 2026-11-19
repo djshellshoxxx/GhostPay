@@ -1,0 +1,273 @@
+{
+  "repo": "djshellshoxxx/GhostPay",
+  "pr": 264,
+  "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+  "runId": 44487024101,
+  "aggregateCheckId": 135456052088,
+  "aggregateConclusion": "failure",
+  "aggregateSecurityAlertCount": 1,
+  "aggregateSeverity": "high",
+  "artifacts": {
+    "artifacts": []
+  },
+  "annotationAccess": {
+    "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "jobs": [
+    {
+      "jobId": 135432925616,
+      "language": "javascript-typescript",
+      "logCharacters": 1020783,
+      "lineCount": 6906,
+      "bindingExcerpt": [
+        {
+          "line": 34,
+          "text": "2026-11-19T09:15:45.2199664Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)"
+        },
+        {
+          "line": 35,
+          "text": "2026-11-19T09:15:45.3359290Z Download action repository 'github/codeql-action@v4' (SHA:33d7b85da1a04171e211befe2c739303b9a4c066)"
+        },
+        {
+          "line": 54,
+          "text": "2026-11-19T09:15:45.7222583Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 110,
+          "text": "2026-11-19T09:15:46.2111945Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a:refs/remotes/pull/264/head"
+        },
+        {
+          "line": 112,
+          "text": "2026-11-19T09:15:48.0096556Z  * [new ref]         bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a -> pull/264/head"
+        },
+        {
+          "line": 139,
+          "text": "2026-11-19T09:15:48.3917772Z [command]/usr/bin/git log -1 --format=%H"
+        },
+        {
+          "line": 140,
+          "text": "2026-11-19T09:15:48.3949429Z bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a"
+        },
+        {
+          "line": 153,
+          "text": "2026-11-19T09:15:48.4332399Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 184,
+          "text": "2026-11-19T09:15:48.7974057Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 210,
+          "text": "2026-11-19T09:15:50.6684082Z Using CodeQL CLI version 2.27.4 from toolcache at /opt/hostedtoolcache/CodeQL/2.27.4/x64"
+        },
+        {
+          "line": 1052,
+          "text": "2026-11-19T09:15:57.4943837Z [command]/opt/hostedtoolcache/CodeQL/2.27.4/x64/codeql/codeql database init --force-overwrite --db-cluster /home/runner/work/_temp/codeql_databases --source-root=/home/runner/work/GhostPay/GhostPay --no-calculate-baseline --extractor-include-aliases --language=javascript --codescanning-config=/home/runner/work/_temp/user-config.yaml --build-mode=none"
+        },
+        {
+          "line": 1076,
+          "text": "2026-11-19T09:16:02.0974777Z   CODE_SCANNING_REF: refs/pull/264/head"
+        }
+      ],
+      "queryCountsMeaning": "Logs list evaluated/interpreted queries; these are not identified alerts.",
+      "sarifUploaded": true,
+      "uploadCompleted": true,
+      "individualJobSuccess": true
+    },
+    {
+      "jobId": 135432925356,
+      "language": "actions",
+      "logCharacters": 121033,
+      "lineCount": 1325,
+      "bindingExcerpt": [
+        {
+          "line": 34,
+          "text": "2026-11-19T09:12:23.2827835Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)"
+        },
+        {
+          "line": 35,
+          "text": "2026-11-19T09:12:23.3772727Z Download action repository 'github/codeql-action@v4' (SHA:33d7b85da1a04171e211befe2c739303b9a4c066)"
+        },
+        {
+          "line": 54,
+          "text": "2026-11-19T09:12:23.6421222Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 110,
+          "text": "2026-11-19T09:12:23.9602358Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a:refs/remotes/pull/264/head"
+        },
+        {
+          "line": 112,
+          "text": "2026-11-19T09:12:25.4858875Z  * [new ref]         bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a -> pull/264/head"
+        },
+        {
+          "line": 139,
+          "text": "2026-11-19T09:12:25.7553769Z [command]/usr/bin/git log -1 --format=%H"
+        },
+        {
+          "line": 140,
+          "text": "2026-11-19T09:12:25.7576446Z bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a"
+        },
+        {
+          "line": 153,
+          "text": "2026-11-19T09:12:25.7851669Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 184,
+          "text": "2026-11-19T09:12:26.0090483Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 208,
+          "text": "2026-11-19T09:12:27.8967785Z Using CodeQL CLI version 2.27.4 from toolcache at /opt/hostedtoolcache/CodeQL/2.27.4/x64"
+        },
+        {
+          "line": 1048,
+          "text": "2026-11-19T09:12:31.1480253Z [command]/opt/hostedtoolcache/CodeQL/2.27.4/x64/codeql/codeql database init --force-overwrite --db-cluster /home/runner/work/_temp/codeql_databases --source-root=/home/runner/work/GhostPay/GhostPay --no-calculate-baseline --extractor-include-aliases --language=actions --codescanning-config=/home/runner/work/_temp/user-config.yaml --build-mode=none"
+        },
+        {
+          "line": 1072,
+          "text": "2026-11-19T09:12:32.9512483Z   CODE_SCANNING_REF: refs/pull/264/head"
+        }
+      ],
+      "queryCountsMeaning": "Logs list evaluated/interpreted queries; these are not identified alerts.",
+      "sarifUploaded": true,
+      "uploadCompleted": true,
+      "individualJobSuccess": true
+    },
+    {
+      "jobId": 135432925095,
+      "language": "python",
+      "logCharacters": 161724,
+      "lineCount": 1583,
+      "bindingExcerpt": [
+        {
+          "line": 34,
+          "text": "2026-11-19T09:09:15.9762656Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)"
+        },
+        {
+          "line": 35,
+          "text": "2026-11-19T09:09:17.8036216Z Download action repository 'github/codeql-action@v4' (SHA:33d7b85da1a04171e211befe2c739303b9a4c066)"
+        },
+        {
+          "line": 54,
+          "text": "2026-11-19T09:09:18.1386812Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 110,
+          "text": "2026-11-19T09:09:20.7028984Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a:refs/remotes/pull/264/head"
+        },
+        {
+          "line": 112,
+          "text": "2026-11-19T09:09:22.0217237Z  * [new ref]         bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a -> pull/264/head"
+        },
+        {
+          "line": 139,
+          "text": "2026-11-19T09:09:22.2663406Z [command]/usr/bin/git log -1 --format=%H"
+        },
+        {
+          "line": 140,
+          "text": "2026-11-19T09:09:22.2682886Z bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a"
+        },
+        {
+          "line": 153,
+          "text": "2026-11-19T09:09:22.2887248Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 184,
+          "text": "2026-11-19T09:09:22.5959299Z   CODE_SCANNING_REF: refs/pull/264/head"
+        },
+        {
+          "line": 210,
+          "text": "2026-11-19T09:09:24.3787847Z Using CodeQL CLI version 2.27.4 from toolcache at /opt/hostedtoolcache/CodeQL/2.27.4/x64"
+        },
+        {
+          "line": 1051,
+          "text": "2026-11-19T09:09:31.9559206Z [command]/opt/hostedtoolcache/CodeQL/2.27.4/x64/codeql/codeql database init --force-overwrite --db-cluster /home/runner/work/_temp/codeql_databases --source-root=/home/runner/work/GhostPay/GhostPay --no-calculate-baseline --extractor-include-aliases --language=python --codescanning-config=/home/runner/work/_temp/user-config.yaml --build-mode=none"
+        },
+        {
+          "line": 1075,
+          "text": "2026-11-19T09:09:36.3304945Z   CODE_SCANNING_REF: refs/pull/264/head"
+        }
+      ],
+      "queryCountsMeaning": "Logs list evaluated/interpreted queries; these are not identified alerts.",
+      "sarifUploaded": true,
+      "uploadCompleted": true,
+      "individualJobSuccess": true
+    }
+  ],
+  "applicability": "Unknown: available logs do not expose a confirmed alert rule ID, source location or dataflow. No claim it is fixed or novel in frozen candidate e74ddd26b75912d770e05d51f0b9229756adc649.",
+  "noAnalyzerExecution": true,
+  "canonicalUrls": {
+    "pullRequest": "https://github.com/djshellshoxxx/GhostPay/pull/264",
+    "workflowRun": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44487024101",
+    "aggregateCheck": "https://github.com/djshellshoxxx/GhostPay/runs/135456052088",
+    "annotationsAttempt": "https://api.github.com/repos/djshellshoxxx/GhostPay/check-runs/135456052088/annotations"
+  },
+  "artifactListingLimit": "The connector returns the first page only. This run's response contained an empty artifacts array.",
+  "environmentInterruption": "An initial local verification process failed to start while the workspace was unavailable; the workspace recovered and lightweight local verification resumed.",
+  "noAccessWorkaround": true,
+  "noFindingDismissal": true,
+  "workflowMetadata": {
+    "id": 44487024101,
+    "name": "PR #264",
+    "path": "dynamic/github-code-scanning/codeql",
+    "head_sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "head_branch": "refs/pull/264/head",
+    "event": "dynamic",
+    "run_attempt": 1,
+    "conclusion": "success",
+    "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44487024101",
+    "workflow_id": 398095781,
+    "created_at": "2026-11-19T08:22:18Z",
+    "updated_at": "2026-11-19T09:20:03Z"
+  },
+  "configurationBinding": {
+    "workflowPath": "dynamic/github-code-scanning/codeql",
+    "event": "dynamic",
+    "cliVersion": "2.27.4",
+    "codeqlActionCommit": "33d7b85da1a04171e211befe2c739303b9a4c066",
+    "buildMode": "none",
+    "queryPacks": {
+      "javascript": "2.5.0",
+      "actions": "0.6.39",
+      "python": "1.9.0"
+    },
+    "generatedConfigPath": "/home/runner/work/_temp/user-config.yaml",
+    "generatedConfigContentRecovered": false,
+    "limits": "Logs bind the exact checked-out head, CLI/action and query-pack versions. No SARIF, generated configuration artifact, alert rule, location, or dataflow was available through the permitted responses."
+  },
+  "aggregateFailureIsSeparateFromSuccessfulAnalysisJobs": true,
+  "savedLogReceipts": [
+    {
+      "path": "codeql-javascript-job-135432925616.log",
+      "connectorCharacterCount": 1020783,
+      "connectorUtf8Bytes": 1020785,
+      "connectorEndedWithLf": true,
+      "containsNul": false,
+      "method": "Native github_fetch_workflow_job_logs structuredContent.content saved as UTF-8 text",
+      "sha256": "461e4cc77a6bab41d9e8e189022df6ef9e04c539fbfc71bf7ac7fcc49ca30a85",
+      "savedBytes": 1020785
+    },
+    {
+      "path": "codeql-actions-job-135432925356.log",
+      "connectorCharacterCount": 121033,
+      "connectorUtf8Bytes": 121035,
+      "connectorEndedWithLf": true,
+      "containsNul": false,
+      "method": "Native github_fetch_workflow_job_logs structuredContent.content saved as UTF-8 text",
+      "sha256": "8ba8d2bbd66373d1d67c39beb78e08db3e977acccbc46f2ef1a157019b9d0514",
+      "savedBytes": 121035
+    },
+    {
+      "path": "codeql-python-job-135432925095.log",
+      "connectorCharacterCount": 161724,
+      "connectorUtf8Bytes": 161726,
+      "connectorEndedWithLf": true,
+      "containsNul": false,
+      "method": "Native github_fetch_workflow_job_logs structuredContent.content saved as UTF-8 text",
+      "sha256": "1af273cdb78a1507aefc1c8ff1010dd5b596081cd563ad230a5989b587e96a03",
+      "savedBytes": 161726
+    }
+  ]
+}

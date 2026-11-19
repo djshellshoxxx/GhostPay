@@ -1,0 +1,207 @@
+{
+  "observedAt": "2026-11-19T10:08:55.394602+00:00",
+  "artifactId": 14509646188,
+  "runId": 44476066945,
+  "prHead": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+  "candidateSource": "e74ddd26b75912d770e05d51f0b9229756adc649",
+  "checks": {
+    "archive_digest_matches_github": true,
+    "metadata_source_pin": true,
+    "manifest_source_pin": true,
+    "report_hash": true,
+    "report_full_length": true,
+    "report_not_truncated": true,
+    "config_hash": true,
+    "source_identity": true,
+    "source_list_sorted_unique": true,
+    "completed_with_unchanged_sources": true,
+    "strict_failure_recorded": true,
+    "source_inventory_exact_expected": true,
+    "all_source_hashes_match_exact_pr": true,
+    "target_order_complete": true,
+    "all_per_target_checks": true
+  },
+  "sourceCount": 241,
+  "sourceIdentity": "00753c458c25149f934f812f3b2ddea61bc3f561de0a21b6e0b99c10f17fb275",
+  "configuration": {
+    "compilerVersion": "0.8.28",
+    "optimizerEnabled": true,
+    "optimizerRuns": 200,
+    "evmVersion": "cancun",
+    "transactionDepth": 3,
+    "executionTimeoutSeconds": 900,
+    "modules": "default",
+    "remappings": [
+      "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+    ]
+  },
+  "configSha256": "a027494042667ca625518aa93fb205b1c82ce497b81c172b3363c69e2b3c0ddc",
+  "sourceBindingCounts": {
+    "different": 3,
+    "identical": 237,
+    "missing": 1
+  },
+  "candidateDifferences": [
+    {
+      "path": ".github/workflows/contract-analysis.yml",
+      "recordedSha256": "7737bc99c2eaf723ab375712c816fa14bd06d78b176f8191a642d1c52253ba8e",
+      "prSha256": "7737bc99c2eaf723ab375712c816fa14bd06d78b176f8191a642d1c52253ba8e",
+      "matchesExactPr": true,
+      "candidateSha256": "0d1295952bc2c8b4974badbdb1c0375c834691e7f6b974624b5c8e7d2d648644",
+      "candidateState": "different"
+    },
+    {
+      "path": "packages/contracts/scripts/capture-mythril-evidence.py",
+      "recordedSha256": "e2b878c4912ec467194688350bb7039ab34c98c502632dfb479e182e7d81b25f",
+      "prSha256": "e2b878c4912ec467194688350bb7039ab34c98c502632dfb479e182e7d81b25f",
+      "matchesExactPr": true,
+      "candidateSha256": null,
+      "candidateState": "missing"
+    },
+    {
+      "path": "packages/contracts/scripts/mythril-compat.py",
+      "recordedSha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd",
+      "prSha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd",
+      "matchesExactPr": true,
+      "candidateSha256": "9635bcc9057ddf4681615e67add21bbb584f74df65b563faa23d1219080c2035",
+      "candidateState": "different"
+    },
+    {
+      "path": "packages/contracts/scripts/run-mythril.sh",
+      "recordedSha256": "cb89ec12f0333a8df2caeec67653f8f80753a4fb815f3166ac879dd67f76a425",
+      "prSha256": "cb89ec12f0333a8df2caeec67653f8f80753a4fb815f3166ac879dd67f76a425",
+      "matchesExactPr": true,
+      "candidateSha256": "9a2a8966bec43b1d971c7c99a4214fef0c3a52570dbd2f0a535874c1d33eb445",
+      "candidateState": "different"
+    }
+  ],
+  "analyses": [
+    {
+      "target": "GhostPayRouter",
+      "exitCode": 0,
+      "structuredSuccess": true,
+      "structuredError": null,
+      "issueCount": 0,
+      "checks": {
+        "stdoutHashMatches": true,
+        "stderrHashMatches": true,
+        "completenessHashMatches": true,
+        "argvExpected": true,
+        "selectedCompilerMatches": true,
+        "telemetryComplete": true
+      },
+      "telemetry": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "target": "GhostPaySweepRelayer",
+      "exitCode": 1,
+      "structuredSuccess": true,
+      "structuredError": null,
+      "issueCount": 1,
+      "checks": {
+        "stdoutHashMatches": true,
+        "stderrHashMatches": true,
+        "completenessHashMatches": true,
+        "argvExpected": true,
+        "selectedCompilerMatches": true,
+        "telemetryComplete": true
+      },
+      "telemetry": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "target": "GhostPayPolicyRouter",
+      "exitCode": 0,
+      "structuredSuccess": true,
+      "structuredError": null,
+      "issueCount": 0,
+      "checks": {
+        "stdoutHashMatches": true,
+        "stderrHashMatches": true,
+        "completenessHashMatches": true,
+        "argvExpected": true,
+        "selectedCompilerMatches": true,
+        "telemetryComplete": true
+      },
+      "telemetry": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "target": "PolicyAccount",
+      "exitCode": 1,
+      "structuredSuccess": true,
+      "structuredError": null,
+      "issueCount": 2,
+      "checks": {
+        "stdoutHashMatches": true,
+        "stderrHashMatches": true,
+        "completenessHashMatches": true,
+        "argvExpected": true,
+        "selectedCompilerMatches": true,
+        "telemetryComplete": true
+      },
+      "telemetry": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "exitCode": 1,
+      "structuredSuccess": true,
+      "structuredError": null,
+      "issueCount": 8,
+      "checks": {
+        "stdoutHashMatches": true,
+        "stderrHashMatches": true,
+        "completenessHashMatches": true,
+        "argvExpected": true,
+        "selectedCompilerMatches": true,
+        "telemetryComplete": true
+      },
+      "telemetry": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    }
+  ],
+  "findingCount": 11,
+  "severityCounts": {
+    "Low": 8,
+    "Medium": 3
+  },
+  "noAnalyzerExecution": true,
+  "archiveMembersExecuted": false
+}

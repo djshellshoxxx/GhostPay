@@ -1,0 +1,19 @@
+{
+  "label": "lean-scan",
+  "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "exit_code": 0,
+  "wall_seconds": 3.746,
+  "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+  "argv": [
+    "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "scripts/scan-bundle.mjs"
+  ],
+  "node": "22.23.4",
+  "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+  "log": "lean-scan.txt",
+  "post_source_validation_error": null,
+  "qualification": "PASSED",
+  "bytes": 832,
+  "sha256": "19fe4c39d31526c52c1806d4fbbb755f8f9cf2a4e7036b5f3c4a5fc65fbf18aa"
+}

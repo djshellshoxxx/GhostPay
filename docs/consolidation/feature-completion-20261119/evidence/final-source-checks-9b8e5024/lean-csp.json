@@ -1,0 +1,19 @@
+{
+  "label": "lean-csp",
+  "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "exit_code": 0,
+  "wall_seconds": 1.767,
+  "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+  "argv": [
+    "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "scripts/apply-csp.mjs"
+  ],
+  "node": "22.23.4",
+  "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+  "log": "lean-csp.txt",
+  "post_source_validation_error": null,
+  "qualification": "PASSED",
+  "bytes": 751,
+  "sha256": "d0610f9e138281f95c075566f50a74b0508fc8b1070d8ebd0ad0623596e4175f"
+}

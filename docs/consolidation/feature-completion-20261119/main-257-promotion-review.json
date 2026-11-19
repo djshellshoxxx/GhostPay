@@ -1,0 +1,435 @@
+{
+  "schema": 1,
+  "observed_main": "8f56376427c96881f49590920ff0bf8543ec81b4",
+  "main_tree": "21ae3aa7b070aa8921d4360debb15add03d5c194",
+  "attribution": "Merged by a concurrent coordinator; observed and independently verified by this execution, not performed by root.",
+  "pr": 257,
+  "head": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+  "merged_at": "2026-11-19T10:52:59Z",
+  "parents": [
+    "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "4f14d6f167c788f5ae2d019bc8482027495f3c6c"
+  ],
+  "files": [
+    {
+      "path": "apps/web/scripts/scan-bundle.d.mts",
+      "status": "modified",
+      "sha": "340d3eec2eecdbc4f1cd726905a081008f7daac7",
+      "changes": 2
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "status": "modified",
+      "sha": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+      "changes": 59
+    },
+    {
+      "path": "apps/web/src/scanBundle.test.ts",
+      "status": "modified",
+      "sha": "a694b8763fc5deb418f65d7ff3a6f13e9295d3ee",
+      "changes": 22
+    },
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "status": "modified",
+      "sha": "2e14c48a66293275d967dd485cb6648969927193",
+      "changes": 121
+    },
+    {
+      "path": "docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md",
+      "status": "added",
+      "sha": "f68bc0c71eb60ea2700faef7b24719a7bf3d0737",
+      "changes": 81
+    },
+    {
+      "path": "docs/consolidation/merge-readiness/historical-pool-values-20261118.json",
+      "status": "added",
+      "sha": "ffbdd51ff73a7b1e5e10cfbd39b85624e3ee9def",
+      "changes": 42
+    },
+    {
+      "path": "docs/handoffs/SCANNER_AST_RECONCILIATION_20261118.md",
+      "status": "added",
+      "sha": "b1d3f58243ebd0ed2b96e97f775c18cb10d80582",
+      "changes": 80
+    },
+    {
+      "path": "docs/handoffs/consolidation-20261118/HISTORICAL_SECURITY_PROMOTION.json",
+      "status": "added",
+      "sha": "db4581f2ef8bd838c5d4030daf0fde5bb0b40b6b",
+      "changes": 174
+    },
+    {
+      "path": "docs/handoffs/consolidation-20261118/HISTORICAL_SECURITY_PROMOTION.md",
+      "status": "added",
+      "sha": "e55034b6313c59b6b6bcdef0013eb6d11dda42ac",
+      "changes": 83
+    },
+    {
+      "path": "packages/net-harness/src/harness.test.ts",
+      "status": "modified",
+      "sha": "d57695d853e93fe3d3def188ad6f80fcbf278767",
+      "changes": 29
+    },
+    {
+      "path": "packages/net-harness/src/socks5Server.ts",
+      "status": "modified",
+      "sha": "1ace4e8ebea81703b1c8fc5d72970c2964f65f36",
+      "changes": 5
+    },
+    {
+      "path": "packages/pool-circuits/DEVIATIONS.md",
+      "status": "modified",
+      "sha": "bff54456013a8f6a578752a68078b99c185505a9",
+      "changes": 2
+    },
+    {
+      "path": "packages/pool-circuits/src/helpers.test.ts",
+      "status": "modified",
+      "sha": "10b1f67f7c880e9da5fb86845b55a7b25bc89d2c",
+      "changes": 34
+    },
+    {
+      "path": "packages/pool-circuits/src/inputs.ts",
+      "status": "modified",
+      "sha": "3a82b848c11d98a7d4afe66050a15ef8003cedbe",
+      "changes": 4
+    },
+    {
+      "path": "packages/pool-circuits/test/witness.test.ts",
+      "status": "modified",
+      "sha": "3cdd17fb07acdb5fe4424cc06312d37a2cc2b773",
+      "changes": 21
+    }
+  ],
+  "checks": [
+    {
+      "id": 135449914756,
+      "name": "typescript",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135449914756"
+    },
+    {
+      "id": 135444086323,
+      "name": "contracts",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135444086323"
+    },
+    {
+      "id": 135425326015,
+      "name": "Post-deployment smoke test",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "skipped",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223995/job/135425326015"
+    },
+    {
+      "id": 135425325370,
+      "name": "Deploy to GitHub Pages",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "skipped",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223995/job/135425325370"
+    },
+    {
+      "id": 135422212095,
+      "name": "CodeQL",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/runs/135422212095"
+    },
+    {
+      "id": 135420410568,
+      "name": "ts-test (rest-2)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410568"
+    },
+    {
+      "id": 135420410495,
+      "name": "ts-test (btc-silent-payments)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410495"
+    },
+    {
+      "id": 135420410438,
+      "name": "ts-test (rest-1)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410438"
+    },
+    {
+      "id": 135420410407,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410407"
+    },
+    {
+      "id": 135420410395,
+      "name": "ts-test (core-crypto)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410395"
+    },
+    {
+      "id": 135420410382,
+      "name": "ts-test (rest-0)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410382"
+    },
+    {
+      "id": 135420410381,
+      "name": "ts-test (confidential-contracts)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410381"
+    },
+    {
+      "id": 135420410371,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410371"
+    },
+    {
+      "id": 135420410365,
+      "name": "ts-test (web)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410365"
+    },
+    {
+      "id": 135420410356,
+      "name": "contracts-slither",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410356"
+    },
+    {
+      "id": 135420410307,
+      "name": "contracts-coverage",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410307"
+    },
+    {
+      "id": 135420410302,
+      "name": "lean-candidate",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410302"
+    },
+    {
+      "id": 135420410267,
+      "name": "e2e (full)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410267"
+    },
+    {
+      "id": 135420410240,
+      "name": "ts-check",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410240"
+    },
+    {
+      "id": 135420410229,
+      "name": "contracts-test",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410229"
+    },
+    {
+      "id": 135420410200,
+      "name": "e2e (lean)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410200"
+    },
+    {
+      "id": 135420410187,
+      "name": "ts-typecheck",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410187"
+    },
+    {
+      "id": 135420410140,
+      "name": "contracts-static",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410140"
+    },
+    {
+      "id": 135420410135,
+      "name": "ts-test-relayer",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410135"
+    },
+    {
+      "id": 135420410107,
+      "name": "ts-lint",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410107"
+    },
+    {
+      "id": 135410383210,
+      "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "skipped",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223995/job/135410383210"
+    },
+    {
+      "id": 135410381752,
+      "name": "kit",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223951/job/135410381752"
+    },
+    {
+      "id": 135410381603,
+      "name": "CLI (macos-latest)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223996/job/135410381603"
+    },
+    {
+      "id": 135410381578,
+      "name": "CLI (ubuntu-24.04)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223996/job/135410381578"
+    },
+    {
+      "id": 135410381173,
+      "name": "Pages artifact on anvil (browser)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223995/job/135410381173"
+    },
+    {
+      "id": 135410381145,
+      "name": "CLI (windows-latest)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223996/job/135410381145"
+    },
+    {
+      "id": 135410381043,
+      "name": "changes",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135410381043"
+    },
+    {
+      "id": 135410380844,
+      "name": "qualify-ghostpay-web",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223951/job/135410380844"
+    },
+    {
+      "id": 135410380788,
+      "name": "secrets-and-egress",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135410380788"
+    },
+    {
+      "id": 135410380701,
+      "name": "Build and verify the Pages site",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223995/job/135410380701"
+    },
+    {
+      "id": 135410380133,
+      "name": "beta acceptance (lib + cli + browser on anvil)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223898/job/135410380133"
+    },
+    {
+      "id": 135410373844,
+      "name": "Analyze (javascript-typescript)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480220163/job/135410373844"
+    },
+    {
+      "id": 135410373808,
+      "name": "Analyze (actions)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480220163/job/135410373808"
+    },
+    {
+      "id": 135410373577,
+      "name": "Analyze (python)",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480220163/job/135410373577"
+    }
+  ],
+  "statuses": [
+    {
+      "context": "security/snyk (djshellshoxxx)",
+      "state": "success",
+      "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/c0ff24bc-7f60-4b88-a304-8ffd4973d750"
+    }
+  ],
+  "candidate_reconciliation": {
+    "tested_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+    "tested_published": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+    "reconciled_local": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+    "reconciled_published": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+    "shared_entire_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+    "changed_paths": [],
+    "note": "Original #257 source already an ancestor. Both merge-tree prediction and actual normal merge retained exactly the entire tested tree. No new test execution is claimed for the ancestry-only commit."
+  }
+}

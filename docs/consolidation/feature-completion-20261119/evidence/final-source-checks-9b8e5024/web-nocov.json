@@ -1,0 +1,25 @@
+{
+  "label": "web-nocov",
+  "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "exit_code": 0,
+  "wall_seconds": 89.689,
+  "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+  "argv": [
+    "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "vitest.nocov.config.ts",
+    "--maxWorkers=1",
+    "--no-file-parallelism",
+    "--reporter=verbose"
+  ],
+  "node": "22.23.4",
+  "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+  "log": "web-nocov.txt",
+  "post_source_validation_error": null,
+  "qualification": "PASSED",
+  "bytes": 3876,
+  "sha256": "0221b97bf2a4a759ad20564f0181855ab7f4e4f5124f1073cc20ac8ed566982e"
+}

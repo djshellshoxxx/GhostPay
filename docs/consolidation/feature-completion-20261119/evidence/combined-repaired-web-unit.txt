@@ -1,0 +1,149 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ × src/lib/scannerCore.fuzz.test.ts > scanner malformed-wire acceptance corpus > processes one million generated wire logs without throwing or matching another owner 191874ms
+   → Test timed out in 180000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+(node:49) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/features/chainViews.i18n.test.tsx > Bitcoin outcomes use the current locale without repeating authority actions > rerenders completed scans, a pending broadcast and its acknowledgement without changing signed bytes or references 3214ms
+ ✓ src/features/chainViews.i18n.test.tsx > Bitcoin outcomes use the current locale without repeating authority actions > retains an unknown broadcast result after a lost response, redacts its cause and changes its language without retrying 3190ms
+ ✓ src/features/chainViews.i18n.test.tsx > Bitcoin outcomes use the current locale without repeating authority actions > drops a signing completion after its destination review was changed 2902ms
+ ✓ src/features/chainViews.i18n.test.tsx > Bitcoin outcomes use the current locale without repeating authority actions > keeps an earlier broadcast reference separate when its destination is edited and a new transaction is signed 3454ms
+ ✓ src/features/chainViews.i18n.test.tsx > Bitcoin outcomes use the current locale without repeating authority actions > does not acknowledge a different server reference as the locally signed transaction 2677ms
+ ✓ src/features/chainViews.i18n.test.tsx > Solana outcomes use the current locale without repeating authority actions > rerenders completed scans, a pending broadcast and its acknowledgement without changing signed bytes or references 2113ms
+ ✓ src/features/chainViews.i18n.test.tsx > Solana outcomes use the current locale without repeating authority actions > retains an unknown broadcast result after a lost response, redacts its cause and changes its language without retrying 1806ms
+ ✓ src/features/chainViews.i18n.test.tsx > Solana outcomes use the current locale without repeating authority actions > drops a signing completion after its destination review was changed 932ms
+ ✓ src/features/chainViews.i18n.test.tsx > Solana outcomes use the current locale without repeating authority actions > keeps an earlier broadcast reference separate when its destination is edited and a new transaction is signed 2423ms
+ ✓ src/features/chainViews.i18n.test.tsx > Solana outcomes use the current locale without repeating authority actions > does not acknowledge a different server reference as the locally signed transaction 1976ms
+ ✓ src/features/chainViews.i18n.test.tsx > TRON outcomes use the current locale without repeating authority actions > rerenders completed scans, a pending broadcast and its acknowledgement without changing signed bytes or references 1407ms
+ ✓ src/features/chainViews.i18n.test.tsx > TRON outcomes use the current locale without repeating authority actions > retains an unknown broadcast result after a lost response, redacts its cause and changes its language without retrying 1877ms
+ ✓ src/features/chainViews.i18n.test.tsx > TRON outcomes use the current locale without repeating authority actions > drops a signing completion after its destination review was changed 1278ms
+ ✓ src/features/chainViews.i18n.test.tsx > TRON outcomes use the current locale without repeating authority actions > keeps an earlier broadcast reference separate when its destination is edited and a new transaction is signed 2142ms
+ ✓ src/features/chainViews.i18n.test.tsx > TRON outcomes use the current locale without repeating authority actions > does not acknowledge a different server reference as the locally signed transaction 1740ms
+ ✓ src/features/chainViews.i18n.test.tsx > Solana authority edits > does not broadcast through an old endpoint after that endpoint is edited during network validation 901ms
+ ✓ src/features/chainViews.i18n.test.tsx > TRON authority edits > does not broadcast through an old endpoint after that endpoint is edited during network validation 1471ms
+(node:57) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/features/tron/TronView.test.tsx > TronView > shows the test-only warning and keeps mainnet disabled 281ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > creates a wallet whose key backup stays hidden until asked for, the request QR, instructions, and locks 1666ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > copies the key backup only after a warning, and Lock empties the clipboard again 343ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > imports the same keys that a backup describes 679ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > rejects malformed key backups with a message 981ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > scans, reviews, requires approval, signs and broadcasts the sweep 1251ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > warns that a never-used destination costs an activation fee 1216ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > validates scanned destinations before filling them 899ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > reports a bad destination, sweeping to the one-time address itself, and node failures 1229ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > refuses a node that reports the mainnet genesis block 607ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > requires a numeric start block 640ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > drops a scan that finishes after the keys were locked 1098ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > refuses to sign when the balance changed since the review 1006ms
+ ✓ src/features/tron/TronView.test.tsx > TronView > can fail to broadcast and keeps the signed transaction 1401ms
+ ✓ src/features/tron/TronView.test.tsx > plain payment request > offers a TRON request QR with text and copy on a named network 281ms
+(node:65) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/components/TagArchive.test.tsx > TagArchive blocked download cleanup > releases the temporary anchor and Blob URL and reports a failure when the browser rejects the download click 1081ms
+ ✓ src/components/TagArchive.test.tsx > TagArchive > previews without writing, then applies 4381ms
+ ✓ src/components/TagArchive.test.tsx > TagArchive > drops a staged preview when the seller session changes 3897ms
+ ✓ src/components/TagArchive.test.tsx > TagArchive > wrong passphrase shows an error and changes nothing 3016ms
+ ✓ src/components/TagArchive.test.tsx > C-R11: the idle lock clears the archive passphrases typed into Seller keys > clears mounted archive secrets on lock and removes archive access while unsaved keys stay loaded 155ms
+ ✓ src/components/TagArchive.test.tsx > I-2: scan history kept for chains this build does not support > lists the chains stored for one seller, never creates the database and reports a failed listing 11ms
+ ✓ src/components/TagArchive.test.tsx > I-2: scan history kept for chains this build does not support > names the stored history of chains this build cannot export, and says so when it cannot be listed 1186ms
+ ✓ src/components/TagArchive.test.tsx > displayArchiveNote > renders each archive gap in English from the catalog 2ms
+ ✓ src/components/TagArchive.test.tsx > displayArchiveNote > formats with the translator it is given, so a later view renders the gap in the language then in effect 2ms
+(node:77) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/features/tron/TronView.privacy.test.tsx > TRON review privacy consent (TM13) > stops new review requests after /wallet/getblockbylimitnext completes under lock cancellation 1857ms
+ ✓ src/features/tron/TronView.privacy.test.tsx > TRON review privacy consent (TM13) > stops new review requests after /wallet/getaccount completes under lock cancellation 982ms
+ ✓ src/features/tron/TronView.privacy.test.tsx > TRON review privacy consent (TM13) > stops new review requests after /wallet/getchainparameters completes under lock cancellation 1260ms
+ ✓ src/features/tron/TronView.privacy.test.tsx > TRON review privacy consent (TM13) > stops new review requests after /wallet/getblockbylimitnext completes under endpoint cancellation 920ms
+ ✓ src/features/tron/TronView.privacy.test.tsx > TRON review privacy consent (TM13) > stops new review requests after /wallet/getaccount completes under unmount cancellation 887ms
+(node:85) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/features/btc/BtcView.persistence.test.tsx > Bitcoin encrypted restart UI > opts in locally, restores cursor after remount, and revalidates saved outputs before offering a sweep 2639ms
+ ✓ src/features/btc/BtcView.persistence.test.tsx > Bitcoin encrypted restart UI > requires explicit deletion and does not restore a cursor after its tombstone 1157ms
+(node:97) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: export > preselects preferences only, disables empty sections and lists exactly what the QR contains 983ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: export > renders the selection as a MY DEVICES QR and hides it again when the selection changes 386ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: export > refuses a selection that does not fit one QR with a clear message 192ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: import > previews each section against this device with endpoint and trust sections unticked, and never contacts imported endpoints 224ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: import > applies only the selected sections in one save, merging RPC chains 575ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: import > asks for a second confirmation before changing the relayer or signer trust 486ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: import > is atomic: a failing save leaves every setting and form field untouched 254ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: import > shows "no changes" when the same code is imported again 405ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: import > still imports a v1 preferences QR and keeps endpoints and trust untouched 207ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: import > disables apply until a changed section is ticked and drops the review on new input 254ms
+ ✓ src/views/Settings.exchange.test.tsx > Settings exchange: export actions > keeps copy and download for a preferences-only QR 179ms
+(node:105) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/features/tron/TronView.lock.test.tsx > TronView and the app lock > the app lock (idle timeout) wipes like Lock, clears typed keys and says why 2504ms
+(node:113) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > refuses an omitted genesis and case-insensitive mainnet identity 68ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > pins the genesis block ids published in tronprotocol/tips tip-474 and keeps them distinct 29ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects malformed account balances 0 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects malformed account balances 1 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects malformed account balances 2 0ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects malformed account balances 3 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects malformed account balances 4 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects malformed account balances 5 0ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > distinguishes an absent account from an activated account with no balance 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects failed or substituted broadcast acknowledgements 0 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects failed or substituted broadcast acknowledgements 1 0ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects failed or substituted broadcast acknowledgements 2 0ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects failed or substituted broadcast acknowledgements 3 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > accepts only the signed transaction id, allowing node hex case differences 0ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > redacts arbitrary errors and gives a safe cancellation message 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > preserves the fixed library diagnostic for an unreadable memo without a UI translation 0ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > rejects mainnet creation/import and rejects zero or reused backup scalars 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > round-trips normalized backup bytes without exposing the redacting secret holders 2ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > rejects negative and oversized scan ranges without downloading blocks 17ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > returns an empty result when the node head moves behind the requested range 16ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > makes no balance or memo request while scanning; one address is read when its sweep is reviewed (TM13) 32ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > fails closed when canceled before reading any funding blocks 17ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > rejects node blocks repeated at the same height instead of double-crediting them 19ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > rejects a funding transaction substituted between the scan and the memo lookup at review time 23ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > refuses an unreadable announcement even when the raw transaction hash still matches the lookup 15ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > deduplicates a valid payment repeated by the node 19ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > rejects malformed memo lookup responses 0 1ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > rejects malformed memo lookup responses 1 0ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > rejects malformed memo lookup responses 2 0ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > reserves the activation cost, refuses fee-only balances, and rejects an unrelated wallet key 27ms
+ ✓ src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > refuses to derive and sign after cancellation even when a node ignores AbortSignal 14ms
+(node:121) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > refuses pre-aborted bootstrap before dispatch for endpoint undefined 6ms
+ ✓ src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > refuses pre-aborted bootstrap before dispatch for endpoint http://127.0.0.1:8545/ 1ms
+ ✓ src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > passes cancellation through the indexer source to an already dispatched bounded request 6ms
+ ✓ src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > does not dispatch another queued window after cancellation during the preceding request 3ms
+ ✓ src/lib/scanPrivacy.authorization.test.ts > scan caller cancellation without a network authority mock > checks cancellation again after jitter before dispatching the next window 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scannerCore.fuzz.test.ts > scanner malformed-wire acceptance corpus > processes one million generated wire logs without throwing or matching another owner
+Error: Test timed out in 180000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/scannerCore.fuzz.test.ts:7:3
+      5| /** Deterministic malformed-wire corpus: repeatable seed, varied bytes…
+      6| describe('scanner malformed-wire acceptance corpus', () => {
+      7|   it('processes one million generated wire logs without throwing or ma…
+       |   ^
+      8|     const keys = generateKeySet();
+      9|     const spend = Array.from(keys.spendingPublicKey, (byte) => byte.to…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 9 passed (10)
+      Tests  1 failed | 96 passed (97)
+   Start at  01:07:35
+   Duration  300.61s (tests 91%, import 5%, environment 3%, transform 1%)
+
+    Isolate  10 workers spawned · ~1.20s startup each (spawn + environment, per file)
+             at least ~10.80s faster with isolate: false — reuses workers across files instead of one per file
+

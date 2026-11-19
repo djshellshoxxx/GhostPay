@@ -1,0 +1,612 @@
+{
+  "schema": 1,
+  "observed_at": "2026-11-19T09:40:24.029975+00:00",
+  "reviewer": "privacy_completion",
+  "source_head": "e74ddd26b75912d770e05d51f0b9229756adc649",
+  "source_tree": "41a1aaca7c9b48bdda4d9cbad7dcda7084045e5f",
+  "scope": "Read-only installed implementation, original configuration/log headers, and native GitHub history/source/job facts. No tests, lint, TypeScript program, process mutation, coverage reconstruction or raw coverage capture.",
+  "installed_versions": {
+    "vitest": "5.1.0",
+    "coverage_v8": "5.1.0"
+  },
+  "installed_source_findings": [
+    {
+      "path": "node_modules/vitest/dist/chunks/defaults.B1FCaFfh.js",
+      "absolute_path": "/workspace/scratch/13855ecc035c/GhostPay/node_modules/vitest/dist/chunks/defaults.B1FCaFfh.js",
+      "sha256": "883fd30d743aee3afe87f099f957d2239d1b81a3151be886558218263d2a05ac",
+      "findings": [
+        {
+          "lines": "18-36",
+          "meaning": "Coverage defaults include reportOnFailure:false."
+        }
+      ]
+    },
+    {
+      "path": "node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js",
+      "absolute_path": "/workspace/scratch/13855ecc035c/GhostPay/node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js",
+      "sha256": "a42f8ed8a242f47856eae9bbbb1ea403dc15279b1bb8c2dd59286513e6c12193",
+      "findings": [
+        {
+          "lines": "13424-13429",
+          "meaning": "runFiles finally generates a coverage map, ends the test run, then invokes reportCoverage."
+        },
+        {
+          "lines": "13747-13754",
+          "meaning": "Failed tests invoke onTestFailure, then return early when reportOnFailure is false."
+        },
+        {
+          "lines": "7113-7143",
+          "meaning": "onTestFailure cleans temporary coverage files and releases directory lock; successful reportCoverage would invoke generateReports."
+        }
+      ]
+    },
+    {
+      "path": "node_modules/@vitest/coverage-v8/dist/provider.js",
+      "absolute_path": "/workspace/scratch/13855ecc035c/GhostPay/node_modules/@vitest/coverage-v8/dist/provider.js",
+      "sha256": "fb0588f2a80879252d45bfbfc4e21ea5af65048b8b4f33571b5d0b8f001f7e72",
+      "findings": [
+        {
+          "lines": "46-91",
+          "meaning": "V8 generateCoverage combines coverage maps and included untested files in memory."
+        },
+        {
+          "lines": "93-118",
+          "meaning": "generateReports emits reporters and then checks configured thresholds; skipped by failure-return path."
+        }
+      ]
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "absolute_path": "/workspace/scratch/13855ecc035c/GhostPay/apps/web/vite.config.ts",
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+      "findings": [
+        {
+          "lines": "102-129",
+          "meaning": "Original web coverage configuration uses V8 text/lcov and90/85/90/90 thresholds; no reportOnFailure override."
+        }
+      ]
+    },
+    {
+      "path": "apps/web/package.json",
+      "absolute_path": "/workspace/scratch/13855ecc035c/GhostPay/apps/web/package.json",
+      "sha256": "b270cd54ff551e81f7dfc89df378dfefbd2c21b6385a0393a8655018ef64a630",
+      "findings": [
+        {
+          "lines": "14",
+          "meaning": "npm test runs vitest run --coverage then separate nocov config only after success."
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+      "absolute_path": "/workspace/scratch/13855ecc035c/GhostPay/apps/web/src/lib/scannerCore.fuzz.test.ts",
+      "sha256": "ecef867114e74277f6d48f5c33602ffd654f39379a9f7655ab9c21f343967d46",
+      "findings": [
+        {
+          "lines": "5-37",
+          "meaning": "Original million-log200x5000 corpus, seed0x47504d31, assertions and180000ms timeout unchanged."
+        }
+      ]
+    }
+  ],
+  "behavior": {
+    "report_on_failure": false,
+    "configuration_override_present": false,
+    "command_override_present": false,
+    "after_tests": "V8 generateCoverage still executes before failure-aware reporting and may incur aggregation cost.",
+    "after_detected_failure": "onTestFailure cleans temporary coverage; reportCoverage returns before provider report generation.",
+    "configured_text_lcov_reports_expected": false,
+    "coverage_threshold_evaluation_expected": false,
+    "qualification": "The failed run can produce the complete unit summary; no configured aggregate coverage report or threshold pass can be claimed from this failure path. An in-memory map passed to test-run reporters is not a new verified report.",
+    "no_changes": "Original corpus,180000ms limit, coverage configuration and running process remained untouched."
+  },
+  "local_fuzz_evidence": {
+    "current_coverage_run": {
+      "log": "/workspace/scratch/13855ecc035c/final-complete-web-coverage.log",
+      "command_header": {
+        "command": [
+          "../../node_modules/.bin/vitest",
+          "run",
+          "--coverage",
+          "--coverage.processingConcurrency=1",
+          "--coverage.reportsDirectory=/workspace/scratch/13855ecc035c/final-web-coverage-e74ddd26",
+          "--maxWorkers=1",
+          "--no-file-parallelism",
+          "--reporter=verbose"
+        ],
+        "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+        "source": "e74ddd26b75912d770e05d51f0b9229756adc649",
+        "coverage_thresholds": "unchanged from original vite.config.ts"
+      },
+      "observed_case_duration_ms": 192246,
+      "test_timeout_ms": 180000,
+      "observed_outcome": "timed out",
+      "final_aggregate_status": "Not claimed by this mid-run review; coordinator will record terminal summary and exit."
+    },
+    "prior_coverage_off_control": {
+      "log": "/workspace/scratch/13855ecc035c/final-fuzz-resource-replay.log",
+      "sha256": "f14d107d9e4ba7fb8f9e4b2e0526bd49c491aa3b18d438899f458cd010ec70ab",
+      "command_header": {
+        "command": [
+          "../../node_modules/.bin/vitest",
+          "run",
+          "--coverage=false",
+          "--maxWorkers=1",
+          "--no-file-parallelism",
+          "--reporter=verbose",
+          "src/lib/scannerCore.fuzz.test.ts"
+        ],
+        "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+        "source": "74e3111f994481e7c9201ddb0494cf4a8405eadd"
+      },
+      "test_duration_ms": 155316,
+      "result": {
+        "exit_code": 0,
+        "wall_seconds": 156.84,
+        "user_cpu_seconds": 168.280465,
+        "system_cpu_seconds": 1.584153,
+        "max_rss_kib": 226080
+      },
+      "fuzz_scanner_config_identical_to_current": true
+    },
+    "interpretation": "Same pinned fuzz, scanner and Vite configuration passed with coverage disabled and exceeded the unchanged limit with coverage enabled. This is consistent with execution-resource/instrumentation sensitivity. It does not prove the timeout is only infrastructure or qualify the full product/coverage gate."
+  },
+  "native_github": {
+    "observed_at": "2026-11-19 09:39:33 UTC",
+    "history": [
+      {
+        "pr": 251,
+        "total_runs": 24,
+        "pagination_complete": true,
+        "ci_runs": [
+          {
+            "id": 44479895706,
+            "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+            "status": "queued",
+            "conclusion": null,
+            "attempt": 1,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706",
+            "total_jobs": 22,
+            "jobs": [
+              {
+                "id": 135430047717,
+                "name": "ts-test-relayer",
+                "status": "queued",
+                "conclusion": null,
+                "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047717"
+              },
+              {
+                "id": 135430047772,
+                "name": "ts-test (btc-silent-payments)",
+                "status": "completed",
+                "conclusion": "success",
+                "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+                "steps_count": 10,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047772"
+              },
+              {
+                "id": 135430047786,
+                "name": "ts-test (confidential-contracts)",
+                "status": "queued",
+                "conclusion": null,
+                "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047786"
+              },
+              {
+                "id": 135430047805,
+                "name": "ts-test (rest-1)",
+                "status": "completed",
+                "conclusion": "success",
+                "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+                "steps_count": 10,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047805"
+              },
+              {
+                "id": 135430047811,
+                "name": "ts-test (web)",
+                "status": "queued",
+                "conclusion": null,
+                "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047811"
+              },
+              {
+                "id": 135430047823,
+                "name": "ts-test (rest-0)",
+                "status": "completed",
+                "conclusion": "failure",
+                "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+                "steps_count": 10,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047823"
+              },
+              {
+                "id": 135430047864,
+                "name": "ts-test (core-crypto)",
+                "status": "completed",
+                "conclusion": "success",
+                "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+                "steps_count": 10,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047864"
+              },
+              {
+                "id": 135430047897,
+                "name": "ts-test (rest-2)",
+                "status": "completed",
+                "conclusion": "success",
+                "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+                "steps_count": 10,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047897"
+              }
+            ]
+          },
+          {
+            "id": 44479640008,
+            "head_sha": "5ec1553462da2a580d26a08854f69ead594c5f69",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "attempt": 1,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479640008",
+            "total_jobs": 0,
+            "jobs": []
+          },
+          {
+            "id": 44478128974,
+            "head_sha": "325a915664b9c8ce44f136d08c6e0ec3c64a6ace",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "attempt": 1,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44478128974",
+            "total_jobs": 0,
+            "jobs": []
+          },
+          {
+            "id": 44474577078,
+            "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "attempt": 1,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078",
+            "total_jobs": 24,
+            "jobs": [
+              {
+                "id": 135398769207,
+                "name": "ts-test-relayer",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135398769207"
+              },
+              {
+                "id": 135398769302,
+                "name": "ts-test (rest-0)",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135398769302"
+              },
+              {
+                "id": 135398769307,
+                "name": "ts-test (rest-1)",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135398769307"
+              },
+              {
+                "id": 135398769308,
+                "name": "ts-test (confidential-contracts)",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135398769308"
+              },
+              {
+                "id": 135398769315,
+                "name": "ts-test (core-crypto)",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135398769315"
+              },
+              {
+                "id": 135398769338,
+                "name": "ts-test (rest-2)",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135398769338"
+              },
+              {
+                "id": 135398769390,
+                "name": "ts-test (btc-silent-payments)",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135398769390"
+              },
+              {
+                "id": 135398769501,
+                "name": "ts-test (web)",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135398769501"
+              },
+              {
+                "id": 135403535013,
+                "name": "typescript",
+                "status": "completed",
+                "conclusion": "failure",
+                "head_sha": "089a0081418dcca395ce169abc36d9ef470162ef",
+                "steps_count": 3,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44474577078/job/135403535013"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pr": 256,
+        "total_runs": 20,
+        "pagination_complete": true,
+        "ci_runs": [
+          {
+            "id": 44492212148,
+            "head_sha": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+            "status": "pending",
+            "conclusion": null,
+            "attempt": 1,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44492212148",
+            "total_jobs": 0,
+            "jobs": []
+          },
+          {
+            "id": 44488954108,
+            "head_sha": "c50ac61a5792c104e960fb1f83ef52ebda244c70",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "attempt": 1,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44488954108",
+            "total_jobs": 0,
+            "jobs": []
+          },
+          {
+            "id": 44483022136,
+            "head_sha": "247c3353871bf67b6711aeacb5ad1e53faa77326",
+            "status": "queued",
+            "conclusion": null,
+            "attempt": 1,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483022136",
+            "total_jobs": 16,
+            "jobs": [
+              {
+                "id": 135439395834,
+                "name": "typescript",
+                "status": "queued",
+                "conclusion": null,
+                "head_sha": "247c3353871bf67b6711aeacb5ad1e53faa77326",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483022136/job/135439395834"
+              },
+              {
+                "id": 135439397490,
+                "name": "ts-test-relayer",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "247c3353871bf67b6711aeacb5ad1e53faa77326",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483022136/job/135439397490"
+              },
+              {
+                "id": 135439397957,
+                "name": "ts-test",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "247c3353871bf67b6711aeacb5ad1e53faa77326",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483022136/job/135439397957"
+              }
+            ]
+          },
+          {
+            "id": 44477703334,
+            "head_sha": "df0d70de5b297391af5f1f2b786800a93b02ce52",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "attempt": 1,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44477703334",
+            "total_jobs": 16,
+            "jobs": [
+              {
+                "id": 135419603690,
+                "name": "typescript",
+                "status": "completed",
+                "conclusion": "failure",
+                "head_sha": "df0d70de5b297391af5f1f2b786800a93b02ce52",
+                "steps_count": 3,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44477703334/job/135419603690"
+              },
+              {
+                "id": 135419605224,
+                "name": "ts-test-relayer",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "df0d70de5b297391af5f1f2b786800a93b02ce52",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44477703334/job/135419605224"
+              },
+              {
+                "id": 135419605388,
+                "name": "ts-test",
+                "status": "completed",
+                "conclusion": "cancelled",
+                "head_sha": "df0d70de5b297391af5f1f2b786800a93b02ce52",
+                "steps_count": 0,
+                "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44477703334/job/135419605388"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "source_comparison": [
+      {
+        "pr": 251,
+        "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+        "tree_truncated": false,
+        "files": [
+          {
+            "path": "apps/web/package.json",
+            "blob": "a61b1551353e02de0bc2e2775d1e45cec1cd72fd",
+            "candidate_blob": "a61b1551353e02de0bc2e2775d1e45cec1cd72fd",
+            "matches_candidate": true
+          },
+          {
+            "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+            "blob": "77ce0bd28772235418d9e241b0da84028068035f",
+            "candidate_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+            "matches_candidate": true
+          },
+          {
+            "path": "apps/web/src/lib/scannerCore.ts",
+            "blob": "3d22991c284bc58ef0abe27671785ef768546259",
+            "candidate_blob": "3d22991c284bc58ef0abe27671785ef768546259",
+            "matches_candidate": true
+          },
+          {
+            "path": "apps/web/vite.config.ts",
+            "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+            "candidate_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+            "matches_candidate": true
+          },
+          {
+            "path": "package-lock.json",
+            "blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+            "candidate_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+            "matches_candidate": true
+          }
+        ]
+      },
+      {
+        "pr": 256,
+        "head": "247c3353871bf67b6711aeacb5ad1e53faa77326",
+        "tree_truncated": false,
+        "files": [
+          {
+            "path": "apps/web/package.json",
+            "blob": "087747cbd56412fe67551b10d874805d01e7f2a4",
+            "candidate_blob": "a61b1551353e02de0bc2e2775d1e45cec1cd72fd",
+            "matches_candidate": false
+          },
+          {
+            "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+            "blob": "77ce0bd28772235418d9e241b0da84028068035f",
+            "candidate_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+            "matches_candidate": true
+          },
+          {
+            "path": "apps/web/src/lib/scannerCore.ts",
+            "blob": "3d22991c284bc58ef0abe27671785ef768546259",
+            "candidate_blob": "3d22991c284bc58ef0abe27671785ef768546259",
+            "matches_candidate": true
+          },
+          {
+            "path": "apps/web/vite.config.ts",
+            "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+            "candidate_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+            "matches_candidate": true
+          },
+          {
+            "path": "package-lock.json",
+            "blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+            "candidate_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+            "matches_candidate": false
+          }
+        ]
+      },
+      {
+        "pr": 256,
+        "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+        "tree_truncated": false,
+        "files": [
+          {
+            "path": "apps/web/package.json",
+            "blob": "087747cbd56412fe67551b10d874805d01e7f2a4",
+            "candidate_blob": "a61b1551353e02de0bc2e2775d1e45cec1cd72fd",
+            "matches_candidate": false
+          },
+          {
+            "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+            "blob": "77ce0bd28772235418d9e241b0da84028068035f",
+            "candidate_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+            "matches_candidate": true
+          },
+          {
+            "path": "apps/web/src/lib/scannerCore.ts",
+            "blob": "3d22991c284bc58ef0abe27671785ef768546259",
+            "candidate_blob": "3d22991c284bc58ef0abe27671785ef768546259",
+            "matches_candidate": true
+          },
+          {
+            "path": "apps/web/vite.config.ts",
+            "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+            "candidate_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+            "matches_candidate": true
+          },
+          {
+            "path": "package-lock.json",
+            "blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+            "candidate_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+            "matches_candidate": false
+          }
+        ]
+      }
+    ],
+    "release_gate_checks": [
+      {
+        "pr": 251,
+        "check_id": 135409318992,
+        "status": "completed",
+        "conclusion": "skipped",
+        "reason": "Pages release-gate job only runs for workflow_dispatch on main with deploy=true; no draft-condition inference."
+      },
+      {
+        "pr": 256,
+        "check_id": 135419606762,
+        "status": "completed",
+        "conclusion": "skipped",
+        "reason": "Pages release-gate job only runs for workflow_dispatch on main with deploy=true; no draft-condition inference."
+      }
+    ],
+    "incidental_rest0": {
+      "job_id": 135430047823,
+      "run_id": 44479895706,
+      "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047823",
+      "failed_tests": [
+        "committed package map current",
+        "web workspace dependency closure",
+        "relayer workspace dependency closure"
+      ],
+      "summary": {
+        "pass": 265,
+        "fail": 3,
+        "skip": 0
+      },
+      "candidate_relevance": "Candidate already distinguishes hygiene/metadata-hardening additions as PENDING_OWNER_REVIEW with unchanged reviewed sets. Coordinator previously recorded package-map/closure passes; no replay by this review."
+    }
+  },
+  "historical_conclusion": "No successful web-unit coverage job found in all listed CI runs on the two requested branches. PR251 latest web job remains queued; prior web job cancelled before steps. PR256 prior generic ts-test jobs cancelled before steps; newest CI pending with no jobs. Other green builds/browser/hosting jobs and intentionally skipped dispatch-only release gates are not unit-coverage evidence.",
+  "recommended_reporting": "Record the actual fuzz timeout and eventual full-run exit/counts, alongside the distinct coverage-off control. Mark aggregate coverage/threshold qualification unavailable under the unchanged failure-reporting setting. Do not transfer historical green statuses or reconstruct a coverage pass."
+}

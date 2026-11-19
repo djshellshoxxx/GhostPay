@@ -1,0 +1,2185 @@
+{
+  "schema_version": 1,
+  "observed_utc": "2026-11-19T08:24:13.315Z",
+  "repository": "djshellshoxxx/GhostPay",
+  "main_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+  "open_pr_count": 57,
+  "scope": {
+    "priority": [
+      249,
+      251,
+      248,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      261,
+      262
+    ],
+    "initially_green": [
+      232,
+      226,
+      224,
+      223,
+      221,
+      219,
+      218,
+      216,
+      215,
+      212,
+      208,
+      205,
+      160,
+      153,
+      140,
+      139,
+      52,
+      51
+    ],
+    "total_reviewed": 30
+  },
+  "protection": {
+    "protected": false,
+    "metadata": {
+      "enabled": false,
+      "required_status_checks": {
+        "enforcement_level": "off",
+        "contexts": [],
+        "checks": []
+      }
+    },
+    "rulesets": [],
+    "required_endpoint": {
+      "error": "GitHub API error 403: {\"message\":\"Resource not accessible by integration\",\"documentation_url\":\"https://docs.github.com/rest/branches/branch-protection#get-status-checks-protection\",\"status\":\"403\"}",
+      "error_code": "FORBIDDEN",
+      "error_data": {
+        "message": "Resource not accessible by integration",
+        "documentation_url": "https://docs.github.com/rest/branches/branch-protection#get-status-checks-protection",
+        "status": "403"
+      }
+    }
+  },
+  "qualification_rule": "Passing/skipped original checks are per head SHA. Clean GitHub mergeability is conflict evidence, not semantic qualification. Required-status API access is forbidden; empty enforcement metadata is not authorization to bypass repository gates. Draft transition and a final live recheck remain necessary before any merge.",
+  "eligible_normal_main_historical_docs_after_ready": [
+    208
+  ],
+  "eligible_priority_feature_merges": [],
+  "mutations": "No GitHub mutation, no commit, no heavy local check. Only this delegated status snapshot was written.",
+  "pages_anvil_failure_diagnosis": [
+    {
+      "pr": 251,
+      "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "job_id": 135409317152,
+      "step": "Pages artifact journey on anvil",
+      "result": "14 passed, 2 failed",
+      "failures": [
+        {
+          "test": "Home release check stays inside /GhostPay/ and shows served entry script hash",
+          "location": "apps/web/e2e/pages-devnet.spec.ts:834",
+          "error": "Expected entry-script SHA256 text was not found within 5000ms.",
+          "source_cause": "Home gives the raw relative module src './assets/index-*.js' to production network.authorize; its strict endpoint parser uses new URL(raw) without a base and refuses before computeReleaseHash resolves document.baseURI.",
+          "consolidation_status": "Confirmed still present in inspected consolidation. Coordinator assigned minimal caller resolution plus production-authority regression to privacy worker; not yet claimed fixed by this snapshot."
+        },
+        {
+          "test": "Expired invoice refused at send",
+          "location": "apps/web/e2e/pages-devnet.spec.ts:1038",
+          "error": "Expected 'This invoice has expired. Nothing was sent.' absent after 30000ms.",
+          "source_cause": "One-hour fake-clock advance also activates the independent 15-minute idle lock.",
+          "consolidation_status": "Already repaired by existing payer-context clock fixture: mount at expiry minus60 seconds and advance90 seconds; original no-wallet-send assertions remain. Combined hosted result still needed."
+        }
+      ]
+    },
+    {
+      "pr": 256,
+      "head_sha": "247c3353871bf67b6711aeacb5ad1e53faa77326",
+      "job_id": 135419605025,
+      "step": "Pages artifact journey on anvil",
+      "result": "15 passed, 1 failed",
+      "failures": [
+        {
+          "test": "Expired invoice refused at send",
+          "location": "apps/web/e2e/pages-devnet.spec.ts:1021",
+          "error": "Expected expiry text absent after30000ms.",
+          "consolidation_status": "Same clock/idle interaction; consolidation has fixture correction. Home hash passed on this branch, which does not establish combined #251 authorization behavior."
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "pr": 249,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/249",
+      "title": "Close TM privacy consent, CSP and scan scheduling gaps",
+      "head_sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "base_branch": "integration/ghostpay-pages-completion-20261118",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:24:13.298Z",
+      "check_runs": {
+        "total": 35,
+        "success": 11,
+        "skipped_or_neutral": 4,
+        "pending": [
+          {
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "queued",
+            "id": 135424285527,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285527"
+          },
+          {
+            "name": "ts-test (confidential-contracts)",
+            "status": "queued",
+            "id": 135424285489,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285489"
+          },
+          {
+            "name": "ts-test (rest-0)",
+            "status": "queued",
+            "id": 135424285463,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285463"
+          },
+          {
+            "name": "ts-test (btc-silent-payments)",
+            "status": "queued",
+            "id": 135424285437,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285437"
+          },
+          {
+            "name": "ts-test (core-crypto)",
+            "status": "queued",
+            "id": 135424285418,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285418"
+          },
+          {
+            "name": "contracts-slither",
+            "status": "queued",
+            "id": 135424285404,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285404"
+          },
+          {
+            "name": "ts-test (rest-2)",
+            "status": "queued",
+            "id": 135424285355,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285355"
+          },
+          {
+            "name": "ts-test (web)",
+            "status": "queued",
+            "id": 135424285339,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285339"
+          },
+          {
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "queued",
+            "id": 135424285309,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285309"
+          },
+          {
+            "name": "contracts-coverage",
+            "status": "queued",
+            "id": 135424285301,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285301"
+          },
+          {
+            "name": "ts-test (rest-1)",
+            "status": "queued",
+            "id": 135424285247,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285247"
+          },
+          {
+            "name": "ts-test-relayer",
+            "status": "queued",
+            "id": 135424285228,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285228"
+          },
+          {
+            "name": "lean-candidate",
+            "status": "queued",
+            "id": 135424285211,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285211"
+          },
+          {
+            "name": "ts-typecheck",
+            "status": "queued",
+            "id": 135424285163,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285163"
+          },
+          {
+            "name": "contracts-test",
+            "status": "queued",
+            "id": 135424285160,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285160"
+          },
+          {
+            "name": "e2e (full)",
+            "status": "queued",
+            "id": 135424285123,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285123"
+          },
+          {
+            "name": "contracts-static",
+            "status": "queued",
+            "id": 135424285068,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285068"
+          },
+          {
+            "name": "e2e (lean)",
+            "status": "queued",
+            "id": 135424285064,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285064"
+          },
+          {
+            "name": "ts-check",
+            "status": "queued",
+            "id": 135424285020,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424285020"
+          },
+          {
+            "name": "ts-lint",
+            "status": "queued",
+            "id": 135424284980,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44482007758/job/135424284980"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/bfc991ef-d4b2-4ccf-87af-0d410d02dd87"
+        }
+      ],
+      "disposition": "pending",
+      "reason": "Final CSP tail incorporated by privacy follow-up; original stacked PR has pending CI and targets #238, not main."
+    },
+    {
+      "pr": 251,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/251",
+      "title": "feat(privacy): enforce browser network authorization and cancellation",
+      "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "base_branch": "integration/ghostpay-pages-completion-20261118",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.837Z",
+      "check_runs": {
+        "total": 35,
+        "success": 10,
+        "skipped_or_neutral": 4,
+        "pending": [
+          {
+            "name": "ts-test (rest-2)",
+            "status": "queued",
+            "id": 135430047897,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047897"
+          },
+          {
+            "name": "ts-test (core-crypto)",
+            "status": "queued",
+            "id": 135430047864,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047864"
+          },
+          {
+            "name": "ts-typecheck",
+            "status": "queued",
+            "id": 135430047854,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047854"
+          },
+          {
+            "name": "ts-test (rest-0)",
+            "status": "queued",
+            "id": 135430047823,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047823"
+          },
+          {
+            "name": "ts-test (web)",
+            "status": "queued",
+            "id": 135430047811,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047811"
+          },
+          {
+            "name": "ts-test (rest-1)",
+            "status": "queued",
+            "id": 135430047805,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047805"
+          },
+          {
+            "name": "ts-test (confidential-contracts)",
+            "status": "queued",
+            "id": 135430047786,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047786"
+          },
+          {
+            "name": "contracts-static",
+            "status": "queued",
+            "id": 135430047783,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047783"
+          },
+          {
+            "name": "ts-test (btc-silent-payments)",
+            "status": "queued",
+            "id": 135430047772,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047772"
+          },
+          {
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "queued",
+            "id": 135430047751,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047751"
+          },
+          {
+            "name": "ts-test-relayer",
+            "status": "queued",
+            "id": 135430047717,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047717"
+          },
+          {
+            "name": "lean-candidate",
+            "status": "queued",
+            "id": 135430047704,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047704"
+          },
+          {
+            "name": "e2e (full)",
+            "status": "queued",
+            "id": 135430047701,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047701"
+          },
+          {
+            "name": "contracts-test",
+            "status": "queued",
+            "id": 135430047698,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047698"
+          },
+          {
+            "name": "ts-lint",
+            "status": "queued",
+            "id": 135430047683,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047683"
+          },
+          {
+            "name": "contracts-slither",
+            "status": "queued",
+            "id": 135430047682,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047682"
+          },
+          {
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "queued",
+            "id": 135430047679,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047679"
+          },
+          {
+            "name": "e2e (lean)",
+            "status": "queued",
+            "id": 135430047635,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047635"
+          },
+          {
+            "name": "ts-check",
+            "status": "queued",
+            "id": 135430047626,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047626"
+          },
+          {
+            "name": "contracts-coverage",
+            "status": "queued",
+            "id": 135430047601,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895706/job/135430047601"
+          }
+        ],
+        "failed": [
+          {
+            "name": "Pages artifact on anvil (browser)",
+            "conclusion": "failure",
+            "id": 135409317152,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44479895738/job/135409317152"
+          }
+        ],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/48540aa1-f24f-4a5c-a7f2-6fa598612202"
+        }
+      ],
+      "disposition": "failed_and_pending",
+      "reason": "Pages Anvil fails Home hash and invoice-expiry fixture; current consolidation retains caller-relative-URL defect pending new fix. Other jobs pending."
+    },
+    {
+      "pr": 248,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/248",
+      "title": "Complete private seller scan checkpoints and durable discovery",
+      "head_sha": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.838Z",
+      "check_runs": {
+        "total": 37,
+        "success": 14,
+        "skipped_or_neutral": 3,
+        "pending": [
+          {
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "queued",
+            "id": 135425979729,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979729"
+          },
+          {
+            "name": "e2e (full)",
+            "status": "queued",
+            "id": 135425979506,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979506"
+          },
+          {
+            "name": "ts-test (rest-0)",
+            "status": "queued",
+            "id": 135425979473,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979473"
+          },
+          {
+            "name": "ts-test (rest-2)",
+            "status": "queued",
+            "id": 135425979465,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979465"
+          },
+          {
+            "name": "ts-test (confidential-contracts)",
+            "status": "queued",
+            "id": 135425979360,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979360"
+          },
+          {
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "queued",
+            "id": 135425979356,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979356"
+          },
+          {
+            "name": "ts-test (core-crypto)",
+            "status": "queued",
+            "id": 135425979355,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979355"
+          },
+          {
+            "name": "ts-test (btc-silent-payments)",
+            "status": "queued",
+            "id": 135425979303,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979303"
+          },
+          {
+            "name": "ts-test (rest-1)",
+            "status": "queued",
+            "id": 135425979301,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979301"
+          },
+          {
+            "name": "ts-test (web)",
+            "status": "queued",
+            "id": 135425979291,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979291"
+          },
+          {
+            "name": "lean-candidate",
+            "status": "queued",
+            "id": 135425979275,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979275"
+          },
+          {
+            "name": "contracts-static",
+            "status": "queued",
+            "id": 135425979269,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979269"
+          },
+          {
+            "name": "contracts-slither",
+            "status": "queued",
+            "id": 135425979264,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979264"
+          },
+          {
+            "name": "contracts-coverage",
+            "status": "queued",
+            "id": 135425979125,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979125"
+          },
+          {
+            "name": "ts-check",
+            "status": "queued",
+            "id": 135425979119,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979119"
+          },
+          {
+            "name": "ts-lint",
+            "status": "queued",
+            "id": 135425979082,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979082"
+          },
+          {
+            "name": "e2e (lean)",
+            "status": "queued",
+            "id": 135425979061,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979061"
+          },
+          {
+            "name": "ts-test-relayer",
+            "status": "queued",
+            "id": 135425979034,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979034"
+          },
+          {
+            "name": "contracts-test",
+            "status": "queued",
+            "id": 135425979024,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425979024"
+          },
+          {
+            "name": "ts-typecheck",
+            "status": "queued",
+            "id": 135425978945,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480893086/job/135425978945"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/f33efafb-0a57-44f3-ae7b-a5d06d240119"
+        }
+      ],
+      "disposition": "pending",
+      "reason": "Durable scan and final app-lock tail are incorporated in consolidation; original PR still has pending CI."
+    },
+    {
+      "pr": 254,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/254",
+      "title": "Spec 12: complete Bitcoin spentness evidence and private scan consent",
+      "head_sha": "8c1d87a2587281c32a5f1326a4f36cfada4384bc",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.840Z",
+      "check_runs": {
+        "total": 38,
+        "success": 23,
+        "skipped_or_neutral": 3,
+        "pending": [
+          {
+            "name": "ts-test (confidential-contracts)",
+            "status": "queued",
+            "id": 135412579771,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579771"
+          },
+          {
+            "name": "ts-test (rest-1)",
+            "status": "queued",
+            "id": 135412579742,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579742"
+          },
+          {
+            "name": "ts-test (rest-2)",
+            "status": "queued",
+            "id": 135412579717,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579717"
+          },
+          {
+            "name": "ts-test (web)",
+            "status": "queued",
+            "id": 135412579677,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579677"
+          },
+          {
+            "name": "ts-test (core-crypto)",
+            "status": "queued",
+            "id": 135412579646,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579646"
+          },
+          {
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "queued",
+            "id": 135412579620,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579620"
+          },
+          {
+            "name": "ts-test (rest-0)",
+            "status": "queued",
+            "id": 135412579564,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579564"
+          },
+          {
+            "name": "contracts-slither",
+            "status": "queued",
+            "id": 135412579511,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579511"
+          },
+          {
+            "name": "lean-candidate",
+            "status": "queued",
+            "id": 135412579438,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579438"
+          },
+          {
+            "name": "e2e (full)",
+            "status": "queued",
+            "id": 135412579414,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579414"
+          },
+          {
+            "name": "contracts-coverage",
+            "status": "queued",
+            "id": 135412579346,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579346"
+          },
+          {
+            "name": "ts-lint",
+            "status": "queued",
+            "id": 135412579088,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579088"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/ab589ca6-28c6-47c5-a101-8a0d99c222c9"
+        }
+      ],
+      "disposition": "pending",
+      "reason": "Bitcoin successor is being semantically integrated by coordinator; original head still has pending CI."
+    },
+    {
+      "pr": 255,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/255",
+      "title": "Close Mythril evidence gaps and bind Factory freeze-risk acknowledgments",
+      "head_sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.841Z",
+      "check_runs": {
+        "total": 38,
+        "success": 14,
+        "skipped_or_neutral": 3,
+        "pending": [
+          {
+            "name": "ts-test (rest-2)",
+            "status": "queued",
+            "id": 135427306675,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306675"
+          },
+          {
+            "name": "ts-test (web)",
+            "status": "queued",
+            "id": 135427306519,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306519"
+          },
+          {
+            "name": "ts-test (rest-1)",
+            "status": "queued",
+            "id": 135427306503,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306503"
+          },
+          {
+            "name": "ts-test (confidential-contracts)",
+            "status": "queued",
+            "id": 135427306431,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306431"
+          },
+          {
+            "name": "contracts-slither",
+            "status": "queued",
+            "id": 135427306429,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306429"
+          },
+          {
+            "name": "ts-test (core-crypto)",
+            "status": "queued",
+            "id": 135427306413,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306413"
+          },
+          {
+            "name": "contracts-static",
+            "status": "queued",
+            "id": 135427306405,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306405"
+          },
+          {
+            "name": "e2e (full)",
+            "status": "queued",
+            "id": 135427306398,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306398"
+          },
+          {
+            "name": "e2e (lean)",
+            "status": "queued",
+            "id": 135427306379,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306379"
+          },
+          {
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "queued",
+            "id": 135427306357,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306357"
+          },
+          {
+            "name": "ts-test (rest-0)",
+            "status": "queued",
+            "id": 135427306346,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306346"
+          },
+          {
+            "name": "ts-test (btc-silent-payments)",
+            "status": "queued",
+            "id": 135427306328,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306328"
+          },
+          {
+            "name": "ts-test-relayer",
+            "status": "queued",
+            "id": 135427306321,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306321"
+          },
+          {
+            "name": "ts-typecheck",
+            "status": "queued",
+            "id": 135427306318,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306318"
+          },
+          {
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "queued",
+            "id": 135427306317,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306317"
+          },
+          {
+            "name": "contracts-test",
+            "status": "queued",
+            "id": 135427306315,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306315"
+          },
+          {
+            "name": "lean-candidate",
+            "status": "queued",
+            "id": 135427306307,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306307"
+          },
+          {
+            "name": "contracts-coverage",
+            "status": "queued",
+            "id": 135427306303,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306303"
+          },
+          {
+            "name": "ts-check",
+            "status": "queued",
+            "id": 135427306209,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306209"
+          },
+          {
+            "name": "ts-lint",
+            "status": "queued",
+            "id": 135427306200,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066970/job/135427306200"
+          }
+        ],
+        "failed": [
+          {
+            "name": "mythril",
+            "conclusion": "failure",
+            "id": 135396814239,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066945/job/135396814239"
+          }
+        ],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/3e7a6af9-31a2-4aa8-b4a9-387797aa4937"
+        }
+      ],
+      "disposition": "failed_and_pending",
+      "reason": "Strict Mythril job failed at exact head; preserve findings and await independent evidence review, not normal-main merge."
+    },
+    {
+      "pr": 256,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/256",
+      "title": "Consolidate sleep-aware session locking and checkpoint revocation",
+      "head_sha": "247c3353871bf67b6711aeacb5ad1e53faa77326",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": true,
+      "checked_utc": "2026-11-19T08:19:55.842Z",
+      "check_runs": {
+        "total": 17,
+        "success": 10,
+        "skipped_or_neutral": 3,
+        "pending": [
+          {
+            "name": "changes",
+            "status": "queued",
+            "id": 135424340627,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483022136/job/135424340627"
+          },
+          {
+            "name": "secrets-and-egress",
+            "status": "queued",
+            "id": 135424339724,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483022136/job/135424339724"
+          },
+          {
+            "name": "Analyze (actions)",
+            "status": "in_progress",
+            "id": 135419589040,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483017464/job/135419589040"
+          }
+        ],
+        "failed": [
+          {
+            "name": "Pages artifact on anvil (browser)",
+            "conclusion": "failure",
+            "id": 135419605025,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483022090/job/135419605025"
+          }
+        ],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/2950f872-1a52-4047-b74c-e73a187bcd23"
+        }
+      ],
+      "disposition": "failed_and_pending",
+      "reason": "Pages Anvil expiry fixture fails after one-hour clock jump. Consolidation already separates expiry from idle locking with a 90-second payer-context clock advance; hosted combined proof pending."
+    },
+    {
+      "pr": 257,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/257",
+      "title": "Recover pool input, AST scanner and SOCKS boundary safeguards",
+      "head_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.843Z",
+      "check_runs": {
+        "total": 37,
+        "success": 16,
+        "skipped_or_neutral": 3,
+        "pending": [
+          {
+            "name": "ts-test (rest-2)",
+            "status": "queued",
+            "id": 135420410568,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410568"
+          },
+          {
+            "name": "ts-test (btc-silent-payments)",
+            "status": "queued",
+            "id": 135420410495,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410495"
+          },
+          {
+            "name": "ts-test (rest-1)",
+            "status": "queued",
+            "id": 135420410438,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410438"
+          },
+          {
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "queued",
+            "id": 135420410407,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410407"
+          },
+          {
+            "name": "ts-test (core-crypto)",
+            "status": "queued",
+            "id": 135420410395,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410395"
+          },
+          {
+            "name": "ts-test (rest-0)",
+            "status": "queued",
+            "id": 135420410382,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410382"
+          },
+          {
+            "name": "ts-test (confidential-contracts)",
+            "status": "queued",
+            "id": 135420410381,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410381"
+          },
+          {
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "queued",
+            "id": 135420410371,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410371"
+          },
+          {
+            "name": "ts-test (web)",
+            "status": "queued",
+            "id": 135420410365,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410365"
+          },
+          {
+            "name": "contracts-slither",
+            "status": "queued",
+            "id": 135420410356,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410356"
+          },
+          {
+            "name": "contracts-coverage",
+            "status": "queued",
+            "id": 135420410307,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410307"
+          },
+          {
+            "name": "lean-candidate",
+            "status": "queued",
+            "id": 135420410302,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410302"
+          },
+          {
+            "name": "e2e (full)",
+            "status": "queued",
+            "id": 135420410267,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410267"
+          },
+          {
+            "name": "ts-check",
+            "status": "in_progress",
+            "id": 135420410240,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410240"
+          },
+          {
+            "name": "contracts-test",
+            "status": "queued",
+            "id": 135420410229,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410229"
+          },
+          {
+            "name": "ts-typecheck",
+            "status": "in_progress",
+            "id": 135420410187,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410187"
+          },
+          {
+            "name": "contracts-static",
+            "status": "in_progress",
+            "id": 135420410140,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410140"
+          },
+          {
+            "name": "ts-lint",
+            "status": "queued",
+            "id": 135420410107,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44480223982/job/135420410107"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/c0ff24bc-7f60-4b88-a304-8ffd4973d750"
+        }
+      ],
+      "disposition": "pending",
+      "reason": "Pool/AST/SOCKS safeguards are incorporated in consolidation; original PR still has pending CI."
+    },
+    {
+      "pr": 258,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/258",
+      "title": "fix(web): cancel QR imports when the page becomes hidden",
+      "head_sha": "84398a79e18673f3e371a405931bc464e1cca99a",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": null,
+      "checked_utc": "2026-11-19T08:19:55.845Z",
+      "check_runs": {
+        "total": 32,
+        "success": 6,
+        "skipped_or_neutral": 2,
+        "pending": [
+          {
+            "name": "ts-test (rest-0)",
+            "status": "queued",
+            "id": 135431746497,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746497"
+          },
+          {
+            "name": "ts-test (rest-1)",
+            "status": "queued",
+            "id": 135431746203,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746203"
+          },
+          {
+            "name": "ts-test (rest-2)",
+            "status": "queued",
+            "id": 135431746135,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746135"
+          },
+          {
+            "name": "ts-test (web)",
+            "status": "queued",
+            "id": 135431746115,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746115"
+          },
+          {
+            "name": "contracts-test",
+            "status": "queued",
+            "id": 135431746099,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746099"
+          },
+          {
+            "name": "e2e (full)",
+            "status": "queued",
+            "id": 135431746083,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746083"
+          },
+          {
+            "name": "ts-test (confidential-contracts)",
+            "status": "queued",
+            "id": 135431746078,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746078"
+          },
+          {
+            "name": "ts-test (btc-silent-payments)",
+            "status": "queued",
+            "id": 135431746073,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746073"
+          },
+          {
+            "name": "ts-test (core-crypto)",
+            "status": "queued",
+            "id": 135431746059,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746059"
+          },
+          {
+            "name": "contracts-static",
+            "status": "queued",
+            "id": 135431746049,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746049"
+          },
+          {
+            "name": "ts-lint",
+            "status": "queued",
+            "id": 135431746045,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746045"
+          },
+          {
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "queued",
+            "id": 135431746044,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746044"
+          },
+          {
+            "name": "contracts-slither",
+            "status": "queued",
+            "id": 135431746036,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746036"
+          },
+          {
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "queued",
+            "id": 135431746019,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431746019"
+          },
+          {
+            "name": "ts-test-relayer",
+            "status": "queued",
+            "id": 135431745973,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431745973"
+          },
+          {
+            "name": "contracts-coverage",
+            "status": "queued",
+            "id": 135431745966,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431745966"
+          },
+          {
+            "name": "e2e (lean)",
+            "status": "queued",
+            "id": 135431745963,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431745963"
+          },
+          {
+            "name": "ts-typecheck",
+            "status": "queued",
+            "id": 135431745930,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431745930"
+          },
+          {
+            "name": "ts-check",
+            "status": "queued",
+            "id": 135431745921,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431745921"
+          },
+          {
+            "name": "lean-candidate",
+            "status": "queued",
+            "id": 135431745856,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135431745856"
+          },
+          {
+            "name": "kit",
+            "status": "queued",
+            "id": 135430042757,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607154/job/135430042757"
+          },
+          {
+            "name": "Pages artifact on anvil (browser)",
+            "status": "queued",
+            "id": 135421542536,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607329/job/135421542536"
+          },
+          {
+            "name": "secrets-and-egress",
+            "status": "queued",
+            "id": 135421542105,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607131/job/135421542105"
+          },
+          {
+            "name": "Analyze (actions)",
+            "status": "in_progress",
+            "id": 135421532921,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483603105/job/135421532921"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/fb941ecb-a99f-43ff-ab44-e61cd1613739"
+        }
+      ],
+      "disposition": "pending",
+      "reason": "Four-file camera visibility cancellation fix; source and browser qualification required before incorporation."
+    },
+    {
+      "pr": 259,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/259",
+      "title": "Recover historical documentation and reconcile current Pages guidance",
+      "head_sha": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "initially_all_green": false,
+      "initial_head_changed": null,
+      "checked_utc": "2026-11-19T08:19:55.846Z",
+      "check_runs": {
+        "total": 20,
+        "success": 3,
+        "skipped_or_neutral": 13,
+        "pending": [
+          {
+            "name": "typescript",
+            "status": "queued",
+            "id": 135431003084,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483977740/job/135431003084"
+          },
+          {
+            "name": "contracts",
+            "status": "queued",
+            "id": 135431003001,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483977740/job/135431003001"
+          },
+          {
+            "name": "Analyze (javascript-typescript)",
+            "status": "queued",
+            "id": 135422774707,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483975224/job/135422774707"
+          },
+          {
+            "name": "Analyze (actions)",
+            "status": "queued",
+            "id": 135422774261,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483975224/job/135422774261"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/75debe8f-ad9b-4ecb-9cf2-c50ae3928933"
+        }
+      ],
+      "disposition": "conflict_and_pending",
+      "reason": "Historical docs recovery plus current Pages guidance; conflicts with main and has pending checks. Prefer this reconciliation to importing stale current-status claims from #215 unchanged."
+    },
+    {
+      "pr": 260,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/260",
+      "title": "Reconcile Spec 18 backup-byte validation and unload custody safeguards",
+      "head_sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "base_branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": null,
+      "checked_utc": "2026-11-19T08:19:55.846Z",
+      "check_runs": {
+        "total": 6,
+        "success": 0,
+        "skipped_or_neutral": 1,
+        "pending": [
+          {
+            "name": "Pages artifact on anvil (browser)",
+            "status": "queued",
+            "id": 135427355110,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485360926/job/135427355110"
+          },
+          {
+            "name": "Build and verify the Pages site",
+            "status": "queued",
+            "id": 135427354796,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485360926/job/135427354796"
+          },
+          {
+            "name": "kit",
+            "status": "queued",
+            "id": 135427352070,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485361026/job/135427352070"
+          },
+          {
+            "name": "qualify-ghostpay-web",
+            "status": "queued",
+            "id": 135427351558,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485361026/job/135427351558"
+          },
+          {
+            "name": "beta acceptance (lib + cli + browser on anvil)",
+            "status": "queued",
+            "id": 135427350225,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485360892/job/135427350225"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/6299549a-10d2-40ac-bd6f-62db6122086d"
+        }
+      ],
+      "disposition": "pending_stacked",
+      "reason": "Recovery reconciliation targets the reviewed Spec18 branch rather than main; 12-file overlap with consolidated recovery/idle source requires exact semantic comparison."
+    },
+    {
+      "pr": 261,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/261",
+      "title": "feat(automation): coordinate GhostPay integration cycles and persist verified progress",
+      "head_sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": null,
+      "checked_utc": "2026-11-19T08:19:55.846Z",
+      "check_runs": {
+        "total": 3,
+        "success": 0,
+        "skipped_or_neutral": 0,
+        "pending": [
+          {
+            "name": "Analyze (actions)",
+            "status": "queued",
+            "id": 135427114063,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485288375/job/135427114063"
+          },
+          {
+            "name": "Analyze (python)",
+            "status": "queued",
+            "id": 135427114010,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485288375/job/135427114010"
+          },
+          {
+            "name": "Analyze (javascript-typescript)",
+            "status": "queued",
+            "id": 135427113734,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44485288375/job/135427113734"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/678b5e8e-fe1e-44fa-a502-af00f7d894f7"
+        }
+      ],
+      "disposition": "pending",
+      "reason": "New integration-cycle lock/tooling and status documents; no green exact-head qualification yet. Do not equate status documents with completed product features."
+    },
+    {
+      "pr": 262,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/262",
+      "title": "Consolidate GhostPay feature sources and close authority-boundary gaps",
+      "head_sha": "b2bb23c466baa0fb8c9cfaf4816ad058fcc8358b",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "initially_all_green": false,
+      "initial_head_changed": null,
+      "checked_utc": "2026-11-19T08:19:55.846Z",
+      "check_runs": {
+        "total": 20,
+        "success": 1,
+        "skipped_or_neutral": 3,
+        "pending": [
+          {
+            "name": "changes",
+            "status": "queued",
+            "id": 135429620551,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035581/job/135429620551"
+          },
+          {
+            "name": "secrets-and-egress",
+            "status": "queued",
+            "id": 135429620104,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035581/job/135429620104"
+          },
+          {
+            "name": "echidna",
+            "status": "queued",
+            "id": 135429619486,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035397/job/135429619486"
+          },
+          {
+            "name": "integration (anvil + bitcoind regtest + solana-test-validator)",
+            "status": "queued",
+            "id": 135429619368,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035452/job/135429619368"
+          },
+          {
+            "name": "beta acceptance (lib + cli + browser on anvil)",
+            "status": "queued",
+            "id": 135429619245,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035364/job/135429619245"
+          },
+          {
+            "name": "mythril",
+            "status": "queued",
+            "id": 135429619154,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035397/job/135429619154"
+          },
+          {
+            "name": "Build and verify the Pages site",
+            "status": "queued",
+            "id": 135429619118,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035315/job/135429619118"
+          },
+          {
+            "name": "CLI (macos-latest)",
+            "status": "queued",
+            "id": 135429619057,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035339/job/135429619057"
+          },
+          {
+            "name": "CLI (windows-latest)",
+            "status": "in_progress",
+            "id": 135429618884,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035339/job/135429618884"
+          },
+          {
+            "name": "Pages artifact on anvil (browser)",
+            "status": "queued",
+            "id": 135429618635,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035315/job/135429618635"
+          },
+          {
+            "name": "qualify-ghostpay-web",
+            "status": "queued",
+            "id": 135429618609,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035254/job/135429618609"
+          },
+          {
+            "name": "kit",
+            "status": "queued",
+            "id": 135429618455,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035254/job/135429618455"
+          },
+          {
+            "name": "CLI (ubuntu-24.04)",
+            "status": "queued",
+            "id": 135429618356,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486035339/job/135429618356"
+          },
+          {
+            "name": "Analyze (javascript-typescript)",
+            "status": "queued",
+            "id": 135429606330,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486029152/job/135429606330"
+          },
+          {
+            "name": "Analyze (python)",
+            "status": "queued",
+            "id": 135429606049,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486029152/job/135429606049"
+          },
+          {
+            "name": "Analyze (actions)",
+            "status": "queued",
+            "id": 135429605359,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486029152/job/135429605359"
+          }
+        ],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/c2d54587-09c5-4637-bc32-c477b408bf67"
+        }
+      ],
+      "disposition": "pending",
+      "reason": "Coordinator's unified candidate; exact remote head is still in qualification and newer local work is not covered by these checks."
+    },
+    {
+      "pr": 232,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/232",
+      "title": "docs: preserve beta execution results, source pins and remaining gates",
+      "head_sha": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.847Z",
+      "check_runs": {
+        "total": 20,
+        "success": 8,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/d38bb785-d7f3-4009-8ef5-b1755d6960be"
+        }
+      ],
+      "disposition": "conflict",
+      "reason": "Historical evidence package conflicts with current main; no normal-main merge without reconciliation."
+    },
+    {
+      "pr": 226,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/226",
+      "title": "fix(audit): contain static helper symlinks and malformed requests",
+      "head_sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "base_branch": "nodata/jolly-rubin-u4zd45",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.847Z",
+      "check_runs": {
+        "total": 16,
+        "success": 4,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/37366fa2-dbb4-4772-a82a-955e590bc740"
+        }
+      ],
+      "disposition": "non_main_target",
+      "reason": "Green against an old static-helper parent, not main. Existing #238/#246 consolidation overlaps; inspect source preservation rather than whole merging."
+    },
+    {
+      "pr": 224,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/224",
+      "title": "SonarCloud triage of all 107 findings + static-server/bidi/download hardening; D03 (AUD24-01) decision packet",
+      "head_sha": "1054daabc5cabe958466ec144582d76137b54910",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.849Z",
+      "check_runs": {
+        "total": 40,
+        "success": 37,
+        "skipped_or_neutral": 3,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/b96e246d-2d64-4af6-9be6-eeea5d75b953"
+        }
+      ],
+      "disposition": "conflict",
+      "reason": "Historical full-green Sonar/static hardening conflicts with main and overlaps consolidated source."
+    },
+    {
+      "pr": 223,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/223",
+      "title": "docs: sync docs with current code (2026-11-18)",
+      "head_sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.851Z",
+      "check_runs": {
+        "total": 20,
+        "success": 8,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/7ccde2f3-ec68-4528-b5a7-ce5a8662d8d9"
+        }
+      ],
+      "disposition": "conflict",
+      "reason": "Historical documentation drift fixes conflict with main."
+    },
+    {
+      "pr": 221,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/221",
+      "title": "docs: record post-consolidation PR retirement and the branch-protection owner script",
+      "head_sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.852Z",
+      "check_runs": {
+        "total": 20,
+        "success": 8,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/83cf516b-dc46-4db3-ba5e-219a6fec12cd"
+        }
+      ],
+      "latest_main_comparison": {
+        "main_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+        "merge_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+        "ahead": 1,
+        "behind": 45,
+        "status": "diverged"
+      },
+      "disposition": "review_incomplete",
+      "reason": "Clean and green, but contains an owner-admin protection script plus historical retirement assertions. Source reviewed for scope; factual retirement and current protection-policy review not completed by this sweep."
+    },
+    {
+      "pr": 219,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/219",
+      "title": "Bitcoin scan: recognise spent outputs locally; per-outpoint provider query becomes opt-in (spec 12)",
+      "head_sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.853Z",
+      "check_runs": {
+        "total": 40,
+        "success": 37,
+        "skipped_or_neutral": 3,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/bafdeeb8-977e-4cee-9695-5d9c8ca7557c"
+        }
+      ],
+      "latest_main_comparison": {
+        "main_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+        "merge_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+        "ahead": 1,
+        "behind": 45,
+        "status": "diverged"
+      },
+      "disposition": "successor_integration",
+      "reason": "Clean and green old Bitcoin implementation, but included by ancestry in #254; coordinator is integrating its stronger successor with privacy authority."
+    },
+    {
+      "pr": 218,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/218",
+      "title": "Restore fixes dropped by merge 84c2c185 that main still lacks: CLI, sweep destination, quote age, relayer (claim + integration)",
+      "head_sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.855Z",
+      "check_runs": {
+        "total": 40,
+        "success": 37,
+        "skipped_or_neutral": 3,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/3e3c7b76-2b33-4104-98fb-27d2257e0cff"
+        }
+      ],
+      "disposition": "conflict",
+      "reason": "Historical CLI/relayer/browser fixes conflict with main and span paused/non-Pages scope; preserve only reviewed unique pieces."
+    },
+    {
+      "pr": 216,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/216",
+      "title": "docs(handoff): GhostPay zero-Codex continuation through rotation 207",
+      "head_sha": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+      "base_branch": "main",
+      "state": "closed",
+      "merged": true,
+      "draft": false,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.855Z",
+      "check_runs": {
+        "total": 20,
+        "success": 8,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/46555e4d-d579-4561-804b-4c814e11b754"
+        }
+      ],
+      "disposition": "merged",
+      "reason": "Merged into main as a36f48da; no remaining merge action."
+    },
+    {
+      "pr": 215,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/215",
+      "title": "docs(wiki): Pages user/developer guides and maintenance through rotation 207",
+      "head_sha": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.856Z",
+      "check_runs": {
+        "total": 20,
+        "success": 8,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/9d8a9483-9dc9-4ed7-8637-931910a5687f"
+        }
+      ],
+      "latest_main_comparison": {
+        "main_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+        "merge_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+        "ahead": 25,
+        "behind": 45,
+        "status": "diverged"
+      },
+      "disposition": "stale_current_status",
+      "reason": "Clean and green, but added current-status sections name old main dfc75ef and call now-merged #241 unmerged. Preserve dated evidence while reconciling current guidance through #259."
+    },
+    {
+      "pr": 212,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/212",
+      "title": "Security and release-gate reconciliation: Mythril/Echidna/fee-token re-evaluation, CI review, owner packets",
+      "head_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.857Z",
+      "check_runs": {
+        "total": 39,
+        "success": 34,
+        "skipped_or_neutral": 5,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/850154a8-26e4-4358-a494-bf1f6df9b0b4"
+        }
+      ],
+      "latest_main_comparison": {
+        "main_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+        "merge_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+        "ahead": 6,
+        "behind": 45,
+        "status": "diverged"
+      },
+      "disposition": "successor_review",
+      "reason": "Clean and green historical security/tooling predecessor, but modifies workflows and adds the earlier unwired Mythril disposition checker. Stronger #255 and current consolidation require semantic review; no whole-PR qualification granted."
+    },
+    {
+      "pr": 208,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/208",
+      "title": "docs(handoff): cooperative completion, audit and security-closure execution prompt",
+      "head_sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.858Z",
+      "check_runs": {
+        "total": 20,
+        "success": 8,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/9326d17c-a88c-4900-97f7-2cb2c449ad54"
+        }
+      ],
+      "latest_main_comparison": {
+        "main_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+        "merge_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+        "ahead": 1,
+        "behind": 45,
+        "status": "diverged"
+      },
+      "disposition": "eligible_historical_docs",
+      "reason": "Reviewed full 234-line added execution-prompt document. It explicitly dates/pins its old source and requires live rechecking; contains no runtime/workflow mutation. Green exact-head checks and GitHub clean main mergeability. Eligible to merge as historical evidence after normal draft-to-ready transition and final head/main/check recheck; document text is not new authorization."
+    },
+    {
+      "pr": 205,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/205",
+      "title": "docs(audit): post-consolidation audit and feature-completion execution package (2026-11-18)",
+      "head_sha": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.859Z",
+      "check_runs": {
+        "total": 20,
+        "success": 8,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/eea92048-94ea-4dec-ade3-15464fe5b0d7"
+        }
+      ],
+      "latest_main_comparison": {
+        "main_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+        "merge_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+        "ahead": 4,
+        "behind": 45,
+        "status": "diverged"
+      },
+      "disposition": "review_incomplete",
+      "reason": "Clean and green dated audit package, but 58 files include an uninspected binary ZIP and large evidence/matrix artifacts; README is explicitly source-pinned. This bounded sweep did not qualify every artifact."
+    },
+    {
+      "pr": 160,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/160",
+      "title": "docs(pages): source-pinned integration and release-gate inventory",
+      "head_sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "base_branch": "integration/consolidated-2026-11-14",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.860Z",
+      "check_runs": {
+        "total": 16,
+        "success": 4,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/58971fc6-d803-4808-a27f-3c7f821d9e10"
+        }
+      ],
+      "disposition": "non_main_target",
+      "reason": "Historical release inventory targets an old integration branch, not main; green checks cannot qualify a retargeted main merge."
+    },
+    {
+      "pr": 153,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/153",
+      "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification",
+      "head_sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "base_branch": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.860Z",
+      "check_runs": {
+        "total": 16,
+        "success": 4,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/910481a3-976a-4dcf-b595-b933b8b446f9"
+        }
+      ],
+      "disposition": "non_main_target",
+      "reason": "Historical handoff stack targets an old reconciliation branch; #216/current reconciliation already cover newer narrative."
+    },
+    {
+      "pr": 140,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/140",
+      "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger",
+      "head_sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "base_branch": "claude/ghostpay-github-pages-up6cj6",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.861Z",
+      "check_runs": {
+        "total": 16,
+        "success": 4,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/e1a7d3ba-8ab9-49b0-9f41-f6812715f3d0"
+        }
+      ],
+      "disposition": "non_main_target",
+      "reason": "Historical wiki stack targets an old Pages branch; #259 carries explicit archive/reconciliation work."
+    },
+    {
+      "pr": 139,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/139",
+      "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)",
+      "head_sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "base_branch": "claude/ghostpay-github-pages-up6cj6",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.862Z",
+      "check_runs": {
+        "total": 16,
+        "success": 4,
+        "skipped_or_neutral": 12,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/431df6ad-3ed6-4ffe-a2b2-87257da7e8b2"
+        }
+      ],
+      "disposition": "non_main_target",
+      "reason": "Historical audit stack targets an old Pages branch; preserve via current source-pinned archive work, not direct main merge."
+    },
+    {
+      "pr": 52,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/52",
+      "title": "ci: add four parallel API-funded GhostPay QA agents with guarded integration",
+      "head_sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.863Z",
+      "check_runs": {
+        "total": 30,
+        "success": 26,
+        "skipped_or_neutral": 4,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/ba38d62f-9141-41b3-a151-aa640386890e"
+        }
+      ],
+      "latest_main_comparison": {
+        "main_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+        "merge_base": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+        "ahead": 6,
+        "behind": 1542,
+        "status": "diverged"
+      },
+      "disposition": "outside_authorized_scope",
+      "reason": "Clean historical checks but activates API-funded parallel agent automation; current task does not authorize activating paid automation."
+    },
+    {
+      "pr": 51,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/51",
+      "title": "ci: continue GhostPay API-funded backlog development twice daily",
+      "head_sha": "5835736c12968231ac7b3152e394077bee453622",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "initially_all_green": true,
+      "initial_head_changed": false,
+      "checked_utc": "2026-11-19T08:19:55.864Z",
+      "check_runs": {
+        "total": 26,
+        "success": 26,
+        "skipped_or_neutral": 0,
+        "pending": [],
+        "failed": [],
+        "pagination_complete": true,
+        "all_reported_heads_match": true
+      },
+      "commit_statuses": [
+        {
+          "name": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/9412e910-52d8-4792-85dc-920e3126115b"
+        }
+      ],
+      "disposition": "conflict_and_outside_scope",
+      "reason": "Old recurring API-funded automation conflicts with main and falls outside authorized activation scope."
+    }
+  ],
+  "followup_implementation": {
+    "issue": "Home relative module URL rejected before production release-hash dispatch",
+    "base_sha": "5dd63d651384a4712615e237bb09da3afcd40afb",
+    "implementation_sha": "9bc9f1a19abedfc667db7931c9892d6cee1190d0",
+    "baseline": "3 failed, 1 control passed",
+    "focused_result": "30 passed; source-focused Vitest; no hosted browser pass claimed",
+    "independent_review": "recovery_completion final source review pinned to 9bc9f1a19abedfc667db7931c9892d6cee1190d0: no introduced source blocker; committed Home/test SHA256 verified, networkAuthorization.ts and release.ts blob-exact to base; author runtime result attributed, no independent runtime replay claimed",
+    "hosted_qualification": "pending combined candidate; original check snapshots above remain per their observed PR heads",
+    "evidence_head_sha": "30611eee4685df63a31bc9e633ca08563998c267"
+  }
+}

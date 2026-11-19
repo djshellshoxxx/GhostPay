@@ -1,0 +1,26 @@
+[
+  {
+    "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "sourcePath": "docs/audits/mythril-14290880802-expiry-dispositions.md",
+    "savedPath": "prior-dispositions/mythril-14290880802-expiry-dispositions.md",
+    "sha256": "ddc02027b00ebad7f01a240748bfc75540add5a909fc1a478924666aabba92be"
+  },
+  {
+    "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "sourcePath": "docs/audits/mythril-14290880802-factory-dispositions.md",
+    "savedPath": "prior-dispositions/mythril-14290880802-factory-dispositions.md",
+    "sha256": "dc73969936e1267f3823ee99365cba0dec9a95d5640776a28f9a7a9ed91c612a"
+  },
+  {
+    "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "sourcePath": "docs/audits/mythril-closure-factory-20261118.md",
+    "savedPath": "prior-dispositions/mythril-closure-factory-20261118.md",
+    "sha256": "a0840d4f00a8035d9cd041d7c4abf89524358ba2ac0d95381328c848f2aa492e"
+  },
+  {
+    "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "sourcePath": "docs/audits/mythril-closure-20261118/TIMING_ASSUMPTIONS.md",
+    "savedPath": "prior-dispositions/TIMING_ASSUMPTIONS.md",
+    "sha256": "73d266508f2ec4b58545d516f73f3eb1403a84f562abf9f32cd4c43b05ce8b3d"
+  }
+]

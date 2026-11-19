@@ -1,0 +1,631 @@
+{
+  "schema_version": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "runtime_local_checkpoint": "e76451ad56ba1634eed9d03468961900433fd130",
+  "test_local_checkpoint": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+  "note": "Recorded command outcomes, not an inferred aggregate pass. Worker-specific results and overlapping selections remain in their source-pinned receipts. The integration-only test repairs do not change runtime/build inputs; see test-reconciliation-review.json.",
+  "checks": [
+    {
+      "id": "web-coverage-initial",
+      "status": "blocked",
+      "exit_code": 137,
+      "source_local": "e76451ad56ba1634eed9d03468961900433fd130",
+      "evidence": "evidence/combined-full-web-tests.txt",
+      "note": "Original coverage thresholds unchanged; terminated before aggregate output. Some compiled inputs were subsequently rebuilt, so this attempt would not qualify the reconciled build inputs even if completed."
+    },
+    {
+      "id": "web-full-unit-diagnostic",
+      "status": "failed",
+      "exit_code": 1,
+      "source_local": "e76451ad56ba1634eed9d03468961900433fd130",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512 --max-semi-space-size=8",
+      "command": "vitest run --coverage=false --maxWorkers=2 --reporter=verbose",
+      "cwd": "apps/web",
+      "evidence": "evidence/complete-web-unit-baseline.txt.gz",
+      "files": {
+        "passed": 245,
+        "failed": 10,
+        "skipped": 2,
+        "total": 257
+      },
+      "tests": {
+        "passed": 3584,
+        "failed": 33,
+        "skipped": 13,
+        "total": 3630
+      },
+      "duration_seconds": 930.13,
+      "note": "Immutable-source complete ordinary unit selection. 31 failures were stale integration contracts; BTC initial scan and fuzz timing diagnosed separately."
+    },
+    {
+      "id": "web-ten-failed-files-replay",
+      "status": "failed",
+      "exit_code": 1,
+      "source_local": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512 --max-semi-space-size=8",
+      "command": "vitest run --coverage=false --maxWorkers=1 --reporter=verbose src/views/Settings.exchange.test.tsx src/components/TagArchive.test.tsx src/features/chainViews.i18n.test.tsx src/features/tron/TronView.test.tsx src/features/tron/TronView.lock.test.tsx src/features/tron/TronView.privacy.test.tsx src/features/tron/chain.hardening.test.ts src/lib/scanPrivacy.authorization.test.ts src/features/btc/BtcView.persistence.test.tsx src/lib/scannerCore.fuzz.test.ts",
+      "cwd": "apps/web",
+      "evidence": "evidence/combined-repaired-web-unit.txt",
+      "files": {
+        "passed": 9,
+        "failed": 1,
+        "total": 10
+      },
+      "tests": {
+        "passed": 96,
+        "failed": 1,
+        "total": 97
+      },
+      "duration_seconds": 300.61,
+      "note": "All four repair groups and unchanged BTC persistence passed. Unchanged million-log fuzz exceeded its 180-second limit at 191.874 seconds."
+    },
+    {
+      "id": "web-typecheck-final-serial",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=1536",
+      "command": "npm run typecheck --workspace @ghostpay/web",
+      "evidence": "evidence/final-serial-web-typecheck.txt",
+      "note": "After all 254 emitted JS inputs reconciled, no competing heavy tests."
+    },
+    {
+      "id": "web-lint-final-serial",
+      "status": "blocked",
+      "exit_code": 137,
+      "source_local": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=1536",
+      "command": "npm run lint --workspace @ghostpay/web",
+      "evidence": "evidence/final-serial-web-lint.txt",
+      "note": "Original ESLint scope/configuration/rules; process killed even after competing heavy jobs stopped."
+    },
+    {
+      "id": "full-production-build-reconciled",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "e76451ad56ba1634eed9d03468961900433fd130",
+      "evidence": [
+        "evidence/final-full-build.txt",
+        "evidence/full-artifact-manifest.json"
+      ],
+      "emitted_files_scanned": 19,
+      "note": "Fresh build after chain-adapters and ux-vault rebuild; default broad-connect policy, not a production endpoint-policy approval."
+    },
+    {
+      "id": "lean-production-build-reconciled",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "e76451ad56ba1634eed9d03468961900433fd130",
+      "evidence": [
+        "evidence/final-lean-build.txt",
+        "evidence/final-lean-boundary.txt",
+        "evidence/lean-artifact-manifest.json",
+        "evidence/lean-module-report.json"
+      ],
+      "emitted_files_scanned": 17,
+      "module_boundary": {
+        "chunks": 6,
+        "workers": 1,
+        "problems": 0
+      }
+    },
+    {
+      "id": "compiled-runtime-inputs",
+      "status": "passed",
+      "source_local": "e76451ad56ba1634eed9d03468961900433fd130",
+      "evidence": "build-input-review.json",
+      "workspaces": 18,
+      "javascript_files_matched": 254,
+      "note": "No extra/missing JS or compiler diagnostics; declarations and source maps not part of this comparator. Current 74e3111f outputs/source unchanged by independent audit."
+    },
+    {
+      "id": "separate-nocov-earlier",
+      "status": "passed",
+      "exit_code": 0,
+      "tests": {
+        "passed": 4,
+        "total": 4
+      },
+      "files": {
+        "passed": 4,
+        "total": 4
+      },
+      "duration_seconds": 80.45,
+      "command": "vitest run --config vitest.nocov.config.ts --maxWorkers=1",
+      "cwd": "apps/web",
+      "evidence": "evidence/combined-web-nocov.txt",
+      "note": "Before final compiled-input reconciliation. Fresh replay tracked separately."
+    },
+    {
+      "id": "production-dependency-audit",
+      "status": "passed",
+      "exit_code": 0,
+      "command": "npm audit --omit=dev --json",
+      "evidence": "evidence/audit-production.json",
+      "vulnerabilities": 0
+    },
+    {
+      "id": "all-dependency-audit",
+      "status": "findings",
+      "exit_code": 1,
+      "command": "npm audit --json",
+      "evidence": "evidence/audit-all.json",
+      "affected_package_entries": {
+        "low": 17,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0
+      },
+      "note": "Development-tooling graph, two underlying advisories; major Hardhat/plugin migration suggested. No unqualified dependency upgrade or exception."
+    },
+    {
+      "id": "browser-local",
+      "status": "blocked-before-assertions",
+      "note": "Chromium singleton socket failed Operation not permitted. Cloud browser fallback timed out. No browser assertion pass."
+    },
+    {
+      "id": "million-log-resource-replay",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "command": "vitest run --coverage=false --maxWorkers=1 --no-file-parallelism --reporter=verbose src/lib/scannerCore.fuzz.test.ts",
+      "cwd": "apps/web",
+      "evidence": "evidence/final-fuzz-resource-replay.txt",
+      "tests": {
+        "passed": 1,
+        "total": 1
+      },
+      "duration_seconds": 156.18,
+      "test_duration_ms": 155316,
+      "wrapper_metrics": {
+        "wall_seconds": 156.84,
+        "user_cpu_seconds": 168.280465,
+        "system_cpu_seconds": 1.584153,
+        "max_rss_kib": 226080
+      },
+      "note": "Original one-million corpus, seed, assertions, test configuration and180000ms limit unchanged. Higher memory allowance is a changed execution resource, not proof of a GC root cause or a full-suite coverage pass."
+    },
+    {
+      "id": "web-coverage-combined-replay",
+      "status": "terminated-before-aggregate",
+      "source_local": "e74ddd26b75912d770e05d51f0b9229756adc649",
+      "child_exit_code": -9,
+      "exec_exit_code": 247,
+      "signal": "SIGKILL",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "command": "vitest run --coverage --coverage.processingConcurrency=1 --coverage.reportsDirectory=/workspace/scratch/13855ecc035c/final-web-coverage-e74ddd26 --maxWorkers=1 --no-file-parallelism --reporter=verbose",
+      "cwd": "apps/web",
+      "evidence": "evidence/complete-web-coverage-replay.txt.gz",
+      "uncompressed_bytes": 150356,
+      "uncompressed_sha256": "a0a557cf33515d65d1e3da6a0c4aef15d40079d71ac9c1e9a0466a12b6171dcb",
+      "partial_log_counts_not_aggregate": {
+        "passing_case_lines": 882,
+        "failing_case_lines": 1
+      },
+      "wrapper_metrics": {
+        "exit_code": -9,
+        "wall_seconds": 2058.443,
+        "user_cpu_seconds": 2001.675482,
+        "system_cpu_seconds": 65.466295,
+        "max_rss_kib": 570916
+      },
+      "confirmed_failed_case": {
+        "file": "src/lib/scannerCore.fuzz.test.ts",
+        "duration_ms": 192246,
+        "unchanged_limit_ms": 180000
+      },
+      "note": "Killed before suite completion; no aggregate test totals, coverage reports, or threshold result. Exact cause of SIGKILL not established. Original thresholds90/85/90/90 and assertions unchanged. Installed reportOnFailure=false would skip coverage reporting/threshold evaluation after any test failure; see final-coverage-behavior-review.json. Prior directory-lock startup failed before assertions and is retained separately."
+    },
+    {
+      "id": "invoice-build-runtime24-after-reset",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+      "node": "24.22.3",
+      "node_options": "--max-old-space-size=384",
+      "command": "npm run build --workspace @ghostpay/invoice-schema",
+      "evidence": "evidence/final-canonical-invoice-build.txt",
+      "note": "Requested PATH entry for prior Node22 cache was absent after environment reset; shell used available Node24.22.3. Kept distinct from direct Node22 replay."
+    },
+    {
+      "id": "invoice-build-final-node22",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+      "node": "22.23.4",
+      "executable": "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+      "command": "node --max-old-space-size=384 ../../node_modules/typescript/bin/tsc -p tsconfig.build.json",
+      "cwd": "packages/invoice-schema",
+      "evidence": "evidence/final-canonical-invoice-node22-build.txt",
+      "note": "Direct executable invocation after restoring and verifying exact Node22.23.4; original production tsconfig."
+    },
+    {
+      "id": "web-lint-partition-trial-3ab",
+      "status": "terminated-before-results",
+      "source_local": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+      "child_exit_code": -9,
+      "shell_exit_code": 137,
+      "driver_exit_code": 2,
+      "signal": "SIGKILL",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "original_scope_files": 497,
+      "planned_partitions": 21,
+      "attempted_partition": 3,
+      "requested_files": 24,
+      "verified_files": 0,
+      "remaining_partitions_unexecuted": 20,
+      "error_count": null,
+      "warning_count": null,
+      "wall_seconds": 185.333358435,
+      "max_rss_kib": 404932,
+      "note": "Original cwd/config/rules and full typed input graph retained. Exact cause of SIGKILL unknown. No eslint.json was produced, so zero files have verifiable lint results. No remaining partition or retry was executed. The prior full-command exit137 remains separate.",
+      "evidence": "evidence/web-lint-partitions-3ab/",
+      "independent_review_sha256": "256b531fb958b7199dd9bce1766209cfc475670e5928d408c56cf48edb26004c"
+    },
+    {
+      "id": "invoice-build-final-merchant-node22",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "node": "22.23.4",
+      "command": "node --max-old-space-size=384 ../../node_modules/typescript/bin/tsc -p tsconfig.build.json",
+      "cwd": "packages/invoice-schema",
+      "evidence": "evidence/final-merchant-invoice-node22-build.txt",
+      "note": "Direct exact Node22 executable after merchant-clock integration. Original production tsconfig."
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 4.368,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vite/bin/vite.js",
+        "build"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "full-build.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 2833,
+      "sha256": "7efc51586a7a5b4dbf349bafda8388e405b7cfe8d131bcfe868a4269be042411",
+      "id": "final-source-full-build",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/full-build.txt"
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 2.207,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "scripts/apply-csp.mjs"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "full-csp.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 750,
+      "sha256": "8d5a3d7296dd2e45c603a09945adf6f0ff6f274eb9d36936226153657a51dc9f",
+      "id": "final-source-full-csp",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/full-csp.txt"
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 4.411,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "scripts/scan-bundle.mjs"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "full-scan.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 832,
+      "sha256": "6dd9dcf3c21b50d892c826bc3ec5c4f4a22e082f2257fc62ae5457225ede8c27",
+      "id": "final-source-full-scan",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/full-scan.txt"
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 10.333,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/tools/portable-hosting-kit",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--test",
+        "--test-concurrency=4",
+        "test/**/*.test.mjs"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "hosting-kit.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 67413,
+      "sha256": "9d4652dbf5dc37d25f17d2892fb990e2051e1f5f51447f025223364b7cef3ac8",
+      "id": "final-source-hosting-kit",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/hosting-kit.txt",
+      "tests": {
+        "passed": 286,
+        "failed": 0,
+        "skipped": 13,
+        "total": 299
+      },
+      "note": "Complete original kit selection with fresh root full web dist. Native nginx and other opt-in cases retain their actual skips. This is not an all-native-hosts qualification."
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 0.339,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--input-type=module",
+        "-e",
+        "import{readFileSync}from'node:fs';import{checkLeanReport}from'../../scripts/pages/verify-pages-site.mjs';const r=JSON.parse(readFileSync('dist/ghostpay-lean-build.json','utf8'));const problems=checkLeanReport(r);console.log(JSON.stringify({chunks:r.chunks.length,workers:r.workers.length,problems}));if(problems.length)process.exitCode=1;"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "lean-boundary.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 1070,
+      "sha256": "73e4d9c87142fd7e8222d955a5d3462fc511eba1ef79329b25cbae2fbc9e9f0a",
+      "id": "final-source-lean-boundary",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/lean-boundary.txt"
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 2.678,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vite/bin/vite.js",
+        "build"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "lean-build.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 2779,
+      "sha256": "cede84156e60dadf95df5bd0593791f27fb3aa9849990414ece4f4247da66d37",
+      "id": "final-source-lean-build",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/lean-build.txt"
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 1.767,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "scripts/apply-csp.mjs"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "lean-csp.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 751,
+      "sha256": "d0610f9e138281f95c075566f50a74b0508fc8b1070d8ebd0ad0623596e4175f",
+      "id": "final-source-lean-csp",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/lean-csp.txt"
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 3.746,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "scripts/scan-bundle.mjs"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "lean-scan.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 832,
+      "sha256": "19fe4c39d31526c52c1806d4fbbb755f8f9cf2a4e7036b5f3c4a5fc65fbf18aa",
+      "id": "final-source-lean-scan",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/lean-scan.txt"
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 89.689,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.nocov.config.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=verbose"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+      "log": "web-nocov.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 3876,
+      "sha256": "0221b97bf2a4a759ad20564f0181855ab7f4e4f5124f1073cc20ac8ed566982e",
+      "id": "final-source-web-nocov",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/web-nocov.txt",
+      "tests": {
+        "passed": 4,
+        "total": 4
+      },
+      "files": {
+        "passed": 4,
+        "total": 4
+      },
+      "vitest_duration_seconds": 88.69
+    },
+    {
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "exit_code": 0,
+      "wall_seconds": 109.097,
+      "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+      "argv": [
+        "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/typescript/bin/tsc",
+        "-p",
+        "tsconfig.json",
+        "--noEmit"
+      ],
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=1536",
+      "log": "web-typecheck.txt",
+      "post_source_validation_error": null,
+      "qualification": "PASSED",
+      "bytes": 536,
+      "sha256": "9e82a9b068098465939a3b14135d9d0d5d86f2b983955fdfad979719432b03f9",
+      "id": "final-source-web-typecheck",
+      "status": "passed",
+      "evidence": "evidence/final-source-checks-9b8e5024/web-typecheck.txt"
+    },
+    {
+      "id": "compiled-runtime-inputs-final",
+      "status": "passed",
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "evidence": "final-build-input-review.json",
+      "workspaces": 18,
+      "javascript_files_matched": 254,
+      "without_per_line_whitespace_normalization_matched": 254,
+      "note": "Independent in-memory JS emission comparison, not semantic typecheck. Zero missing/extra/unhandled JS or emission diagnostics; source/config/dist stable; includes canonical-array and merchant-clock changes. Declaration files/maps not compared."
+    },
+    {
+      "id": "final-source-build-profile-summary",
+      "status": "passed",
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "full_files_scanned": 19,
+      "lean_files_scanned": 17,
+      "lean_boundary": {
+        "chunks": 6,
+        "workers": 1,
+        "problems": 0
+      },
+      "matching_original_typecheck_qualified": true,
+      "evidence": "evidence/final-source-checks-9b8e5024/",
+      "note": "Original TypeScript check plus Vite production bundles and original CSP/artifact scanners all passed on unchanged source. Default broad-connect setting, not a production endpoint-policy or release approval."
+    },
+    {
+      "id": "final-source-secret-scan",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "command": "bash scripts/scan-secrets.sh",
+      "evidence": "evidence/final-source-secret-scan.txt",
+      "note": "Original repository check and scope unchanged; this check does not replace other security gates."
+    },
+    {
+      "id": "final-source-actions-pins",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "command": "bash scripts/check-actions-pinned.sh",
+      "evidence": "evidence/final-source-actions-pins.txt",
+      "note": "Original repository check and scope unchanged; this check does not replace other security gates."
+    },
+    {
+      "id": "final-source-tx-origin",
+      "status": "passed",
+      "exit_code": 0,
+      "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "command": "node scripts/check-tx-origin.mjs .",
+      "evidence": "evidence/final-source-tx-origin.txt",
+      "note": "Original repository check and scope unchanged; this check does not replace other security gates."
+    }
+  ],
+  "combined_source_local_checkpoint": "e74ddd26b75912d770e05d51f0b9229756adc649",
+  "combined_source_published_checkpoint": "c40b7581b9b996f33612186bc91960c65273cb64",
+  "native_tool_observation": {
+    "observed_utc": "2026-11-19T09:56:57Z",
+    "on_path": {
+      "forge": null,
+      "anvil": null,
+      "solc": null,
+      "myth": null,
+      "echidna": null,
+      "bitcoind": null,
+      "nginx": null,
+      "chromium": "/usr/bin/chromium"
+    },
+    "workspace_bins": {
+      "forge": false,
+      "anvil": false,
+      "solc": false,
+      "solcjs": true,
+      "myth": false,
+      "echidna": false,
+      "bitcoind": false,
+      "nginx": false
+    },
+    "installed_packages": {
+      "solc": "0.8.26",
+      "hardhat": "2.29.2"
+    },
+    "note": "Executable discovery only, not a native test run or a claim about every filesystem location. Installed solcjs0.8.26 does not establish the required0.8.28 compiler identity."
+  },
+  "final_source_local_checkpoint": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "final_source_published_checkpoint": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "final_source_shared_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+  "unqualified_gates": [
+    "Whole-final-source ordinary web unit/coverage aggregate and original90/85/90/90 thresholds",
+    "Whole-final-source typed web lint; original full and unchanged-web-scope partition trials terminated",
+    "All-workspace clean installation/build/test gate",
+    "Final exact-head hosted full/lean browser, Pages/native/regtest and security gates",
+    "Full invoice-schema package coverage95/90/95/95 (focused208 and static/build checks passed)",
+    "Strict contract findings and required0.8.28 native qualification; separateCodeQL264 alert applicability unknown"
+  ],
+  "main_reconciliation": {
+    "tested_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+    "tested_published": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+    "reconciled_local": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+    "reconciled_published": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+    "shared_entire_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+    "changed_paths": [],
+    "note": "Original #257 source already an ancestor. Both merge-tree prediction and actual normal merge retained exactly the entire tested tree. No new test execution is claimed for the ancestry-only commit."
+  },
+  "ending_main_at_observation": "8f56376427c96881f49590920ff0bf8543ec81b4",
+  "main_promotion_evidence": "main-257-promotion-review.json"
+}
