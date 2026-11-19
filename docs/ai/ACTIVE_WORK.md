@@ -1263,4 +1263,7 @@ Acceptance: relative module script URLs under `/GhostPay/` resolve against `docu
 before granting authority; the exact resolved URL binds grant and digest fetch; cross-origin
 targets remain refused; reproduce the hosted PR #251 failure before fixing it, then run focused
 tests and obtain an independent recovery-worker review. No broad checks or remote mutation.
+Status: implemented at `9bc9f1a19abedfc667db7931c9892d6cee1190d0`; baseline 3 failures/1 control,
+30 focused tests pass. Independent scoped source review found no blocker; combined hosted
+qualification remains required. See `docs/handoffs/home-release-hash-20261119/REVIEW.md`.
 
