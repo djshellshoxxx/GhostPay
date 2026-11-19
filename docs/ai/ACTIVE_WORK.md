@@ -81,6 +81,24 @@ requests; execute focused and full applicable qualification, and obtain independ
 PR #239/#240 recovery, #241 network isolation, session key lifecycles, unrelated lint/dependency gates and Mythril
 findings remain separately owned. No smart-contract changes, main merge, deployment or release.
 
+# Sleep-aware session security completion — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT coordinator with independent clock/lifecycle, vault/session and integration reviewers.
+Branch: `chatgpt/ghostpay-idle-lifecycle-20261119`.
+Base/integration target: PR #238, `integration/ghostpay-pages-completion-20261118`,
+`198aa5baff22272453733a0f3dcfcac0e0994eec`; main `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+PR #227 `613667be4eeb132c7d21ccd06c627f9a7144d85b` is already an ancestor.
+Owned paths: `apps/web/src/AppShell*`; idle-specific session/key-vault lifecycle changes and tests;
+`apps/web/e2e/idle-session.spec.ts`; directly required lock-state locale/security-key entries;
+`apps/web/DEVIATIONS.md`; session-security guidance and `docs/handoffs/idle-session-20261119/`.
+Acceptance: fail closed on expired/invalid clocks before activity; retire old timer/session generations;
+synchronously revoke protected key operations at expiry; preserve sole-copy keys for the existing encrypted
+backup/recovery path; qualify full/lean lifecycle behavior; independently review and integrate into #238.
+No wallet encryption/KDF redesign, Spec 18 feature work, contract/analyzer remediation, network-isolation
+redesign, dependency upgrade, deployment, release, force push or protection bypass. Other source branches
+remain read-only; #239/#240 overlaps must be reconciled only if they reach the selected integration head.
+Initial defects and exact acceptance evidence are tracked in the task handoff directory.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:
