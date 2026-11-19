@@ -32,6 +32,19 @@ contract NoDecimalsToken {
 
 /// @notice Exercises the policy deployment script; scenarios run sequentially in one test function.
 contract DeployPolicyTest is Test {
+    function _ackConfig(DeployPolicyHarness script, address token, uint256 fee, address recipient)
+        internal
+    {
+        script.setVar(
+            "FEE_TOKEN_FREEZE_ACK_CONFIG",
+            vm.toString(
+                script.feeTokenFreezeConfigHash(
+                    block.chainid, token, token.codehash, fee, recipient
+                )
+            )
+        );
+    }
+
     function test_deployPolicyScriptScenarios() public {
         DeployPolicyHarness script = new DeployPolicyHarness();
         address fee = makeAddr("multisig");
@@ -77,9 +90,28 @@ contract DeployPolicyTest is Test {
         );
         script.run();
 
-        // 5. Valid configuration (fee exactly at the bound is accepted).
+        // 4c. N1 / SEC-E2-01: a fee-charging factory freezes counterfactual funds if its fee token is
+        // upgradeable, has a fee switch or can make its views revert. A non-zero fee therefore needs an
+        // acknowledgement that names exactly this fee token; a missing or different one is refused.
         script.setVar("FLAT_FEE", "3000000");
         script.setVar("MAX_FLAT_FEE", "3000000");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployPolicy.FeeChargingFactoryNotAcknowledged.selector, address(usdc)
+            )
+        );
+        script.run();
+        script.setVar("FEE_TOKEN_FREEZE_ACK", vm.toString(makeAddr("otherToken")));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployPolicy.FeeChargingFactoryNotAcknowledged.selector, address(usdc)
+            )
+        );
+        script.run();
+        script.setVar("FEE_TOKEN_FREEZE_ACK", vm.toString(address(usdc)));
+        _ackConfig(script, address(usdc), 3_000_000, fee);
+
+        // 5. Valid configuration (fee exactly at the bound is accepted).
         (PolicyAccount implementation, PolicyAccountFactory factory) = script.run();
         assertEq(factory.IMPLEMENTATION(), address(implementation));
         assertEq(factory.FEE_TOKEN(), address(usdc));
@@ -89,10 +121,14 @@ contract DeployPolicyTest is Test {
         assertEq(factory.MIN_DELAY(), 1 hours);
         assertEq(factory.MAX_DELAY(), 30 days);
 
-        // 6. Explicit zero fee is allowed.
+        // 6. Explicit zero fee is allowed and needs no acknowledgement.
         script.setVar("FLAT_FEE", "0");
+        script.setVar("FEE_TOKEN_FREEZE_ACK", "");
+        script.setVar("FEE_TOKEN_FREEZE_ACK_CONFIG", "");
         (, factory) = script.run();
         assertEq(factory.FLAT_FEE(), 0);
+        script.setVar("FEE_TOKEN_FREEZE_ACK", vm.toString(address(usdc)));
+        _ackConfig(script, address(usdc), 3_000_000, fee);
 
         // 6b. FEE_RECIPIENT equal to the broadcaster is rejected; a contract recipient only warns.
         script.setVar("FEE_RECIPIENT", vm.toString(address(this)));
@@ -118,6 +154,7 @@ contract DeployPolicyTest is Test {
         vm.expectRevert(abi.encodeWithSelector(DeployBase.ChainNotAllowed.selector, 1));
         script.run();
         script.setVar("ALLOWED_CHAIN_IDS", "8453, 1");
+        _ackConfig(script, address(usdc), 3_000_000, fee);
         script.run();
         script.setVar("ALLOWED_CHAIN_IDS", "8453;1");
         vm.expectRevert(abi.encodeWithSelector(DeployBase.InvalidChainIdEntry.selector, "8453;1"));
@@ -127,6 +164,7 @@ contract DeployPolicyTest is Test {
         vm.expectRevert(abi.encodeWithSelector(DeployBase.ChainNotAllowed.selector, 31_337));
         script.run();
         script.setVar("ALLOW_LOCAL", "1");
+        _ackConfig(script, address(usdc), 3_000_000, fee);
         script.run();
         script.setVar("ALLOW_LOCAL", "");
         vm.chainId(11_155_111);

@@ -6,6 +6,8 @@
 # Usage:  scripts/pre-deploy-check.sh router|policy
 #   router: FEE_RECIPIENT [ANNOUNCER] [ALLOW_CUSTOM_ANNOUNCER=1] [EXPECTED_ANNOUNCER_CODEHASH]
 #   policy: FEE_RECIPIENT FEE_TOKEN FLAT_FEE MAX_FLAT_FEE
+#     nonzero fee: FEE_TOKEN_FREEZE_ACK=<FEE_TOKEN>, FEE_TOKEN_FREEZE_ACK_CONFIG=<configuration digest>,
+#     RPC_URL and cast (needed to verify actual chain id and token runtime codehash)
 #   both:   [ALLOWED_CHAIN_IDS=1,8453] [ALLOW_LOCAL=1] [RPC_URL] [SENDER=<broadcaster address>]
 #   DRY_RUN=1 additionally runs `forge script` WITHOUT --broadcast (needs RPC_URL).
 # Exit status 0 = all checks passed, 1 = at least one check failed.
@@ -16,6 +18,7 @@ CANONICAL_ANNOUNCER=0x55649E01B5Df198D18D95b5cc5051630cfD45564
 TESTNETS=(11155111 84532 11155420 421614 80002 560048)
 mode="${1:-}"
 fail=0
+fee_ack_required=0
 bad() { echo "FAIL  $*"; fail=1; }
 ok()  { echo "ok    $*"; }
 warn() { echo "WARN  $*"; }
@@ -39,6 +42,8 @@ else
   echo "FEE_TOKEN                  : ${FEE_TOKEN:-<unset>}"
   echo "FLAT_FEE                   : ${FLAT_FEE:-<unset>}"
   echo "MAX_FLAT_FEE               : ${MAX_FLAT_FEE:-<unset>}"
+  echo "FEE_TOKEN_FREEZE_ACK       : ${FEE_TOKEN_FREEZE_ACK:-<unset>}"
+  echo "FEE_TOKEN_FREEZE_ACK_CONFIG: ${FEE_TOKEN_FREEZE_ACK_CONFIG:-<unset>}"
 fi
 echo
 
@@ -80,6 +85,20 @@ else
       bad "FLAT_FEE ($FLAT_FEE) exceeds MAX_FLAT_FEE ($MAX_FLAT_FEE)"
     else ok "FLAT_FEE <= MAX_FLAT_FEE"; fi
   fi
+  # Residual N1 (SEC-E2-01): a fee-charging factory freezes counterfactual funds if its fee token is upgradeable,
+  # has a fee switch or can make its views revert. DeployPolicy refuses FLAT_FEE != 0 unless FEE_TOKEN_FREEZE_ACK
+  # names exactly FEE_TOKEN; this mirrors that check.
+  if [[ "${FLAT_FEE:-}" =~ ^[0-9]+$ && -n "${FLAT_FEE#"${FLAT_FEE%%[!0]*}"}" ]]; then
+    fee_ack_required=1
+    if [[ -z "${FEE_TOKEN_FREEZE_ACK:-}" ]]; then bad "FLAT_FEE != 0 needs FEE_TOKEN_FREEZE_ACK=<FEE_TOKEN> (non-upgradeable, no fee switch; else use FLAT_FEE=0)"
+    # DeployPolicy parses the acknowledgment with the same strict EIP-55 spelling as FEE_TOKEN.
+    # Do not report success for a lowercased acknowledgment that the actual deployment rejects.
+    elif [[ "$FEE_TOKEN_FREEZE_ACK" != "${FEE_TOKEN:-}" ]]; then bad "FEE_TOKEN_FREEZE_ACK must exactly match the checksummed FEE_TOKEN"
+    else warn "FEE_TOKEN_FREEZE_ACK set: the operator states FEE_TOKEN is non-upgradeable with no fee switch, pause or blacklist"; fi
+    [[ "${FEE_TOKEN_FREEZE_ACK_CONFIG:-}" =~ ^0x[0-9a-fA-F]{64}$ ]] || bad "FLAT_FEE != 0 needs a bytes32 FEE_TOKEN_FREEZE_ACK_CONFIG"
+    [[ -n "${RPC_URL:-}" ]] || bad "RPC_URL is required to verify FEE_TOKEN_FREEZE_ACK_CONFIG against this chain and token code"
+    command -v cast >/dev/null || bad "cast is required to verify FEE_TOKEN_FREEZE_ACK_CONFIG"
+  else ok "FLAT_FEE is 0: no fee token call is made by the factory"; fi
 fi
 
 if [[ -n "${RPC_URL:-}" ]]; then
@@ -112,8 +131,26 @@ if [[ -n "${RPC_URL:-}" ]]; then
     else
       if [[ -n "${FEE_TOKEN:-}" ]] && is_addr "$FEE_TOKEN"; then
         code=$(cast code "$FEE_TOKEN" --rpc-url "$RPC_URL" 2>/dev/null || true)
-        if [[ ${#code} -le 3 ]]; then bad "FEE_TOKEN has no code on this chain"
+        if [[ ! "$code" =~ ^0x([0-9a-fA-F]{2})+$ ]]; then bad "FEE_TOKEN has no valid code on this chain"
         else
+          if (( fee_ack_required )); then
+            for address_var in FEE_TOKEN FEE_RECIPIENT; do
+              configured_address="${!address_var:-}"
+              checksummed_address=$(cast to-check-sum-address "$configured_address" 2>/dev/null || true)
+              [[ "$checksummed_address" == "$configured_address" ]] || bad "$address_var must use its exact EIP-55 spelling"
+            done
+            token_hash=$(cast keccak "$code" 2>/dev/null || true)
+            ack_domain=$(cast keccak 'GhostPay.DeployPolicy.FeeTokenFreezeAck.v1' 2>/dev/null || true)
+            encoded=$(cast abi-encode 'f(bytes32,uint256,address,bytes32,uint256,address)' \
+              "$ack_domain" "$chain" "$FEE_TOKEN" "$token_hash" "$FLAT_FEE" "$FEE_RECIPIENT" 2>/dev/null || true)
+            expected_ack=$(cast keccak "$encoded" 2>/dev/null || true)
+            if [[ ! "$token_hash" =~ ^0x[0-9a-fA-F]{64}$ || ! "$ack_domain" =~ ^0x[0-9a-fA-F]{64}$ || ! "$encoded" =~ ^0x[0-9a-fA-F]{384}$ || ! "$expected_ack" =~ ^0x[0-9a-fA-F]{64}$ ]]; then
+              bad "cannot compute FEE_TOKEN_FREEZE_ACK_CONFIG from actual chain/token configuration"
+            elif [[ "$(lower "${FEE_TOKEN_FREEZE_ACK_CONFIG:-}")" != "$(lower "$expected_ack")" ]]; then
+              bad "FEE_TOKEN_FREEZE_ACK_CONFIG does not match this chain/token/codehash/fee/recipient"
+              echo "Expected configuration digest: $expected_ack"
+            else ok "FEE_TOKEN_FREEZE_ACK_CONFIG matches the actual deployment configuration"; fi
+          fi
           dec=$(cast call "$FEE_TOKEN" "decimals()(uint8)" --rpc-url "$RPC_URL" 2>/dev/null || true)
           sym=$(cast call "$FEE_TOKEN" "symbol()(string)" --rpc-url "$RPC_URL" 2>/dev/null || true)
           echo "FEE_TOKEN symbol/decimals  : ${sym:-?} / ${dec:-?}"

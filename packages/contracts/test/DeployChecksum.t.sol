@@ -117,6 +117,21 @@ contract DeployChecksumTest is Test {
         script.run();
 
         script.setVar("FEE_TOKEN", vm.toString(address(usdc)));
+        // FLAT_FEE != 0 also needs FEE_TOKEN_FREEZE_ACK (N1), parsed with the same checksum rule.
+        string memory ackLower = vm.toLowercase(vm.toString(address(usdc)));
+        script.setVar("FEE_TOKEN_FREEZE_ACK", ackLower);
+        _expectNotChecksummed("FEE_TOKEN_FREEZE_ACK", ackLower);
+        script.run();
+
+        script.setVar("FEE_TOKEN_FREEZE_ACK", vm.toString(address(usdc)));
+        script.setVar(
+            "FEE_TOKEN_FREEZE_ACK_CONFIG",
+            vm.toString(
+                script.feeTokenFreezeConfigHash(
+                    block.chainid, address(usdc), address(usdc).codehash, 3_000_000, fee
+                )
+            )
+        );
         (, PolicyAccountFactory factory) = script.run();
         assertEq(factory.FEE_RECIPIENT(), fee);
         assertEq(factory.FEE_TOKEN(), address(usdc));

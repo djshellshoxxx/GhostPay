@@ -1,0 +1,26 @@
+{
+  "name": "independent-completeness-native",
+  "cwd": "/workspace/scratch/b608f89bdf4a/GhostPay-checker-review",
+  "argv": [
+    "/workspace/scratch/b608f89bdf4a/mythril-venv/bin/python",
+    "/workspace/scratch/b608f89bdf4a/factory-evidence/completeness-native-review.py"
+  ],
+  "before": {
+    "commit": "47f41a818a2e63abef2c459730b712c1c6bd8a36",
+    "tree": "0cb9fa3f372cf7181bbc99b0e35dd6beb943f2db",
+    "trackedChanges": ""
+  },
+  "startedAt": "2026-11-19T06:47:26.599760+00:00",
+  "selectedEnvironment": {},
+  "exitCode": 0,
+  "seconds": 22.723229547998926,
+  "finishedAt": "2026-11-19T06:47:49.323045+00:00",
+  "after": {
+    "commit": "47f41a818a2e63abef2c459730b712c1c6bd8a36",
+    "tree": "0cb9fa3f372cf7181bbc99b0e35dd6beb943f2db",
+    "trackedChanges": ""
+  },
+  "log": "independent-completeness-native.log",
+  "logBytes": 2720,
+  "logSha256": "3f56aa9828659665632bea7fe35dcb602ce9b783e325d8bdd14125d2aeb5f743"
+}

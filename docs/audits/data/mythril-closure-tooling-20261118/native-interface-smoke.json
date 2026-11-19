@@ -1,0 +1,51 @@
+{
+  "scope": "installed Mythril0.24.8 interfaces only; no symbolic contract campaign",
+  "compat_sha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd",
+  "results": [
+    {
+      "case": "complete",
+      "exit": 0,
+      "report_output_preserved": true,
+      "original_hooks_restored": true,
+      "telemetry": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "case": "internal-timeout",
+      "exit": 124,
+      "report_output_preserved": true,
+      "original_hooks_restored": true,
+      "telemetry": {
+        "creationTimeoutObserved": true,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": true,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "case": "hidden-exception",
+      "exit": 2,
+      "report_output_preserved": true,
+      "original_hooks_restored": true,
+      "telemetry": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 1,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    }
+  ]
+}

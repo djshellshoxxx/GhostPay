@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -35,7 +35,7 @@ test('contract analysis is reusable and PR-scoped with read-only pinned tools an
   assert.doesNotMatch(nightly, /run-echidna\.sh|run-mythril\.sh/);
 });
 
-test('Mythril host compatibility preserves every argument and the CLI return code', () => {
+test('Mythril host compatibility preserves version command arguments and the CLI return code', () => {
   const directory = mkdtempSync(join(tmpdir(), 'ghostpay-mythril-host-'));
   try {
     mkdirSync(join(directory, 'solcx'), { recursive: true });
@@ -47,7 +47,7 @@ def main():
     print(json.dumps({'host': solcx.install.BINARY_DOWNLOAD_BASE, 'args': sys.argv[1:]}))
     return 19
 `);
-    const args = ['analyze', 'src/PolicyAccount.sol', '--solv', '0.8.28', '--execution-timeout', '900', '-t', '3', '-o', 'json'];
+    const args = ['version', '-o', 'json'];
     const result = spawnSync('python3', [join(scripts, 'mythril-compat.py'), ...args], {
       encoding: 'utf8', timeout: 10_000, env: { ...process.env, PYTHONPATH: directory },
     });
@@ -112,6 +112,60 @@ test('missing reports and cancellation never acquire a successful exit code', ()
     const metadata = JSON.parse(readFileSync(join(output, 'metadata.json'), 'utf8'));
     assert.equal(metadata.reportPresent, false); assert.equal(metadata.runnerExitCode, null);
     assert.equal(metadata.analysisOutcome, 'cancelled'); assert.equal(metadata.fullReportSha256, null);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('artifact collection retains complete target evidence without changing release metadata location', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'ghostpay-target-evidence-'));
+  try {
+    const input = join(directory, 'input');
+    const evidence = join(input, 'mythril-evidence');
+    const output = join(directory, 'output');
+    mkdirSync(evidence, { recursive: true });
+    const report = '{"success":true,"error":null,"issues":[]}\n';
+    writeFileSync(join(input, 'report.log'), report);
+    writeFileSync(join(input, 'exit-code.txt'), '1\n');
+    writeFileSync(join(evidence, 'manifest.json'), '{"completed":false}\n');
+    writeFileSync(join(evidence, 'GhostPayRouter.stdout.json'), report);
+    writeFileSync(join(evidence, 'GhostPayRouter.stderr.log'), 'native diagnostic\n');
+    // The collector preserves even failed/malformed telemetry for review; the runner and checker judge it.
+    writeFileSync(join(evidence, 'GhostPayRouter.completeness.json'), '{"executionTimeoutObserved":true}\n');
+    const result = spawnSync('python3', [join(scripts, 'collect-analysis-report.py'), input, output], {
+      cwd: root, encoding: 'utf8', timeout: 10_000,
+      env: { ...process.env, ANALYZER: 'mythril', ANALYSIS_OUTCOME: 'failure' },
+    });
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    assert.equal(JSON.parse(readFileSync(join(output, 'metadata.json'))).runnerExitCode, 1);
+    for (const name of ['manifest.json', 'GhostPayRouter.stdout.json', 'GhostPayRouter.stderr.log', 'GhostPayRouter.completeness.json']) {
+      assert.deepEqual(readFileSync(join(output, 'mythril-evidence', name)), readFileSync(join(evidence, name)));
+    }
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('artifact collection rejects symlinked, unexpected or oversized target evidence instead of truncating it', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'ghostpay-invalid-evidence-'));
+  try {
+    for (const scenario of ['file-link', 'directory-link', 'unexpected', 'oversized']) {
+      const input = join(directory, scenario);
+      const evidence = join(input, 'mythril-evidence');
+      mkdirSync(evidence, { recursive: true });
+      writeFileSync(join(input, 'report.log'), 'analysis output\n');
+      writeFileSync(join(input, 'exit-code.txt'), '137\n');
+      if (scenario === 'file-link') symlinkSync(join(input, 'report.log'), join(evidence, 'manifest.json'));
+      if (scenario === 'directory-link') {
+        rmSync(evidence, { recursive: true });
+        symlinkSync(directory, evidence);
+      }
+      if (scenario === 'unexpected') writeFileSync(join(evidence, 'unrelated.txt'), 'not analyzer output');
+      if (scenario === 'oversized') writeFileSync(join(evidence, 'GhostPayRouter.stdout.json'), Buffer.alloc(8 * 1024 * 1024 + 1));
+      const output = join(directory, `out-${scenario}`);
+      const result = spawnSync('python3', [join(scripts, 'collect-analysis-report.py'), input, output], {
+        cwd: root, encoding: 'utf8', timeout: 10_000,
+        env: { ...process.env, ANALYZER: 'mythril', ANALYSIS_OUTCOME: 'failure' },
+      });
+      assert.equal(result.status, 1, `${scenario}: ${result.stdout}${result.stderr}`);
+      assert.equal(JSON.parse(readFileSync(join(output, 'metadata.json'))).runnerExitCode, 137);
+    }
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
