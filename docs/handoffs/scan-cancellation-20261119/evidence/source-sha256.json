@@ -1,0 +1,23 @@
+{
+  "base_sha": "e76451ad56ba1634eed9d03468961900433fd130",
+  "implementation_sha": "9ae57de3ef8a432c1592ddfb496de8b0fd0a6fee",
+  "reused_test_source": "5c926889d424392c67185b3c13974d0fcd589780",
+  "test_byte_identical_to_reused_source": true,
+  "files": [
+    {
+      "file": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+      "sha256": "27ce74ac23b8b0544b075718ef5d3cbe609fbf6bdb0368bab634a9043b3e4394",
+      "unchanged_from_base": false
+    },
+    {
+      "file": "apps/web/src/lib/scanPrivacy.ts",
+      "sha256": "595a4eef4cd22d2d513291ee842d95a8eb3ea1895c32480434d43d858f44641b",
+      "unchanged_from_base": true
+    },
+    {
+      "file": "apps/web/src/views/Scan.tsx",
+      "sha256": "3329ba66438b022e75c1750bf9d9d75a83c47866587b7fe6491c00273d8c0451",
+      "unchanged_from_base": true
+    }
+  ]
+}

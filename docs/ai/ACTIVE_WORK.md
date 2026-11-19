@@ -11,6 +11,10 @@ existing assertion-only repair from `5c926889` if exact; retain all forbidden
 dispatch, bounded abort propagation, queued-window and post-jitter assertions.
 No production privacy/parser/authority, dependency, configuration or gate changes.
 Focused original-config execution and independent recovery-worker review required.
+Status: exact prior assertion repair restored at `9ae57de3`; original-config
+baseline 4 failed / 1 control, followed by 5/5 passed. Recovery worker independently
+pinned the source review with no blocker; runtime and all dispatch safeguards are
+unchanged. Evidence: `docs/handoffs/scan-cancellation-20261119/REVIEW.md`.
 
 # Idle regression type reconciliation — 2026-11-19
 
