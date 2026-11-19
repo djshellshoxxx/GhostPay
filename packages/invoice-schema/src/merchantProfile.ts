@@ -154,6 +154,8 @@ export function signMerchantProfile(body: MerchantProfileBody, signingKey: Uint8
  * @param nowSec Current unix time in seconds.
  */
 export function verifyMerchantProfile(input: unknown, nowSec: number): ProfileResult {
+  // A non-finite or negative clock must never bypass signed-profile expiry.
+  if (!Number.isFinite(nowSec) || nowSec < 0) return { ok: false, reason: 'format' };
   let raw: unknown = input;
   if (typeof input === 'string') {
     if (utf8ToBytes(input).byteLength > MAX_PROFILE_BYTES) return { ok: false, reason: 'size' };
