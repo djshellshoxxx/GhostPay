@@ -1,3 +1,28 @@
+# Payment export authorization completion — 2026-11-19
+
+Worker: `feature_verification`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-export-authorization-20261119`.
+Base: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).
+Owned paths: `apps/web/src/views/Scan.tsx`, its focused stealth-export integration tests,
+`apps/web/src/lib/paymentKeyExport.ts`, new `paymentExportRpc.ts` and tests,
+`apps/web/src/lib/networkAuthorization.ts` and focused action-policy tests,
+`docs/privacy/network-egress-inventory.json`, this additive claim, and
+`docs/handoffs/payment-export-authorization-20261119/`.
+Acceptance: reproduce an explicit payment-key export failing after its scan grant expires
+or is cancelled; obtain fresh, bounded authority only after an explicit export action,
+bound to the original verified scan endpoint and chain. Preserve session and live-settings
+checks, forbid fallback and unrelated RPC methods, propagate export cancellation, and
+dispose each export authorization. Execute RED/GREEN integration regressions and independent
+source review. Also normalize two existing Scan promise rejections identified in hosted
+lint, preserving Error values and cancellation precedence. The coordinator owns integration
+into continuation PR #269; this isolated source branch does not change #262, #269 or main.
+No cryptographic-format, dependency, release-gate or deployment changes.
+Status: confirmed two-case behavioral RED; initial repair reached both expected downloads,
+then failed only an exact canonical-URL assertion. Final GREEN and inventory-runner validation
+remain pending after executor interruptions. Source reconstructed from the exact base and
+recorded patches when the workspace became unavailable; local claim/test commits remain
+provenance, not claimed identical remote commit IDs. Details are in the scoped qualification.
+
 # Hosting export timestamp precision — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
