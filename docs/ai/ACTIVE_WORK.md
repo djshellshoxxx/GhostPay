@@ -491,3 +491,18 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+
+## Feature completion and consolidation — 2026-11-19
+
+Worker: ChatGPT root coordinator with independent privacy, recovery, and branch-review workers.
+Branch: `codex/ghostpay-feature-consolidation-20261119`.
+Base: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (verified live main at task start).
+Owned paths: semantic integration of existing PRs; `packages/chain-adapters/src/payments.bulkCancellation.test.ts`;
+`docs/ai/PACKAGE_MAP.md` and dependency-closure guard data if supported by actual emitted-source evidence;
+`apps/web/e2e/hostile-text.spec.ts` browser lifecycle fixture; scoped regression tests and
+`docs/consolidation/feature-completion-20261119/**`. Privacy and recovery workers claim their own isolated paths.
+Acceptance: retain original feature ancestry and main fixes, repair reproducible integration failures without
+weaker assertions or gates, independently review combined source, run applicable validation, and merge only
+qualified work under current repository protections. No mainnet deployment, release publication, branch deletion,
+shared-branch rewrite, or finding suppression. External live writers remain read-only inputs until rechecked.
