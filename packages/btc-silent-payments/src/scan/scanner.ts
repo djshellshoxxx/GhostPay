@@ -161,6 +161,8 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
   for (const id of watch) if (!OUTPOINT.test(id)) return fail('INVALID_INPUT');
   const seenKeys = p.seenKeys ?? new Set<string>();
   const seenOutpoints = new Set<string>();
+  // Only matched/watched outpoints enter this set; raw block input volume cannot grow it.
+  const reportedSpends = new Set<string>();
   const labels = keys.labels ?? createLabelTable(keys.scanSecret);
   for (let height = fromHeight; height <= toHeight; height++) {
     if (isAborted(signal)) return;
@@ -237,7 +239,9 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
         checkSpendBounds(sIn);
         const id = `${sIn.txid}:${sIn.vout}`;
         if (!watch.has(id) && !seenOutpoints.has(id)) continue;
+        if (reportedSpends.has(id)) continue;
         if (isAborted(signal)) return;
+        reportedSpends.add(id);
         await p.onSpend({ txid: sIn.txid, vout: sIn.vout, spentBy: sIn.spentBy, height, blockHash: tw.blockHash });
       }
     }

@@ -141,8 +141,8 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     nBits the difficulty rules require, median-time-past and the 2-hour future limit, BIP-34/66/65 versions, most cumulative
     work (strictly more) among the branches seen. Every scanned block must equal the checked chain's hash at its height
     (`HeaderAnchoredTweakSource`); a block's transactions are bound to that header by the txid Merkle root and the BIP-141
-    witness commitment (`esplora.ts`, unchanged). **Not checked / trusted:** transactions, scripts and amounts of the
-    outputs being spent (earlier blocks), spent status, signet block signatures, Core checkpoints/assumevalid; the server
+    witness commitment (`esplora.ts`). **Not checked / trusted:** transactions, scripts and amounts of the
+    outputs being spent (earlier blocks), optional provider spent-status reports, signet block signatures, Core checkpoints/assumevalid; the server
     is trusted for availability and can withhold a heavier chain or eclipse the device (only one source can be configured
     today; `syncHeaders` accepts several and fails closed if any fails); test-network proof of work is cheap, so a server
     can mine a heavier fork. A first sync starts at genesis (no later checkpoint is pinned): slow on testnet4/signet
@@ -178,8 +178,8 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     re-validates every header with the pinned genesis as the **required** checkpoint (`HeaderChain.fromJSON` no longer
     accepts a call without one); any failure (bad JSON, old record format, wrong network, a substituted self-consistent
     anchor, a tampered header, over the size limit) deletes the record and resyncs from genesis. Without IndexedDB (or
-    when a save fails) the view says headers are not kept. The package's `ScanState` is still **not** persisted (it is
-    private and needs an encrypted store): scan results stay in memory.
+    when a save fails) the view says headers are not kept. Private Bitcoin `ScanState` metadata has separate opt-in
+    encrypted continuity; spend tweaks remain in memory and historical matches must be re-derived (item 25).
     Saved headers are keyed by network only, so they pin whichever server first filled them: after a deliberate server
     change the new server may look like a lighter fork (or its blocks are refused with `REORG_DETECTED`). The view then
     says so and offers **"Forget saved headers for this network"**, behind a confirmation, which deletes the record and the
@@ -217,8 +217,8 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     `scanForPayments` without `headers` still exists (unit tests and per-block checks); the view never calls it that way.
     Not done (review L-d): parsed context is not limited to the last 2016 + 11 headers in the sense of dropping old ones:
     fork evaluation, reorg checks of scan results (`hashAt` at any scanned height), the probe and persistence read old
-    active headers, so all are kept, but compactly (above). Remaining gaps: `spentCount` of a cut-back scan still
-    counts outputs from removed blocks. Known costs, not fixed: each save builds the whole record in memory (one hex
+    active headers, so all are kept, but compactly (above). A cut-back scan now clears the orphan-sensitive
+    `spentCount` and reports unknown spentness until rescanned. Known costs, not fixed: each save builds the whole record in memory (one hex
     string from `hexRange` plus its JSON copy, ~128 MB temporary at 400 000 headers); without IndexedDB the in-memory
     store keeps one more copy of that text (so memory roughly doubles); `HeaderChain.toJSON` (a package API the view
     no longer uses for storage) still creates one string per header. The size limit is enforced before every round:
@@ -236,6 +236,35 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     (chain-adapters validates every log with an on-curve decode, ~115 us each on the development container, which alone would take ~2 minutes) and runs in the
     nocov pass with the 120 s deadline already used there; the real fetch is covered by the smaller "(A5)" floods. Not done: the Pay-view amount-hygiene hint
     (another stream's file) and a published endpoint list.
+
+25. **Spec 12 local spend tracking (Bitcoin view, 2026-11-18).** PR #219's `getSpends` interface is retained:
+    complete Esplora block transactions supply the consumed outpoints without additional requests. Coinbase identity
+    comes from the reserialized transaction's null prevout, and contradictory JSON `is_coinbase` metadata is refused.
+    Header-anchored and cross-checked sources bind spends to the agreed block hash. The scanner compares inputs with
+    new and persisted matches and stores the earliest observed `match.spent` block evidence.
+
+    `ScanResult.spentStatus` remains `local`, `provider` or `unknown`. Local results require applicable continuous
+    input coverage through the captured provider tip. `ScanState.spendsFromHeight` is a compatible optional marker;
+    legacy records and gaps created by light-mode scanning do not acquire coverage merely by resuming. Newly
+    rediscovered historical outputs cannot inherit evidence from periods in which their outpoints were not watched.
+    Incomplete history is displayed as unknown and cannot be selected for sweeping. A fresh scan from the birth
+    height, continued through the tip, or an explicitly authorized provider check refreshes the answer.
+
+    Provider spent checks default off. Light mode requires explicit consent because it has no block inputs; the
+    main-thread bridge independently refuses unauthorized outpoint requests. Revocation cancels the current scan,
+    closes its bridge and clears stale results; already dispatched requests cannot be recalled. No retries or cached
+    clients can bypass an aborted scan's dispatch guard. Source/network/mode/lock changes reject stale results.
+
+    Reorganizations remove orphaned spent evidence and roll back continuous coverage. A retained discovery whose
+    scanned suffix is replaced becomes unknown and its old spent count is cleared. A checked-tip extension also
+    invalidates local spentness until the additional block inputs are scanned. Mempool spends are not detected
+    locally; broadcasting can fail if an output was spent there. Provider answers may include mempool state but
+    remain untrusted reports. These are scan-time evidence labels, not guarantees of spendability or full consensus.
+
+    Security disclosures use reviewed English fallback in all catalogs until native review. Existing full/lean
+    profile boundaries remain: the full profile includes Bitcoin, the lean Pages profile intentionally excludes it.
+    Exact tests, independent AI-assisted review and remaining qualification limits are recorded in
+    `docs/handoffs/btc-spent-20261118/README.md`.
 
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the

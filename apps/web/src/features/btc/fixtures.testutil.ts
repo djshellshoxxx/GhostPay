@@ -196,6 +196,24 @@ export function paymentTx(i: number, recipient: BtcWallet, senderSeedHex: string
   });
 }
 
+/** A transaction that spends `prev` (a taproot output) to a P2WPKH output, with a key-path-sized witness. */
+export function spendTx(i: number, prev: { readonly txid: string; readonly vout: number; readonly scriptpubkey: string }, valueSats = 40_000): EsploraTxJson {
+  return withTxid({
+    version: 2,
+    locktime: 0,
+    vin: [{ txid: prev.txid, vout: prev.vout, sequence: 0xfffffffd, prevout: { scriptpubkey: prev.scriptpubkey }, scriptsig: '', witness: [hex(128, (4 + (i % 6)).toString())], is_coinbase: false }],
+    vout: [{ scriptpubkey: `0014${hex(40, '8')}`, value: valueSats }],
+  });
+}
+
+/** Extends `blocks` with linked blocks holding `rawBodies` (coinbase first in each), mined on the current tip. */
+export function appendBlocks(blocks: MockBlock[], rawBodies: readonly EsploraTxJson[][]): void {
+  for (const txs of rawBodies.map(withWitnessCommitment)) {
+    const header = mineHeader(blocks[blocks.length - 1]!.hash, txs, 0x207fffff, blockTime(blocks.length));
+    blocks.push({ hash: parseHeader(header).hash, header, txs });
+  }
+}
+
 export interface MockChain {
   readonly blocks: MockBlock[];
   readonly spent: Set<string>;
@@ -203,6 +221,8 @@ export interface MockChain {
   readonly requests: string[];
   /** Makes the next request for this path fail with HTTP 500. */
   failPath: string | undefined;
+  /** Answers `POST /tx` with this HTTP status and a text body instead of accepting the transaction. */
+  broadcastStatus: number | undefined;
   /** Serve `GET /blocks/:height` (default true); false acts like a server without it (HTTP 404). */
   summaries: boolean;
   /** Rewrites each `/blocks/:height` summary before it is served (tampering tests). */
@@ -237,6 +257,7 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet, opts: MockC
     broadcasts: [],
     requests: [],
     failPath: undefined,
+    broadcastStatus: undefined,
     summaries: true,
     fetchFn: (url, init) => {
       const base = 'https://esplora.test/api';
@@ -283,6 +304,7 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet, opts: MockC
       }
       if (path === '/fee-estimates') return json({ '1': 3.5, '6': 1.2 });
       if (path === '/tx' && init.method === 'POST') {
+        if (chain.broadcastStatus !== undefined) return Promise.resolve(new Response('sendrawtransaction RPC error: bad-txns-inputs-missingorspent', { status: chain.broadcastStatus }));
         chain.broadcasts.push(typeof init.body === 'string' ? init.body : '');
         return text(parseRawTransaction(typeof init.body === 'string' ? init.body : '').txid);
       }

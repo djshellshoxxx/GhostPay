@@ -1,5 +1,13 @@
 # 12 BIP-352 light-client scanning
 
+> **2026-11-18 spentness continuation:** PR #219's local `getSpends` path is preserved. Full-block scans default to
+> no per-outpoint provider checks. Continuous input-coverage metadata distinguishes a complete local result from
+> partial or legacy history; insufficient evidence is `unknown` and cannot be selected for sweeping. Provider
+> checks, including those required by light mode, need explicit consent enforced at the main-thread worker bridge.
+> Reorg rollback removes orphaned spent evidence and invalidates retained result status. The
+> [qualification packet](../handoffs/btc-spent-20261118/README.md) records exact source and executed evidence;
+> this implementation note does not claim overall release or external-node acceptance.
+
 > **2026-11-16 implementation:** The full-profile Bitcoin view has an isolated scan worker, opt-in encrypted continuity, own-node Esplora full-block checks, explicit BlindBit HTTP/HTTPS gRPC-Web selection, all-block cross-checks, and optional light scanning. Light matches require raw-transaction/Merkle inclusion against the checked header chain and current Esplora outspend checks, including restored matches. Source changes cancel work, clear spend authority, and separate encrypted oracle-policy scopes. See [source handoff](../handoffs/agents/TEAM_H_SOURCES_UNIFIED.md) and [worker handoff](../handoffs/agents/TEAM_H_WORKER_UNIFIED.md). Real-node/proxy and physical-device acceptance remain unperformed; mocked regtest evidence does not satisfy those gates.
 
 Priority P2-P3 | Effort M-L (8-12 d) | Owner: btc-silent-payments | Deps: 11, 10 (shared disclosure model)
@@ -8,7 +16,7 @@ Sources: research s3 (Appendix A open research; ~30 MB/month for 3-day scans, Ju
 ## 1. Modes and disclosure table (shown in UI before enabling)
 | Mode | Scan key leaves client? | Server learns | Bandwidth |
 |---|---|---|---|
-| A own-node Esplora with local `EsploraTweakSource` (default path) | no | selected Esplora sees IP, block range and outspend queries; an own local node keeps this local | full blocks plus headers |
+| A own-node Esplora with local `EsploraTweakSource` (default path) | no | selected Esplora sees IP and block range; optional, explicitly authorized outspend queries reveal matched outpoints | full blocks plus headers |
 | B explicitly selected BlindBit HTTP or HTTPS gRPC-Web | no | oracle sees IP/block range; light proof queries reveal matching transaction IDs to Esplora; outspend queries reveal matched outpoints | full mode retains full-block bandwidth; light mode fetches tweaks/outputs and matched transaction proofs; no current size estimate claimed |
 | C hosted scan service (Frigate-style) | yes (scan key) | all incoming payments | minimal; loudly labelled opt-in, own ToS (MULTICHAIN s4) |
 Hosted mode C remains absent and ADR-gated. BlindBit gRPC schema/transport provenance is pinned in the worker handoff. Deployed server/proxy compatibility is not demonstrated by fixtures. HTTP is the legacy adapter; full, unfiltered capabilities and exact network identity are required at runtime.
@@ -21,6 +29,14 @@ class BlindBitGrpcClient implements TweakSource // optional HTTPS gRPC-Web besid
 interface ScanState { network; lastHeight; lastHash; recent: {height,hash}[] /*reorg window 100*/; birthHeight }
 ```
 Persistence: encrypted IndexedDB (same keystore pattern as spec 08) storing `ScanState` and matched outputs; reorg: on hash mismatch roll back to common ancestor and rescan, matches above it become `pending`. Scan from `birthHeight` only; resumable; Web Worker with cancel. Verify oracle tweaks against own header chain/ Merkle when mode A or optional SPV check; two-oracle cross-check option. `Kmax` and k++ per spec 11.
+
+The compatible optional `ScanState.spendsFromHeight` marker records the beginning of continuous local input
+coverage through `lastHeight`. Legacy records without it remain readable but cannot prove missing history.
+`match.spent` carries its spending height/hash/transaction; rollback removes evidence outside the canonical
+retained prefix. `ScanResult.spentStatus` retains the `local | provider | unknown` contract. Local means no
+confirmed spend was observed with complete applicable input coverage through the scan's captured tip; it never
+includes a guarantee about mempool spends. The user-facing refresh and mode rules are documented in the
+[Bitcoin guide](../user/bitcoin-silent-payments.md#understanding-local-provider-and-unknown).
 
 ## 3. Threats
 Oracle serves wrong/omitted tweaks (cross-check, own node); query pattern leaks interest (Tor via spec 10 transport); scan key exfiltration in mode C (explicit consent, never default, separate from spend key); DoS by large blocks (caps); reorg corruption.
@@ -35,7 +51,7 @@ Regtest bitcoind in CI (if available) generating SP payments; mock oracle with f
 
 The default full-block mode recomputes transaction IDs, block Merkle roots and BIP-141 witness commitments against locally checked headers. It excludes coinbase and ineligible transaction outputs before scanning. It does not validate all Bitcoin scripts/prevouts/consensus. An optional oracle must agree on every scanned block's complete tweak/output multisets before results or checkpoints are accepted; extra, missing or changed entries fail closed. A second selected oracle can cross-check every block in either mode, including blocks with no wallet match. Different origins are required but do not establish independent operators.
 
-Light mode never treats oracle metadata alone as spend authority. Every matched raw transaction must reproduce the claimed txid and exact taproot script, amount and output index, then verify its Merkle branch against the expected height and checked header hash. Coinbase outputs are rejected. Historical matches are re-derived and freshly proved on restoration. This proves inclusion, not witness validity, tweak correctness, payment completeness or the best chain. Colluding oracles may omit payments. Current spent status remains the explicitly selected Esplora server's report, checked again before broadcast by the existing sweep flow.
+Light mode never treats oracle metadata alone as spend authority. Every matched raw transaction must reproduce the claimed txid and exact taproot script, amount and output index, then verify its Merkle branch against the expected height and checked header hash. Coinbase outputs are rejected. Historical matches are re-derived and freshly proved on restoration. This proves inclusion, not witness validity, tweak correctness, payment completeness or the best chain. Colluding oracles may omit payments. Current spent status remains the explicitly authorized Esplora server's report at scan time; it can become stale before broadcast.
 
 The source UI starts with Esplora only and no oracle URL. No keys leave the worker through either bounded main-thread transport. Oracle source/mode edits cancel asynchronous work, wipe results/review/signatures and turn saved continuity off until selected again. Oracle continuity is cryptographically scoped to network, wallet, normalized Esplora URL, oracle protocol/URL, mode and optional second endpoint; endpoint details are not persisted in plaintext. The established full-block scope remains compatible and always revalidates historical matches.
 
