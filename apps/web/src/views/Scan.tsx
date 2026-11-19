@@ -406,7 +406,7 @@ export function Scan(): ReactNode {
           const endpoint = selectedSettings.rpcUrls[String(chainId)] ?? '';
           return endpoint === '' ? Promise.resolve(undefined) : services.createRpc(chain, endpoint);
         };
-        const clients = await awaitCurrent(() => openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: selectedRpc, fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScopeCurrent }));
+        const clients = await awaitCurrent(() => openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: selectedRpc, fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScopeCurrent, signal: ctl.signal }));
         assertScopeCurrent();
         if (clients === undefined) {
           setError(msg('scan.error.noRpc'));
@@ -449,7 +449,7 @@ export function Scan(): ReactNode {
           return;
         }
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.
-        const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep, assertCurrent: assertScopeCurrent });
+        const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep, assertCurrent: assertScopeCurrent, signal: ctl.signal });
         assertScopeCurrent();
         setScanOwner(scope);
         setScanRpc({ scope, rpc });

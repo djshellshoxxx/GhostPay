@@ -48,8 +48,15 @@ export interface FundedPayment extends FoundPayment {
  * review, not for every address a scan matched.
  */
 export async function readSweepDetails(rpc: TronRpc, found: FoundPayment, signal?: AbortSignal): Promise<FundedPayment> {
+  const checkActive = (): void => {
+    if (signal?.aborted === true) throw new TronViewError({ key: 'tron.error.aborted' });
+  };
+  checkActive();
   const balanceSun = await getBalanceSun(rpc, found.stealthAddress, signal);
+  // An ignored abort must not allow the next request to reveal this payment's transaction id.
+  checkActive();
   const memo = await fetchMemo(rpc, found.txID, signal);
+  checkActive();
   return { ...found, balanceSun, memo };
 }
 

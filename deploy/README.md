@@ -29,4 +29,4 @@ Spec: `docs/remote/usability/specs/self-host-one-command.md`. Tor notes: `TOR.md
 
 ## Tight connect-src
 
-Hosted builds should set `GHOSTPAY_CONNECT_ORIGINS` (and `GHOSTPAY_REQUIRE_TIGHT_CSP=1`) so `connect-src` lists only your RPC and relayer origins instead of `https: wss:`; see `BUILD-WEB.md`. Tradeoff: origins users add in Settings are blocked until you add them and redeploy. The nginx recipe keeps its own CSP copy in `nginx/security-headers.conf`; set the same `connect-src` there.
+Hosted builds should set `GHOSTPAY_CONNECT_ORIGINS` and `GHOSTPAY_REQUIRE_TIGHT_CSP=1` so `connect-src` lists only approved RPC/relayer origins. Both the normal web build and Pages builder validate their actual artifacts. Generate matching standard/embed nginx header files with `node deploy/nginx/render-security-headers.mjs <separate-output-directory>` using the same allowlist; see [BUILD-WEB.md](BUILD-WEB.md). Origins users add in Settings are blocked until the site is rebuilt with them. GitHub Pages uses the HTML meta CSP and does not enforce `_headers`; generated nginx configuration requires installation and live verification separately.

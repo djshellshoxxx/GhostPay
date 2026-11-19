@@ -9,6 +9,8 @@
 #   GHOSTPAY_PAGES_DEPLOYMENTS_DIR  reviewed, release-signed manifests to bundle. Default: none, so every chain shows
 #                                   "payments disabled" (DEMO profile). Only EVM testnet chain ids are accepted.
 #   GHOSTPAY_RELEASE_PUBKEYS        release public keys that verify those manifests (required when any is present).
+#   GHOSTPAY_CONNECT_ORIGINS       exact HTTPS/WSS connect-src origins (comma separated, no path or credentials).
+#   GHOSTPAY_REQUIRE_TIGHT_CSP=1    refuse missing origin list; recommended for hosted builds.
 #   GP_COMMIT                       commit recorded in build-info.json (default: git HEAD; must match HEAD in CI).
 #   GHOSTPAY_PAGES_ORIGIN           the origin the site is served from (https://host[:port], no path), recorded in the
 #                                   evidence and the banner, and compiled in: served from any other origin, the app
@@ -118,11 +120,13 @@ if ! (
   env -i PATH="$PATH" HOME="$HOME" TMPDIR="${TMPDIR:-/tmp}" CI="${CI:-}" TZ=UTC LC_ALL=C \
     GHOSTPAY_LOCAL_BUILD_PROFILE=lean \
     GHOSTPAY_RELEASE_PUBKEYS="${GHOSTPAY_RELEASE_PUBKEYS:-}" \
+    GHOSTPAY_CONNECT_ORIGINS="${GHOSTPAY_CONNECT_ORIGINS:-}" \
+    GHOSTPAY_REQUIRE_TIGHT_CSP="${GHOSTPAY_REQUIRE_TIGHT_CSP:-0}" \
     GHOSTPAY_PAGES_DEV="$dev" \
     VITE_GHOSTPAY_PAGES_ORIGIN="$origin" \
     GHOSTPAY_DEPLOYMENTS_DIR="$deployments" \
     GP_COMMIT="$commit" SOURCE_DATE_EPOCH="$epoch" \
-    bash -c 'npx tsc -p tsconfig.json --noEmit && npx vite build --outDir "$0" --emptyOutDir && node e2e/devnet/scan-dist.mjs "$0"' "$work/dist"
+    bash -c 'npx tsc -p tsconfig.json --noEmit && npx vite build --outDir "$0" --emptyOutDir && node scripts/apply-csp.mjs "$0" && node e2e/devnet/scan-dist.mjs "$0"' "$work/dist"
 ) >"$log" 2>&1; then
   tail -n 60 "$log" >&2
   die "web build failed"

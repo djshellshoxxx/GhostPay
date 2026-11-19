@@ -28,6 +28,22 @@ describe('BTC spend detection from the scanned blocks (TM13)', () => {
     wipeFound(res.found);
   });
 
+  it('detects a committed spend even when Esplora labels its input as coinbase', async () => {
+    const f = setup((pay) => [[coinbase(2), spendTx(1, [{ txid: pay.txid, vout: 1 }])]]);
+    const spendingTx = f.chain.blocks[2]?.txs[1];
+    if (spendingTx === undefined) throw new Error('missing spending fixture');
+    // This annotation is outside the serialized transaction: txid, witness and mined header remain unchanged.
+    spendingTx.vin[0]!.is_coinbase = true;
+    const res = await scanForPayments({ client: f.client, wallet: f.wallet, fromHeight: 0 });
+    try {
+      expect(res.spentCount).toBe(1);
+      expect(res.found.map((x) => x.txid)).toEqual([f.pay2.txid]);
+      expect(outspendRequests(f.chain)).toEqual([]);
+    } finally {
+      wipeFound(res.found);
+    }
+  });
+
   it('sees a spend in the same block as the payment', async () => {
     const wallet = walletA();
     const chain = mockChain('regtest', wallet);

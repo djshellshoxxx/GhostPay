@@ -563,8 +563,12 @@ export class EsploraTweakSource implements TweakSource {
     const outputs: BlockOutput[] = [];
     const spends = new Set<string>();
     for (const tx of txs) {
-      if (tx.inputs === null) continue; // coinbase
-      for (const i of tx.inputs) spends.add(`${i.txid}:${String(i.vout)}`);
+      // Spend outpoints come from the serialized transaction already bound to the checked header.
+      // Esplora's is_coinbase annotation is not committed by txid and must not hide a real spend.
+      if (!tx.raw.isCoinbase) {
+        for (const i of tx.raw.inputs) spends.add(`${i.txid}:${String(i.vout)}`);
+      }
+      if (tx.inputs === null) continue; // No parsed tweak inputs; spend detection above is independent.
       let tweak;
       try {
         tweak = computeTransactionTweak(tx.inputs);

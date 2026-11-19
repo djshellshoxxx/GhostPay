@@ -38,6 +38,22 @@ describe('MH-REL-3 body padding (TM11 a)', () => {
     expect(code(() => unpadBody({ a: 1 }, true))).toBe('invalid_pad');
   });
 
+  it('accepts the documented padding boundary and rejects malformed or excessive padding', () => {
+    expect(unpadBody({ a: 1, pad: '' }, true)).toEqual({ a: 1 });
+    expect(unpadBody({ a: 1, pad: 'a'.repeat(16 * 1024) }, true)).toEqual({ a: 1 });
+    for (const pad of ['a'.repeat(16 * 1024 + 1), 'AB', 'a\nb', 'ab ', null, false, 1, [], {}]) {
+      expect(code(() => unpadBody({ a: 1, pad }, true))).toBe('invalid_pad');
+    }
+  });
+
+  it('enforces the whole-body limit independently of the padding field limit', async () => {
+    const s = await start();
+    expect((await call(s, 'POST', '/v1/quote', padBody(quoteBody, [16 * 1024]))).status).toBe(200);
+    const tooLarge = await call(s, 'POST', '/v1/quote', { ...quoteBody, pad: 'a'.repeat(16 * 1024) });
+    expect(tooLarge.status).toBe(413);
+    expect(errCode(tooLarge)).toBe('body_too_large');
+  });
+
   it('accepts padded and unpadded quote and sweep bodies by default (transition)', async () => {
     const s = await start();
     const padded = padBody(quoteBody, DEFAULT_BODY_BUCKETS);
@@ -153,5 +169,9 @@ describe('privacy config block (TM11 c, d)', () => {
     expect(err({ privacy: { bodyPadding: 'always' } })).toMatch(/privacy.bodyPadding/);
     expect(err({ privacy: { zeroLog: 'yes' } })).toMatch(/privacy.zeroLog/);
     expect(err({ privacy: { logIps: true } })).toMatch(/privacy.logIps: unknown key/);
+  });
+
+  it.each(['ingress', 'bodyPadding'] as const)('rejects explicit null rather than defaulting privacy.%s', (setting) => {
+    expect(err({ privacy: { [setting]: null } })).toContain(`privacy.${setting}: must be`);
   });
 });

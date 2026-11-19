@@ -828,3 +828,32 @@ ReturnBombStealth and its regression; deployment shell preflight and its offline
 Preserve current CLI, TRON completeness, browser-warning assertion, dependency boundary
 review and all release/analyzer gates. Independent reviewer completed the exact source
 crosswalk before this claim. No deployment, fee-token policy approval or source-branch edits.
+# TM1–TM15 hardening completion — 2026-11-18
+
+Coordinator: ChatGPT root; reviewers: browser_privacy, metadata_privacy, relayer_chain_privacy, acceptance_review.
+Branch: `chatgpt/ghostpay-tm-hardening-20261118`.
+Base: `198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238), which already contains
+main `dfc75ef2087fa6463ae59e0818abec01796c578d` and PR #222
+`2bc2098298d90928eb1acafad969f28316bb05fc` as ancestors. The new PR will be stacked
+on #238 so only the TM-specific continuation is proposed; existing integration is
+an input, not repeated repository consolidation.
+
+| Worker | Owned paths | TM acceptance |
+|---|---|---|
+| browser_privacy | `apps/web/src/lib/settings*.ts`, `apps/web/src/views/Settings*.tsx`; focused new privacy tests | TM4 session-only settings and credential-bearing configuration never leak through accidental persistence/export; TM1/TM2/TM3/TM7/TM14 existing implementations reviewed and qualified. |
+| metadata_privacy | `apps/web/src/components/ReceiptPanel*.tsx`, `packages/scan-source/src/{padded,range}*.ts`, `apps/web/src/lib/scanPrivacy*.ts`, `apps/web/src/views/Scan{,.privacy.test}.tsx`; focused invoice/default acceptance tests | TM9 opt-in scoped to receipt identity; TM15 bounded/cancellable padding; TM8/TM10/TM12 source and test qualification while preserving checkpoint owner. |
+| relayer_chain_privacy | Existing TM11 relayer privacy source/tests/docs and TM13 BTC/Solana/TRON flow-specific tests; runtime only for a confirmed in-scope defect | Strict padding/ingress/zero-log behavior; chain-specific query consent and sign-time checks. |
+| acceptance_review | Read-only fourth-role review and acceptance-review report | Test coverage, active call paths, disclosure boundaries and independently reviewed corrections. |
+| coordinator | CSP scripts/tests and deployment documentation; privacy matrix/defaults tests; catalogs after coordination; qualification and review evidence | TM5 generated meta/header/nginx validation; TM6 accurate Tor guidance; all 15 dispositions, independent cross-review and exact-source qualification. |
+
+All 15 authoritative recommendations were read before product changes. First phase
+is read-only source review, then failing regressions for each confirmed defect.
+PR #241 owns general browser transports, #235 owns checkpoint architecture, #234
+owns pinned invoice signers, and #239/#240 own Spec 18. Those implementations are
+not independently redesigned. Main merges, deployment, release publication,
+contracts/Mythril, unrelated dependency upgrades and general consolidation are
+outside this task. Do not overwrite concurrent changes; recheck remote heads
+before publication. Final source and test evidence belong in
+`docs/handoffs/tm-hardening-20261118/`.
+
+TM acceptance fixture follow-up: browser_privacy owns only the hostile-text case in `apps/web/e2e/app.spec.ts`; the existing dialog listener must acknowledge one expected outgoing beforeunload prompt without suppressing invoice-origin dialogs. Runtime/key retention and global helpers stay unchanged. acceptance_review independently reviews the fixture delta; hosted full/lean execution remains required.

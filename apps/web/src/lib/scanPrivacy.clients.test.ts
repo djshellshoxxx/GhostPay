@@ -35,6 +35,30 @@ describe('openScanClients', () => {
     await expect(openScanClients(options)).rejects.toThrow('scope revoked');
     expect(fetchImpl).not.toHaveBeenCalled(); expect(appRpc).not.toHaveBeenCalled();
   });
+  it('does not open an RPC or custom endpoint for a pre-aborted scan', async () => {
+    const ctl = new AbortController();
+    ctl.abort();
+    let opens = 0;
+    const appRpc = () => { opens++; return Promise.resolve(undefined); };
+    let fetches = 0;
+    const fetchImpl = () => { fetches++; return Promise.resolve(new Response()); };
+    for (const plan of [ready(), ready({ endpoint: 'http://127.0.0.1:8545/', allowLoopbackHttp: true })]) {
+      await expect(openScanClients({ plan, chain, announcer: FAKE_ANNOUNCER, appRpc, fetchImpl, sleep, signal: ctl.signal })).rejects.toThrow('scan-aborted');
+    }
+    expect(opens).toBe(0);
+    expect(fetches).toBe(0);
+  });
+
+  it('passes the scan signal to the opened window scheduler', async () => {
+    const ctl = new AbortController();
+    const app = mockRpc(chain.chainId, (method) => method === 'eth_blockNumber' ? '0x1388' : []);
+    const clients = await openScanClients({ plan: ready(), chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(app), fetchImpl: noFetch, sleep, signal: ctl.signal });
+    expect(clients).toBeDefined();
+    ctl.abort();
+    await expect(clients!.scan.getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, `0x${'1'.padStart(64, '0')}`], fromBlock: 1000n, toBlock: 1999n })).rejects.toThrow('scan-aborted');
+    expect(app.calls).toEqual([]);
+  });
+
   it('uses the Settings RPC when no endpoint is set, and makes no request while opening', async () => {
     const app = mockRpc(84532, () => { throw new Error('unexpected'); });
     const r = await openScanClients({ plan: ready(), chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(app), fetchImpl: noFetch, sleep });

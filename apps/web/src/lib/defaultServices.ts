@@ -1,11 +1,5 @@
 import { CHAINS, ChainAdapterError, createClient, fetchTransport, type ChainConfig, type RpcClient, type RpcTransport } from '@ghostpay/chain-adapters';
-import {
-  WEB_NETWORK_SELECTION_KEY,
-  checkOwnNodeRpcUrl,
-  effectiveSelection,
-  parseWebNetworkSelection,
-  type WebNetworkSelection,
-} from '@ghostpay/net-transport/browser';
+import { checkOwnNodeRpcUrl, type WebNetworkSelection } from '@ghostpay/net-transport/browser';
 import { UserFacingError } from './errors';
 import { IdbTagStore } from './idbStore';
 import { loadBundledManifest } from './manifest';
@@ -18,6 +12,9 @@ import { discoverWallets } from './wallet';
 import { createBrowserScanWorker } from './workerFactory';
 import { IdbReconciliationVaultStore } from './reconciliationVault';
 import { purgeLegacyPrivateScanHistory } from './privateScanLifecycle';
+import { loadNetworkSelection } from './networkSelection';
+
+export { loadNetworkSelection } from './networkSelection';
 
 function safeStorage(): Storage | undefined {
   try {
@@ -41,25 +38,6 @@ export function loadDefaultManifest(
 }
 
 /**
- * TM14: the network selection that applies now (`ghostpay.networkProfiles.v1`). Missing, unreadable or invalid storage,
- * or a non-default selection whose first-use notice was not acknowledged, yields the default (direct, single RPC), which
- * is the behaviour before TM14.
- *
- * `tor-browser` is ambient: requests still use this page's `fetch`; only the user running the page in Tor Browser
- * changes the path, and that is not verified (unverified profile, see `PROFILE_VERIFICATION`).
- */
-export function loadNetworkSelection(storage: Storage | undefined = safeStorage()): WebNetworkSelection {
-  let raw: unknown;
-  try {
-    const text = storage?.getItem(WEB_NETWORK_SELECTION_KEY);
-    raw = text === null || text === undefined ? undefined : JSON.parse(text);
-  } catch {
-    raw = undefined;
-  }
-  return effectiveSelection(parseWebNetworkSelection(raw));
-}
-
-/**
  * `createRpc` that enforces `own-node` when it is selected: the RPC URL must be loopback or a v3 onion URL, otherwise
  * nothing is contacted (fail closed, no fallback to the configured third-party URL). The transport rechecks the current
  * selection before every dispatch, including retries from clients cached before the selection changed.
@@ -69,7 +47,7 @@ export function createSelectedRpc(
   create: (chain: ChainConfig, url: string, opts: { readonly allowInsecureLocalhost: boolean; readonly transport: RpcTransport }) => Promise<RpcClient> = (chain, url, opts) =>
     createClient(chain, url, opts),
 ): (chain: ChainConfig, url: string) => Promise<RpcClient> {
-  return (chain, url) => {
+  return async (chain, url) => {
     const ownNode = selection().rpcMode === 'own-node';
     let checked: string;
     try {
@@ -79,7 +57,12 @@ export function createSelectedRpc(
     }
     const transport: RpcTransport = {
       send(target, body, init) {
-        if (selection().rpcMode === 'own-node') {
+        let selected: WebNetworkSelection;
+        try { selected = selection(); } catch {
+          // Policy read/acknowledgement failure is terminal, not a retryable transport outage.
+          return Promise.reject(new ChainAdapterError('RPC_URL_REJECTED', 'network profile settings require review'));
+        }
+        if (selected.rpcMode === 'own-node') {
           try {
             checkOwnNodeRpcUrl(target, { kind: 'evm', chainId: chain.chainId });
           } catch {

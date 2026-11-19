@@ -49,7 +49,9 @@ A test in `src/api.test.ts` scans the log output for these values.
 IP addresses, owners and destinations are never logged in either mode (see above). Zero-log mode also removes the
 remaining per-request trail: the `request` access line (route, status, error class, request id) is not emitted, and
 `requestId` is stripped from every other line (for example `sweep_sent`). What remains are operational events with
-chain id and error class only (startup, shutdown, breaker, state journal, receipt outcomes). Tested in
+chain id and error class only (startup, shutdown, breaker, state journal, sweep submission, receipt outcomes). These
+events still carry timestamps: a sparse event stream can correlate with on-chain activity or other observers' logs.
+The switch is access-log suppression, not a claim of no records or timing anonymity. Tested in
 `src/privacy.test.ts`. It does not change what any proxy, CDN or RPC provider in front of or behind the relayer logs:
 configure those separately (for nginx, `access_log off;`).
 
@@ -62,6 +64,10 @@ default). An operator may set `"required"` once all clients pad; unpadded bodies
 older than this change refuses `pad` with `400 invalid_request`; the web client then resends the same request once
 unpadded. Padding hides only the body length; responses are not padded, and IP, timing and content still reach the
 relayer.
+
+The browser keeps the documented unpadded fallback for bodies larger than its largest bucket, and callers can
+explicitly select `pad:false`. Other padding failures, including unavailable or failed secure randomness, stop
+before dispatch with a fixed diagnostic; they do not silently drop padding or display the underlying exception.
 
 ## Quote and sweep: the tuple is sent twice (assessed, not changed)
 
@@ -83,6 +89,12 @@ relayer about an intended sweep.
   arrive from loopback, so the per-IP and per-network limits become one shared onion budget; the global quote budget
   still applies. The relayer learns no client IP in this mode; the Tor process is a trust point. **Not tested against
   a real Tor network** (see `deploy/TOR.md`).
+
+Omitting an ingress or padding setting selects the documented default. Explicit `null`, unknown values and
+contradictory settings are rejected at configuration parsing. The `pad` field accepts 0–16384 lowercase hex digits;
+the independent 16 KiB limit covers the entire JSON body, including its other fields and syntax. An empty pad is
+valid at an exact size bucket; it is not proof that a request has useful length cover. These rules are exercised by
+the local HTTP and parser tests, not by a real Tor service.
 
 ## What is NOT retained
 

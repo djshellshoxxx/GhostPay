@@ -85,6 +85,14 @@ describe('fetchPadded', () => {
     await expect(fetchPadded({ fromBlock: 0n, toBlock: 99n }, (s, e) => { calls.push([s, e]); return Promise.resolve([]); }, { align: 10, windowBlocks: 10, maxRequests: 3 })).rejects.toMatchObject({ code: 'TRUNCATED' });
     expect(calls).toEqual([]);
   });
+  it('rejects a huge permitted span before allocating or requesting its windows', async () => {
+    const calls: bigint[] = [];
+    await expect(fetchPadded({ fromBlock: 0n, toBlock: 1_000_000_000_000n }, (s) => {
+      calls.push(s);
+      return Promise.resolve([]);
+    }, { align: 1, windowBlocks: 1, maxSpan: Number.MAX_SAFE_INTEGER, maxRequests: 50 })).rejects.toMatchObject({ code: 'TRUNCATED' });
+    expect(calls).toEqual([]);
+  });
   it('rejects bad windowBlocks and maxRequests', async () => {
     await expect(fetchPadded({ fromBlock: 0n, toBlock: 1n }, () => Promise.resolve([]), { align: 10, windowBlocks: 0 })).rejects.toBeInstanceOf(ScanSourceError);
     await expect(fetchPadded({ fromBlock: 0n, toBlock: 1n }, () => Promise.resolve([]), { align: 10, windowBlocks: 10, maxRequests: 0 })).rejects.toBeInstanceOf(ScanSourceError);
@@ -94,5 +102,33 @@ describe('fetchPadded', () => {
     let seen: AbortSignal | undefined;
     await fetchPadded({ fromBlock: 0n, toBlock: 1n }, (_s, _e, sig) => { seen = sig; return Promise.resolve([]); }, { align: 10, windowBlocks: 10 }, ac.signal);
     expect(seen).toBe(ac.signal);
+  });
+
+  it('makes no request for an already cancelled operation and hides the abort reason', async () => {
+    const ac = new AbortController();
+    ac.abort(new Error('private caller context'));
+    const calls: bigint[] = [];
+    const task = fetchPadded({ fromBlock: 0n, toBlock: 19n }, (s) => {
+      calls.push(s);
+      return Promise.resolve([item(s)]);
+    }, { align: 10, windowBlocks: 10 }, ac.signal);
+    await expect(task).rejects.toMatchObject({ code: 'TRANSPORT', message: 'scan cancelled' });
+    expect(calls).toEqual([]);
+  });
+
+  it.each([9n, 29n])('discards a late response and stops after cancellation (last requested block %s)', async (toBlock) => {
+    const ac = new AbortController();
+    const calls: bigint[] = [];
+    let finish: (value: readonly { blockNumber: bigint }[]) => void = () => { throw new Error('request not started'); };
+    const response = new Promise<readonly { blockNumber: bigint }[]>((resolve) => { finish = resolve; });
+    const task = fetchPadded({ fromBlock: 0n, toBlock }, (s) => {
+      calls.push(s);
+      return response; // A backend that deliberately ignores AbortSignal.
+    }, { align: 10, windowBlocks: 10 }, ac.signal);
+    expect(calls).toEqual([0n]);
+    ac.abort(new Error('private caller context'));
+    finish([item(1n)]);
+    await expect(task).rejects.toMatchObject({ code: 'TRANSPORT', message: 'scan cancelled' });
+    expect(calls).toEqual([0n]);
   });
 });

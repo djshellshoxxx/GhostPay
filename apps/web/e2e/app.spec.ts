@@ -114,12 +114,12 @@ test('egress: parsing and reviewing an invoice makes no request except same-orig
 
 test('hostile text in line items and memo is rendered inert', async ({ page }) => {
   const dialogs: string[] = [];
-  let unloadConfirmations = 0;
+  let allowExpectedBeforeUnload = false;
+  let acceptedBeforeUnload = 0;
   page.on('dialog', (d) => {
-    // The fresh-load journey intentionally leaves unbacked seller keys. Accept that custody warning while still
-    // recording and refusing every script-created dialog; dismissing beforeunload cancels the navigation itself.
-    if (d.type() === 'beforeunload') {
-      unloadConfirmations++;
+    if (allowExpectedBeforeUnload && d.type() === 'beforeunload') {
+      allowExpectedBeforeUnload = false;
+      acceptedBeforeUnload++;
       void d.accept();
       return;
     }
@@ -130,12 +130,20 @@ test('hostile text in line items and memo is rendered inert', async ({ page }) =
   await page.goto('/');
   await generateKeys(page);
   const link = await createInvoice(page, { description: evil, memo: evil });
-  await openFresh(page, link);
+  // The fixture waived backup, so leaving its seller keys requires one explicit acknowledgement.
+  // Limit that allowance to the outgoing page; every dialog from the invoice remains unexpected.
+  allowExpectedBeforeUnload = true;
+  try {
+    await page.goto('about:blank');
+  } finally {
+    allowExpectedBeforeUnload = false;
+  }
+  expect(acceptedBeforeUnload).toBe(1);
+  await page.goto(link);
   await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
   await expect(page.getByText(evil, { exact: true }).first()).toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();
   expect(await page.locator('main img, main script, main svg[onload]').count()).toBe(0);
-  expect(unloadConfirmations).toBe(1);
   expect(dialogs).toEqual([]);
 });
 

@@ -1,5 +1,7 @@
 # TM1–TM15 implementation and evidence — 2026-11-18
 
+> Historical qualification ledger for the earlier integration lane. The later bounded continuation, including corrected consent/export/CSP behavior and current acceptance evidence, is [TM_HARDENING_COMPLETION_20261118.md](TM_HARDENING_COMPLETION_20261118.md). Preserve the original source and execution identities below.
+
 ## Ownership and source boundary
 
 Worker: branch-archaeology/security-tooling lane; coordinator: current Pages completion session.

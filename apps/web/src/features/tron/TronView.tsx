@@ -168,12 +168,15 @@ export function TronView(): ReactNode {
         // Cheap local checks first, so a typo never costs a round trip.
         decodeTronAddress(destination.trim());
         const rpc = await connect(signal);
+        if (!live()) return;
         // The balance of this one address is read now, not for every match during the scan.
         const funded = await readSweepDetails(rpc, selected, signal);
-        const params = await getChainParams(rpc, signal);
-        const destinationActivated = await isActivated(rpc, destination.trim(), signal);
-        const out = reviewSweep(wallet, funded, destination, { params, destinationActivated });
         if (!live()) return;
+        const params = await getChainParams(rpc, signal);
+        if (!live()) return;
+        const destinationActivated = await isActivated(rpc, destination.trim(), signal);
+        if (!live()) return;
+        const out = reviewSweep(wallet, funded, destination, { params, destinationActivated });
         fundedRef.current = funded;
         setReview(out);
         setApproved(false);
