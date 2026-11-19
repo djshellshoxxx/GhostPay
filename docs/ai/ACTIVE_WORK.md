@@ -1,3 +1,21 @@
+# Focused hosting main reconciliation — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-hosting-main-reconcile-20261119`.
+Starting PR #267 head: `c3a693e87053fbe91219f8edfe159a5ec0a37a34`.
+Qualified main input: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: additive `docs/ai/ACTIVE_WORK.md` reconciliation and new evidence under
+`docs/consolidation/hosting-timestamp-reconciliation-20261119/`. Incoming qualified
+main source/test changes are preserved exactly; no runtime source or gate edits.
+Acceptance: first preview merge conflicts; preserve main and focused ancestry;
+retain all existing ownership sections; keep the complete 80-file hosting-kit tree
+and its three reviewed timestamp source/test blobs exact; inspect the full resulting
+source/config diff and run only checks needed for a concrete reconciliation risk.
+Historical hosted kit/browser outcomes remain pinned to the earlier checkout;
+new-head CI/build/browser qualification is coordinator-owned and remains pending.
+No remote writes, force operations, mainnet, deployment or parallel heavy checks.
+Status: claim recorded before merge; merge-tree preview found only this registry.
+
 # Focused hosting timestamp promotion — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
