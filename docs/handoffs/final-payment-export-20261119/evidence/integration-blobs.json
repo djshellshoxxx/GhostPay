@@ -1,0 +1,72 @@
+{
+  "base": "7f44cf742f25df25105a5a21d223b6d0d1efb62d",
+  "source": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+  "merged": "b456f8637934c3774d0400a1eed13d33c8d08709",
+  "files": [
+    {
+      "path": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+      "matches_pr269": true,
+      "sha256": "cf6aa7a9d92438cf451e455798c109cd64f51d3ffa66115ee1bfcde00ad6b29f"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.test.ts",
+      "matches_pr269": true,
+      "sha256": "25f8f5573d1381a95be4e87404bbbab90682f7a94861b90927c22fecf2073064"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "matches_pr269": true,
+      "sha256": "7fc1b7060b35552bab3f1544f944549849621f592c84504417a8c39cec89b1ab"
+    },
+    {
+      "path": "apps/web/src/lib/paymentExportRpc.test.ts",
+      "matches_pr269": true,
+      "sha256": "c6bdf80117f2db31753150bdf35b7f2d7785eb484e7ecceb4c439f10c0d845ec"
+    },
+    {
+      "path": "apps/web/src/lib/paymentExportRpc.ts",
+      "matches_pr269": true,
+      "sha256": "b2ee8e2a4881840c4ba89c8c434a47652820200e6ab0d5e209549be7839c0b31"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "matches_pr269": true,
+      "sha256": "3993ddc825b5129447fdfca89d449ecd3db9eaa524e9cc5a682c324daea48d9f"
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.test.ts",
+      "matches_pr269": true,
+      "sha256": "03816efe28e84d4963a3ec4b626d8770fc782ba7659a8b93b486d43bb8edb5bb"
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.test.ts",
+      "matches_pr269": true,
+      "sha256": "c16a7acfa95497fd715fe5facb66724eb3eaae5bbccf2342fb466695a21cf581"
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.ts",
+      "matches_pr269": true,
+      "sha256": "4df3fb1fab75dca60a37352142cdfc8464b078398d734b5f10045ed892265ff1"
+    },
+    {
+      "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+      "matches_pr269": true,
+      "sha256": "5d8df754ca0592a32dd5287c4551c9a60d8dce0a3d5b5d65dca2403ffec92ebc"
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+      "matches_pr269": true,
+      "sha256": "a607d39a1d1d95953f769c28b49294af9e6e3af8108058651efed7fbc0197620"
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "matches_pr269": true,
+      "sha256": "e4a9a5479ca2fb8079b8f4035beaf9d06fef7493769ed77c0698dcbdc6b9dffd"
+    },
+    {
+      "path": "docs/privacy/network-egress-inventory.json",
+      "matches_pr269": true,
+      "sha256": "20de50f0d2dc43022487d18cf60aacf004c0b283fe3dd68fd6fd7dc88cdb8db6"
+    }
+  ]
+}
