@@ -35,8 +35,9 @@ Owned paths: `packages/chain-adapters/src/{deployments,quote,rpc}.ts` and focuse
 `packages/tron-adapter/src/rpc.ts` block-range validation only and `scan.test.ts`; this claim and scoped handoff.
 Source provenance: `e2fef011ca1195d6c5edaf4e1ea1055692462004`,
 `b098b73a3a93bde331b7f49123e99d3406b6cb6f`, `c37604d1b1cf561573270d6cc002418003f80b69`.
-Acceptance: reject impossible manifest calendar dates; bounded retries for non-finite inputs; bounded price
-decimals; refuse incomplete/noncontiguous TRON block ranges; preserve PR #241 transport isolation.
+Acceptance: reject impossible manifest calendar dates; bounded retries for non-finite inputs; preserve the existing
+0..30 price-decimals bound with additional regressions; refuse incomplete/noncontiguous TRON block ranges;
+preserve PR #241 transport isolation. The historical price-decimals runtime hunk is redundant and excluded.
 Apply only those previously implemented safeguards and regressions, run focused failing/passing evidence and
 affected package checks, then hand off for independent review. No new feature, dependency, policy, deployment or release.
 
