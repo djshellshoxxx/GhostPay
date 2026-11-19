@@ -1,3 +1,17 @@
+# Historical scanner repair main reconciliation — 2026-11-19
+
+Worker: actions_repair, assigned by the pre-merge reconciliation coordinator.
+Branch: `repair/ghostpay-history-scanner-20261118-local`.
+Starting local head: `3db24b5496a2d1979a55757a2b83eb8dd362614b`; reviewed tree:
+`96e15f7544b592bac8da065ad64188f56b0d9f4d`. Merge target: main
+`e454de6abfefda70d82784fafc1d8949b277c334`, independently observed after PR #242 merged.
+Owned scope: this additive claim, preservation of the existing AST scanner repair
+while merging current main, and scoped validation evidence. Preserve both source
+histories, all ownership sections, and the reviewed scanner implementation/test blobs.
+Run all 88 scanner/privacy tests on Node 22, scan the resulting eligible production
+sources, and obtain independent integration-diff review. Source conflicts require
+inspection; publication and hosted qualification remain coordinator-owned.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
