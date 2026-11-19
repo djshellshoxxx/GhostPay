@@ -212,5 +212,56 @@
       "compressed_sha256": "9be7db89d239828ca44d039253cd39062ba6e0819b9498aead26ae6b40488378",
       "uncompressed_bytes": 509
     }
+  ],
+  "additional_commands": [
+    {
+      "id": "export-combined",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+      "command": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/StealthExportCommon.review.test.tsx",
+        "src/components/StealthExportCommon.expiry.test.tsx",
+        "src/components/StealthExportPayment.test.tsx",
+        "src/components/StealthExportRecovery.test.tsx",
+        "src/components/StealthExportVerification.test.tsx",
+        "src/components/StealthExportSelection.test.tsx",
+        "src/components/StealthExportDownload.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=<evidence>/export-combined.json"
+      ],
+      "exit_code": 0,
+      "note": "Before equivalent prefer-const spelling correction in new review fixture."
+    },
+    {
+      "id": "review-final",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+      "command": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/StealthExportCommon.review.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=<evidence>/review-final.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "export-lint-final",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+      "command": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src/components/StealthExportCommon.review.test.tsx",
+        "src/components/StealthExportCommon.expiry.test.tsx",
+        "src/components/StealthExportCommon.tsx"
+      ],
+      "exit_code": 0
+    }
   ]
 }
