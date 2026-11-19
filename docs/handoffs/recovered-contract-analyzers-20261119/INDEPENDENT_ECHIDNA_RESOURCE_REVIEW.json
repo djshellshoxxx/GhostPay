@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/security_review",
+  "scope": "Independent read-only official binary help/version and pinned source/configuration review; no campaign execution or binary/config edits.",
+  "binary_sha256": "04f9437a655c79fc1a4ca7ecdadff68ffc64aacbafafa04cad0a408eb9cd621c",
+  "verdict": "NO_DOCUMENTED_SUPPORTED_MEMORY_CAP_FOR_PINNED_BINARY_FOUND",
+  "observations": [
+    "Official --help exits 0 and exposes no memory option.",
+    "Independent GHCRTS=-N4 -M1536m --version probe exits 1: Most RTS options are disabled. Link with -rtsopts to enable them.",
+    "Pinned package.yaml enables -threaded and compiled defaults -A64m -N, without -rtsopts.",
+    "Pinned Config.hs and Main.hs expose no memory setting; official configuration documentation lists no memory parameter.",
+    "Profiling instructions require a profiling/source build outside this bounded scope."
+  ],
+  "source_blobs": {
+    "package.yaml": "b3219b461f371026c03cff6b71bdb736fdc454f5",
+    "Config.hs": "51cade8417998bfc400d954cdf11c9540a9051bf",
+    "Main.hs": "1a4e43ae56da7f3bd389c1949d1db21d96c1d221"
+  },
+  "remaining_route": "A dedicated environment with sufficient resources for the unchanged pinned binary and campaign. External hard limits may terminate the process; they do not establish completion."
+}

@@ -103,7 +103,7 @@
   ],
   "other_analyzers": {
     "acquisition": "evidence/other-analyzer-acquisition.json",
-    "echidna": "Official checksum-pinned 2.2.7 binary and version smoke passed. Full campaign newly authorized by coordinator, pending separate exact-source campaign receipt.",
+    "echidna": "Full unchanged original campaign executed and failed (runner exit1): Router/Policy killed137 before budgets, Sweep completed300048 calls and inventory. See evidence/echidna-attempt-1.json; no full-campaign pass.",
     "mythril": "0.24.8 source distribution checksum verified and official requirements inspected. Full dependency environment and campaign not installed/executed. Python 3.12 is not declared unsupported: metadata allows >=3.7 while README advertises 3.7\u20133.10 and repository CI historically used 3.12. Required native/scientific/solver packages need a separate complete environment; no packages substituted or patched."
   },
   "historical_mythril": "evidence/historical-mythril-dispositions.json",
@@ -118,5 +118,8 @@
       "gzip_sha256": "bc1c3d77294c753b198a8739368307171d96c662c35a61ff10eb990cb6ac60b9",
       "encoding": "Deterministic gzip (mtime=0); exact original official source bytes retained, including upstream whitespace."
     }
-  ]
+  ],
+  "echidna_attempt_1": "evidence/echidna-attempt-1.json",
+  "independent_slither_review": "INDEPENDENT_SLITHER_REVIEW.json",
+  "independent_echidna_resource_review": "INDEPENDENT_ECHIDNA_RESOURCE_REVIEW.json"
 }

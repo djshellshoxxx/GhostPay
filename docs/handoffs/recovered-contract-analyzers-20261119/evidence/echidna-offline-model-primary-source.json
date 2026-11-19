@@ -1,0 +1,32 @@
+[
+  {
+    "observed_at": "2026-11-19T13:49:13.459291+00:00",
+    "name": "exec",
+    "source_url": "https://raw.githubusercontent.com/crytic/echidna/e871c88b08a906b513f820c93a77610a56ae00bb/lib/Echidna/Exec.hs",
+    "source_bytes": 15041,
+    "sha256": "9942b10f954cdb542a6c12114ff04a550e6b1dc9581c5a3025c6a00e61d47175",
+    "matching_source_lines": [
+      40,
+      124,
+      143,
+      146,
+      149,
+      177
+    ],
+    "read_only_conclusion": "The missing-RPC branch caches the missing account and resumes with emptyAccount; it does not call safeFetchContractFrom in that branch.",
+    "limit": "Primary-source inspection explains the logged offline model. It is not evidence of real remote contract state or an additional runtime campaign."
+  },
+  {
+    "observed_at": "2026-11-19T13:49:19.204246+00:00",
+    "name": "types",
+    "source_url": "https://raw.githubusercontent.com/crytic/echidna/e871c88b08a906b513f820c93a77610a56ae00bb/lib/Echidna/Types.hs",
+    "source_bytes": 1832,
+    "sha256": "b79a76007428cd10144dd0b3eea2ebd56bf8f03d2e69effc4cbe9a6951b935db",
+    "matching_source_lines": [
+      44,
+      45
+    ],
+    "read_only_conclusion": "emptyAccount is created with empty concrete runtime code.",
+    "limit": "Primary-source inspection explains the logged offline model. It is not evidence of real remote contract state or an additional runtime campaign."
+  }
+]
