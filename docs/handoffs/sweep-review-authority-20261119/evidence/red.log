@@ -1,0 +1,185 @@
+
+ RUN  v5.1.0 /tmp/ghostpay-security-246ff268d20d/apps/web
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts (14 tests | 11 failed) 855ms
+   ❯ Sweep helper review authority (14)
+     × refuses a revoked direct review before deriving or signing a key 184ms
+     × refuses a changed direct review during eth_gasPrice before signing 76ms
+     × refuses a changed direct review during eth_getTransactionCount before signing 51ms
+     × refuses a changed direct review during eth_getBalance before signing 38ms
+     × refuses a changed direct review during eth_estimateGas before signing 57ms
+     × refuses a changed direct review during eth_call before signing 63ms
+     × discards a direct signature completed after its review was revoked 53ms
+     × refuses a revoked relayed review before deriving or requesting signatures 54ms
+     × does not obtain a permit after the review changes during the sweep signature 38ms
+     × refuses a changed relayed review after permit RPC reads and before signing the permit 48ms
+     × discards a permit signature completed after its review was revoked 34ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > refuses a revoked direct review before deriving or signing a key
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:96:62
+     94|     const h = directInput(); h.authority.revoke();
+     95|     await expect(directSweep(h.input)).rejects.toThrow('review replace…
+     96|     expect(vi.mocked(deriveStealthSecret).mock.calls.length).toBe(0); …
+       |                                                              ^
+     97|     expect(h.rpc.calls).toHaveLength(0); expect(h.handoff).not.toHaveB…
+     98|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > refuses a changed direct review during eth_gasPrice before signing
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > refuses a changed direct review during eth_getTransactionCount before signing
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > refuses a changed direct review during eth_getBalance before signing
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > refuses a changed direct review during eth_estimateGas before signing
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > refuses a changed direct review during eth_call before signing
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:103:53
+    101|     const h = directInput((method) => { if (method === pausedMethod) h…
+    102|     await expect(directSweep(h.input)).rejects.toThrow('review replace…
+    103|     expect(vi.mocked(signDigest).mock.calls.length).toBe(0); expect(h.…
+       |                                                     ^
+    104|     expect(h.rpc.calls.map((call) => call.method)).not.toContain('eth_…
+    105|     const secret = vi.mocked(deriveStealthSecret).mock.results[0]?.val…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > discards a direct signature completed after its review was revoked
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "amount": 99958000000000000n,
+        "asset": "native",
+        "chainId": 11155111,
+        "destination": "0x6666666666666666666666666666666666666666",
+        "expectedHash": "0x6c99673c75ca582182f09ce91d5ac13150c5f86c76a5eff4945c4bf1d09dd632",
+        "nonce": 7,
+        "owner": "0xAfec25720f3605693FE964BC6EAB6AAa72e433c2",
+        "status": "unknown-after-handoff",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:116:84
+    114|     });
+    115|     await expect(directSweep(h.input)).rejects.toThrow('review replace…
+    116|     expect(vi.mocked(signDigest).mock.calls.length).toBe(1); expect(h.…
+       |                                                                                    ^
+    117|     expect(h.rpc.calls.map((call) => call.method)).not.toContain('eth_…
+    118|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > refuses a revoked relayed review before deriving or requesting signatures
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:140:62
+    138|     const h = relayedInput(); h.authority.revoke();
+    139|     await expect(relayedSweep(h.input)).rejects.toThrow('review replac…
+    140|     expect(vi.mocked(deriveStealthSecret).mock.calls.length).toBe(0); …
+       |                                                              ^
+    141|     expect(vi.mocked(signPermit).mock.calls.length).toBe(0); expect(h.…
+    142|     expect(h.handoff).not.toHaveBeenCalled(); expect(h.fetchFn).not.to…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > does not obtain a permit after the review changes during the sweep signature
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:152:109
+    150|     });
+    151|     await expect(relayedSweep(h.input)).rejects.toThrow('review replac…
+    152|     expect(vi.mocked(signSweep).mock.calls.length).toBe(1); expect(vi.…
+       |                                                                                                             ^
+    153|     expect(h.rpc.calls).toHaveLength(0); expect(h.handoff).not.toHaveB…
+    154|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > refuses a changed relayed review after permit RPC reads and before signing the permit
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:159:109
+    157|     const h = relayedInput(() => { h.authority.revoke(); });
+    158|     await expect(relayedSweep(h.input)).rejects.toThrow('review replac…
+    159|     expect(vi.mocked(signSweep).mock.calls.length).toBe(1); expect(vi.…
+       |                                                                                                             ^
+    160|     expect(h.handoff).not.toHaveBeenCalled(); expect(h.fetchFn).not.to…
+    161|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > Sweep helper review authority > discards a permit signature completed after its review was revoked
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "deadline": 1800001200,
+        "nonce": 42n,
+        "relayer": "0x2222222222222222222222222222222222222222",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:170:84
+    168|     });
+    169|     await expect(relayedSweep(h.input)).rejects.toThrow('review replac…
+    170|     expect(vi.mocked(signPermit).mock.calls.length).toBe(1); expect(h.…
+       |                                                                                    ^
+    171|   });
+    172|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  11 failed | 3 passed (14)
+   Start at  03:17:48
+   Duration  2.67s (tests 35%, import 33%, transform 31%)
+
