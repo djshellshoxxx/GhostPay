@@ -1,0 +1,74 @@
+{
+  "observedAtUtc": "2026-11-19 13:19:41 UTC",
+  "repository": "djshellshoxxx/GhostPay",
+  "pullRequest": 279,
+  "url": "https://github.com/djshellshoxxx/GhostPay/pull/279",
+  "head": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+  "headBranch": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+  "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "state": "open",
+  "draft": true,
+  "merged": false,
+  "commitCount": 5,
+  "changedFileCount": 4,
+  "statuses": [
+    {
+      "context": "security/snyk (djshellshoxxx)",
+      "state": "success",
+      "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/df6914bc-865c-455f-8df4-6dd8e314c0ed"
+    }
+  ],
+  "workflowRuns": [
+    {
+      "id": 44527678552,
+      "name": "Hosting kit",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 375,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678552/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678552/logs",
+      "workflow_id": 398745505
+    },
+    {
+      "id": 44527678568,
+      "name": "CI",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 1503,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678568/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678568/logs",
+      "workflow_id": 391558649
+    },
+    {
+      "id": 44527678573,
+      "name": "CLI operator qualification",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 246,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678573/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678573/logs",
+      "workflow_id": 412675588
+    },
+    {
+      "id": 44527678666,
+      "name": "Pages",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 259,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678666/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678666/logs",
+      "workflow_id": 392799214
+    },
+    {
+      "id": 44527678458,
+      "name": "Beta acceptance",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 264,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678458/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44527678458/logs",
+      "workflow_id": 414091144
+    }
+  ],
+  "qualification": "All five retrieved PR-triggered workflow runs were queued, so no exact-head hosted workflow pass was observed. A successful Snyk status is not complete CI or release approval."
+}

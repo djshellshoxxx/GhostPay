@@ -1,0 +1,26 @@
+{
+  "source": "98786e75f7979708b52fbe7424825a41100e2d98",
+  "tree": "37bf0e722ddbd068504f0a6445fbbba642ae8d8f",
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/workspace/scratch/246ff268d20d/GhostPay-qr/node_modules/eslint/bin/eslint.js",
+    "--config",
+    "../../eslint.config.js",
+    "src"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay-qr/packages/qr-exchange",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=512",
+    "NO_COLOR": "1"
+  },
+  "started": "2026-11-19T13:18:41.904470+00:00",
+  "ended": "2026-11-19T13:18:50.134821+00:00",
+  "durationSeconds": 8.23,
+  "exitCode": 0,
+  "log": {
+    "path": "docs/handoffs/qr-surrogate-review-20261119/evidence/qr-package-lint.log.gz",
+    "uncompressedSha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+    "uncompressedBytes": 174,
+    "storedSha256": "22261350fc486353f6dff25c25b5ce1d957ce9d60075c53c06b1b1532de5b3c0"
+  }
+}
