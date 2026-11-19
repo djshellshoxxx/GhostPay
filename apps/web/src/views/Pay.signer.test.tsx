@@ -86,7 +86,7 @@ describe('invoice signer verification lifecycle', () => {
     fireEvent.change(screen.getByLabelText('Expected seller (optional)'), { target: { value: 'Bob' } });
     await screen.findByText(MISMATCH);
     expect(screen.queryByText(PINNED)).toBeNull();
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue', exact: true }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
     expect(services.createRpc).not.toHaveBeenCalled();
     expect(services.discoverWallets).not.toHaveBeenCalled();
   });
@@ -113,7 +113,7 @@ describe('invoice signer verification lifecycle', () => {
     expect(screen.queryByText(PINNED)).toBeNull();
     await screen.findByText('Verification unavailable or interrupted. Open the invoice again to retry.');
     expect(screen.getByLabelText<HTMLSelectElement>('Expected seller (optional)').value).toBe('Alice');
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue', exact: true }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
   });
 
   it('cannot publish an old matching result after a pin is removed during verification', async () => {
@@ -184,7 +184,7 @@ describe('invoice signer verification lifecycle', () => {
     await screen.findByRole('heading', { name: 'Review payment' });
     fireEvent.change(screen.getByLabelText('Expected seller (optional)'), { target: { value: 'Alice' } });
     await screen.findByText(PINNED);
-    const proceed = await screen.findByRole<HTMLButtonElement>('button', { name: 'Continue', exact: true });
+    const proceed = await screen.findByRole<HTMLButtonElement>('button', { name: 'Continue' });
     await waitFor(() => { expect(proceed.disabled).toBe(false); });
     await user.click(proceed);
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
@@ -212,7 +212,7 @@ describe('invoice signer verification lifecycle', () => {
     await screen.findByRole('heading', { name: 'Review payment' });
     fireEvent.change(screen.getByLabelText('Expected seller (optional)'), { target: { value: 'Alice' } });
     await screen.findByText(PINNED);
-    const proceed = await screen.findByRole<HTMLButtonElement>('button', { name: 'Continue', exact: true });
+    const proceed = await screen.findByRole<HTMLButtonElement>('button', { name: 'Continue' });
     await waitFor(() => { expect(proceed.disabled).toBe(false); });
     await user.click(proceed);
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));

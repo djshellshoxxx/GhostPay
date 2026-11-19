@@ -25,7 +25,7 @@ describe('explicit signer pin controls', () => {
     enterPin('Cafe\u0301');
     expect(save).not.toHaveBeenCalled();
     expect(screen.getByText(B)).toBeTruthy();
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm signer pin' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm signer pin' })); await Promise.resolve(); });
     expect(save).toHaveBeenCalledWith(expect.objectContaining({ label: 'Café', expectedSigner: null, signer: B, confirmation: B }), expect.any(Function));
     expect(p.onSelect).toHaveBeenCalledWith('Café');
   });
@@ -42,7 +42,7 @@ describe('explicit signer pin controls', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel pin change' }));
     expect(save).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Review pin change' }));
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm signer pin' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm signer pin' })); await Promise.resolve(); });
     expect(save).toHaveBeenCalledWith(expect.objectContaining({ label: 'Alice', expectedSigner: A, signer: B }), expect.any(Function));
   });
 
@@ -51,7 +51,7 @@ describe('explicit signer pin controls', () => {
     const p = props(); render(<InvoiceSignerVerification {...p} selected="Alice" />);
     fireEvent.click(screen.getByRole('button', { name: 'Remove selected pin' }));
     expect(save).not.toHaveBeenCalled();
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm pin removal' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm pin removal' })); await Promise.resolve(); });
     expect(save).toHaveBeenCalledWith(expect.objectContaining({ label: 'Alice', expectedSigner: A, signer: null, confirmation: A }), expect.any(Function));
     expect(p.onSelect).not.toHaveBeenCalled();
   });
@@ -66,7 +66,7 @@ describe('explicit signer pin controls', () => {
     vi.spyOn(pins, 'changeInvoiceSignerPin').mockResolvedValue(result);
     const p = props(); render(<InvoiceSignerVerification {...p} />);
     enterPin('Bob');
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm signer pin' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm signer pin' })); await Promise.resolve(); });
     expect(screen.getByText(/The pin could not be changed/)).toBeTruthy();
     expect(p.onSelect).not.toHaveBeenCalled();
   });
