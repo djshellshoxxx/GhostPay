@@ -12,27 +12,142 @@ Branch: `chatgpt/btc-spentness-private-scan-20261118`.
 | Main + PR #219 integration and ownership claim | `7873171faab06a43b40697b18973b23909fb5008` |
 | Continuous coverage and state reconciliation | `62380400320c0cda7867b42e3cb708b0148af64e` |
 | Initial completed runtime/test implementation | `019de9cb9c9b65b6ceddec1225274504c98bcf2b` |
-| Current-main integration | `72194c4f57b27f2928bd47d67c8999eb27794fbb` |
+| Earlier current-main integration | `72194c4f57b27f2928bd47d67c8999eb27794fbb` |
 | Duplicate/replayed evidence repair | `8998030627f091de4079d91dbaccf0619a7b77c9` |
 | Current-authority action guards | `8cbbc1bfedce73e785d9b0f46069f501a67b59e7` |
 | Distinct-output resource bounds | `e261a777c44d742f5e19a8975bbdcbab7059c545` |
-| Final runtime implementation / independent review target | `d646e6db035f008b643d5a5278bbbae8b838f488` |
+| Earlier runtime implementation / independent review target | `d646e6db035f008b643d5a5278bbbae8b838f488` |
 | Published runtime with byte-identical complete tree | `4281fce1ecc862b2805fce0106efa395ed4b2f4a` |
-| Complete runtime tree, local and published | `64fa82876d9ed0667f74cb66acafa4be3021478d` |
+| Earlier runtime tree, local and published | `64fa82876d9ed0667f74cb66acafa4be3021478d` |
+| Earlier published PR head | `8c1d87a2587281c32a5f1326a4f36cfada4384bc` |
+| Earlier hosted PR merge checkout | `a5673653b0a856b63a266ee0e2bbb8b44fdf9c02` |
+| Earlier hosted checkout tree | `9721a1fe7bfbfcac65dad577c651c9b5284386cb` |
+| Current-main runtime baseline imported (#242 and #214) | `ffd982a7aea2856c186b40ef236a39720a1b81f5` |
+| Current combined runtime, local merge | `f567d7602c2aa2999a6b5b346389af7c409fdf6d` |
+| Matching published combined runtime | `11667060182bf4d59a559530b2c89e258b231c08` |
+| Current combined runtime tree | `af0d3d83344c80c44cdf977a3d1c0a2e05992861` |
+| Documentation-only main advance (#216), included with retained evidence | `a36f48da526b818a5940a7a0ed2ae7303ef17056` |
 
 This work preserves PR #219 and completes its Bitcoin-specific spentness,
-resumption, provider-consent, and UI safeguards. It does not modify EVM protocols,
-Spec 18 recovery, seller checkpoint architecture, cryptographic signing or transaction construction,
-contracts/Mythril, dependencies, release workflows, or general consolidation.
-The full web profile contains Bitcoin; the lean Pages profile still excludes it.
+resumption, provider-consent, and UI safeguards. The feature diff leaves EVM
+protocols, Spec 18 recovery, seller checkpoint architecture, cryptographic signing
+and transaction construction, contracts/Mythril, dependencies and release
+workflows unchanged. The new combined runtime also inherits the shared AppShell
+idle clock, seller checkpoint v4, invoice signer and ux-core changes from current
+main exactly; the import is verified below. The full web profile contains Bitcoin;
+the lean Pages profile still excludes it.
 
-**Qualification status:** final independent focused qualification passed on
-`d646e6db`: **45 library tests and 144 web tests**, with no failures or skips.
-All 22 captured source/test/compiled-library hashes were unchanged before and
-after execution. Full candidate browser/build/typecheck/coverage qualification
-requires the current PR's actual CI results. This document does not claim release
-readiness or a main merge. The final PR description records the published head
-and latest CI outcomes.
+**Current combined-source qualification status:** independent focused validation
+passed on `f567d760`: **45 library tests across 2 files and 144 web tests across
+8 files, with no failures or skips**. The web result comes from eight separate
+sequential invocations with unchanged assertions and timeouts; each retained the
+same source/tree/fingerprint inventories. It is not a completed single-process
+eight-file run or a full-web coverage result. The earlier combined eight-file
+attempt ended with SIGKILL before any assertion diagnostic or test summary and
+is retained separately.
+
+The earlier `d646e6db` selection passed 45 library and 144 web tests. Hosted results
+on `a5673653` are also retained below as historical evidence. Neither result
+qualifies the newer combined AppShell/invoice/checkpoint runtime. Hosted
+build/typecheck/lint/coverage/full-and-lean browser qualification must be tied to
+the new published head and its actual checkout after publication. The PR description records the latest exact-head hosted outcomes. This report
+does not claim release readiness, a merge into main, or a deployed artifact.
+
+## Current-main integration and source identity
+
+The local merge `f567d7602c2aa2999a6b5b346389af7c409fdf6d` has ordered parents
+`ea196fb3c7c9e8b5182d3e89285ec44a6e7bede9` and
+`ffd982a7aea2856c186b40ef236a39720a1b81f5`, with tree
+`af0d3d83344c80c44cdf977a3d1c0a2e05992861`. The independently inspected worktree
+was clean. The merge imports main into the feature branch.
+
+Main changed 23 paths between `58d89b39` and `ffd982a7`; the merge changes the
+same 23 paths with the same status entries relative to `ea196fb3`. All 13 imported
+runtime/test paths below are byte-for-byte and mode-identical to `ffd982a7`:
+
+| Directory | Imported source and test files |
+| --- | --- |
+| `apps/web/src/` | `AppShell.tsx`, `AppShell.idleClock.test.tsx` |
+| `apps/web/src/lib/` | `scanCheckpointPrivacy.test.ts`, `scanClient.test.ts`, `scanClient.ts`, `scanCursorSlot.test.ts`, `scanCursorSlot.ts`, `scannerCore.spam.nocov.test.ts` |
+| `packages/invoice-schema/src/` | `envelope.ts`, `errors.ts`, `pinnedSigner.test.ts` |
+| `packages/ux-core/src/` | `errors.test.ts`, `errors.ts` |
+
+Of the 23 imported paths, 22 match main exactly. `docs/ai/ACTIVE_WORK.md` is the
+sole imported-path difference: it preserves the identical pre-existing 24-line
+feature overlay with no removals. No file changed relative to `ea196fb3` in
+`packages/btc-silent-payments`, `apps/web/src/features/btc`, or either
+`apps/web/e2e/btc-worker.spec.ts` or `apps/web/e2e/btc-spentness.spec.ts`.
+Of the 51 prior feature paths, only the shared ownership document changed during
+the merge. The feature diff versus `ffd982a7` is still **51 paths, 2,634 additions
+and 118 deletions**, with exactly the prior per-file numstat. `git diff --check`
+passed. These counts describe `f567d760` before the planned evidence/documentation
+additions; they are not a prediction of the final documentation-only diff count.
+
+The evidence descendant also integrates main `a36f48da526b818a5940a7a0ed2ae7303ef17056` (#216).
+That commit was created at 2026-11-19 08:01:12 UTC. Comparison and fetch confirmed
+that its difference from `ffd982a7` is only
+`docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md`. The retained evidence and this
+handoff update change no product, test, dependency, or workflow input from the
+independently tested `f567d760` runtime. The actual published head and complete
+tree are recorded in the PR description.
+
+### AppShell and Bitcoin lock compatibility review
+
+The `ui_consent` lane’s source-only review of `f567d760` found no concrete interaction
+blocker. It inspected the AppShell/idle-clock delta, `lib/appLock.ts`, Bitcoin
+`BtcView.tsx`, `scanWorkerClient.ts`, `scanWorkerSource.ts`, `scanStore.ts`, and
+the existing secrets, persistence and worker tests. The new clock triggers use
+the unchanged synchronous `notifyAppLock` path before seller recovery. Bitcoin
+lock handling increments its operation generation, aborts the active controller,
+clears scan/review/signature authority and wipes keys/tweaks. Worker abort closes
+bridges and terminates the worker; delayed header and persistence completions
+retain live/abort/wallet checks. Timer rearming does not restore Bitcoin authority.
+This is read-only source/test inspection, with no new test or browser execution
+claimed by that review.
+
+## Current combined-source validation
+
+The following fresh observations are attributed to local `f567d760` / tree
+`af0d3d83`, whose matching published runtime is `11667060`. Later evidence-only
+descendants preserve its product and test inputs. Hosted checks are recorded
+against their actual checkout in the PR description.
+
+| Check | Actual current combined-source observation |
+| --- | --- |
+| Shared package rebuilds | `invoice-schema` and `ux-core` builds passed before the independent reruns. |
+| Independent library state/scanner selection | **45 passed across 2 files; 0 failed, 0 skipped**, Vitest duration **28.63 seconds**, wrapper wall time **33.068 seconds**, Node **22.23.4**. The worktree remained clean at `f567d760` before and after execution. |
+| Combined eight-file Bitcoin web attempt | Terminated by **signal 9 / SIGKILL**, wrapper exit **137**, after **442.384 seconds**. The 940-byte log contains startup/proxy warnings only: no assertion diagnostic, completed test summary or coverage result. No pass is claimed; the termination cause beyond the observed signal is not assigned. |
+| Fingerprints around the interrupted web attempt | All **22 Bitcoin fingerprints and six source/dist inventories** were unchanged after termination; HEAD/tree remained clean at `f567d760` / `af0d3d83`. |
+| Sequential replacement, complete eight-file result | **144/144 passed across 8 files, 0 failed, 0 skipped**, executed as eight separate sequential invocations with unchanged assertions, timeouts and gates. Every invocation retained the same source/tree/inventories. Per-file results are listed below; this is not full-web coverage. |
+| Imported-main/source-scope review | Passed as detailed above; no tests or product edits were performed by the source-review lane. |
+| New combined-source hosted CI | Required on the final published head and its actual workflow checkout; the PR description retains current source-pinned outcomes. Earlier runs on `a5673653` do not satisfy this row. |
+
+All paths in this per-file result table are relative to
+`apps/web/src/features/btc/`. Each row represents a separate completed invocation:
+
+| Test file | Passed / collected | Failed | Skipped | Reported Vitest duration |
+| --- | ---: | ---: | ---: | ---: |
+| `scan.spentness-completion.test.ts` | 9 / 9 | 0 | 0 | 9.47 s |
+| `scan-secrets.hardening.test.ts` | 6 / 6 | 0 | 0 | 6.34 s |
+| `esplora.test.ts` | 36 / 36 | 0 | 0 | 14.33 s |
+| `headers.test.ts` | 31 / 31 | 0 | 0 | 25.76 s |
+| `scanWorker.test.ts` | 27 / 27 | 0 | 0 | 9.96 s |
+| `scanWorkerSource.test.ts` | 14 / 14 | 0 | 0 | 1.21 s |
+| `oracleWorker.test.ts` | 12 / 12 | 0 | 0 | 9.02 s |
+| `BtcView.spentness.test.tsx` | 9 / 9 | 0 | 0 | 24.87 s |
+
+The sum of these eight reported Vitest durations is **100.96 seconds**.
+It is a sum across separate invocations, not the elapsed wall time of one
+invocation or a combined-suite benchmark. The interrupted attempt's 442.384-second
+wrapper time remains a separate observation.
+
+The four current-main evidence files are retained with this report. The text
+transcripts wrap unchanged raw output in labeled blocks and identify each payload
+by its original byte count and SHA-256. The execution JSON preserves exact
+commands, source identities, statuses, all eight isolated invocations, and all
+three complete before/after inventories. Its 209,446 bytes have SHA-256
+`c3d1c93237bc68adbfa3c87924f5afd2114a31b4829caf701364b4881b8e9717`.
+The interrupted attempt remains separate from the successful focused selection.
 
 ## Acceptance matrix
 
@@ -121,7 +236,12 @@ worker/bridge failures, 5 UI failures, 8 coordinator web failures, and 3 additio
 tip/anchor regressions. These selections overlap; the numbers are not summed into
 one unique-test count.
 
-## Local validation ledger
+## Historical local validation ledger
+
+These rows preserve the earlier checkpoint ledger. Explicit revisions remain
+binding; rows without a revision are historical diagnostic observations without
+an exact-current-source claim. None of the rows in this section qualifies
+`f567d760`. The earlier final independent selections refer to `d646e6db`.
 
 All npm dependencies came from the existing lockfile with `npm ci --ignore-scripts
 --offline --no-audit --no-fund`. No dependency upgrade or gate change was made.
@@ -155,7 +275,21 @@ All npm dependencies came from the existing lockfile with `npm ci --ignore-scrip
 | Bitcoin library typecheck / lint before replay delta | Typecheck passed on `72194c4f` (same library source as `62380400`); documented lint exited 137 without a source diagnostic. These are not final-delta qualification. |
 | Full web unit/coverage, whole-web lint, full/lean builds and Pages artifact verification | Current PR qualification required; final outcomes are recorded in the PR description and follow-up evidence. |
 
-Tool versions used: Node 24.22.3 (initial execution and benchmark), cached Node
+
+### Later pre-merge local observations
+
+The Bitcoin library ESLint run at
+`ea196fb3c7c9e8b5182d3e89285ec44a6e7bede9` passed with **0 errors and 1 unchanged
+generated-file warning**. This is earlier-source lint evidence, not a lint pass
+for the combined shared runtime. A bounded whole-web lint attempt using a
+640 MiB V8 old-space limit ended with a V8 heap exhaustion and exit **134**;
+no whole-web lint pass is claimed. The earlier local full-web unit/coverage
+attempt lost its execution handle, so no complete terminal result or coverage
+report was captured. These observations do not replace the pending current-source
+qualification, and the lost-handle attempt is not described as either a pass or
+an assertion failure.
+
+Historical local tool versions used: Node 24.22.3 (initial execution and benchmark), cached Node
 22.23.4 (CI-compatible diagnostic/runtime), npm 11.9.0, TypeScript 5.9.3, Vitest
 5.0.5 with `@vitest/coverage-v8` 5.0.5, Playwright 1.64.1, and installed Chromium
 156.0.8078.79. Browser tests in hosted CI use the repository's configured runner.
@@ -164,9 +298,48 @@ Resource bounds such as `NODE_OPTIONS` and `VITEST_MAX_WORKERS=1` changed execut
 concurrency/heap allocation only. No test timeout, assertion, coverage threshold,
 privacy gate or release requirement was relaxed.
 
+## Historical hosted qualification
+
+The results in this section ran on **`a5673653b0a856b63a266ee0e2bbb8b44fdf9c02`**,
+the earlier synthetic PR merge of head
+`8c1d87a2587281c32a5f1326a4f36cfada4384bc` with base
+`58d89b39b27a66454ebf392bcd35d5c68b57b2f8`, tree
+`9721a1fe7bfbfcac65dad577c651c9b5284386cb`. Actual checkout identities were
+verified in completed logs. They predate the `ffd982a7` shared-runtime import
+and do not qualify the new combined source.
+
+| Earlier hosted run | Actual result on `a5673653` |
+| --- | --- |
+| [Main CI: Bitcoin library](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579657) | **573 tests passed across 32 files**; coverage **97.83% statements / 96.02% branches / 98.46% functions / 99.37% lines**. Node **22.23.5**, npm **10.9.9**. This resolves the earlier local header-stress timeout for that earlier source only. |
+| [Hosting: full web qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622820/job/135395328391) | Whole-web `tsc -p tsconfig.json --noEmit` and full-profile Vite build passed; 19-file bundle scan and archive verification passed; **1 Chromium hosting smoke test passed, 0 skipped**. Node **22.23.4**, npm **10.9.9**. |
+| [Pages](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622779) | **72 tooling/verifier tests passed, 0 failed/skipped**; lean site build/verification passed; **16 real-Anvil Pages browser tests passed**. Release-gates, deploy and post-deploy jobs were skipped under the normal PR conditions. |
+| [Integration](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622799) | EVM, Bitcoin and Solana suites passed. Bitcoin regtest: **9 steps**; Solana: **10 steps**; EVM additionally reported **1 Vitest file / 5 tests passed**. |
+| [Beta acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622838) | Library, CLI and browser stages passed; **124/124 CLI checks**, including 11 recorded fail-closed gap assertions; **3 browser tests passed**. |
+| [Hosting kit](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622820/job/135395328887) | Lint, typecheck and package verification passed; **290 tests passed, 6 skipped, 0 failed**. The skips concern unavailable/disabled environment capabilities; they remain explicit. |
+| [CLI operator qualification](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622855) | Ubuntu/macOS: **570 tests passed across 37 files each**. Windows: **568 passed, 2 skipped across 37 files**. Each platform also passed **1 build-contract test and 21 compiled tests**. Windows skips are the explicit FIFO and POSIX signing-key file-permission cases; they passed on Ubuntu/macOS. |
+
+The Bitcoin regtest scenario verifies payment discovery, header/PoW/Merkle/linkage
+checks and a confirmed sweep with the exact destination amount. It does not
+assert the new post-sweep spent-state coverage or reorg behavior. Pages and beta
+browser journeys are Anvil/EVM scenarios, not Bitcoin-specific browser results.
+The hosting smoke is ordinary Chromium validation, not Tor Browser, I2P or
+wallet acceptance.
+
+The retained Pages artifact is `pages-site-a5673653b0a856b63a266ee0e2bbb8b44fdf9c02`,
+ID `14506918504`, SHA-256
+`6f880f60395f9312369e081f5150da155326436e5cc36313c7845ee419fdf4c6`.
+It is a verified 16-file DEMO site with payments disabled because no deployment
+manifest is present. The browser job built a separate devnet-enabled artifact
+from the same source; its bytes are not asserted to equal that retained upload.
+Integration retained `integration-logs` (ID `14507968035`); beta retained
+`beta-acceptance-log` (ID `14507694298`). Hosting and CLI uploaded no GitHub
+artifacts. None of these historical artifacts represents the new combined source.
+
 ## Reproduction commands
 
-Run from the repository root after installing its locked dependencies:
+Run from the repository root after installing its locked dependencies. Listing a
+command here is not a claim that it completed on the current combined source;
+actual current-run commands/statuses belong in `btc-current-main-execution.json`:
 
 ```sh
 npm run build:libs
@@ -192,8 +365,9 @@ publishing requires the existing separate authorized manual deployment path.
 
 ## Measured resource behavior
 
-Exact library source at `d646e6db035f008b643d5a5278bbbae8b838f488`, with source and
-compiled-module SHA-256 pins inside each JSON file:
+These historical measurements use exact library source at
+`d646e6db035f008b643d5a5278bbbae8b838f488`, with source and compiled-module SHA-256
+pins inside each JSON file. They are not a new combined-runtime benchmark:
 
 | Fixture | Local scan | Resume/checkpoint |
 | --- | ---: | ---: |
@@ -227,8 +401,9 @@ node --max-old-space-size=128 --max-semi-space-size=8 --expose-gc docs/handoffs/
 
 ## Changed-file acceptance mapping
 
-Every changed file relative to current main belongs to the following feature
-groups. Paths in the middle column are relative to the stated directory; paired
+Every feature file relative to the inspected current-main baseline belongs to
+the following groups. The 51-path count above is for `f567d760`; four retained
+evidence files bring the feature diff against `a36f48da` to 55 paths. Paths in the middle column are relative to the stated directory; paired
 source/test names are listed explicitly. PR #219's original changes are included
 in this mapping. The unrelated main changes inherited through ancestry do not
 appear in the feature diff.
@@ -253,20 +428,33 @@ appear in the feature diff.
 | `docs/handoffs/btc-spentness-20261118/` | `QUALIFICATION.md`, `INDEPENDENT_REVIEW.md` | Acceptance, exact-source evidence, independent review and merge limits (§§2,10,13,16). |
 | `docs/handoffs/btc-spentness-20261118/evidence/` | `benchmark.mjs`, `performance-scan.json`, `performance-resume.json`, `performance-conflict.json` | Reproducible measured resource behavior with explicit exclusions (§11). |
 | Same | `publication-map.json` | Exact local/published commit-tree and ordered-parent provenance (§§13,15,16). |
-| Same | `btc-independent-final-library.txt`, `btc-independent-final-web.txt` | Retained raw final independent execution evidence at the reviewed runtime (§§10,13,16). |
+| Same | `btc-independent-final-library.txt`, `btc-independent-final-web.txt` | Retained earlier independent execution evidence at `d646e6db` (§§10,13,16). |
+| Same | `btc-current-main-library.txt` | Fresh 45-test, two-file library execution at combined runtime `f567d760`, including the actual command and terminal result (§§10,13,16). |
+| Same | `btc-current-main-web.txt` | All eight completed sequential Bitcoin web invocations: 144 passed, 0 failed/skipped, with individual counts, statuses and timings (§§10,13,16). |
+| Same | `btc-current-main-web-interrupted.txt` | Preserve the 940-byte interrupted combined attempt and its signal/exit/wall-time attribution, separate from the replacement run (§§10,13,16). |
+| Same | `btc-current-main-execution.json` | Exact source/tree, runtime versions, commands, statuses/timings, all 22 Bitcoin fingerprints and six source/dist inventories before and after execution (§§10,13,16). |
 
 ## Publication provenance
 
 Shell Git has no push credential in this workspace. The authenticated GitHub
-connector recreates the nine local implementation/integration commits with the
-same complete trees and ordered ancestry, then creates this feature's separate
-branch. Every generated blob and tree was checked against its local Git object
+connector initially recreated the nine local feature-history commits
+with the same complete trees and ordered ancestry, then created this feature's
+separate branch. Every generated blob and tree was checked against its local Git object
 ID. Original local commit IDs, authors, committers and ordered parent IDs are
 retained in the corresponding published commit messages. The machine-readable
 [mapping](evidence/publication-map.json) identifies both sets of commits. This
 transport does not modify main, PR #219 or another worker's branch and does not
 force-update any ref. Documentation-only descendants retain the same runtime
 inputs; the PR description records the final published head and its own checks.
+
+For the current-main integration, local `f567d760` corresponds to published
+runtime `11667060182bf4d59a559530b2c89e258b231c08`, with the identical complete tree
+`af0d3d83344c80c44cdf977a3d1c0a2e05992861`. The publication map includes this
+correspondence and the preceding documentation commit. The final evidence
+commit also integrates the documentation-only `a36f48da` advance without
+changing runtime inputs; its local/published identities and actual hosted
+outcomes are recorded in the PR description. The feature branch is updated
+with a checked, non-force fast-forward.
 
 ## Independent review and integration limits
 
@@ -278,11 +466,13 @@ professional audit.
 
 The branch includes PR #219 through ancestry and should be integrated as its
 feature completion, not as a second scanning engine. Other active GhostPay PRs
-remain independently owned. General seller checkpoint PR #235 and Spec 18 work are
-not prerequisites for these Bitcoin-specific changes. Overlapping consolidation
-branches must integrate this feature deliberately and rerun their combined gates.
+remain independently owned. The Bitcoin-specific design did not require an
+independent import of general seller checkpoint PR #235 or Spec 18 work. The later
+current-main shared checkpoint/runtime changes are now inherited exactly as
+recorded above. Overlapping consolidation branches must integrate this feature
+deliberately and rerun their combined gates.
 
-The final remote recheck also found concurrently created PR #244 at
+An earlier remote recheck also found concurrently created PR #244 at
 `ef08170a83d86d194b8ce4186299e791027e461e`, on a different Bitcoin completion
 branch. It uses a different continuous-coverage representation and overlaps the
 same source paths. Its source informed additional concrete regression checks;
@@ -295,5 +485,5 @@ by this work.
 
 Mempool blindness in local mode, provider dishonesty/omission, full-consensus limits,
 live-node interoperability, physical-device acceptance, native-language security
-review and overall GhostPay/Mythril/release gates remain explicit. No merge,
-deployment, release publication or mainnet enablement is part of this work.
+review and overall GhostPay/Mythril/release gates remain explicit. No merge into
+main, deployment, release publication or mainnet enablement is part of this work.

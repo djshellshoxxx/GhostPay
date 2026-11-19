@@ -2,8 +2,8 @@
   "repository": "djshellshoxxx/GhostPay",
   "branch": "chatgpt/btc-spentness-private-scan-20261118",
   "method": "Authenticated GitHub Git Data API; no force update; exact trees verified",
-  "runtimeLocal": "d646e6db035f008b643d5a5278bbbae8b838f488",
-  "runtimePublished": "4281fce1ecc862b2805fce0106efa395ed4b2f4a",
+  "runtimeLocal": "f567d7602c2aa2999a6b5b346389af7c409fdf6d",
+  "runtimePublished": "11667060182bf4d59a559530b2c89e258b231c08",
   "commits": [
     {
       "local": "7873171faab06a43b40697b18973b23909fb5008",
@@ -78,6 +78,28 @@
       "parents": [
         "524215eb2f693d587a300127d780ac47e1e0ce95"
       ]
+    },
+    {
+      "local": "ea196fb3c7c9e8b5182d3e89285ec44a6e7bede9",
+      "published": "8c1d87a2587281c32a5f1326a4f36cfada4384bc",
+      "tree": "9721a1fe7bfbfcac65dad577c651c9b5284386cb",
+      "parents": [
+        "4281fce1ecc862b2805fce0106efa395ed4b2f4a"
+      ]
+    },
+    {
+      "local": "f567d7602c2aa2999a6b5b346389af7c409fdf6d",
+      "published": "11667060182bf4d59a559530b2c89e258b231c08",
+      "tree": "af0d3d83344c80c44cdf977a3d1c0a2e05992861",
+      "parents": [
+        "8c1d87a2587281c32a5f1326a4f36cfada4384bc",
+        "ffd982a7aea2856c186b40ef236a39720a1b81f5"
+      ]
     }
-  ]
+  ],
+  "bitcoinImplementationLocal": "d646e6db035f008b643d5a5278bbbae8b838f488",
+  "bitcoinImplementationPublished": "4281fce1ecc862b2805fce0106efa395ed4b2f4a",
+  "runtimeTree": "af0d3d83344c80c44cdf977a3d1c0a2e05992861",
+  "runtimeIntegratedMain": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+  "documentationMainIncluded": "a36f48da526b818a5940a7a0ed2ae7303ef17056"
 }

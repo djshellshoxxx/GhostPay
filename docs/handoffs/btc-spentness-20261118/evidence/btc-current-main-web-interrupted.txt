@@ -1,0 +1,28 @@
+Source commit: f567d7602c2aa2999a6b5b346389af7c409fdf6d
+Source tree: af0d3d83344c80c44cdf977a3d1c0a2e05992861
+Published runtime counterpart: 11667060182bf4d59a559530b2c89e258b231c08
+Node: v22.23.4; Vitest: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Each raw-output block is retained byte-for-byte; its original byte count and SHA-256 identify the payload between the markers.
+
+=== Incomplete combined web invocation ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/scan.spentness-completion.test.ts src/features/btc/scan-secrets.hardening.test.ts src/features/btc/esplora.test.ts src/features/btc/headers.test.ts src/features/btc/scanWorker.test.ts src/features/btc/scanWorkerSource.test.ts src/features/btc/oracleWorker.test.ts src/features/btc/BtcView.spentness.test.tsx --maxWorkers=1 --no-file-parallelism
+Observed subprocess status: -9 (SIGKILL); wrapper exit: 137; wrapper elapsed: 442.384 s. No assertion diagnostic or terminal test count was produced. Cause beyond the observed signal is undetermined.
+Original raw bytes: 940
+Original raw SHA-256: 981f0446a1aaf0b600eb54a3c4bc7ee6e096dabf49b5fb2c100051b26ae1c847
+--- BEGIN RAW OUTPUT ---
+(node:14) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:50) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:74) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+--- END RAW OUTPUT ---

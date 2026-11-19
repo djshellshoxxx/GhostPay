@@ -1,0 +1,184 @@
+Source commit: f567d7602c2aa2999a6b5b346389af7c409fdf6d
+Source tree: af0d3d83344c80c44cdf977a3d1c0a2e05992861
+Published runtime counterpart: 11667060182bf4d59a559530b2c89e258b231c08
+Node: v22.23.4; Vitest: 5.0.5
+NODE_OPTIONS: --max-old-space-size=512 --max-semi-space-size=8
+Each raw-output block is retained byte-for-byte; its original byte count and SHA-256 identify the payload between the markers.
+
+This transcript contains eight separate sequential Vitest invocations. It is not a successful combined invocation, a full-web pass, or a coverage result.
+
+=== src/features/btc/scan.spentness-completion.test.ts ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/scan.spentness-completion.test.ts --maxWorkers=1 --no-file-parallelism
+Exit code: 0; passed/collected: 9/9; no failures or skips; Vitest duration: 9.47 s.
+Original raw bytes: 549
+Original raw SHA-256: e4fe33afddf16569a54a1b3ef3f078474b56a1a1b3f5990c9a0d489f1b8147cf
+--- BEGIN RAW OUTPUT ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  00:12:18
+   Duration  9.47s (tests 66%, import 20%, transform 14%)
+
+
+--- END RAW OUTPUT ---
+
+=== src/features/btc/scan-secrets.hardening.test.ts ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/scan-secrets.hardening.test.ts --maxWorkers=1 --no-file-parallelism
+Exit code: 0; passed/collected: 6/6; no failures or skips; Vitest duration: 6.34 s.
+Original raw bytes: 548
+Original raw SHA-256: 9f49441b9b9884f37668851642f887085b58489ff6339b5164dce9f3ac738694
+--- BEGIN RAW OUTPUT ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  00:12:37
+   Duration  6.34s (tests 72%, import 20%, transform 8%)
+
+
+--- END RAW OUTPUT ---
+
+=== src/features/btc/esplora.test.ts ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/esplora.test.ts --maxWorkers=1 --no-file-parallelism
+Exit code: 0; passed/collected: 36/36; no failures or skips; Vitest duration: 14.33 s.
+Original raw bytes: 550
+Original raw SHA-256: dde06e6f5ed9fbb8401e6a23e64c4148105b07b07b6a2f85c6ca3f49f6039b45
+--- BEGIN RAW OUTPUT ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  36 passed (36)
+   Start at  00:12:47
+   Duration  14.33s (tests 93%, import 5%, transform 2%)
+
+
+--- END RAW OUTPUT ---
+
+=== src/features/btc/headers.test.ts ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/headers.test.ts --maxWorkers=1 --no-file-parallelism
+Exit code: 0; passed/collected: 31/31; no failures or skips; Vitest duration: 25.76 s.
+Original raw bytes: 550
+Original raw SHA-256: baa243806292db5d3475b48099e687b418af6955a6fde8bd27586a582e8dcb40
+--- BEGIN RAW OUTPUT ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  31 passed (31)
+   Start at  00:13:06
+   Duration  25.76s (tests 92%, import 5%, transform 3%)
+
+
+--- END RAW OUTPUT ---
+
+=== src/features/btc/scanWorker.test.ts ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/scanWorker.test.ts --maxWorkers=1 --no-file-parallelism
+Exit code: 0; passed/collected: 27/27; no failures or skips; Vitest duration: 9.96 s.
+Original raw bytes: 550
+Original raw SHA-256: 898f5abebf883967eb05c951a475bc83505a1b2bb798bc37b5c232f841712433
+--- BEGIN RAW OUTPUT ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  27 passed (27)
+   Start at  00:13:46
+   Duration  9.96s (tests 84%, import 11%, transform 5%)
+
+
+--- END RAW OUTPUT ---
+
+=== src/features/btc/scanWorkerSource.test.ts ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/scanWorkerSource.test.ts --maxWorkers=1 --no-file-parallelism
+Exit code: 0; passed/collected: 14/14; no failures or skips; Vitest duration: 1.21 s.
+Original raw bytes: 562
+Original raw SHA-256: b15ea6d8250b85d395affe999caf9b033f13783aa551ef8530a0fb3cafe67e61
+--- BEGIN RAW OUTPUT ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  00:14:03
+   Duration  1.21s (tests 63%, import 23%, transform 13%, worker 1%)
+
+
+--- END RAW OUTPUT ---
+
+=== src/features/btc/oracleWorker.test.ts ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/oracleWorker.test.ts --maxWorkers=1 --no-file-parallelism
+Exit code: 0; passed/collected: 12/12; no failures or skips; Vitest duration: 9.02 s.
+Original raw bytes: 550
+Original raw SHA-256: 7bddde03054c3d9b148fcef36cc65ca818e0b2e0c20eaf54fededfe3d841385d
+--- BEGIN RAW OUTPUT ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  00:14:12
+   Duration  9.02s (tests 76%, import 16%, transform 8%)
+
+
+--- END RAW OUTPUT ---
+
+=== src/features/btc/BtcView.spentness.test.tsx ===
+Command: ../../node_modules/.bin/vitest run src/features/btc/BtcView.spentness.test.tsx --maxWorkers=1 --no-file-parallelism
+Exit code: 0; passed/collected: 9/9; no failures or skips; Vitest duration: 24.87 s.
+Original raw bytes: 565
+Original raw SHA-256: 4da3f659a8d6865709b3e01fa6ef853d16666bfb7992fa5b851c3b3bbf0df1f2
+--- BEGIN RAW OUTPUT ---
+(node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/314c8bd45e5d/GhostPay/apps/web
+
+(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  00:14:25
+   Duration  24.87s (tests 74%, import 12%, transform 7%, environment 7%)
+
+
+--- END RAW OUTPUT ---

@@ -2,45 +2,77 @@
 
 ## Disposition and reviewed source
 
-The reviewed implementation has no unresolved feature-specific **source** blocker
-after the corrections recorded below. Independent final-source execution passed
-**45 library tests and 144 Bitcoin web tests**, with no failures or skips. These
-results are recorded separately from the earlier development runs. This review does
-not establish overall GhostPay release readiness, an external professional audit,
-or completion of the full browser/build/coverage gates.
+The Bitcoin implementation has no unresolved feature-specific **source** blocker
+after the eleven corrections recorded below. The earlier independent execution on
+`d646e6db` passed **45 library tests and 144 Bitcoin web tests**; those results are
+historical evidence for that runtime, not a pass for the subsequently combined
+current-main runtime.
+
+On the current combined runtime, the fresh independent library selection passed
+**45 tests in 2 files**, with no failures or skips. The single-process eight-file
+web attempt ended with **SIGKILL (process status -9; wrapper exit 137)** after
+**442.384 s**, without an assertion diagnostic or result summary. It is not a
+144-test pass, and the available evidence does not establish why the process was
+killed. The reviewer then ran the same eight web files as separate sequential
+processes with unchanged tests and timeouts: all eight invocations completed,
+with **144 passed, 0 failed, and 0 skipped** in aggregate, and exit 0 for each.
+This aggregate is eight successful invocations, not a successful rerun of the
+single-process combined command.
+
+The `ui_consent` lane's read-only AppShell/BTC interaction review found no concrete
+integration blocker. The `state_engine` lane separately confirmed source-byte and
+Git-mode preservation as described below. Neither source inspection is a test or
+browser pass. This review does not establish overall GhostPay release readiness,
+an external professional audit, or completion of full browser/build/coverage gates.
 
 | Identity | Revision |
 | --- | --- |
 | Task branch | `chatgpt/btc-spentness-private-scan-20261118` |
 | Main plus PR #219 review baseline | `7873171faab06a43b40697b18973b23909fb5008` |
 | Preserved PR #219 | `9617e8572f9bc414410bd937b0e7718d0c5bd55c` |
-| Integrated current main | `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` |
-| Final locally tested runtime commit | `d646e6db035f008b643d5a5278bbbae8b838f488` |
-| Corresponding publication runtime commit | `4281fce1ecc862b2805fce0106efa395ed4b2f4a` |
-| Identical full Git tree of those runtime commits | `64fa82876d9ed0667f74cb66acafa4be3021478d` |
+| Earlier integrated main | `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` |
+| Historical locally tested Bitcoin runtime | `d646e6db035f008b643d5a5278bbbae8b838f488` |
+| Historical corresponding publication runtime | `4281fce1ecc862b2805fce0106efa395ed4b2f4a` |
+| Identical full Git tree of that historical runtime pair | `64fa82876d9ed0667f74cb66acafa4be3021478d` |
+| Newly integrated main, including independently owned #242 runtime and #214 documentation | `ffd982a7aea2856c186b40ef236a39720a1b81f5` |
+| Current combined local runtime | `f567d7602c2aa2999a6b5b346389af7c409fdf6d` |
+| Current combined publication runtime | `11667060182bf4d59a559530b2c89e258b231c08` |
+| Identical full Git tree of the current combined runtime pair | `af0d3d83344c80c44cdf977a3d1c0a2e05992861` |
+| Later main advance, changing only a historical handoff document; included with retained evidence | `a36f48da526b818a5940a7a0ed2ae7303ef17056` |
 
-The reviewer independently checked both runtime tree IDs using the local Git
-objects, and checked that PR #219 and the listed current main are ancestors of the
-locally tested commit. The coordinator's
-[publication mapping](evidence/publication-map.json) records the commit transport.
-Later documentation/evidence commits must preserve the reviewed product and test
-files to retain this attribution; changed runtime source requires new qualification.
+The original reviewer independently checked the historical runtime pair's tree IDs
+using local Git objects, and checked that PR #219 and the earlier listed main are
+ancestors of `d646e6db`. The current combined identities are recorded by the
+coordinator; the fresh command wrappers independently captured a clean `f567d760` /
+`af0d3d83` at command start and exit. The coordinator's
+[publication mapping](evidence/publication-map.json) records commit transport.
+Later documentation/evidence commits may change the complete Git tree while
+preserving the reviewed product and tests. A changed runtime requires new
+qualification; the documentation-only `a36f48da` advance does not supply another
+runtime execution result.
 
 ## Independence and method
 
-Reviewer: the separate `spentness_review` assistant lane. The reviewer inspected
-product code read-only, proposed concrete failure mechanisms and regressions to the
-implementation lanes, reviewed their fixes, and independently executed the tests
-listed below. This report is the reviewer's only repository edit. No remote branch,
-PR, deployment, or release was changed by the reviewer.
+The separate `spentness_review` assistant lane inspected product code read-only,
+proposed concrete failure mechanisms and regressions to the implementation lanes,
+reviewed their fixes, and independently executed the tests attributed to it below.
+The coordinator retains this report and later review records and execution
+evidence. The `ui_consent` lane prepared this current-main update outside the
+repository and supplied the separately attributed lock-interaction source review;
+`state_engine` supplied the byte/mode preservation check. These later records do
+not extend the original reviewer's authorship or turn another lane's inspection
+into independent execution. No remote branch, PR, deployment, or release was
+changed by the reviewer.
 
 The review followed the repository's `AGENTS.md`, `docs/ai/WORKFLOW.md`, ownership
 claim, and the investigate-first workflow. It covered the library state/scanner,
 Esplora input extraction, header/source wrappers, web scan aggregation, encrypted
 checkpoint integration, worker request/result boundaries, Bitcoin UI lifecycle,
-disclosures, and deterministic browser acceptance source. It did not audit inherited
-Solana/TRON/network changes, EVM protocols, Spec 18, general seller checkpoints,
-contracts/Mythril, or unrelated consolidation.
+disclosures, and deterministic browser acceptance source. The current-main
+follow-up adds a narrow AppShell/BTC lock-interaction review. It does not audit
+inherited Solana/TRON/network changes, EVM protocols, Spec 18, general seller
+checkpoints or invoice-signing behavior, contracts/Mythril, or unrelated
+consolidation.
 
 The implementation lanes recorded failing regressions before their repairs. The
 reviewer distinguishes those reported RED runs from its own GREEN executions.
@@ -50,7 +82,7 @@ this branch. No alternative scanning engine or coverage schema was imported.
 
 ## Findings and disposition
 
-Coordinates below refer to the final runtime source. Prefixes are exact:
+Coordinates below refer to the unchanged Bitcoin runtime source. Prefixes are exact:
 
 | Prefix | Repository directory |
 | --- | --- |
@@ -77,12 +109,66 @@ version, rather than creating a parallel implementation.
 
 ## Independent execution ledger
 
-### Final runtime source
+### Current combined runtime: f567d760 / af0d3d83
 
-Both commands below ran against local commit
+The `spentness_review` lane rebuilt the changed `invoice-schema` and `ux-core`
+packages successfully before checking the combined runtime. Fresh commands use
+Node **22.23.4**, Vitest **5.0.5**, a **512 MiB** old-space limit, an **8 MiB**
+semi-space limit, one worker, and no file parallelism. The Node executable remains
+`/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node`, with its directory
+prepended to `PATH`. Assertions, tests, timeouts, coverage thresholds, and release
+gates were not changed.
+
+| Independent command selection | Actual result | Retained evidence |
+| --- | --- | --- |
+| Library state/scanner, 2 files | **45 passed**, 0 failed, 0 skipped; process exit 0; **28.63 s** Vitest duration, **33.068 s** wrapper elapsed | `evidence/btc-current-main-library.txt`; command/status in `evidence/btc-current-main-execution.json` |
+| Bitcoin web selection, all 8 files in one invocation | **Interrupted by SIGKILL**, process status **-9**, wrapper exit **137**, **442.384 s** wrapper elapsed; no test-count or assertion summary | `evidence/btc-current-main-web-interrupted.txt`; command/status in `evidence/btc-current-main-execution.json` |
+| Same 8 web files in separate sequential invocations | **144 passed across 8 separate sequential invocations**, 0 failed, 0 skipped; every invocation exit 0 | `evidence/btc-current-main-web.txt` (eight invocations); per-invocation commands/statuses in `evidence/btc-current-main-execution.json` |
+
+The library wrapper captured start `2026-11-19T07:58:01.930799+00:00` and finish
+`2026-11-19T07:58:35.412035+00:00`. The interrupted web wrapper captured start
+`2026-11-19T07:59:18.710558+00:00` and finish
+`2026-11-19T08:06:41.639741+00:00`. Both recorded the same clean local commit and tree
+at start and exit. The raw interrupted web log is **940 bytes**, containing startup
+and proxy warnings only, with SHA-256
+`981f0446a1aaf0b600eb54a3c4bc7ee6e096dabf49b5fb2c100051b26ae1c847`.
+It supplies neither an assertion failure nor a successful test result. No
+out-of-memory cause is asserted from the signal alone.
+
+The current library command and interrupted web command are exactly the two
+command selections printed in the historical subsection below, at their stated
+working directories, with the current source/dependency pins above. Each isolated
+web invocation keeps the same executable, options, and selected test file; only
+the grouping changes from eight files in one process to one file per process.
+The coordinator retains the actual eight commands and process statuses in
+`btc-current-main-execution.json` alongside the following observed per-file results.
+
+| Selected web file, relative to `apps/web` | Observed isolated result |
+| --- | --- |
+| `src/features/btc/scan.spentness-completion.test.ts` | **9 passed / 9**, exit 0; **9.47 s** |
+| `src/features/btc/scan-secrets.hardening.test.ts` | **6 passed / 6**, exit 0; **6.34 s** |
+| `src/features/btc/esplora.test.ts` | **36 passed / 36**, exit 0; **14.33 s** |
+| `src/features/btc/headers.test.ts` | **31 passed / 31**, exit 0; **25.76 s** |
+| `src/features/btc/scanWorker.test.ts` | **27 passed / 27**, exit 0; **9.96 s** |
+| `src/features/btc/scanWorkerSource.test.ts` | **14 passed / 14**, exit 0; **1.21 s** |
+| `src/features/btc/oracleWorker.test.ts` | **12 passed / 12**, exit 0; **9.02 s** |
+| `src/features/btc/BtcView.spentness.test.tsx` | **9 passed / 9**, exit 0; **24.87 s** |
+
+The four current-main evidence files are retained with this report. Text
+transcripts contain labeled, byte-preserved raw-output payloads, with their
+original byte counts and SHA-256 digests. The complete execution JSON is
+209,446 bytes, SHA-256 `c3d1c93237bc68adbfa3c87924f5afd2114a31b4829caf701364b4881b8e9717`.
+All eight isolated invocations completed with no failures or skips; their
+durations are not represented as the duration of one combined run. Source
+identity and inventories remained unchanged. This targeted selection does
+not establish a whole-web pass, coverage percentages, or browser execution.
+
+### Historical runtime source: d646e6db (before the current-main merge)
+
+The following completed historical commands ran against local commit
 `d646e6db035f008b643d5a5278bbbae8b838f488`, after the coordinator rebuilt the Bitcoin
 library from that source. Product and test paths were clean before execution.
-The final commands use Node **22.23.4**, Vitest **5.0.5**, a 512 MiB old-space limit,
+Those commands used Node **22.23.4**, Vitest **5.0.5**, a 512 MiB old-space limit,
 8 MiB semi-space limit, one worker, and no file parallelism. These resource settings
 do not alter test assertions, timeouts, coverage thresholds, or release gates.
 
@@ -119,19 +205,19 @@ NODE_OPTIONS='--max-old-space-size=512 --max-semi-space-size=8' \
 The cached Node executable was
 `/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node`; its directory
 was prepended to `PATH`. No dependency, timeout, test, or gate was changed to obtain
-these results. These targeted commands do not establish a coverage percentage or
-a whole-web pass.
+these historical results. They do not qualify the later shared-runtime merge and
+do not establish a coverage percentage or a whole-web pass.
 
 ### Earlier independent runs, retained with their actual attribution
 
 | Source at execution | Result | Qualification limit |
 | --- | --- | --- |
-| Initial library working implementation after the pending-row fix, before `019de9cb` | 2 files / 41 passed; 21.07 s; Node 24.22.3 / Vitest 5.0.5 | Earlier component evidence; no before-run source hash was captured. Superseded for final library attribution by the run above. |
+| Initial library working implementation after the pending-row fix, before `019de9cb` | 2 files / 41 passed; 21.07 s; Node 24.22.3 / Vitest 5.0.5 | Earlier component evidence; no before-run source hash was captured. Superseded for historical d646e6db library attribution by its run above. |
 | `019de9cb9c9b65b6ceddec1225274504c98bcf2b` web implementation | 7 files / 120 passed; 295.17 s; Node 24.22.3, 384 MiB, one worker | Does not qualify later UI, worker, replay, cap, or current-main deltas. Log: `btc-independent-web.log`. |
 | `72194c4f` plus the uncommitted final UI authority delta | 1 file / 9 passed; 59.45 s; Node 22.23.4, 512/8 MiB, one worker | UI source and test hashes matched before/after; the library replay rebuild was not yet included. Log: `btc-independent-ui-final.log`. |
 
 These earlier selections overlap later runs and are not summed into an inflated
-final test total. Coordinator/implementation-lane runs, full-suite attempts,
+test total. Coordinator/implementation-lane runs, full-suite attempts,
 typecheck, lint, build, and benchmark results are separately recorded in
 [QUALIFICATION.md](QUALIFICATION.md).
 
@@ -158,13 +244,64 @@ it measures; the coordinator owns the measurements and source/dist pins in the
 evidence directory. Those measurements are not browser performance claims and were
 not rerun by this reviewer.
 
+### Current-main AppShell/BTC interaction review — source inspection only
+
+The `ui_consent` lane reviewed the `AppShell.tsx` / `AppShell.idleClock.test.tsx`
+merge delta on `f567d760` against `apps/web/src/lib/appLock.ts` and the Bitcoin
+lifecycle in `apps/web/src/features/btc/BtcView.tsx`, `scanWorkerClient.ts`,
+`scanWorkerSource.ts`, and `scanStore.ts`. It also inspected existing
+`BtcView.secrets.test.tsx`, `BtcView.persistence.test.tsx`, and `scanWorker.test.ts`.
+This lane ran no tests and made no source edits for that review.
+
+No concrete integration blocker was found. The new wall/monotonic-clock expiry,
+rollback, and nonfinite-value checks call the unchanged synchronous app-lock path.
+`notifyAppLock('idle')` runs before the asynchronous seller-key recoverability
+check and also runs when there is no seller session. The BTC subscriber always
+calls `lock → invalidate`, increments the operation generation, aborts the active
+controller, clears current scan/sweep authority, and wipes wallet keys, seed, and
+received tweaks. It does not use the `clearSigning` exception that preserves
+active header reconciliation during ordinary authority edits.
+
+The worker's abort handler closes the source/oracle bridges, aborts pending
+fetches, detaches handlers, and terminates the worker. Late results are rejected
+and their tweaks wiped. Header completion and persistence callbacks retain their
+operation, abort, and wallet-identity guards. Re-arming the idle timer does not
+restore BTC keys or operation generations; retained Sign/Broadcast callbacks read
+the cleared current scan reference. Existing tests describe those lock and
+cancellation mechanisms, but inspecting them is not a new execution pass.
+
+Separately, the `state_engine` lane confirmed that **13 independently owned main
+runtime paths** retain their source bytes and Git modes from the integrated main,
+and the Bitcoin feature's **51-path diff** is unchanged. This is preservation
+evidence, not a new semantic audit of seller checkpoints or invoice signing.
+
+### Current dependency and fingerprint preservation
+
+After the interrupted web attempt and the eight successful isolated invocations,
+all **22 BTC source/test/dist fingerprints** and all **six source/dist inventories**
+remained identical to their captured values; `f567d760` / `af0d3d83` was still clean. The BTC dist inventory contains
+**102 files**. The changed invoice-schema and ux-core packages rebuilt successfully;
+their runtime inventory manifests are:
+
+| Rebuilt runtime | Files | Manifest SHA-256 |
+| --- | ---: | --- |
+| `packages/invoice-schema/dist` | 33 | `fcb8a56772b794021d83450166cd31cf2dabe1ea91d9fcabd0335706888870ff` |
+| `packages/ux-core/dist` | 18 | `05d439c6e47f60440c8a9477bb588d5511798792e358fecf72e942c34b4e2152` |
+
+The complete command/status and source/dist inventory records are retained in
+`evidence/btc-current-main-execution.json`. Unchanged artifacts establish the
+executed inputs; they do not turn a killed process into a successful test run.
+
 The Bitcoin browser acceptance diff includes real-worker cancellation, encrypted
 reload and a later confirmed spend, optional-query revocation, a 500/501-block
 incomplete-history boundary, and lean-profile exclusion. These are source-reviewed
 acceptance cases. **No browser execution was performed or claimed by this reviewer.**
 The coordinator records Chromium failing before page creation with `socket()`
 `EPERM`; no sandbox bypass was attempted. jsdom/structured-clone worker tests do not
-replace full and lean Chromium runs.
+replace full and lean Chromium runs. The earlier a5673653 PR-merge checkout
+belongs to the preceding tree; any browser result from it is historical and does
+not qualify the combined af0d3d83 runtime. Final dedicated full/lean Chromium
+evidence must identify the subsequently published combined checkout and tree.
 
 The English disclosures and established fallback policy were reviewed alongside
 the source. `unknown` describes incomplete evidence and disables sweeping; `local`
@@ -194,9 +331,11 @@ queries. See [the user guide](../../user/bitcoin-spent-status.md),
   dependencies identified by the coordinator. Neither should be silently
   overwritten or treated as already reconciled; any combined tree needs its own
   final qualification.
-- General seller checkpoint PR #235 and Spec 18 remain outside this feature.
-  Inherited current-main transport/Solana/TRON changes remain independently owned
-  and qualified by their merged workstreams.
+- General seller checkpoint semantics, invoice-signer validation, and Spec 18
+  remain outside this Bitcoin feature. Independently owned #242 shared-runtime
+  changes are preserved; the narrow AppShell/BTC source review above is not a new
+  qualification of those other features. Inherited transport/Solana/TRON changes
+  likewise remain owned and qualified by their merged workstreams.
 
 **Merge disposition:** the reviewed source can proceed through the repository's
 normal PR review and required CI, with the integration conflicts explicitly
@@ -206,9 +345,14 @@ record and PR description.
 
 ## Source and runtime-artifact fingerprints
 
-The following SHA-256 fingerprints were captured immediately before and after the
-final independent commands. All **22 hashes matched**. A post-run scoped Git diff
-also showed no product/test changes from `d646e6db`. The dist entries identify the
+The following SHA-256 fingerprints were originally captured immediately before
+and after the historical d646e6db independent commands. All **22 hashes matched**.
+They were rechecked on the current combined runtime, including after the
+interrupted web attempt and the completed eight isolated invocations, and all 22
+remained identical. The six source/dist inventories also remained unchanged.
+The fresh execution results are recorded separately above; unchanged fingerprints
+alone are not an execution result. The historical
+post-run scoped Git diff showed no product/test changes from `d646e6db`. The dist entries identify the
 rebuilt Bitcoin runtime consumed by web tests; generated dist files are not proposed
 repository changes.
 
