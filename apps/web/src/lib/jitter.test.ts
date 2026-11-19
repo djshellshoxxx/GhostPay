@@ -87,6 +87,24 @@ describe('DelayScheduler', () => {
     s.check();
     expect(s.snapshot().status).toBe('waiting');
   });
+  it('expires even when wall time rolls back while the monotonic delay advances', () => {
+    const f = fakeDeps();
+    const s = new DelayScheduler(5000, 1002, f.deps);
+    f.setWall(990);
+    f.advance(2500);
+    expect(s.snapshot()).toEqual({ status: 'expired', remainingMs: 0 });
+    expect(f.cleared).toEqual([1]);
+  });
+  it('does not let Send now bypass expiry after a clock rollback in a throttled tab', () => {
+    const f = fakeDeps();
+    // Simulate a background tab where the interval callback has not fired yet.
+    const s = new DelayScheduler(5000, 1002, { ...f.deps, setInterval: () => 1 });
+    f.setWall(990);
+    f.advance(2500);
+    s.sendNow();
+    expect(s.snapshot()).toEqual({ status: 'expired', remainingMs: 0 });
+    expect(f.cleared).toEqual([1]);
+  });
   it('expires when the invoice expires before the delay ends', () => {
     const f = fakeDeps();
     const s = new DelayScheduler(5000, 1002, f.deps);
