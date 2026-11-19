@@ -1,0 +1,39 @@
+{
+  "scenario": "conflict",
+  "outcome": "rejected conflicting duplicate",
+  "commit": "019de9cb9c9b65b6ceddec1225274504c98bcf2b",
+  "sourceSha256": {
+    "packages/btc-silent-payments/src/scan/state.ts": "9458cc201f88b515a286f681b69d3ec3be4e58fd31b72772b0adb7e28578f4a9",
+    "packages/btc-silent-payments/src/scan/scanner.ts": "87b92d889781e75c302bb0c7df90667bc6bdfd214f8de745c00fd298dea33282",
+    "packages/btc-silent-payments/dist/scan/state.js": "8d2652f22dc6039f3c89413d3409f57505863876c54169007f16e6d85b9ab5f9",
+    "packages/btc-silent-payments/dist/scan/scanner.js": "c4ff32c652ca50daf2e363c7377e7850b291012c03cc194847f361165d9bcb28"
+  },
+  "node": "v24.22.3",
+  "platform": "linux",
+  "requestedBlocks": 500,
+  "completedBlocks": 0,
+  "watchedOutpoints": 10000,
+  "uniqueInputsPerBlock": 1000,
+  "inputEntriesPerBlock": 2000,
+  "duplicateCopiesPerInput": 2,
+  "inputEntriesSupplied": 2000,
+  "spendEvents": 0,
+  "sourceMethodCalls": {
+    "getTipHeight": 0,
+    "getTweaks": 1,
+    "getOutputs": 1,
+    "getSpends": 1,
+    "networkRequests": 0
+  },
+  "headerLookups": 0,
+  "checkpointBytesTotal": 0,
+  "maxCheckpointBytes": 0,
+  "workerStateByteCap": 524288,
+  "wallTimeMs": 87.68,
+  "maxRssKiB": 71992,
+  "heapBeforeBytes": 17096064,
+  "heapAfterBytes": 15576984,
+  "retainedHeapDeltaBytes": -1519080,
+  "gcBeforeAndAfter": true,
+  "scope": "Node library input indexing, local matching, state updates and JSON checkpoint serialization only. Excludes BIP-352 receiver cryptography (no tweaks), raw block/header validation, browser/worker messaging, encryption, storage I/O and network latency. RSS includes runtime and fixture setup. Timing is one deterministic local run, not a browser benchmark or universal performance guarantee."
+}

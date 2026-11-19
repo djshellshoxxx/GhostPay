@@ -363,8 +363,13 @@ Bitcoin documentation/DEVIATIONS, this claim, and a feature-specific qualificati
 Acceptance: local input matching, conservative unknown status, explicit provider
 consent through worker dispatch/retry, encrypted resumption, reorg-safe spend
 evidence, historical migration and deterministic regression/browser coverage.
-Independent reviewer `spentness_review` reads all feature code without modifying it.
-Implementation lanes are assigned disjoint paths and reviewed before integration.
+Independent reviewer `spentness_review` reads all feature code without modifying it
+and owns `docs/handoffs/btc-spentness-20261118/INDEPENDENT_REVIEW.md`.
+Implementation worker `state_engine` owns the library's scan state/scanner source
+and tests. `ui_consent` owns Bitcoin view/worker consent and browser tests.
+The coordinator owns Esplora parsing, the web scan wrapper, header-result
+invalidation, disclosures, documentation and combined qualification. These disjoint
+paths are reviewed before integration.
 PR #235 seller checkpoints, Spec 18 recovery, EVM, general network isolation,
 contracts/Mythril, dependency upgrades and general consolidation are excluded.
 No main merge, branch deletion, force-push, deployment or release publication.
