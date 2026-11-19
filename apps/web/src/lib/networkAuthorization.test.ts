@@ -286,6 +286,27 @@ describe('network authorization clock validity', () => {
     expect(h.fetcher).not.toHaveBeenCalled();
   });
 
+  it('remints a throwing clock without exposing its cause or contacting the network', () => {
+    const h = harness({ nowMs: () => { throw new Error('private clock detail'); } });
+    let failure: unknown;
+    try { h.authorize(); } catch (error) { failure = error; }
+    expect(failure).toMatchObject({ name: 'UserFacingError' });
+    expect(String(failure)).not.toContain('private clock detail');
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+
+  it('accepts epoch zero and does not refresh the idle deadline when only checking authority', () => {
+    let now = 0;
+    const h = harness({ nowMs: () => now, contextIdleMs: 100 });
+    const grant = h.authorize();
+    now = 99;
+    grant.assertCurrent();
+    now = 100;
+    expect(() => grant.assertCurrent()).toThrow();
+    expect(grant.signal.aborted).toBe(true);
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+
   it('rejects rollback from the latest observed clock before any new dispatch', async () => {
     let now = 1000;
     const h = harness({ nowMs: () => now });
