@@ -96,6 +96,68 @@ describe('BTC dedicated worker message integration', () => {
 
 
 describe('BTC worker stale and untrusted boundary', () => {
+  it.each(['hex', 'merkle-proof'])('rejects an unexpected matched-transaction %s query outside opted-in light mode', async (method) => {
+    const f = await fixture(); const abort = new AbortController(); let posted!: BtcScanRequest; let fake!: BtcScanWorker;
+    f.chain.requests.length = 0;
+    const running = scanForPaymentsInWorker({ ...f, signal: abort.signal, providerSpentCheck: true }, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate: () => {}, postMessage: (m) => { posted = m; },
+    }), f.chain.fetchFn);
+    const settled = running.catch((e: unknown) => e);
+    fake.onmessage?.({ data: { type: 'source', id: posted.id, requestId: 1, path: `/tx/${'ab'.repeat(32)}/${method}` } });
+    try { expect(f.chain.requests).toHaveLength(0); await expect(settled).resolves.toMatchObject({ code: 'INVALID_RESPONSE' }); }
+    finally { abort.abort(); await settled; }
+  });
+  it('rejects a worker outpoint query when the owner did not enable provider checks', async () => {
+    const f = await fixture(); let posted!: BtcScanRequest; let fake!: BtcScanWorker;
+    const abort = new AbortController();
+    f.chain.requests.length = 0;
+    const running = scanForPaymentsInWorker({ ...f, signal: abort.signal }, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate: () => {},
+      postMessage: (m) => { posted = m; },
+    }), f.chain.fetchFn);
+    const settled = running.catch((e: unknown) => e);
+    fake.onmessage?.({ data: { type: 'source', id: posted.id, requestId: 1, path: `/tx/${'ab'.repeat(32)}/outspend/0` } });
+    try {
+      expect(f.chain.requests).toHaveLength(0);
+      await expect(settled).resolves.toMatchObject({ code: 'INVALID_RESPONSE' });
+    } finally { abort.abort(); await settled; }
+  });
+
+  it('rejects a provider-labelled result without consent and wipes its transferred tweak', async () => {
+    const f = await fixture(); const result = await scanForPayments(f);
+    let posted!: BtcScanRequest; let fake!: BtcScanWorker;
+    const running = scanForPaymentsInWorker(f, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate: () => {},
+      postMessage: (m) => { posted = m; },
+    }), f.chain.fetchFn);
+    const transferred = structuredClone(result);
+    fake.onmessage?.({ data: { type: 'done', id: posted.id, result: { ...transferred, spentStatus: 'provider' } } });
+    await expect(running).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(transferred.found[0]!.spendTweak.every((b) => b === 0)).toBe(true);
+    wipeFound(result.found);
+  });
+
+  it.each(['range', 'chain', 'duplicate', 'local-gap', 'history-page'] as const)('binds a same-session worker result to the requested %s evidence', async (bad) => {
+    const f = await fixture(); const result = await scanForPayments(f);
+    let posted!: BtcScanRequest; let fake!: BtcScanWorker;
+    const running = scanForPaymentsInWorker(f, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate: () => {},
+      postMessage: (m) => { posted = m; },
+    }), f.chain.fetchFn);
+    const transferred = structuredClone(result);
+    const altered = { ...transferred,
+      ...(bad === 'range' ? { fromHeight: f.fromHeight + 1 } : {}),
+      ...(bad === 'chain' ? { found: transferred.found.map((o) => ({ ...o, blockHash: 'ab'.repeat(32) })) } : {}),
+      ...(bad === 'duplicate' ? { found: [...transferred.found, ...transferred.found] } : {}),
+      ...(bad === 'local-gap' ? { toHeight: 3 } : {}),
+      ...(bad === 'history-page' ? { recoveredHistory: { offset: 0, end: 2, total: 1 } } : {}),
+    };
+    fake.onmessage?.({ data: { type: 'done', id: posted.id, result: altered } });
+    await expect(running).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(transferred.found[0]!.spendTweak.every((b) => b === 0)).toBe(true);
+    wipeFound(result.found);
+  });
+
   it('ignores another request and wipes a late result after cancellation', async () => {
     const f = await fixture(); const result = await scanForPayments(f); const ac = new AbortController();
     let posted!: BtcScanRequest; let fake!: BtcScanWorker; const terminate = vi.fn();
@@ -131,6 +193,17 @@ describe('BTC worker stale and untrusted boundary', () => {
       }
     }
     await expect(scanForPaymentsInWorker(f, () => new BadAnchor(), f.chain.fetchFn)).rejects.toMatchObject({ code: 'INVALID_HEADER' });
+    expect(f.chain.requests).toHaveLength(0);
+  });
+
+  it('rejects a forged light-mode start without consent inside the worker before requesting source data', async () => {
+    const f = await fixture(); f.chain.requests.length = 0;
+    class NoConsentLight extends InlineBtcScanWorker {
+      public override postMessage(m: BtcScanRequest): void {
+        super.postMessage(m.type === 'start' ? { ...m, providerSpentCheck: false, oracle: { kind: 'http', url: 'https://oracle.test', mode: 'light' } } : m);
+      }
+    }
+    await expect(scanForPaymentsInWorker(f, () => new NoConsentLight(), f.chain.fetchFn)).rejects.toMatchObject({ code: 'INVALID_INPUT' });
     expect(f.chain.requests).toHaveLength(0);
   });
 });
