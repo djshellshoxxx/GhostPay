@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "task": "PR #258 camera visibility integration",
+  "observed_at": "2026-11-19T09:25:27.065071+00:00",
+  "candidate_base": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+  "claim": "52c9d7738949e473cd77b2213a038ba07f41238e",
+  "upstream": "84398a79e18673f3e371a405931bc464e1cca99a",
+  "upstream_parent": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+  "integration": "f0fe867d8bb257ecabb4cf36898962acb72839dc",
+  "runtime_changed_paths": [
+    "apps/web/src/components/CameraImporter.tsx"
+  ],
+  "runtime_delta": {
+    "added": 8,
+    "removed": 3
+  },
+  "runtime_test_match_upstream": true,
+  "conflicts": "Only additive ACTIVE_WORK registry prepend. Upstream16 lines plus complete existing candidate bytes preserved.",
+  "node": "22.23.4",
+  "vitest": "5.1.0",
+  "heap_mib": 512,
+  "semi_space_mib": 32,
+  "max_workers": 1,
+  "file_parallelism": false,
+  "configuration": "Original apps/web/vite.config.ts. No config/rule/threshold change, source aliases, or type/lint claim.",
+  "red": {
+    "runtime_sha256": "baf705c8a623810546c1a6099cf5ea25844b7e6c42f45f5d4f0229d13de2cf25",
+    "test_source": "84398a79",
+    "test_files_failed": 1,
+    "tests_failed": 9,
+    "exit_code": 1,
+    "duration_seconds": 2.88,
+    "log": "evidence/red.log"
+  },
+  "green": {
+    "source": "f0fe867d8bb257ecabb4cf36898962acb72839dc",
+    "test_files_passed": 6,
+    "tests_passed": 77,
+    "tests_failed": 0,
+    "tests_skipped": 0,
+    "exit_code": 0,
+    "duration_seconds": 18.04,
+    "log": "evidence/green.log"
+  },
+  "non_behavioral_startup": {
+    "exit_code": 127,
+    "cause": "/usr/bin/time executable unavailable; no test started. Actual runs use bash time.",
+    "log": "evidence/instrumentation-startup.log"
+  },
+  "compiled_prerequisites": {
+    "source_checkout": "/workspace/scratch/13855ecc035c/GhostPay",
+    "target_checkout": "/workspace/scratch/13855ecc035c/GhostPay-privacy",
+    "copied_dist_workspaces": 41,
+    "identical_javascript_files": 565,
+    "all_copied_js_hashes_equal": true,
+    "workspace_links": "Own clone, no links into source checkout",
+    "record": "evidence/compiled-inputs.json",
+    "limit": "Byte comparison to coordinator outputs, not an independent rebuild of every workspace."
+  },
+  "source_sha256": {
+    "apps/web/src/components/CameraImporter.tsx": "f5725a3c854b60414ce10330922941110bb5bd20058048d46bc89256e9f1fb13",
+    "apps/web/src/components/CameraImporter.visibility.test.tsx": "27d24dd0ff8be898f514fe56e19e92f7bc6159c8706fe807f538e67bd7e954d5",
+    "apps/web/vite.config.ts": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+    "apps/web/tsconfig.json": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325",
+    "eslint.config.js": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+    "package-lock.json": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2",
+    "apps/web/src/components/CameraImporter.behavior.test.tsx": "7caf1a00e22f9a7bc2a8bdd94a86c2f213bcdcf61e2b80058da783e0577d0f99",
+    "apps/web/src/components/CameraImporter.i18n.test.tsx": "268bb7bfa660307a2db3c688f3992b046a26cb96a75f601e845239926acab57a",
+    "apps/web/src/components/CameraImporter.lifecycle.test.tsx": "e863bd58c46f49ef108a891b1f2ff50d01bb263e98ed5441ba6108d4163d494e",
+    "apps/web/src/components/CameraImporter.multipart.test.tsx": "3b49bb9dfdf63a8375c9f0edc378ba35d51711e3b4cbfb6cad5af1260ba720eb",
+    "apps/web/src/components/CameraImporter.test.tsx": "508ca3d6123f35a2ee18f1e4744634cafe0454a4a393cb48459d8a5eb9b29e3a"
+  },
+  "artifact_sha256": {
+    "compiled-inputs.json": "19cbd6c4f134f332b928289e3916670d8c1ae8cc918937da68c23795e42de572",
+    "green.log": "271e8e85a6d5bd3ea02c86673f36579ec9a13d66d4f65cf23527955ac47d6fe6",
+    "instrumentation-startup.log": "3e737f6a9117cec194b02103b357f8668fae9adb86a8a8cd0bf25efab8948548",
+    "red.log": "d20fc1bc34a05e6efbb0ab71c7263fa71d09cad5b6a7d73a0d2e98f2e930c50e"
+  },
+  "independent_review": {
+    "reviewer": "recovery_completion",
+    "scope": "Read-only upstream and integration runtime/test source, ancestry and retained registry. No reviewer runtime replay claimed.",
+    "status": "No introduced source blocker; exact merge parents/upstream ancestry, runtime/test blobs, all11 source/config hashes, all4 artifact hashes, and registry byte preservation independently verified.",
+    "source_pin": "f0fe867d8bb257ecabb4cf36898962acb72839dc",
+    "execution_attribution": "Reviewer read complete author RED9/9 and GREEN77/77 logs; no independent runtime replay claimed."
+  },
+  "remaining": [
+    "Coordinator combined-head full typed lint/typecheck/coverage and hosted/browser qualification",
+    "Physical camera and real browser behavior not established by jsdom tests"
+  ]
+}

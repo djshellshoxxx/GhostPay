@@ -29,8 +29,10 @@ using the original configuration and reconciled compiled prerequisites; obtain
 independent source review before coordinator integration. Preserve the original
 PR author claim and receipt. No source edits outside the importer pair, no broader
 web lint/typecheck, configuration/rule/threshold changes or remote mutation.
-Status: claimed before edits; source comparison confirms the candidate importer is
-byte-identical to the upstream fix's parent, so runtime conflict is not expected.
+Status: original ancestry merged at `f0fe867d`; only the additive ownership registry
+conflicted. Runtime/test blobs match upstream exactly. Original-config baseline nine
+regressions failed, then all 77 importer tests passed on Node 22; independent source
+review and qualification limits are in the scoped camera-visibility integration receipt.
 
 # Settings exchange disclosure assertion reconciliation — 2026-11-19
 
