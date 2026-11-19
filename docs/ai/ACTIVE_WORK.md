@@ -1,3 +1,19 @@
+# QR import visibility cancellation — 2026-11-19
+
+Worker: GhostPay automation bug worker, with a separate security reviewer.
+Branch: `automation/20261119T073600Z/bug/camera-visibility`.
+Base: `e454de6abfefda70d82784fafc1d8949b277c334` (current main at claim).
+Owned paths: `apps/web/src/components/CameraImporter.tsx`, focused `CameraImporter` tests,
+and `docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md`.
+Acceptance: reproduce pending image/paste imports remaining authorized while the document is hidden;
+abort those operations on hiding; reject late delivery and hidden dispatch; retain existing camera,
+multipart, scope and retry behavior. Run focused tests and independent review before publication.
+This isolated claim does not own other workers' scan, session, recovery, transport or integration paths.
+Status: implemented at `d6e9dd38`; nine regressions failed on the original runtime and pass after repair.
+All 77 focused importer tests pass. Independent security review found no source blocker and reran the
+nine regressions successfully. Scoped TypeScript/typed lint pass; full hosted gates and integration remain
+coordinator-owned. See `docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md` for exact evidence and limits.
+
 # Camera visibility integration — 2026-11-19
 
 Worker: `privacy_completion`, delegated by the feature-consolidation coordinator.
