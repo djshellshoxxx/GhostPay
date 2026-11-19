@@ -631,19 +631,6 @@ candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
 ## Beta acceptance log artifact capture — 2026-11-18
 
 
-## Feature completion and consolidation — 2026-11-19
-
-Worker: ChatGPT root coordinator with independent privacy, recovery, and branch-review workers.
-Branch: `codex/ghostpay-feature-consolidation-20261119`.
-Base: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (verified live main at task start).
-Owned paths: semantic integration of existing PRs; `packages/chain-adapters/src/payments.bulkCancellation.test.ts`;
-`docs/ai/PACKAGE_MAP.md` and dependency-closure guard data if supported by actual emitted-source evidence;
-`apps/web/e2e/hostile-text.spec.ts` browser lifecycle fixture; scoped regression tests and
-`docs/consolidation/feature-completion-20261119/**`. Privacy and recovery workers claim their own isolated paths.
-Acceptance: retain original feature ancestry and main fixes, repair reproducible integration failures without
-weaker assertions or gates, independently review combined source, run applicable validation, and merge only
-qualified work under current repository protections. No mainnet deployment, release publication, branch deletion,
-shared-branch rewrite, or finding suppression. External live writers remain read-only inputs until rechecked.
 
 
 Status: workflow source `05a3b45bda60d18a6922c0897d48bd8984bad377` adds only the requested boolean
@@ -697,3 +684,17 @@ Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
 Owned paths: root/workspace package manifests, package-lock.json, dependency tooling regressions if a defect is reproduced, and a source-pinned dependency handoff. No application source, workflows, coverage configuration, contracts or deployment changes.
 Acceptance: integrate the exact paired #210 and #236 dependency revisions; clean installation; library and web builds; relevant original coverage-enabled suites, typechecks and lints; full and production dependency audits; preserve pending browser and hosted qualification honestly. No forced peers, casts, blanket overrides or weakened gates.
 Source candidates: #210 `4d19655a2e5d93ad9378803cd4163245168aca24`; #236 `defdaa308a2d05ab407af7e42f8dc457cf52d103`.
+
+## Feature completion and consolidation — 2026-11-19
+
+Worker: ChatGPT root coordinator with independent privacy, recovery, and branch-review workers.
+Branch: `codex/ghostpay-feature-consolidation-20261119`.
+Base: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (verified live main at task start).
+Owned paths: semantic integration of existing PRs; `packages/chain-adapters/src/payments.bulkCancellation.test.ts`;
+`.claude/skills/ghostpay-package-map/PACKAGE_MAP.md` and dependency-closure guard data if supported by actual emitted-source evidence;
+`apps/web/e2e/app.spec.ts` browser lifecycle fixture; scoped regression tests and
+`docs/consolidation/feature-completion-20261119/**`. Privacy and recovery workers claim their own isolated paths.
+Acceptance: retain original feature ancestry and main fixes, repair reproducible integration failures without
+weaker assertions or gates, independently review combined source, run applicable validation, and merge only
+qualified work under current repository protections. No mainnet deployment, release publication, branch deletion,
+shared-branch rewrite, or finding suppression. External live writers remain read-only inputs until rechecked.
