@@ -4,7 +4,7 @@
   "branch": "integration/ghostpay-policy-assets-reconciled-20261119",
   "baseline_commit": "f6fe390859326f52b185c900004ff4a69f7ae0b7",
   "baseline_policy_pay_blob": "3c67a58ff419f1cfa495073a24be3e174a8c9988",
-  "corrected_policy_pay_blob": "c65b424d0aeddf1e5d5c2f429deb734324605b51",
+  "corrected_policy_pay_blob": "290fee0aa9b0f3c776011ee81df66b687160f4d2",
   "regression_blob": "f537a646275c1af003b1fbeb898d233be5bc3951",
   "command": "node /workspace/scratch/9b4050d15a9b/GhostPay-master/node_modules/vitest/vitest.mjs run --config /workspace/scratch/9b4050d15a9b/audit-data/policy-authority.vitest.config.mts --root /workspace/scratch/9b4050d15a9b/GhostPay-asset-coverage/apps/web",
   "runner": "Borrowed master dependency installation; temporary source aliases resolve every GhostPay package to the asset worktree; one worker; no install/build/coverage/configuration change.",
@@ -35,12 +35,35 @@
       "exit_code": 0,
       "passed": 2,
       "failed": 0,
-      "duration_seconds": 5.3
+      "duration_seconds": 5.3,
+      "qualification": "Superseded implementation; render assignment was refined after independent source review."
+    },
+    {
+      "phase": "final-layout-green",
+      "path": "docs/consolidation/policy-record-authority-layout-green.txt",
+      "sha256": "eed2a1dca88930ec4d43ebbb143813a27eb21287a00ee4ac7f3e2cae8779cf2d",
+      "exit_code": 0,
+      "passed": 2,
+      "failed": 0,
+      "duration_seconds": 5.99
     }
   ],
   "result": "Confirmed and corrected commit-to-passive-effect record authority gap. Real policy preparation, coverage, send, submit, and wallet recheck code; controlled EIP-1193 final account reply. No live network or real transaction was sent.",
   "pending": [
     "Independent coordinator review",
     "Combined exact-head hosted suite/typecheck/lint/browser/coverage qualification"
+  ],
+  "intermediate_render_assignment_blob": "c65b424d0aeddf1e5d5c2f429deb734324605b51",
+  "correction": "Publish records in useLayoutEffect after commit and before promise continuations; speculative renders do not replace committed authority.",
+  "other_checks": [
+    {
+      "command": "bash scripts/scan-secrets.sh",
+      "exit_code": 0,
+      "log": "/workspace/scratch/9b4050d15a9b/audit-data/policy-authority-secrets-green.log"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
   ]
 }

@@ -20,15 +20,17 @@ the test environment afterward. Only application/service presentation seams and 
 controlled. All RPC data and wallet submissions are in-process fixtures; no live request or transaction is sent.
 
 Before the correction, the DAI case issued one `eth_sendTransaction` despite the newly committed record excluding
-DAI: **1 failed, 1 passed**, exit 1. The USDC positive control passed, confirming the send path was reachable. After
-the correction, **both cases passed**, exit 0. DAI produces the coverage refusal and removes the sendable review;
-USDC still submits once. The saved RED and GREEN logs and their SHA-256 hashes are in the paired JSON receipt.
+DAI: **1 failed, 1 passed**, exit 1. The USDC positive control passed, confirming the send path was reachable. The
+initial render-assignment correction passed both cases. Independent coordinator review then required committed
+authority only: an abandoned speculative render must not replace the record list with a less restrictive one.
+The final layout-effect correction passed the identical two cases, exit 0. DAI produces the coverage refusal and
+removes the sendable review; USDC still submits once. All three logs and hashes are retained in the paired JSON receipt.
 
 ## Correction and scope
 
-`PolicyPay` now assigns `records.current = props.ctx.records` synchronously during render, following the existing
-current-authority ref pattern. The final send guard observes the updated records without waiting for a passive
-effect. The unused effect import is removed. The cryptographic predicate, canonical calldata/R/metadata binding,
+`PolicyPay` now publishes `props.ctx.records` to the ref in `useLayoutEffect`, after the render commits and before
+pending promise continuations resume. The final send guard observes the committed records without waiting for a
+passive effect; speculative renders do not change authority. The cryptographic predicate, canonical calldata/R/metadata binding,
 session/deployment guards, existing delay floor and duplicate-attempt handling are unchanged.
 
 The runtime delta is limited to `PolicyPay.tsx`, with one new two-case component regression. No dependency, build
@@ -40,7 +42,8 @@ remains in `POLICY_ASSET_RECOVERY_2026-11-19.md`; the focus regression remains a
 The one-worker diagnostic runner borrowed the integration worktree's installed dependencies and resolved workspace
 packages to this isolated asset worktree's source. It did not use another branch's library build output. Exact runner
 command, Node/Vitest/React versions, source blobs and log hashes are in `policy-record-authority-2026-11-19.json`.
-The RED run took 15.23 seconds; GREEN took 5.30 seconds. The secret scan and diff whitespace check also passed.
+The RED run took 15.23 seconds; the intermediate render-assignment GREEN took 5.30 seconds and the final layout-effect
+GREEN took 5.99 seconds. The secret scan and diff whitespace check also passed.
 
 This focused regression is not a full asset suite, coverage run, lint/typecheck, browser qualification or combined-head
 CI pass. Those checks remain part of the integration candidate's qualification. The timing failure was confirmed in a

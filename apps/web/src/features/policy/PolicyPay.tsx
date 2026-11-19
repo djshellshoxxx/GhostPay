@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { WalletAttempts } from '../../components/WalletAttempts';
 import { PostBroadcastError } from '../../lib/payExec';
@@ -42,8 +42,8 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
   // Policy records loaded in this tab, read again immediately before every wallet request (SEC-11): a record of the
   // payee's policy imported after the review can still show that the asset could never be withdrawn.
   const records = useRef(props.ctx.records);
-  // A pending wallet reply can resume after a record commit but before passive effects run.
-  records.current = props.ctx.records;
+  // Publish committed authority before a pending wallet reply resumes; speculative renders must not change it.
+  useLayoutEffect(() => { records.current = props.ctx.records; }, [props.ctx.records]);
 
   const review = (): void => {
     setMsg(undefined);
