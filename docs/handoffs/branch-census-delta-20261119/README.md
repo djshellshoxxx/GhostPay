@@ -40,3 +40,7 @@ PR #267's advanced head is an earlier main-reconciliation/provenance update from
 ## Release status
 
 **BLOCKED.** Branch census, exact source identity and preserved ancestry cannot replace complete source-matched CI, browser acceptance, required security review or owner/hosting/signing conditions. No source branch, PR state, main, tag, deployment or workflow was mutated by this read-only task.
+
+## Subsequent focused PR #279 source review
+
+After the census observation, the security worker reconstructed and normally merged PR #279 in an isolated worktree. Independent source review at **`98786e75f7979708b52fbe7424825a41100e2d98`** approves the bounded correction; both source/test blobs match upstream and the original head remains a merge parent. [QR279_SOURCE_REVIEW.json](QR279_SOURCE_REVIEW.json) records the newly inspected source and assertion details. This reviewer performed no runtime tests; fresh execution remains separately owned. The earlier DELTA classifications and CI snapshot are not rewritten or retroactively upgraded by this review.
