@@ -185,15 +185,15 @@ export function Sweep(): ReactNode {
     actionAbort.current = controller;
     const id = ++operation.current;
     const epoch = authEpoch.current;
-    const liveSession = captureSessionGuard();
-    const assertCurrent = (): void => {
-      if (controller.signal.aborted || authEpoch.current !== epoch) throw new UserFacingError({ key: 'sweep.vaultCancelledKeys' });
-      liveSession();
-    };
     setBusy(true);
     setVaultPhase('authorizing');
     setError(undefined);
     try {
+      const liveSession = captureSessionGuard();
+      const assertCurrent = (): void => {
+        if (controller.signal.aborted || authEpoch.current !== epoch) throw new UserFacingError({ key: 'sweep.vaultCancelledKeys' });
+        liveSession();
+      };
       const vaultGuard = await authorizeEncryptedVault(vaultPass);
       assertCurrent();
       vaultGuard?.();
