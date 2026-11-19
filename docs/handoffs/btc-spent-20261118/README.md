@@ -2,12 +2,14 @@
 
 ## Qualification status
 
-Implementation is committed on `chatgpt/btc-spent-private-scan-20261118`. Final combined qualification is running;
-this packet is being prepared for a draft review PR and does not yet assert merge readiness. Runtime source:
-`985d5284` (full pin recorded in the final validation report). No main merge, deployment, release, contract,
-transaction-construction, recovery or unrelated dependency change is included.
+Implementation is committed in [PR #244](https://github.com/djshellshoxxx/GhostPay/pull/244), branch
+`chatgpt/btc-spent-private-scan-20261118`. The independently reviewed source is published at
+`4a878e302beac5cca52d20e17cdd756f3fbebb0d`, incorporating main
+`58d89b39b27a66454ebf392bcd35d5c68b57b2f8`. **The PR remains a draft while the final CI matrix is pending.**
+No merge into `main`, deployment, release, contract, transaction-construction, recovery or unrelated dependency change
+is part of this feature. The [validation report](VALIDATION.md) records exact source identities and results.
 
-Source inputs: current main `dfc75ef2087fa6463ae59e0818abec01796c578d` and the unchanged implementation of
+Source inputs: initial main `dfc75ef2087fa6463ae59e0818abec01796c578d` and the unchanged implementation of
 [PR #219](https://github.com/djshellshoxxx/GhostPay/pull/219), head
 `9617e8572f9bc414410bd937b0e7718d0c5bd55c`. Original #219 CI passed at that original head; those passes do not
 qualify this continuation. The original commit is preserved in this branch's ancestry.
@@ -28,19 +30,46 @@ qualify this continuation. The original commit is preserved in this branch's anc
 
 Every confirmed behavioral defect has a failing regression followed by a fix; the independent reviewer also found
 and checked follow-up edge cases. See [the acceptance matrix](ACCEPTANCE_MATRIX.md) for initial status and scope.
-The final independent review and validation report will record actual source, commands, counts, coverage and limits.
+The [independent review](INDEPENDENT_REVIEW.md) records seven principal findings plus follow-up edge cases,
+their fixes and independently executed tests. The [changed-file map](FILE_MAP.md) maps every file to the user's
+acceptance criteria. Neither source review nor authored browser tests are presented as a professional external audit.
 
-## Validation already observed (preliminary, not final combined qualification)
+## Observed qualification and final correction
 
-- Clean locked installation (`npm ci --ignore-scripts --prefer-offline --no-audit --no-fund`) and all library builds succeeded.
-- Esplora suite: 38 passed. Header suite before the final short-header edge: 31 passed.
-- Final header invalidation selection: 5 passed; 27 deselected by the targeted filter. A broader concurrent run passed31
-  and timed out one existing 60-second header stress test; its timeout was not changed.
-- Core package state/scanner selection: 39 passed; web spent/resume/secret selection: 21 passed.
-- Independent reruns: package39, web spent/resume/store/secret29, and worker/oracle46 passed with no skips in those selections.
-- Whole-web typecheck attempts were terminated by the local executor (exit137); these are not passes.
-- System Chromium launch failed before page execution: `socket() failed: Operation not permitted`. Browser specs are authored,
-  but local browser acceptance is not claimed. Fresh hosted full/lean CI is required.
+The earlier local integration commit `3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a`, earlier published implementation `ef08170a83d86d194b8ce4186299e791027e461e`, and
+hosted PR merge `278b1d5afcbc5056fd096ea52e34feaaeedfdb4e` share exact Git tree
+`0074dde6081e45188c45feb39503c64243ef99b8`. The results below retain that original source identity.
+
+Hosted lint then identified ten unsafe typed accesses in the worker-result validator. The correction at local
+`10c3993d4d7a215c57b936ee2b1967741d247675` / published `4a878e302beac5cca52d20e17cdd756f3fbebb0d` adds only three callback type
+annotations. Two independent comparisons confirm byte-identical emitted JavaScript; every runtime guard and
+behavioral test remains unchanged. All 28 changed web files pass focused lint, and all 29 worker regressions
+pass after the correction. Fresh full qualification is requested for the corrected candidate. Packet changes
+after that source commit are documentation/evidence only.
+
+| Check on that combined source | Result |
+| --- | --- |
+| Secrets, catalog completeness and translation-key extraction | Passed; no missing keys or catalog errors. |
+| Pages tooling | 72 passed locally and hosted; 0 failed/skipped. |
+| Network egress checks | 23 passed locally; 0 failed/skipped. |
+| Hosted clean libraries, Pages web typecheck/build/bundle scan/site verification | Passed; verified 16-file DEMO site. |
+| Pages Chromium against local anvil | 16 passed. This is lean compatibility evidence. |
+| Bitcoin regtest integration | All 9 Bitcoin steps passed; existing integration workflow passed. |
+| Beta acceptance, CLI operator qualification, hosting kit | Hosted workflows passed. |
+| Local Node22 whole Bitcoin package | 566 passed, 1 existing large-header stress timeout, 0 skipped; coverage was not emitted. Package lint and typecheck passed. |
+| Earlier whole-workspace typecheck / lean Chromium | Passed / 71 passed and 5 intentional skips. |
+| Earlier whole-workspace lint | Ten callback-typing diagnostics; corrected as described above. |
+| Corrected-candidate Bitcoin/web coverage, whole-workspace typecheck/lint/build and full/lean Chromium | Fresh qualification pending in the existing CI matrix. |
+
+Independent source-review selections separately passed 119 tests in 12 files. Earlier Esplora, header,
+scanner/state and UI regressions and all unsuccessful local attempts are retained with their original pins in
+the validation report; they are not renamed as final combined-source passes. Local Chromium could not launch
+because socket creation was denied. The original test deadlines and coverage thresholds remain unchanged.
+
+The full profile's new browser cases cover default local privacy, opt-in/revocation, unknown legacy records,
+fresh rescanning, later spending and repeated encrypted reload. The lean case verifies that Bitcoin remains
+absent. Full-profile Bitcoin runtime cases still require successful execution in the corrected candidate's hosted job.
+The earlier lean run executed and passed the new Bitcoin-exclusion case.
 
 ## User-visible evidence semantics
 
