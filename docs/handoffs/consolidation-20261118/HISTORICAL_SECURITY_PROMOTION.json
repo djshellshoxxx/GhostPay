@@ -1,0 +1,174 @@
+{
+  "base_main": "e454de6abfefda70d82784fafc1d8949b277c334",
+  "tested_source_commit": "4d7402feffa18b37e68a121665d4a28e0a0b92a9",
+  "combined_source_commit": "b7e9a34c55689ce61e7c89f4f8292090e7470cce",
+  "combined_source_tree": "8a0247ce437dfb51e047720a3f6bc1be09c0cd66",
+  "source_heads": {
+    "pool_original": "baa032547a16196005dccc30a247acd55d4f62c6",
+    "pool_refreshed": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+    "scanner_original": "20207a930336da95e78ad1d6f4987b3c74fc535a",
+    "scanner_refreshed": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+    "socks_selected": "303ba1114fd78426162c4728f1778f66d64088f4",
+    "socks_refreshed": "6b07e403dd26a8c8e12dfab82dedb0c36002b043"
+  },
+  "source_blob_identity": [
+    {
+      "path": "packages/pool-circuits/src/inputs.ts",
+      "source_commit": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+      "source_blob": "3a82b848c11d98a7d4afe66050a15ef8003cedbe",
+      "combined_blob": "3a82b848c11d98a7d4afe66050a15ef8003cedbe",
+      "tested_blob": "3a82b848c11d98a7d4afe66050a15ef8003cedbe"
+    },
+    {
+      "path": "packages/pool-circuits/src/helpers.test.ts",
+      "source_commit": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+      "source_blob": "10b1f67f7c880e9da5fb86845b55a7b25bc89d2c",
+      "combined_blob": "10b1f67f7c880e9da5fb86845b55a7b25bc89d2c",
+      "tested_blob": "10b1f67f7c880e9da5fb86845b55a7b25bc89d2c"
+    },
+    {
+      "path": "packages/pool-circuits/test/witness.test.ts",
+      "source_commit": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+      "source_blob": "3cdd17fb07acdb5fe4424cc06312d37a2cc2b773",
+      "combined_blob": "3cdd17fb07acdb5fe4424cc06312d37a2cc2b773",
+      "tested_blob": "3cdd17fb07acdb5fe4424cc06312d37a2cc2b773"
+    },
+    {
+      "path": "packages/pool-circuits/DEVIATIONS.md",
+      "source_commit": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+      "source_blob": "bff54456013a8f6a578752a68078b99c185505a9",
+      "combined_blob": "bff54456013a8f6a578752a68078b99c185505a9",
+      "tested_blob": "bff54456013a8f6a578752a68078b99c185505a9"
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "source_commit": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+      "source_blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+      "combined_blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+      "tested_blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4"
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.d.mts",
+      "source_commit": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+      "source_blob": "340d3eec2eecdbc4f1cd726905a081008f7daac7",
+      "combined_blob": "340d3eec2eecdbc4f1cd726905a081008f7daac7",
+      "tested_blob": "340d3eec2eecdbc4f1cd726905a081008f7daac7"
+    },
+    {
+      "path": "apps/web/src/scanBundle.test.ts",
+      "source_commit": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+      "source_blob": "a694b8763fc5deb418f65d7ff3a6f13e9295d3ee",
+      "combined_blob": "a694b8763fc5deb418f65d7ff3a6f13e9295d3ee",
+      "tested_blob": "a694b8763fc5deb418f65d7ff3a6f13e9295d3ee"
+    },
+    {
+      "path": "packages/net-harness/src/socks5Server.ts",
+      "source_commit": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "source_blob": "1ace4e8ebea81703b1c8fc5d72970c2964f65f36",
+      "combined_blob": "1ace4e8ebea81703b1c8fc5d72970c2964f65f36",
+      "tested_blob": "1ace4e8ebea81703b1c8fc5d72970c2964f65f36"
+    },
+    {
+      "path": "packages/net-harness/src/harness.test.ts",
+      "source_commit": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "source_blob": "d57695d853e93fe3d3def188ad6f80fcbf278767",
+      "combined_blob": "d57695d853e93fe3d3def188ad6f80fcbf278767",
+      "tested_blob": "d57695d853e93fe3d3def188ad6f80fcbf278767"
+    }
+  ],
+  "pool_and_scanner_original_and_refreshed_heads_are_ancestors": true,
+  "socks_major_dependency_heads_are_not_ancestors": true,
+  "dependency_workflow_contract_runtime_blobs_unchanged_from_main": true,
+  "changed_paths": [
+    "apps/web/scripts/scan-bundle.d.mts",
+    "apps/web/scripts/scan-bundle.mjs",
+    "apps/web/src/scanBundle.test.ts",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md",
+    "docs/consolidation/merge-readiness/historical-pool-values-20261118.json",
+    "docs/handoffs/SCANNER_AST_RECONCILIATION_20261118.md",
+    "packages/net-harness/src/harness.test.ts",
+    "packages/net-harness/src/socks5Server.ts",
+    "packages/pool-circuits/DEVIATIONS.md",
+    "packages/pool-circuits/src/helpers.test.ts",
+    "packages/pool-circuits/src/inputs.ts",
+    "packages/pool-circuits/test/witness.test.ts"
+  ],
+  "checks": [
+    {
+      "check": "pool helpers",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "files": 1,
+      "log": "history-focused-pool-helpers-green.log"
+    },
+    {
+      "check": "scanner and privacy",
+      "passed": 88,
+      "failed": 0,
+      "skipped": 0,
+      "files": 2,
+      "log": "history-focused-scanner.log"
+    },
+    {
+      "check": "SOCKS full harness",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "files": 1,
+      "log": "history-focused-socks-green.log"
+    },
+    {
+      "check": "SOCKS control against unchanged runtime",
+      "failed": 1,
+      "not_selected": 27,
+      "uncaught_errors": 1,
+      "error": "ERR_INVALID_ARG_TYPE at Buffer.concat after text-decoded socket data",
+      "log": "history-focused-socks-red.log"
+    }
+  ],
+  "dependencies": {
+    "borrowed_node_modules": "GhostPay-history-fixes exact-version scoped install; no fresh full install",
+    "versions": {
+      "vitest": "5.0.5",
+      "vite": "8.3.5",
+      "typescript": "5.9.3",
+      "fast-check": "4.10.2",
+      "viem": "2.57.13",
+      "@noble/hashes": "2.4.0"
+    },
+    "new_test_only_tarballs": [
+      {
+        "name": "poseidon-lite",
+        "version": "0.3.0",
+        "lock_integrity": "sha512-ilJj4MIve4uBEG7SrtPqUUNkvpJ/pLVbndxa0WvebcQqeIhe+h72JR4g0EvwchUzm9sOQDlOjiDNmRAgxNZl4A==",
+        "actual_integrity": "sha512-ilJj4MIve4uBEG7SrtPqUUNkvpJ/pLVbndxa0WvebcQqeIhe+h72JR4g0EvwchUzm9sOQDlOjiDNmRAgxNZl4A==",
+        "source": "npm pack exact version; no lifecycle scripts; extracted outside repo"
+      },
+      {
+        "name": "@zk-kit/lean-imt",
+        "version": "2.2.5",
+        "lock_integrity": "sha512-7pJIWiWp30wKz7OlbzV/+ATvHD+Emwy1aejU+9R4V+a1BkdY/yhGA/hFoVULxYyZ/RohiCfcJC/48cU2xI6Rtw==",
+        "actual_integrity": "sha512-7pJIWiWp30wKz7OlbzV/+ATvHD+Emwy1aejU+9R4V+a1BkdY/yhGA/hFoVULxYyZ/RohiCfcJC/48cU2xI6Rtw==",
+        "source": "npm pack exact version; no lifecycle scripts; extracted outside repo"
+      },
+      {
+        "name": "@zk-kit/utils",
+        "version": "1.4.1",
+        "lock_path": "node_modules/@zk-kit/utils",
+        "lock_integrity": "sha512-IoXzy3ElfkvRfC/s6uk3eFQO8uxkCdAOVxKlJlaEjM7pgckX5AK46Q+7n5yMQD/v/o6OL0mMtet065o5EpUocA==",
+        "actual_integrity": "sha512-IoXzy3ElfkvRfC/s6uk3eFQO8uxkCdAOVxKlJlaEjM7pgckX5AK46Q+7n5yMQD/v/o6OL0mMtet065o5EpUocA==",
+        "source": "npm pack exact version; no lifecycle scripts; extracted outside repo"
+      }
+    ],
+    "project_lock_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+    "initial_dependency_startup_failure": "Pool helper suite initially could not resolve @zk-kit/utils/error-handlers; no tests ran. Resolved with exact lock-bound transitive dependency; original startup log retained."
+  },
+  "limits": [
+    "No new clean whole-workspace install. Exact locked package versions borrowed; three missing test-only tarballs validated against lock SHA512.",
+    "Raw witness/proof execution pending absent Wasm/zkey artifacts; changed witness fixture source-reviewed only. No circuit or contract source change.",
+    "Full focused-head typecheck, lint, build, coverage, browser suites and hosted qualification remain pending.",
+    "No remote mutations or original active branch edits."
+  ]
+}

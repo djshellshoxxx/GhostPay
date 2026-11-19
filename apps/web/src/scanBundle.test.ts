@@ -98,6 +98,28 @@ describe('scan-bundle', () => {
     expect(out).toMatch(/src\/Hide\.ts: eval/);
   });
 
+  it.each([
+    ['nested template', 'Hidden.ts', 'const t = `${`//`}`; el.innerHTML = x;\n', 'innerHTML/outerHTML assignment'],
+    ['regex after a condition', 'Hidden.ts', 'if (a) /\\/*/.test(b); el.innerHTML = c; const r = /x*/;\n', 'innerHTML/outerHTML assignment'],
+    ['JSX URL text', 'Hidden.tsx', 'export const A = () => <a>https://x.y</a>; eval(z);\n', 'eval/new Function'],
+    ['compound assignment', 'Hidden.ts', 'el.innerHTML += x;\n', 'innerHTML/outerHTML assignment'],
+    ['string-keyed assignment', 'Hidden.ts', 'el["outerHTML"] = x;\n', 'innerHTML/outerHTML assignment'],
+    ['parenthesised eval', 'Hidden.ts', '(0, eval)("1");\n', 'eval/new Function'],
+    ['parenthesised constructor', 'Hidden.ts', 'new (Function)("return 1");\n', 'eval/new Function'],
+    ['comment-separated property', 'Hidden.ts', 'el /* first */ . /* second */ innerHTML = x;\n', 'innerHTML/outerHTML assignment'],
+    ['unparsable TypeScript', 'Hidden.ts', 'const = = = ;\n', 'could not be parsed'],
+  ])('rejects source sinks or parse failures after %s', (_name, file, text, problem) => {
+    expect(scan(build({ [`src/${file}`]: text }))).toContain(`src/${file}: ${problem}`);
+  });
+
+  it('does not mistake inert sink-looking strings, regex literals or JSX text for executable sinks', () => {
+    const b = build({
+      'src/Safe.tsx': 'const text = "el.innerHTML = x; eval(1); new Function(1)"; const r = /el.innerHTML = x/; export const A = () => <span>eval(x)</span>;\n',
+      'src/Compare.ts': 'if (a === b) { x.innerHTML == y; }\n',
+    });
+    expect(scan(b)).toEqual([]);
+  });
+
   it('allows the documented React DOM fingerprints but not extra innerHTML assignments', () => {
     const react = 'o.innerHTML=`<script><\\/script>`;\n?.__html!==n&&(e.innerHTML=n);case`innerHTML`:break;case`dangerouslySetInnerHTML`:if(r!=null){}n.dangerouslySetInnerHTML!=null';
     expect(scan(build({ 'dist/assets/a.js': react }))).toEqual([]);
