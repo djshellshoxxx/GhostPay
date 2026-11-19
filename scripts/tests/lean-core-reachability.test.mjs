@@ -61,10 +61,6 @@ const WEB_REVIEWED = [
   '@ghostpay/tron-adapter',
   '@ghostpay/tx-review',
 ];
-// Existing privacy helpers introduced by #222 and retained after #230's session-only correction. The master
-// consolidation reviewed the specific import edges and their pure behavior; this does not approve other exports,
-// new network operations or production release. See docs/consolidation/master-20261118/INTEGRATION_REPAIRS.md.
-const PRIVACY_INTEGRATION_REVIEWED = ['@ghostpay/hygiene', '@ghostpay/metadata-hardening'];
 // PENDING_OWNER_REVIEW = present on the consolidated integration branch but NOT owner-reviewed for lean core.
 // The owner must accept (move to REVIEWED) or remove each one. Closure must equal REVIEWED + PENDING exactly:
 // a new dep fails, and a PENDING entry that left the closure fails too, so the list never grows or lingers silently.
@@ -81,11 +77,10 @@ const WEB_PENDING_OWNER_REVIEW = [
 ];
 
 test('apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list', () => {
-  assert.equal(WEB_PENDING_OWNER_REVIEW.filter((n) => WEB_DEFERRED.includes(n) || WEB_REVIEWED.includes(n) || PRIVACY_INTEGRATION_REVIEWED.includes(n)).length, 0);
-  assert.equal(PRIVACY_INTEGRATION_REVIEWED.filter((n) => WEB_DEFERRED.includes(n) || WEB_REVIEWED.includes(n)).length, 0);
+  assert.equal(WEB_PENDING_OWNER_REVIEW.filter((n) => WEB_DEFERRED.includes(n) || WEB_REVIEWED.includes(n)).length, 0);
   assert.deepEqual(
     closure('apps/web', workspaceIndex()),
-    [...WEB_REVIEWED, ...PRIVACY_INTEGRATION_REVIEWED, ...WEB_PENDING_OWNER_REVIEW].sort(),
+    [...WEB_REVIEWED, ...WEB_PENDING_OWNER_REVIEW].sort(),
     'apps/web closure must equal REVIEWED + WEB_PENDING_OWNER_REVIEW (not owner-reviewed: ' + WEB_PENDING_OWNER_REVIEW.join(', ') + ')',
   );
 });
