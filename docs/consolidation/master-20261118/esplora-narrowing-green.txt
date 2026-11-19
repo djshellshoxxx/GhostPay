@@ -1,0 +1,4 @@
+Compiler command: node node_modules/typescript/bin/tsc --noEmit --skipLibCheck --strict --lib es2022,dom audit-data/esplora-narrowing-green.ts
+Exit code: 0
+Compiler diagnostics: none
+Scope: minimal control-flow reproduction; not full workspace typecheck.

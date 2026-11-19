@@ -1,0 +1,1 @@
+../audit-data/esplora-narrowing-probe.ts(4,15): error TS2367: This comparison appears to be unintentional because the types 'false | undefined' and 'true' have no overlap.
