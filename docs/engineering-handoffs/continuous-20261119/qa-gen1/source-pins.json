@@ -1,0 +1,35 @@
+{
+  "commit": "45a5dcf7f3a37a44e252db6f2b902aeb02981206",
+  "tree": "6a84a3269b18a0ed0904a983af95c3b91241a607",
+  "base": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "files": {
+    "apps/web/e2e/network-authorization.spec.ts": {
+      "gitBlob": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b",
+      "sha256": "55ebe9d0096bf655969b2f77d79442c0262c706815c279db3ecbaec53f12bc55"
+    },
+    "apps/web/e2e/privacy-settings.spec.ts": {
+      "gitBlob": "a673b37c5927c60aa8d4ca260a0861209178a00f",
+      "sha256": "7fdb26b0730b32649108cfc5c5073a41bc8bb0c551cfccbf2afc12d9ff2517b0"
+    },
+    "apps/web/e2e/stealth-export.spec.ts": {
+      "gitBlob": "7914f00fd505121edb5271e7040603b2dc2a847a",
+      "sha256": "505a612227ccb2a6bf86cb6e713c6a7bb801403b8202b323ec5c1be53341bebe"
+    },
+    "apps/web/e2e/stealthExportFixtures.ts": {
+      "gitBlob": "97044edcd17c4ead4f16b6e5a852a85480121987",
+      "sha256": "c20f34cbee17db4bfeec6a3b360f674cc35db58df3c8a732256bdc37299991d9"
+    },
+    "apps/web/src/components/Disclosure.manifest.test.tsx": {
+      "gitBlob": "da7fd9a6813dc6b1ddfa1aaa5ec165d199b525e8",
+      "sha256": "348527df50d8a2f68241a803c7e2b413b86a98beb9b4f2f7fb30e6f35a0eb425"
+    },
+    "apps/web/src/components/Disclosure.tsx": {
+      "gitBlob": "4ecacbf464c6e1b413d9857be417569200a05b69",
+      "sha256": "c090adce8b7a55d31036f55b31bdf182de27db8c71e318f3fe44ca2d71f0f391"
+    },
+    "apps/web/src/views/Pay.network.test.tsx": {
+      "gitBlob": "e72ea03feaa07a7e5450ac3eae1bef7c7a097887",
+      "sha256": "4b7f3f3d2b1ef6acf65163181135deb5a4c6d2aa62909b289a056f6c75d8f17b"
+    }
+  }
+}
