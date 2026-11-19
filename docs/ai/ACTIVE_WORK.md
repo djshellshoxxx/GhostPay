@@ -559,3 +559,18 @@ Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
 Owned paths: root/workspace package manifests, package-lock.json, dependency tooling regressions if a defect is reproduced, and a source-pinned dependency handoff. No application source, workflows, coverage configuration, contracts or deployment changes.
 Acceptance: integrate the exact paired #210 and #236 dependency revisions; clean installation; library and web builds; relevant original coverage-enabled suites, typechecks and lints; full and production dependency audits; preserve pending browser and hosted qualification honestly. No forced peers, casts, blanket overrides or weakened gates.
 Source candidates: #210 `4d19655a2e5d93ad9378803cd4163245168aca24`; #236 `defdaa308a2d05ab407af7e42f8dc457cf52d103`.
+
+## Master consolidation: bounded CodeQL reconciliation — 2026-11-18
+
+Worker: independent CI/release reviewer, Caveman investigate-first.
+Branch: `integration/ghostpay-codeql-reconciled-20261118`.
+Base: PR #238 `198aa5baff22272453733a0f3dcfcac0e0994eec`.
+Owned paths: `packages/pir-two-server/src/client.ts` and its regression tests;
+`apps/web/src/views/Settings.test.tsx`; this claim; a scoped consolidation handoff.
+Acceptance: reproduce the uncontrolled trailing-slash normalization mechanism, remove
+quadratic processing without changing ordinary endpoint semantics, and keep regression
+coverage; replace the Settings preloaded-storage fixture with an honest synthetic
+test setup while preserving persisted-provider-warning and session-only assertions.
+No CodeQL suppression, scanner exclusion, gate, dependency, crypto, network-policy or
+release change. Record actual tests and source identities; hosted CodeQL must rerun
+on the combined candidate before the alerts can be claimed closed.
