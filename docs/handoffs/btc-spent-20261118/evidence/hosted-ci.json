@@ -860,7 +860,327 @@
     ],
     "cliRunConclusion": "success",
     "cliFinalArtifactCount": 0,
-    "cliConclusionObservedAt": "2026-11-19T08:46:17Z"
+    "cliConclusionObservedAt": "2026-11-19T08:46:17Z",
+    "beta": {
+      "observed_utc": "2026-11-19T09:09:36.386Z",
+      "source_head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "run_id": 44486594134,
+      "job_id": 135431490043,
+      "conclusion": "success",
+      "checkout_sha": "d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+      "checkout_log_timestamp": "2026-11-19T09:01:25.8571741Z",
+      "versions": {
+        "node": "v22.23.4",
+        "npm": "10.9.9",
+        "chromium": null,
+        "playwright_cache_key": "playwright-Linux-1.64.1",
+        "chromium_note": "Chromium install reused a browser cache; browser version was not printed in this job log.",
+        "anvil": "1.8.5",
+        "forge": "1.8.5"
+      },
+      "command": "bash scripts/beta/acceptance.sh --skip-build",
+      "stages": [
+        "lib",
+        "cli",
+        "browser"
+      ],
+      "cli_checks": {
+        "passed": 124,
+        "total": 124
+      },
+      "browser_scope": "Supplemental EVM devnet journey",
+      "browser_counts": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      "coverage": null,
+      "raw_log": "job-135431490043-current981-beta.log",
+      "artifacts_snapshot": "run-44486594134-current981-artifacts-89.json",
+      "artifact": {
+        "id": 14512754792,
+        "name": "beta-acceptance-log",
+        "size_bytes": 5430,
+        "digest": "sha256:333e434907384506b614e19515f8e1c5268b260c37ccd21d8bc587120a688c7f",
+        "download_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594134/artifacts/14512754792",
+        "created_at": "2026-11-19T09:05:29Z",
+        "expires_at": "2026-11-26T09:05:29Z",
+        "expired_at_observation": false
+      },
+      "job_name": "beta acceptance (lib + cli + browser on anvil)",
+      "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594134/job/135431490043",
+      "runUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594134",
+      "jobStartedAt": "2026-11-19T09:01:22Z",
+      "jobCompletedAt": "2026-11-19T09:05:33Z",
+      "runStatusAtSnapshot": "completed",
+      "runConclusionAtSnapshot": "success",
+      "statusSnapshot": "current981-supplemental-89.json",
+      "statusSnapshotObservedAt": "2026-11-19T09:08:43.227Z",
+      "rawLogSha256": "57c2bc3937a0c23950a10a3f30f78669ab230746c790280d1381ad592a8177ee",
+      "rawLogBytes": 75204,
+      "countScope": "The 124 CLI acceptance checks and 3 EVM devnet browser tests are separate supplemental counts; neither is added to unique Bitcoin unit or full/lean browser test totals.",
+      "browser_test_file": "e2e/devnet-journey.spec.ts",
+      "browser_duration_seconds": 37.6,
+      "stages_result": {
+        "lib": "passed",
+        "cli": "passed",
+        "browser": "passed"
+      },
+      "artifact_count_observed": 1,
+      "artifactsObservedAt": "2026-11-19T09:09:06.543Z",
+      "verificationExcerpt": [
+        "2026-11-19T09:01:25.8538901Z [command]/usr/bin/git log -1 --format=%H",
+        "2026-11-19T09:01:25.8571741Z d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+        "2026-11-19T09:01:26.9424507Z node: v22.23.4",
+        "2026-11-19T09:01:26.9424900Z npm: 10.9.9",
+        "2026-11-19T09:01:50.2268062Z   key: playwright-Linux-1.64.1",
+        "2026-11-19T09:01:53.2575707Z Cache restored from key: playwright-Linux-1.64.1",
+        "2026-11-19T09:02:45.5286712Z ##[group]Run bash scripts/beta/acceptance.sh --skip-build",
+        "2026-11-19T09:02:45.7321052Z node v22.23.4; anvil Version: 1.8.5; forge Version: 1.8.5",
+        "2026-11-19T09:02:45.7321717Z stages lib,cli,browser",
+        "2026-11-19T09:04:45.9425312Z == CLI devnet e2e: 124/124 checks passed",
+        "2026-11-19T09:05:15.7682018Z Running 3 tests using 1 worker",
+        "2026-11-19T09:05:23.9491116Z   ✓  1 e2e/devnet-journey.spec.ts:71:1 › real chain: keys -> signed invoice -> consented payment (pending, then included) -> reload keeps hash, no duplicate -> scan (pending, then final) -> bound receipt -> direct sweep -> no second sweep (7.0s)",
+        "2026-11-19T09:05:26.5995740Z   ✓  2 e2e/devnet-journey.spec.ts:239:1 › real chain: reload while the payment is still pending keeps its hash and blocks a duplicate; it is mined exactly once (2.6s)",
+        "2026-11-19T09:05:28.7860789Z   ✓  3 e2e/devnet-journey.spec.ts:280:1 › real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment (2.2s)",
+        "2026-11-19T09:05:28.8470882Z   3 passed (37.6s)",
+        "2026-11-19T09:05:28.9299901Z PASS lib (5s)",
+        "2026-11-19T09:05:28.9300186Z PASS cli (71s)",
+        "2026-11-19T09:05:28.9300458Z PASS browser (43s)",
+        "2026-11-19T09:05:28.9300719Z ACCEPTANCE OK",
+        "2026-11-19T09:05:29.4692791Z SHA256 digest of uploaded artifact is 333e434907384506b614e19515f8e1c5268b260c37ccd21d8bc587120a688c7f",
+        "2026-11-19T09:05:29.8433619Z Artifact beta-acceptance-log has been successfully uploaded! Final size is 5430 bytes. Artifact ID is 14512754792"
+      ]
+    },
+    "hostingWeb": {
+      "observed_utc": "2026-11-19T09:09:36.896Z",
+      "source_head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "run_id": 44486593904,
+      "job_id": 135431489145,
+      "job_name": "qualify-ghostpay-web",
+      "conclusion": "success",
+      "checkout_sha": "d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+      "checkout_log_timestamp": "2026-11-19T09:05:52.7571772Z",
+      "versions": {
+        "node": "v22.23.5",
+        "npm": "10.9.9",
+        "chromium_installed": "Chrome for Testing and Chrome Headless Shell 156.0.8078.4",
+        "playwright_browser_revision": "1248",
+        "version_evidence": "Install log at 09:08:18–09:08:25 UTC; browser runtime did not print a separate version."
+      },
+      "commands": [
+        {
+          "command": "npm run build --workspace @ghostpay/web",
+          "result": "passed"
+        },
+        {
+          "command": "node bin/ghostpay-host.mjs validate ../../apps/web/dist",
+          "cwd": "tools/portable-hosting-kit",
+          "result": "passed"
+        },
+        {
+          "command": "node bin/ghostpay-host.mjs package ../../apps/web/dist --out \"$RUNNER_TEMP/ghostpay-web.zip\" \\\n  --label \"ci-${GITHUB_SHA::12}\" --git-dir ../.. --license-file ../../THIRD_PARTY.md",
+          "cwd": "tools/portable-hosting-kit",
+          "result": "passed"
+        },
+        {
+          "command": "node bin/ghostpay-host.mjs verify \"$RUNNER_TEMP/ghostpay-web.zip\"",
+          "cwd": "tools/portable-hosting-kit",
+          "result": "passed",
+          "verification_scope": "Archive consistency with its own manifest; --expect-digest was not supplied and publisher authenticity was not established by this command."
+        },
+        {
+          "command": "node --test test/browser/chromium.test.mjs",
+          "counts": {
+            "passed": 1,
+            "failed": 0,
+            "skipped": 0,
+            "cancelled": 0,
+            "todo": 0
+          },
+          "case": "demo and GhostPay render in Chromium under their CSP (preview, root and subpath)",
+          "environment": {
+            "HK_BROWSER_TESTS": "1"
+          },
+          "cwd": "tools/portable-hosting-kit",
+          "duration_ms": 6916.807946
+        }
+      ],
+      "coverage": null,
+      "raw_log": "job-135431489145-current981-hosting-web.log",
+      "artifacts_snapshot": "run-44486593904-current981-artifacts-89.json",
+      "artifact_count_observed": 0,
+      "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486593904/job/135431489145",
+      "runUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486593904",
+      "jobStartedAt": "2026-11-19T09:05:49Z",
+      "jobCompletedAt": "2026-11-19T09:08:35Z",
+      "runStatusAtSnapshot": "in_progress",
+      "runConclusionAtSnapshot": null,
+      "statusSnapshot": "current981-supplemental-89.json",
+      "statusSnapshotObservedAt": "2026-11-19T09:08:43.227Z",
+      "rawLogSha256": "04d01e8089a29c6c49550ae8713b1d323993543f949d920418927c6cc6228853",
+      "rawLogBytes": 52343,
+      "packagedOutput": {
+        "files": 19,
+        "uncompressedBytes": 3009450,
+        "entrypoint": "index.html",
+        "archiveSha256": "f2116e97f3ae5e7ede8cf7158c2a75ee386850c9f7556ec8522e0f93e1ff2f9a",
+        "contentDigest": "sha256:b87705bd423c70e01d9a96fd3713e1b85b34c20f654b150c2be41af9ef5f6627",
+        "artifactUploaded": false
+      },
+      "countScope": "One supplemental ordinary-Chromium packaging/CSP smoke test; not a Bitcoin feature, full/lean browser matrix, wallet, Tor Browser, or I2P test. It is not added to unique Bitcoin test totals.",
+      "artifactsObservedAt": "2026-11-19T09:09:07.050Z",
+      "verificationExcerpt": [
+        "2026-11-19T09:05:52.7543828Z [command]/usr/bin/git log -1 --format=%H",
+        "2026-11-19T09:05:52.7571772Z d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+        "2026-11-19T09:05:53.7541342Z node: v22.23.5",
+        "2026-11-19T09:05:53.7542206Z npm: 10.9.9",
+        "2026-11-19T09:06:11.4353736Z ##[group]Run npm run build --workspace @ghostpay/web",
+        "2026-11-19T09:06:11.5886901Z > tsc -p tsconfig.json --noEmit && vite build",
+        "2026-11-19T09:06:32.1257785Z Bundle scan passed: 19 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.",
+        "2026-11-19T09:06:32.1450634Z ##[group]Run node bin/ghostpay-host.mjs validate ../../apps/web/dist",
+        "2026-11-19T09:06:32.1452088Z \u001b[36;1mnode bin/ghostpay-host.mjs package ../../apps/web/dist --out \"$RUNNER_TEMP/ghostpay-web.zip\" \\\u001b[0m",
+        "2026-11-19T09:06:32.1452751Z \u001b[36;1m  --label \"ci-${GITHUB_SHA::12}\" --git-dir ../.. --license-file ../../THIRD_PARTY.md\u001b[0m",
+        "2026-11-19T09:06:32.1453314Z \u001b[36;1mnode bin/ghostpay-host.mjs verify \"$RUNNER_TEMP/ghostpay-web.zip\"\u001b[0m",
+        "2026-11-19T09:06:32.3203808Z OK: 19 files, 3009450 bytes, entrypoint index.html, headers from site",
+        "2026-11-19T09:06:32.8195789Z packaged 19 files",
+        "2026-11-19T09:06:32.9384296Z OK: /home/runner/work/_temp/ghostpay-web.zip",
+        "2026-11-19T09:06:32.9385780Z   content digest sha256:b87705bd423c70e01d9a96fd3713e1b85b34c20f654b150c2be41af9ef5f6627",
+        "2026-11-19T09:06:32.9387042Z   archive sha256 f2116e97f3ae5e7ede8cf7158c2a75ee386850c9f7556ec8522e0f93e1ff2f9a",
+        "2026-11-19T09:06:32.9389160Z   authenticity: NOT ESTABLISHED: files are consistent with their own manifest, which proves nothing about who published them; pass --expect-digest from an independent channel",
+        "2026-11-19T09:08:22.3549866Z Chrome for Testing 156.0.8078.4 (playwright chromium v1248) downloaded to /home/runner/.cache/ms-playwright/chromium-1248",
+        "2026-11-19T09:08:25.6086423Z Chrome Headless Shell 156.0.8078.4 (playwright chromium-headless-shell v1248) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1248",
+        "2026-11-19T09:08:25.6268314Z ##[group]Run node --test test/browser/chromium.test.mjs",
+        "2026-11-19T09:08:25.6302066Z   HK_BROWSER_TESTS: 1",
+        "2026-11-19T09:08:32.5589084Z ok 1 - demo and GhostPay render in Chromium under their CSP (preview, root and subpath)",
+        "2026-11-19T09:08:32.5823335Z # tests 1",
+        "2026-11-19T09:08:32.5824904Z # pass 1",
+        "2026-11-19T09:08:32.5826550Z # fail 0",
+        "2026-11-19T09:08:32.5829050Z # cancelled 0",
+        "2026-11-19T09:08:32.5829544Z # skipped 0",
+        "2026-11-19T09:08:32.5832568Z # todo 0",
+        "2026-11-19T09:08:32.5842604Z # duration_ms 6916.807946"
+      ]
+    },
+    "hostingKit": {
+      "observed_utc": "2026-11-19T09:13:08.864Z",
+      "source_head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "run_id": 44486593904,
+      "job_id": 135431489581,
+      "job_name": "kit",
+      "conclusion": "success",
+      "checkout_sha": "d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+      "checkout_log_timestamp": "2026-11-19T09:06:38.5566017Z",
+      "versions": {
+        "node": "v22.23.4",
+        "npm": "10.9.9",
+        "chromium": null,
+        "chromium_note": "This job skips the browser test; qualify-ghostpay-web is the separate executed browser job."
+      },
+      "command_scope": "Hosting kit package",
+      "commands": [
+        {
+          "command": "npm run lint",
+          "result": "passed",
+          "cwd": "tools/portable-hosting-kit",
+          "script": "eslint --config eslint.config.mjs ."
+        },
+        {
+          "command": "npm run typecheck",
+          "result": "passed",
+          "cwd": "tools/portable-hosting-kit",
+          "script": "tsc -p tsconfig.json"
+        },
+        {
+          "command": "npm test",
+          "counts": {
+            "total": 296,
+            "passed": 290,
+            "failed": 0,
+            "skipped": 6,
+            "cancelled": 0,
+            "todo": 0
+          },
+          "skip_log_lines": [
+            "2026-11-19T09:10:14.4645935Z ok 17 - i2pd parses the generated tunnel file (no-network namespace, temp datadir, killed immediately) # SKIP cannot create a network namespace (unshare -n); refusing to start i2pd with network access",
+            "2026-11-19T09:10:14.4650772Z ok 19 - Java I2P runtime validation # SKIP Java I2P is not installed in this environment and has no non-activating config check; the i2ptunnel.config.d format is validated against the official spec and i2p.i2p source only (see i2p.test.mjs)",
+            "2026-11-19T09:10:14.4849686Z ok 35 - demo and GhostPay render in Chromium under their CSP (preview, root and subpath) # SKIP set HK_BROWSER_TESTS=1 (needs a Playwright Chromium build)",
+            "2026-11-19T09:10:14.4880261Z ok 45 - kit onion validation agrees with @ghostpay/net-transport # SKIP packages/net-transport/dist not built (npm run build -w @ghostpay/net-transport)",
+            "2026-11-19T09:10:17.2294569Z ok 228 - real GhostPay apps/web/dist: validate, package, verify, preview # SKIP apps/web/dist not built",
+            "2026-11-19T09:10:21.9566927Z ok 251 - runs fully unprivileged (as nobody) from a writable runtime directory # SKIP needs root to switch to an unprivileged user"
+          ],
+          "cwd": "tools/portable-hosting-kit",
+          "script": "node --test --test-concurrency=4 \"test/**/*.test.mjs\"",
+          "environment": {
+            "HK_DOCKER_TESTS": "1"
+          },
+          "suites": 3,
+          "duration_ms": 10693.713413
+        },
+        {
+          "command": "node bin/ghostpay-host.mjs demo --out \"$RUNNER_TEMP/hk-demo\"",
+          "result": "passed",
+          "cwd": "tools/portable-hosting-kit"
+        },
+        {
+          "command": "node bin/ghostpay-host.mjs verify \"$RUNNER_TEMP/hk-demo/demo-site.zip\"",
+          "cwd": "tools/portable-hosting-kit",
+          "result": "passed",
+          "verification_scope": "Archive consistency with its own manifest; no independently supplied expected digest. The demo separately exercises a matching expected digest produced within the same run."
+        }
+      ],
+      "coverage": null,
+      "raw_log": "job-135431489581-current981-hosting-kit.log",
+      "artifacts_snapshot": "run-44486593904-current981-artifacts-final.json",
+      "artifact_count": 0,
+      "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486593904/job/135431489581",
+      "runUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486593904",
+      "jobStartedAt": "2026-11-19T09:06:29Z",
+      "jobCompletedAt": "2026-11-19T09:10:26Z",
+      "runStatusAtSnapshot": "completed",
+      "runConclusionAtSnapshot": "success",
+      "statusSnapshot": "current981-supplemental-92.json",
+      "statusSnapshotObservedAt": "2026-11-19T09:12:27.798Z",
+      "rawLogSha256": "78b31fdd15f151a1e5957081825076c177f42a07da4c8e01f305952713c8d3a4",
+      "rawLogBytes": 142368,
+      "artifactsObservedAt": "2026-11-19T09:12:42.414Z",
+      "countScope": "Portable hosting kit tests are supplemental compatibility evidence and are not added to unique Bitcoin unit or full/lean browser test totals. All six skips remain skips in this job; Hosting-web separately executes its Chromium smoke and real web packaging checks.",
+      "demoOutput": {
+        "files": 10,
+        "archiveSha256": "3fdbc20dfca1af0909df38e6657b4eae052e0fa2d8fc8d3d5ee6309efa5af9b8",
+        "contentDigest": "sha256:0665db8a049b292491a5b44a5cca4a4ba2a66b8273356c165ddb49a234d54c32",
+        "artifactUploaded": false
+      },
+      "verificationExcerpt": [
+        "2026-11-19T09:06:38.5548683Z [command]/usr/bin/git log -1 --format=%H",
+        "2026-11-19T09:06:38.5566017Z d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+        "2026-11-19T09:06:44.9390281Z node: v22.23.4",
+        "2026-11-19T09:06:44.9390596Z npm: 10.9.9",
+        "2026-11-19T09:10:07.7911473Z ##[group]Run npm run lint",
+        "2026-11-19T09:10:07.8883462Z > eslint --config eslint.config.mjs .",
+        "2026-11-19T09:10:08.8645847Z ##[group]Run npm run typecheck",
+        "2026-11-19T09:10:11.1355383Z > tsc -p tsconfig.json",
+        "2026-11-19T09:10:11.1394527Z ##[group]Run npm test",
+        "2026-11-19T09:10:11.1413803Z   HK_DOCKER_TESTS: 1",
+        "2026-11-19T09:10:11.2321516Z > node --test --test-concurrency=4 \"test/**/*.test.mjs\"",
+        "2026-11-19T09:10:21.9633982Z # tests 296",
+        "2026-11-19T09:10:21.9634187Z # suites 3",
+        "2026-11-19T09:10:21.9634393Z # pass 290",
+        "2026-11-19T09:10:21.9634606Z # fail 0",
+        "2026-11-19T09:10:21.9634818Z # cancelled 0",
+        "2026-11-19T09:10:21.9635034Z # skipped 6",
+        "2026-11-19T09:10:21.9635240Z # todo 0",
+        "2026-11-19T09:10:21.9635470Z # duration_ms 10693.713413",
+        "2026-11-19T09:10:21.9692729Z ##[group]Run node bin/ghostpay-host.mjs demo --out \"$RUNNER_TEMP/hk-demo\"",
+        "2026-11-19T09:10:21.9693484Z \u001b[36;1mnode bin/ghostpay-host.mjs verify \"$RUNNER_TEMP/hk-demo/demo-site.zip\"\u001b[0m",
+        "2026-11-19T09:10:22.0435427Z 2. validated: 10 files, headers from site",
+        "2026-11-19T09:10:22.0653307Z 4. verified: ok (authenticity: content-digest-matches-expected; the expected digest came from this same run, so this only demonstrates the mechanism)",
+        "2026-11-19T09:10:22.1722937Z demo complete. Nothing was installed, started or published.",
+        "2026-11-19T09:10:22.2385637Z OK: /home/runner/work/_temp/hk-demo/demo-site.zip",
+        "2026-11-19T09:10:22.2386592Z   content digest sha256:0665db8a049b292491a5b44a5cca4a4ba2a66b8273356c165ddb49a234d54c32",
+        "2026-11-19T09:10:22.2387616Z   archive sha256 3fdbc20dfca1af0909df38e6657b4eae052e0fa2d8fc8d3d5ee6309efa5af9b8"
+      ]
+    }
   },
   "superseded236FullJobSnapshot": {
     "observedAt": "2026-11-19 08:49:03 UTC",
@@ -1112,5 +1432,80 @@
       }
     ],
     "note": "The queued/cancelled jobs' started_at field does not prove execution: the cancelled matrix jobs have no runner and no steps. Both always-run aggregators remain queued; the overall run is not recorded as finished."
+  },
+  "superseded236FinalSnapshot": {
+    "utc": "2026-11-19T09:02:45.389Z",
+    "classification": "historical prior-source final snapshot",
+    "run_id": 44476728502,
+    "head_sha": "2364284a2717a22b895fcb7badeb2e7ae6bb0e48",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "total_count": 24,
+    "returned_count": 24,
+    "job_conclusions": {
+      "success": 2,
+      "cancelled": 20,
+      "failure": 2
+    },
+    "aggregators": [
+      {
+        "id": 135431496619,
+        "name": "contracts",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-19T09:01:35Z",
+        "completed_at": "2026-11-19T09:01:37Z",
+        "runner_name": "GitHub Actions 1000065216",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run echo \"needs results: $RESULTS\"",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 2
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          }
+        ]
+      },
+      {
+        "id": 135431497187,
+        "name": "typescript",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-19T09:01:40Z",
+        "completed_at": "2026-11-19T09:01:43Z",
+        "runner_name": "GitHub Actions 1000065217",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run echo \"needs results: $RESULTS\"",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 2
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          }
+        ]
+      }
+    ]
   }
 }

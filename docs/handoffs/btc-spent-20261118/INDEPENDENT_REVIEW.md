@@ -403,3 +403,28 @@ source/configuration hashes match that commit and the worktree; before/after man
 All 16 workspace runtime/declaration output pairs and six saved artifact hashes/byte counts match. The embedded
 raw log equals the saved file. No additional tests were run, and no broader typecheck, coverage or browser
 completion was inferred from this evidence verification.
+
+## Current-source validation evidence review
+
+The reviewer independently checked the subsequent web typecheck and whole-workspace lint records at
+`1977a500` / `981cc2f4`. The typecheck exited 0 without diagnostics. Lint started all 67 workspace scripts,
+with five `Killed` lines and five lifecycle code-137 failures; the wrapper records `signal: null`.
+The packet correctly preserves this as an unsuccessful gate, leaves its cause unverified, and does not
+infer success from the absence of ESLint rule errors. Source manifests and saved log/result hashes match.
+
+The current supplemental workflows were also checked against their raw logs and metadata. All three CLI
+platforms, Pages build/browser, Integration, Beta, Hosting web and Hosting kit confirm actual checkout
+`d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac`. Counts, tool versions, explicit skips, artifact sizes and
+GitHub-reported digests match the records in VALIDATION.md and the per-workflow evidence files. Repeated
+platform executions and compatibility tests are not added into unique Bitcoin test totals.
+
+The Pages evidence distinguishes the uploaded 16-file DEMO artifact from the browser job's separately built
+development/testnet manifest and local-Anvil site. Installed Chromium version evidence is not presented as
+a separately printed runtime version. Integration's actual test-runtime line confirms Node 22.23.4 and
+npm 10.9.9; its nine Bitcoin steps are existing compatibility coverage, not execution of the new browser
+spentness/reload cases. Artifact digests were checked against the upload logs and GitHub API snapshots;
+the reviewers did not claim an independent download and hash of those archives.
+
+No concrete report-accuracy issue remained in these additions. These were evidence checks without new test
+executions. Current core Bitcoin/web coverage, workspace gates and full/lean Chromium were still pending
+and were not assigned passing results by these reviews.

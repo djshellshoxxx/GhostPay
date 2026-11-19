@@ -105,5 +105,38 @@
       "tree": "af61e24cb588fbf082915deac110c10cca008e70",
       "subject": "fix(btc): bind provider result labels to scan consent"
     }
-  ]
+  ],
+  "preparedDocumentationCheckpoint": {
+    "local": "deb00a417c4d745cdf2d0434aca81bbb5203e7ca",
+    "remote": "3d7c291ef18af6c5bedc427ed8ac635d1f40cfc8",
+    "tree": "258379b5d39e7a0d9187336aa1730ab89352d472",
+    "parentLocal": "1977a50010e2d72476e0de67168b4f46715aab9c",
+    "parentRemote": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+    "branchUpdated": false,
+    "purpose": "Prepared documentation checkpoint objects with exact blob/tree equality; defer branch fast-forward until current runtime qualification outcomes are recorded.",
+    "recordedAt": "2026-11-19T08:57:46.565866+00:00",
+    "publicationStatus": "prepared Git objects only; not the published branch head",
+    "publishedBranchHeadObserved": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+    "publishedBranchRef": "refs/heads/chatgpt/btc-spent-private-scan-20261118",
+    "branchHeadVerification": "git ls-remote origin refs/heads/chatgpt/btc-spent-private-scan-20261118 returned 981cc2f4395d2d76c499a5cd46387daaaa3a6b1f; no branch ref was moved.",
+    "verifiedAtUTC": "2026-11-19T09:33:11.559304+00:00",
+    "verification": {
+      "localCommitAndParentVerified": true,
+      "remoteCommitAndParentVerified": true,
+      "remoteObjectReadOnlyFetch": "git fetch origin 3d7c291ef18af6c5bedc427ed8ac635d1f40cfc8",
+      "localAndRemoteTreeEqual": true,
+      "localAndRemoteDiffEmpty": true,
+      "changesFromLocalParentRestrictedTo": "docs/handoffs/btc-spent-20261118/",
+      "appsAndPackagesTreesUnchangedFromLocalParent": {
+        "apps": "16a75249fd5d70d0a21a7d1220a4bdcca29086b3",
+        "packages": "f3436c7e06f818aa6c4d97780389d84cf0947682"
+      }
+    },
+    "transportEvidence": {
+      "file": "/workspace/scratch/c20ffc46347e/integration-evidence/prepared-packet-transport.json",
+      "sha256": "279ee99a94cdeda0b70d2be03ea938b2e43eb8ef25ec741b09b6a6feff8fe30a"
+    },
+    "scope": "Documentation/evidence checkpoint only. Runtime remains the separately pinned 1977a500/981cc2f4 correction. Later working-tree evidence additions are not retroactively part of this prepared tree; this record does not claim publication or new test execution.",
+    "mappingScope": "Separate prepared mapping; the existing commits array and its published-equivalent attribution remain unchanged."
+  }
 }

@@ -9,6 +9,22 @@ Implementation is committed in [PR #244](https://github.com/djshellshoxxx/GhostP
 No merge into `main`, deployment, release, contract, transaction-construction, Spec18 wallet-backup/recovery or unrelated dependency change
 is part of this feature. The [validation report](VALIDATION.md) records exact source identities and results.
 
+| Current-implementation check | Recorded source | Result |
+| --- | --- | --- |
+| Complete Bitcoin web directory | Local `1977a500`, identical published tree at `981cc2f4` | 244 passed, 0 failed, 1 existing live-bitcoind skip; no coverage collected. |
+| Worker/oracle regressions | Same local implementation | 45 passed with no skips; these are included in the complete Bitcoin selection. |
+| Web TypeScript check | Same local implementation | Passed, no diagnostics. |
+| Focused lint for the final two changed files | Same local implementation | Passed. |
+| Full local workspace lint | Same local implementation | Failed, exit 137; five processes killed. No rule errors recorded before termination; cause unverified. |
+| Pages build, artifact verification and browser | Hosted merge `d46949b9` | Clean libraries/web build and verification passed; 72 tooling tests and 16 lean/devnet browser tests passed. |
+| Bitcoin regtest integration | Hosted merge `d46949b9` | All 9 steps passed. |
+| CLI, Beta and Hosting compatibility | Hosted merge `d46949b9` | All workflows passed; exact repeated-platform totals and intentional skips are retained separately. |
+| Core full/lean Chromium, Bitcoin/web coverage and workspace gates | Current core run `44486593963` | Pending; no completion inferred from the supplemental workflows. |
+
+The hosted merge combines this implementation with accepted main `a36f48da`; its full source identity and
+per-job checkout proofs are retained below. The PR is **not yet merge-ready** while the required core gates
+remain unresolved.
+
 Source inputs: initial main `dfc75ef2087fa6463ae59e0818abec01796c578d` and the unchanged implementation of
 [PR #219](https://github.com/djshellshoxxx/GhostPay/pull/219), head
 `9617e8572f9bc414410bd937b0e7718d0c5bd55c`. Original #219 CI passed at that original head; those passes do not
@@ -54,6 +70,13 @@ lint attempted all 67 workspaces but exited 137: five processes were killed, inc
 recorded before termination; that is an unsuccessful gate, with cause unverified. Hosted qualification remains separate.
 [The regression evidence](evidence/worker-consent-label-fix.json) records the exact red/green sources and results.
 No unauthorized query was demonstrated by this finding; its demonstrated defect was an inaccurate result label.
+
+Fresh hosted checks confirm integration checkout `d46949b9`: all three CLI platforms passed; Pages passed a
+clean library build, web typecheck, 72 tooling tests and verification of the 16-file DEMO artifact; and Bitcoin
+regtest passed all nine existing integration steps. The separate Pages browser job passed all 16 lean/devnet
+tests. Beta and Hosting also passed, with explicit Hosting skips retained. All five supplemental workflows
+are successful; their logs and artifacts are pinned separately in the validation report. Core full/lean
+Chromium and Bitcoin/web coverage remain required current-source gates.
 
 ## Earlier qualification and typing correction
 

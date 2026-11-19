@@ -51,7 +51,7 @@ skip at that same source. Full-web coverage and full/lean browser acceptance rem
 | B12 | Deterministic unit/integration and full/lean browser cases supplied. | Final matrix remains pending; authored or intentionally skipped cases are not counted as passed. |
 | B13 | Independent source, integration and packet reviews completed with no unresolved feature-specific source blocker. | 119 independently executed focused tests; no external professional-audit claim. |
 | B14 | Bounds reviewed; real output cap corrected; input-filter, memory-sample and abort-to-completion measurements recorded. | Synthetic in-memory benchmark excludes network, block parsing, payment cryptography and browser worker scheduling. |
-| B15 | Interfaces, signing/recovery, dependencies and gates preserved; hosted Pages, regtest and workspace typecheck passed. | Remaining final CI checks must pass before merge readiness is asserted. |
+| B15 | Interfaces, signing/recovery, dependencies and gates preserved; current-source web typecheck, hosted Pages and Bitcoin regtest passed at their recorded pins. | Current whole-workspace lint did not pass locally; core hosted workspace checks, Bitcoin/web coverage and full/lean Chromium remain pending. Earlier whole-workspace typecheck retains its earlier source pin. |
 | B16 | Reviewable draft PR #244, source/transport mapping, independent review, scope map and validation evidence prepared. | No merge into main, deployment or release performed. |
 
 The full [validation report](VALIDATION.md) is authoritative for actual counts, failures, skips and source

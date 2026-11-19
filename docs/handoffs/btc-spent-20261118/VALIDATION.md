@@ -102,6 +102,37 @@ These repeated platform executions are not added into a count of unique feature 
 were produced. Per-platform commands, skip evidence and log hashes are under `latestConsentFix` in
 [hosted-ci.json](evidence/hosted-ci.json).
 
+Fresh Pages build [135431490079](https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594015/job/135431490079)
+and Integration [135431488263](https://github.com/djshellshoxxx/GhostPay/actions/runs/44486593825/job/135431488263)
+both confirm checkout `d46949b9` and passed. Pages used Node 22.23.4/npm 10.9.9, removed previous library
+outputs before rebuilding, passed 72 tooling tests with no skips, and completed the existing web typecheck,
+lean Vite build, distribution scan, source secret scan and 16-file DEMO site verification. Artifact
+[14513612413](https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594015/artifacts/14513612413)
+is 717,405 bytes, GitHub-reported SHA-256
+`04e28f3cf3b759cb0f354e591bf8dcb551584e7f92f676604b331530490fb89a`.
+
+Integration's actual test runtime log prints Node 22.23.4/npm 10.9.9. All nine Bitcoin regtest steps passed,
+including send, scan, real-node block proofs, sweep and destination confirmation; existing EVM/Solana suites
+also passed. Artifact [14514026496](https://github.com/djshellshoxxx/GhostPay/actions/runs/44486593825/artifacts/14514026496)
+is 2,393,589 bytes, GitHub-reported SHA-256
+`b2ebbb41eb732545dbb19b81cb3ed76c15353a0167450895fbc10034ac7d0102`.
+These fresh current-merge results are retained under `latestConsentFix` in the Pages and integration evidence
+files. They do not substitute for the main CI full/lean Chromium and Bitcoin/web coverage gates.
+
+The fresh Pages browser job [135431490312](https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594015/job/135431490312)
+also passed **16 tests, zero failures/skips**, with actual checkout `d46949b9` confirmed. It separately builds
+a test-manifest Pages artifact for local Anvil; this is lean compatibility, not Bitcoin runtime acceptance or
+testing of a deployed site. Observed Node 22.23.4/npm 10.9.9; install logs identify Chrome/Headless Shell
+156.0.8078.4, Playwright revision 1248. All case lines and raw-log identity are retained in
+[hosted-pages-browser.json](evidence/hosted-pages-browser.json). Release/deploy/post-deploy jobs were skipped.
+
+All five fresh supplemental workflows completed successfully. Beta passed 124 CLI acceptance checks and three
+browser tests; Hosting kit passed 290 tests with six explicit environment/optional-execution skips, and its
+separate web qualification passed one browser check. These are compatibility checks, not additional unique
+Bitcoin tests. Beta's log does not print a Chromium version. Hosting web used Node 22.23.5, while Beta and the
+kit used Node 22.23.4; all printed npm 10.9.9. Exact commands, six kit skip reasons, artifact metadata and
+verification excerpts are under `latestConsentFix` in [hosted-ci.json](evidence/hosted-ci.json).
+
 Exact commands, source hashes, logs and review boundaries are retained in
 [worker-consent-label-fix.json](evidence/worker-consent-label-fix.json). This fixes a false disclosure label
 on a malformed worker result; the demonstrated provider request was authorized. The existing UI passes a
