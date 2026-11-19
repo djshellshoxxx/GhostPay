@@ -114,8 +114,42 @@ from an old invoice, pin revision, cleared pin, lock/reset, seller change or unm
 Reopening an invoice requires a fresh current-context result; a previous successful result is not payment authority.
 Cross-tab changes must invalidate the displayed identity comparison before any payment action relies on it.
 
-The browser user guide documents the implemented pin-storage and confirmation controls. Same-origin browser storage
-and JavaScript are part of the trust boundary: a compromised origin or browser can alter stored public pins and code.
+### Browser pin persistence
+
+[`invoiceSignerPins.ts`](../../apps/web/src/lib/invoiceSignerPins.ts) stores the optional named collection under
+`ghostpay.invoiceSignerPins.v1` in the current origin's `localStorage`, as plain JSON:
+
+```json
+{"v":1,"revision":0,"pins":[]}
+```
+
+Each pin contains exactly `label` and `signer`. Labels are unique, trimmed NFC strings of at most 64 Unicode code points;
+control/format/surrogate characters are refused. Public keys must be canonical lowercase compressed secp256k1 points,
+validated on the curve. The collection allows at most 50 entries and 16,384 UTF-16 code units of stored JSON. Unknown
+fields, duplicate JSON keys, invalid records, unavailable storage and read failures make the collection unavailable;
+they do not silently create a trusted empty or partially recovered collection.
+
+Creation, replacement and removal require explicit user confirmation. Writes use a nonwaiting exclusive Web Lock
+named by the storage key. Under that lock, the store rereads the actual record and compares the expected previous
+signer with the displayed identity before changing it. It also rechecks the current UI/session authority before writing
+and verifies the read-back value. Lock contention or an unavailable lock/storage refuses the change. There is no silent
+memory-only fallback that could be represented as a saved pin. The persisted revision increments and is retained when
+the final pin is removed, so remove/re-add cannot revive an older confirmation for the same key.
+
+Same-tab subscribers and native cross-tab storage/focus events cause fresh reads. Event payloads are never trusted as
+the stored record, and asynchronous authority guards reread storage even before a queued event reaches the UI. Browser
+state retains the selected name only for the active Pay view; saved names/keys persist across reloads. A removed
+selected name stays unavailable until the user explicitly changes their expectation. The legacy Settings trust set
+is not silently migrated into named identities.
+
+Only user-entered names, public signer keys and a local concurrency revision are persisted by this collection. It does
+not store invoice contents, private keys, passphrases, payment information or a network tracking identifier. No network
+API is used. Public names/key associations can still reveal relationships to someone with browser-profile access.
+
+The [browser user guide](../user/invoice-signer-pins.md) describes the confirmation controls, key rotation and recovery
+from an incorrect pin. Same-origin browser storage and JavaScript are part of the trust boundary: a compromised origin
+or browser can alter stored public pins and code. The revision/lock mechanism prevents honest-tab races; it is not
+cryptographic authentication of browser storage.
 This feature does not claim hardware-backed identity storage, an external audit, anonymity or product release readiness.
 
 ## Regression evidence
