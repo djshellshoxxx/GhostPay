@@ -15,6 +15,7 @@ import {
   type TxInput,
 } from '@ghostpay/btc-silent-payments';
 import { MAINNET_GENESIS, type BtcNetworkInfo } from './network';
+import { boundedRequest, BoundedRequestError } from '../../lib/boundedRequest';
 
 /** Subset of `fetch` used here (the app's injected `Services.fetchFn`). */
 export type EsploraFetch = (url: string, init: RequestInit) => Promise<Response>;
@@ -207,52 +208,6 @@ function encodeWitness(items: readonly unknown[]): string {
   }).join('');
 }
 
-/**
- * Reads the body as UTF-8 text through a byte cap, so a hostile server cannot make the tab buffer an unbounded body:
- * a declared `Content-Length` above it is refused unread, and the download is cancelled as soon as the streamed bytes
- * pass it. An abort of `signal` cancels the download too, even when the fetch implementation does not.
- * @returns The text and the number of bytes read.
- * @throws {SilentPaymentError} `INVALID_RESPONSE` past the cap; stream errors and the abort reason propagate as thrown.
- */
-async function readCapped(res: Response, max: number, signal: AbortSignal): Promise<{ readonly text: string; readonly bytes: number }> {
-  if (Number(res.headers.get('content-length')) > max) {
-    await res.body?.cancel().catch(() => undefined);
-    return bad();
-  }
-  if (res.body === null) return { text: '', bytes: 0 };
-  const reader = res.body.getReader();
-  const stop = (): void => {
-    reader.cancel().catch(() => undefined);
-  };
-  signal.addEventListener('abort', stop, { once: true });
-  // Already aborted (a fetch implementation that ignored the signal): no event will come, so stop now.
-  if (signal.aborted) stop();
-  try {
-    const chunks: Uint8Array[] = [];
-    let total = 0;
-    for (;;) {
-      const { done, value } = await reader.read();
-      signal.throwIfAborted();
-      if (done) break;
-      total += value.byteLength;
-      if (total > max) {
-        await reader.cancel().catch(() => undefined);
-        return bad();
-      }
-      chunks.push(value);
-    }
-    const all = new Uint8Array(total);
-    let off = 0;
-    for (const c of chunks) {
-      all.set(c, off);
-      off += c.byteLength;
-    }
-    return { text: new TextDecoder().decode(all), bytes: total };
-  } finally {
-    signal.removeEventListener('abort', stop);
-  }
-}
-
 function parseJson(text: string): unknown {
   try {
     return JSON.parse(text) as unknown;
@@ -288,32 +243,21 @@ export class EsploraClient {
     this.baseUrl = normalizeEsploraUrl(options.baseUrl);
     this.fetchFn = options.fetchFn;
     this.timeoutMs = options.timeoutMs ?? TIMEOUT_MS;
+    if (!Number.isInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 2_147_483_647) {
+      throw new SilentPaymentError('INVALID_INPUT');
+    }
   }
 
   /** Requests `path` and reads the body through `max` bytes; returns the text and the bytes read. */
   private async request(path: string, init: RequestInit, signal: AbortSignal | undefined, max: number): Promise<{ readonly text: string; readonly bytes: number }> {
-    const timeout = AbortSignal.timeout(this.timeoutMs);
-    const combined = signal === undefined ? timeout : AbortSignal.any([signal, timeout]);
-    const failure = (): SilentPaymentError => new SilentPaymentError(signal?.aborted === true ? 'ABORTED' : 'TRANSPORT_FAILURE');
-    let res: Response;
     try {
-      res = await this.fetchFn(`${this.baseUrl}${path}`, {
-        ...init,
-        credentials: 'omit',
-        referrerPolicy: 'no-referrer',
-        redirect: 'error',
-        cache: 'no-store',
-        signal: combined,
-      });
-    } catch {
-      throw failure();
-    }
-    if (!res.ok) throw new SilentPaymentError('TRANSPORT_FAILURE');
-    try {
-      return await readCapped(res, max, combined);
+      const response = await boundedRequest(this.fetchFn, `${this.baseUrl}${path}`, init, { timeoutMs: this.timeoutMs, maxBytes: max, signal });
+      if (!response.ok) throw new SilentPaymentError('TRANSPORT_FAILURE');
+      return { text: new TextDecoder().decode(response.body), bytes: response.body.byteLength };
     } catch (e) {
-      if (e instanceof SilentPaymentError) throw e;
-      throw failure();
+      if (signal?.aborted === true) throw new SilentPaymentError('ABORTED');
+      if (e instanceof BoundedRequestError && e.code === 'TOO_LARGE') throw new SilentPaymentError('INVALID_RESPONSE');
+      throw new SilentPaymentError('TRANSPORT_FAILURE');
     }
   }
 
@@ -447,9 +391,9 @@ export class EsploraClient {
   }
 
   /** Broadcasts a raw transaction (hex). Returns the txid the server reports. */
-  public async broadcast(rawHex: string): Promise<string> {
+  public async broadcast(rawHex: string, signal?: AbortSignal): Promise<string> {
     if (!/^[0-9a-f]+$/.test(rawHex) || rawHex.length % 2 !== 0) throw new SilentPaymentError('INVALID_INPUT');
-    const t = (await this.text('/tx', { method: 'POST', body: rawHex, headers: { 'content-type': 'text/plain' } })).trim().toLowerCase();
+    const t = (await this.text('/tx', { method: 'POST', body: rawHex, headers: { 'content-type': 'text/plain' } }, signal)).trim().toLowerCase();
     return HEX64.test(t) ? t : bad();
   }
 

@@ -5,8 +5,9 @@ import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
 import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, isSessionSuspended, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup, subscribeSessionExpiryCheck, suspendSession } from './lib/session';
-import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
-import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
+import { clearRpcSessionOnly, loadSettings, saveSettings, SETTINGS_KEY, type Settings as SettingsData } from './lib/settings';
+import { AppContext, VIEW_LABELS, type AppState, type RpcAuthorizationOptions, type ViewId } from './state';
+import { UserFacingError } from './lib/errors';
 import { RegistryView } from './features/registry/RegistryView';
 import { About } from './views/About';
 import { CreateInvoice } from './views/CreateInvoice';
@@ -18,7 +19,7 @@ import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { notifyAppLock } from './lib/appLock';
+import { notifyAppLock, subscribeAppLock } from './lib/appLock';
 import { FRAME_REFUSAL, ORIGIN_MISMATCH, currentOriginCheck, embedModeEnabled, frameRefusesView, isFramed, originMismatch } from './lib/frameGuard';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
@@ -58,6 +59,11 @@ export interface AppShellProps {
 }
 
 export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'registry', 'settings', 'about']);
+const noNetworkSubscription = (): (() => void) => () => undefined;
+const noNetworkRevision = (): number => 0;
+function storedSettingsRevision(): string | null | undefined {
+  try { return window.localStorage.getItem(SETTINGS_KEY); } catch { return undefined; }
+}
 
 /** Shown instead of a key, sweep or settings view while the page is framed by another site (SEC-18). */
 function FrameRefusal(): ReactNode {
@@ -104,12 +110,19 @@ export function AppShell(props: AppShellProps): ReactNode {
   const extraViews = props.extraViews ?? {};
   const order = profile === 'lean' ? props.order.filter((id) => CORE_ORDER.includes(id)) : props.order;
   const services = useServices();
-  const [fragment, setFragment] = useState<string | undefined>(() => readInvoiceFragment(window.location));
+  const networkRevision = useSyncExternalStore(services.network?.subscribe ?? noNetworkSubscription, services.network?.getRevision ?? noNetworkRevision);
+  const [fragment, setFragmentState] = useState<string | undefined>(() => readInvoiceFragment(window.location));
+  const setFragment = useCallback((next: string | undefined): void => {
+    services.network?.invalidate();
+    setFragmentState(next);
+  }, [services]);
   const [selectedView, setViewState] = useState<ViewId>(() => (readInvoiceFragment(window.location) === undefined ? 'home' : 'pay'));
   const setView = useCallback((next: ViewId): void => {
+    services.network?.invalidate();
     setViewState(profile === 'lean' && !CORE_ORDER.includes(next) ? 'home' : next);
-  }, [profile]);
+  }, [profile, services]);
   const [settings, setSettings] = useState<SettingsData>(() => loadSettings());
+  const settingsRevision = useRef(storedSettingsRevision());
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
@@ -136,6 +149,21 @@ export function AppShell(props: AppShellProps): ReactNode {
   // Configuration/service rerenders do not count as activity. Only actual key installation starts a new session lease.
   const idleLease = useRef<IdleLease | undefined>(undefined);
 
+  useEffect(() => {
+    const onStorage = (event: StorageEvent): void => {
+      if (event.key !== null && event.key !== SETTINGS_KEY) return;
+      if (event.storageArea !== null && event.storageArea !== window.localStorage) return;
+      clearRpcSessionOnly();
+      rpcCache.current.clear();
+      settingsRevision.current = storedSettingsRevision();
+      setSettings(loadSettings());
+    };
+    window.addEventListener('storage', onStorage);
+    const unsubscribeLock = subscribeAppLock(() => { rpcCache.current.clear(); });
+    return () => { window.removeEventListener('storage', onStorage); unsubscribeLock(); };
+  }, []);
+  useEffect(() => { rpcCache.current.clear(); }, [networkRevision]);
+
   // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
   // Hash changes arriving later are handled by the listener below.
   useEffect(() => {
@@ -149,14 +177,14 @@ export function AppShell(props: AppShellProps): ReactNode {
       const f = readInvoiceFragment(window.location);
       if (f === undefined) return;
       setFragment(f);
-      setViewState('pay');
+      setView('pay');
       if (settings.autoClearFragment) clearFragment(window.location, window.history);
     };
     window.addEventListener('hashchange', onHash);
     return () => {
       window.removeEventListener('hashchange', onHash);
     };
-  }, [settings.autoClearFragment]);
+  }, [settings.autoClearFragment, setFragment, setView]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -166,6 +194,7 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
   useEffect(() => subscribeSession(() => {
+    rpcCache.current.clear();
     services.vault.lock();
     if (hasSession()) setIdleWiped(undefined);
   }), [services]);
@@ -356,10 +385,17 @@ export function AppShell(props: AppShellProps): ReactNode {
   }, [view, fragment]);
 
   const rpcFor = useCallback(
-    (urls: Readonly<Record<string, string>>, chainId: number): Promise<RpcClient | undefined> => {
+    (urls: Readonly<Record<string, string>>, chainId: number, authorization?: RpcAuthorizationOptions): Promise<RpcClient | undefined> => {
       const url = urls[String(chainId)];
       const chain = services.chains.find((c) => c.chainId === chainId);
       if (url === undefined || chain === undefined) return Promise.resolve(undefined);
+      if (services.network !== undefined) {
+        if (authorization === undefined) return Promise.reject(new UserFacingError({ key: 'error.network.authorizationRefused' }));
+        try {
+          const context = services.network.authorize({ ...authorization, category: 'rpc', endpoint: url, network: { kind: 'evm', chainId } });
+          return services.createRpc(chain, url, context).catch((error: unknown) => { context.dispose(); throw error; });
+        } catch { return Promise.reject(new UserFacingError({ key: 'error.network.authorizationRefused' })); }
+      }
       const key = `${String(chainId)}|${url}`;
       let p = rpcCache.current.get(key);
       if (p === undefined) {
@@ -373,17 +409,31 @@ export function AppShell(props: AppShellProps): ReactNode {
     },
     [services],
   );
-  const getRpc = useCallback((chainId: number) => rpcFor(settings.rpcUrls, chainId), [rpcFor, settings.rpcUrls]);
-  const getSecondaryRpc = useCallback((chainId: number) => rpcFor(settings.rpcUrlsSecondary, chainId), [rpcFor, settings.rpcUrlsSecondary]);
+  const getRpc = useCallback((chainId: number, authorization?: RpcAuthorizationOptions) => rpcFor(settings.rpcUrls, chainId, authorization), [rpcFor, settings.rpcUrls]);
+  const getSecondaryRpc = useCallback((chainId: number, authorization?: RpcAuthorizationOptions) => rpcFor(settings.rpcUrlsSecondary, chainId, authorization), [rpcFor, settings.rpcUrlsSecondary]);
 
   const state = useMemo<AppState>(
     () => ({
       view,
       setView,
       settings,
+      networkRevision,
       updateSettings: (s) => {
+        rpcCache.current.clear();
+        // A form opened before another tab saved may not overwrite that newer selection.
+        if (storedSettingsRevision() !== settingsRevision.current) {
+          clearRpcSessionOnly();
+          settingsRevision.current = storedSettingsRevision();
+          setSettings(loadSettings());
+          services.network?.invalidate();
+          setLive({ key: 'error.network.authorizationRefused' });
+          return false;
+        }
         setSettings(s);
-        return saveSettings(s);
+        const saved = saveSettings(s);
+        settingsRevision.current = storedSettingsRevision();
+        services.network?.invalidate();
+        return saved;
       },
       session,
       fragment,
@@ -396,7 +446,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       getSecondaryRpc,
       announce: setLive,
     }),
-    [view, setView, settings, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc],
+    [view, setView, settings, networkRevision, session, fragment, setFragment, matches, sweepTarget, getRpc, getSecondaryRpc, services],
   );
 
   return (
@@ -418,6 +468,10 @@ export function AppShell(props: AppShellProps): ReactNode {
         </nav>
       </header>
       <main id="main" tabIndex={-1} ref={main}>
+        {services.network !== undefined && <Notice kind="info">
+          <p>{t('network.actionConsent')}</p>
+          <button type="button" className="btn" onClick={() => { services.network?.invalidate(); setLive({ key: 'network.revoked' }); }}>{t('network.revoke')}</button>
+        </Notice>}
         {!suspended && props.mainPrelude}
         {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
         {wrongOrigin !== undefined && (
@@ -426,14 +480,14 @@ export function AppShell(props: AppShellProps): ReactNode {
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
             {t('app.backup.unverified.body')}
-            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.unverified.action')}</button></>}
+            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setView('seller'); }}>{t('app.backup.unverified.action')}</button></>}
           </Notice>
         )}
         {session !== undefined && backup?.backedUp === false && (
           // Payments stay sweepable from typed hex when only the signing key generated for it is unsaved (C-R10).
           <Notice kind="warn" title={backup.signerOnly ? t('app.backup.signerOnly.title') : t('app.backup.title')}>
             {backup.signerOnly ? t('app.backup.signerOnly.body') : t('app.backup.body')}
-            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
+            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setView('seller'); }}>{t('app.backup.action')}</button></>}
           </Notice>
         )}
         {session === undefined && idleWiped !== undefined && (
@@ -443,7 +497,7 @@ export function AppShell(props: AppShellProps): ReactNode {
           </Notice>
         )}
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
-        <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
+        <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setView('home'); }}>
           <ShellProfileContext.Provider value={profile}>
             <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} framedRefusal={frameRefusesView(view, framed, embedMode)} />
           </ShellProfileContext.Provider>

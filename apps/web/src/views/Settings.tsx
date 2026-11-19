@@ -16,9 +16,10 @@ import type { MessageKey } from '../i18n/sourceCatalog';
 import { Field, Notice } from '../components/Common';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, isRpcSessionOnly, rpcUrlLooksSecret, setRpcSessionOnly, type RpcSlot, type Settings as SettingsData } from '../lib/settings';
-import { MAX_BULK_EVIDENCE, MAX_PAD_BLOCKS, applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
-import { MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
+import { SCAN_PRIVACY_KEY, MAX_BULK_EVIDENCE, MAX_PAD_BLOCKS, applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
+import { SCAN_LANES_KEY, MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
+import type { NetworkAuthorization } from '../lib/networkAuthorization';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -52,19 +53,32 @@ export function Settings(): ReactNode {
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
   const [checks, setChecks] = useState<Record<string, DisplayMessage>>({});
   const testRevision = useRef(new Map<number, number>());
+  const testControllers = useRef(new Map<number, AbortController>());
   const mounted = useRef(true);
 
-  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; for (const controller of testControllers.current.values()) controller.abort(); }; }, []);
 
   const invalidateTest = (chainId: number): void => {
+    testControllers.current.get(chainId)?.abort();
+    testControllers.current.delete(chainId);
     testRevision.current.set(chainId, (testRevision.current.get(chainId) ?? 0) + 1);
     setChecks((current) => { const next = { ...current }; delete next[chainId]; return next; });
   };
 
   // A saved-settings change invalidates pending RPC tests (the exchange section resets its own review and export).
   useEffect(() => {
+    for (const controller of testControllers.current.values()) controller.abort();
+    testControllers.current.clear();
     for (const [chainId, revision] of testRevision.current) testRevision.current.set(chainId, revision + 1);
     setChecks({});
+    setRpc({ ...s.rpcUrls }); setRpc2({ ...s.rpcUrlsSecondary }); setRelayer(s.relayerUrl);
+    setMinSec(s.delayMinSec); setMaxSec(s.delayMaxSec); setLock(s.lockTimeoutMin);
+    setTheme(s.theme); setAutoClear(s.autoClearFragment); setPins(s.pinnedSigners.join('\n'));
+    const ephemeral: Record<string, boolean> = {};
+    for (const [slot, map] of [['primary', s.rpcUrls], ['secondary', s.rpcUrlsSecondary]] as const) {
+      for (const [id, value] of Object.entries(map)) if (isRpcSessionOnly(slot, id, value)) ephemeral[`${slot}:${id}`] = true;
+    }
+    setSessionOnly(ephemeral);
   }, [s]);
 
   const onSave = (e: FormEvent): void => {
@@ -103,16 +117,27 @@ export function Settings(): ReactNode {
     const chain = services.chains.find((c) => c.chainId === chainId);
     const url = rpc[String(chainId)] ?? '';
     if (chain === undefined) return;
+    testControllers.current.get(chainId)?.abort();
+    const controller = new AbortController();
+    testControllers.current.set(chainId, controller);
     const revision = (testRevision.current.get(chainId) ?? 0) + 1;
     testRevision.current.set(chainId, revision);
     const current = (): boolean => mounted.current && testRevision.current.get(chainId) === revision;
     setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.checking' } }));
     void (async () => {
+      let context: NetworkAuthorization | undefined;
       try {
-        await services.createRpc(chain, checkRpcUrl(url));
+        const checked = checkRpcUrl(url);
+        context = services.network?.authorize({ action: 'settings-check', category: 'rpc', endpoint: checked, network: { kind: 'evm', chainId }, signal: controller.signal });
+        await services.createRpc(chain, checked, context);
+        context?.assertCurrent();
         if (current()) setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.connected' } }));
       } catch (err) {
         if (current()) setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? { key: 'settings.rpc.failed' } : captureUserMessage(err) }));
+      } finally {
+        context?.dispose();
+        controller.abort();
+        if (testControllers.current.get(chainId) === controller) testControllers.current.delete(chainId);
       }
     })();
   };
@@ -457,35 +482,49 @@ function saveNetworkSelection(sel: WebNetworkSelection): boolean {
  * RPC; only an absent preference uses the default. Changing any draft choice clears its acknowledgement, without
  * changing the saved choice until Save. Tor Browser and own node are unverified here.
  */
+function preferenceRevision(key: string): string | null | undefined {
+  try { return browserStorage()?.getItem(key); } catch { return undefined; }
+}
+
 function NetworkProfilesSection(): ReactNode {
+  const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const uid = useId();
+  const storedRevision = useRef(preferenceRevision(WEB_NETWORK_SELECTION_KEY));
   const [draft, setDraft] = useState<WebNetworkSelection>(() => {
     const stored = readNetworkSelection();
     return stored.status === 'invalid' ? DEFAULT_WEB_NETWORK_SELECTION : stored.selection;
   });
   const [saved, setSaved] = useState(readNetworkSelection);
   const [message, setMessage] = useState<{ kind: 'ok' | 'warn'; text: DisplayMessage } | undefined>(undefined);
-  useEffect(() => {
-    const changed = (event: StorageEvent): void => {
-      if (event.key === WEB_NETWORK_SELECTION_KEY || event.key === null) {
-        setSaved(readNetworkSelection());
-        setMessage(undefined);
-      }
-    };
-    window.addEventListener('storage', changed);
-    return () => { window.removeEventListener('storage', changed); };
-  }, []);
   const choose = (patch: Partial<Omit<WebNetworkSelection, 'noticeAcknowledged'>>): void => {
     setDraft((d) => ({ ...d, ...patch, noticeAcknowledged: false }));
     setMessage(undefined);
   };
+  const refreshStored = (): void => {
+    storedRevision.current = preferenceRevision(WEB_NETWORK_SELECTION_KEY);
+    const value = readNetworkSelection();
+    setDraft(value.status === 'invalid' ? DEFAULT_WEB_NETWORK_SELECTION : value.selection);
+    setSaved(value); setMessage(undefined);
+  };
+  useEffect(() => {
+    const changed = (event: StorageEvent): void => { if (event.key === null || event.key === WEB_NETWORK_SELECTION_KEY) refreshStored(); };
+    window.addEventListener('storage', changed);
+    return () => { window.removeEventListener('storage', changed); };
+  }, []);
   const nonDefault = isNonDefaultSelection(draft);
   const effective = saved.status === 'ready' ? saved.selection : undefined;
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
+    if (preferenceRevision(WEB_NETWORK_SELECTION_KEY) !== storedRevision.current) {
+      refreshStored();
+      setMessage({ kind: 'warn', text: { key: 'error.network.authorizationRefused' } });
+      return;
+    }
     const ok = saveNetworkSelection(draft);
+    storedRevision.current = preferenceRevision(WEB_NETWORK_SELECTION_KEY);
+    services.network?.invalidate();
     setSaved(readNetworkSelection());
     setMessage(ok ? { kind: 'ok', text: { key: 'settings.network.saved' } } : { kind: 'warn', text: { key: 'settings.network.refused' } });
   };
@@ -543,10 +582,20 @@ function ScanPrivacySection(): ReactNode {
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const storedRevision = useRef([preferenceRevision(SCAN_PRIVACY_KEY), preferenceRevision(SCAN_LANES_KEY)]);
   const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
   // Spec 05 lane and privacy-set options: own key, saved by the same button.
   const [lanes, setLanes] = useState<ScanLaneSettings>(() => loadScanLanes(browserStorage()));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
+  const refreshStored = (): void => {
+    storedRevision.current = [preferenceRevision(SCAN_PRIVACY_KEY), preferenceRevision(SCAN_LANES_KEY)];
+    setCfg(loadScanPrivacy(browserStorage())); setLanes(loadScanLanes(browserStorage())); setMessage(undefined);
+  };
+  useEffect(() => {
+    const changed = (event: StorageEvent): void => { if (event.key === null || event.key === SCAN_PRIVACY_KEY || event.key === SCAN_LANES_KEY) refreshStored(); };
+    window.addEventListener('storage', changed);
+    return () => { window.removeEventListener('storage', changed); };
+  }, []);
   const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
   const setLane = (patch: Partial<ScanLaneSettings>): void => { setLanes((c) => ({ ...c, ...patch })); setMessage(undefined); };
   const num = (v: string): number => (v.trim() === '' ? Number.NaN : Number(v));
@@ -554,6 +603,10 @@ function ScanPrivacySection(): ReactNode {
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
     try {
+      if (preferenceRevision(SCAN_PRIVACY_KEY) !== storedRevision.current[0] || preferenceRevision(SCAN_LANES_KEY) !== storedRevision.current[1]) {
+        refreshStored();
+        throw new UserFacingError({ key: 'error.network.authorizationRefused' });
+      }
       const endpoints: Record<string, string> = {};
       for (const [k, v] of Object.entries(cfg.endpoints)) if (v.trim() !== '') endpoints[k] = checkScanEndpoint(v, cfg.transport);
       const indexerUrls: Record<string, string> = {};
@@ -568,6 +621,8 @@ function ScanPrivacySection(): ReactNode {
       const next = { ...cfg, endpoints, indexerUrls };
       setCfg(next);
       const saved = saveScanPrivacy(browserStorage(), next) && saveScanLanes(browserStorage(), lanes);
+      storedRevision.current = [preferenceRevision(SCAN_PRIVACY_KEY), preferenceRevision(SCAN_LANES_KEY)];
+      services.network?.invalidate();
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });

@@ -1,5 +1,5 @@
 import { CHAINS, ChainAdapterError, createClient, fetchTransport, type ChainConfig, type RpcClient, type RpcTransport } from '@ghostpay/chain-adapters';
-import { checkOwnNodeRpcUrl, type WebNetworkSelection } from '@ghostpay/net-transport/browser';
+import { checkOwnNodeRpcUrl, createFetchTransport, type WebNetworkSelection } from '@ghostpay/net-transport/browser';
 import { UserFacingError } from './errors';
 import { IdbTagStore } from './idbStore';
 import { loadBundledManifest } from './manifest';
@@ -13,6 +13,7 @@ import { createBrowserScanWorker } from './workerFactory';
 import { IdbReconciliationVaultStore } from './reconciliationVault';
 import { purgeLegacyPrivateScanHistory } from './privateScanLifecycle';
 import { loadNetworkSelection } from './networkSelection';
+import { createNetworkAuthority, networkAuthorizationError } from './networkAuthorization';
 
 export { loadNetworkSelection } from './networkSelection';
 
@@ -80,12 +81,35 @@ export function createSelectedRpc(
 
 export function createDefaultServices(): Services {
   purgeLegacyPrivateScanHistory(safeStorage());
+  const network = createNetworkAuthority();
   return {
     nowMs: () => Date.now(),
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
-    fetchFn: (u, i) => fetch(u, i),
+    network,
+    fetchFn: () => Promise.reject(networkAuthorizationError()),
     loadManifest: (id) => loadDefaultManifest(id),
-    createRpc: createSelectedRpc(),
+    async createRpc(chain, url, authorization) {
+      network.assertRpcAuthorization(authorization, chain.chainId, url);
+      // assertRpcAuthorization verifies opaque ownership; the explicit check also narrows the optional type.
+      if (authorization === undefined) throw networkAuthorizationError();
+      const bounded = createFetchTransport({ fetchImpl: authorization.fetchFn, allowInsecureLocalhost: true });
+      const transport: RpcTransport = {
+        async send(target, body, init) {
+          network.assertRpcAuthorization(authorization, chain.chainId, target, body);
+          const result = await bounded.send(target, body, init);
+          network.assertRpcAuthorization(authorization, chain.chainId, target);
+          return result;
+        },
+      };
+      try {
+        const client = await createClient(chain, url, { transport, allowInsecureLocalhost: true });
+        authorization.assertCurrent();
+        return client;
+      } catch (error) {
+        authorization.dispose();
+        throw error;
+      }
+    },
     discoverWallets: () => discoverWallets(window),
     createScanWorker: createBrowserScanWorker,
     checkpoints: localCheckpointStore(safeStorage()),

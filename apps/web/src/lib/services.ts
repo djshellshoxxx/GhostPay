@@ -5,14 +5,17 @@ import type { CheckpointStore, ScanWorkerLike } from './scanClient';
 import type { TagVault } from './tags';
 import type { WalletInfo } from './wallet';
 import type { ReconciliationVaultStore } from './reconciliationVault';
+import type { NetworkAuthority, NetworkAuthorization } from './networkAuthorization';
 
 /** Everything with side effects that views use, injectable for tests. */
 export interface Services {
   readonly nowMs: () => number;
   readonly sleep: (ms: number) => Promise<void>;
   readonly fetchFn: (url: string, init: RequestInit) => Promise<Response>;
+  /** Production network boundary. Optional only for isolated local/test service implementations. */
+  readonly network?: NetworkAuthority;
   readonly loadManifest: (chainId: number) => Promise<ManifestState>;
-  readonly createRpc: (chain: ChainConfig, url: string) => Promise<RpcClient>;
+  readonly createRpc: (chain: ChainConfig, url: string, authorization?: NetworkAuthorization) => Promise<RpcClient>;
   readonly discoverWallets: () => Promise<readonly WalletInfo[]>;
   readonly createScanWorker: () => ScanWorkerLike;
   readonly checkpoints: CheckpointStore;

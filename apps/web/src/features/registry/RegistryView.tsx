@@ -70,6 +70,7 @@ export function RegistryView(): ReactNode {
   const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall; readonly name?: string } | undefined>(undefined);
   const [look, setLook] = useState<Msg | undefined>(undefined);
   const lookupVersion = useRef(0);
+  const operation = useRef(new AbortController());
   useEffect(() => {
     lookupVersion.current += 1;
     setFound(undefined);
@@ -94,18 +95,32 @@ export function RegistryView(): ReactNode {
   latest.current = { chainId, consent, metaAddress, wallet, reviewed, reviewAction, session: app.session, settings: app.settings, who };
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; };
+    return () => { mounted.current = false; operation.current.abort(); };
   }, []);
+  useEffect(() => {
+    operation.current.abort();
+    operation.current = new AbortController();
+  }, [chainId, app.session, app.settings, consent, who]);
+  useEffect(() => services.network?.subscribe(() => {
+    operation.current.abort();
+    operation.current = new AbortController();
+    lookupVersion.current++;
+    setReviewed(undefined);
+    setReviewAction(undefined);
+    setFound(undefined);
+    setLook(undefined);
+  }), [services.network]);
   useEffect(() => { setConsent(false); }, [chainId, app.session]);
   const captureAuthority = (): (() => void) => {
     const expected = latest.current;
+    const networkRevision = services.network?.getRevision() ?? 0;
     const guardSession = captureSessionGuard();
     return () => {
       guardSession();
       const current = latest.current;
       if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
           current.metaAddress !== expected.metaAddress || current.wallet !== expected.wallet || current.reviewed !== expected.reviewed ||
-          current.reviewAction !== expected.reviewAction || current.settings !== expected.settings) {
+          current.reviewAction !== expected.reviewAction || current.settings !== expected.settings || (services.network?.getRevision() ?? 0) !== networkRevision) {
         throw new UserFacingError({ key: 'registry.sessionChanged' });
       }
     };
@@ -113,7 +128,7 @@ export function RegistryView(): ReactNode {
 
   const rpcFor = async (): Promise<NonNullable<Awaited<ReturnType<typeof app.getRpc>>>> => {
     if (chainId === undefined) throw new Error('chain');
-    const rpc = await app.getRpc(chainId);
+    const rpc = await app.getRpc(chainId, { action: 'registry-read', signal: operation.current.signal });
     if (rpc === undefined) throw new Error('rpc');
     return rpc;
   };
@@ -224,7 +239,8 @@ export function RegistryView(): ReactNode {
     if (busyRef.current || who.trim() === '') return;
     const expected = latest.current;
     const version = lookupVersion.current;
-    const isCurrent = (): boolean => mounted.current && lookupVersion.current === version && latest.current.chainId === expected.chainId && latest.current.who === expected.who && latest.current.settings === expected.settings;
+    const networkRevision = services.network?.getRevision() ?? 0;
+    const isCurrent = (): boolean => mounted.current && lookupVersion.current === version && latest.current.chainId === expected.chainId && latest.current.who === expected.who && latest.current.settings === expected.settings && (services.network?.getRevision() ?? 0) === networkRevision;
     busyRef.current = true;
     setFound(undefined);
     setLook(undefined);

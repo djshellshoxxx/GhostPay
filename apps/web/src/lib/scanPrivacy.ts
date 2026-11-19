@@ -24,11 +24,13 @@ import {
   type RpcClient,
   type RpcLog,
 } from '@ghostpay/chain-adapters';
-import { FIRST_USE_NOTICE, TOR_BROWSER_NOTICE, createFetchTransport, type FetchLike } from '@ghostpay/net-transport/browser';
+import { FIRST_USE_NOTICE, TOR_BROWSER_NOTICE, createFetchTransport } from '@ghostpay/net-transport/browser';
 import { createIndexerSource, padRange, ScanSourceError, TESTNET_CHAIN_IDS, type HttpTransport, type HeadSource, type ScanAnnouncement } from '@ghostpay/scan-source';
 import { encodeAbiParameters } from 'viem/utils';
 import { UserFacingError, displayMessage, type MessageDescriptor } from './errors';
 import { randomDelayMs, type CryptoLike } from './jitter';
+import type { NetworkAuthority } from './networkAuthorization';
+import { boundedRequest, BoundedRequestError } from './boundedRequest';
 
 export type ScanTransportKind = 'direct' | 'tor-browser' | 'local-proxy';
 export type ScanLogSource = 'rpc' | 'indexer';
@@ -570,58 +572,18 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
 // ---------------------------------------------------------------------------------------------------------------
 // Indexer
 
-/**
- * Reads at most `max` bytes of a response body. A declared Content-Length above the cap is refused unread; otherwise the
- * stream is counted chunk by chunk and, once it passes the cap, the reader is cancelled and the request aborted, so at most
- * one chunk beyond the cap is ever held. A response without a body reads as empty. (The capped readers in net-transport
- * and the Esplora client are private and throw their own error types, so this one stays local.)
- */
-async function readBodyCapped(res: Response, max: number, ctl: AbortController): Promise<Uint8Array> {
-  const tooLarge = (): ScanSourceError => new ScanSourceError('TRANSPORT', 'response too large');
-  const declared = Number(res.headers.get('content-length'));
-  if (Number.isFinite(declared) && declared > max) {
-    await res.body?.cancel().catch(() => undefined);
-    ctl.abort();
-    throw tooLarge();
-  }
-  if (res.body === null) return new Uint8Array(0);
-  const reader = res.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    total += value.byteLength;
-    if (total > max) {
-      await reader.cancel().catch(() => undefined);
-      ctl.abort();
-      throw tooLarge();
-    }
-    chunks.push(value);
-  }
-  const all = new Uint8Array(total);
-  let off = 0;
-  for (const c of chunks) {
-    all.set(c, off);
-    off += c.byteLength;
-  }
-  return all;
-}
-
-/** Browser GET transport for the indexer: no redirects, no cookies, no referrer, streamed size cap, timeout. */
+/** Browser GET transport: bounded fetch/body, no redirects, credentials, referrer, cache or endpoint fallback. */
 export function fetchHttpTransport(fetchImpl: (url: string, init: RequestInit) => Promise<Response>): HttpTransport {
   return {
     async request(req) {
-      const ctl = new AbortController();
-      const timer = setTimeout(() => { ctl.abort(); }, req.timeoutMs);
-      const onAbort = (): void => { ctl.abort(); };
-      req.signal?.addEventListener('abort', onAbort, { once: true });
       try {
-        const res = await fetchImpl(req.url, { method: req.method, signal: ctl.signal, redirect: 'error', credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer', headers: { accept: 'application/json' } });
-        return { status: res.status, body: await readBodyCapped(res, req.maxBytes, ctl) };
-      } finally {
-        clearTimeout(timer);
-        req.signal?.removeEventListener('abort', onAbort);
+        const res = await boundedRequest(fetchImpl, req.url, { method: req.method, headers: { accept: 'application/json' } }, {
+          timeoutMs: req.timeoutMs, maxBytes: req.maxBytes, signal: req.signal,
+        });
+        return { status: res.status, body: res.body };
+      } catch (e) {
+        // Only fixed local classifications reach the source; never surface request URLs or transport errors.
+        throw new ScanSourceError('TRANSPORT', e instanceof BoundedRequestError && e.code === 'TOO_LARGE' ? 'response too large' : 'request failed or cancelled');
       }
     },
   };
@@ -659,6 +621,7 @@ function toRpcLog(a: ScanAnnouncement, announcer: Address): RpcLog {
 }
 
 export interface IndexerClientOptions {
+  readonly signal?: AbortSignal;
   readonly chain: ChainConfig;
   readonly announcer: Address;
   /** Manifest router: a router-only query is answered from the same records, filtered here by caller. */
@@ -695,7 +658,7 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
       assertScanFilter(f, o.router);
       let res;
       try {
-        res = await source.fetch({ chainId: o.chain.chainId, fromBlock: f.fromBlock, toBlock: f.toBlock });
+        res = await source.fetch({ chainId: o.chain.chainId, fromBlock: f.fromBlock, toBlock: f.toBlock }, o.signal);
       } catch (e) {
         if (e instanceof ChainAdapterError) throw e;
         throw new ChainAdapterError('RPC_FAILURE', `indexer ${e instanceof ScanSourceError ? e.code : 'failure'}`);
@@ -713,6 +676,7 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
 // Wiring
 
 export interface OpenScanOptions {
+  readonly authorize?: NetworkAuthority['authorize'];
   readonly plan: Extract<ScanPlan, { kind: 'ready' }>;
   readonly chain: ChainConfig;
   readonly announcer: Address;
@@ -738,34 +702,38 @@ export interface ScanClients {
  * fail-closed handling stays in one place.
  */
 export async function openScanClients(o: OpenScanOptions): Promise<ScanClients | undefined> {
-  o.assertCurrent?.();
-  assertScanActive(o.signal);
+  const assertActive = (): void => { o.assertCurrent?.(); assertScanActive(o.signal); };
+  assertActive();
   const { plan } = o;
-  const fetchImpl = o.assertCurrent === undefined ? o.fetchImpl : (url: string, init: RequestInit): Promise<Response> => {
-    o.assertCurrent?.(); return o.fetchImpl(url, init);
+  const signal = o.signal === undefined ? {} : { signal: o.signal };
+  const guardedFetch = (fetchImpl: OpenScanOptions['fetchImpl']): OpenScanOptions['fetchImpl'] => (url, init) => {
+    assertActive();
+    const requestSignal = o.signal === undefined ? init.signal : init.signal == null ? o.signal : AbortSignal.any([init.signal, o.signal]);
+    return fetchImpl(url, { ...init, ...(requestSignal == null ? {} : { signal: requestSignal }) });
   };
   let base: RpcClient | undefined;
   if (plan.endpoint !== undefined) {
-    const transport = createFetchTransport({ fetchImpl: fetchImpl as unknown as FetchLike, allowInsecureLocalhost: plan.allowLoopbackHttp });
+    const authorization = o.authorize?.({ action: 'scan', category: 'rpc', endpoint: plan.endpoint, network: { kind: 'evm', chainId: o.chain.chainId }, ...signal });
+    const transport = createFetchTransport({ fetchImpl: guardedFetch(authorization?.fetchFn ?? o.fetchImpl), allowInsecureLocalhost: plan.allowLoopbackHttp });
     try {
       base = await createClient(o.chain, plan.endpoint, { allowInsecureLocalhost: plan.allowLoopbackHttp, transport });
-    } catch (e) {
-      assertScanActive(o.signal);
-      const blocked = new UserFacingError({ key: 'error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed' });
-      blocked.cause = e;
-      throw blocked;
+      assertActive();
+    } catch {
+      authorization?.dispose();
+      assertActive();
+      throw new UserFacingError({ key: 'error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed' });
     }
   } else {
     try { base = await o.appRpc(); }
-    finally { assertScanActive(o.signal); }
+    finally { assertActive(); }
   }
-  o.assertCurrent?.();
-  assertScanActive(o.signal);
+  assertActive();
   if (base === undefined) return undefined;
   base = guardedRpc(base, o.assertCurrent);
   const router = o.router === undefined ? {} : { router: o.router };
-  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl, windowBlocks: plan.window.windowBlocks });
-  const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep, ...(o.signal === undefined ? {} : { signal: o.signal }), ...(o.assertCurrent === undefined ? {} : { assertCurrent: o.assertCurrent }) });
+  const indexerAuthorization = plan.indexerUrl === undefined ? undefined : o.authorize?.({ action: 'scan', category: 'indexer', endpoint: plan.indexerUrl, match: 'prefix', network: { kind: 'evm', chainId: o.chain.chainId }, ...signal });
+  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl: guardedFetch(indexerAuthorization?.fetchFn ?? o.fetchImpl), windowBlocks: plan.window.windowBlocks, ...signal });
+  const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep, ...signal, ...(o.assertCurrent === undefined ? {} : { assertCurrent: o.assertCurrent }) });
   return { base, scan };
 }
 

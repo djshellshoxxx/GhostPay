@@ -8,7 +8,7 @@
     "settings.title": "設定",
     "settings.notice.plaintext": "設定はこのブラウザーに平文で保存されます（RPC URL を含む）。平文で保存したくない秘密情報を含む URL は入力しないでください。鍵が保存されることはありません。",
     "settings.rpc.legend": "RPC エンドポイント",
-    "settings.rpc.hint": "https:// と wss:// のみ使用でき、ユーザー名とパスワードは指定できません。チェーン ID はエンドポイントの使用時に検証されます。既定の RPC は組み込まれていません。",
+    "settings.rpc.hint": "Use HTTPS, or HTTP on this computer for a local node, with no username, password or fragment. The selected chain is checked before use. Saved WebSocket URLs are retained but this browser transport refuses them. No default RPC is built in.",
     "settings.rpc.secretWarning": "このエンドポイント URL にはプロバイダーのキーが含まれているようです。このブラウザーに保存すると平文のままになります。下のチェックボックスをオンにすると、このセッションのみ保持します。",
     "settings.rpc.secretStored": "保存済みのエンドポイント URL にプロバイダーのキーが含まれているようで、このブラウザーに平文で保存されています。下のチェックボックスをオンにして保存すると、ストレージから削除され、アプリを閉じるか再読み込みするまで有効です。",
     "settings.rpc.sessionOnly": "このエンドポイントをこのセッションのみ保持する(このブラウザーには保存しません)",
@@ -306,7 +306,7 @@
     "settings.scanPrivacy.errWindow": "ウィンドウサイズは0から100000までの整数のブロック数で指定してください。",
     "settings.scanPrivacy.errDelays": "遅延は10000以下の整数ミリ秒で、最小値が最大値以下になるよう指定してください。",
     "settings.scanPrivacy.errBudget": "スキャンごとの上限は1から100000までで指定してください。",
-    "settings.scanPrivacy.saved": "スキャンのプライバシー設定を保存しました。次のスキャンから適用されます。",
+    "settings.scanPrivacy.saved": "Network privacy settings saved. Pending network operations were cancelled; start a new action to use these settings.",
     "settings.scanPrivacy.refused": "このブラウザーはスキャンのプライバシー設定の保存を拒否しました。",
     "settings.scanPrivacy.legend": "スキャンのプライバシー",
     "settings.scanPrivacy.hint": "これらのオプションは、アナウンスの取得方法を変更するもので、チェーン上の内容は変えません。ウェブページはSOCKS接続を開くことも、Tor Browser内で動作しているか確認することもできません。「Tor Browser」は、自分でTor Browserでこのページを開いたことを意味します。「ローカルプロキシ」は、このコンピューターで自分が実行するJSON-RPC転送サービス（たとえばTor経由で通信を送るもの）を意味します。既定の設定では新たな通信先は追加されません。",
@@ -2291,11 +2291,11 @@
     "settings.network.notice.body": "Tor Browser and own-node RPC are UNVERIFIED in this build: GhostPay has not tested them against the real networks they name. They do not make payments anonymous. Payer, amount, token, timing and the announcement stay public on-chain, and the RPC and relayer still see what you ask them.",
     "settings.network.notice.unverified": "Unverified: GhostPay has not tested this profile against the real network it names; only local fakes were used.",
     "settings.network.notice.ack": "I have read this notice; apply my choice",
-    "settings.network.pending": "保存済みの既定以外のプロファイルには同意が必要です。未同意の保存済みプロファイルを使う 共通 EVM RPC リクエストはブロックされます。同意して保存するか、明示的に Direct を選択して保存してください。",
+    "settings.network.pending": "選択したプロファイルの注意事項に同意して保存するまで、ネットワーク操作はブロックされます。",
     "settings.network.active": "In effect now: RPC reads {rpc}, relayer calls {relayer}, RPC mode {mode}.",
     "settings.network.save": "Save network profiles",
     "settings.network.saved": "Network profiles saved.",
-    "settings.network.refused": "ブラウザーがネットワークプロファイルの保存を拒否しました。以前に保存した選択が引き続き適用されます。設定を読み取れない場合、共通 EVM RPC リクエストはブロックされます。",
+    "settings.network.refused": "ブラウザーがネットワークプロファイルの保存を拒否しました。新しいプロファイルは承認されていません。続行する前に保存済み設定を確認してください。",
     "error.network.ownNodeRpcRefused": "Own-node mode needs an RPC URL on this computer (loopback) or a valid v3 onion URL. Nothing was contacted.",
     "settings.scanPrivacy.padBlocks": "Extra padding around scan ranges (blocks, 0 = off)",
     "settings.scanPrivacy.padBlocksHint": "固定ウィンドウに合わせる前に、アナウンス照会範囲を両側へ広げます。固定ウィンドウ使用時のみ有効です。ウィンドウが小さくパディングが大きいと多数のリクエストが増えます。プロバイダー制限による分割前で、照会ごとに最大 2 × ceil(パディング / ウィンドウサイズ) 個の追加ウィンドウです。最大パディングは 100000 ブロックです。 過大なウィンドウ拡張は拒否されます。各照会のウィンドウリクエスト上限は、プロバイダー制限による分割を含めて 4096 回です。その他の RPC 呼び出しや通信の再試行では追加の通信が発生します。",
@@ -2493,6 +2493,13 @@
     "scan.checkpoint.retry": "Reload saved scan history",
     "error.network.profileInvalid": "ネットワークプロファイル設定が無効か、読み取れません。共通 EVM RPC リクエストはブロックされています。設定でネットワークプロファイルを確認して保存してから、再試行してください。",
     "error.network.profilePending": "保存済みネットワークプロファイルの注意事項に同意するか、明示的に Direct を選択して保存するまで、共通 EVM RPC リクエストはブロックされます。",
-    "error.relayerClient.paddingFailed": "リクエストのパディングを準備できませんでした。リクエストは送信されていません。安全な乱数を利用できるブラウザーで再試行してください。"
-  }
+    "error.relayerClient.paddingFailed": "リクエストのパディングを準備できませんでした。リクエストは送信されていません。安全な乱数を利用できるブラウザーで再試行してください。",
+    "error.network.authorizationRefused": "Network access is not authorized for this action or the settings changed. Review the selected endpoint and try again.",
+    "network.operationEndpoint": "This action contacts the selected endpoint: {endpoint}",
+    "network.actionConsent": "Each network action authorizes only its displayed endpoint and purpose. Changing settings, locking, or cancelling revokes pending access. Offline wallet and invoice tools remain available.",
+    "network.revoke": "Cancel network activity",
+    "network.revoked": "Network activity cancelled. Start a new action to authorize another request.",
+    "network.reviewAction": "Review network access for this invoice"
+  },
+  "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

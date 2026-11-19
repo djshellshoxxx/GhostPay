@@ -8,7 +8,7 @@
     "settings.title": "Ajustes",
     "settings.notice.plaintext": "Los ajustes se guardan en este navegador en texto sin cifrar, incluidas las URL de RPC. No introduzcas una URL que contenga un secreto que no guardarías en texto sin cifrar. Nunca se guarda ninguna clave.",
     "settings.rpc.legend": "Puntos de conexión RPC",
-    "settings.rpc.hint": "Solo se aceptan https:// y wss://, sin nombre de usuario ni contraseña. El identificador de la cadena se verifica cuando se usa el punto de conexión. No hay ningún RPC predeterminado.",
+    "settings.rpc.hint": "Use HTTPS, or HTTP on this computer for a local node, with no username, password or fragment. The selected chain is checked before use. Saved WebSocket URLs are retained but this browser transport refuses them. No default RPC is built in.",
     "settings.rpc.secretWarning": "Esta URL parece contener una clave del proveedor. Guardada en este navegador queda en texto plano. Marca la casilla de abajo para conservarla solo durante esta sesión.",
     "settings.rpc.secretStored": "Una URL guardada parece contener una clave del proveedor y está en texto plano en este navegador. Marca la casilla y guarda para quitarla del almacenamiento; durará hasta que cierres o recargues la app.",
     "settings.rpc.sessionOnly": "Conservar este endpoint solo durante esta sesión (no se guarda en este navegador)",
@@ -306,7 +306,7 @@
     "settings.scanPrivacy.errWindow": "El tamaño de la ventana debe ser un número entero de bloques entre 0 y 100000.",
     "settings.scanPrivacy.errDelays": "Los retrasos deben ser milisegundos enteros, con el mínimo no superior al máximo y un límite de 10000.",
     "settings.scanPrivacy.errBudget": "El presupuesto por análisis debe estar entre 1 y 100000.",
-    "settings.scanPrivacy.saved": "Ajustes de privacidad del análisis guardados. Se aplican al próximo análisis.",
+    "settings.scanPrivacy.saved": "Network privacy settings saved. Pending network operations were cancelled; start a new action to use these settings.",
     "settings.scanPrivacy.refused": "Este navegador rechazó guardar los ajustes de privacidad del análisis.",
     "settings.scanPrivacy.legend": "Privacidad del análisis",
     "settings.scanPrivacy.hint": "Estas opciones cambian cómo se obtienen los anuncios, no lo que está en la cadena. Una página web no puede abrir una conexión SOCKS ni comprobar si se ejecuta en Tor Browser: «Tor Browser» significa que tú abriste esta página en Tor Browser; «Proxy local» significa un reenviador JSON-RPC que ejecutas en este ordenador (por ejemplo, uno que envía el tráfico por Tor). Los valores predeterminados no añaden ningún destino nuevo.",
@@ -2291,11 +2291,11 @@
     "settings.network.notice.body": "Tor Browser y el RPC de nodo propio NO ESTÁN VERIFICADOS en esta versión: GhostPay no los ha probado con las redes reales que nombran. No hacen anónimos los pagos. Pagador, importe, token, momento y el anuncio siguen siendo públicos en la cadena, y el RPC y el relayer siguen viendo lo que usted les pide.",
     "settings.network.notice.unverified": "No verificado: GhostPay no ha probado este perfil con la red real que nombra; solo se usaron simulaciones locales.",
     "settings.network.notice.ack": "He leído este aviso; aplicar mi elección",
-    "settings.network.pending": "Un perfil guardado no predeterminado requiere confirmación. Las solicitudes del servicio RPC de EVM compartido con un perfil guardado sin confirmar están bloqueadas; confirme y guarde, o elija Directo y guarde explícitamente.",
+    "settings.network.pending": "Las operaciones de red están bloqueadas hasta que confirme el aviso del perfil seleccionado y guarde.",
     "settings.network.active": "En vigor ahora: lecturas RPC {rpc}, llamadas al relayer {relayer}, modo RPC {mode}.",
     "settings.network.save": "Guardar perfiles de red",
     "settings.network.saved": "Perfiles de red guardados.",
-    "settings.network.refused": "El navegador rechazó guardar los perfiles de red. Sigue vigente la selección guardada anterior; los ajustes ilegibles bloquean las solicitudes del servicio RPC de EVM compartido.",
+    "settings.network.refused": "El navegador rechazó guardar los perfiles de red. No se autorizó ningún perfil nuevo; revise los ajustes guardados antes de continuar.",
     "error.network.ownNodeRpcRefused": "El modo de nodo propio necesita una URL RPC en este equipo (loopback) o una URL onion v3 válida. No se contactó nada.",
     "settings.scanPrivacy.padBlocks": "Relleno adicional alrededor de los rangos de escaneo (bloques, 0 = desactivado)",
     "settings.scanPrivacy.padBlocksHint": "Amplía las consultas de anuncios por ambos lados antes de ajustarlas a ventanas fijas. Solo se usa con una ventana fija. Ventanas pequeñas y relleno grande pueden añadir muchas solicitudes: hasta 2 × ceil(relleno / tamaño de ventana) ventanas adicionales por consulta, antes de dividir por límites del proveedor. Máximo 100000 bloques de relleno. Se rechazan las ampliaciones de ventana excesivas. Cada consulta tiene un límite de 4096 solicitudes de ventana, incluidas las divisiones por límites del proveedor; otras llamadas RPC y los reintentos de transporte añaden tráfico.",
@@ -2493,6 +2493,13 @@
     "scan.checkpoint.retry": "Reload saved scan history",
     "error.network.profileInvalid": "Los ajustes del perfil de red no son válidos o no están disponibles. Las solicitudes del servicio RPC de EVM compartido están bloqueadas. Revise y guarde los perfiles de red en Ajustes antes de reintentar.",
     "error.network.profilePending": "Las solicitudes del servicio RPC de EVM compartido están bloqueadas hasta que confirme el aviso del perfil guardado o elija y guarde explícitamente Directo.",
-    "error.relayerClient.paddingFailed": "No se pudo preparar el relleno de la solicitud. No se envió ninguna solicitud. Reinténtelo en un navegador con aleatoriedad segura disponible."
-  }
+    "error.relayerClient.paddingFailed": "No se pudo preparar el relleno de la solicitud. No se envió ninguna solicitud. Reinténtelo en un navegador con aleatoriedad segura disponible.",
+    "error.network.authorizationRefused": "Network access is not authorized for this action or the settings changed. Review the selected endpoint and try again.",
+    "network.operationEndpoint": "This action contacts the selected endpoint: {endpoint}",
+    "network.actionConsent": "Each network action authorizes only its displayed endpoint and purpose. Changing settings, locking, or cancelling revokes pending access. Offline wallet and invoice tools remain available.",
+    "network.revoke": "Cancel network activity",
+    "network.revoked": "Network activity cancelled. Start a new action to authorize another request.",
+    "network.reviewAction": "Review network access for this invoice"
+  },
+  "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

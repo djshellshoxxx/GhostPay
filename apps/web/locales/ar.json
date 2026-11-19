@@ -8,7 +8,7 @@
     "settings.title": "الإعدادات",
     "settings.notice.plaintext": "تُحفظ الإعدادات في هذا المتصفح كنص عادي، بما في ذلك عناوين RPC. لا تضع عنوانًا يحتوي على سرّ لا تحفظه كنص عادي. لا يتم حفظ أي مفتاح أبدًا.",
     "settings.rpc.legend": "نقاط اتصال RPC",
-    "settings.rpc.hint": "يُقبل https:// وwss:// فقط، دون اسم مستخدم أو كلمة مرور. يتم التحقق من معرّف السلسلة عند استخدام نقطة الاتصال. لا توجد نقطة RPC افتراضية.",
+    "settings.rpc.hint": "Use HTTPS, or HTTP on this computer for a local node, with no username, password or fragment. The selected chain is checked before use. Saved WebSocket URLs are retained but this browser transport refuses them. No default RPC is built in.",
     "settings.rpc.secretWarning": "يبدو أن عنوان نقطة النهاية هذا يحتوي على مفتاح المزوّد. عند حفظه في هذا المتصفح يبقى نصًا عاديًا. فعّل الخانة أدناه للاحتفاظ به لهذه الجلسة فقط.",
     "settings.rpc.secretStored": "يبدو أن عنوان نقطة نهاية محفوظًا يحتوي على مفتاح المزوّد ويُحفظ نصًا عاديًا في هذا المتصفح. فعّل الخانة أدناه ثم احفظ لإزالته من التخزين؛ سيبقى حتى تغلق التطبيق أو تعيد تحميله.",
     "settings.rpc.sessionOnly": "الاحتفاظ بنقطة النهاية هذه لهذه الجلسة فقط (لا تُحفظ في هذا المتصفح)",
@@ -306,7 +306,7 @@
     "settings.scanPrivacy.errWindow": "يجب أن يكون حجم النافذة عددًا صحيحًا من الكتل من 0 إلى 100000.",
     "settings.scanPrivacy.errDelays": "يجب أن تكون فترات التأخير أعدادًا صحيحة بالمللي ثانية، وألا يتجاوز الحد الأدنى الحد الأقصى، وبحد أقصى 10000.",
     "settings.scanPrivacy.errBudget": "يجب أن تكون ميزانية كل مسح من 1 إلى 100000.",
-    "settings.scanPrivacy.saved": "حُفظت إعدادات خصوصية المسح. تُطبّق على المسح التالي.",
+    "settings.scanPrivacy.saved": "Network privacy settings saved. Pending network operations were cancelled; start a new action to use these settings.",
     "settings.scanPrivacy.refused": "رفض هذا المتصفح تخزين إعدادات خصوصية المسح.",
     "settings.scanPrivacy.legend": "خصوصية المسح",
     "settings.scanPrivacy.hint": "تغيّر هذه الخيارات طريقة جلب الإعلانات، لا ما هو موجود على السلسلة. لا تستطيع صفحة ويب فتح اتصال SOCKS أو التحقّق من أنها تعمل في Tor Browser: يعني «Tor Browser» أنك فتحت هذه الصفحة بنفسك في Tor Browser؛ ويعني «وكيل محلي» وسيط JSON-RPC تشغّله على هذا الحاسوب (مثل وسيط يرسل البيانات عبر Tor). لا تضيف الإعدادات الافتراضية وجهة جديدة.",
@@ -2291,11 +2291,11 @@
     "settings.network.notice.body": "Tor Browser and own-node RPC are UNVERIFIED in this build: GhostPay has not tested them against the real networks they name. They do not make payments anonymous. Payer, amount, token, timing and the announcement stay public on-chain, and the RPC and relayer still see what you ask them.",
     "settings.network.notice.unverified": "Unverified: GhostPay has not tested this profile against the real network it names; only local fakes were used.",
     "settings.network.notice.ack": "I have read this notice; apply my choice",
-    "settings.network.pending": "يتطلب ملف التعريف المحفوظ غير الافتراضي إقرارًا. تُحظر طلبات خدمة EVM RPC المشتركة التي تستخدم ملفًا محفوظًا لم تُقرّ به؛ أقرّ واحفظ، أو اختر Direct واحفظه صراحةً.",
+    "settings.network.pending": "تُحظر عمليات الشبكة حتى تُقرّ بإشعار ملف التعريف المحدد وتحفظه.",
     "settings.network.active": "In effect now: RPC reads {rpc}, relayer calls {relayer}, RPC mode {mode}.",
     "settings.network.save": "Save network profiles",
     "settings.network.saved": "Network profiles saved.",
-    "settings.network.refused": "رفض المتصفح حفظ ملفات تعريف الشبكة. يبقى الاختيار المحفوظ سابقًا ساريًا؛ وإذا تعذر قراءة الإعدادات تُحظر طلبات خدمة EVM RPC المشتركة.",
+    "settings.network.refused": "رفض المتصفح حفظ ملفات تعريف الشبكة. لم يُصرَّح بأي ملف تعريف جديد؛ راجع الإعدادات المحفوظة قبل المتابعة.",
     "error.network.ownNodeRpcRefused": "Own-node mode needs an RPC URL on this computer (loopback) or a valid v3 onion URL. Nothing was contacted.",
     "settings.scanPrivacy.padBlocks": "Extra padding around scan ranges (blocks, 0 = off)",
     "settings.scanPrivacy.padBlocksHint": "يوسّع نطاق استعلامات الإعلانات من الجانبين قبل ضبطها على نوافذ ثابتة. يُستخدم فقط مع نافذة ثابتة. قد تضيف النوافذ الصغيرة والحشو الكبير طلبات كثيرة: حتى 2 × ceil(الحشو / حجم النافذة) نافذة إضافية لكل استعلام، قبل التقسيم بسبب حدود المزوّد. الحد الأقصى للحشو 100000 كتلة. يُرفض التوسّع المفرط في النوافذ. حدّ كل استعلام 4096 طلب نافذة، بما في ذلك التقسيم بسبب حدود المزوّد؛ وتضيف استدعاءات RPC الأخرى وإعادات محاولة النقل حركة بيانات.",
@@ -2493,6 +2493,13 @@
     "scan.checkpoint.retry": "Reload saved scan history",
     "error.network.profileInvalid": "إعدادات ملف تعريف الشبكة غير صالحة أو غير متاحة. طلبات خدمة EVM RPC المشتركة محظورة. راجع ملفات تعريف الشبكة واحفظها في الإعدادات قبل المحاولة مجددًا.",
     "error.network.profilePending": "طلبات خدمة EVM RPC المشتركة محظورة حتى تقرّ بإشعار ملف تعريف الشبكة المحفوظ، أو تختار Direct وتحفظه صراحةً.",
-    "error.relayerClient.paddingFailed": "تعذر إعداد حشو الطلب. لم يُرسل أي طلب. حاول مجددًا في متصفح تتوفر فيه عشوائية آمنة."
-  }
+    "error.relayerClient.paddingFailed": "تعذر إعداد حشو الطلب. لم يُرسل أي طلب. حاول مجددًا في متصفح تتوفر فيه عشوائية آمنة.",
+    "error.network.authorizationRefused": "Network access is not authorized for this action or the settings changed. Review the selected endpoint and try again.",
+    "network.operationEndpoint": "This action contacts the selected endpoint: {endpoint}",
+    "network.actionConsent": "Each network action authorizes only its displayed endpoint and purpose. Changing settings, locking, or cancelling revokes pending access. Offline wallet and invoice tools remain available.",
+    "network.revoke": "Cancel network activity",
+    "network.revoked": "Network activity cancelled. Start a new action to authorize another request.",
+    "network.reviewAction": "Review network access for this invoice"
+  },
+  "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }
