@@ -364,6 +364,18 @@ describe('invalidating scan results after a reorg', () => {
     });
   });
 
+  it('keeps a discovery unknown when reloaded headers have not rechecked its spending suffix', () => {
+    const chain = mockChain('regtest', walletA());
+    const headers = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });
+    headers.connect(chain.blocks.slice(1, 3).map((b) => b.header!));
+    const scan: ScanResult = {
+      fromHeight: 1, toHeight: 4, found: [pay(1, chain.blocks[1]!.hash)], spentCount: 0,
+      blocks: chain.blocks.slice(1).map((b, i) => ({ height: i + 1, hash: b.hash })),
+      headerAnchored: true, spentStatus: 'local',
+    };
+    expect(invalidateReorged(scan, headers)).toEqual({ scan: { ...scan, spentStatus: 'unknown' }, dropped: [] });
+  });
+
   it('treats blocks above the checked tip as not yet checked, not as reorged', async () => {
     const chain = mockChain('regtest', walletA());
     const full = await synced(chain);
@@ -372,7 +384,7 @@ describe('invalidating scan results after a reorg', () => {
     expect(full.tipHeight).toBe(4);
     const short = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });
     short.connect(chain.blocks.slice(1, 3).map((b) => b.header!));
-    expect(invalidateReorged(scan, short)).toEqual({ scan, dropped: [] });
+    expect(invalidateReorged(scan, short)).toEqual({ scan: { ...scan, spentStatus: 'unknown' }, dropped: [] });
     // A real mismatch at or below the checked tip still cuts back.
     forkChain(chain.blocks, 2, 1, 6);
     const other = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });

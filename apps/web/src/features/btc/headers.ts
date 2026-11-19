@@ -470,7 +470,7 @@ export function invalidateReorged(
   const stale = scan.blocks.find((b) => checked(b.height) && chain.hashAt(b.height) !== b.hash);
   const staleFound = scan.found.filter((f) => checked(f.height) && chain.hashAt(f.height) !== f.blockHash);
   if (stale === undefined && staleFound.length === 0) {
-    return { scan: scan.spentStatus === 'local' && scan.toHeight < chain.tipHeight ? { ...scan, spentStatus: 'unknown' } : scan, dropped: [] };
+    return { scan: scan.spentStatus === 'local' && scan.toHeight !== chain.tipHeight ? { ...scan, spentStatus: 'unknown' } : scan, dropped: [] };
   }
   const cut = Math.min(stale?.height ?? Infinity, ...staleFound.map((f) => f.height)) - 1;
   const dropped = scan.found.filter((f) => f.height > cut);
