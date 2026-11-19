@@ -1776,6 +1776,15 @@ Recovery qualification: implementation `bd05411b2a4c5b1b1793065bce1c10e0553cf952
 - Acceptance: reconstruct from retained source/patch context, compare recovered blobs with those exact identities, obtain fresh focused/type/lint/build results and independent review. The previous 342-case result is historical and does not qualify the recovered candidate. Lost raw diagnostics must not be invented or described as present.
 - Boundaries: no contract, dependency, authority-module, mainnet, relayer-server or deployment changes. Coordinator owns publication of incremental commits and supplies the execution slot. Other workers' paths and histories remain untouched.
 
+## PR 279 multipart QR integrity qualification — 2026-11-19
+
+- Worker: `/root/security_review`, delegated by the final Pages coordinator.
+- Branch: `repair/ghostpay-qr-surrogates-20261119`; base `75cc6149e2fd560f26725e806b24f859f999d647`.
+- Original source: PR #279 `b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0`; five commits above main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrMultipart.ts`, its focused test, the original PR handoff, this additive claim, and `docs/handoffs/qr-surrogate-review-20261119/`. QR package source/configuration is read-only; run its complete original suite to qualify framing and Unicode compatibility.
+- Acceptance: independently run the exact upstream regression against the unchanged current helper; retain valid Unicode controls; preserve all original PR ancestry through a normal merge; run focused web QR tests, complete QR package coverage, package typecheck/build/lint and scoped web typed lint with original assertions/settings; obtain independent source review and report actual outcomes.
+- Scope: reject lossy conversion of malformed UTF-16 to multipart QR bytes. No fund-loss or key-exposure exploit is claimed. No other web feature, native-sweep source, contract, dependency, threshold, workflow, network grant, mainnet or deployment change. Coordinator owns shared integration, publication and full application gates.
+
 
 ## Recovered native authority independent source review — 2026-11-19
 
