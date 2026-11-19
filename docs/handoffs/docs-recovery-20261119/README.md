@@ -85,3 +85,14 @@ Inspect current remote main and source PR heads before promotion. Review the new
 status snapshot and archive mapping, publish the isolated candidate through the
 normal PR workflow, and retain required checks and approvals. No deployment or live
 GitHub Wiki publication is part of this work.
+
+## Remote publication provenance
+
+The GitHub connector preserves each verified Git tree and source-parent relationship while creating new commit identities.
+[publication.json](publication.json) maps the four original local commits to their remote counterparts. In particular,
+local comparison commit `562c219123de64a8089c95af1393ce955b0d4ff2` maps to remote
+`b0617e272096c2145acd90fb00a5f8a4bac2f9cc`, with the identical tree
+`73d949403fc79ffa5b8d6bfc28b754ea4ca9ceee`. Local content commit `c7bf99ad` maps to
+remote `62d9554d1cb4f77259a8f8463c4472c1824d1cc1`, with the identical verified tree
+`8c8550e5863b24152b449588a07a261a17a3d568`. This publication note and mapping are a
+subsequent documentation-only commit; the original archive and provenance hashes remain unchanged.

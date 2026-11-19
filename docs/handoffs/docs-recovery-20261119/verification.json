@@ -9,7 +9,7 @@
   },
   "relative_links": {
     "markdown_files": 17,
-    "checked": 122,
+    "checked": 123,
     "missing_targets": []
   },
   "ancestry": {
@@ -28,6 +28,7 @@
       "docs/handoffs/docs-recovery-20261119/archive/pr140-historical-evidence.md",
       "docs/handoffs/docs-recovery-20261119/archive/pr153-historical-evidence.md",
       "docs/handoffs/docs-recovery-20261119/provenance.json",
+      "docs/handoffs/docs-recovery-20261119/publication.json",
       "docs/handoffs/docs-recovery-20261119/verification.json",
       "docs/wiki/Architecture-and-Design-Rationale.md",
       "docs/wiki/Codebase-Map.md",
