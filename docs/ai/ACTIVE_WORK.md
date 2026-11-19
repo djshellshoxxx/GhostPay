@@ -1,3 +1,15 @@
+# Automation cycle 20261119T2243Z — strict base64url decoder runtime input
+
+- Worker: one ChatGPT operator (development, separate read-only audit and integration review sequentially; no independent subagent).
+- Isolated branch: `automation/20261119T2243Z/bug/base64url-runtime-input`; baseline `main` `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `packages/invoice-schema/src/base64url.ts`, `packages/invoice-schema/src/base64url.test.ts`, and `docs/handoffs/BASE64URL_INPUT_TYPE_20261119.md`; this claim is appended to `docs/ai/ACTIVE_WORK.md` on this branch only.
+- Reproduction: public strict decoder accepts a numeric value as empty bytes (and array-like objects can supply length/charCodeAt); non-string input is outside its contract. A null value raises a native TypeError rather than fixed Base64UrlError.
+- Acceptance: all non-primitive-string values fail with `Base64UrlError`, including number, undefined/null, arrays, boxed strings and array-like objects; canonical valid inputs and existing test vectors unchanged. No secret-bearing error messages or protocol change.
+- Ownership: sampled open #238/#262/#264/#265/#268/#269/#270/#278/#285; none list direct modification of base64url files. Recheck live heads before integration. Never edit other workers' branches.
+- Dependencies: existing invoice schema test package, no new dependency. Full exact-head hosted CI and independent review required; no shared integration lock acquired, no main merge.
+
+---
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
