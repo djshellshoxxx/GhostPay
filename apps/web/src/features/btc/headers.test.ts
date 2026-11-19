@@ -334,15 +334,57 @@ describe('invalidating scan results after a reorg', () => {
     txid: 'aa'.repeat(32), vout: height, amountSats: 1000n, xOnlyPublicKey: new Uint8Array(32), spendTweak: tweak, height, blockHash, label: null, duplicateKey: false,
   });
 
+  it('makes a surviving payment unknown when the blocks supporting its spentness are orphaned', async () => {
+    const chain = mockChain('regtest', walletA());
+    const headers = await synced(chain);
+    const scan: ScanResult = {
+      fromHeight: 1, toHeight: 4, found: [pay(2, chain.blocks[2]!.hash)], spentCount: 1,
+      blocks: chain.blocks.slice(1).map((b, i) => ({ height: i + 1, hash: b.hash })),
+      headerAnchored: true, spentStatus: 'local',
+    };
+    forkChain(chain.blocks, 3, 3, 15);
+    await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: new MemoryHeaderStore() });
+    for (const spentStatus of ['local', 'provider'] as const) {
+      expect(invalidateReorged({ ...scan, spentStatus }, headers)).toMatchObject({
+        scan: { toHeight: 2, found: scan.found, spentStatus: 'unknown', spentCount: 0 }, dropped: [],
+      });
+    }
+  });
+
+  it('requires refreshed local input evidence after the verified chain tip advances', async () => {
+    const chain = mockChain('regtest', walletA());
+    const headers = await synced(chain);
+    const scan: ScanResult = {
+      fromHeight: 1, toHeight: 3, found: [pay(3, chain.blocks[3]!.hash)], spentCount: 0,
+      blocks: chain.blocks.slice(1, 4).map((b, i) => ({ height: i + 1, hash: b.hash })),
+      headerAnchored: true, spentStatus: 'local',
+    };
+    expect(invalidateReorged(scan, headers)).toMatchObject({
+      scan: { toHeight: 3, found: scan.found, spentStatus: 'unknown' }, dropped: [],
+    });
+  });
+
+  it('keeps a discovery unknown when reloaded headers have not rechecked its spending suffix', () => {
+    const chain = mockChain('regtest', walletA());
+    const headers = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });
+    headers.connect(chain.blocks.slice(1, 3).map((b) => b.header!));
+    const scan: ScanResult = {
+      fromHeight: 1, toHeight: 4, found: [pay(1, chain.blocks[1]!.hash)], spentCount: 0,
+      blocks: chain.blocks.slice(1).map((b, i) => ({ height: i + 1, hash: b.hash })),
+      headerAnchored: true, spentStatus: 'local',
+    };
+    expect(invalidateReorged(scan, headers)).toEqual({ scan: { ...scan, spentStatus: 'unknown' }, dropped: [] });
+  });
+
   it('treats blocks above the checked tip as not yet checked, not as reorged', async () => {
     const chain = mockChain('regtest', walletA());
     const full = await synced(chain);
     const blocks = chain.blocks.slice(1).map((b, i) => ({ height: i + 1, hash: b.hash }));
-    const scan: ScanResult = { fromHeight: 1, toHeight: 4, found: [pay(3, chain.blocks[3]!.hash)], spentCount: 0, blocks, headerAnchored: true };
+    const scan: ScanResult = { fromHeight: 1, toHeight: 4, found: [pay(3, chain.blocks[3]!.hash)], spentCount: 0, blocks, headerAnchored: true, spentStatus: 'local' };
     expect(full.tipHeight).toBe(4);
     const short = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });
     short.connect(chain.blocks.slice(1, 3).map((b) => b.header!));
-    expect(invalidateReorged(scan, short)).toEqual({ scan, dropped: [] });
+    expect(invalidateReorged(scan, short)).toEqual({ scan: { ...scan, spentStatus: 'unknown' }, dropped: [] });
     // A real mismatch at or below the checked tip still cuts back.
     forkChain(chain.blocks, 2, 1, 6);
     const other = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });
@@ -354,7 +396,7 @@ describe('invalidating scan results after a reorg', () => {
     const chain = mockChain('regtest', walletA());
     const headers = await synced(chain);
     const blocks = chain.blocks.slice(1).map((b, i) => ({ height: i + 1, hash: b.hash }));
-    const scan: ScanResult = { fromHeight: 1, toHeight: 4, found: [pay(2, chain.blocks[2]!.hash), pay(3, chain.blocks[3]!.hash)], spentCount: 0, blocks, headerAnchored: true };
+    const scan: ScanResult = { fromHeight: 1, toHeight: 4, found: [pay(2, chain.blocks[2]!.hash), pay(3, chain.blocks[3]!.hash)], spentCount: 0, blocks, headerAnchored: true, spentStatus: 'local' };
     expect(invalidateReorged(scan, headers)).toEqual({ scan, dropped: [] });
     forkChain(chain.blocks, 3, 3, 4);
     await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: new MemoryHeaderStore() });

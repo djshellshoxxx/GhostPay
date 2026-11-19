@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "branch": "integration/ghostpay-btc244-reconciled-20261119",
+  "sources": {
+    "base_master": "435c6e6bca463f83b6c55a2063f8c18c546c3c22",
+    "pr219": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+    "prior_repair": "befd696546020abfe2988ed8c49495b4e9a83f23",
+    "pr244_core": "ef08170a83d86d194b8ce4186299e791027e461e",
+    "pr244_refreshed": "2364284a2717a22b895fcb7badeb2e7ae6bb0e48",
+    "pr254": "8c1d87a2587281c32a5f1326a4f36cfada4384bc",
+    "master_authority_context": "260f094460b11ccc285b9cebf6a41148dbbe04cb"
+  },
+  "selected_behavior": {
+    "coverage": "per-output spentCheckedThrough; no global-to-per-output trust migration",
+    "consent": "explicit revocable opt-in; immutable serialized start policy at main-thread bridge and result validation",
+    "signing": "master TM13 fresh selected-output query retained and disclosed",
+    "raw_spends": "serialized committed inputs, independently of tweak eligibility; contradictory coinbase JSON refused"
+  },
+  "source_pins": {
+    "apps/web/e2e/btc-spent-consent.spec.ts": {
+      "git_blob": "17ef11133ab429b632ffc03ba3088db74f5f501b",
+      "sha256": "c029177013ad68aee0bb4b65685ae9353258f774a55a4d7bb8a6554690946b1e"
+    },
+    "apps/web/e2e/btc-spentness.spec.ts": {
+      "git_blob": "8f20a9f7b5909c0513e5419c8f266025f998e487",
+      "sha256": "b5c9230b7ee455a397ebe88e8558c1b9cbebdcbca089089f01bba20dff97ee83"
+    },
+    "apps/web/e2e/btc-worker.spec.ts": {
+      "git_blob": "403ecc320c18c732b7f3c3549fbdda3e4e08e7e9",
+      "sha256": "73d8917858c80c251a495af35a79930eb52b4ffdc67767a97dfd3cfc4c1002dd"
+    },
+    "apps/web/locales/ar.json": {
+      "git_blob": "d499283cdba652fb32692ab7b707447c75bba546",
+      "sha256": "c1259479c447d3901db70ccc2366cbce76460ea9f33db1f19422d525f292d146"
+    },
+    "apps/web/locales/en.json": {
+      "git_blob": "bf644380fb60eec1b55292651bac56c03e8f7270",
+      "sha256": "e3a7abc49a05d50e3c466cbddb95ed8c3877ead7b58b48a3cd894f8fc5a0a6b6"
+    },
+    "apps/web/locales/es.json": {
+      "git_blob": "895c5c85de71d4569b288f2b07270767ab5926a4",
+      "sha256": "67f903034c427622d3fa7d31bc7b42cf1b6b03a44ce5994a63bf035712060c71"
+    },
+    "apps/web/locales/ja.json": {
+      "git_blob": "5225027c51ef792442c93711d4187c5f0cb4b016",
+      "sha256": "ea42a39eaa57107037d9f00657081eb6d9664bfdea4d3ab8ab74afc0ffa41f73"
+    },
+    "apps/web/src/features/btc/BtcView.headerOwnership.test.tsx": {
+      "git_blob": "b834219ff7cf5cb3ecdeb30edfd2ac39201f4bd4",
+      "sha256": "e321b993a9ae191fbef706ac49c06f880962f270391a1d19bb64e9cbeae15ede"
+    },
+    "apps/web/src/features/btc/BtcView.headers.test.tsx": {
+      "git_blob": "bfaa70178b37bf5a58dba41abea0dfbb959f7c29",
+      "sha256": "2f5f5efe6ea3fee128a02fa7f54a74b6a49204cf8db9e375c954212afd4d5ff5"
+    },
+    "apps/web/src/features/btc/BtcView.oracle.test.tsx": {
+      "git_blob": "1574d23a77800cf1e183e2b6a01fd37d4e9455a8",
+      "sha256": "fe0134851c01a7c7d34fb086980e8d8399d338a288252a3154be8049a56c7fed"
+    },
+    "apps/web/src/features/btc/BtcView.secrets.test.tsx": {
+      "git_blob": "0b83890dff3c642cbe0a984a3c1d551dbcad3cfa",
+      "sha256": "6eb58647202bb0bcce14ddecd6f5d0fe31ef29bbc0be2575b52f13e65c15dfcb"
+    },
+    "apps/web/src/features/btc/BtcView.spentConsent.test.tsx": {
+      "git_blob": "70118b7aed6df2ea2fa07d24ec78dc7b45e580b6",
+      "sha256": "846e906900c5556b8c9149f638bbbfac5631dcf7dbe3ba4a8d04e157de450402"
+    },
+    "apps/web/src/features/btc/BtcView.spentness.test.tsx": {
+      "git_blob": "b1334e6c0fbd8ce95b5369822ff5dd6697467a89",
+      "sha256": "4212ac3f34c8b9543ed6ecb66526133a02de119f0189c79a941b4e349b190760"
+    },
+    "apps/web/src/features/btc/BtcView.test.tsx": {
+      "git_blob": "b921fee4ec24ac9f3a1fe3a57f1eabdd6f256994",
+      "sha256": "beefa5c402cb334079d30b4c1b20fb12601a6b1f24fe90a85dd6425a2c5f3db3"
+    },
+    "apps/web/src/features/btc/BtcView.tsx": {
+      "git_blob": "85018c38718822f88bf0fdf24866a6ec3393d3d5",
+      "sha256": "59a82127d9b35fe3b9c1629d3fc7974df0cd7476b3ebc22e8f95cefa33139a01"
+    },
+    "apps/web/src/features/btc/esplora.test.ts": {
+      "git_blob": "b3ed40302459b58ef2ccaf96f20309eb6a230e03",
+      "sha256": "22cc585bc8007fdc0400c597fc1b4ee0f2b1bbc713dd4fa365124d660f043a8a"
+    },
+    "apps/web/src/features/btc/esplora.ts": {
+      "git_blob": "5eca8a6d42b32a951a6d0bfa709c6f06207a1cef",
+      "sha256": "8de3e6f0634f591ff72db721309536462ba4c86fb4226fd0e3da89301cf883e8"
+    },
+    "apps/web/src/features/btc/fixtures.testutil.ts": {
+      "git_blob": "d67d906cf6c7562fb7e7e7f042807c83d8f3bda3",
+      "sha256": "f842e9e9d50bce3f32c9ea7739681d694f57ddf93f2475f53276ab87120d4bf0"
+    },
+    "apps/web/src/features/btc/headers.test.ts": {
+      "git_blob": "01f6363e36435db0b72065652f6eb1185c0caf28",
+      "sha256": "26cb79bb74183ba7674351db844053e7c209652e9f565e10df1cf093aca98bd1"
+    },
+    "apps/web/src/features/btc/headers.ts": {
+      "git_blob": "eab5c493cf4a2ddeba3ee8b6d9ee2cfac5641e1a",
+      "sha256": "34880d0630ed8a793372e4560c95132ef8551bf745d4520292feb899a51848ad"
+    },
+    "apps/web/src/features/btc/oracleSource.test.ts": {
+      "git_blob": "08dc0c4b6529eaeff4e305eae83e80c89d013d45",
+      "sha256": "80cde8c3735a3481de2fa3067c77d74de6b5fe7e2305affc2004dde1c60f912d"
+    },
+    "apps/web/src/features/btc/oracleSource.ts": {
+      "git_blob": "dbbd9003c66f9ff6f2a9960c2b83257be21eb90d",
+      "sha256": "61eec20f11a1064288f89082fd30f775587a68413699ac6e2a45b06dd6e34465"
+    },
+    "apps/web/src/features/btc/oracleWorker.test.ts": {
+      "git_blob": "f045726f04e218a5462756d14972bf868ffee0d3",
+      "sha256": "52b0aeb4fe1e35a697ead4732499042e05baf66b985013bb9fafddc494c573e5"
+    },
+    "apps/web/src/features/btc/scan-secrets.hardening.test.ts": {
+      "git_blob": "a5bfb37a7d4388a6b731a0c07600a3a127c3d9d8",
+      "sha256": "c6a693d20d16b0c10137539a0683f324c771131ec66aaa33e17790580cfa695a"
+    },
+    "apps/web/src/features/btc/scan.localSpends.test.ts": {
+      "git_blob": "8f3e5a6808849a9c834239ff70f23ab962ccb647",
+      "sha256": "5a3413d36f76c5e1c8c954dc3682259ed9c7a00353660039be0f15e0ff8d48b8"
+    },
+    "apps/web/src/features/btc/scan.spends.test.ts": {
+      "git_blob": "2f36327a9eb007a6febcaf79b6b4ccd650a1737f",
+      "sha256": "3484ee481661c8fb68720fd08709880c6db54077abf12112b12ca5f86597e6ae"
+    },
+    "apps/web/src/features/btc/scan.spentness-completion.test.ts": {
+      "git_blob": "97d1198997b1afc969d362e172283fa0a3a790cc",
+      "sha256": "aa5c6dc22a4c43fe60a20321f9802281fcb2bf94ba9446d64aebeaae8fec7c77"
+    },
+    "apps/web/src/features/btc/scan.ts": {
+      "git_blob": "abee269aa64323eb7d9229244c7e2c66e8b8ee1e",
+      "sha256": "d5a9af78b3c7ccedf25998e7e5810aa72616bd127968f9ebf39fc0396a166875"
+    },
+    "apps/web/src/features/btc/scanWorker.test.ts": {
+      "git_blob": "df54fcf1af98c301e743eed8c9c82f4c25efbc51",
+      "sha256": "8ab8f7aa0d51ea054cb6fe1780b1007ff8e4a9cc0e501897a1c3700bd5a84b10"
+    },
+    "apps/web/src/features/btc/scanWorkerClient.ts": {
+      "git_blob": "38bfd8c8f72cc2c6bbed1541c1df8607a0f3cc4f",
+      "sha256": "776cb35b4350b6315ef01a642902bb6796abeb200996063f4fb8664e23093a34"
+    },
+    "apps/web/src/features/btc/scanWorkerMessages.ts": {
+      "git_blob": "b83c76612e5df5976869d7e2c7a366b582b257fe",
+      "sha256": "add0d25d0e8cd1749c5d1d2a863870dbb370f3e13ff75e9844309eb602a53be7"
+    },
+    "apps/web/src/features/btc/scanWorkerProtocol.ts": {
+      "git_blob": "a18ac8da33a48c8bac5c0881cba39da9f3861105",
+      "sha256": "2f164a54eeb3ff75b5d831a93c52c79a1983908de0053cf014ef1b344b7094bd"
+    },
+    "apps/web/src/features/btc/scanWorkerSource.test.ts": {
+      "git_blob": "4b4757712652072a8d9bedafc223132f9de2e1cc",
+      "sha256": "271c079b40e9d25004a0ddd4c77393a7eac54eda26ec58d738fd022d6c052b07"
+    },
+    "apps/web/src/features/btc/scanWorkerSource.ts": {
+      "git_blob": "6c02ea54678b06ed4b073652aed000ac5197b50e",
+      "sha256": "70a17211e11f9654dbfd9bf00856f675e5deb34318f3f4d4320891035ab2bfb4"
+    },
+    "apps/web/src/features/btc/verification.ts": {
+      "git_blob": "12fc8afc579e574268247aa658d498d42a556ab9",
+      "sha256": "b0974b2646d52c5802cbb566ca297e672d1e5e6c99663cc12d5a28f90c5b82ed"
+    },
+    "apps/web/src/i18n/securityKeys.ts": {
+      "git_blob": "7ab15a6b53e743cc1b1e43f4f70ca0352820c178",
+      "sha256": "72af808e818ab896302e95437083296acbadf2aaddb330ceefc5c7b5efd08f37"
+    },
+    "packages/btc-silent-payments/src/scan/headersync.test.ts": {
+      "git_blob": "a9c62f97b132835f6b3c97b23568057aa80e8208",
+      "sha256": "4a8b47033252d40d4743f34dfb8d4ac86aaf7d91a3678f61019d394b4b0ebdf3"
+    },
+    "packages/btc-silent-payments/src/scan/headersync.ts": {
+      "git_blob": "6c25af4bdb71291448f79f3943f22c3d7f4d086c",
+      "sha256": "dea264c471c1a941f1de15f8f68f886076cee5ec4acd0b9d3adcb34b2448d01b"
+    },
+    "packages/btc-silent-payments/src/scan/scanner.test.ts": {
+      "git_blob": "17e31235fbd94a547bcd428aeb8b46e58c547cf0",
+      "sha256": "e2b3f0ed76ebd7f4f56269c3712cad405a8c985df5724c38967ecbec3737b481"
+    },
+    "packages/btc-silent-payments/src/scan/scanner.ts": {
+      "git_blob": "fe7f4e124a03ec9ee0cbead5d79a2830e420ca29",
+      "sha256": "3754d05c8d27ef00f284fec67e3e4b8bd671dd0ffb9556f87ce6710475b3884e"
+    },
+    "packages/btc-silent-payments/src/scan/state.test.ts": {
+      "git_blob": "536c321304ab7d8c034cef5c3f22347501abd50f",
+      "sha256": "5cc16dbc708d48b9b3a296d27806e4e553fadd350fddc3da44323bafa16e2266"
+    },
+    "packages/btc-silent-payments/src/scan/state.ts": {
+      "git_blob": "6e91f657d38a511e353786d22905c08780b55d70",
+      "sha256": "fb10101b6329390a935109d7fdbb57573eb05599f0580b1b86777ec5f9beac49"
+    }
+  },
+  "environment": {
+    "node": "v24.22.3",
+    "vitest": "5.1.0",
+    "dependency_source": "GhostPay-master/node_modules (borrowed, no install/build)",
+    "source_aliases": true,
+    "max_workers": 1,
+    "file_parallelism": false,
+    "max_old_space_size_mb": 768,
+    "configs": {
+      "btc244-web.vitest.config.mts": "e315d0a67bf54ddf8f34e3f51cd74be7272ed0adc6ca2cea381b3dfc63a58217",
+      "btc244-library.vitest.config.mts": "7a31596ff8a3370161f8f134099f4e83fbef098cded8b4bcc75a19f2f7137eed",
+      "btc244-runtime.tsconfig.json": "46623898729bfd07cb2f909ce096ffc8764aa92aa35059d87db33673d09cb88b"
+    }
+  },
+  "checks": [
+    {
+      "name": "new regression RED",
+      "tree": "5285e9f6552b200d02563d6c99b8865134791e34",
+      "result": "4 intended failures",
+      "seconds": 21.16,
+      "log": "btc244-red.log"
+    },
+    {
+      "name": "worker consent coverage GREEN",
+      "tree": "379368b7769486da3999490e7aef41ed28651e92",
+      "passed": 52,
+      "files": 3,
+      "seconds": 47.41,
+      "log": "btc244-green-targeted.log"
+    },
+    {
+      "name": "library state scanner header-source GREEN",
+      "tree": "2b7fb4fae9e59b27b152bdc309a8fc44a74e33fb",
+      "passed": 70,
+      "files": 3,
+      "seconds": 11.1,
+      "log": "btc244-library-green.log"
+    },
+    {
+      "name": "web core GREEN",
+      "tree": "2b7fb4fae9e59b27b152bdc309a8fc44a74e33fb",
+      "passed": 170,
+      "files": 13,
+      "seconds": 98.47,
+      "log": "btc244-web-core-green.log"
+    },
+    {
+      "name": "component integration",
+      "tree": "2b7fb4fae9e59b27b152bdc309a8fc44a74e33fb",
+      "passed": 74,
+      "failed": 1,
+      "files": 8,
+      "seconds": 174.18,
+      "failure": "stale disclosure text expectation only",
+      "log": "btc244-web-components-green.log"
+    },
+    {
+      "name": "component affected-file rerun",
+      "tree": "b18ee08c14d6f2251b87783ef126c83f48d2ba45",
+      "passed": 14,
+      "failed": 0,
+      "files": 1,
+      "seconds": 23.16,
+      "runtime_change": false,
+      "log": "btc244-web-components-rerun.log"
+    },
+    {
+      "name": "BTC package typecheck",
+      "exit_code": 0,
+      "config": "packages/btc-silent-payments/tsconfig.json",
+      "log": "btc244-library-typecheck.log"
+    },
+    {
+      "name": "aliased web runtime typecheck",
+      "exit_code": 130,
+      "status": "interrupted after bounded resource window, no diagnostics; not qualified",
+      "config": "btc244-runtime.tsconfig.json",
+      "log": "btc244-runtime-typecheck.log"
+    },
+    {
+      "name": "committed-secret scan",
+      "exit_code": 0,
+      "command": "bash scripts/scan-secrets.sh"
+    },
+    {
+      "name": "whitespace check",
+      "exit_code": 0,
+      "command": "git diff --cached --check"
+    }
+  ],
+  "unrun": [
+    "clean lock install",
+    "shared library build",
+    "full repository typecheck/lint/coverage",
+    "production bundle",
+    "Playwright browser cases",
+    "external Bitcoin node/device acceptance",
+    "native-language review"
+  ],
+  "coordination": "Root owns later master merge; no remote writes by this lane.",
+  "distinct_passing_tests": 367,
+  "distinct_test_files": 27,
+  "reconciliation_status": "focused source/tests qualified locally; combined master integration and full hosted gates remain coordinator-owned"
+}

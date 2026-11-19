@@ -18,6 +18,8 @@ export class BtcScanProtocol {
   private secret: Uint8Array | undefined;
   private pending: { id: number; sequence: number; resolve: () => void; reject: (e: Error) => void } | undefined;
   private requestId = 0;
+  private providerSpentCheck = false;
+  private matchedOutputProofs = false;
   private readonly sources = new Map<number, { resolve: (response: Response) => void; reject: (error: Error) => void; cleanup: () => void }>();
   private readonly oracles = new Map<number, { resolve: (block: BtcOracleBlock) => void; reject: (error: Error) => void; cleanup: () => void }>();
   public constructor(private readonly send: (message: BtcScanResponse) => void) {}
@@ -77,7 +79,9 @@ export class BtcScanProtocol {
     });
   }
   private source(path: string, signal: AbortSignal | null | undefined): Promise<Response> {
-    if (!isScanSourcePath(path) || this.sources.size >= MAX_SOURCE_PENDING) return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
+    if (!isScanSourcePath(path) || (path.includes('/outspend/') && !this.providerSpentCheck) ||
+        (/\/tx\/[^/]+\/(hex|merkle-proof)$/.test(path) && !this.matchedOutputProofs) || this.sources.size >= MAX_SOURCE_PENDING)
+      return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
     if (this.stopped || signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
     const requestId = ++this.requestId;
     return new Promise<Response>((resolve, reject) => {
@@ -96,6 +100,7 @@ export class BtcScanProtocol {
     this.secret = m.scanSecret; this.sessionId = m.id;
     try {
       if (!isHeight(m.id) || !isHeight(m.fromHeight) || (m.toHeight !== undefined && !isHeight(m.toHeight)) || typeof m.checkpoints !== 'boolean' ||
+          (m.providerSpentCheck !== undefined && typeof m.providerSpentCheck !== 'boolean') ||
           typeof m.baseUrl !== 'string' || m.baseUrl.length > 2048 || !(m.scanSecret instanceof Uint8Array) || m.scanSecret.length !== 32 ||
           !(m.spendPublicKey instanceof Uint8Array) || m.spendPublicKey.length !== 33 || !Array.isArray(m.headers?.headers) ||
           m.headers.headers.length > MAX_HEADERS || m.headers.headers.some((h) => typeof h !== 'string' || !/^[0-9a-f]{160}$/.test(h)))
@@ -106,6 +111,9 @@ export class BtcScanProtocol {
       // Reuse the source parser with its configured base, but emit only allowed path suffixes to the main thread.
       const baseUrl = normalizeEsploraUrl(m.baseUrl);
       const oracle = m.oracle === undefined ? undefined : normalizeOracleConfig(m.oracle, baseUrl);
+      if (oracle?.mode === 'light' && m.providerSpentCheck !== true) throw new SilentPaymentError('INVALID_INPUT');
+      this.providerSpentCheck = m.providerSpentCheck === true;
+      this.matchedOutputProofs = oracle?.mode === 'light' && this.providerSpentCheck;
       const client = new EsploraClient({ baseUrl, fetchFn: (url, init) => {
         if (!url.startsWith(`${baseUrl}/`) || (init.method !== undefined && init.method !== 'GET') || init.body !== undefined)
           return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
@@ -124,6 +132,7 @@ export class BtcScanProtocol {
         ...(m.resumeState === undefined ? {} : { resumeState: readWorkerState(m.resumeState) }),
         ...(m.recoveryOffset === undefined ? {} : { recoveryOffset: m.recoveryOffset }),
         ...(m.recoveryLimit === undefined ? {} : { recoveryLimit: m.recoveryLimit }),
+        ...(m.providerSpentCheck === undefined ? {} : { providerSpentCheck: m.providerSpentCheck }),
         onBlock: (height) => { if (!this.stopped) this.send({ type: 'block', id: m.id, height }); },
         ...(m.checkpoints ? { onState: (state) => {
           const text = serializeScanState(state);
