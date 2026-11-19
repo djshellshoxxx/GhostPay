@@ -1,0 +1,42 @@
+[
+  {
+    "pr": 280,
+    "path": "apps/web/src/lib/buildProfile.ts",
+    "main": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+    "candidate": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+    "branch": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+    "candidate_equals_main": true
+  },
+  {
+    "pr": 281,
+    "path": "apps/web/src/lib/scanSpam.ts",
+    "main": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+    "candidate": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+    "branch": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+    "candidate_equals_main": true
+  },
+  {
+    "pr": 282,
+    "path": "apps/web/src/lib/merchantIdentity.ts",
+    "main": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+    "candidate": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+    "branch": "183a8fbc588cb1c66e5ec480e572849b803761db",
+    "candidate_equals_main": true
+  },
+  {
+    "pr": 285,
+    "path": "apps/web/src/lib/qrKinds.ts",
+    "main": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+    "candidate": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+    "branch": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+    "candidate_equals_main": true
+  },
+  {
+    "pr": 289,
+    "path": "packages/invoice-schema/src/base64url.ts",
+    "main": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+    "candidate": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+    "branch": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+    "candidate_equals_main": true
+  }
+]
