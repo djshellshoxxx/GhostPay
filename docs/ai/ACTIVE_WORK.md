@@ -1,3 +1,21 @@
+# Camera visibility integration — 2026-11-19
+
+Worker: `privacy_completion`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-camera-visibility-integration-20261119`.
+Base: `74e3111f994481e7c9201ddb0494cf4a8405eadd`.
+Owned paths: `apps/web/src/components/CameraImporter.tsx`, focused CameraImporter
+visibility tests, this additive claim, and a scoped integration receipt.
+Acceptance: reproduce PR #258's nine hidden-document regression cases against the
+unchanged candidate runtime; merge exact `84398a79e18673f3e371a405931bc464e1cca99a`
+with original ancestry; preserve idle pasted drafts, explicit retries, multipart,
+scope cancellation and caller AbortSignal obligations; replay all importer tests
+using the original configuration and reconciled compiled prerequisites; obtain
+independent source review before coordinator integration. Preserve the original
+PR author claim and receipt. No source edits outside the importer pair, no broader
+web lint/typecheck, configuration/rule/threshold changes or remote mutation.
+Status: claimed before edits; source comparison confirms the candidate importer is
+byte-identical to the upstream fix's parent, so runtime conflict is not expected.
+
 # Settings exchange disclosure assertion reconciliation — 2026-11-19
 
 Worker: `privacy_completion`, delegated by the feature-consolidation coordinator.
