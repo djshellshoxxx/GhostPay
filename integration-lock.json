@@ -1,12 +1,24 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "20261119T100000Z-11e5ddb9da60-root",
   "token": "b7cb841e-ed0c-4492-81fc-2ce0ac5c2260",
   "generation": 2,
   "base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
   "acquired_at": "2026-11-19T10:00:25.773Z",
-  "heartbeat_at": "2026-11-19T10:00:25.774Z",
+  "heartbeat_at": "2026-11-19T10:39:09.006Z",
   "expires_at": "2026-11-19T13:00:25.774Z",
-  "transport": "authorized-github-connector"
+  "transport": "authorized-github-connector",
+  "released_at": "2026-11-19T10:39:09.006Z",
+  "cycle_result": {
+    "scope": "Pages continuation integration; no main merge or deployment",
+    "pull_request": 269,
+    "head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+    "tree": "b1adc223bb49ebfbdfa6d809ecbb2d44dfa92eac",
+    "preserved_principal": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+    "independent_source_review": "no introduced blocker; integration metadata and source blobs verified",
+    "qualification": "CI pending; Pages/beta/hosting/CLI queued; final runtime, typed lint, inventory and browser checks remain unqualified after execution environment outage",
+    "main": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "handoff": "docs/handoffs/PAGES_CONTINUATION_20261119.md"
+  }
 }
