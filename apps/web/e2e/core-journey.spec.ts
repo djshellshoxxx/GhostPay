@@ -541,6 +541,10 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
     await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(sim.raws).toHaveLength(0);
+    await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
     const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
     await expect(sign).toBeEnabled();
     await sign.click();
@@ -638,6 +642,9 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
     await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(sim.raws).toHaveLength(0);
     const held = sim.hold('eth_gasPrice'); // The first RPC read inside the actual direct sweep, after its session capture.
     await sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' }).click();
     await held.arrived;

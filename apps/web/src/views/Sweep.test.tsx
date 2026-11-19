@@ -553,6 +553,9 @@ describe('Sweep', () => {
       const user = await toSweep({ nativePayment: true, raw: sink });
       expect(await screen.findByText('0.1 ETH')).toBeTruthy();
       await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Review native sweep fees' }));
+      expect(await screen.findByRole('region', { name: 'Review this native sweep' })).toBeTruthy();
+      expect(sink.raw).toBeUndefined();
       await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
       expect(await screen.findByText('Submitted')).toBeTruthy();
       const tx = parseTransaction(sink.raw as `0x${string}`);

@@ -194,6 +194,9 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(net.sentRaw.length).toBe(sweepRawBefore);
     const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
     await expect(sign).toBeEnabled();
     await sign.click();
@@ -229,7 +232,7 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await expect(sweepView(s).locator('code', { hasText: stealth })).toBeVisible();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
-    const again = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
+    const again = sweepView(s).getByRole('button', { name: 'Review native sweep fees' });
     // EIP-1559 leaves the unspent part of the max fee behind; that dust cannot pay for another transfer.
     expect(dust).toBeGreaterThan(0n);
     await expect(again).toBeEnabled();

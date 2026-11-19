@@ -906,10 +906,12 @@
       ],
       "symbols": [
         "directSweep",
+        "prepareNativeDirectSweep",
+        "confirmNativeDirectSweep",
         "readBalance",
         "eth_sendRawTransaction"
       ],
-      "trigger": "Explicit preparation, signature and direct sweep/broadcast; replacement preparation uses the existing attempt state.",
+      "trigger": "Native sweeps require an explicit fee-preparation click followed by a separate signature/broadcast click. Replacement preparation binds the full existing attempt state, including its nonce and transaction hash.",
       "destination": "Settings EVM RPC.",
       "transport": "json-rpc-http",
       "sensitiveData": [
@@ -923,9 +925,9 @@
         "signed raw transaction"
       ],
       "automatic": true,
-      "authorization": "The explicit review/sign/send action creates its own Sweep capability for the selected RPC. A visible one-action direct-path exception does not carry over from balance consent and cannot override own-node. Existing signing, nonce and attempt-journal gates remain separate.",
+      "authorization": "Native fee preparation creates a read-only sweep-quote capability for the selected RPC. Its frozen public review binds the endpoint, original session, payment, destination, manifest and replacement attempt for at most 60 seconds; it retains no key or live network grant. A separate confirmation creates a sweep-submit capability and consumes the review once, rechecking fresh balance, nonce, fees and simulation against the exact reviewed transaction before signing. A visible one-action direct-path exception does not carry over from balance consent and cannot override own-node. Existing signing, nonce and attempt-journal gates remain separate.",
       "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
-      "failureBehavior": "Keep exact nonce/fee/attempt guards. Failed reads or ambiguous broadcast must not trigger endpoint downgrade or duplicate send.",
+      "failureBehavior": "Changed, cancelled, expired or clock-rolled-back native reviews fail closed and require another explicit preparation. No automatic fee refresh authorizes different signed bytes. Failed reads or ambiguous broadcast must not trigger endpoint downgrade or duplicate send; submitted and uncertain outcomes retain their attempt evidence.",
       "profile": [
         "full",
         "lean"
@@ -933,6 +935,8 @@
       "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
       "status": "action-policy-integrated; combined-head qualification pending",
       "testPaths": [
+        "apps/web/src/lib/sweep.nativeReview.test.ts",
+        "apps/web/src/views/Sweep.nativeReview.test.tsx",
         "apps/web/src/lib/networkAuthorization.test.ts",
         "apps/web/src/lib/defaultServices.authorization.test.ts",
         "apps/web/src/AppShell.network.test.tsx",
@@ -942,6 +946,7 @@
       "authority": {
         "boundary": "application-action",
         "actions": [
+          "sweep-quote",
           "sweep-submit"
         ],
         "category": "rpc",
@@ -2527,10 +2532,10 @@
     },
     "apps/web/src/views/Sweep.tsx": {
       "call:authorize": 2,
-      "call:getRpc": 5,
+      "call:getRpc": 6,
       "reference:authorize": 2,
       "reference:fetchFn": 4,
-      "reference:getRpc": 7
+      "reference:getRpc": 8
     },
     "packages/btc-silent-payments/src/scan/blindbit.ts": {
       "reference:fetch": 1
