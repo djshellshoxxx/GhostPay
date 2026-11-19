@@ -108,5 +108,15 @@
   },
   "historical_mythril": "evidence/historical-mythril-dispositions.json",
   "lint_source_review": "LINT_SOURCE_REVIEW.json",
-  "release_verdict": "BLOCKED; this is a scoped analyzer/test-fixture evidence handoff, not release qualification."
+  "release_verdict": "BLOCKED; this is a scoped analyzer/test-fixture evidence handoff, not release qualification.",
+  "official_source_documents": [
+    {
+      "path": "evidence/mythril-official-README.md.txt.gz",
+      "raw_bytes": 4903,
+      "raw_sha256": "4186b841b1e99891c95be9219a41fc36e5d23a0c21e46962b6649888c57a3e9f",
+      "gzip_bytes": 2176,
+      "gzip_sha256": "bc1c3d77294c753b198a8739368307171d96c662c35a61ff10eb990cb6ac60b9",
+      "encoding": "Deterministic gzip (mtime=0); exact original official source bytes retained, including upstream whitespace."
+    }
+  ]
 }
