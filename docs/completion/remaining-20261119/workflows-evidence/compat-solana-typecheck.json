@@ -1,0 +1,16 @@
+{
+  "name": "compat-solana-typecheck",
+  "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "packages/chain-solana/tsconfig.json",
+    "--noEmit"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 4.673,
+  "observed_at": "2026-11-19T07:40:27.738085+00:00",
+  "log": "compat-solana-typecheck.log"
+}

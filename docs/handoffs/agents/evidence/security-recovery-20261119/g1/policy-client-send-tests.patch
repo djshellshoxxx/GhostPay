@@ -1,0 +1,186 @@
+diff --git a/apps/web/src/features/policy/pay.selfcheck.test.ts b/apps/web/src/features/policy/pay.selfcheck.test.ts
+new file mode 100644
+index 00000000..a719bc51
+--- /dev/null
++++ b/apps/web/src/features/policy/pay.selfcheck.test.ts
+@@ -0,0 +1,56 @@
++import { buildNativeMetadata, parseMetadata } from '@ghostpay/core-crypto';
++import { ghostPayPolicyRouterAbi, type Hex, type PolicyPayment } from '@ghostpay/policy-scheme';
++import { bytesToHex, decodeFunctionData, encodeFunctionData } from 'viem/utils';
++import { afterEach, describe, expect, it, vi } from 'vitest';
++import { DEPLOYMENT, account } from './fixtures.testutil';
++import { preparePolicyPayment } from './pay';
++
++// Lets a test replace the built router call, as a faulty or hostile builder would.
++const ctl = vi.hoisted(() => ({ tamper: undefined as ((built: PolicyPayment) => PolicyPayment) | undefined }));
++vi.mock('@ghostpay/policy-scheme', async (importOriginal) => {
++  const real = await importOriginal<typeof import('@ghostpay/policy-scheme')>();
++  return {
++    ...real,
++    buildPolicyPaymentTx: (input: Parameters<typeof real.buildPolicyPaymentTx>[0]): PolicyPayment => {
++      const built = real.buildPolicyPaymentTx(input);
++      return ctl.tamper === undefined ? built : ctl.tamper(built);
++    },
++  };
++});
++
++const a1 = account('acct-001');
++/** A valid compressed point other than the derived R (the secp256k1 generator). */
++const OTHER_R: Hex = '0x0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798';
++const prepare = () => preparePolicyPayment({ metaAddress: a1.metaAddress, deployment: DEPLOYMENT, token: 'native', gross: 1_000_000n, nowSec: 1n });
++
++/** payNative call with R or the view tag replaced; `built.metadata` follows the call, so only R and the tag differ. */
++function withNative(built: PolicyPayment, change: { readonly eph?: Hex; readonly viewTag?: (tag: number) => number }): PolicyPayment {
++  const d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: built.tx.data });
++  if (d.functionName !== 'payNative') throw new Error('fixture is not payNative');
++  const a = d.args;
++  const meta = parseMetadata(a[5]);
++  const metadata = bytesToHex(buildNativeMetadata(change.viewTag?.(meta.viewTag) ?? meta.viewTag, meta.netAmount));
++  const data = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payNative', args: [a[0], a[1], a[2], a[3], change.eph ?? a[4], metadata] });
++  return { ...built, metadata, tx: { ...built.tx, data } };
++}
++
++describe('preparePolicyPayment self-check binds R and the view tag to the derivation', () => {
++  afterEach(() => { ctl.tamper = undefined; });
++  it('accepts the untouched builder output', () => {
++    ctl.tamper = (built) => withNative(built, {});
++    expect(prepare().built.method).toBe('payNative');
++  });
++  it('refuses a built call with another R or view tag (same owner and policy hash)', () => {
++    const changes = [{ eph: OTHER_R }, { viewTag: (tag: number) => (tag + 1) % 256 }];
++    const got = changes.map((change) => {
++      ctl.tamper = (built) => withNative(built, change);
++      try {
++        prepare();
++        return 'prepared';
++      } catch (e) {
++        return e instanceof Error ? e.message : 'thrown';
++      }
++    });
++    expect(got).toEqual(changes.map(() => 'The prepared payment failed its self-check. Nothing was sent.'));
++  });
++});
+diff --git a/apps/web/src/features/policy/send.test.ts b/apps/web/src/features/policy/send.test.ts
+index 2d6e6e6a..aa1b08c1 100644
+--- a/apps/web/src/features/policy/send.test.ts
++++ b/apps/web/src/features/policy/send.test.ts
+@@ -1,6 +1,7 @@
+ import { erc20Abi } from '@ghostpay/chain-adapters';
+-import { ghostPayPolicyRouterAbi, type Hex } from '@ghostpay/policy-scheme';
+-import { decodeFunctionData, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
++import { buildErc20Metadata, buildNativeMetadata, parseMetadata } from '@ghostpay/core-crypto';
++import { ghostPayPolicyRouterAbi, policyRouterFee, type Hex } from '@ghostpay/policy-scheme';
++import { bytesToHex, decodeFunctionData, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
+ import { afterEach, describe, expect, it, vi } from 'vitest';
+ import { PostBroadcastError } from '../../lib/payExec';
+ import { beginAttempt, finishAttempt } from '../../lib/duplicateAttemptJournal';
+@@ -243,12 +244,41 @@ describe('policy payment sending (deadline, same boundary as Pay)', () => {
+ });
+ 
+ const OTHER = '0x1111111111111111111111111111111111111111';
+-/** Re-encodes a payERC20 call with its token or gross replaced (a well-formed but different call). */
+-function payErc20With(data: Hex, change: { readonly token?: Hex; readonly gross?: bigint }): Hex {
++/** A valid compressed point other than the prepared R (the secp256k1 generator). */
++const OTHER_R: Hex = '0x0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798';
++/** Changes to a router call; `viewTag` is a function of the call's own view tag. */
++interface CallChange { readonly token?: Hex; readonly gross?: bigint; readonly eph?: Hex; readonly viewTag?: (tag: number) => number }
++/**
++ * Re-encodes a payERC20 call with its token, gross, ephemeral key R or view tag replaced (a well-formed but different call).
++ * The metadata is rebuilt for the new view tag, token and net, so the call stays self-consistent and passes
++ * decodePolicyPaymentCalldata; only send.ts's comparison with the prepared payment can catch it.
++ */
++function payErc20With(data: Hex, change: CallChange): Hex {
+   const d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data });
+   if (d.functionName !== 'payERC20') throw new Error('fixture is not payERC20');
+   const a = d.args;
+-  return encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: [change.token ?? a[0], a[1], a[2], change.gross ?? a[3], a[4], a[5], a[6], a[7]] });
++  const token = change.token ?? a[0];
++  const gross = change.gross ?? a[3];
++  const tag = parseMetadata(a[7]).viewTag;
++  const metadata = bytesToHex(buildErc20Metadata(change.viewTag?.(tag) ?? tag, token, gross - policyRouterFee(gross)));
++  return encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: [token, a[1], a[2], gross, a[4], a[5], change.eph ?? a[6], metadata] });
++}
++/** The same for payNative (R and view tag only; the net is unchanged). */
++function payNativeWith(data: Hex, change: Pick<CallChange, 'eph' | 'viewTag'>): Hex {
++  const d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data });
++  if (d.functionName !== 'payNative') throw new Error('fixture is not payNative');
++  const a = d.args;
++  const meta = parseMetadata(a[5]);
++  const metadata = bytesToHex(buildNativeMetadata(change.viewTag?.(meta.viewTag) ?? meta.viewTag, meta.netAmount));
++  return encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payNative', args: [a[0], a[1], a[2], a[3], change.eph ?? a[4], metadata] });
++}
++/**
++ * The prepared payment with another payERC20 call and that call's metadata as `built.metadata` (the view tag is kept), so
++ * the R and metadata binding passes and only the token and amount comparison can catch it.
++ */
++function withCall(p: PreparedPolicyPayment, data: Hex): PreparedPolicyPayment {
++  const metadata = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data }).args[7] as Hex;
++  return { ...p, built: { ...p.built, metadata, tx: { ...p.built.tx, data } } };
+ }
+ /** A prepared payment changed consistently with its own review snapshot, so only the decode checks can catch it. */
+ function consistent(t: Awaited<ReturnType<typeof setup>>, p: PreparedPolicyPayment): [PolicySendGuard, PreparedPolicyPayment] {
+@@ -285,13 +315,13 @@ describe('policy payment sending (single use and final-gate details)', () => {
+   });
+   it('refuses a payERC20 whose token argument differs from the prepared token', async () => {
+     const t = await setup({ allowanceBefore: GROSS });
+-    const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, data: payErc20With(t.prepared.built.tx.data, { token: OTHER }) } } };
++    const p = withCall(t.prepared, payErc20With(t.prepared.built.tx.data, { token: OTHER }));
+     await expect(t.run(...consistent(t, p))).rejects.toThrow(/token or amount/);
+     expect(t.walletSends()).toBe(0);
+   });
+   it('refuses a payERC20 whose gross argument differs from the prepared amount', async () => {
+     const t = await setup({ allowanceBefore: GROSS * 2n });
+-    const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, data: payErc20With(t.prepared.built.tx.data, { gross: GROSS + 1n }) } } };
++    const p = withCall(t.prepared, payErc20With(t.prepared.built.tx.data, { gross: GROSS + 1n }));
+     await expect(t.run(...consistent(t, p))).rejects.toThrow(/token or amount/);
+     expect(t.walletSends()).toBe(0);
+   });
+@@ -321,6 +351,48 @@ describe('policy payment sending (single use and final-gate details)', () => {
+     }
+     expect(t.walletSends()).toBe(0);
+   });
++  // The router accepts any valid R and view tag, but the payee's scan derives from exactly the prepared ones: a call
++  // with another R (or view tag) and the same owner and policy hash would pay into an account no scan finds.
++  it('refuses a payERC20 whose ephemeral key R or view tag differs from the prepared payment', async () => {
++    const t = await setup({ allowanceBefore: GROSS });
++    const data = t.prepared.built.tx.data;
++    const changes: CallChange[] = [{ eph: OTHER_R }, { viewTag: (tag) => (tag + 1) % 256 }, { eph: OTHER_R, viewTag: (tag) => (tag + 1) % 256 }];
++    const got: string[] = [];
++    for (const change of changes) {
++      const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, data: payErc20With(data, change) } } };
++      got.push(await t.run(...consistent(t, p)).then(() => 'sent', (e: unknown) => (e instanceof Error ? e.message : 'thrown')));
++    }
++    expect(got).toEqual(changes.map(() => 'Blocked: the payment calldata does not match the derived policy account. Nothing was sent.'));
++    expect(t.walletSends()).toBe(0);
++  });
++  it('refuses a payNative whose ephemeral key R or view tag differs from the prepared payment', async () => {
++    const t = await setup({ token: 'native' });
++    const data = t.prepared.built.tx.data;
++    const changes: Pick<CallChange, 'eph' | 'viewTag'>[] = [{ eph: OTHER_R }, { viewTag: (tag) => (tag + 1) % 256 }];
++    const got: string[] = [];
++    for (const change of changes) {
++      const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, data: payNativeWith(data, change) } } };
++      got.push(await t.run(...consistent(t, p)).then(() => 'sent', (e: unknown) => (e instanceof Error ? e.message : 'thrown')));
++    }
++    expect(got).toEqual(changes.map(() => 'Blocked: the payment calldata does not match the derived policy account. Nothing was sent.'));
++    expect(t.walletSends()).toBe(0);
++  });
++  it('refuses calldata whose metadata matches a prepared payment that was edited to it', async () => {
++    // Swapping the prepared metadata along with the call still leaves the view tag of the derivation.
++    const t = await setup({ token: 'native' });
++    const data = payNativeWith(t.prepared.built.tx.data, { viewTag: (tag) => (tag + 1) % 256 });
++    const metadata = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data }).args[5] as Hex;
++    const p = { ...t.prepared, built: { ...t.prepared.built, metadata, tx: { ...t.prepared.built.tx, data } } };
++    await expect(t.run(...consistent(t, p))).rejects.toThrow(/derived policy account/);
++    expect(t.walletSends()).toBe(0);
++  });
++  it('still sends an unchanged payment re-encoded through the same helpers', async () => {
++    const t = await setup({ token: 'native' });
++    const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, data: payNativeWith(t.prepared.built.tx.data, {}) } } };
++    expect(p.built.tx.data).toBe(t.prepared.built.tx.data);
++    await t.run(...consistent(t, p));
++    expect(t.walletSends()).toBe(1);
++  });
+   it('refuses a native payment that carries a token approval', async () => {
+     const t = await setup({ token: 'native' });
+     const approval = { to: TOKEN as Hex, value: 0n, data: encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [ROUTER, GROSS] }) };

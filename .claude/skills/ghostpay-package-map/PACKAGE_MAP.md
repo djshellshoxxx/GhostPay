@@ -43,7 +43,7 @@
 | `pool-circuits` | circom 2.2.3 + snarkjs Groth16 circuits for the GhostPay testnet shielded pool (withdraw, ragequit). INSECURE DEV CEREMONY. GPL-3.0 toolchain isolated here (OWNER DECISION on repo licence). | - | - | build:circuits, check:verifiers, gen:vectors |
 | `pool-prover` | Local Groth16 prover wrapper (snarkjs) for the GhostPay testnet shielded pool. GPL-3.0 isolated package (OWNER DECISION on repo licence). | - | pool-relayer | - |
 | `pool-relayer` | Withdrawal relayer for the GhostPay testnet shielded pool: HTTP-agnostic core plus a node:http entry (testnet only). | pool-prover, pool-sdk, relayer-guard | - | start |
-| `pool-sdk` | Client SDK for the GhostPay testnet shielded pool: notes, Poseidon commitments, local Merkle tree, event sync, withdraw inputs, encrypted note storage (testnet only). | core-crypto, secret-box | pool-relayer | - |
+| `pool-sdk` | Client SDK for the GhostPay testnet shielded pool: notes, Poseidon commitments, local Merkle tree, event sync, withdraw inputs, encrypted note storage (testnet only). | core-crypto, secret-box, ux-vault | pool-relayer | - |
 | `privacy-pipeline` | Privacy pipeline planner, validator and executor chaining privacy steps (testnet PoC). | - | - | - |
 | `privacy-profiles` | Privacy option catalogue, presets, compatibility rules and honest labels (testnet PoC). | - | - | - |
 | `qr-exchange` | Multipart QR transfer (chunk, reassemble, verify) and camera scanning behind small interfaces for moving data between computer and phone. | core-crypto, invoice-schema | apps/web, cli | - |
@@ -71,7 +71,7 @@
 | `ux-receipts` | GhostPay usability: receipts (pure logic, no UI, no network). | - | - | - |
 | `ux-sandbox` | GhostPay usability: sandbox (pure logic, no UI, no network). | sandbox | - | - |
 | `ux-schedule` | GhostPay usability: schedule (pure logic, no UI, no network). | - | - | - |
-| `ux-vault` | GhostPay usability: vault (pure logic, no UI, no network). | chain-adapters, core-crypto, invoice-schema | apps/web, cli | - |
+| `ux-vault` | GhostPay usability: vault (pure logic, no UI, no network). | chain-adapters, core-crypto, invoice-schema | apps/web, cli, pool-sdk | - |
 | `apps/relayer` | GhostPay gas-sponsorship relay service (node:http, viem). | chain-adapters, metadata-hardening, relayer-guard | - | start, ops, smoke:container |
 | `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, hygiene, invoice-schema, metadata-hardening, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-vault | - | dev, postbuild, preview, validate:deployments, test:e2e, e2e:devnet |
 

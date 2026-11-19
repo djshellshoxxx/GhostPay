@@ -1,0 +1,15 @@
+{
+  "name": "relayer-guard-build",
+  "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "packages/relayer-guard/tsconfig.build.json"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 3.575,
+  "observed_at": "2026-11-19T07:19:26.870850+00:00",
+  "log": "relayer-guard-build.log"
+}

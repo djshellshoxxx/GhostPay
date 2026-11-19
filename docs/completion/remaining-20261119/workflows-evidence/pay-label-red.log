@@ -1,0 +1,441 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-pay-residuals/apps/web
+
+(node:43) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/views/Pay.test.tsx (67 tests | 1 failed | 66 skipped) 1945ms
+   ❯ Pay: optional delay (Feature 6) and gas buffer (Feature 1) (14)
+     × LF-65392fcef-4: displays fractional delay minutes instead of rounding 90 seconds to 2 minutes 1942ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > LF-65392fcef-4: displays fractional delay minutes instead of rounding 90 seconds to 2 minutes
+TestingLibraryElementError: Unable to find a label with the text of: Wait a random time first (1.5 to 2.5 minutes)
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"skip"[39m
+      [33mhref[39m=[32m"#main"[39m
+    [36m>[39m
+      [0mSkip to content[0m
+    [36m</a>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"site-header"[39m
+    [36m>[39m
+      [36m<h1>[39m
+        [0mGhostPay[0m
+      [36m</h1>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"tagline"[39m
+      [36m>[39m
+        [0mStealth-address payments. Everything runs in your browser. Unaudited software.[0m
+      [36m</p>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Main"[39m
+      [36m>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"nav"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"home"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"seller"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSeller keys[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"create"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCreate invoice[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33maria-current[39m=[32m"page"[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"pay"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPay[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"scan"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mScan and receive[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"sweep"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSweep[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"btc"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mBitcoin (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"solana"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSolana (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"tron"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mTRON (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"registry"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPublic registry[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"settings"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSettings[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"about"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mAbout and privacy[0m
+            [36m</button>[39m
+          [36m</li>[39m
+        [36m</ul>[39m
+      [36m</nav>[39m
+    [36m</header>[39m
+    [36m<main[39m
+      [33mid[39m=[32m"main"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"card"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0mMerchant profile[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_0_"[39m
+          [36m>[39m
+            [0mProfile URL[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33maria-describedby[39m=[32m"_r_0_-hint"[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mid[39m=[32m"_r_0_"[39m
+            [33minputmode[39m=[32m"url"[39m
+            [33mmaxlength[39m=[32m"2048"[39m
+            [33mspellcheck[39m=[32m"false"[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hint"[39m
+            [33mid[39m=[32m"_r_0_-hint"[39m
+          [36m>[39m
+            [0mLoading contacts this HTTPS server and reveals your IP address and the requested URL. Cookies and referrers are omitted. No request is made until you choose Load profile.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mLoad profile[0m
+        [36m</button>[39m
+      [36m</details>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"notice notice-warn"[39m
+        [33mrole[39m=[32m"note"[39m
+      [36m>[39m
+        [36m<strong[39m
+          [33mclass[39m=[32m"notice-title"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+          [36m>[39m
+            [0m⚠[0m
+            [0m [0m
+          [36m</span>[39m
+          [0mThese seller keys have no backup[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"sr-only"[39m
+          [36m>[39m
+            [0m:[0m
+          [36m</span>[39m
+        [36m</strong>[39m
+        [36m<div>[39m
+          [0mThey exist only in this tab. If it cl...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"skip"[39m
+      [33mhref[39m=[32m"#main"[39m
+    [36m>[39m
+      [0mSkip to content[0m
+    [36m</a>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"site-header"[39m
+    [36m>[39m
+      [36m<h1>[39m
+        [0mGhostPay[0m
+      [36m</h1>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"tagline"[39m
+      [36m>[39m
+        [0mStealth-address payments. Everything runs in your browser. Unaudited software.[0m
+      [36m</p>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Main"[39m
+      [36m>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"nav"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"home"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"seller"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSeller keys[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"create"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCreate invoice[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33maria-current[39m=[32m"page"[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"pay"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPay[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"scan"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mScan and receive[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"sweep"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSweep[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"btc"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mBitcoin (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"solana"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSolana (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"tron"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mTRON (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"registry"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPublic registry[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"settings"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSettings[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"about"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mAbout and privacy[0m
+            [36m</button>[39m
+          [36m</li>[39m
+        [36m</ul>[39m
+      [36m</nav>[39m
+    [36m</header>[39m
+    [36m<main[39m
+      [33mid[39m=[32m"main"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"card"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0mMerchant profile[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_0_"[39m
+          [36m>[39m
+            [0mProfile URL[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33maria-describedby[39m=[32m"_r_0_-hint"[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mid[39m=[32m"_r_0_"[39m
+            [33minputmode[39m=[32m"url"[39m
+            [33mmaxlength[39m=[32m"2048"[39m
+            [33mspellcheck[39m=[32m"false"[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hint"[39m
+            [33mid[39m=[32m"_r_0_-hint"[39m
+          [36m>[39m
+            [0mLoading contacts this HTTPS server and reveals your IP address and the requested URL. Cookies and referrers are omitted. No request is made until you choose Load profile.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mLoad profile[0m
+        [36m</button>[39m
+      [36m</details>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"notice notice-warn"[39m
+        [33mrole[39m=[32m"note"[39m
+      [36m>[39m
+        [36m<strong[39m
+          [33mclass[39m=[32m"notice-title"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+          [36m>[39m
+            [0m⚠[0m
+            [0m [0m
+          [36m</span>[39m
+          [0mThese seller keys have no backup[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"sr-only"[39m
+          [36m>[39m
+            [0m:[0m
+          [36m</span>[39m
+        [36m</strong>[39m
+        [36m<div>[39m
+          [0mThey exist only in this tab. If it cl...
+ ❯ waitForWrapper ../../node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/views/Pay.test.tsx:672:25
+    670|     const { fragment } = await makeParsed({ token: 'native', tokenAmou…
+    671|     openWith(fragment, makeServices({ loadManifest: loaded(84532), cre…
+    672|     expect(await screen.findByLabelText('Wait a random time first (1.5…
+       |                         ^
+    673|     expect(wallet.calls).toEqual([]);
+    674|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 66 skipped (67)
+   Start at  22:51:39
+   Duration  31.38s (transform 51%, import 25%, environment 18%, tests 6%)
+

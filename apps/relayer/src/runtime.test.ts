@@ -2,6 +2,8 @@ import { join } from 'node:path';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
+import { keccak256, toBytes } from 'viem/utils';
+import { CANONICAL_ANNOUNCER, validateManifest, type Address, type DeploymentManifest } from '@ghostpay/chain-adapters';
 import { buildChainClients, buildRelayer, buildSourceClients } from './runtime.js';
 import { FakeChain, testConfig } from './harness.testutil.js';
 import { createLogger } from './log.js';
@@ -12,20 +14,57 @@ afterEach(async () => {
   await Promise.all(servers.splice(0).map((s) => new Promise<void>((r) => s.close(() => r()))));
 });
 
-function fakeRpc(chainId: number): Promise<string> {
+type RpcRead = (method: string, params: readonly unknown[]) => unknown;
+function fakeRpc(chainId: number, read: RpcRead = () => '0x0'): Promise<string> {
   return new Promise((resolve) => {
     const s = createServer((req, res) => {
       let body = '';
       req.on('data', (c: Buffer) => (body += c.toString()));
       req.on('end', () => {
-        const j = JSON.parse(body) as { id: number; method: string };
+        const j = JSON.parse(body) as { id: number; method: string; params: readonly unknown[] };
         res.setHeader('content-type', 'application/json');
-        res.end(JSON.stringify({ jsonrpc: '2.0', id: j.id, result: j.method === 'eth_chainId' ? `0x${chainId.toString(16)}` : '0x0' }));
+        try {
+          const result = j.method === 'eth_chainId' ? `0x${chainId.toString(16)}` : read(j.method, j.params);
+          res.end(JSON.stringify({ jsonrpc: '2.0', id: j.id, result }));
+        } catch {
+          res.statusCode = 503;
+          res.end('{}');
+        }
       });
     });
     servers.push(s);
     s.listen(0, '127.0.0.1', () => resolve(`http://127.0.0.1:${String((s.address() as AddressInfo).port)}`));
   });
+}
+
+function readbackFixture(chainId = 11155111, announcer: Address = CANONICAL_ANNOUNCER): { manifest: DeploymentManifest; read: RpcRead } {
+  const codes = { router: '0x6001600155', sweepRelayer: '0x6002600255', announcer: '0x6003600355' } as const;
+  const manifest = validateManifest({
+    chainId, announcer,
+    router: '0x00000000000000000000000000000000000000a1',
+    sweepRelayer: '0x00000000000000000000000000000000000000a2',
+    feeRecipient: '0x00000000000000000000000000000000000000a3',
+    feeBps: 25, solcVersion: '0.8.28', commit: 'a'.repeat(40), date: '2026-11-19T00:00:00Z',
+    deployTx: { router: `0x${'11'.repeat(32)}`, sweepRelayer: `0x${'22'.repeat(32)}` },
+    bytecodeHashes: { router: keccak256(codes.router), sweepRelayer: keccak256(codes.sweepRelayer) },
+  }, chainId);
+  const code: Record<string, string> = {
+    [manifest.router.toLowerCase()]: codes.router,
+    [manifest.sweepRelayer.toLowerCase()]: codes.sweepRelayer,
+    [manifest.announcer.toLowerCase()]: codes.announcer,
+  };
+  const word = (v: string): string => `0x${v.slice(2).toLowerCase().padStart(64, '0')}`;
+  const calls: Record<string, string> = {
+    [keccak256(toBytes('FEE_RECIPIENT()')).slice(0, 10)]: word(manifest.feeRecipient),
+    [keccak256(toBytes('ANNOUNCER()')).slice(0, 10)]: word(manifest.announcer),
+    [keccak256(toBytes('FEE_BPS()')).slice(0, 10)]: word('0x19'),
+  };
+  const read: RpcRead = (method, params) => {
+    if (method === 'eth_getCode') return code[(params[0] as string).toLowerCase()] ?? '0x';
+    if (method === 'eth_call') return calls[(params[0] as { data: string }).data] ?? '0x';
+    throw new Error('unexpected readback method');
+  };
+  return { manifest, read };
 }
 
 describe('buildChainClients', () => {
@@ -87,6 +126,51 @@ describe('buildChainClients', () => {
     const cfg = testConfig({ allowInsecureLocalhostRpc: true });
     const chains = [{ ...(cfg.chains[0] as object), rpcUrl: url }] as never;
     await expect(buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5))).rejects.toMatchObject({ code: 'CHAIN_MISMATCH' });
+  });
+
+  it.each([
+    [11155111, CANONICAL_ANNOUNCER],
+    [31337, '0x0000000000000000000000000000000000000a11'],
+  ] as const)('checks every manifest value through both explicitly configured providers on chain %i', async (chainId, announcer) => {
+    const { manifest, read } = readbackFixture(chainId, announcer);
+    const primaryReads: unknown[] = []; const secondaryReads: unknown[] = [];
+    const primary = await fakeRpc(chainId, (method, params) => { primaryReads.push([method, params]); return read(method, params); });
+    const secondary = await fakeRpc(chainId, (method, params) => { secondaryReads.push([method, params]); return read(method, params); });
+    const cfg = testConfig({ allowInsecureLocalhostRpc: true });
+    const chains = [{ ...cfg.chains[0]!, chainId, rpcUrl: primary, secondaryRpcUrl: secondary, manifest }];
+    const clients = await buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5));
+    expect([...clients.keys()]).toEqual([chainId]);
+    expect(primaryReads).toHaveLength(6);
+    expect(secondaryReads).toEqual(primaryReads);
+  });
+
+  it.each(['missing code', 'unavailable'] as const)('refuses startup when the configured secondary reports %s', async (failure) => {
+    const { manifest, read } = readbackFixture();
+    const primary = await fakeRpc(manifest.chainId, read);
+    const secondary = await fakeRpc(manifest.chainId, (method, params) => {
+      if (failure === 'unavailable') throw new Error('fixture RPC unavailable');
+      return method === 'eth_getCode' ? '0x' : read(method, params);
+    });
+    const cfg = testConfig({ allowInsecureLocalhostRpc: true });
+    const chains = [{ ...cfg.chains[0]!, rpcUrl: primary, secondaryRpcUrl: secondary, manifest }];
+    await expect(buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5))).rejects.toMatchObject({ code: 'RPC_FAILURE' });
+  });
+
+  it('refuses startup when the configured secondary is on a different chain', async () => {
+    const { manifest, read } = readbackFixture();
+    const primary = await fakeRpc(manifest.chainId, read);
+    const secondary = await fakeRpc(1, read);
+    const cfg = testConfig({ allowInsecureLocalhostRpc: true });
+    const chains = [{ ...cfg.chains[0]!, rpcUrl: primary, secondaryRpcUrl: secondary, manifest }];
+    await expect(buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5))).rejects.toMatchObject({ code: 'CHAIN_MISMATCH' });
+  });
+
+  it('refuses startup when the manifest and primary agree on a noncanonical known-chain announcer', async () => {
+    const { manifest, read } = readbackFixture(11155111, '0x0000000000000000000000000000000000000a11');
+    const primary = await fakeRpc(manifest.chainId, read);
+    const cfg = testConfig({ allowInsecureLocalhostRpc: true });
+    const chains = [{ ...cfg.chains[0]!, rpcUrl: primary, manifest }];
+    await expect(buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5))).rejects.toThrow(/canonical announcer/);
   });
 });
 

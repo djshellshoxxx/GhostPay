@@ -1,0 +1,11 @@
+{
+  "rpcUrl": "http://127.0.0.1:33483",
+  "chainId": 84532,
+  "publicKey": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+  "deploymentsDir": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deployments",
+  "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
+  "router": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+  "sweepRelayer": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+  "feeRecipient": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+  "feeBps": 25
+}

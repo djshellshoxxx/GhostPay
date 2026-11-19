@@ -1,0 +1,60 @@
+{
+  "recorded_utc": "2026-11-19T08:22:54.412998+00:00",
+  "files": [
+    {
+      "path": "initial/cli-typecheck.log",
+      "bytes": 685,
+      "sha256": "b76892dc00fbca04cb3412d8b50965659885f5cd999dc11c512ba0d81dea6698"
+    },
+    {
+      "path": "initial/results.json",
+      "bytes": 1129,
+      "sha256": "903a1ea6d657bfb515320c808a2f13ad3375058402d31aed7b8dfbcdd6581be9"
+    },
+    {
+      "path": "initial/solana-build.log",
+      "bytes": 341,
+      "sha256": "5deb0433b67ffc2f793c3a3fdb570d9ef0c8b9a78218b29cccac076822dc2b0d"
+    },
+    {
+      "path": "initial/tron-build.log",
+      "bytes": 340,
+      "sha256": "39a16e804aa8e9b675e3375fb430d3027e4f0f98222711a13d18dca262b90cb6"
+    },
+    {
+      "path": "retry/cli-typecheck.log",
+      "bytes": 684,
+      "sha256": "840baa1cde14105167f73023fc89eaaaa4892a6f5ed0e229678c77991350aba3"
+    },
+    {
+      "path": "retry/results.json",
+      "bytes": 379,
+      "sha256": "37e712bc98d9c89ae7f67d61f5ccf18aba5c8fd07d41d420a304453ed1f9cbe9"
+    },
+    {
+      "path": "remainder/action-pins.log",
+      "bytes": 85,
+      "sha256": "1c76b6edc75d44dd7954440b2f7653a3693ebfd7f137619df92dd66e1a51b515"
+    },
+    {
+      "path": "remainder/cli-build.log",
+      "bytes": 531,
+      "sha256": "56644299a80c9824f29c31697cc1933b2f591f3f4fb7f0f3715fc208f0dab150"
+    },
+    {
+      "path": "remainder/cli-chain-regressions.log",
+      "bytes": 555,
+      "sha256": "657a86820bd38b8120661968771c26ca7f625ebea022c7f5f89a5250e5adbaa0"
+    },
+    {
+      "path": "remainder/package-map.log",
+      "bytes": 202,
+      "sha256": "93c8f7d662a7b547dc5d6e9a1addfe8be980fc8802fdfc936fff0ca96304e171"
+    },
+    {
+      "path": "remainder/results.json",
+      "bytes": 1530,
+      "sha256": "f7901085916a0d57e6c2181048672a151eb121b70a37188a9164592ece03ddaa"
+    }
+  ]
+}

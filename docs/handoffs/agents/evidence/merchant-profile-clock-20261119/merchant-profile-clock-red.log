@@ -1,0 +1,202 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-merchant-profile-clock/packages/invoice-schema
+
+(node:40) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/merchantProfile.test.ts > merchant profile > round-trips through JSON text 12ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects changed amount, token, origin and allowAmount (signature) 18ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects bad signatures, wrong signer, wrong merchantId 8ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects expired profiles and oversize input 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects unknown keys, bad origins, duplicate template ids, __proto__ and non-objects 1ms
+ ✓ src/merchantProfile.test.ts > merchant profile > refuses to sign with a mismatched key 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > establishes a valid signature and ordinary expired control for the clock regression 19ms
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects NaN without coercion or throwing 18ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects positive Infinity without coercion or throwing 5ms
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects negative Infinity without coercion or throwing 8ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects undefined without coercion or throwing 6ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects null without coercion or throwing 6ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects numeric string without coercion or throwing 6ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects empty string without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects false without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects true without coercion or throwing 8ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects bigint without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects symbol without coercion or throwing 4ms
+   → Cannot convert a Symbol value to a number
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects object without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects coercible object without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects throwing valueOf without coercion or throwing 4ms
+   → clock must not be coerced
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at negative finite 5ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at negative fractional 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at minimum finite 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at epoch 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at negative zero 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at smallest positive finite 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at whole second before expiry 6ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at fractional second before expiry 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at exact expiry 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at fractional second after expiry 5ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at ordinary current time 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at maximum safe integer 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at maximum finite 5ms
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects NaN without coercion or throwing 4ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects positive Infinity without coercion or throwing 4ms
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects negative Infinity without coercion or throwing 8ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects undefined without coercion or throwing 4ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects null without coercion or throwing 4ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects numeric string without coercion or throwing 11ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects empty string without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects false without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects true without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects bigint without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects symbol without coercion or throwing 5ms
+   → Cannot convert a Symbol value to a number
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects object without coercion or throwing 5ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects coercible object without coercion or throwing 6ms
+   → expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+ × src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects throwing valueOf without coercion or throwing 4ms
+   → clock must not be coerced
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at negative finite 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at negative fractional 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at minimum finite 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at epoch 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at negative zero 5ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at smallest positive finite 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at whole second before expiry 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at fractional second before expiry 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at exact expiry 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at fractional second after expiry 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at ordinary current time 5ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at maximum safe integer 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at maximum finite 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > preserves size, format and signature error precedence when the clock is invalid 12ms
+ ✓ src/merchantProfile.test.ts > merchant profile > fuzz: random single-char mutations never throw and never verify to a different profile 177ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 26 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects NaN without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects negative Infinity without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects undefined without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects null without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects numeric string without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects empty string without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects false without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects true without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects bigint without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects object without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects coercible object without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects NaN without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects negative Infinity without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects undefined without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects null without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects numeric string without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects empty string without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects false without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects true without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects bigint without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects object without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects coercible object without coercion or throwing
+AssertionError: expected { ok: true, profile: { v: 1, …(9) } } to deeply equal { ok: false, reason: 'expired' }
+
+- Expected
++ Received
+
+  {
+-   "ok": false,
+-   "reason": "expired",
++   "ok": true,
++   "profile": {
++     "chains": [
++       8453,
++     ],
++     "exp": 1699999999,
++     "merchantId": "c6p4ogg7cqbkhomw",
++     "name": "Shop",
++     "origins": [
++       "https://shop.example",
++     ],
++     "sig": "e0d99e62c791e8f2b01f9bbc0d152eb480c022fd83932e48981ca592a31a9fca443609ac509be98abe73cbc704ba08346a7857ee9b24eb6ec46fc8fb66f014a1",
++     "signer": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
++     "templates": [
++       {
++         "amountMinor": "50000",
++         "currency": "USD",
++         "expires": 1800,
++         "id": "t1",
++       },
++     ],
++     "tokens": [
++       "USDC",
++     ],
++     "v": 1,
++   },
+  }
+
+ ❯ src/merchantProfile.test.ts:89:61
+     87|       it.each(invalidClocks)('rejects %s without coercion or throwing'…
+     88|         // Deliberately exercise JavaScript callers that do not have t…
+     89|         expect(verifyMerchantProfile(input, now as number)).toEqual({ …
+       |                                                             ^
+     90|       });
+     91|       it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/26]⎯
+
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects symbol without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects symbol without coercion or throwing
+TypeError: Cannot convert a Symbol value to a number
+ ❯ verifyMerchantProfile src/merchantProfile.ts:181:9
+    179|   }
+    180|   if (!valid) return { ok: false, reason: 'signature' };
+    181|   if (p.exp <= nowSec) return { ok: false, reason: 'expired' };
+       |         ^
+    182|   return { ok: true, profile: p };
+    183| }
+ ❯ src/merchantProfile.test.ts:89:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/26]⎯
+
+ FAIL  src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects throwing valueOf without coercion or throwing
+ FAIL  src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects throwing valueOf without coercion or throwing
+Error: clock must not be coerced
+ ❯ Object.valueOf src/merchantProfile.test.ts:37:49
+     35|   ['object', {}],
+     36|   ['coercible object', { valueOf: () => NOW - 2 }],
+     37|   ['throwing valueOf', { valueOf: () => { throw new Error('clock must …
+       |                                                 ^
+     38| ];
+     39|
+ ❯ verifyMerchantProfile src/merchantProfile.ts:181:9
+ ❯ src/merchantProfile.test.ts:89:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/26]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  26 failed | 37 passed (63)
+   Start at  00:58:33
+   Duration  1.62s (tests 42%, import 30%, transform 27%, worker 1%)
+

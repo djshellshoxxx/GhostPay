@@ -4,6 +4,7 @@ import {
   FEE_SCHEDULE,
   buildSweepTypedData,
   diagnoseSignedPermit,
+  findChain,
   sponsorFee,
   type SignedPermitDiagnosis,
   type SweepOrder,
@@ -24,16 +25,17 @@ import { DailyBudget } from './budget.js';
 import type { ChainClient, MinedReceipt, ReceiptSummary, SweepCall } from './chain.js';
 import type { ChainRuntimeConfig, RelayerConfig } from './config.js';
 import { RelayerError, SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
-import { ChainLane, NonceManager, type JobOutcome } from './lane.js';
+import { ChainLane, NonceManager, type JobOutcome, type LaneTicket } from './lane.js';
 import { KeyHasher, type RateLimiter } from './limiter.js';
 import type { Metrics } from './metrics.js';
 import { nullLogger, type Logger } from './log.js';
 import type { AllowedToken, GasPriceSource, TokenPriceSource } from './pricing.js';
 import { makeKeyring, signQuote, verifyQuote, type QuoteKeyring } from './quoteToken.js';
-import type { QuoteRequest, SweepRequest } from './validate.js';
+import { isCanonicalSignature, type QuoteRequest, type SweepRequest } from './validate.js';
 import { RevertRate } from './revertRate.js';
 import { MemoryStateBackend, StateError, StateJournal } from './stateStore.js';
 import type { SourceChecks } from './sourceChecks.js';
+import { isNativeFee } from './opFees.js';
 
 /** Dependencies of {@link RelayerService}. */
 export interface ServiceDeps {
@@ -172,6 +174,10 @@ interface ChainRuntime {
   readonly budget: DailyBudget;
   readonly breaker: GuardedBreaker;
   lastBreakerState: BreakerState;
+  /** Consecutive failed quote-path gas price reads since the last good one (one number per chain). */
+  quoteRpcFailStreak: number;
+  /** Independent oracle streak: a healthy gas-price read cannot erase persistent OP fee failures. */
+  quoteFeeRpcFailStreak: number;
   /** Sweeps whose receipt wait timed out, looked up again at the start of later jobs (L5-06), oldest first. */
   readonly pending: SentSweep[];
   readonly reverts: RevertRate;
@@ -257,6 +263,7 @@ export function revertToError(r: SimulationRevert): RelayerError {
  * Core relay logic, independent of HTTP: quoting, sweep validation and submission.
  *
  * @remarks Order of checks in {@link RelayerService.sweep}: cheap structural/policy checks first, then
+ * the client's lane ticket (taken synchronously before the first await, `client_queue_full`), then
  * signature recovery, then the owner rate limit (keyed only by an authenticated owner so nobody can
  * exhaust another owner's quota), the compliance gate, and finally the per-chain serial lane where
  * the simulation runs immediately before the send.
@@ -272,6 +279,8 @@ export class RelayerService {
   private readonly alerts: AlertSink;
   private readonly gasCache = new Map<number, { price: bigint; at: number }>();
   private readonly gasLookups = new Map<number, Promise<bigint>>();
+  private readonly feeCache = new Map<string, { fee: bigint; at: number }>();
+  private readonly feeLookups = new Map<string, Promise<bigint>>();
   private readonly quoteKeys: QuoteKeyring;
   private readonly failures: FailureBudgets;
   private readonly journal: StateJournal;
@@ -311,7 +320,7 @@ export class RelayerService {
       this.chains.set(cfg.chainId, {
         cfg,
         client,
-        lane: new ChainLane(d.config.queue.maxPending),
+        lane: new ChainLane(d.config.queue.maxPending, d.config.queue.maxPerClient),
         nonces: new NonceManager(() => client.getPendingNonce()),
         budget: new DailyBudget(cfg.dailyBudgetWei, this.now, stored.budget, mono),
         breaker: new GuardedBreaker(
@@ -328,6 +337,8 @@ export class RelayerService {
           mono,
         ),
         lastBreakerState: 'closed',
+        quoteRpcFailStreak: 0,
+        quoteFeeRpcFailStreak: 0,
         pending: [],
         unknownSend: undefined,
         lastBalance: undefined,
@@ -499,9 +510,10 @@ export class RelayerService {
     await this.d.sourceChecks?.ensureAgreement(req.chainId);
     const gasPrice = await this.quoteGasPrice(rt);
     const units = token.permit ? rt.cfg.gasUnits.sweepWithPermit : rt.cfg.gasUnits.sweep;
+    const nativeCost = units * gasPrice + await this.quoteFeeReserve(rt, units, token.permit);
     const conversion = this.d.tokenPrices.quoteNativeToTokenUnits === undefined
-      ? { amount: await this.d.tokenPrices.nativeToTokenUnits(req.chainId, token, units * gasPrice) }
-      : await this.d.tokenPrices.quoteNativeToTokenUnits(req.chainId, token, units * gasPrice);
+      ? { amount: await this.d.tokenPrices.nativeToTokenUnits(req.chainId, token, nativeCost) }
+      : await this.d.tokenPrices.quoteNativeToTokenUnits(req.chainId, token, nativeCost);
     const gasCost = conversion.amount;
     // Spec 04 grief reserve: price a margin for gas lost when the owner drains or revokes first (rounded up).
     const griefBps = BigInt(this.d.config.gas.griefReserveBps ?? 0);
@@ -572,6 +584,29 @@ export class RelayerService {
       if (e instanceof ChainAdapterError) throw new RelayerError(422, 'invalid_order');
       throw e;
     }
+    // Same rule as the contract's OpenZeppelin `ECDSA.recover`: a malleated twin (high s, or v 0/1) would recover the
+    // owner below and only fail in the simulation, costing RPC work and an owner strike for a third party's copy.
+    if (!isCanonicalSignature(req.sweepSig)) throw new RelayerError(422, 'invalid_signature');
+    // RL-02 / NC-04: the client's lane slot is taken here, synchronously and before the first await, and held until
+    // its job settles, so concurrent requests cannot all pass a check that is only counted later. Salted key only.
+    const ticket = rt.lane.reserve(ctx.clientKey === undefined ? undefined : this.hasher.hash(ctx.clientKey));
+    try {
+      return await this.admit(req, ctx, rt, typed, ticket);
+    } finally {
+      ticket.release(); // no-op once the job was submitted: the lane releases the slot when the job settles
+    }
+  }
+
+  /** Client and owner checks that await, then the lane; runs while the caller holds the client's lane ticket. */
+  private async admit(
+    req: SweepRequest,
+    ctx: RequestContext,
+    rt: ChainRuntime,
+    typed: ReturnType<typeof buildSweepTypedData>,
+    ticket: LaneTicket,
+  ): Promise<SweepResponse> {
+    const s = req.sweep;
+    const cfg = this.d.config;
     let recovered: Address;
     try {
       recovered = await recoverTypedDataAddress({
@@ -618,7 +653,7 @@ export class RelayerService {
       permit: req.permit,
     };
     try {
-      return await rt.lane.submit(() => this.runJob(rt, call, ctx, keys));
+      return await ticket.submit(() => this.runJob(rt, call, ctx, keys));
     } catch (e) {
       if (e instanceof RelayerError && OWNER_STRIKE_CODES.has(e.code)) this.strike(call);
       throw e;
@@ -630,6 +665,11 @@ export class RelayerService {
     if (call === undefined) return;
     this.failures.record(call.sweep.owner.toLowerCase(), call.sweep.destination.toLowerCase());
     this.d.metrics?.inc('relayer_owner_failures_total');
+  }
+
+  /** @returns Client keys holding a lane ticket on the chain (tests and diagnostics; no key is exposed). */
+  public heldClientSlots(chainId: number): number {
+    return this.chains.get(chainId)?.lane.heldClients ?? 0;
   }
 
   /** Stops admitting work and waits for every queued/in-flight transaction to settle. */
@@ -705,9 +745,56 @@ export class RelayerService {
       price = await this.d.gasPrices.getGasPrice(rt.cfg.chainId);
     } catch (e) {
       if (e instanceof RelayerError) throw e;
+      this.quoteRpcFailure(rt);
       throw new RelayerError(503, 'rpc_unavailable');
     }
+    rt.quoteRpcFailStreak = 0; // the RPC answered, whatever the cap says
     return this.capGasPrice(rt, price);
+  }
+
+  /** Quote-only coalescing/cache, bounded to two calldata shapes per configured chain. Send reads stay fresh. */
+  private async quoteFeeReserve(rt: ChainRuntime, gas: bigint, withPermit: boolean): Promise<bigint> {
+    const key = `${String(rt.cfg.chainId)}:${String(withPermit)}`;
+    const ttl = this.d.gasPriceCacheMs ?? this.d.config.gas.quoteCacheSeconds * 1000;
+    const t = this.now();
+    const hit = this.feeCache.get(key);
+    if (ttl > 0 && hit !== undefined && t >= hit.at && t - hit.at < ttl) return hit.fee;
+    let lookup = this.feeLookups.get(key);
+    if (lookup === undefined) {
+      lookup = (async () => {
+        try {
+          const fee = await rt.client.estimateFeeReserve(gas, withPermit);
+          rt.quoteFeeRpcFailStreak = 0;
+          return fee;
+        } catch {
+          this.quoteRpcFailure(rt, 'quoteFeeRpcFailStreak');
+          throw new RelayerError(503, 'rpc_unavailable');
+        }
+      })().finally(() => this.feeLookups.delete(key));
+      this.feeLookups.set(key, lookup);
+    }
+    const fee = await lookup;
+    this.feeCache.set(key, { fee, at: t });
+    return fee;
+  }
+
+  /**
+   * A failed quote-path gas price read is an operational failure like an in-lane one (L5-10), so an RPC outage that
+   * only quotes see (every sweep needs a fresh quote) still opens the breaker and degrades `/healthz`
+   * (LF-074edb61e-1). Quote reads are kept out of the breaker's count window: their successes would dilute send and
+   * receipt failures, and failures alone would pile up there with no time decay, so isolated blips hours apart
+   * would open it. Instead a run of `breaker.minSamples` consecutive failed reads, with no good read in between
+   * (a failure ratio of 1), opens a closed breaker. A quote never takes or settles the half-open probe, which stays
+   * for a sweep, and never re-opens an open breaker (its cooldown is not extended). One read serves every quote
+   * within `gas.quoteCacheSeconds`.
+   */
+  private quoteRpcFailure(rt: ChainRuntime, field: 'quoteRpcFailStreak' | 'quoteFeeRpcFailStreak' = 'quoteRpcFailStreak'): void {
+    rt[field] += 1;
+    if (rt[field] < this.d.config.breaker.minSamples) return;
+    rt[field] = 0;
+    if (rt.breaker.state !== 'closed') return;
+    rt.breaker.trip();
+    this.noteBreaker(rt);
   }
 
   /** The configured gas price cap; refusing above it is neutral for the breaker (a spike, not an outage). */
@@ -849,16 +936,18 @@ export class RelayerService {
       this.alerts.send({ kind: 'price_stale', chainId: cfg.chainId });
       return new RelayerError(503, 'price_stale');
     };
-    const coversGas = async (estimate: bigint, price: bigint): Promise<boolean> => {
+    const coversGas = async (estimate: bigint, price: bigint, extra: bigint): Promise<boolean> => {
+      const nativeCost = estimate * price + extra;
       const converted = this.d.tokenPrices.quoteNativeToTokenUnits === undefined
-        ? { amount: await this.d.tokenPrices.nativeToTokenUnits(cfg.chainId, token, estimate * price) }
-        : await this.d.tokenPrices.quoteNativeToTokenUnits(cfg.chainId, token, estimate * price);
+        ? { amount: await this.d.tokenPrices.nativeToTokenUnits(cfg.chainId, token, nativeCost) }
+        : await this.d.tokenPrices.quoteNativeToTokenUnits(cfg.chainId, token, nativeCost);
       priceValidUntil = converted.validUntil;
       const refusal = priceRefusal();
       if (refusal !== undefined) throw refusal;
       return call.sweep.fee * 100n >= converted.amount * BigInt(this.d.config.gas.coverPercent);
     };
-    if (!(await coversGas(firstSimulation.gasEstimate, gasPrice)))
+    const firstFeeReserve = await op(() => client.estimateFeeReserve(firstSimulation.gasLimit, call.permit !== undefined));
+    if (!(await coversGas(firstSimulation.gasEstimate, gasPrice, firstFeeReserve)))
       throw new RelayerError(422, 'fee_below_gas_cost');
 
     const sendGasPrice = await readGasPrice();
@@ -878,13 +967,14 @@ export class RelayerService {
     }
     if (finalSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
     await this.d.sourceChecks?.ensureAgreement(cfg.chainId);
-    if (!(await coversGas(finalSimulation.gasEstimate, sendGasPrice)))
+    const additionalFeeReserve = await op(() => client.estimateFeeReserve(finalSimulation.gasLimit, call.permit !== undefined));
+    if (!(await coversGas(finalSimulation.gasEstimate, sendGasPrice, additionalFeeReserve)))
       throw new RelayerError(422, 'fee_below_gas_cost');
     // Next to the send and before anything is reserved: only the nonce read and the send itself follow.
     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
 
     const gasLimit = finalSimulation.gasLimit;
-    const reserved = gasLimit * sendGasPrice;
+    const reserved = gasLimit * sendGasPrice + additionalFeeReserve;
     // One reservation for the whole sweep: each source's key and group, and the global cap once (L5-02).
     const loss = this.lossBudget.reserveAll(keys, reserved);
     if (loss === null) {
@@ -936,10 +1026,11 @@ export class RelayerService {
         nonce,
         gas: gasLimit,
         gasPrice: sendGasPrice,
+        additionalFeeReserve,
         // Runs after signing, before the broadcast; throwing here aborts the send (SendRefused).
         onSigned: (hash) => {
-          // Signing is also asynchronous. A feed deadline must still hold at the last pre-broadcast hook.
-          preHandoffRefusal = priceRefusal();
+          // Signing and the OP fee recheck are asynchronous: both deadlines must still hold at the final hook.
+          preHandoffRefusal = deadlineTooSoon() ? new RelayerError(422, 'deadline_too_soon') : priceRefusal();
           if (preHandoffRefusal !== undefined) throw preHandoffRefusal;
           try {
             this.journal.updateSend(cfg.chainId, id, { status: 'signed', txHash: hash }, true);
@@ -995,14 +1086,14 @@ export class RelayerService {
       } catch {
         r = { status: 'timeout', gasUsed: 0n };
       }
-      if (r.status === 'timeout') {
+      if (r.status === 'timeout' || !this.hasReceiptFees(rt, r)) {
         nonces.invalidate();
         setOutcome(classifyRelayOutcome('receipt_timeout'));
         this.receiptTimedOut(rt, sent);
         return;
       }
       setOutcome(classifyRelayOutcome(r.status === 'success' ? 'confirmed' : 'mined_revert_state_changed'));
-      this.settleReceipt(rt, sent, { status: r.status, gasUsed: r.gasUsed });
+      this.settleReceipt(rt, sent, { ...r, status: r.status });
     })();
     return { value: { txHash }, settled };
   }
@@ -1058,7 +1149,7 @@ export class RelayerService {
       } catch {
         return; // RPC trouble: this job's own reads decide; look again next time
       }
-      if (r === null) continue;
+      if (r === null || !this.hasReceiptFees(rt, r)) continue;
       rt.pending.splice(rt.pending.indexOf(sent), 1);
       this.logger.log('info', 'receipt_late', { chainId: rt.cfg.chainId, txHash: sent.txHash });
       this.settleReceipt(rt, sent, r);
@@ -1096,6 +1187,7 @@ export class RelayerService {
       if (u.txHash !== undefined && !u.mined) {
         const r = await rt.client.getReceipt(u.txHash);
         if (r !== null) {
+          if (!this.hasReceiptFees(rt, r)) return;
           u.mined = true;
           this.logger.log('info', 'receipt_late', { chainId, txHash: u.txHash });
           this.settleReceipt(rt, { ...u, txHash: u.txHash }, r);
@@ -1132,11 +1224,18 @@ export class RelayerService {
     this.d.metrics?.inc('relayer_send_not_broadcast_total', { chain_id: chainId });
   }
 
+  /** An OP receipt cannot release reservations until both additional fee components are known. */
+  private hasReceiptFees(rt: ChainRuntime, r: ReceiptSummary): boolean {
+    return findChain(rt.cfg.chainId)?.opStack !== true ||
+      (isNativeFee(r.l1Fee) && isNativeFee(r.operatorFee) && isNativeFee(r.gasUsed));
+  }
+
   /** Settles a mined sweep: returns unused budget and releases its loss reservations, or charges a mined revert. */
   private settleReceipt(rt: ChainRuntime, sent: SentSweep, r: MinedReceipt): void {
     const { cfg, budget } = rt;
-    const spent = r.gasUsed * sent.gasPrice;
-    budget.release(sent.reserved > spent ? sent.reserved - spent : 0n, sent.reservedDay);
+    const extra = findChain(cfg.chainId)?.opStack === true ? (r.l1Fee ?? 0n) + (r.operatorFee ?? 0n) : 0n;
+    const spent = r.gasUsed * sent.gasPrice + extra;
+    budget.settle(sent.reserved, spent, sent.reservedDay);
     this.journalWrite(rt, () => this.journal.removeSend(cfg.chainId, sent.recordId, budget.snapshot()));
     this.d.metrics?.addInteger('relayer_gas_spent_wei_total', spent, { chain_id: cfg.chainId });
     this.d.metrics?.inc('relayer_sweep_receipts_total', { chain_id: cfg.chainId, outcome: r.status });

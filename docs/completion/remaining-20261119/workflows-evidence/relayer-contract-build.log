@@ -1,0 +1,106 @@
+Compiling 117 files with Solc 0.8.28
+Solc 0.8.28 finished in 41.33s
+Compiler run successful with warnings:
+Warning (3628): This contract has a payable fallback function, but no receive ether function. Consider adding a receive ether function.
+  --> test/audit/Router.audit.t.sol:27:1:
+   |
+27 | contract PhantomPermitToken is ERC20 {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+Note: The payable fallback function is defined here.
+  --> test/audit/Router.audit.t.sol:34:5:
+   |
+34 |     fallback() external payable {}
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (3628): This contract has a payable fallback function, but no receive ether function. Consider adding a receive ether function.
+  --> test/audit/Router.audit.t.sol:38:1:
+   |
+38 | contract BombReceiver {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+Note: The payable fallback function is defined here.
+  --> test/audit/Router.audit.t.sol:52:5:
+   |
+52 |     fallback() external payable {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (5159): "selfdestruct" has been deprecated. Note that, starting from the Cancun hard fork, the underlying opcode no longer deletes the code and data associated with an account and only transfers its Ether to the beneficiary, unless executed in the same transaction in which the contract was created (see EIP-6780). Any use in newly deployed contracts is strongly discouraged even if the new behavior is taken into account. Future changes to the EVM might further reduce the functionality of the opcode.
+  --> test/audit/Policy.audit.t.sol:44:9:
+   |
+44 |         selfdestruct(target);
+   |         ^^^^^^^^^^^^
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+    ╭▸ test/audit/Policy.audit.t.sol:112:17
+    │
+112 │         vm.warp(block.timestamp + 1 days);
+    │         ────────━━━━━━━━━━━━━━━────────── `vm.warp` changes this environment here
+    │
+    ├ help: capture it with `vm.getBlockTimestamp()` instead
+    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+    ╭▸ test/audit/Policy.audit.t.sol:257:17
+    │
+257 │         vm.warp(block.timestamp + DELAY);
+    │         ────────━━━━━━━━━━━━━━━───────── `vm.warp` changes this environment here
+    │
+    ├ help: capture it with `vm.getBlockTimestamp()` instead
+    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+    ╭▸ test/audit/Policy.audit.t.sol:277:17
+    │
+277 │         vm.warp(block.timestamp + 2 * DELAY); // both mature; destination change executes first
+    │         ────────━━━━━━━━━━━━━━━───────────── `vm.warp` changes this environment here
+    │
+    ├ help: capture it with `vm.getBlockTimestamp()` instead
+    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+    ╭▸ test/audit/Policy.audit.t.sol:302:34
+    │
+302 │         uint256 endOfBucket = (((block.timestamp + DELAY) / W) + 1) * W - 1;
+    │                                  ━━━━━━━━━━━━━━━
+    ‡
+306 │         vm.warp(endOfBucket);
+    │         ──────────────────── `vm.warp` changes this environment here
+    │
+    ├ help: capture it with `vm.getBlockTimestamp()` instead
+    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+    ╭▸ test/audit/Policy.audit.t.sol:361:17
+    │
+361 │         vm.warp(block.timestamp + 1 days);
+    │         ────────━━━━━━━━━━━━━━━────────── `vm.warp` changes this environment here
+    │
+    ├ help: capture it with `vm.getBlockTimestamp()` instead
+    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+    ╭▸ test/echidna/EchidnaPolicyReachability.t.sol:107:17
+    │
+107 │         vm.warp(block.timestamp + DELAY - 1);
+    │         ────────━━━━━━━━━━━━━━━───────────── `vm.warp` changes this environment here
+    │
+    ├ help: capture it with `vm.getBlockTimestamp()` instead
+    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+   ╭▸ test/echidna/EchidnaPolicyReachability.t.sol:43:17
+   │
+43 │         vm.warp(block.timestamp + timeDelay);
+   │         ────────━━━━━━━━━━━━━━━───────────── `vm.warp` changes this environment here
+   │
+   ├ help: capture it with `vm.getBlockTimestamp()` instead
+   ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+warning[environment-read-across-mutation]: `block.number` may be reused across `vm.roll`
+   ╭▸ test/echidna/EchidnaPolicyReachability.t.sol:44:17
+   │
+44 │         vm.roll(block.number + blockDelay);
+   │         ────────━━━━━━━━━━━━────────────── `vm.roll` changes this environment here
+   │
+   ├ help: capture it with `vm.getBlockNumber()` instead
+   ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+

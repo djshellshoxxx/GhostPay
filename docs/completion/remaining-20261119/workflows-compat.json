@@ -1,0 +1,606 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T07:43:43.403740+00:00",
+  "base_sha": "308a2148dbf7e23795b223e1f8aeaf6806b4160f",
+  "claim_sha": "23df344dd3799642674a5cd97f55a9a9026a5cba",
+  "format_regression_sha": "9c1ccb903cfb66bcb28851e5ea75afa6c982214b",
+  "format_implementation_sha": "9913080e1535029868aead06501b6fd0af3315fa",
+  "memo_regression_sha": "1766e71ff0041128c1931fd4718c4499c522901d",
+  "final_runtime_sha": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+  "historical_readme_label_sha": "c7229b9523aaa6c45fad4e870e11646d98c591ad",
+  "donor_pr": 211,
+  "donor_head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+  "source_commits": [
+    {
+      "sha": "179a5b433f35396ca4f0961c99226dbb38e4e4cd",
+      "subject": "chain-solana: adopt the ADR-0017 formats shipped by the web app (TB-08)"
+    },
+    {
+      "sha": "28ce8a0b6fe22458505da6a77ae7c7cf81db8864",
+      "subject": "chain-tron: adopt the ADR-0019 st:trx:0x meta-address and GPT1 memo (TB-08)"
+    },
+    {
+      "sha": "b9af22a9c85c6a8674d8ac72d7f038954ce713b9",
+      "subject": "chain-tron: fail closed in build() until the GPT1 memo can be bound"
+    },
+    {
+      "sha": "e2427c20387aa2e228309c49a1558d3edc6583ce",
+      "subject": "Add TB-08 shared Solana and TRON meta-address vectors"
+    },
+    {
+      "sha": "1b28f355ae7df248d87e4e7265cbabe15f445c91",
+      "subject": "Integrate lane G5b: TRON build() fails closed; CLI Solana cluster and legacy errors (review follow-ups N-02..N-04)"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "TB-08 / ADR-0017 / #211 G5b",
+      "requirement": "CLI-side Solana meta-address, cluster binding, memo and stealth derivation agree with the existing web scheme. Retired gpsol formats are refused and CLI mainnet inspection stays refused.",
+      "status": "IMPLEMENTED; PACKAGE COVERAGE AND STATIC CHECKS GREEN"
+    },
+    {
+      "id": "TB-08 / ADR-0019 / #211 G5b",
+      "requirement": "CLI-side TRON accepts st:trx:0x, rejects EVM legacy meta-addresses and derives identical one-time addresses and GPT1 memos.",
+      "status": "IMPLEMENTED; PACKAGE COVERAGE AND STATIC CHECKS GREEN"
+    },
+    {
+      "id": "#211 N-02..N-04 / b9af22a9",
+      "requirement": "TRON skeleton payment builds fail before deriving when the announcement cannot be bound into raw_data.data; input bounds remain checked before building.",
+      "status": "IMPLEMENTED; ACTUAL SEPARATE BASELINE FAILURE AND GREEN"
+    },
+    {
+      "id": "#211 CLI legacy errors",
+      "requirement": "Use fixed dedicated legacy-format guidance, preserve generic handling for other/forged errors, expose the decoded Solana cluster and refuse mainnet.",
+      "status": "IMPLEMENTED; ALL 45 CHAIN COMMAND TESTS AND CLI STATIC/BUILD GREEN"
+    }
+  ],
+  "ownership_review": {
+    "pr250_head": "22af2074a086d9957a18e310ef8572b28d1facd0",
+    "read_via": "GitHub connector PR changed files, metadata and ACTIVE_WORK.md at exact head",
+    "result": "Path-disjoint. PR #250 owns chain-adapters deployment/date/retry and tron-adapter RPC completeness. This lane edits chain-solana/chain-tron and three CLI chain paths only.",
+    "sweep_pr252": "Not edited; referred to its owner."
+  },
+  "preservation": {
+    "runtime_donor_parity": "Final chain-solana and chain-tron runtime equals donor #211 source byte-for-byte. Only additional custom TRON regression and historical README label differ outside preserved newer manifests.",
+    "web_solana_stealth": "unchanged",
+    "web_tron_adapter": "unchanged",
+    "net_transport": "unchanged",
+    "package_manifests_and_lock": "unchanged from 308a2148; newer 5.1.0/3.10.1 pins retained instead of donor 5.0.5/3.9.10",
+    "excluded_owner_streams": "No edits."
+  },
+  "environment": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "node_options": "--max-old-space-size=768",
+    "lock": "flock --close /workspace/scratch/6eafdb04d91b/qualification.lock, released per command",
+    "dependencies": "74 independent dependency/artifact directory copies from same-source relayer worktree; relative workspace links checked within this worktree. No fresh npm-ci success claimed. Both CLI-side libraries and CLI rebuilt.",
+    "lock_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2"
+  },
+  "review": {
+    "reviewer": "root coordinator, independent of implementation",
+    "result": "PASS at 9913080e + 9c014e2b: correct existing ADR0017/web hash order/domains and strict prime-order validation without extra cofactor; bounded cluster/checksum/memo parity; explicit legacy refusal; existing ADR0019 TRON format and pre-derivation memo-bound refusal; input bounds and mainnet restriction preserved.",
+    "qualification": "Source review, not an independent cryptographic audit. No cluster, provider, wallet, transaction broadcast, or mainnet qualification claimed."
+  },
+  "checks": [
+    {
+      "name": "compat-solana-red",
+      "source_revision": "9c1ccb903cfb66bcb28851e5ea75afa6c982214b",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/interop.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/chain-solana",
+      "exit_code": 1,
+      "seconds": 3.357,
+      "observed_at": "2026-11-19T07:28:56.919041+00:00",
+      "log": "compat-solana-red.log",
+      "node": "22.23.4",
+      "passed": 3,
+      "failed": 8,
+      "skipped": 0
+    },
+    {
+      "name": "compat-tron-red",
+      "source_revision": "9c1ccb903cfb66bcb28851e5ea75afa6c982214b",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/compatibility.regression.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/chain-tron",
+      "exit_code": 1,
+      "seconds": 3.134,
+      "observed_at": "2026-11-19T07:29:00.142566+00:00",
+      "log": "compat-tron-red.log",
+      "node": "22.23.4",
+      "passed": 0,
+      "failed": 3,
+      "skipped": 0
+    },
+    {
+      "name": "compat-cli-red",
+      "source_revision": "9c1ccb903cfb66bcb28851e5ea75afa6c982214b",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/chain-commands.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/cli",
+      "exit_code": 1,
+      "seconds": 11.373,
+      "observed_at": "2026-11-19T07:29:11.579444+00:00",
+      "log": "compat-cli-red.log",
+      "node": "22.23.4",
+      "passed": 37,
+      "failed": 8,
+      "skipped": 0
+    },
+    {
+      "name": "compat-tron-memo-red",
+      "source_revision": "1766e71ff0041128c1931fd4718c4499c522901d",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/adapter.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/chain-tron",
+      "exit_code": 1,
+      "seconds": 3.106,
+      "observed_at": "2026-11-19T07:29:57.351740+00:00",
+      "log": "compat-tron-memo-red.log",
+      "node": "22.23.4",
+      "passed": 4,
+      "failed": 2,
+      "skipped": 0
+    },
+    {
+      "name": "compat-solana-coverage",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/chain-solana",
+      "exit_code": 0,
+      "seconds": 70.58,
+      "observed_at": "2026-11-19T07:31:49.958618+00:00",
+      "log": "compat-solana-coverage.log",
+      "node": "22.23.4",
+      "passed": 111,
+      "failed": 0,
+      "skipped": 0,
+      "coverage_percent": {
+        "statements": 99.41,
+        "branches": 98.99,
+        "functions": 98.41,
+        "lines": 99.64
+      }
+    },
+    {
+      "name": "compat-tron-coverage",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/chain-tron",
+      "exit_code": 0,
+      "seconds": 13.35,
+      "observed_at": "2026-11-19T07:32:03.378884+00:00",
+      "log": "compat-tron-coverage.log",
+      "node": "22.23.4",
+      "passed": 57,
+      "failed": 0,
+      "skipped": 0,
+      "coverage_percent": {
+        "statements": 100,
+        "branches": 100,
+        "functions": 100,
+        "lines": 100
+      }
+    },
+    {
+      "name": "compat-cli-green",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/chain-commands.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/cli",
+      "exit_code": 0,
+      "seconds": 8.187,
+      "observed_at": "2026-11-19T07:32:11.633890+00:00",
+      "log": "compat-cli-green.log",
+      "node": "22.23.4",
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "compat-solana-build",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/chain-solana/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 2.545,
+      "observed_at": "2026-11-19T07:34:05.221304+00:00",
+      "log": "compat-solana-build.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "compat-tron-build",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/chain-tron/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 1.871,
+      "observed_at": "2026-11-19T07:34:07.147257+00:00",
+      "log": "compat-tron-build.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "compat-solana-typecheck",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/chain-solana/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 4.673,
+      "observed_at": "2026-11-19T07:40:27.738085+00:00",
+      "log": "compat-solana-typecheck.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "compat-tron-typecheck",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/chain-tron/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 4.615,
+      "observed_at": "2026-11-19T07:40:56.534498+00:00",
+      "log": "compat-tron-typecheck.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "compat-cli-typecheck",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/cli/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 16.542,
+      "observed_at": "2026-11-19T07:41:13.132757+00:00",
+      "log": "compat-cli-typecheck.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "compat-vector-reproduction",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "python",
+        "/workspace/scratch/6eafdb04d91b/workflow-evidence/reproduce_compat_vectors.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 2.078,
+      "observed_at": "2026-11-19T07:41:15.265927+00:00",
+      "log": "compat-vector-reproduction.log",
+      "node": "22.23.4",
+      "result": "Generator imports only the web implementations and core-crypto compiled outputs. Every JSON field matched the committed donor fixture after excluding only generatedAt and node metadata. Original fixture bytes restored.",
+      "semantic_sha256": "31ecfe6a775a9deb13ce9c3e261e6c23c0c1978d686dda4f83ba3db24092402c"
+    },
+    {
+      "name": "compat-solana-lint",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "packages/chain-solana/src"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 9.362,
+      "observed_at": "2026-11-19T07:41:24.768845+00:00",
+      "log": "compat-solana-lint.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "compat-tron-lint",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "packages/chain-tron/src"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 6.451,
+      "observed_at": "2026-11-19T07:41:31.267853+00:00",
+      "log": "compat-tron-lint.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "compat-cli-lint",
+      "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "packages/cli/src/commands/chain.ts",
+        "packages/cli/src/payment-context.ts",
+        "packages/cli/src/chain-commands.test.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 9.626,
+      "observed_at": "2026-11-19T07:41:40.945978+00:00",
+      "log": "compat-cli-lint.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "compat-cli-build",
+      "source_revision": "c7229b9523aaa6c45fad4e870e11646d98c591ad",
+      "command": [
+        "python",
+        "/workspace/scratch/6eafdb04d91b/workflow-evidence/build_compat_cli.py"
+      ],
+      "cwd": "packages/cli",
+      "exit_code": 0,
+      "seconds": 6.131,
+      "observed_at": "2026-11-19T07:42:17.582458+00:00",
+      "log": "compat-cli-build.log",
+      "node": "22.23.4",
+      "result": "Exact package build steps: Node 22 TypeScript emit, then Node 22 stamp-build.mjs. Runtime is unchanged from reviewed 9c014e2b; c7229b95 is README-only."
+    }
+  ],
+  "limits": [
+    "No changes to web implementations, RPC transports, wallet/provider configuration or experimental enablement.",
+    "Existing different local Solana signer nonce derivation and stricter S==V refusal are documented and unchanged.",
+    "TRON skeleton remains unable to build a payment; it now refuses the unsafe result.",
+    "Full CLI coverage and compiled acceptance were not repeated; their previously recorded broader gates remain coordinator-owned.",
+    "Combined-head hosted qualification and external chain acceptance remain separate."
+  ],
+  "raw_evidence": [
+    {
+      "path": "workflows-evidence/compat-solana-red.json",
+      "sha256": "fac7d9c35522d4a67f539cd31d1520fef3b2899cec69456a2c21a10047c4d229",
+      "bytes": 483
+    },
+    {
+      "path": "workflows-evidence/compat-solana-red.log",
+      "sha256": "763717aec344763258dd54c07ecd154f400390bbb057bc32c672162859992064",
+      "bytes": 9343
+    },
+    {
+      "path": "workflows-evidence/compat-tron-red.json",
+      "sha256": "5eb96f991ff548c85b2ef27789d853c9d8434f7ddf95173110234b2fbb858a70",
+      "bytes": 494
+    },
+    {
+      "path": "workflows-evidence/compat-tron-red.log",
+      "sha256": "f86f08eb7364e22126fc84e5b8f4d7eebbadebb7a6f048c6176689b6f6c7699e",
+      "bytes": 2898
+    },
+    {
+      "path": "workflows-evidence/compat-cli-red.json",
+      "sha256": "617f93935aa399ea583d3bf8cd4a2ac73b10995eb5e5d4e6c57334aee229e8ff",
+      "bytes": 476
+    },
+    {
+      "path": "workflows-evidence/compat-cli-red.log",
+      "sha256": "8c32ca0060b4b5e13b0014959f01795a7ec936a07e3fa03bb3f1296ce1f43f5c",
+      "bytes": 8871
+    },
+    {
+      "path": "workflows-evidence/compat-tron-memo-red.json",
+      "sha256": "1a32ac1a9bf21a9e7fd33ca8f7aa6951754fd0afa0d9f04f11e1f5b617aff517",
+      "bytes": 487
+    },
+    {
+      "path": "workflows-evidence/compat-tron-memo-red.log",
+      "sha256": "689237664ed5bebab17edf7463a1b419c9b4d3dd7e12e1829ccbc9f9e36a90fd",
+      "bytes": 2249
+    },
+    {
+      "path": "workflows-evidence/compat-solana-coverage.json",
+      "sha256": "8d67d99ffe52abede5e994c96fea550027d54ad7b4e34e593845fc1a7ae90a61",
+      "bytes": 484
+    },
+    {
+      "path": "workflows-evidence/compat-solana-coverage.log",
+      "sha256": "5a4571793587ce8bc2275102bab3e653998778fd3e564a91cce40ef26bce9717",
+      "bytes": 3335
+    },
+    {
+      "path": "workflows-evidence/compat-tron-coverage.json",
+      "sha256": "fe8df6c34ea22b23415752377721b9162c732f319894e640beb2e666c3187dd4",
+      "bytes": 478
+    },
+    {
+      "path": "workflows-evidence/compat-tron-coverage.log",
+      "sha256": "27e1d770f4682a4f8afe5b252fead4e0ca039c868e3f332f17448466258aa8f5",
+      "bytes": 2232
+    },
+    {
+      "path": "workflows-evidence/compat-cli-green.json",
+      "sha256": "ad81538d664a3112b8314efd1dc812c54e9da34b3cbb78ec45bf1ddd2461ad80",
+      "bytes": 479
+    },
+    {
+      "path": "workflows-evidence/compat-cli-green.log",
+      "sha256": "81ec181e1c01949569f6542432ffa3aeb3e60935bb1234f33218aecc92126e5b",
+      "bytes": 560
+    },
+    {
+      "path": "workflows-evidence/compat-solana-build.json",
+      "sha256": "0dfb63d7b25296375dccc814c9adeef86e198cefa94cc445e27cd6e53ab5ebc5",
+      "bytes": 432
+    },
+    {
+      "path": "workflows-evidence/compat-solana-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/compat-tron-build.json",
+      "sha256": "ee73022e6cf03add7b6f680e253c2a3dddcb993c7a5e592b6fc9d5b2015c3fdb",
+      "bytes": 426
+    },
+    {
+      "path": "workflows-evidence/compat-tron-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/compat-solana-typecheck.json",
+      "sha256": "300a4cdd8cd51aacc10da678bb3ffaad2d178a9781605e4f7768fede428294ee",
+      "bytes": 450
+    },
+    {
+      "path": "workflows-evidence/compat-solana-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/compat-tron-typecheck.json",
+      "sha256": "d273916e13480dd082a8a38afee85469e3fe92318f0e9c5023aaae3d55ba4aba",
+      "bytes": 444
+    },
+    {
+      "path": "workflows-evidence/compat-tron-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/compat-cli-typecheck.json",
+      "sha256": "7e62c9bb399667842d437d81e0c59e740fd4f2aee0c05c83c0c11268eff27afa",
+      "bytes": 436
+    },
+    {
+      "path": "workflows-evidence/compat-cli-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/compat-vector-reproduction.json",
+      "sha256": "03b983b8e4533f8604a78a71b3f91b7f00b03c9c9db33b062680961cd44e134f",
+      "bytes": 374
+    },
+    {
+      "path": "workflows-evidence/compat-vector-reproduction.log",
+      "sha256": "ec68adb93b82b41686fec68de9fd35411c97e035e351d7855e07e4e4372efbde",
+      "bytes": 599
+    },
+    {
+      "path": "workflows-evidence/compat-solana-lint.json",
+      "sha256": "dbd738c62cf672232233fcc9f199a919d8d2c88439d132a440547c2f24d7094a",
+      "bytes": 446
+    },
+    {
+      "path": "workflows-evidence/compat-solana-lint.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "workflows-evidence/compat-tron-lint.json",
+      "sha256": "3ebf044a6c87fdf665313745e79b73f1bc76f1b7b4fbab8f0a09db3156446e2b",
+      "bytes": 440
+    },
+    {
+      "path": "workflows-evidence/compat-tron-lint.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "workflows-evidence/compat-cli-lint.json",
+      "sha256": "13d9191851996a936dfba651a9963c39df93de193bb91294f82c326cb4dac4f5",
+      "bytes": 539
+    },
+    {
+      "path": "workflows-evidence/compat-cli-lint.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "workflows-evidence/compat-cli-build.json",
+      "sha256": "97caebfb4b5e76c41bef59d79c3b3c18fef8b2ee8c60aaaa250fa96dbb927950",
+      "bytes": 357
+    },
+    {
+      "path": "workflows-evidence/compat-cli-build.log",
+      "sha256": "c6834112bf065716f10e22a08aeaee0ad8268294002115f63678f9bab270c158",
+      "bytes": 175
+    },
+    {
+      "path": "workflows-evidence/compat-dependency-copy.json",
+      "sha256": "23e5bf1ce60ca958f6625b41cad9e6706ea83cf9d16c6b9fc6398e39e260e483",
+      "bytes": 2774
+    },
+    {
+      "path": "workflows-evidence/build_compat_cli.py",
+      "sha256": "7e4b8a7495f77f91304ab114244d4fd5a59b92300b8b777b55795ee40a7e5ab8",
+      "bytes": 244
+    },
+    {
+      "path": "workflows-evidence/reproduce_compat_vectors.py",
+      "sha256": "25b165be722bff6ae13f3172abc8bd3164cd43f5571b7b3dbc671efd47586657",
+      "bytes": 1016
+    }
+  ]
+}

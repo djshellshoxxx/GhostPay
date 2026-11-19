@@ -1,0 +1,422 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T07:03:31.364392+00:00",
+  "base_sha": "1ad4c9a35c17c71649fe52c8b3f83fe2e23f1f01",
+  "regression_sha": "a7b5eb608546fe0d0e3709d17da431be5bc71341",
+  "implementation_sha": "ea04605c55a7c00e5f6ff26dfab516a7c5c763e4",
+  "claim_sha": "7c6781c641291f252c44af1481f67709e0d9b017",
+  "environment": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "node_options": "--max-old-space-size=768",
+    "qualification_lock": "/workspace/scratch/6eafdb04d91b/qualification.lock",
+    "lock_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2",
+    "setup": "Independent dependency copies with the same lock; source-identical missing package dist copies only; changed chain-adapters rebuilt before web GREEN. No clean npm-ci pass is claimed."
+  },
+  "requirements": [
+    {
+      "id": "LF-365f017ac-1 / TS-07 / #218 L3",
+      "source_commit": "365f017ac47c02734bf1f69ade4f28a8828e1cd9",
+      "requirement": "A trusted configured heartbeat plus the historical 300-second margin caps the caller maxAge, while retaining a stricter caller limit. Validate heartbeat type/range before reads.",
+      "status": "REVIEWED IMPLEMENTATION; FOCUSED GREEN"
+    },
+    {
+      "id": "LF-7aee9060b-1 / #218 L3",
+      "source_commit": "7aee9060b0361de5a8b053d54f0a3927fe4fda62",
+      "requirement": "The payer must require and pass the trusted feed heartbeat, rather than relying only on the seller-authored quote lifetime. Missing/malformed heartbeat refuses before RPC.",
+      "status": "REVIEWED IMPLEMENTATION; FOCUSED GREEN"
+    }
+  ],
+  "checks": [
+    {
+      "name": "quote-red-library",
+      "exit_code": 1,
+      "seconds": 29.65,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "/workspace/scratch/6eafdb04d91b/GhostPay-quotes/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/quote.heartbeat.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "packages/chain-adapters",
+      "source_revision": "a7b5eb608546fe0d0e3709d17da431be5bc71341",
+      "node": "22.23.4",
+      "passed": 2,
+      "failed": 7,
+      "skipped": 0,
+      "log": "quote-red-library.log"
+    },
+    {
+      "name": "quote-red-web",
+      "exit_code": 1,
+      "seconds": 25.578,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "/workspace/scratch/6eafdb04d91b/GhostPay-quotes/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/pay.quoteAge.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "source_revision": "a7b5eb608546fe0d0e3709d17da431be5bc71341",
+      "node": "22.23.4",
+      "passed": 2,
+      "failed": 8,
+      "skipped": 0,
+      "log": "quote-red-web.log"
+    },
+    {
+      "name": "Rebuild changed chain-adapters used by web tests",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/chain-adapters/tsconfig.build.json"
+      ],
+      "source_revision": "ea04605c55a7c00e5f6ff26dfab516a7c5c763e4",
+      "node": "22.23.4",
+      "exit_code": 0,
+      "seconds": 51.308,
+      "observed_at": "2026-11-19T06:37:25.058956+00:00",
+      "log": "quote-build.log"
+    },
+    {
+      "name": "quote-green-library",
+      "source_revision": "ea04605c55a7c00e5f6ff26dfab516a7c5c763e4",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/quote.heartbeat.test.ts",
+        "src/quote.test.ts",
+        "src/quote.guards.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "packages/chain-adapters",
+      "exit_code": 0,
+      "seconds": 9.806,
+      "observed_at": "2026-11-19T06:40:18.028674+00:00",
+      "log": "quote-green-library.log",
+      "node": "22.23.4",
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "quote-green-web",
+      "source_revision": "ea04605c55a7c00e5f6ff26dfab516a7c5c763e4",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/pay.quoteAge.test.ts",
+        "src/lib/pay.test.ts",
+        "src/lib/payExec.test.ts",
+        "src/i18n/securityKeys.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "seconds": 29.152,
+      "observed_at": "2026-11-19T06:40:47.410708+00:00",
+      "log": "quote-green-web.log",
+      "node": "22.23.4",
+      "passed": 138,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "quote-chain-typecheck",
+      "source_revision": "ea04605c55a7c00e5f6ff26dfab516a7c5c763e4",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/chain-adapters/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 39.551,
+      "observed_at": "2026-11-19T06:42:05.173925+00:00",
+      "log": "quote-chain-typecheck.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "quote-web-typecheck",
+      "source_revision": "ea04605c55a7c00e5f6ff26dfab516a7c5c763e4",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/web/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": -6,
+      "seconds": 73.992,
+      "observed_at": "2026-11-19T06:43:19.302179+00:00",
+      "log": "quote-web-typecheck.log",
+      "node": "22.23.4",
+      "result": "V8 heap exhaustion at the required 768MiB cap; subprocess SIGABRT (-6), wrapper exit 250. No TypeScript source diagnostic. Not a passing static gate."
+    },
+    {
+      "name": "quote-i18n",
+      "source_revision": "ea04605c55a7c00e5f6ff26dfab516a7c5c763e4",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/../scripts/i18n/check.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 3.437,
+      "observed_at": "2026-11-19T06:41:47.657728+00:00",
+      "log": "quote-i18n.log",
+      "node": "22.23.4",
+      "catalogs": 4,
+      "errors": 0,
+      "warnings": 503,
+      "result": "Existing catalog gate passes. Warning count includes three intentionally English new critical-error draft entries; no native translation review claimed."
+    },
+    {
+      "name": "quote-lint",
+      "source_revision": "ea04605c55a7c00e5f6ff26dfab516a7c5c763e4",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "packages/chain-adapters/src/quote.ts",
+        "packages/chain-adapters/src/quote.heartbeat.test.ts",
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/pay.quoteAge.test.ts",
+        "apps/web/src/lib/pay.test.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/i18n/securityKeys.ts"
+      ],
+      "cwd": ".",
+      "exit_code": -9,
+      "seconds": 34.449,
+      "observed_at": "2026-11-19T06:45:27.275978+00:00",
+      "log": "quote-lint.log",
+      "node": "22.23.4",
+      "wrapper_exit_code": 247,
+      "result": "Process killed by SIGKILL (-9) with no ESLint source diagnostic. Not a passing lint gate; no repeated local broad attempt."
+    },
+    {
+      "name": "quote-chain-lint",
+      "source_revision": "9f84fa8b6958473ba57f179220842de7753784b7",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "packages/chain-adapters/src/quote.ts",
+        "packages/chain-adapters/src/quote.heartbeat.test.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 14.061,
+      "observed_at": "2026-11-19T06:59:20.552074+00:00",
+      "log": "quote-chain-lint.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "pay-residual-web-lint",
+      "source_revision": "36c66271d5ce491971339bbafbba0181609c66cd",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/format.ts",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/lib/pay.permitNonce.test.ts",
+        "apps/web/src/views/Pay.test.tsx",
+        "apps/web/src/lib/pay.quoteAge.test.ts",
+        "apps/web/src/lib/pay.test.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/i18n/securityKeys.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 1,
+      "seconds": 31.394,
+      "observed_at": "2026-11-19T06:59:52.038376+00:00",
+      "log": "pay-residual-web-lint.log",
+      "node": "22.23.4",
+      "result": "A separate web-only process reached one real diagnostic: unused binding in pay.quoteAge.test.ts. Fixed without runtime change by d7667bcb, equivalent to b69c5b91 in the residual worktree."
+    },
+    {
+      "name": "pay-residual-web-lint-green",
+      "source_revision": "b69c5b91858da8d45491380b3354be54752ac4da",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/format.ts",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/lib/pay.permitNonce.test.ts",
+        "apps/web/src/views/Pay.test.tsx",
+        "apps/web/src/lib/pay.quoteAge.test.ts",
+        "apps/web/src/lib/pay.test.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/i18n/securityKeys.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 31.532,
+      "observed_at": "2026-11-19T07:01:21.453072+00:00",
+      "log": "pay-residual-web-lint-green.log",
+      "node": "22.23.4",
+      "result": "Nine web files passed in a separate web-only TypeScript process, including the quote fixture correction and subsequent nonce/delay repairs at the recorded source."
+    },
+    {
+      "name": "quote-fixture-green",
+      "source_revision": "b69c5b91858da8d45491380b3354be54752ac4da",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/pay.quoteAge.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "seconds": 3.587,
+      "observed_at": "2026-11-19T07:00:49.858428+00:00",
+      "log": "quote-fixture-green.log",
+      "node": "22.23.4",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "built_quote_js_sha256": "1d5aa37b805454670b0c521baabd9dbc8b23ebe791a7ae8a6bdaafeee8ce6482",
+  "review": {
+    "reviewer": "root coordinator, separate agent",
+    "scope": "ea04605c runtime diff",
+    "result": "Source and regression review PASS by root coordinator: trusted heartbeat validation before RPC, smaller caller bounds preserved, optional guards unchanged; 188 focused checks green. Approved for coordinator integration. Combined-source and hosted qualification remain separate."
+  },
+  "qualification_blockers": [
+    {
+      "id": "F-WEB-02",
+      "status": "MISSING AUTHENTICATED CONSUMER CONFIGURATION / PUBLIC-CHAIN QUALIFICATION",
+      "implemented_library_guards": [
+        "sequencerFeed: distinct nonzero same-chain aggregator, valid up status, strict >3600-second recovery grace",
+        "reference: separate reader, distinct address, expected decimals, freshness, <=1% deviation from lower price",
+        "enforceUsdPeg: opt-in inclusive USD 0.98..1.02 range"
+      ],
+      "current_consumer": "createPayContext supplies heartbeat and expected decimals after this fix; it does not configure sequencerFeed, reference or enforceUsdPeg.",
+      "known_registry": "Four primary ETH/USD and USDC/USD feeds on Sepolia 11155111 and Base Sepolia 84532; saved metadata includes proxy, decimals, heartbeat and sourceRef only.",
+      "missing_fields": [
+        "Verified same-chain sequencer aggregator address and provenance for enabled L2 input",
+        "Independent reference-feed address and reader configuration, matching base/quote/chain, expected decimals and trusted age limit",
+        "Evidence that the reference price discovery is independent; distinct feed addresses alone are insufficient",
+        "Real-feed fork/testnet acceptance before public-chain pricing qualification"
+      ],
+      "sources": [
+        "docs/specs/03-fiat-price-feeds.md",
+        "docs/chains/SOURCES-2026-11-04.md (Superseding note: saved primary evidence)",
+        "docs/handoffs/agents/TEAM_D_PRICE_GATES.md"
+      ],
+      "not_claimed": [
+        "No public RPC/fork verification, new address, public endpoint, feed activation or chain enablement",
+        "No Uniswap TWAP source implementation",
+        "No relayer signed priceRoundId protocol change"
+      ]
+    },
+    {
+      "id": "LF-365f017ac-3",
+      "status": "PRODUCT POLICY / PROTOCOL FOLLOW-UP",
+      "requirement": "quote.maxSlippageBps is not compared against a fresh price; historical commit introduced only an unused helper. The #218 lost-fix handover explicitly records an owner product decision."
+    }
+  ],
+  "preserved": [
+    "Existing future-time, round, decimals, int256, sequencer, reference and USD-peg checks",
+    "All PR238 privacy and dependency changes",
+    "All seven excluded feature streams",
+    "Original test timeouts and coverage thresholds"
+  ],
+  "artifacts": [
+    {
+      "path": "quote-red-library.log",
+      "sha256": "a29b115466bbfc7c2b7d24c62b5affbb0ea0c83a0cb53ae8543db981576d421d",
+      "bytes": 3871
+    },
+    {
+      "path": "quote-red-web.log",
+      "sha256": "3c41300b04842572dc5d5b040ea1478110bae02bed26598f14b3e6beb72604e2",
+      "bytes": 55812
+    },
+    {
+      "path": "quote-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "quote-green-library.log",
+      "sha256": "8e31145ac1e90e955bf5972944d927b82b1569f84105b4bdc73eda312490524c",
+      "bytes": 1131
+    },
+    {
+      "path": "quote-green-web.log",
+      "sha256": "7567426e63ebcfa015dbc952b7c1f79448ed9dc49fd6bb2bd069b4322b7c763b",
+      "bytes": 1284
+    },
+    {
+      "path": "quote-chain-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "quote-web-typecheck.log",
+      "sha256": "47a5e256956bec00d7356742737e744e9fa317a7c7a9ed17d24c6b52df2bf366",
+      "bytes": 2345
+    },
+    {
+      "path": "quote-i18n.log",
+      "sha256": "5dcf5e88a14b86b98401324af38760a8d4f129b46745a757ad72f064ae6ad46f",
+      "bytes": 43904
+    },
+    {
+      "path": "quote-lint.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "quote-chain-lint.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "pay-residual-web-lint.log",
+      "sha256": "6e0d02b53ab078bf7786c78c4fadb2386e7ea3f64a21c8eb1268b798880e1fd5",
+      "bytes": 402
+    },
+    {
+      "path": "pay-residual-web-lint-green.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "quote-fixture-green.log",
+      "sha256": "1e2a45e3763b1f9bf960ebb9ab5c53b7dcb20a8c82934b37005d9bb557f8cbb6",
+      "bytes": 564
+    }
+  ],
+  "integration": {
+    "status": "READY FOR COORDINATOR SOURCE INTEGRATION; STATIC/HOSTED GATES REMAIN",
+    "main_merge_sha": null,
+    "public_network_qualified": false
+  },
+  "test_fixture_lint_repair_sha": "d7667bcbde5a1114e9980a79dbd07730978f6541"
+}

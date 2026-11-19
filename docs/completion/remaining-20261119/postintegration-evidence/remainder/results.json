@@ -1,0 +1,65 @@
+[
+  {
+    "name": "cli-build",
+    "source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "final_source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--workspace",
+      "@ghostpay/cli"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 57.798,
+    "node": "22.23.4",
+    "heap_mib": 512
+  },
+  {
+    "name": "cli-chain-regressions",
+    "source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "final_source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "command": [
+      "node",
+      "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/vitest/vitest.mjs",
+      "run",
+      "src/chain-commands.test.ts",
+      "--maxWorkers=1"
+    ],
+    "cwd": "packages/cli",
+    "exit_code": 0,
+    "seconds": 30.218,
+    "node": "22.23.4",
+    "heap_mib": 512
+  },
+  {
+    "name": "package-map",
+    "source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "final_source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "command": [
+      "node",
+      "scripts/agent/package-map.mjs",
+      "--check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.332,
+    "node": "22.23.4",
+    "heap_mib": 512
+  },
+  {
+    "name": "action-pins",
+    "source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "final_source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "command": [
+      "bash",
+      "scripts/check-actions-pinned.sh"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.396,
+    "node": "22.23.4",
+    "heap_mib": 512
+  }
+]

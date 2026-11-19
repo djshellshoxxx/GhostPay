@@ -1,0 +1,17 @@
+{
+  "name": "op-fees-corrected-red",
+  "source_revision": "49d68d7b2d71119d43c502a6ff4613c927b36f1c",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/opFees.test.ts",
+    "--maxWorkers=1",
+    "--no-file-parallelism"
+  ],
+  "cwd": "apps/relayer",
+  "exit_code": 1,
+  "seconds": 17.612,
+  "observed_at": "2026-11-19T07:57:15.517153+00:00",
+  "log": "op-fees-corrected-red.log"
+}

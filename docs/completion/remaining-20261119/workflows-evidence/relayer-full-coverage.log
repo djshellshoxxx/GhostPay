@@ -1,0 +1,86 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-workflows/apps/relayer
+      Coverage enabled with v8
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:546) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:572) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:584) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:596) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:608) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:620) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:632) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:644) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:656) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:668) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:680) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:692) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:704) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:716) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:728) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:740) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:752) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:764) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  20 passed (20)
+      Tests  518 passed (518)
+   Start at  23:18:01
+   Duration  64.38s (tests 66%, import 29%, transform 4%, worker 1%)
+
+     Import  121 modules were evaluated 174 times · 15.87s total, 29% of tracked time
+             ~4.83s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+
+ % Coverage report from v8
+------------------|---------|----------|---------|---------|--------------------
+File              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s  
+------------------|---------|----------|---------|---------|--------------------
+All files         |   96.92 |    92.58 |   98.13 |   98.77 |                    
+ alerts.ts        |    91.3 |    85.59 |   95.83 |      98 | 72,94              
+ budget.ts        |     100 |    95.23 |     100 |     100 | 96                 
+ chain.ts         |    96.7 |    90.69 |     100 |     100 | 134,137-144,181    
+ clientip.ts      |   98.41 |    90.41 |     100 |   97.95 | 103                
+ config.ts        |   98.11 |    97.35 |     100 |     100 | ...440,444,464-469 
+ feedPricing.ts   |   95.74 |    91.66 |     100 |   97.14 | 35                 
+ lane.ts          |   95.16 |    81.81 |     100 |     100 | 39-60,68-70,76,115 
+ limiter.ts       |     100 |    94.73 |     100 |     100 | 32                 
+ metrics.ts       |   98.07 |    84.93 |     100 |     100 | ...138-139,147,167 
+ metricsServer.ts |   89.74 |    86.36 |     100 |   91.42 | 16-18              
+ ops.ts           |   97.11 |    96.68 |   91.17 |   97.23 | 317,423-427        
+ rejectSpike.ts   |   95.65 |    94.11 |     100 |     100 | 20                 
+ runtime.ts       |   97.08 |    84.61 |     100 |   98.88 | 170                
+ server.ts        |      98 |    93.45 |   96.96 |   98.82 | 208-209            
+ service.ts       |   96.12 |    88.29 |   96.51 |   98.94 | ...12,930,935,1171 
+ stateStore.ts    |   96.61 |     95.9 |     100 |   97.04 | ...120-121,464-465 
+ validate.ts      |   94.73 |     90.9 |     100 |     100 | 121                
+------------------|---------|----------|---------|---------|--------------------
+
+=============================== Coverage summary ===============================
+Statements   : 96.92% ( 2423/2500 )
+Branches     : 92.58% ( 1586/1713 )
+Functions    : 98.13% ( 421/429 )
+Lines        : 98.77% ( 2021/2046 )
+================================================================================

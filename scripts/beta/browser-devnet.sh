@@ -7,14 +7,16 @@
 #      temp dir: nothing is written to deployments/, scripts/devnet/.state or packages/contracts/{out,cache,broadcast};
 #   3. anvil_setChainId 84532: from here on every app transaction is signed and executed as Base Sepolia (the web app
 #      bundles no 31337 deployment by design); a stub GasPriceOracle predeploy answers 0 (anvil charges no L1 data fee);
-#   4. apps/web/e2e/devnet/prepare-devnet-manifest.mjs builds the 84532 manifest from the broadcast, reads it back on
+#   4. prove the local node is anvil on 84532, seed the compiled CC0 reference runtime at the canonical announcer, and
+#      run the unmodified Deploy.s.sol for a new router/sweep broadcast; retain the original 31337 token broadcast;
+#   5. apps/web/e2e/devnet/prepare-devnet-manifest.mjs builds the 84532 manifest from the new broadcast, reads it back on
 #      chain and signs it with the public Playwright test key (refuses unless loopback + chain 84532 + anvil);
-#   5. Playwright builds the app with that manifest and runs the devnet spec; anvil is torn down on exit.
+#   6. Playwright builds the app with that manifest and runs the devnet spec; anvil is torn down on exit.
 #
 # Public anvil dev keys only (local, world-known, no value). Exit status is Playwright's (or the first failing step's).
 # Env: BROWSER_DEVNET_PORT (8546), BROWSER_DEVNET_WEB_PORT (4174), BROWSER_DEVNET_KEEP=1 keeps the temp dir.
 #
-# Opt-in BROWSER_DEVNET_MODE=pages: steps 1-4 are identical; step 5 instead runs apps/web/playwright.pages-devnet.config.ts,
+# Opt-in BROWSER_DEVNET_MODE=pages: steps 1-5 are identical; step 6 instead runs apps/web/playwright.pages-devnet.config.ts,
 # which builds the actual GitHub Pages artifact (scripts/pages/build-pages.sh, lean profile, with this run's signed
 # manifest) into "$WORK/pages", serves it under /GhostPay/ with scripts/pages/serve-pages.mjs on
 # BROWSER_DEVNET_PAGES_PORT (4175; never 4173/4174) and runs e2e/pages-devnet.spec.ts against it.
@@ -95,6 +97,39 @@ echo "== switch the local chain to Base Sepolia id (84532) and stub the OP fee o
 rpc anvil_setChainId '[84532]' >/dev/null
 case "$(rpc eth_chainId)" in *'"0x14a34"'*) ;; *) die "anvil_setChainId did not take effect" ;; esac
 rpc anvil_setCode "[\"$OP_GAS_PRICE_ORACLE\",\"$ZERO_WORD_CODE\"]" >/dev/null
+
+echo "== seed the canonical announcer on the verified local anvil"
+DEV_CANONICAL_ANNOUNCER="$(
+  cd "$ROOT"
+  node --input-type=module - "$RPC_URL" "$WORK/forge-out" <<'NODE'
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { CANONICAL_ANNOUNCER } from '@ghostpay/chain-adapters';
+import { assertLocalAnvil, loopbackRpc } from './apps/web/e2e/devnet/prepare-devnet-manifest.mjs';
+const [rpcUrl, artifactsDir] = process.argv.slice(2);
+const rpc = loopbackRpc(rpcUrl);
+await assertLocalAnvil(rpc);
+const artifact = JSON.parse(readFileSync(resolve(artifactsDir, 'ERC5564Announcer.sol/ERC5564Announcer.json'), 'utf8'));
+const runtime = artifact.deployedBytecode?.object;
+if (typeof runtime !== 'string' || !/^0x(?:[0-9a-fA-F]{2})+$/.test(runtime)) throw new Error('compiled reference announcer runtime is missing or malformed');
+await rpc('anvil_setCode', [CANONICAL_ANNOUNCER, runtime]);
+const actual = await rpc('eth_getCode', [CANONICAL_ANNOUNCER, 'latest']);
+if (typeof actual !== 'string' || actual.toLowerCase() !== runtime.toLowerCase()) throw new Error('canonical announcer runtime readback failed');
+process.stdout.write(CANONICAL_ANNOUNCER);
+NODE
+)"
+
+echo "== deploy the canonical 84532 router and sweep relayer (script/Deploy.s.sol)"
+(
+  cd "$ROOT/packages/contracts"
+  FOUNDRY_OUT="$WORK/forge-out" FOUNDRY_CACHE_PATH="$WORK/forge-cache" FOUNDRY_BROADCAST="$WORK/broadcast" \
+    FEE_RECIPIENT="$DEV_FEE_RECIPIENT" ANNOUNCER="$DEV_CANONICAL_ANNOUNCER" \
+    forge script script/Deploy.s.sol:Deploy --offline --rpc-url "$RPC_URL" \
+    --broadcast --private-key "$DEV_DEPLOYER_KEY" --slow >"$WORK/forge-canonical.log" 2>&1
+) || { tail -n 30 "$WORK/forge-canonical.log" >&2; die "canonical forge deploy failed"; }
+# DeployDevnet.s.sol/31337 remains in place: the Pages c2 test reads its stand-in-token evidence.
+BROADCAST="$WORK/broadcast/Deploy.s.sol/84532/run-latest.json"
+[ -f "$BROADCAST" ] || die "canonical broadcast file missing"
 
 echo "== sign the devnet manifest with the public Playwright test key"
 node "$ROOT/apps/web/e2e/devnet/prepare-devnet-manifest.mjs" --rpc "$RPC_URL" --broadcast "$BROADCAST" \

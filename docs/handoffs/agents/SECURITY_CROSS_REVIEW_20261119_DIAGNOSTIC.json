@@ -1,0 +1,41 @@
+{
+  "scope": "Offline missing/malformed fee diagnostic comparison; no RPC and no deployment",
+  "cases": [
+    {
+      "source": "recovered-cff088d6",
+      "scriptSha256": "4376adcb54742c2e98bb6a4fa18d2235a59f31e006a53de6124e6b21b1e790be",
+      "flatFee": null,
+      "exitCode": 1,
+      "misleadingZeroFeeMessage": false,
+      "stdout": "== effective configuration (policy) ==\nRPC_URL                    : <unset>\nSENDER                     : <unset>\nFEE_RECIPIENT              : 0xde709f2102306220921060314715629080e2fb77\nALLOWED_CHAIN_IDS          : <unset>\nALLOW_LOCAL                : <unset>\nFEE_TOKEN                  : 0x52908400098527886E0F7030069857D2E4169EE7\nFLAT_FEE                   : <unset>\nMAX_FLAT_FEE               : 1\n\n== static checks ==\nok    FEE_RECIPIENT is a non-zero address\nWARN  SENDER not given: cannot check FEE_RECIPIENT != broadcaster (the script re-checks at run time)\nok    FEE_TOKEN is a non-zero address\nFAIL  FLAT_FEE unset or not a decimal integer\nWARN  RPC_URL not set: chain id, code and decimals checks skipped\n\nRESULT: FAILED (nothing was broadcast)\n",
+      "stderr": ""
+    },
+    {
+      "source": "recovered-cff088d6",
+      "scriptSha256": "4376adcb54742c2e98bb6a4fa18d2235a59f31e006a53de6124e6b21b1e790be",
+      "flatFee": "bad",
+      "exitCode": 1,
+      "misleadingZeroFeeMessage": false,
+      "stdout": "== effective configuration (policy) ==\nRPC_URL                    : <unset>\nSENDER                     : <unset>\nFEE_RECIPIENT              : 0xde709f2102306220921060314715629080e2fb77\nALLOWED_CHAIN_IDS          : <unset>\nALLOW_LOCAL                : <unset>\nFEE_TOKEN                  : 0x52908400098527886E0F7030069857D2E4169EE7\nFLAT_FEE                   : bad\nMAX_FLAT_FEE               : 1\n\n== static checks ==\nok    FEE_RECIPIENT is a non-zero address\nWARN  SENDER not given: cannot check FEE_RECIPIENT != broadcaster (the script re-checks at run time)\nok    FEE_TOKEN is a non-zero address\nFAIL  FLAT_FEE unset or not a decimal integer\nWARN  RPC_URL not set: chain id, code and decimals checks skipped\n\nRESULT: FAILED (nothing was broadcast)\n",
+      "stderr": ""
+    },
+    {
+      "source": "pr255-ea47fa75",
+      "scriptSha256": "3f77b829b7525c46c98abeb7018b4a24f3673011dd5c4e63181c25aeb2260cd3",
+      "flatFee": null,
+      "exitCode": 1,
+      "misleadingZeroFeeMessage": true,
+      "stdout": "== effective configuration (policy) ==\nRPC_URL                    : <unset>\nSENDER                     : <unset>\nFEE_RECIPIENT              : 0xde709f2102306220921060314715629080e2fb77\nALLOWED_CHAIN_IDS          : <unset>\nALLOW_LOCAL                : <unset>\nFEE_TOKEN                  : 0x52908400098527886E0F7030069857D2E4169EE7\nFLAT_FEE                   : <unset>\nMAX_FLAT_FEE               : 1\nFEE_TOKEN_FREEZE_ACK       : <unset>\nFEE_TOKEN_FREEZE_ACK_CONFIG: <unset>\n\n== static checks ==\nok    FEE_RECIPIENT is a non-zero address\nWARN  SENDER not given: cannot check FEE_RECIPIENT != broadcaster (the script re-checks at run time)\nok    FEE_TOKEN is a non-zero address\nFAIL  FLAT_FEE unset or not a decimal integer\nok    FLAT_FEE is 0: no fee token call is made by the factory\nWARN  RPC_URL not set: chain id, code and decimals checks skipped\n\nRESULT: FAILED (nothing was broadcast)\n",
+      "stderr": ""
+    },
+    {
+      "source": "pr255-ea47fa75",
+      "scriptSha256": "3f77b829b7525c46c98abeb7018b4a24f3673011dd5c4e63181c25aeb2260cd3",
+      "flatFee": "bad",
+      "exitCode": 1,
+      "misleadingZeroFeeMessage": true,
+      "stdout": "== effective configuration (policy) ==\nRPC_URL                    : <unset>\nSENDER                     : <unset>\nFEE_RECIPIENT              : 0xde709f2102306220921060314715629080e2fb77\nALLOWED_CHAIN_IDS          : <unset>\nALLOW_LOCAL                : <unset>\nFEE_TOKEN                  : 0x52908400098527886E0F7030069857D2E4169EE7\nFLAT_FEE                   : bad\nMAX_FLAT_FEE               : 1\nFEE_TOKEN_FREEZE_ACK       : <unset>\nFEE_TOKEN_FREEZE_ACK_CONFIG: <unset>\n\n== static checks ==\nok    FEE_RECIPIENT is a non-zero address\nWARN  SENDER not given: cannot check FEE_RECIPIENT != broadcaster (the script re-checks at run time)\nok    FEE_TOKEN is a non-zero address\nFAIL  FLAT_FEE unset or not a decimal integer\nok    FLAT_FEE is 0: no fee token call is made by the factory\nWARN  RPC_URL not set: chain id, code and decimals checks skipped\n\nRESULT: FAILED (nothing was broadcast)\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "merchant-profile-clock-typecheck",
+  "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "packages/invoice-schema/tsconfig.json",
+    "--noEmit"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 5.422,
+  "observed_at": "2026-11-19T09:00:09.088749+00:00",
+  "log": "merchant-profile-clock-typecheck.log"
+}

@@ -1,0 +1,77 @@
+{
+  "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "runtime_source_hashes": [
+    {
+      "path": "scripts/beta/browser-devnet.sh",
+      "sha256": "e27d6a5f6d5f1f2b1b0cdd5609b37a18485db85f8925d0b7578920c9d285e8d6"
+    },
+    {
+      "path": "apps/web/e2e/devnet/prepare-devnet-manifest.mjs",
+      "sha256": "7c25f77738ef4ad7c4a5d1d58a17592c4c0d0701937d181c392bcda5c6fed360"
+    },
+    {
+      "path": "scripts/testnet/make-manifest.test.mjs",
+      "sha256": "8396991bc82531b98fac40cf7f27f06ff9f9430605d5ff656192a3b713756394"
+    }
+  ],
+  "preserved_source_hashes": [
+    {
+      "path": "packages/chain-adapters/src/deploymentsVerify.ts",
+      "sha256": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "packages/contracts/script/Deploy.s.sol",
+      "sha256": "2e06d10b6dedea114546ca302acd7a9f5a0a85b1107cf84e7cc1941a0b1753e0",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "packages/contracts/script/devnet/DeployDevnet.s.sol",
+      "sha256": "8613019c8bbc6c78fd2b075725e7c19d608f0e9db339dfb3bbad83da75e094d6",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "packages/contracts/test/utils/ERC5564Announcer.sol",
+      "sha256": "9b7f4283fb02c97754cef6136453d38eeaab6c5632e1ccfc41468ae3bddd8e44",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "sha256": "bffb01d28a5183df5f16fc5f0e519897d1260ed3e55301dc84e48fe7232de124",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "apps/web/playwright.devnet.config.ts",
+      "sha256": "8d998e476a17731e11ec710308f90abd52eb7edb6ca4f40d2f6c2152fe9663b8",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "apps/web/playwright.pages-devnet.config.ts",
+      "sha256": "dd30f7a94a0afc6e227679bfc39f46d5ad4aed7c4107cd35e64e0ab18eed86b2",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "apps/web/e2e/prepare-manifest.mjs",
+      "sha256": "3920a20a2a4920d50c8d807bc9e7d48adc4e553b1bfc4eac1f80ad804944a1b7",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "c5305bd026b32331d0dd758ac2a359480b9865cc5871c3276ce1ebb6c07ead9e",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    },
+    {
+      "path": "eslint.config.js",
+      "sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+    }
+  ],
+  "browser_execution_tail_identical_to_peer_baseline": true,
+  "browser_execution_tail_sha256": "f780a22fb68dbd9cbc8b538f31677010371cd1dcb91e35056447b9be60977655",
+  "relevant_dependency_source_and_manifests_match_copy_origin": "6fe060e370ccf168899796708ae4d6bed5e990ef"
+}

@@ -1,0 +1,215 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-compat/packages/cli
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/chain-commands.test.ts (45 tests | 8 failed) 493ms
+   ❯ chain and operator inspection (45)
+     × rejects unsupported or invalid solana recipient input 55ms
+     × tells the user a recipient uses a retired meta-address format, in the CLI JSON error shape 44ms
+     × surfaces only the legacy-format chain codes and keeps every other chain error generic 6ms
+     × validates solana public recipient encoding with its shared decoder 39ms
+     × reports the decoded Solana devnet cluster of a public recipient 36ms
+     × reports the decoded Solana testnet cluster of a public recipient 21ms
+     × reports the decoded Solana localnet cluster of a public recipient 25ms
+     × refuses a Solana mainnet recipient because experimental chains are testnet-only 28ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/chain-commands.test.ts > chain and operator inspection > rejects unsupported or invalid solana recipient input
+AssertionError: promise resolved "+0" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+0
+
+ ❯ src/chain-commands.test.ts:37:112
+     35|   ])('rejects unsupported or invalid %s recipient input', async (famil…
+     36|     const io = makeIo({ 'address.txt': value });
+     37|     await expect(execute('chain recipient inspect', io, ['--family', f…
+       |                                                                                                                ^
+     38|     expect(io.out).toHaveLength(0);
+     39|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/chain-commands.test.ts > chain and operator inspection > tells the user a recipient uses a retired meta-address format, in the CLI JSON error shape
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/chain-commands.test.ts:43:117
+     41|   it('tells the user a recipient uses a retired meta-address format, i…
+     42|     const io = makeIo({ 'address.txt': LEGACY_SOLANA });
+     43|     expect(await run(['chain', 'recipient', 'inspect', '--family', 'so…
+       |                                                                                                                     ^
+     44|     expect(io.out).toHaveLength(0);
+     45|     const error = (JSON.parse(io.err.join('')) as { ok: boolean; error…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/chain-commands.test.ts > chain and operator inspection > surfaces only the legacy-format chain codes and keeps every other chain error generic
+AssertionError: expected CliError: chain input or evidence is inva… { …(3) } to match object { kind: 'fail', …(3) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+- {
+-   "code": "LEGACY_META_ADDRESS",
+-   "exitCode": 1,
++ CliError {
++   "code": "INVALID_INPUT",
+    "kind": "fail",
+-   "message": StringContaining "st:trx:0x",
+  }
+
+ ❯ src/chain-commands.test.ts:52:87
+     50|
+     51|   it('surfaces only the legacy-format chain codes and keeps every othe…
+     52|     await expect(chainBoundary(() => { throw new TronError('LEGACY_MET…
+       |                                                                                       ^
+     53|       kind: 'fail', code: 'LEGACY_META_ADDRESS', exitCode: 1, message:…
+     54|     await expect(chainBoundary(() => { throw new SolanaStealthError('L…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/chain-commands.test.ts > chain and operator inspection > validates solana public recipient encoding with its shared decoder
+AssertionError: expected { ok: true, schemaVersion: 1, …(6) } to match object { family: 'solana', valid: true, …(4) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "canonical": "gpsol:n4KqvWSDpR3TSycUoBWz3yUJufnnRDpfe7BMDSL5uavux8rL6PY7f1Bxu4k6rsYPdWrU8HYJCzZZr29PWKazhLNkYzcPu",
+    "family": "solana",
+    "identityVerified": false,
+-   "network": "devnet",
++   "network": null,
+    "paymentVerified": false,
+    "valid": true,
+  }
+
+ ❯ src/chain-commands.test.ts:153:28
+    151|     const io = makeIo({ 'address.txt': canonical });
+    152|     expect(await execute('chain recipient inspect', io, ['--family', f…
+    153|     expect(stdoutJson(io)).toMatchObject({ family, valid: true, canoni…
+       |                            ^
+    154|       network: family === 'evm' ? null : family === 'solana' ? 'devnet…
+    155|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/chain-commands.test.ts > chain and operator inspection > reports the decoded Solana devnet cluster of a public recipient
+AssertionError: expected { ok: true, schemaVersion: 1, …(6) } to match object { family: 'solana', valid: true, …(2) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "canonical": "gpsol:n4KqvWSDpR3TSycUoBWz3yUJufnnRDpfe7BMDSL5uavux8rL6PY7f1Bxu4k6rsYPdWrU8HYJCzZZr29PWKazhLNkYzcPu",
+    "family": "solana",
+-   "network": "devnet",
++   "network": null,
+    "valid": true,
+  }
+
+ ❯ src/chain-commands.test.ts:163:28
+    161|     const io = makeIo({ 'address.txt': canonical });
+    162|     expect(await execute('chain recipient inspect', io, ['--family', '…
+    163|     expect(stdoutJson(io)).toMatchObject({ family: 'solana', valid: tr…
+       |                            ^
+    164|   });
+    165|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/chain-commands.test.ts > chain and operator inspection > reports the decoded Solana testnet cluster of a public recipient
+AssertionError: expected { ok: true, schemaVersion: 1, …(6) } to match object { family: 'solana', valid: true, …(2) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "canonical": "gpsol:n4KqvWSDpR3TSycUoBWz3yUJufnnRDpfe7BMDSL5uavux8rL6PY7f1Bxu4k6rsYPdWrU8HYJCzZZr29PWKazhLNkYzcPu",
+    "family": "solana",
+-   "network": "testnet",
++   "network": null,
+    "valid": true,
+  }
+
+ ❯ src/chain-commands.test.ts:163:28
+    161|     const io = makeIo({ 'address.txt': canonical });
+    162|     expect(await execute('chain recipient inspect', io, ['--family', '…
+    163|     expect(stdoutJson(io)).toMatchObject({ family: 'solana', valid: tr…
+       |                            ^
+    164|   });
+    165|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/chain-commands.test.ts > chain and operator inspection > reports the decoded Solana localnet cluster of a public recipient
+AssertionError: expected { ok: true, schemaVersion: 1, …(6) } to match object { family: 'solana', valid: true, …(2) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "canonical": "gpsol:n4KqvWSDpR3TSycUoBWz3yUJufnnRDpfe7BMDSL5uavux8rL6PY7f1Bxu4k6rsYPdWrU8HYJCzZZr29PWKazhLNkYzcPu",
+    "family": "solana",
+-   "network": "localnet",
++   "network": null,
+    "valid": true,
+  }
+
+ ❯ src/chain-commands.test.ts:163:28
+    161|     const io = makeIo({ 'address.txt': canonical });
+    162|     expect(await execute('chain recipient inspect', io, ['--family', '…
+    163|     expect(stdoutJson(io)).toMatchObject({ family: 'solana', valid: tr…
+       |                            ^
+    164|   });
+    165|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/chain-commands.test.ts > chain and operator inspection > refuses a Solana mainnet recipient because experimental chains are testnet-only
+AssertionError: promise resolved "+0" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+0
+
+ ❯ src/chain-commands.test.ts:171:26
+    169|     keys.spendSecret.fill(0); keys.viewSecret.fill(0);
+    170|     const refused = execute('chain recipient inspect', io, ['--family'…
+    171|     await expect(refused).rejects.toMatchObject({ kind: 'unsupported',…
+       |                          ^
+    172|     await expect(refused).rejects.toThrow(/mainnet recipients are refu…
+    173|     expect(io.out).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 37 passed (45)
+   Start at  23:29:00
+   Duration  10.59s (transform 64%, import 31%, tests 5%)
+

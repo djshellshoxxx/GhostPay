@@ -1,0 +1,25 @@
+{
+  "base": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+  "phase": "existing models before CI wiring edit",
+  "command": [
+    "flock",
+    "--close",
+    "/workspace/scratch/6eafdb04d91b/qualification.lock",
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "--test",
+    "scripts/experimental/milestone-escrow/model.test.mjs",
+    "scripts/experimental/policy-recovery/model.test.mjs"
+  ],
+  "exit_code": 0,
+  "node": "22.23.4",
+  "model_sources_unchanged": true,
+  "file_sha256": {
+    "scripts/experimental/milestone-escrow/model.test.mjs": "358734cdef863724383029db92aa0a33e93e38975bc7e858cd7b3d7ed55da954",
+    "scripts/experimental/policy-recovery/model.test.mjs": "e2521674b69f0418c3ff7fa6863c0809462db7bc0119f3eee346efa89dccaeb0",
+    "scripts/experimental/milestone-escrow/model.mjs": "cfe5a1b84eb8485998a72b7b68c9dc8967b0ef53cabe35b7d12ff8bdc2276e4a",
+    "scripts/experimental/policy-recovery/model.mjs": "d5f4c80cbfbc3d6d936f67f1566aa751b622d0b13197a70ebcbcec30f01e1987"
+  },
+  "passed": 38,
+  "failed": 0,
+  "skipped": 0
+}

@@ -1,0 +1,14 @@
+{
+  "source": "9bec156622c4c606b97e7d43b1b6f12deff71063",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/vitest/vitest.mjs",
+    "run",
+    "src/merchantProfile.test.ts"
+  ],
+  "cwd": "/workspace/scratch/6eafdb04d91b/GhostPay/packages/invoice-schema",
+  "exit_code": 0,
+  "seconds": 2.113,
+  "recorded_utc": "2026-11-19T09:08:39.053012+00:00",
+  "scope": "Existing full merchant-profile regression file on integrated source; no browser or end-to-end remote exploit test"
+}

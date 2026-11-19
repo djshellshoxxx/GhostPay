@@ -1,0 +1,33 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-policy-client/packages/policy-scheme
+      Coverage enabled with v8
+
+
+ Test Files  6 passed (6)
+      Tests  118 passed (118)
+   Start at  22:52:31
+   Duration  24.21s (tests 66%, import 29%, transform 3%, worker 2%)
+
+    Isolate  6 workers spawned · ~516ms startup each (spawn + environment, per file)
+             at least ~2.58s faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+-------------|---------|----------|---------|---------|-------------------
+File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------|---------|----------|---------|---------|-------------------
+All files    |   97.38 |    95.84 |     100 |   99.57 |                   
+ calldata.ts |   96.96 |    91.66 |     100 |     100 | 49                
+ derive.ts   |   94.44 |     90.9 |     100 |   97.67 | 124               
+ eip712.ts   |    98.3 |    97.33 |     100 |     100 | 179,438           
+ limits.ts   |     100 |    97.05 |     100 |     100 | 126               
+ record.ts   |   94.17 |     91.3 |     100 |   98.71 | 118               
+ types.ts    |   96.42 |    95.83 |     100 |     100 | 48                
+ window.ts   |      95 |    96.15 |     100 |     100 | 26,37             
+-------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 97.38% ( 558/573 )
+Branches     : 95.84% ( 369/385 )
+Functions    : 100% ( 84/84 )
+Lines        : 99.57% ( 464/466 )
+================================================================================

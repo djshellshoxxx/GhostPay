@@ -1,0 +1,96 @@
+green: deploy-devnet-31337
+(node:94) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+green: seed-canonical-runtime
+green: deploy-canonical-84532
+green: prepare-manifest
+green: independent-manifest-readback
+{
+  "phase": "green",
+  "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "source_sha256": {
+    "scripts/beta/browser-devnet.sh": "e27d6a5f6d5f1f2b1b0cdd5609b37a18485db85f8925d0b7578920c9d285e8d6",
+    "apps/web/e2e/devnet/prepare-devnet-manifest.mjs": "7c25f77738ef4ad7c4a5d1d58a17592c4c0d0701937d181c392bcda5c6fed360",
+    "scripts/testnet/make-manifest.test.mjs": "8396991bc82531b98fac40cf7f27f06ff9f9430605d5ff656192a3b713756394",
+    "packages/chain-adapters/src/deploymentsVerify.ts": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973",
+    "packages/chain-adapters/dist/deploymentsVerify.js": "f82657172746a1411e9059b33c3feb1dc11bc8c3a05119d16bb3b0a9fa85ed26",
+    "packages/contracts/script/Deploy.s.sol": "2e06d10b6dedea114546ca302acd7a9f5a0a85b1107cf84e7cc1941a0b1753e0",
+    "packages/contracts/script/devnet/DeployDevnet.s.sol": "8613019c8bbc6c78fd2b075725e7c19d608f0e9db339dfb3bbad83da75e094d6",
+    "packages/contracts/test/utils/ERC5564Announcer.sol": "9b7f4283fb02c97754cef6136453d38eeaab6c5632e1ccfc41468ae3bddd8e44"
+  },
+  "replay_sha256": "a853a215149f8b050277f92853ff6601863fc8fbac1e7c0e8228e47096a70b50",
+  "observed_at": "2026-11-19T08:39:19.698360+00:00",
+  "work_directory": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba",
+  "acceptance_scope": "native local fixture/readback/signature only; no browser or public-chain acceptance",
+  "public_test_signer_source": "scripts/beta/browser-devnet.sh DEV_DEPLOYER_KEY (public Anvil account 0)",
+  "steps": [
+    {
+      "name": "deploy-devnet-31337",
+      "exit_code": 0,
+      "seconds": 4.549,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deploy-devnet-31337.log",
+      "sha256": "e5eaca770b8b662f0c462907c505d3ef206b5f2da6f07fab3120c5570381cbf4"
+    },
+    {
+      "name": "seed-canonical-runtime",
+      "exit_code": 0,
+      "seconds": 0.719,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/seed-canonical-runtime.log",
+      "sha256": "234dd9d86243c62e29d8e3a162eaa0c0c74ab775167888c6c423af849e7545bc",
+      "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/seed-canonical-runtime.stdout",
+      "stdout_sha256": "6fd26b117e78f5e42db415df7ba494ac0f75d41318aed25f5e17dc14909b09e3"
+    },
+    {
+      "name": "deploy-canonical-84532",
+      "exit_code": 0,
+      "seconds": 3.558,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deploy-canonical-84532.log",
+      "sha256": "301037a23913d0b763e40d12a374a78ef512629420d02e83c3892b71437f953a"
+    },
+    {
+      "name": "prepare-manifest",
+      "exit_code": 0,
+      "seconds": 0.974,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/prepare-manifest.log",
+      "sha256": "87e3b7402efee82e072482a1d55ab4abba37d2e66e187e95dd051e7bf07a50f3"
+    },
+    {
+      "name": "independent-manifest-readback",
+      "exit_code": 0,
+      "seconds": 0.93,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/independent-manifest-readback.log",
+      "sha256": "13997c6601382193d4668cbd4ce9e4134842ed5630f5d6cfa816051b55ec49dc",
+      "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/independent-manifest-readback.stdout",
+      "stdout_sha256": "43e2c62bcfcbb48d251956149910d36f7208fd5148251ac23ee2ddeacb90731e"
+    }
+  ],
+  "canonical_announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
+  "runner_seed_source_sha256": "776873840f5eb4ac701a96ecbeeb74b28c24981bd5b9f0b6e13847c94489edfd",
+  "canonical_runtime_artifact_sha256": "b974e8ed887185d777ddb72e1f36b637fa44d68a6ebbbd8d429c4af5faed61b2",
+  "prepare_exit_code": 0,
+  "manifest_result": {
+    "chainId": 84532,
+    "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
+    "router": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+    "sweepRelayer": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+    "signature": "valid",
+    "readback": "passed",
+    "allowlistedTokens": [
+      "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "0x808456652fdb597867f38412077A9182bf77359F"
+    ],
+    "allowlistedTokensHaveNoCode": true
+  },
+  "signed_manifest_sha256": "0a6a71d47d773caa3c749d9442ed33a8d25f9d35451e52e14d38f7f8114ccb37",
+  "original_31337_broadcast_sha256": "d340893c9a785670d32b0ed8a511fbd9f3eee3a0b9fd019b32a380430223754e",
+  "original_31337_broadcast_preserved": true,
+  "stand_in_tokens": [
+    "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9",
+    "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9",
+    "0x5fc8d32690cc91d4c39d9d3abcbd16989f875707"
+  ],
+  "stand_in_token_code_preserved": true,
+  "browser_executed": false,
+  "result": "native fixture/readback passed",
+  "owned_anvil_stopped": true
+}

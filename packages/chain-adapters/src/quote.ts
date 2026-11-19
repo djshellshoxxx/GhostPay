@@ -37,8 +37,8 @@ export interface FeedConfig {
   /** Answer decimals from the saved Chainlink source (`decimals`, not display `decimalPlaces`). `readPrice` still reads `decimals()` on chain. */
   readonly decimals?: number;
   /**
-   * Heartbeat in seconds from the saved Chainlink source. Metadata only: it does not define the tolerated quote
-   * age (callers pass an explicit `maxAgeSeconds`) and does not prove the feed is updating.
+   * Heartbeat in seconds from the saved Chainlink source. Pass it to `readPrice` to cap the caller's quote age;
+   * the heartbeat does not itself prove the feed is updating.
    */
   readonly heartbeatSec?: number;
 }
@@ -46,8 +46,8 @@ export interface FeedConfig {
 /**
  * Chainlink feed registry (testnets only). An entry exists only when its proxy address, `decimals` and `heartbeat`
  * were read from saved Chainlink reference data (SOURCES-2026-11-04.md); everything else, mainnets included, stays
- * absent so pricing fails closed. `heartbeatSec` is source metadata, not a freshness guarantee: `readPrice` still
- * enforces an explicit `maxAgeSeconds` on every read.
+ * absent so pricing fails closed. `heartbeatSec` is source metadata, not a freshness guarantee: callers supply
+ * it to `readPrice`, which checks each round against both the heartbeat allowance and an explicit `maxAgeSeconds`.
  */
 export const FEEDS: readonly FeedConfig[] = Object.freeze([
   {
@@ -132,6 +132,8 @@ export interface PriceOptions {
   readonly now: bigint;
   /** Maximum accepted age of `updatedAt` in seconds, `1..604800`. */
   readonly maxAgeSeconds: bigint;
+  /** Trusted feed heartbeat, `1..604800`. Caps the accepted age at heartbeat plus 300 seconds. */
+  readonly heartbeatSeconds?: bigint;
   /** Expected decimals from a sourced feed registry. When supplied, on-chain metadata must agree exactly. */
   readonly expectedDecimals?: number;
   /** Tolerated clock skew for an `updatedAt` slightly in the future, default 60 s. */
@@ -167,7 +169,7 @@ export interface Price {
  * Reads and validates a Chainlink price. Fails closed.
  *
  * @remarks Rejects: `answer <= 0`, `roundId == 0`, `updatedAt == 0`, `answeredInRound < roundId`
- * (stale round carried over), `updatedAt` older than `maxAgeSeconds` or more than the skew in the
+ * (stale round carried over), `updatedAt` older than `maxAgeSeconds` or the configured heartbeat plus 300 seconds, or more than the skew in the
  * future, decimals outside 0..30 or different from configured expected decimals, and values outside the int256/uint256 ranges. The legacy
  * `answeredInRound` rule is applied alongside the staleness check (modern aggregators return equal
  * values, so it never rejects a healthy feed).
@@ -182,6 +184,12 @@ export async function readPrice(reader: AggregatorReader, feed: string, opts: Pr
   if (!isAddress(feed, { strict: true }) || feed.toLowerCase() === ZERO_ADDRESS) return fail('QUOTE_FAILED', 'feed address');
   if (typeof opts.now !== 'bigint' || opts.now <= 0n || opts.now > MAX_UINT256) return fail('QUOTE_FAILED', 'current time out of range');
   if (typeof opts.maxAgeSeconds !== 'bigint' || opts.maxAgeSeconds < 1n || opts.maxAgeSeconds > 604_800n) return fail('QUOTE_FAILED', 'maxAge out of range');
+  const heartbeat = opts.heartbeatSeconds;
+  if (heartbeat !== undefined && (typeof heartbeat !== 'bigint' || heartbeat < 1n || heartbeat > 604_800n)) {
+    return fail('QUOTE_FAILED', 'feed heartbeat');
+  }
+  const heartbeatAge = heartbeat === undefined ? opts.maxAgeSeconds : heartbeat + 300n;
+  const maxAge = opts.maxAgeSeconds < heartbeatAge ? opts.maxAgeSeconds : heartbeatAge;
   if (opts.expectedDecimals !== undefined && (!Number.isInteger(opts.expectedDecimals) || opts.expectedDecimals < 0 || opts.expectedDecimals > 30)) {
     return fail('QUOTE_FAILED', 'configured decimals are invalid');
   }
@@ -230,7 +238,7 @@ export async function readPrice(reader: AggregatorReader, feed: string, opts: Pr
   if (r.answeredInRound < r.roundId) return fail('QUOTE_FAILED', 'answer from an earlier round');
   if (r.updatedAt <= 0n) return fail('QUOTE_FAILED', 'round not updated');
   if (r.updatedAt > opts.now + skew) return fail('QUOTE_FAILED', 'updatedAt in the future');
-  if (opts.now > r.updatedAt && opts.now - r.updatedAt > opts.maxAgeSeconds) return fail('QUOTE_FAILED', 'stale price');
+  if (opts.now > r.updatedAt && opts.now - r.updatedAt > maxAge) return fail('QUOTE_FAILED', 'stale price');
   const price = { answer: r.answer, decimals, updatedAt: r.updatedAt, roundId: r.roundId };
   if (opts.enforceUsdPeg === true) {
     const dollar = 10n ** BigInt(decimals);

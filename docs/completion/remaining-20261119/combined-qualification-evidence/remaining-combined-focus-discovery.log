@@ -1,0 +1,5 @@
+(node:125) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Listing tests:
+  [desktop] › focus-scope.spec.ts:9:1 › in-view paste "Read" moves focus to main once the invoice loads; a rejected paste keeps focus on the control
+Total: 1 test in 1 file

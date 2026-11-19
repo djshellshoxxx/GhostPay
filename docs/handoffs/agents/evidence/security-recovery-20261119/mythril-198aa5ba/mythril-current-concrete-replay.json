@@ -1,0 +1,190 @@
+{
+  "scope": "Exact current Mythril trace inputs; fresh concrete replay, no patched production code",
+  "reportSha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00",
+  "anvilVersion": "anvil Version: 1.8.5\nCommit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f\nBuild Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)\nBuild Profile: dist",
+  "stateModel": "Default Anvil precompiles; original creation bytecode and supplied calldata; deployer funded and impersonated only; report initialState actor balances/storage not injected",
+  "errorSelectors": {
+    "0x203d82d8": "Expired()",
+    "0x2c5211c6": "InvalidAmount()",
+    "0x1f2a2005": "ZeroAmount()",
+    "0xac6b05f5": "InvalidDestination()",
+    "0x6f778c3a": "ImplementationHasNoCode()"
+  },
+  "findings": [
+    {
+      "reportIndex": 1,
+      "issueIndex": 0,
+      "contract": "GhostPaySweepRelayer",
+      "swc": "116",
+      "pc": 785,
+      "creationInputSha256": "80b0d7a901f936a87b43c9ffff31a30155a268690047508a065131cfcabc536e",
+      "deploymentTimestamp": 0,
+      "calls": [
+        {
+          "inputSha256": "c532b7f1e3f67398d0f00d3f30711cc41da6bb75456b7620d5442ad6b5532a79",
+          "result": null,
+          "error": {
+            "code": 3,
+            "message": "execution reverted: custom error 0x2c5211c6",
+            "data": "0x2c5211c6"
+          },
+          "decodedError": "InvalidAmount()"
+        }
+      ]
+    },
+    {
+      "reportIndex": 3,
+      "issueIndex": 0,
+      "contract": "PolicyAccount",
+      "swc": "116",
+      "pc": 1876,
+      "creationInputSha256": "dab0767a1ee366b998c0195ecc022261307f89c78c6f60ea1017233e22b91f64",
+      "deploymentTimestamp": 0,
+      "calls": [
+        {
+          "inputSha256": "82ac1c1679f81adc48acc03674c32f114b60f70dc869ccca44ad263343f42f4b",
+          "result": null,
+          "error": {
+            "code": 3,
+            "message": "execution reverted: \u001f* \u0005",
+            "data": "0x1f2a2005"
+          },
+          "decodedError": "ZeroAmount()"
+        }
+      ]
+    },
+    {
+      "reportIndex": 3,
+      "issueIndex": 1,
+      "contract": "PolicyAccount",
+      "swc": "116",
+      "pc": 5077,
+      "creationInputSha256": "dab0767a1ee366b998c0195ecc022261307f89c78c6f60ea1017233e22b91f64",
+      "deploymentTimestamp": 0,
+      "calls": [
+        {
+          "inputSha256": "b110c88fe1beecb064b0118a653faea371701657adbe094c543f785685c77103",
+          "result": null,
+          "error": {
+            "code": 3,
+            "message": "execution reverted: custom error 0xac6b05f5",
+            "data": "0xac6b05f5"
+          },
+          "decodedError": "InvalidDestination()"
+        }
+      ]
+    },
+    {
+      "reportIndex": 4,
+      "issueIndex": 0,
+      "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+      "swc": "110",
+      "pc": 30,
+      "creationInputSha256": "ffdb8370f4218e6b6e2fff7e02844eaa3eb2ea66352f7d3d254447dc69668c9e",
+      "creationCall": {
+        "code": 3,
+        "message": "execution reverted: custom error 0x6f778c3a",
+        "data": "0x6f778c3a"
+      },
+      "expectedConstructorRejection": true
+    },
+    {
+      "reportIndex": 4,
+      "issueIndex": 1,
+      "contract": "PolicyAccountFactory",
+      "swc": "107",
+      "pc": 999,
+      "creationInputSha256": "bd165d1bc79cb1d4cce6c85581b772f332cb028534ef2860ba5655d6adad52d9",
+      "creationCall": {
+        "code": 3,
+        "message": "execution reverted: custom error 0x6f778c3a",
+        "data": "0x6f778c3a"
+      },
+      "expectedConstructorRejection": true
+    },
+    {
+      "reportIndex": 4,
+      "issueIndex": 2,
+      "contract": "PolicyAccountFactory",
+      "swc": "107",
+      "pc": 1170,
+      "creationInputSha256": "dba378a8b3470a7fa52b6564f946e818da9f2579301ed7c319d357ce6df02bd3",
+      "creationCall": {
+        "code": 3,
+        "message": "execution reverted: custom error 0x6f778c3a",
+        "data": "0x6f778c3a"
+      },
+      "expectedConstructorRejection": true
+    },
+    {
+      "reportIndex": 4,
+      "issueIndex": 3,
+      "contract": "PolicyAccountFactory",
+      "swc": "113",
+      "pc": 1668,
+      "creationInputSha256": "c75773d6640b19c7ae53700f98dd88c6a17650e4c1df4ef45e411446cd6cf7c1",
+      "creationCall": {
+        "code": 3,
+        "message": "execution reverted: custom error 0x6f778c3a",
+        "data": "0x6f778c3a"
+      },
+      "expectedConstructorRejection": true
+    },
+    {
+      "reportIndex": 4,
+      "issueIndex": 4,
+      "contract": "PolicyAccountFactory",
+      "swc": "113",
+      "pc": 1781,
+      "creationInputSha256": "895759e836defaace8e6003a5c8246b589de482285e986506b2bccfead75a834",
+      "creationCall": {
+        "code": 3,
+        "message": "execution reverted: custom error 0x6f778c3a",
+        "data": "0x6f778c3a"
+      },
+      "expectedConstructorRejection": true
+    },
+    {
+      "reportIndex": 4,
+      "issueIndex": 5,
+      "contract": "PolicyAccountFactory",
+      "swc": "107",
+      "pc": 2887,
+      "creationInputSha256": "bd165d1bc79cb1d4cce6c85581b772f332cb028534ef2860ba5655d6adad52d9",
+      "creationCall": {
+        "code": 3,
+        "message": "execution reverted: custom error 0x6f778c3a",
+        "data": "0x6f778c3a"
+      },
+      "expectedConstructorRejection": true
+    },
+    {
+      "reportIndex": 4,
+      "issueIndex": 6,
+      "contract": "PolicyAccountFactory",
+      "swc": "107",
+      "pc": 2978,
+      "creationInputSha256": "ba9c03b48bb74cddbd2f759da1b1aadae690cbacddf273ebe851ca8cce2a68af",
+      "creationCall": {
+        "code": 3,
+        "message": "execution reverted: custom error 0x6f778c3a",
+        "data": "0x6f778c3a"
+      },
+      "expectedConstructorRejection": true
+    },
+    {
+      "reportIndex": 4,
+      "issueIndex": 7,
+      "contract": "PolicyAccountFactory",
+      "swc": "104",
+      "pc": 2978,
+      "creationInputSha256": "01c9d347ebb9834d42819afe0dfbff40cb26bb0937df69d10738d2467bcbc545",
+      "creationCall": {
+        "code": 3,
+        "message": "execution reverted: custom error 0x6f778c3a",
+        "data": "0x6f778c3a"
+      },
+      "expectedConstructorRejection": true
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "path": "packages/invoice-schema/src/passphrase.test.ts",
+    "baseline_sha": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+    "sha256": "09186df084b666d16d789cb7bffd500f57ab546db01827d08bac35ffda4bac1d",
+    "byte_identical": true
+  },
+  {
+    "path": "packages/invoice-schema/src/envelope.ts",
+    "baseline_sha": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+    "sha256": "fe9a123e3181605338d0587cc0c9ec0385303e34e784adf60287478f76f1c487",
+    "byte_identical": true
+  },
+  {
+    "path": "packages/invoice-schema/src/json.ts",
+    "baseline_sha": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+    "sha256": "0a54fa384f04516fd9b56b2e2b44cfa04a2d1ec9d748fea2d4ff73f96aa5a0d7",
+    "byte_identical": true
+  },
+  {
+    "path": "packages/invoice-schema/src/sign.ts",
+    "baseline_sha": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+    "sha256": "8efcb19e49d30dbc742c89104c178f10691026c554278e8e44b9ad0b394964d3",
+    "byte_identical": true
+  },
+  {
+    "path": "packages/invoice-schema/src/passphrase.ts",
+    "baseline_sha": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+    "sha256": "4b20b14f6e545a5c0d91ffe215e197829cb7ead81d1ceb89906c4df0ed48e9c9",
+    "byte_identical": true
+  }
+]

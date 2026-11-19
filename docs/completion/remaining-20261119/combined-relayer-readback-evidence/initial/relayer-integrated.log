@@ -1,0 +1,60 @@
+(node:23) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay/apps/relayer
+
+(node:58) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:546) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/e2e.anvil.test.ts (5 tests | 1 failed | 4 skipped) 26ms
+   ❯ anvil e2e prerequisites (CI must not skip) (1)
+     × anvil binary and forge artifacts exist 23ms
+(node:555) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:563) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:571) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:579) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:587) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:595) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/e2e.anvil.test.ts > anvil e2e prerequisites (CI must not skip) > anvil binary and forge artifacts exist
+AssertionError: expected { anvil: true, relayer: false, …(1) } to deeply equal { anvil: true, relayer: true, …(1) }
+
+- Expected
++ Received
+
+  {
+    "anvil": true,
+-   "relayer": true,
+-   "token": true,
++   "relayer": false,
++   "token": false,
+  }
+
+ ❯ src/e2e.anvil.test.ts:26:98
+     24| describe.runIf(mustRun)('anvil e2e prerequisites (CI must not skip)', …
+     25|   it('anvil binary and forge artifacts exist', () => {
+     26|     expect({ anvil: anvilOk, relayer: existsSync(RELAYER_JSON), token:…
+       |                                                                                                  ^
+     27|       anvil: true,
+     28|       relayer: true,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 7 passed (8)
+      Tests  1 failed | 241 passed | 4 skipped (246)
+   Start at  00:26:51
+   Duration  18.92s (import 49%, tests 35%, transform 16%, worker 1%)
+
+    Isolate  8 workers spawned · ~402ms startup each (spawn + environment, per file)
+             at least ~2.82s faster with isolate: false — reuses workers across files instead of one per file
+

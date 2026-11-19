@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "contract_security",
+  "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+  "rawFiles": {
+    "op-receipt-status-probe.mjs": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/op-receipt-status-probe.mjs",
+      "bytes": 3727,
+      "sha256": "ca6ed3842d89d8e809415fa6bad73812e30d600ce525f4b1791a0973871074e7"
+    },
+    "op-receipt-status-probe.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/op-receipt-status-probe.json",
+      "bytes": 4569,
+      "sha256": "c101f5b2b9c8db65830db4d659c23a85f98ceab8ee3057d48b8f6c112b76c83c"
+    },
+    "op-receipt-status-red.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/op-receipt-status-red.json",
+      "bytes": 537,
+      "sha256": "14a3c1e88003a7e05b7b6cd554deb8b9d041c45751dd2871101c4fdc25928bea"
+    },
+    "op-receipt-status-red.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/op-receipt-status-red.log",
+      "bytes": 10604,
+      "sha256": "22d5792beae345a9ddb25cdd614d8cab652114aa05d403a617e5f449aba9ba1a"
+    },
+    "op-fees-final-targeted.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/op-fees-final-targeted.json",
+      "bytes": 565,
+      "sha256": "db966da52cd97a7c447a96097f5cf58148630a0983d6f9a8dad85e34a4806c90"
+    },
+    "op-fees-final-targeted.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/op-fees-final-targeted.log",
+      "bytes": 1087,
+      "sha256": "a6d2fca0a837fdfc87ff3c5d167f9d0a529d5e90c30a2724cc3941cf3e1bb310"
+    }
+  },
+  "reviewedSources": {
+    "apps/relayer/src/opFees.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "c62220f62ede85e0e21cfef4e4fefc42283e6081",
+      "bytes": 5978,
+      "sha256": "f19d9591954a07abcccf986bcb0f61b423b95cd7bb53e5450efc957b1fe29ea3"
+    },
+    "apps/relayer/src/chain.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "601473a7fc57f82ddc4fc2fbb16f146d82d1795f",
+      "bytes": 14233,
+      "sha256": "998ebbb67298179e43d90fc08c94c6a42c5427e63bde3c8b64b37548b9e1015d"
+    },
+    "apps/relayer/src/service.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "2bbecfba697b6e83a5167334c1393bfa29fd7a7a",
+      "bytes": 60892,
+      "sha256": "2f16b217585fbc44f2f857230a7eac8e872b8c109e902d3e9bb818e1011ebf73"
+    },
+    "apps/relayer/src/budget.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "b297be7f9d0b4462089e80e9951752672bfd0e04",
+      "bytes": 4489,
+      "sha256": "bfa1436da4409ff1307fa10a926adbece5a4198c2c7f311ea6748e9ac15a8fbd"
+    },
+    "apps/relayer/src/validate.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "5192ff6783dcfa91638cbdd928860abc1d3ba888",
+      "bytes": 4606,
+      "sha256": "72caa41502ed6a045fa1707bed09e5878449446c301f0f4530a74675599c1be9"
+    },
+    "apps/relayer/src/stateStore.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "ef3fac4b07b998a9d3f919fd7524208dfc7250b4",
+      "bytes": 20244,
+      "sha256": "7e0cc7bd2ba670048f881a88d95473de794e0912f027dace7612884f99e2e28e"
+    },
+    "apps/relayer/src/runtime.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "df682d3acbc2ec51c4274b1f56c0e703f61a38ac",
+      "bytes": 13238,
+      "sha256": "7308a2b735950065a126c1c6c7d7853b56cfdfafd3971e323ff90ad4138d7b6f"
+    },
+    "packages/relayer-guard/src/limiter.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "79cf96b346911d45bad68ca0ce0930043ba260ff",
+      "bytes": 21634,
+      "sha256": "aa124e6b16f506c184e6495202746ece03433a559e016f5f1c08a4c3062077e2"
+    },
+    "packages/chain-adapters/src/config/chains.ts": {
+      "sourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "gitBlob": "d9e78d0c2420ccfdd33f2bcdb29c0e5515b81f5d",
+      "bytes": 4944,
+      "sha256": "d9f24f2be8a172e1e35bde28fe3e3cf588939889782bf06472cf7c7f2492a3b7"
+    },
+    "apps/relayer/src/opFees.test.ts": {
+      "sourceCommit": "0b7fbfbaedaef688ce337f1ecfe3d7940bdfa4da",
+      "gitBlob": "45bebd45cbc7322f1f0929204a4c63fadf122ba3",
+      "bytes": 18989,
+      "sha256": "558d61e6bbb06cf64512e1814fbe8d259ef873ceea3cfcb424669a5f66958008"
+    },
+    "apps/relayer/README.md": {
+      "sourceCommit": "6d23e5b69bf6b2c4a56b2a4527d64aa6fa74aad5",
+      "gitBlob": "ade70c9ac12e70da614e73c920f3e3fb7506a851",
+      "bytes": 34595,
+      "sha256": "97e164511c8ce6e9852116f5f5c79b9cbdf7534c0c0f82935a0f223b57c9240c"
+    },
+    "apps/relayer/DEVIATIONS.md": {
+      "sourceCommit": "6d23e5b69bf6b2c4a56b2a4527d64aa6fa74aad5",
+      "gitBlob": "bcefbcb9c863842b23e9dbd4482f0143a59ef382",
+      "bytes": 13880,
+      "sha256": "0fee0347911bc68dc9a79b508f0adf61bad645d9ea1e706d35831298f47340c6"
+    }
+  },
+  "sourceProbeCommand": "flock --close /workspace/scratch/6eafdb04d91b/qualification.lock env NODE_OPTIONS=--max-old-space-size=256 node /workspace/scratch/6eafdb04d91b/security-evidence/op-receipt-status-probe.mjs",
+  "sourceProbeExitCode": 0,
+  "sourceProbeLimit": "Fake transport, exact Git source transpiled without typecheck. No real RPC, wallet signing, package/full-suite qualification or production OP execution. Original harness paths preserved.",
+  "primarySources": [
+    {
+      "repository": "ethereum-optimism/optimism",
+      "commit": "06de20f199ebf615649bc0f9caf4c1cd176c1e8a",
+      "path": "packages/contracts-bedrock/src/L2/GasPriceOracle.sol",
+      "gitBlob": "ab6cdcf80c4fe4336aa0711d91982bc282c96f77",
+      "bytes": 13711,
+      "url": "https://github.com/ethereum-optimism/optimism/blob/06de20f199ebf615649bc0f9caf4c1cd176c1e8a/packages/contracts-bedrock/src/L2/GasPriceOracle.sol"
+    },
+    {
+      "repository": "ethereum-optimism/op-geth",
+      "commit": "79e9d244748a1201fe686ca8a882b5fe7e173348",
+      "path": "core/state_transition.go",
+      "gitBlob": "d8c52238c610d85fe92f6ed6e07aafe99afa13fd",
+      "bytes": 32614,
+      "url": "https://github.com/ethereum-optimism/op-geth/blob/79e9d244748a1201fe686ca8a882b5fe7e173348/core/state_transition.go"
+    }
+  ],
+  "subsequentReviewedSources": {
+    "apps/relayer/src/chain.ts": {
+      "sourceCommit": "2af11e3816d3b9de93df5fab4d35e39c68447a9b",
+      "gitBlob": "161a3a8490d82b15273e606214e1aa71005d35ad",
+      "bytes": 14548,
+      "sha256": "0d4c9a63b0b4035d7c00ea6c5aeb696bddd205ce900285b67d53ce2a40ccd177"
+    },
+    "apps/relayer/src/opFees.test.ts": {
+      "sourceCommit": "f3c0c795c7f9366cde982dc8e28e0cc1dd6870c2",
+      "gitBlob": "954854dce80649a8b677cb22210937086020d9c8",
+      "bytes": 20157,
+      "sha256": "8b5dc8a319261bb15018d240bd0aa97f7ed2fcfade7cebe2ec42f92fe2868eda"
+    },
+    "apps/relayer/src/opFees.ts": {
+      "sourceCommit": "de253aaf7f4139c8778b73cd7a9e052f9438e91e",
+      "gitBlob": "ee4ab9e4f7d525f6ba85e4e65c639534f5554b3b",
+      "bytes": 5982,
+      "sha256": "7e1056d993606dcc195847983483640d89089c4e707e5e9ab8293f26f0eadb4e"
+    }
+  },
+  "latestReviewedSourceCommit": "de253aaf7f4139c8778b73cd7a9e052f9438e91e"
+}

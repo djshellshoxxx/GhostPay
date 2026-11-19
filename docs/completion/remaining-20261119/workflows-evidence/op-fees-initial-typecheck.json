@@ -1,0 +1,16 @@
+{
+  "name": "op-fees-initial-typecheck",
+  "source_revision": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "apps/relayer/tsconfig.json",
+    "--noEmit"
+  ],
+  "cwd": ".",
+  "exit_code": -9,
+  "seconds": 39.839,
+  "observed_at": "2026-11-19T07:56:19.741682+00:00",
+  "log": "op-fees-initial-typecheck.log"
+}

@@ -1,0 +1,8 @@
+(node:96) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+npm error code ELSPROBLEMS
+npm error invalid: viem@2.57.19 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/viem
+npm error invalid: underscore@1.13.8 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/underscore
+npm error invalid: ws@8.21.0 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/ws
+npm error A complete log of this run can be found in: /home/agent/.npm/_logs/2026-11-19T07_33_33_338Z-debug-0.log

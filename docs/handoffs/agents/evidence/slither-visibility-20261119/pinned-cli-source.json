@@ -1,0 +1,22 @@
+{
+  "source": "https://pypi.org/pypi/slither-analyzer/0.11.6/json",
+  "package": "slither_analyzer-0.11.6-py3-none-any.whl",
+  "wheel_url": "https://files.pythonhosted.org/packages/63/d2/967c616a6a9bed1a34c27165278efcfad79ae917e8f483a73c2013ee7bea/slither_analyzer-0.11.6-py3-none-any.whl",
+  "sha256": "01f809198d3f171e2d768569c0054c96af5736614e183c64f42c9b51636c33c1",
+  "flags_present_in_pinned_source": {
+    "--fail-none": [
+      "slither/__main__.py"
+    ],
+    "--show-ignored-findings": [
+      "slither/__main__.py",
+      "slither/utils/command_line.py"
+    ],
+    "--checklist": [
+      "slither/__main__.py"
+    ],
+    "--fail-medium": [
+      "slither/__main__.py"
+    ]
+  },
+  "execution": "archive source inspection only; no analyzer campaign or package installation"
+}

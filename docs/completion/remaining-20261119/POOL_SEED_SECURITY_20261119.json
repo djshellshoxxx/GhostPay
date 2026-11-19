@@ -1,0 +1,144 @@
+{
+  "schema": "ghostpay-pool-seed-security/1",
+  "task": "RW-POOL-SEED",
+  "sources": [
+    "SEC-16",
+    "docs/audits/24: L8-07",
+    "PS-10"
+  ],
+  "scope": "Pool SDK seed envelope only; separately owned Spec18 web vault unchanged",
+  "base_sha": "824091cf0bef4128641264fde3b606243ef66af3",
+  "implementation_sha": "02711be2dbfbdea4b644feaad56f6f5bc8a52fe4",
+  "branch": "chatgpt/ghostpay-pool-seed-security-20261119",
+  "worker": "root",
+  "independent_reviewer": "contract_security",
+  "review": {
+    "status": "PASS after correction",
+    "initial_issue": "32-byte-only restriction would break existing supported variable-length seeds",
+    "resolution": "Both v1 and v2 support16..512byte seeds with independent crypto interoperability tests"
+  },
+  "checks": [
+    {
+      "name": "original source with final regression tests",
+      "source": "824091cf0bef4128641264fde3b606243ef66af3",
+      "tests_from": "02711be2dbfbdea4b644feaad56f6f5bc8a52fe4",
+      "command": "vitest run src/seed-backup-security.test.ts src/seed-backup-interop.test.ts (pool-sdk working directory)",
+      "status": "EXPECTED FAILURE",
+      "failed": 22,
+      "passed": 13,
+      "log": "pool-seed-evidence/pool-seed-final-red.log"
+    },
+    {
+      "name": "compatibility regression on first implementation",
+      "source": "abc876ab672090699e2bd1a6579e6fe0623c6136",
+      "status": "EXPECTED FAILURE",
+      "failed": 10,
+      "unselected": 3,
+      "log": "pool-seed-evidence/pool-seed-review-red.log"
+    },
+    {
+      "name": "complete pool package coverage",
+      "source": "02711be2dbfbdea4b644feaad56f6f5bc8a52fe4",
+      "command": "vitest run --coverage (pool-sdk working directory)",
+      "status": "PASS",
+      "passed": 82,
+      "failed": 0,
+      "skipped": 0,
+      "files": 7,
+      "seconds": 56.81,
+      "coverage": {
+        "statements": 97.65,
+        "branches": 95.18,
+        "functions": 99.15,
+        "lines": 99.79
+      },
+      "thresholds_unchanged": true,
+      "log": "pool-seed-evidence/pool-seed-full-green.log"
+    },
+    {
+      "name": "typecheck-final",
+      "exit_code": 0,
+      "seconds": 7.477,
+      "source": "02711be2dbfbdea4b644feaad56f6f5bc8a52fe4"
+    },
+    {
+      "name": "lint",
+      "exit_code": 0,
+      "seconds": 16.77,
+      "source": "02711be2dbfbdea4b644feaad56f6f5bc8a52fe4"
+    }
+  ],
+  "tools": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "typescript": "5.9.3"
+  },
+  "compatibility_bounds": {
+    "v1_logN": [
+      10,
+      18
+    ],
+    "v2_logN": [
+      14,
+      18
+    ],
+    "seed_bytes": [
+      16,
+      512
+    ],
+    "envelope_max_code_units": 1024,
+    "password_max_code_units_before_and_after_normalization": 1024,
+    "v1_password": "exact original bytes; old short passwords remain readable",
+    "v2_password": "NFKC with existing ux-vault export strength policy",
+    "outside_bounds": "Unsupported; no universal legacy recovery claim"
+  },
+  "integration_status": "REVIEWED; coordinator to consolidate and qualify combined source",
+  "main_merge_sha": null,
+  "logs": [
+    {
+      "path": "pool-seed-evidence/pool-seed-red.log",
+      "bytes": 17326,
+      "sha256": "e731070e11993c03063dae58a2c438e46d3a4a09862c425823b14ffb8ed75b38"
+    },
+    {
+      "path": "pool-seed-evidence/pool-seed-green.log",
+      "bytes": 1119,
+      "sha256": "5a214851389f136a309cf57376e46f5146b3446363b2e06544949186a95dcc0a"
+    },
+    {
+      "path": "pool-seed-evidence/pool-seed-review-red.log",
+      "bytes": 3766,
+      "sha256": "4c63be14a0a0ba2c3f8ddbea0d373b71c8fd5c71bbecaf3f20f6f7c7d0fff09c"
+    },
+    {
+      "path": "pool-seed-evidence/pool-seed-final-red.log",
+      "bytes": 19146,
+      "sha256": "811fad47d32f0a1d85f6c19cc2537a72ef7ebccc94ba4c96f597f3fd424860ea"
+    },
+    {
+      "path": "pool-seed-evidence/pool-seed-full-green.log",
+      "bytes": 3112,
+      "sha256": "f49c322657b52a3e1b5765976aa76c916c38231f75a1db4a0bce1f1054f2c97e"
+    },
+    {
+      "path": "pool-seed-evidence/pool-seed-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "pool-seed-evidence/pool-seed-typecheck-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "pool-seed-evidence/pool-seed-lint.log",
+      "bytes": 175,
+      "sha256": "c6834112bf065716f10e22a08aeaee0ad8268294002115f63678f9bab270c158"
+    },
+    {
+      "path": "pool-seed-evidence/pool-seed-static-results.json",
+      "bytes": 270,
+      "sha256": "188fa961f30df68f166d6ca44804b5c6ca0d8c9b407190521fc2e4e1a5b5b5d5"
+    }
+  ]
+}

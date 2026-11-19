@@ -1,0 +1,3256 @@
+{
+  "schemaVersion": 1,
+  "documentType": "observational-finding-comparison-not-gate-policy",
+  "reviewer": "contract_security",
+  "reviewDate": "2026-11-19",
+  "analyzedSourceCommit": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+  "priorAnalyzedSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "currentProvenance": {
+    "runId": 44472897672,
+    "jobId": 135386401249,
+    "artifactId": 14508101082,
+    "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44472897672/job/135386401249",
+    "reportBytes": 283170,
+    "reportSha256": "84f4f5846b68054fac52dc4968da78996d520c03c4049318ddc62ba4424b642e",
+    "metadata": {
+      "schemaVersion": 1,
+      "analyzer": "mythril",
+      "requestedCommit": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+      "checkoutCommit": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+      "analysisOutcome": "failure",
+      "runnerExitCode": 1,
+      "reportPresent": true,
+      "fullReportBytes": 283170,
+      "fullReportSha256": "84f4f5846b68054fac52dc4968da78996d520c03c4049318ddc62ba4424b642e",
+      "retainedBytes": 283170,
+      "truncated": false,
+      "retention": "At most the last 8 MiB; truncation applies only to the artifact, not the gate's input."
+    },
+    "rawManifest": "raw-manifest.json",
+    "newLocalAnalyzerCampaignPerformed": false,
+    "newConcreteReplayPerformed": false
+  },
+  "priorProvenance": {
+    "evidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+    "packetPath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba",
+    "reportSha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00",
+    "dispositionsSha256": "47c6476726c73835af2cf036a484e03f3e201f321d3adc40b038984deb963d9a",
+    "originalProvenance": {
+      "runId": 44342340082,
+      "jobId": 134935409285,
+      "artifactId": 14462654594,
+      "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44342340082/job/134935409285",
+      "reportBytes": 283168,
+      "reportSha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00",
+      "artifactZipSha256": "5db3cf9ffd6feaf74b1e7c50ca96f97591d0731a9ba975614ffcaa7b7474dff3",
+      "metadata": {
+        "schemaVersion": 1,
+        "analyzer": "mythril",
+        "requestedCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "checkoutCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "analysisOutcome": "failure",
+        "runnerExitCode": 1,
+        "reportPresent": true,
+        "fullReportBytes": 283168,
+        "fullReportSha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00",
+        "retainedBytes": 283168,
+        "truncated": false,
+        "retention": "At most the last 8 MiB; truncation applies only to the artifact, not the gate's input."
+      },
+      "tool": {
+        "mythril": "0.24.8",
+        "solc": "0.8.28",
+        "transactions": 3,
+        "executionTimeoutSecondsPerContract": 900,
+        "optimizerRuns": 200,
+        "evmVersion": "cancun"
+      },
+      "freshLocalSymbolicCampaignPerformed": false
+    }
+  },
+  "gate": {
+    "hostedConclusion": "failure",
+    "runnerExitCode": 1,
+    "findings": 11,
+    "severityCounts": {
+      "Low": 8,
+      "Medium": 3
+    },
+    "approvedDispositions": 0,
+    "releaseBlockerRemains": true,
+    "runnerOrGatePolicyChanged": false
+  },
+  "identitySummary": {
+    "sameContractSwcPcKeys": true,
+    "currentOnly": [],
+    "priorOnly": [],
+    "sameObservationsExcludingTransactionSequences": 11,
+    "completeIssueIdentityKeys": [
+      "GhostPaySweepRelayer|SWC-116|PC-785",
+      "PolicyAccount|SWC-116|PC-1876",
+      "PolicyAccount|SWC-116|PC-5077"
+    ],
+    "changedTraceKeys": [
+      "0x72c68108a82e82617b93d1be0d7975d762035015|SWC-110|PC-30",
+      "PolicyAccountFactory|SWC-107|PC-999",
+      "PolicyAccountFactory|SWC-107|PC-1170",
+      "PolicyAccountFactory|SWC-113|PC-1668",
+      "PolicyAccountFactory|SWC-113|PC-1781",
+      "PolicyAccountFactory|SWC-107|PC-2887",
+      "PolicyAccountFactory|SWC-107|PC-2978",
+      "PolicyAccountFactory|SWC-104|PC-2978"
+    ],
+    "changedPrimitiveFields": 45,
+    "changesConfinedToFactoryTransactionSteps": true,
+    "interpretation": "The same eleven location keys and unchanged source do not make the Factory traces identical. All eight changed; this is not a timing-only rerun."
+  },
+  "sourceIdentity": {
+    "packages/contracts/src": {
+      "priorGitObject": "dabfd36a98424a4184ee7e267e12815763d1157f",
+      "currentGitObject": "dabfd36a98424a4184ee7e267e12815763d1157f",
+      "identical": true
+    },
+    "packages/contracts/lib": {
+      "priorGitObject": "b10191d543360a5c102e269cca72883b4303d8c7",
+      "currentGitObject": "b10191d543360a5c102e269cca72883b4303d8c7",
+      "identical": true
+    },
+    "packages/contracts/scripts/run-mythril.sh": {
+      "priorGitObject": "7ad37efb96f6b5e1f54ffbdfc8a644ef3b03ab4e",
+      "currentGitObject": "7ad37efb96f6b5e1f54ffbdfc8a644ef3b03ab4e",
+      "identical": true
+    },
+    "packages/contracts/scripts/mythril-compat.py": {
+      "priorGitObject": "bd78f6b0cecc1f9b43c2a933a44981d38e403521",
+      "currentGitObject": "bd78f6b0cecc1f9b43c2a933a44981d38e403521",
+      "identical": true
+    },
+    ".github/workflows/contract-analysis.yml": {
+      "priorGitObject": "ab4b881de3f586869d1efbaec32799d9082193fd",
+      "currentGitObject": "ab4b881de3f586869d1efbaec32799d9082193fd",
+      "identical": true
+    },
+    "packages/contracts/foundry.toml": {
+      "priorGitObject": "59bf7337ea5fe8526869f22e9595e022027b4712",
+      "currentGitObject": "59bf7337ea5fe8526869f22e9595e022027b4712",
+      "identical": true
+    }
+  },
+  "sourceFiles": {
+    "packages/contracts/src/GhostPaySweepRelayer.sol": {
+      "priorGitBlob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+      "currentGitBlob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+      "bytes": 7419,
+      "sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+      "identical": true
+    },
+    "packages/contracts/src/PolicyAccount.sol": {
+      "priorGitBlob": "1e5eeadfe7ba6e2a68f64e95ef1ca84afe12cbf4",
+      "currentGitBlob": "1e5eeadfe7ba6e2a68f64e95ef1ca84afe12cbf4",
+      "bytes": 18878,
+      "sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+      "identical": true
+    },
+    "packages/contracts/src/PolicyAccountFactory.sol": {
+      "priorGitBlob": "d456eec25c744e1e992ca786b2f21eefdbdf81a7",
+      "currentGitBlob": "d456eec25c744e1e992ca786b2f21eefdbdf81a7",
+      "bytes": 10013,
+      "sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+      "identical": true
+    },
+    "packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol": {
+      "priorGitBlob": "c156fa1cc9656ba278ca90270707848524bf0d25",
+      "currentGitBlob": "c156fa1cc9656ba278ca90270707848524bf0d25",
+      "bytes": 4766,
+      "sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "identical": true
+    },
+    "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol": {
+      "priorGitBlob": "bf12368bdbdf6057b9fa7b698d20eaa838755f57",
+      "currentGitBlob": "bf12368bdbdf6057b9fa7b698d20eaa838755f57",
+      "bytes": 14522,
+      "sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "identical": true
+    },
+    "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol": {
+      "priorGitBlob": "b1e4b6e67dbe01b666da809442d8833499fa9f3c",
+      "currentGitBlob": "b1e4b6e67dbe01b666da809442d8833499fa9f3c",
+      "bytes": 13314,
+      "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "identical": true
+    },
+    "packages/contracts/test/MythrilExpiryDispositions.t.sol": {
+      "priorGitBlob": "b1ab1a4823f7c562f6d07e9b51bbfbeb4ca3dbb8",
+      "currentGitBlob": "b1ab1a4823f7c562f6d07e9b51bbfbeb4ca3dbb8",
+      "bytes": 28512,
+      "sha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+      "identical": true
+    },
+    "packages/contracts/test/MythrilFactoryDispositions.t.sol": {
+      "priorGitBlob": "be677e1b934bfb4275abf66771d98c75e45516c5",
+      "currentGitBlob": "be677e1b934bfb4275abf66771d98c75e45516c5",
+      "bytes": 52580,
+      "sha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+      "identical": true
+    },
+    "packages/contracts/scripts/run-mythril.sh": {
+      "priorGitBlob": "7ad37efb96f6b5e1f54ffbdfc8a644ef3b03ab4e",
+      "currentGitBlob": "7ad37efb96f6b5e1f54ffbdfc8a644ef3b03ab4e",
+      "bytes": 1864,
+      "sha256": "9a2a8966bec43b1d971c7c99a4214fef0c3a52570dbd2f0a535874c1d33eb445",
+      "identical": true
+    },
+    "packages/contracts/scripts/mythril-compat.py": {
+      "priorGitBlob": "bd78f6b0cecc1f9b43c2a933a44981d38e403521",
+      "currentGitBlob": "bd78f6b0cecc1f9b43c2a933a44981d38e403521",
+      "bytes": 564,
+      "sha256": "9635bcc9057ddf4681615e67add21bbb584f74df65b563faa23d1219080c2035",
+      "identical": true
+    },
+    ".github/workflows/contract-analysis.yml": {
+      "priorGitBlob": "ab4b881de3f586869d1efbaec32799d9082193fd",
+      "currentGitBlob": "ab4b881de3f586869d1efbaec32799d9082193fd",
+      "bytes": 4352,
+      "sha256": "0d1295952bc2c8b4974badbdb1c0375c834691e7f6b974624b5c8e7d2d648644",
+      "identical": true
+    },
+    "packages/contracts/foundry.toml": {
+      "priorGitBlob": "59bf7337ea5fe8526869f22e9595e022027b4712",
+      "currentGitBlob": "59bf7337ea5fe8526869f22e9595e022027b4712",
+      "bytes": 932,
+      "sha256": "07fb03295f899933c3a6e85e3cb080184f6d3f7f5f089c9528891fa2b9191f8c",
+      "identical": true
+    }
+  },
+  "reports": [
+    {
+      "target": "GhostPayRouter",
+      "priorByteOffset": 353,
+      "currentByteOffset": 353,
+      "priorObjectBytes": 46,
+      "currentObjectBytes": 46,
+      "issues": 0,
+      "completeReportObjectIdentical": true,
+      "priorCanonicalJsonSha256": "90e1e12076cd86e525b7ac0d800529eb7b67b56eada5e9fb4acdf98b14627731",
+      "currentCanonicalJsonSha256": "90e1e12076cd86e525b7ac0d800529eb7b67b56eada5e9fb4acdf98b14627731"
+    },
+    {
+      "target": "GhostPaySweepRelayer",
+      "priorByteOffset": 753,
+      "currentByteOffset": 753,
+      "priorObjectBytes": 15164,
+      "currentObjectBytes": 15164,
+      "issues": 1,
+      "completeReportObjectIdentical": true,
+      "priorCanonicalJsonSha256": "42d8b83e5f4ceee7901ebf527b08991041a3c119b9c84763a588c7454cccb6f6",
+      "currentCanonicalJsonSha256": "42d8b83e5f4ceee7901ebf527b08991041a3c119b9c84763a588c7454cccb6f6"
+    },
+    {
+      "target": "GhostPayPolicyRouter",
+      "priorByteOffset": 16343,
+      "currentByteOffset": 16343,
+      "priorObjectBytes": 46,
+      "currentObjectBytes": 46,
+      "issues": 0,
+      "completeReportObjectIdentical": true,
+      "priorCanonicalJsonSha256": "90e1e12076cd86e525b7ac0d800529eb7b67b56eada5e9fb4acdf98b14627731",
+      "currentCanonicalJsonSha256": "90e1e12076cd86e525b7ac0d800529eb7b67b56eada5e9fb4acdf98b14627731"
+    },
+    {
+      "target": "PolicyAccount",
+      "priorByteOffset": 16743,
+      "currentByteOffset": 16743,
+      "priorObjectBytes": 47244,
+      "currentObjectBytes": 47244,
+      "issues": 2,
+      "completeReportObjectIdentical": true,
+      "priorCanonicalJsonSha256": "6a5b4b79c51827efb9f3dc62374671145022480fdac44b23bcd60b027d51dca3",
+      "currentCanonicalJsonSha256": "6a5b4b79c51827efb9f3dc62374671145022480fdac44b23bcd60b027d51dca3"
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "priorByteOffset": 64406,
+      "currentByteOffset": 64406,
+      "priorObjectBytes": 218689,
+      "currentObjectBytes": 218691,
+      "issues": 8,
+      "completeReportObjectIdentical": false,
+      "priorCanonicalJsonSha256": "1c4ad6b1ce2757865d6c982b10f07b2fdea04e756d3a3874837b3d2912735e99",
+      "currentCanonicalJsonSha256": "f553674f59f7c8cca7fb2a75b95354d4b7f741f53eb2d9b93356ee57a2e7f6ed"
+    }
+  ],
+  "findingsByContractSwcPc": {
+    "GhostPaySweepRelayer|SWC-116|PC-785": {
+      "historicalLabelForSameLocation": "EXP-1",
+      "analyzedTarget": "GhostPaySweepRelayer",
+      "currentReportIndex": 1,
+      "currentIssueIndex": 0,
+      "priorReportIndex": 1,
+      "priorIssueIndex": 0,
+      "observation": {
+        "address": 785,
+        "code": "if (block.timestamp > s.deadline) revert Expired()",
+        "contract": "GhostPaySweepRelayer",
+        "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.",
+        "filename": "src/GhostPaySweepRelayer.sol",
+        "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+        "lineno": 83,
+        "max_gas_used": 31841,
+        "min_gas_used": 6576,
+        "severity": "Low",
+        "sourceMap": "4414:50",
+        "swc-id": "116",
+        "title": "Dependence on predictable environment variable"
+      },
+      "sourceTrace": {
+        "sourceMap": "4414:50",
+        "reportedFilename": "src/GhostPaySweepRelayer.sol",
+        "reportedLine": 83,
+        "repositoryPath": "packages/contracts/src/GhostPaySweepRelayer.sol",
+        "sourceSha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+        "byteStart": 4414,
+        "byteLength": 50,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": true,
+      "priorIssueCanonicalJsonSha256": "6d546ceedfbf6fa2f85fe12913cef4749d79f1d0357cb6bf34a41355db8965bc",
+      "currentIssueCanonicalJsonSha256": "6d546ceedfbf6fa2f85fe12913cef4749d79f1d0357cb6bf34a41355db8965bc",
+      "priorTraceCanonicalJsonSha256": "4a38c6b809b31da45c6534e56152533d573d014c1ac3750bc0aed5e40e5a8315",
+      "currentTraceCanonicalJsonSha256": "4a38c6b809b31da45c6534e56152533d573d014c1ac3750bc0aed5e40e5a8315",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 6135,
+          "inputSha256": "80036465b03a1370acf85afa2520d2a8fd73b1d19c771deac4dd447b61ff4bcf",
+          "calldataBytes": 0,
+          "calldataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "creationCodeBytes": 6135,
+          "creationCodeSha256": "80036465b03a1370acf85afa2520d2a8fd73b1d19c771deac4dd447b61ff4bcf"
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": null,
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 292,
+          "inputSha256": "723fd608f48ee6e6f5d7997ab7973125816c55d6889b8c890f343c09ac928964",
+          "calldataBytes": 292,
+          "calldataSha256": "723fd608f48ee6e6f5d7997ab7973125816c55d6889b8c890f343c09ac928964",
+          "input": "0xbad66243000000000000000000000000000000000000000000000000000000000000010004000000000000000000000000000000000000008400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 6135,
+          "inputSha256": "80036465b03a1370acf85afa2520d2a8fd73b1d19c771deac4dd447b61ff4bcf",
+          "calldataBytes": 0,
+          "calldataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "creationCodeBytes": 6135,
+          "creationCodeSha256": "80036465b03a1370acf85afa2520d2a8fd73b1d19c771deac4dd447b61ff4bcf"
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": null,
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 292,
+          "inputSha256": "723fd608f48ee6e6f5d7997ab7973125816c55d6889b8c890f343c09ac928964",
+          "calldataBytes": 292,
+          "calldataSha256": "723fd608f48ee6e6f5d7997ab7973125816c55d6889b8c890f343c09ac928964",
+          "input": "0xbad66243000000000000000000000000000000000000000000000000000000000000010004000000000000000000000000000000000000008400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": true,
+        "priorResultForByteIdenticalTrace": {
+          "reportIndex": 1,
+          "issueIndex": 0,
+          "contract": "GhostPaySweepRelayer",
+          "swc": "116",
+          "pc": 785,
+          "creationInputSha256": "80b0d7a901f936a87b43c9ffff31a30155a268690047508a065131cfcabc536e",
+          "deploymentTimestamp": 0,
+          "calls": [
+            {
+              "inputSha256": "c532b7f1e3f67398d0f00d3f30711cc41da6bb75456b7620d5442ad6b5532a79",
+              "result": null,
+              "error": {
+                "code": 3,
+                "message": "execution reverted: custom error 0x2c5211c6",
+                "data": "0x2c5211c6"
+              },
+              "decodedError": "InvalidAmount()"
+            }
+          ]
+        },
+        "scope": "Prior replay applies to the same bytes under its recorded timestamp-zero/default-Anvil assumptions; it is not a new execution or a full symbolic-state replay."
+      },
+      "review": {
+        "classification": "intended_expiry_with_timestamp_assumptions",
+        "assessment": "The predicate is the inclusive deadline of a signed sweep order. The complete issue and trace equal the preserved 198aa5ba report. That earlier concrete replay returned InvalidAmount() at timestamp 0; no new replay was run for this review. Signed deadlines, authorization and timestamp/inclusion assumptions remain relevant.",
+        "productionReachability": "Valid owner-signed sweeps are accepted only at or before their signed deadline, then remain subject to signature, nonce, address, amount and exact-transfer checks. Producer-selected timestamp can affect inclusion near the boundary.",
+        "confirmedRisk": "No unauthorized transfer is demonstrated. Timestamp latitude and transaction inclusion/censorship remain assumptions; this finding does not prove their bounds.",
+        "conditions": [
+          "Keep the signed deadline and replay-domain checks",
+          "Do not reinterpret timestamp as randomness"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp1_mythrilCounterexample_bothBranchesRevertWithoutEffect",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp1_oneSecondBeforeDeadline_sweeps",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp1_atDeadline_inclusiveOnBothEntryPoints",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp1_oneSecondAfterDeadline_revertsOnBothEntryPointsWithoutEffect",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp1_wrongChainOrRelayerAtDeadline_revertsInvalidSignature",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "testFuzz_exp1_producerTimestampOnlyGatesAcceptance",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": false
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccount|SWC-116|PC-1876": {
+      "historicalLabelForSameLocation": "EXP-2",
+      "analyzedTarget": "PolicyAccount",
+      "currentReportIndex": 3,
+      "currentIssueIndex": 0,
+      "priorReportIndex": 3,
+      "priorIssueIndex": 0,
+      "observation": {
+        "address": 1876,
+        "code": "if (block.timestamp > w.deadline) revert Expired()",
+        "contract": "PolicyAccount",
+        "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.",
+        "filename": "src/PolicyAccount.sol",
+        "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+        "lineno": 161,
+        "max_gas_used": 31919,
+        "min_gas_used": 6654,
+        "severity": "Low",
+        "sourceMap": "8390:50",
+        "swc-id": "116",
+        "title": "Dependence on predictable environment variable"
+      },
+      "sourceTrace": {
+        "sourceMap": "8390:50",
+        "reportedFilename": "src/PolicyAccount.sol",
+        "reportedLine": 161,
+        "repositoryPath": "packages/contracts/src/PolicyAccount.sol",
+        "sourceSha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+        "byteStart": 8390,
+        "byteLength": 50,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": true,
+      "priorIssueCanonicalJsonSha256": "73f9795035ef6e06c15f07ceded99436f367cabd7c4a5d6523496f2a7d6f58e3",
+      "currentIssueCanonicalJsonSha256": "73f9795035ef6e06c15f07ceded99436f367cabd7c4a5d6523496f2a7d6f58e3",
+      "priorTraceCanonicalJsonSha256": "da761b95973be910c630af3a0fae2aa8e238ca2da43877766ea9e68079cc0550",
+      "currentTraceCanonicalJsonSha256": "da761b95973be910c630af3a0fae2aa8e238ca2da43877766ea9e68079cc0550",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 10567,
+          "inputSha256": "87cafe880793d3aeb1337b3f97d36b26687d75e5dfc752354e50e9c022574498",
+          "calldataBytes": 0,
+          "calldataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "creationCodeBytes": 10567,
+          "creationCodeSha256": "87cafe880793d3aeb1337b3f97d36b26687d75e5dfc752354e50e9c022574498"
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+          "origin": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "resolved_input": [
+            [
+              "0x0000000000000000000000000000000000000000",
+              0,
+              0,
+              0,
+              "0000000000001800000000000000000000000000000000000000000000000000"
+            ],
+            [
+              0,
+              0,
+              []
+            ],
+            "000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 228,
+          "inputSha256": "1e1e11dcdf95aa285fe87249afe6d3872193ba193b78f84b1209d63662c599b4",
+          "calldataBytes": 228,
+          "calldataSha256": "1e1e11dcdf95aa285fe87249afe6d3872193ba193b78f84b1209d63662c599b4",
+          "input": "0x30d513070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000067"
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 10567,
+          "inputSha256": "87cafe880793d3aeb1337b3f97d36b26687d75e5dfc752354e50e9c022574498",
+          "calldataBytes": 0,
+          "calldataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "creationCodeBytes": 10567,
+          "creationCodeSha256": "87cafe880793d3aeb1337b3f97d36b26687d75e5dfc752354e50e9c022574498"
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+          "origin": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "resolved_input": [
+            [
+              "0x0000000000000000000000000000000000000000",
+              0,
+              0,
+              0,
+              "0000000000001800000000000000000000000000000000000000000000000000"
+            ],
+            [
+              0,
+              0,
+              []
+            ],
+            "000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 228,
+          "inputSha256": "1e1e11dcdf95aa285fe87249afe6d3872193ba193b78f84b1209d63662c599b4",
+          "calldataBytes": 228,
+          "calldataSha256": "1e1e11dcdf95aa285fe87249afe6d3872193ba193b78f84b1209d63662c599b4",
+          "input": "0x30d513070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000067"
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": true,
+        "priorResultForByteIdenticalTrace": {
+          "reportIndex": 3,
+          "issueIndex": 0,
+          "contract": "PolicyAccount",
+          "swc": "116",
+          "pc": 1876,
+          "creationInputSha256": "dab0767a1ee366b998c0195ecc022261307f89c78c6f60ea1017233e22b91f64",
+          "deploymentTimestamp": 0,
+          "calls": [
+            {
+              "inputSha256": "82ac1c1679f81adc48acc03674c32f114b60f70dc869ccca44ad263343f42f4b",
+              "result": null,
+              "error": {
+                "code": 3,
+                "message": "execution reverted: \u001f* \u0005",
+                "data": "0x1f2a2005"
+              },
+              "decodedError": "ZeroAmount()"
+            }
+          ]
+        },
+        "scope": "Prior replay applies to the same bytes under its recorded timestamp-zero/default-Anvil assumptions; it is not a new execution or a full symbolic-state replay."
+      },
+      "review": {
+        "classification": "intended_expiry_with_timestamp_assumptions",
+        "assessment": "The predicate bounds signed withdrawal-request submission, not delayed execution. The complete issue and trace equal the preserved 198aa5ba report. Its earlier concrete replay returned ZeroAmount() at timestamp 0. The raw model deploys the self-locked implementation, while separate historical tests exercise valid initialized clones. No new replay was run.",
+        "productionReachability": "A valid request still requires the owner signature, nonce, valid bound limit leaf and proof. The model deploys the self-locked implementation, not an initialized factory clone. Deadline semantics are also covered on valid clones by existing tests.",
+        "confirmedRisk": "No unauthorized withdrawal is demonstrated by this trace. The minimum policy reaction window under L2 censorship/timestamp assumptions remains an open owner decision.",
+        "conditions": [
+          "Keep authorization and nonce checks",
+          "Preserve full delay after acceptance"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY",
+          "OD11-TIMELOCK-BOUND"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp2_exp3_implementationModelNeverPassesAuthorization",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp2_mythrilCounterexample_bothBranchesRevertWithoutEffect",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp2_atDeadline_inclusiveAndStartsFullDelay",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp2_deadlineBoundsSubmissionNotExecution",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp2_lateAcceptedRequestStaysCancellableForFullDelay",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp2_wrongChainOrCloneAtDeadline_revertsInvalidSignature",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "testFuzz_exp2_producerTimestampOnlyGatesAcceptance",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": false
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccount|SWC-116|PC-5077": {
+      "historicalLabelForSameLocation": "EXP-3",
+      "analyzedTarget": "PolicyAccount",
+      "currentReportIndex": 3,
+      "currentIssueIndex": 1,
+      "priorReportIndex": 3,
+      "priorIssueIndex": 1,
+      "observation": {
+        "address": 5077,
+        "code": "if (block.timestamp > deadline) revert Expired()",
+        "contract": "PolicyAccount",
+        "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.",
+        "filename": "src/PolicyAccount.sol",
+        "function": "proposeDestination(address,uint256,uint256,bytes)",
+        "lineno": 262,
+        "max_gas_used": 31849,
+        "min_gas_used": 6584,
+        "severity": "Low",
+        "sourceMap": "12988:48",
+        "swc-id": "116",
+        "title": "Dependence on predictable environment variable"
+      },
+      "sourceTrace": {
+        "sourceMap": "12988:48",
+        "reportedFilename": "src/PolicyAccount.sol",
+        "reportedLine": 262,
+        "repositoryPath": "packages/contracts/src/PolicyAccount.sol",
+        "sourceSha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+        "byteStart": 12988,
+        "byteLength": 48,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": true,
+      "priorIssueCanonicalJsonSha256": "b750d8f05edc32939f21eead6204e3c5d0733fef9065437aae85e7c3ce9a0fbd",
+      "currentIssueCanonicalJsonSha256": "b750d8f05edc32939f21eead6204e3c5d0733fef9065437aae85e7c3ce9a0fbd",
+      "priorTraceCanonicalJsonSha256": "bed5ef8c8c81513f3563e719488eb398baf49fd75530bf187ec6125ef833de71",
+      "currentTraceCanonicalJsonSha256": "bed5ef8c8c81513f3563e719488eb398baf49fd75530bf187ec6125ef833de71",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 10567,
+          "inputSha256": "87cafe880793d3aeb1337b3f97d36b26687d75e5dfc752354e50e9c022574498",
+          "calldataBytes": 0,
+          "calldataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "creationCodeBytes": 10567,
+          "creationCodeSha256": "87cafe880793d3aeb1337b3f97d36b26687d75e5dfc752354e50e9c022574498"
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "proposeDestination(address,uint256,uint256,bytes)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": null,
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "1f2e9a3746ac184f67dccd3dc2197adf90c59d24a62beadaeebd190a8c48aab1",
+          "calldataBytes": 132,
+          "calldataSha256": "1f2e9a3746ac184f67dccd3dc2197adf90c59d24a62beadaeebd190a8c48aab1",
+          "input": "0xa950552f0000000000000000000000000000000000000000000000000000000000000000000000000055000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006"
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 10567,
+          "inputSha256": "87cafe880793d3aeb1337b3f97d36b26687d75e5dfc752354e50e9c022574498",
+          "calldataBytes": 0,
+          "calldataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "creationCodeBytes": 10567,
+          "creationCodeSha256": "87cafe880793d3aeb1337b3f97d36b26687d75e5dfc752354e50e9c022574498"
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "proposeDestination(address,uint256,uint256,bytes)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": null,
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "1f2e9a3746ac184f67dccd3dc2197adf90c59d24a62beadaeebd190a8c48aab1",
+          "calldataBytes": 132,
+          "calldataSha256": "1f2e9a3746ac184f67dccd3dc2197adf90c59d24a62beadaeebd190a8c48aab1",
+          "input": "0xa950552f0000000000000000000000000000000000000000000000000000000000000000000000000055000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006"
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": true,
+        "priorResultForByteIdenticalTrace": {
+          "reportIndex": 3,
+          "issueIndex": 1,
+          "contract": "PolicyAccount",
+          "swc": "116",
+          "pc": 5077,
+          "creationInputSha256": "dab0767a1ee366b998c0195ecc022261307f89c78c6f60ea1017233e22b91f64",
+          "deploymentTimestamp": 0,
+          "calls": [
+            {
+              "inputSha256": "b110c88fe1beecb064b0118a653faea371701657adbe094c543f785685c77103",
+              "result": null,
+              "error": {
+                "code": 3,
+                "message": "execution reverted: custom error 0xac6b05f5",
+                "data": "0xac6b05f5"
+              },
+              "decodedError": "InvalidDestination()"
+            }
+          ]
+        },
+        "scope": "Prior replay applies to the same bytes under its recorded timestamp-zero/default-Anvil assumptions; it is not a new execution or a full symbolic-state replay."
+      },
+      "review": {
+        "classification": "intended_expiry_with_timestamp_assumptions",
+        "assessment": "The predicate bounds signed destination-proposal submission; activation remains delayed by twice the configured delay. The complete issue and trace equal the preserved 198aa5ba report, whose earlier concrete replay returned InvalidDestination() at timestamp 0. No new replay was run.",
+        "productionReachability": "Valid proposals require the owner signature, nonce and an eligible destination. The raw model deploys the self-locked implementation; valid-clone boundary tests provide separate evidence.",
+        "confirmedRisk": "No unauthorized destination change is demonstrated. Minimum reaction/cancellation time on each L2 is not established by this trace or these tests.",
+        "conditions": [
+          "Keep owner signature and nonce binding",
+          "Preserve full activation delay after acceptance"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY",
+          "OD11-TIMELOCK-BOUND"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp2_exp3_implementationModelNeverPassesAuthorization",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp3_mythrilCounterexample_bothBranchesRevertWithoutEffect",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp3_atDeadline_inclusiveAndStartsFullTimelock",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp3_deadlineBoundsSubmissionNotExecution",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp3_lateAcceptedProposalStaysCancellableForFullTimelock",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "test_exp3_wrongChainAtDeadline_revertsInvalidSignature",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+            "test": "testFuzz_exp3_producerTimestampOnlyGatesAcceptance",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+            "prior445SnapshotPassed": false
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "0x72c68108a82e82617b93d1be0d7975d762035015|SWC-110|PC-30": {
+      "historicalLabelForSameLocation": "R4",
+      "analyzedTarget": "PolicyAccountFactory",
+      "currentReportIndex": 4,
+      "currentIssueIndex": 0,
+      "priorReportIndex": 4,
+      "priorIssueIndex": 0,
+      "observation": {
+        "address": 30,
+        "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+        "description": "An assertion violation was triggered.\nIt is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values). This issue is reported for internal compiler generated code.",
+        "function": "fallback",
+        "max_gas_used": 2340,
+        "min_gas_used": 36,
+        "severity": "Low",
+        "sourceMap": "1864:8148:26:-:0",
+        "swc-id": "110",
+        "title": "Exception State"
+      },
+      "sourceTrace": {
+        "sourceMap": "1864:8148:26:-:0",
+        "reportedFilename": null,
+        "reportedLine": null,
+        "sourceSliceMatchesReportedCode": null,
+        "limitation": "Modeled clone/internal generated code; report supplies no filename or line."
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": false,
+      "priorIssueCanonicalJsonSha256": "623b5f45a25ddbe1f21d696d236164025b117e39efd9d431626eda5967fc9c52",
+      "currentIssueCanonicalJsonSha256": "c4d8c73037596ccffb9a93d6aaeb41fcf73f690e382f614f349ad500fc78f63d",
+      "priorTraceCanonicalJsonSha256": "ef408d46f2093a23ebae5a68716fb10bc9c47d4d7b3080f8291252cd7198c38f",
+      "currentTraceCanonicalJsonSha256": "0938c43e0a9df4d78da507bcffe5e3e0a07336c80086293c2813ecb6482cde2e",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [
+        {
+          "path": "tx_sequence.steps[0].calldata",
+          "before": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "87f91c00070a4282dbe69042f1e7c237e81478a836590c68038c45c610d8feb9",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          },
+          "after": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "acad5ffcedd8449c824b2993adb66e443936c840ca775529fcdfeea65001d3fb",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[0].input",
+          "before": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "ffdb8370f4218e6b6e2fff7e02844eaa3eb2ea66352f7d3d254447dc69668c9e",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          },
+          "after": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "bb306bb20e8ab101433b075b0218734322f9624cfd7083764ea2ce44cf2f5f74",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          }
+        }
+      ],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "a50d37ef22131e6fdf1e5a23e88f6a4697ab31903132a1d4d5b6328277724dcf",
+          "calldataBytes": 4319,
+          "calldataSha256": "4b429c2195363696f4973c83d407084ce5109691bd86f80a320b3fc7d1530d8c",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0000000000000000000000000000000000000000",
+            "flatFee": "0",
+            "feeRecipient": "0x0204040108020401080101010101011001011001"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "calldataBytes": 132,
+          "calldataSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "791aa2f5c8361329a436b7d1b43b0ee4d49e4da1843893c435a622a582ece2e4",
+          "calldataBytes": 4319,
+          "calldataSha256": "63458be52cbace551e4fe4a807281da435ed81d64012dff7af3ad7ad074b1149",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0000000000000000000000000000000000000000",
+            "flatFee": "0",
+            "feeRecipient": "0x0204040108020401080101010101011001010101"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "calldataBytes": 132,
+          "calldataSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": false,
+        "currentSourceConstraint": {
+          "implementation": "0x0000000000000000000000000000000000000001",
+          "constructorAddressPrerequisitesNonzero": true,
+          "guard": "if (implementation_.code.length == 0) revert ImplementationHasNoCode();",
+          "sourcePath": "packages/contracts/src/PolicyAccountFactory.sol",
+          "condition": "The target EVM has no deployed code at address 0x1, as in the earlier default-Anvil replay.",
+          "kind": "source inference, not a new executed revert"
+        },
+        "scope": "Old Factory concrete inputs differ. Do not relabel the earlier replay as execution of these new traces."
+      },
+      "review": {
+        "classification": "constrained_symbolic_clone_exception",
+        "assessment": "The modeled clone record has no filename or line. The unchanged creation-code prefix and prior clone-runtime tests support PC30 being GAS and PC31 DELEGATECALL in the concrete EIP-1167 runtime. The new constructor arguments still choose implementation 0x1. On an EVM where that address has no deployed code, the source rejects creation before the clone trace. This is source inference for the changed trace, not a newly executed revert or a universal SWC-110 exception.",
+        "productionReachability": "The supplied creation-to-fallback trace is blocked by the constructor on an EVM where implementation 0x1 has no deployed code. Separate historical valid-implementation tests cover exact clone runtime, fallback/receive and initialization authority. No new chain configuration is qualified.",
+        "confirmedRisk": "No concrete panic/assert failure is demonstrated. This is a source/model-specific constraint, not a universal SWC-110 dismissal.",
+        "conditions": [
+          "Implementation must have code",
+          "Clone runtime and initialization authorization must remain unchanged"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R4_cloneRuntimeIsExactEip1167_pc30IsGasNotInvalid",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R4_mythrilCloneAccountAddressIsCreateNonceZeroOfModelFactory",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R4_mythrilImplementationModelIsRejectedByConstructor",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R4_cloneFallbackRevertsWithoutPanic_receiveAccepts",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R4_R5_doubleInitAndImplementationInitRevert",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccountFactory|SWC-107|PC-999": {
+      "historicalLabelForSameLocation": "R5",
+      "analyzedTarget": "PolicyAccountFactory",
+      "currentReportIndex": 4,
+      "currentIssueIndex": 1,
+      "priorReportIndex": 4,
+      "priorIssueIndex": 1,
+      "observation": {
+        "address": 999,
+        "code": "PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot)",
+        "contract": "PolicyAccountFactory",
+        "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.",
+        "filename": "src/PolicyAccountFactory.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 117,
+        "max_gas_used": 380307,
+        "min_gas_used": 57114,
+        "severity": "Medium",
+        "sourceMap": "6237:81:26::1",
+        "swc-id": "107",
+        "title": "State access after external call"
+      },
+      "sourceTrace": {
+        "sourceMap": "6237:81:26::1",
+        "reportedFilename": "src/PolicyAccountFactory.sol",
+        "reportedLine": 117,
+        "repositoryPath": "packages/contracts/src/PolicyAccountFactory.sol",
+        "sourceSha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+        "byteStart": 6237,
+        "byteLength": 81,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": false,
+      "priorIssueCanonicalJsonSha256": "276c64b3e01ebdfa91eaab2c18673c68c9d6efc006369c99ce5c557203ab6d10",
+      "currentIssueCanonicalJsonSha256": "6e5c58b9d3076221948aae28507b0efac557e4243a26feba717605c17b40a744",
+      "priorTraceCanonicalJsonSha256": "54294ed3eb602f5422a458ea1294c5a193405b609ca1b87b421e2fc5dce65783",
+      "currentTraceCanonicalJsonSha256": "44560861297a23b9aa237f7913860b8bc5e623bcecd86d12bb6db2d61a21c385",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [
+        {
+          "path": "tx_sequence.steps[0].calldata",
+          "before": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "d8a4517cc6ea288a07feec57146c69a7c301c3325629c2a2a32889e209eec0ad",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          },
+          "after": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "9ae0421ad75d4d9ec32459ba7b6f1cb488562d5649ac114ecbfd6da9c184112b",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[0].input",
+          "before": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "bd165d1bc79cb1d4cce6c85581b772f332cb028534ef2860ba5655d6adad52d9",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          },
+          "after": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "7831cbcec4a7f9a97e921d924729b7e8fa1c052b01675dfedb0311ff48396cb1",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].calldata",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "23dafc7168b94d473189833321c264b02e34ee74175d9ba807eae16ad14d732a",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "12d0f161c3bf008ec0f8956fa73ac2c468ada6cb0b878f535d26869ae2984b13",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].input",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "23dafc7168b94d473189833321c264b02e34ee74175d9ba807eae16ad14d732a",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "12d0f161c3bf008ec0f8956fa73ac2c468ada6cb0b878f535d26869ae2984b13",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].origin",
+          "before": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "after": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+        },
+        {
+          "path": "tx_sequence.steps[1].resolved_input[2]",
+          "before": 524560,
+          "after": 3600
+        }
+      ],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "1fc24e7760fa20fa186eac3cf3243eb7cd05adee61e6df7d104e43cabe511ac8",
+          "calldataBytes": 4319,
+          "calldataSha256": "bf61935e5c2e729d7384861441e54de4375e54feb006f3021a4990504549149e",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flatFee": "35229047993510679846777813121242054591639132839778328894514852581563160252415",
+            "feeRecipient": "0x0101400101010102010108020101020101010101"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            524560,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "7dcd7a66f24953245e264ded0edfc8e19f7cdb8024d16a3c1870db5baa252864",
+          "calldataBytes": 132,
+          "calldataSha256": "7dcd7a66f24953245e264ded0edfc8e19f7cdb8024d16a3c1870db5baa252864",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c00260000000000000000000000000000000000000000000000000000000000000801100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 524560,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "82888a4a4a7a6ef317e3848881bbe0bf4a04ce76cb3e3c25b19535bc73af4dc6",
+          "calldataBytes": 4319,
+          "calldataSha256": "e97e9649ceb941af9ac631f1660f090ae51294798545df80d215e19d27a87c80",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flatFee": "42466053570842937252319430899433128741022514264199356410331660828949766586335",
+            "feeRecipient": "0x0101010202010101080101040101010101010201"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "calldataBytes": 132,
+          "calldataSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": false,
+        "currentSourceConstraint": {
+          "implementation": "0x0000000000000000000000000000000000000001",
+          "constructorAddressPrerequisitesNonzero": true,
+          "guard": "if (implementation_.code.length == 0) revert ImplementationHasNoCode();",
+          "sourcePath": "packages/contracts/src/PolicyAccountFactory.sol",
+          "condition": "The target EVM has no deployed code at address 0x1, as in the earlier default-Anvil replay.",
+          "kind": "source inference, not a new executed revert"
+        },
+        "scope": "Old Factory concrete inputs differ. Do not relabel the earlier replay as execution of these new traces."
+      },
+      "review": {
+        "classification": "guarded_fee_then_initialize_ordering",
+        "assessment": "Initialization follows the fee-token call in the real source. deploy remains nonReentrant, the clone is freshly created from the fixed implementation, and initialize makes no external call. The new modeled deploy origin and delay differ from the old trace; they are decoded explicitly here. The new implementation=0x1 constructor is constrained by the code-length guard, without a new concrete replay.",
+        "productionReachability": "The fee-first ordering is reachable with a valid factory. Tested hostile-token callbacks cannot reenter, initialize the future clone, hijack it or block it by prefunding. A later failure rolls back the fee and clone atomically.",
+        "confirmedRisk": "No reentrant account-parameter or custody modification is demonstrated under the stated guard and implementation conditions. Fee-token availability remains a distinct N1 risk.",
+        "conditions": [
+          "nonReentrant remains on deploy",
+          "initialize has no external call and enforces creator-bound initialization",
+          "The implementation used in production matches the verified code"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_R9_reentrantFeeTokenCannotReenterBeforeCreate2OrInitialize",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_R9_feeCallbackCannotPreInitialiseHijackOrBlockTheClone",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_initializeFailureAfterFeePullRollsBackFee",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_foreignCloneCannotBeInitialisedByThirdParty",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_initializeIssuesNoExternalCallBelowTheClone",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_R6_R9_R10_exactCallOrderAndOnlyGuardWrites",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccountFactory|SWC-107|PC-1170": {
+      "historicalLabelForSameLocation": "R6",
+      "analyzedTarget": "PolicyAccountFactory",
+      "currentReportIndex": 4,
+      "currentIssueIndex": 2,
+      "priorReportIndex": 4,
+      "priorIssueIndex": 2,
+      "observation": {
+        "address": 1170,
+        "code": "_reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED",
+        "contract": "PolicyAccountFactory",
+        "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a fixed address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.",
+        "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 99,
+        "max_gas_used": 128119,
+        "min_gas_used": 48163,
+        "severity": "Low",
+        "sourceMap": "3972:62",
+        "swc-id": "107",
+        "title": "State access after external call"
+      },
+      "sourceTrace": {
+        "sourceMap": "3972:62",
+        "reportedFilename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+        "reportedLine": 99,
+        "repositoryPath": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+        "sourceSha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+        "byteStart": 3972,
+        "byteLength": 62,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": false,
+      "priorIssueCanonicalJsonSha256": "1ea15b27f6ddf529f05a09f762fe3e5d42910b94f92042be0a5155402453a670",
+      "currentIssueCanonicalJsonSha256": "9dcebfc7c35ebc4778303b9267a343aa58c48ced4d65507f40faadcd8f1334e7",
+      "priorTraceCanonicalJsonSha256": "ecfaaee785fe1a1399f6d4215287b83ae440bbf0fc860af4f8f496d47bfc2b0b",
+      "currentTraceCanonicalJsonSha256": "fa61c1930bcc45c5c86cfa6b1b118df05c86debcd1d6b8503d48b4c82a03a392",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [
+        {
+          "path": "tx_sequence.steps[0].calldata",
+          "before": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "5cc35e40e1eb9cee103b53c80175d322210acc727781f5beeb36694cd965736d",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          },
+          "after": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "5b41e6143dd71976790b1446b595cfdd39ec145450f97853f986f247acf5bbe9",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[0].input",
+          "before": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "dba378a8b3470a7fa52b6564f946e818da9f2579301ed7c319d357ce6df02bd3",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          },
+          "after": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "cd17604ef882222a02cd8fce9ff1e8388e69517a1035731e756658c64af0e371",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          }
+        }
+      ],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "146c4f85caca7f342c10c98a190e9e81d9434c4ec75c360f66a612cab5300813",
+          "calldataBytes": 4319,
+          "calldataSha256": "5bb90840f42ad08913776a69db554f3d77fd8b4c1e9858bdaa976439a26b084b",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0000000000000000000000000000000000000000",
+            "flatFee": "0",
+            "feeRecipient": "0x0102084001040102100480028001800202400201"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "calldataBytes": 132,
+          "calldataSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "ea60561a0079d6077079d1d1d2d0688fc7129b5cedf25900f0359dd738718487",
+          "calldataBytes": 4319,
+          "calldataSha256": "67f0613a715caf2385b976c0aa955c295a55c69a0f4077990a306b021596bd56",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0000000000000000000000000000000000000000",
+            "flatFee": "0",
+            "feeRecipient": "0x4004084001010202100402028002808001020101"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "calldataBytes": 132,
+          "calldataSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": false,
+        "currentSourceConstraint": {
+          "implementation": "0x0000000000000000000000000000000000000001",
+          "constructorAddressPrerequisitesNonzero": true,
+          "guard": "if (implementation_.code.length == 0) revert ImplementationHasNoCode();",
+          "sourcePath": "packages/contracts/src/PolicyAccountFactory.sol",
+          "condition": "The target EVM has no deployed code at address 0x1, as in the earlier default-Anvil replay.",
+          "kind": "source inference, not a new executed revert"
+        },
+        "scope": "Old Factory concrete inputs differ. Do not relabel the earlier replay as execution of these new traces."
+      },
+      "review": {
+        "classification": "guard_release_misattributed_by_source_map",
+        "assessment": "Prior bytecode and focused test evidence identifies PC1170 as releasing the reentrancy guard after initialization; its optimizer source map points to the ENTERED source line. The complete observation and creation-code prefix are unchanged. The new constructor recipient differs, but implementation remains 0x1, subject to the source code-length guard. No fresh concrete execution is claimed.",
+        "productionReachability": "Releasing the guard after a successful deployment is intended. Tests show it remains held during initialize, a callback is refused, and a later deployment can run.",
+        "confirmedRisk": "No unguarded reentrant window is demonstrated by this record.",
+        "conditions": [
+          "Keep guard entry before all external calls and release after initialize"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R6_guardIsHeldDuringInitialize_reentryFromCloneReverts",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R6_feeFreeDeployMakesNoTokenCallAndReleasesGuard",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_R6_R9_R10_exactCallOrderAndOnlyGuardWrites",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccountFactory|SWC-113|PC-1668": {
+      "historicalLabelForSameLocation": "R7",
+      "analyzedTarget": "PolicyAccountFactory",
+      "currentReportIndex": 4,
+      "currentIssueIndex": 3,
+      "priorReportIndex": 4,
+      "priorIssueIndex": 3,
+      "observation": {
+        "address": 1668,
+        "code": "token.balanceOf(FEE_RECIPIENT)",
+        "contract": "PolicyAccountFactory",
+        "description": "Multiple calls are executed in the same transaction.\nThis call is executed following another call within the same transaction. It is possible that the call never gets executed if a prior call fails permanently. This might be caused intentionally by a malicious callee. If possible, refactor the code such that each transaction only executes one external call or make sure that all callees can be trusted (i.e. they’re part of your own codebase).",
+        "filename": "src/PolicyAccountFactory.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 131,
+        "max_gas_used": 380307,
+        "min_gas_used": 57114,
+        "severity": "Low",
+        "sourceMap": "7118:30:26",
+        "swc-id": "113",
+        "title": "Multiple Calls in a Single Transaction"
+      },
+      "sourceTrace": {
+        "sourceMap": "7118:30:26",
+        "reportedFilename": "src/PolicyAccountFactory.sol",
+        "reportedLine": 131,
+        "repositoryPath": "packages/contracts/src/PolicyAccountFactory.sol",
+        "sourceSha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+        "byteStart": 7118,
+        "byteLength": 30,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": false,
+      "priorIssueCanonicalJsonSha256": "36c3eabaf875f251eab1d1d35fcf1ae03e46a16956bcffe5804752ef0168a137",
+      "currentIssueCanonicalJsonSha256": "227e77bb41d425067d09240bc1a48601282075ad79ae7cbca1d4ebe56be83de6",
+      "priorTraceCanonicalJsonSha256": "46e02049e2ea6cecb6081caaeed5ac35adb77ade3d712fa45044bd6065d3865a",
+      "currentTraceCanonicalJsonSha256": "9f8592f4ae7795affe9026e1f5bbddab163618bfba6acc75daa016940ed6781d",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [
+        {
+          "path": "tx_sequence.steps[0].calldata",
+          "before": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "fc58c462a317802686f1d23c76ef7363c544fe903c53927d7e82fec21add9043",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          },
+          "after": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "451a56a18c8aded4c265e9bbe1980a894045dbbe2217ea2652c3aa3e9b8f5187",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[0].input",
+          "before": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "c75773d6640b19c7ae53700f98dd88c6a17650e4c1df4ef45e411446cd6cf7c1",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          },
+          "after": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "142592696237c39836d849d4dfd8dd93694f68d6443ed2f0eaed01d555d935a2",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          }
+        }
+      ],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "17fc9fb7e2fe634b50d5abcc555dd90ef0f42d8dff39d17702ca7627c46d5ddb",
+          "calldataBytes": 4319,
+          "calldataSha256": "8ef9cbc2fa88dfd2fb32968d25de65826322ae30df5db8c6a3e79af24fd4a412",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0202010101010202010120010101010101400101",
+            "flatFee": "42466053570842937233488125672818107118316688955659102973547276016025246894071",
+            "feeRecipient": "0x4004000120024001010104800404010140010101"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "calldataBytes": 132,
+          "calldataSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "7cc4cb84337a114bf18615a17df1586d3d929b72011767ab8b962caba8befe66",
+          "calldataBytes": 4319,
+          "calldataSha256": "e0e325d43eb447fca06e7da6761544a22bd8748fede149e0ed769a7f3c9d9c92",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0801010101010402010120010101010101400101",
+            "flatFee": "42466053570842937233488221453789411236373699277260273224739694614160898703095",
+            "feeRecipient": "0x0201080120020401010101010210080101014040"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "calldataBytes": 132,
+          "calldataSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": false,
+        "currentSourceConstraint": {
+          "implementation": "0x0000000000000000000000000000000000000001",
+          "constructorAddressPrerequisitesNonzero": true,
+          "guard": "if (implementation_.code.length == 0) revert ImplementationHasNoCode();",
+          "sourcePath": "packages/contracts/src/PolicyAccountFactory.sol",
+          "condition": "The target EVM has no deployed code at address 0x1, as in the earlier default-Anvil replay.",
+          "kind": "source inference, not a new executed revert"
+        },
+        "scope": "Old Factory concrete inputs differ. Do not relabel the earlier replay as execution of these new traces."
+      },
+      "review": {
+        "classification": "confirmed_conditional_fee_token_availability_risk",
+        "assessment": "balanceOf(FEE_RECIPIENT) follows another configured-token read. Real fee-charging factories fail closed when a read reverts or a successful transfer changes balances incorrectly. The current modeled constructor is constrained by implementation=0x1; that does not dismiss the independently demonstrated N1 availability risk. No new concrete replay was run.",
+        "productionReachability": "Reachable if the immutable configured fee token starts reverting in a view or succeeds with a wrong balance delta. Every fee-charging deployment through that factory can fail, locking prefunded counterfactual funds until token behavior is restored.",
+        "confirmedRisk": "N1 conditional counterfactual-fund freeze. There is no alternate-factory rescue for the same CREATE2 address. The transfer-failure waiver covers neither failing views nor successful wrong-delta transfers.",
+        "conditions": [
+          "Operational token-specific acknowledgement does not prove token safety or eliminate the freeze",
+          "A zero-fee factory skips token calls"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY",
+          "N1-FEE-TOKEN-FREEZE"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R7_recipientBalanceOfRevertFailsClosedWithFullRollback",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R7_R8_feeReadsAreStaticCalls_mutatingReadsFailClosed",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R7_R8_feeTokenWithoutCodeFailsClosed_feeFreeFactoryUnaffected",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccountFactory|SWC-113|PC-1781": {
+      "historicalLabelForSameLocation": "R8",
+      "analyzedTarget": "PolicyAccountFactory",
+      "currentReportIndex": 4,
+      "currentIssueIndex": 4,
+      "priorReportIndex": 4,
+      "priorIssueIndex": 4,
+      "observation": {
+        "address": 1781,
+        "code": "token.allowance(msg.sender, address(this))",
+        "contract": "PolicyAccountFactory",
+        "description": "Multiple calls are executed in the same transaction.\nThis call is executed following another call within the same transaction. It is possible that the call never gets executed if a prior call fails permanently. This might be caused intentionally by a malicious callee. If possible, refactor the code such that each transaction only executes one external call or make sure that all callees can be trusted (i.e. they’re part of your own codebase).",
+        "filename": "src/PolicyAccountFactory.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 132,
+        "max_gas_used": 380307,
+        "min_gas_used": 57114,
+        "severity": "Low",
+        "sourceMap": "7184:42:26",
+        "swc-id": "113",
+        "title": "Multiple Calls in a Single Transaction"
+      },
+      "sourceTrace": {
+        "sourceMap": "7184:42:26",
+        "reportedFilename": "src/PolicyAccountFactory.sol",
+        "reportedLine": 132,
+        "repositoryPath": "packages/contracts/src/PolicyAccountFactory.sol",
+        "sourceSha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+        "byteStart": 7184,
+        "byteLength": 42,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": false,
+      "priorIssueCanonicalJsonSha256": "05771feeea1919e042a61ac4d1ab935f1447239b13b67f05f3d8742e450795b9",
+      "currentIssueCanonicalJsonSha256": "37319c7769d757c1e699c5c6f241fa6a298dcd88a29a5f9321889a585ceac7cc",
+      "priorTraceCanonicalJsonSha256": "ae5fdc7400e7f129eafd2fe8aa8988b94c3e188ee3457d9f4c498c3e2f567513",
+      "currentTraceCanonicalJsonSha256": "1ba1e07b4680d696a2e9759cd04a1e53dc2ad3831e0c105ef879b05af459c4e7",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [
+        {
+          "path": "tx_sequence.steps[0].calldata",
+          "before": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "58ec96d62ab4aa92469d15eb6e534666f86280abbb61c17ee8d58ed7d0ae1250",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          },
+          "after": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "f22f2c9824da879077ff16ffd5df2edd41d31fb5b37e321587dfeb9fcd111dea",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[0].input",
+          "before": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "895759e836defaace8e6003a5c8246b589de482285e986506b2bccfead75a834",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          },
+          "after": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "bb5615052ead49eca55dc483354d6a0dfd9bc1a0e8d9ec55759ba33583a22241",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].calldata",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "09e183fd74f9af776fed0ee0209a08003079680c86cfeb7298102870fff8e942",
+            "prefix": "0xaffdf33700000000000000000000000000000000000800000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "ed5accf935ef1305107b3906b67ce14f7f584c4ed70da3836ca6fd54a18f6ed6",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].input",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "09e183fd74f9af776fed0ee0209a08003079680c86cfeb7298102870fff8e942",
+            "prefix": "0xaffdf33700000000000000000000000000000000000800000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "ed5accf935ef1305107b3906b67ce14f7f584c4ed70da3836ca6fd54a18f6ed6",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].origin",
+          "before": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "after": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+        },
+        {
+          "path": "tx_sequence.steps[1].resolved_input[0]",
+          "before": "0x0000000000080000000000000000000000000000",
+          "after": "0x0000000000000000000000000000000004000000"
+        },
+        {
+          "path": "tx_sequence.steps[1].resolved_input[1]",
+          "before": "0x1000001000000000000000000000000000000000",
+          "after": "0x0000000000000000000000000000000000000400"
+        },
+        {
+          "path": "tx_sequence.steps[1].resolved_input[2]",
+          "before": 3840,
+          "after": 2097152
+        },
+        {
+          "path": "tx_sequence.steps[1].resolved_input[3]",
+          "before": "0000000000000000000000000000000000000000000000000000000000000000",
+          "after": "0000000000000000000000000000000000000000000000000000000000200000"
+        },
+        {
+          "path": "tx_sequence.steps[2].calldata",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "09e183fd74f9af776fed0ee0209a08003079680c86cfeb7298102870fff8e942",
+            "prefix": "0xaffdf33700000000000000000000000000000000000800000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "ce66862c66250a97b8d868a2a4752b10384beaeb87a8caa3963027d616e94369",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[2].input",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "09e183fd74f9af776fed0ee0209a08003079680c86cfeb7298102870fff8e942",
+            "prefix": "0xaffdf33700000000000000000000000000000000000800000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "ce66862c66250a97b8d868a2a4752b10384beaeb87a8caa3963027d616e94369",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[2].origin",
+          "before": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "after": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+        },
+        {
+          "path": "tx_sequence.steps[2].resolved_input[0]",
+          "before": "0x0000000000080000000000000000000000000000",
+          "after": "0x0000000000000000000000000000000000100000"
+        },
+        {
+          "path": "tx_sequence.steps[2].resolved_input[1]",
+          "before": "0x1000001000000000000000000000000000000000",
+          "after": "0x0000000000000000000000000000000000100000"
+        },
+        {
+          "path": "tx_sequence.steps[2].resolved_input[2]",
+          "before": 3840,
+          "after": 1048576
+        },
+        {
+          "path": "tx_sequence.steps[2].resolved_input[3]",
+          "before": "0000000000000000000000000000000000000000000000000000000000000000",
+          "after": "0000000000000001000000000000000000000000000000000000000000100000"
+        }
+      ],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "6b01e41c89b45522a6426b023a73fec7699e3a741602f1b6173fbc7feba48367",
+          "calldataBytes": 4319,
+          "calldataSha256": "4794cc3cad92bb4240e0aa079a858353be923595e49b89a446c2e032dde68c14",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x4000024000040102040101020810011002042008",
+            "flatFee": "50941735003155660318979779330534833361612854517358725685197905897483130556415",
+            "feeRecipient": "0x4008800802400140010202800801080401000240"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000080000000000000000000000000000",
+            "0x1000001000000000000000000000000000000000",
+            3840,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "3a1f79fd4b84ce58daacc78b791fa93ee025b2d33490c57e8638f27330a58b42",
+          "calldataBytes": 132,
+          "calldataSha256": "3a1f79fd4b84ce58daacc78b791fa93ee025b2d33490c57e8638f27330a58b42",
+          "input": "0xaffdf337000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f000000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000080000000000000000000000000000",
+            "destination": "0x1000001000000000000000000000000000000000",
+            "delaySeconds": 3840,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000080000000000000000000000000000",
+            "0x1000001000000000000000000000000000000000",
+            3840,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 2,
+          "inputBytes": 132,
+          "inputSha256": "3a1f79fd4b84ce58daacc78b791fa93ee025b2d33490c57e8638f27330a58b42",
+          "calldataBytes": 132,
+          "calldataSha256": "3a1f79fd4b84ce58daacc78b791fa93ee025b2d33490c57e8638f27330a58b42",
+          "input": "0xaffdf337000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f000000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000080000000000000000000000000000",
+            "destination": "0x1000001000000000000000000000000000000000",
+            "delaySeconds": 3840,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "557481c3050b8cdfd37af62da040ff60b501a9ff55cd2e540021ccae907de118",
+          "calldataBytes": 4319,
+          "calldataSha256": "6696026fe2c16b367b50d3b18d76b836db5ded24b8a6e9fa401d5f2b0f9b8270",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0404808008040204400208800800201008010401",
+            "flatFee": "42466928609831506408424127501271333062655743380395300316389823693243491941626",
+            "feeRecipient": "0x4002021000102010200804100240012001208040"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": [
+            "0x0000000000000000000000000000000004000000",
+            "0x0000000000000000000000000000000000000400",
+            2097152,
+            "0000000000000000000000000000000000000000000000000000000000200000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "dc76932dc71da3c29672dcf5ff45af5501027333ef7dfa39728470ba92c6d7c5",
+          "calldataBytes": 132,
+          "calldataSha256": "dc76932dc71da3c29672dcf5ff45af5501027333ef7dfa39728470ba92c6d7c5",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000200000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000004000000",
+            "destination": "0x0000000000000000000000000000000000000400",
+            "delaySeconds": 2097152,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000200000"
+          }
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000100000",
+            "0x0000000000000000000000000000000000100000",
+            1048576,
+            "0000000000000001000000000000000000000000000000000000000000100000"
+          ],
+          "value": "0x0",
+          "stepIndex": 2,
+          "inputBytes": 132,
+          "inputSha256": "98589065ccf40fe6913bed62a6d508f67beb694ef53252173d6a3fc9d8709cd6",
+          "calldataBytes": 132,
+          "calldataSha256": "98589065ccf40fe6913bed62a6d508f67beb694ef53252173d6a3fc9d8709cd6",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000001000000000000000000000000000000000000000000100000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000100000",
+            "destination": "0x0000000000000000000000000000000000100000",
+            "delaySeconds": 1048576,
+            "limitsRoot": "0x0000000000000001000000000000000000000000000000000000000000100000"
+          }
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": false,
+        "currentSourceConstraint": {
+          "implementation": "0x0000000000000000000000000000000000000001",
+          "constructorAddressPrerequisitesNonzero": true,
+          "guard": "if (implementation_.code.length == 0) revert ImplementationHasNoCode();",
+          "sourcePath": "packages/contracts/src/PolicyAccountFactory.sol",
+          "condition": "The target EVM has no deployed code at address 0x1, as in the earlier default-Anvil replay.",
+          "kind": "source inference, not a new executed revert"
+        },
+        "scope": "Old Factory concrete inputs differ. Do not relabel the earlier replay as execution of these new traces."
+      },
+      "review": {
+        "classification": "confirmed_conditional_fee_token_availability_risk",
+        "assessment": "allowance(msg.sender,address(this)) follows token balance reads. Unlike the old 198aa5ba trace, the two new deploy calls have distinct owner, destination, delay and limitsRoot values; an identical-call AlreadyDeployed argument does not apply to this report. Both new calls originate from the same modeled DEAD... account. The implementation=0x1 constructor remains source-constrained, while reverting allowance reads remain a real N1 dependency for valid factories.",
+        "productionReachability": "A reverting allowance read on a valid fee token prevents deployment with atomic rollback. The same N1 counterfactual-fund freeze applies; later token changes can make an earlier safe factory unusable.",
+        "confirmedRisk": "N1 availability risk is real and conditional. This new distinct-call symbolic sequence does not establish a successful exploit. The prior identical-call AlreadyDeployed constraint is withdrawn for this trace.",
+        "conditions": [
+          "Do not infer first-call success from the symbolic sequence",
+          "Operational token acknowledgement is not a recovery mechanism"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY",
+          "N1-FEE-TOKEN-FREEZE"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R8_allowanceRevertFailsClosedWithFullRollback",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R7_R8_feeReadsAreStaticCalls_mutatingReadsFailClosed",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_replay_R7_R8_secondIdenticalDeployRevertsBeforeAnyTokenCall",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          }
+        ],
+        "withdrawnPriorTraceArgument": "The two current deploy inputs are not identical; do not infer a second-call AlreadyDeployed rejection from the previous report."
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccountFactory|SWC-107|PC-2887": {
+      "historicalLabelForSameLocation": "R9",
+      "analyzedTarget": "PolicyAccountFactory",
+      "currentReportIndex": 4,
+      "currentIssueIndex": 5,
+      "priorReportIndex": 4,
+      "priorIssueIndex": 5,
+      "observation": {
+        "address": 2887,
+        "code": "create2(value, 0x09, 0x37, salt)",
+        "contract": "PolicyAccountFactory",
+        "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.",
+        "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 104,
+        "max_gas_used": 380307,
+        "min_gas_used": 57114,
+        "severity": "Medium",
+        "sourceMap": "5629:32",
+        "swc-id": "107",
+        "title": "State access after external call"
+      },
+      "sourceTrace": {
+        "sourceMap": "5629:32",
+        "reportedFilename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+        "reportedLine": 104,
+        "repositoryPath": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+        "sourceSha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+        "byteStart": 5629,
+        "byteLength": 32,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": false,
+      "priorIssueCanonicalJsonSha256": "1f2f5749a9ad9cf9e6fdae9e6971cd0079b304436c7b3bdb73aef3f730fe48f0",
+      "currentIssueCanonicalJsonSha256": "960ed3f208b409a070611c8cbc6714ab126fcacbc1fb20db177507eb55b264dc",
+      "priorTraceCanonicalJsonSha256": "54294ed3eb602f5422a458ea1294c5a193405b609ca1b87b421e2fc5dce65783",
+      "currentTraceCanonicalJsonSha256": "44560861297a23b9aa237f7913860b8bc5e623bcecd86d12bb6db2d61a21c385",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [
+        {
+          "path": "tx_sequence.steps[0].calldata",
+          "before": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "d8a4517cc6ea288a07feec57146c69a7c301c3325629c2a2a32889e209eec0ad",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          },
+          "after": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "9ae0421ad75d4d9ec32459ba7b6f1cb488562d5649ac114ecbfd6da9c184112b",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[0].input",
+          "before": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "bd165d1bc79cb1d4cce6c85581b772f332cb028534ef2860ba5655d6adad52d9",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          },
+          "after": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "7831cbcec4a7f9a97e921d924729b7e8fa1c052b01675dfedb0311ff48396cb1",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].calldata",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "23dafc7168b94d473189833321c264b02e34ee74175d9ba807eae16ad14d732a",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "12d0f161c3bf008ec0f8956fa73ac2c468ada6cb0b878f535d26869ae2984b13",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].input",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "23dafc7168b94d473189833321c264b02e34ee74175d9ba807eae16ad14d732a",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "12d0f161c3bf008ec0f8956fa73ac2c468ada6cb0b878f535d26869ae2984b13",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].origin",
+          "before": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "after": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+        },
+        {
+          "path": "tx_sequence.steps[1].resolved_input[2]",
+          "before": 524560,
+          "after": 3600
+        }
+      ],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "1fc24e7760fa20fa186eac3cf3243eb7cd05adee61e6df7d104e43cabe511ac8",
+          "calldataBytes": 4319,
+          "calldataSha256": "bf61935e5c2e729d7384861441e54de4375e54feb006f3021a4990504549149e",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flatFee": "35229047993510679846777813121242054591639132839778328894514852581563160252415",
+            "feeRecipient": "0x0101400101010102010108020101020101010101"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            524560,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "7dcd7a66f24953245e264ded0edfc8e19f7cdb8024d16a3c1870db5baa252864",
+          "calldataBytes": 132,
+          "calldataSha256": "7dcd7a66f24953245e264ded0edfc8e19f7cdb8024d16a3c1870db5baa252864",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c00260000000000000000000000000000000000000000000000000000000000000801100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 524560,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "82888a4a4a7a6ef317e3848881bbe0bf4a04ce76cb3e3c25b19535bc73af4dc6",
+          "calldataBytes": 4319,
+          "calldataSha256": "e97e9649ceb941af9ac631f1660f090ae51294798545df80d215e19d27a87c80",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flatFee": "42466053570842937252319430899433128741022514264199356410331660828949766586335",
+            "feeRecipient": "0x0101010202010101080101040101010101010201"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "calldataBytes": 132,
+          "calldataSha256": "a47b05ebeff30dd3771083b3192832febd7fb834e06915c4f3ca4a70265cffd7",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": false,
+        "currentSourceConstraint": {
+          "implementation": "0x0000000000000000000000000000000000000001",
+          "constructorAddressPrerequisitesNonzero": true,
+          "guard": "if (implementation_.code.length == 0) revert ImplementationHasNoCode();",
+          "sourcePath": "packages/contracts/src/PolicyAccountFactory.sol",
+          "condition": "The target EVM has no deployed code at address 0x1, as in the earlier default-Anvil replay.",
+          "kind": "source inference, not a new executed revert"
+        },
+        "scope": "Old Factory concrete inputs differ. Do not relabel the earlier replay as execution of these new traces."
+      },
+      "review": {
+        "classification": "guarded_fee_then_create2_ordering",
+        "assessment": "CREATE2 follows the fee-token call under the held guard. Salt, fixed implementation and initializer bind the resulting account. This new trace is byte-identical to the new R5 trace, not to its own 198aa5ba trace. The new constructor chooses implementation=0x1 and is subject to the code-length guard; no fresh replay is claimed.",
+        "productionReachability": "A third party may pay to deploy the same victim policy, but cannot substitute owner/policy or make the victim pay. Failure after the fee call reverts atomically; another factory cannot occupy this factory-bound address.",
+        "confirmedRisk": "No attacker-controlled account substitution is demonstrated. Availability and token-waiver risks are separately recorded.",
+        "conditions": [
+          "Keep nonReentrant and deterministic deployment/initialization binding"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_R9_reentrantFeeTokenCannotReenterBeforeCreate2OrInitialize",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R9_create2FailureAfterFeeCallRevertsAtomically",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R9_frontRunSameSaltDeploysVictimPolicy_victimPaysNothing",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R9_otherFactoryWithSameImplementationCannotOccupyAddress",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccountFactory|SWC-107|PC-2978": {
+      "historicalLabelForSameLocation": "R10",
+      "analyzedTarget": "PolicyAccountFactory",
+      "currentReportIndex": 4,
+      "currentIssueIndex": 6,
+      "priorReportIndex": 4,
+      "priorIssueIndex": 6,
+      "observation": {
+        "address": 2978,
+        "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+        "contract": "PolicyAccountFactory",
+        "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.",
+        "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 227,
+        "max_gas_used": 380307,
+        "min_gas_used": 57114,
+        "severity": "Low",
+        "sourceMap": "10660:45",
+        "swc-id": "107",
+        "title": "External Call To User-Supplied Address"
+      },
+      "sourceTrace": {
+        "sourceMap": "10660:45",
+        "reportedFilename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "reportedLine": 227,
+        "repositoryPath": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "sourceSha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+        "byteStart": 10660,
+        "byteLength": 45,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": false,
+      "priorIssueCanonicalJsonSha256": "7ceffe469b144167c1b9568ce30de053e3c446a4e5c9e8e1df2e20ea63c4af46",
+      "currentIssueCanonicalJsonSha256": "7a708105d8d7aff306626ce06b0df3bc1e9b415c7dcc64023d8dd78ce41899a1",
+      "priorTraceCanonicalJsonSha256": "9c7cd76d5925035a9db3538ca98ea98b58378ea053b6caca6b6e8c9145cde0e1",
+      "currentTraceCanonicalJsonSha256": "ab2071b24d3cf2113d3000e813c0cae7e09c253c5451110a9dc8f4c7223b484b",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [
+        {
+          "path": "tx_sequence.steps[0].calldata",
+          "before": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "0b020b4dd01ede4b84d31bb9919d8016cfbb0accd5acb4a30c27f464ad251c71",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          },
+          "after": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "6428e8e3fb3e4a5ed342e6b15b7f0990a18b9b7b71f29a3314c5b8b4ca7e94b9",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[0].input",
+          "before": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "ba9c03b48bb74cddbd2f759da1b1aadae690cbacddf273ebe851ca8cce2a68af",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          },
+          "after": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "1fc4158872e6861ddb68b2d3708de32e3ace4c1524b78daa33aae5aa9c3efafe",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          }
+        }
+      ],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "ddbbbe3fcc64bd29e06bf976421b8608ed241b48fe258a900da7c0f998d94a0d",
+          "calldataBytes": 4319,
+          "calldataSha256": "bc776a5dc942c966092acaf9032a8d0f5071698aea55c412da2ffb97712b5b9a",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flatFee": "42476654653231608336633025921809622186033255421929767483933607642550713106301",
+            "feeRecipient": "0x0101020101010102010801020101010201018001"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            524560,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "7dcd7a66f24953245e264ded0edfc8e19f7cdb8024d16a3c1870db5baa252864",
+          "calldataBytes": 132,
+          "calldataSha256": "7dcd7a66f24953245e264ded0edfc8e19f7cdb8024d16a3c1870db5baa252864",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c00260000000000000000000000000000000000000000000000000000000000000801100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 524560,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "b863e39b55546aaf451c5a61f0a51d00ca3f876201e96b0beb46208e81eb5aa3",
+          "calldataBytes": 4319,
+          "calldataSha256": "3cc4f4d7297b7fca036826c3d8d229da42fe4bdcc85894b877a0493ff6d49bef",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flatFee": "42466053577477610007946285914103139962104623768856854182631556546998942265327",
+            "feeRecipient": "0x0801010101048001020201010101000101020101"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            524560,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "7dcd7a66f24953245e264ded0edfc8e19f7cdb8024d16a3c1870db5baa252864",
+          "calldataBytes": 132,
+          "calldataSha256": "7dcd7a66f24953245e264ded0edfc8e19f7cdb8024d16a3c1870db5baa252864",
+          "input": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c00260000000000000000000000000000000000000000000000000000000000000801100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0xfffffb5f430064a4401430521dcdc03b0c002600",
+            "delaySeconds": 524560,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": false,
+        "currentSourceConstraint": {
+          "implementation": "0x0000000000000000000000000000000000000001",
+          "constructorAddressPrerequisitesNonzero": true,
+          "guard": "if (implementation_.code.length == 0) revert ImplementationHasNoCode();",
+          "sourcePath": "packages/contracts/src/PolicyAccountFactory.sol",
+          "condition": "The target EVM has no deployed code at address 0x1, as in the earlier default-Anvil replay.",
+          "kind": "source inference, not a new executed revert"
+        },
+        "scope": "Old Factory concrete inputs differ. Do not relabel the earlier replay as execution of these new traces."
+      },
+      "review": {
+        "classification": "constructor_selected_token_not_per_call_target",
+        "assessment": "The external call target is constructor-selected immutable FEE_TOKEN, not owner or destination supplied to deploy. The new symbolic constructor uses the modeled DEAD... fee token and implementation=0x1. The latter is a source-level creation constraint; the former represents a real token-selection assumption. Caller-controlled hooks and changeable token behavior still require separate operational decisions.",
+        "productionReachability": "A malicious configured token can block deployments or grant fee waivers, but the tested guard prevents reentry and the caller cannot change the token per deployment. The trust assumption belongs to token selection and deployment policy.",
+        "confirmedRisk": "The per-deploy arbitrary-target premise is false. A constructor-selected malicious or changeable fee token is a real N1/fee-revenue risk, not cleared by this disposition.",
+        "conditions": [
+          "FEE_TOKEN stays immutable",
+          "Choose a suitable token without sender hooks",
+          "Keep exact caller/deployer distinctions in the disposition"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY",
+          "N1-FEE-TOKEN-FREEZE",
+          "FEE-TOKEN-SENDER-HOOKS"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R5_R6_R9_R10_exactCallOrderAndOnlyGuardWrites",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "testFuzz_R10_callTargetsAreFixedForAnyCallerInput",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": false
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_replay_R5_R9_R10_attackerTokenWithMythrilArguments",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          }
+        ]
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    },
+    "PolicyAccountFactory|SWC-104|PC-2978": {
+      "historicalLabelForSameLocation": "R11",
+      "analyzedTarget": "PolicyAccountFactory",
+      "currentReportIndex": 4,
+      "currentIssueIndex": 7,
+      "priorReportIndex": 4,
+      "priorIssueIndex": 7,
+      "observation": {
+        "address": 2978,
+        "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+        "contract": "PolicyAccountFactory",
+        "description": "The return value of a message call is not checked.\nExternal calls return a boolean value. If the callee halts with an exception, 'false' is returned and execution continues in the caller. The caller should check whether an exception happened and react accordingly to avoid unexpected behavior. For example it is often desirable to wrap external calls in require() so the transaction is reverted if the call fails.",
+        "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 227,
+        "max_gas_used": 380307,
+        "min_gas_used": 57114,
+        "severity": "Medium",
+        "sourceMap": "10660:45",
+        "swc-id": "104",
+        "title": "Unchecked return value from external call."
+      },
+      "sourceTrace": {
+        "sourceMap": "10660:45",
+        "reportedFilename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "reportedLine": 227,
+        "repositoryPath": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "sourceSha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+        "byteStart": 10660,
+        "byteLength": 45,
+        "sourceSliceMatchesReportedCode": true
+      },
+      "observationWithoutTransactionSequenceIdentical": true,
+      "completeIssueIdentical": false,
+      "priorIssueCanonicalJsonSha256": "932cfcd8f13368d28df444bcf317998e6f5ab23f6238e1873e5b5675d657725d",
+      "currentIssueCanonicalJsonSha256": "16e0d2ef6884edfc9b55fced944161156992f96dbc92fdc5b599bb07e1f534cf",
+      "priorTraceCanonicalJsonSha256": "3d7b65be29e5066ce43b9e43d7ad5e1b074914bd85323a462e4001e9419c05b8",
+      "currentTraceCanonicalJsonSha256": "f59217fc06f0fab30b8e0249c326cc918fbf1d49a2a66d96f2a523483ba3fd86",
+      "traceInitialStateIdentical": true,
+      "traceChangedPrimitiveFields": [
+        {
+          "path": "tx_sequence.steps[0].calldata",
+          "before": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "8e8b7d99e18ca33be8e50de7edc354e51973ba92f3207b07e153efcbe8a567d9",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          },
+          "after": {
+            "type": "string",
+            "characters": 8638,
+            "utf8Sha256": "f07ba1d38af6eb3a5b0b0639293586a12a8615d6600c42f3f6c40f5eb5dda7e1",
+            "prefix": "000000000000000000000000000000000000000000000000000000000000000100"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[0].input",
+          "before": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "01c9d347ebb9834d42819afe0dfbff40cb26bb0937df69d10738d2467bcbc545",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          },
+          "after": {
+            "type": "string",
+            "characters": 16254,
+            "utf8Sha256": "85ec7c43626f1a855c58350bdeb6510cbfe3f5030ced098bd5b544696a1b5f5b",
+            "prefix": "0x610100604052348015610010575f5ffd5b50604051610edf380380610edf8339"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].calldata",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "89fee2f6480a5ccb9bc5652595073bb6074192d2fcb60af0e07d230816ffc223",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "f7c1134ddf1375ee399f40e04e3b51b135dbb322f76a7ad7c8efac1e3c96af3c",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].input",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "89fee2f6480a5ccb9bc5652595073bb6074192d2fcb60af0e07d230816ffc223",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "f7c1134ddf1375ee399f40e04e3b51b135dbb322f76a7ad7c8efac1e3c96af3c",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[1].origin",
+          "before": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "after": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+        },
+        {
+          "path": "tx_sequence.steps[1].resolved_input[1]",
+          "before": "0x0000000001000002020201010101010100000048",
+          "after": "0x0000000000000000000001010101010100000048"
+        },
+        {
+          "path": "tx_sequence.steps[2].calldata",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "cede27bfe42cee8d8bcfa012d5ca2b0870bf616efe0c1b460f8d9aabda1128cc",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "33ba0df0132918bd861cb972227adf04a2b90fb8c06e46b6aea86b63d09eb4a6",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[2].input",
+          "before": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "cede27bfe42cee8d8bcfa012d5ca2b0870bf616efe0c1b460f8d9aabda1128cc",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          },
+          "after": {
+            "type": "string",
+            "characters": 266,
+            "utf8Sha256": "33ba0df0132918bd861cb972227adf04a2b90fb8c06e46b6aea86b63d09eb4a6",
+            "prefix": "0xaffdf33700000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "path": "tx_sequence.steps[2].resolved_input[1]",
+          "before": "0x0000000001000002020201010101010100000049",
+          "after": "0x0000000000000000000001010101010100000049"
+        }
+      ],
+      "priorSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "6577ba3657a5742070068f8813f0f2de2995f8d2b7155b819143f2f048ad47e8",
+          "calldataBytes": 4319,
+          "calldataSha256": "341b82ce93037c03d80b0323b3b00d60d0e791fa4b2a08f8d12068372041dc8c",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0101200101010101010101004002400101010101",
+            "flatFee": "42467178555549708865080353710596261523560672433051539890493512757952925413453",
+            "feeRecipient": "0x0110010101020208044004020110800102010140"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0x0000000001000002020201010101010100000048",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "699bd5c27c13592c7b5514bf6b9c5782dad8a5ef0e7d4160239ccd743cab0b12",
+          "calldataBytes": 132,
+          "calldataSha256": "699bd5c27c13592c7b5514bf6b9c5782dad8a5ef0e7d4160239ccd743cab0b12",
+          "input": "0xaffdf337000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000010000020202010101010101000000480000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0x0000000001000002020201010101010100000048",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0x0000000001000002020201010101010100000049",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 2,
+          "inputBytes": 132,
+          "inputSha256": "622b8a98e70be7260c8135108c4209898820674ec87affe097bf236887c32c39",
+          "calldataBytes": 132,
+          "calldataSha256": "622b8a98e70be7260c8135108c4209898820674ec87affe097bf236887c32c39",
+          "input": "0xaffdf337000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000010000020202010101010101000000490000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0x0000000001000002020201010101010100000049",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "currentSteps": [
+        {
+          "address": "",
+          "name": "unknown",
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "stepIndex": 0,
+          "inputBytes": 8126,
+          "inputSha256": "5607d5852b372951cc24a7c109734fbac15159ccc1b324dff92691cc86e724d2",
+          "calldataBytes": 4319,
+          "calldataSha256": "457d012d7268de14f4d0101f49dd9c5b6b5a0e99ecb2fa5daaf7ebbc8d12ba54",
+          "creationCodeBytes": 3807,
+          "creationCodeSha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+          "constructorAbiFirst128Bytes": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "feeToken": "0x0001400101042001020801000101010101040101",
+            "flatFee": "42467157850153315608074109747117323188589858751232533622558588862272348471039",
+            "feeRecipient": "0x1004040801041001010001081001010120108004"
+          },
+          "constructorTrailingModelDataBytes": 4191
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0x0000000000000000000001010101010100000048",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 1,
+          "inputBytes": 132,
+          "inputSha256": "3c8cf6e3f7d0b0ab9c38a4487b9b429bc2acf8a9f18b6164e4ed3979fbbaed7a",
+          "calldataBytes": 132,
+          "calldataSha256": "3c8cf6e3f7d0b0ab9c38a4487b9b429bc2acf8a9f18b6164e4ed3979fbbaed7a",
+          "input": "0xaffdf337000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000010101010101000000480000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0x0000000000000000000001010101010100000048",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "name": "deploy(address,address,uint256,bytes32)",
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "resolved_input": [
+            "0x0000000000000000000000000000000000000001",
+            "0x0000000000000000000001010101010100000049",
+            3600,
+            "0000000000000000000000000000000000000000000000000000000000000000"
+          ],
+          "value": "0x0",
+          "stepIndex": 2,
+          "inputBytes": 132,
+          "inputSha256": "ab8ee6dcd6f124698fe5942a458970b2778cbd1387e7e3a2b4d6c6100be60a2a",
+          "calldataBytes": 132,
+          "calldataSha256": "ab8ee6dcd6f124698fe5942a458970b2778cbd1387e7e3a2b4d6c6100be60a2a",
+          "input": "0xaffdf337000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000010101010101000000490000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000",
+          "independentlyDecodedDeployInput": {
+            "owner": "0x0000000000000000000000000000000000000001",
+            "destination": "0x0000000000000000000001010101010100000049",
+            "delaySeconds": 3600,
+            "limitsRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "concreteEvidenceAndCurrentConstraint": {
+        "newConcreteReplayPerformed": false,
+        "priorSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "priorEvidenceCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+        "priorEvidencePath": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-current-concrete-replay.json",
+        "priorEvidenceSha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+        "sameTraceAndCreationInputAsPriorReplay": false,
+        "currentSourceConstraint": {
+          "implementation": "0x0000000000000000000000000000000000000001",
+          "constructorAddressPrerequisitesNonzero": true,
+          "guard": "if (implementation_.code.length == 0) revert ImplementationHasNoCode();",
+          "sourcePath": "packages/contracts/src/PolicyAccountFactory.sol",
+          "condition": "The target EVM has no deployed code at address 0x1, as in the earlier default-Anvil replay.",
+          "kind": "source inference, not a new executed revert"
+        },
+        "scope": "Old Factory concrete inputs differ. Do not relabel the earlier replay as execution of these new traces."
+      },
+      "review": {
+        "classification": "checked_return_value_with_intentional_waiver",
+        "assessment": "SafeERC20 consumes call success and the bool/no-return-data rule, and the factory branches on the result. A clean failed transfer can intentionally waive the fee only after before/after checks. The new trace has two different destinations but the same DEAD... caller for both deploy calls; the historical two-caller test is related counterevidence, not this trace. The new constructor remains constrained by implementation=0x1, with no new concrete execution.",
+        "productionReachability": "When a transfer fails without changing payer/recipient balances or allowance and the caller could pay, the account can deploy without the fee. Insufficient funds/allowance or mutated balances revert. Sender-hook tokens can let the caller veto payment; extremely gas-hungry tokens can reach a gas-starvation waiver.",
+        "confirmedRisk": "Conditional fee-revenue loss is documented and tested, including caller-controlled sender hooks and pathological gas use. This trace does not show unauthorized account custody. Historical gas measurements are token/proxy/limitsRoot-specific and are not universal thresholds or fresh measurements.",
+        "conditions": [
+          "Keep all before/after balance and allowance checks",
+          "Keep exact SafeERC20 return handling",
+          "Do not use fee tokens with sender hooks"
+        ],
+        "decisionIds": [
+          "MYTHRIL-DISPOSITION-POLICY",
+          "FEE-TOKEN-SENDER-HOOKS"
+        ],
+        "tests": [
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R11_falseReturnWithFunds_waivesWithoutAnyBalanceChange",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R11_falseReturnWithoutFunds_revertsFeeTransferFailed",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R11_noReturnDataToken_collectsExactFee_insufficientAllowanceReverts",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R11_nonCanonicalTrue_movingFundsReverts_notMovingWaives",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R11_revertingTransferWithReturnDataBomb_waivesWithBoundedCopy",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R11_revertingTransferWithInsufficientAllowance_doesNotWaive",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R11_gasStarvationOfOrdinaryFeeTransferNeverWaives",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_R11_residual_gasHungryFeeTokenCanBeStarvedIntoWaiver",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          },
+          {
+            "path": "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+            "test": "test_replay_R11_twoCallerSequenceWaivesOnlyBecauseTokenReturnsFalse",
+            "origin": "Earlier 445-test non-fuzz snapshot only; no new execution. Related historical counterevidence, not an exact current-trace replay.",
+            "presentAtCurrentSource": true,
+            "sourceSha256": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+            "prior445SnapshotPassed": true
+          }
+        ],
+        "historicalFixtureLimit": "test_replay_R11_twoCallerSequenceWaivesOnlyBecauseTokenReturnsFalse uses a historical two-caller sequence. Both new report calls have the same caller."
+      },
+      "approval": {
+        "approved": false,
+        "gateExceptionAuthorized": false,
+        "suppress": false,
+        "status": "observational source review; strict failure unchanged"
+      }
+    }
+  },
+  "ownerDecisions": {
+    "MYTHRIL-DISPOSITION-POLICY": {
+      "owner": "repository/security owner",
+      "status": "unapproved",
+      "decisionRequired": "Approve a finding-specific, source/bytecode/tool-bound disposition mechanism after independent review, or keep the strict release gate red. Existing candidate checker is not authorization. No SWC-wide suppression, count-based acceptance or ignore-failures change is approved.",
+      "source": [
+        "docs/audits/mythril-14290880802-expiry-dispositions.md",
+        "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "docs/handoffs/consolidation-20261118/NEXT_PHASE_QUEUE.md"
+      ]
+    },
+    "N1-FEE-TOKEN-FREEZE": {
+      "owner": "scheme-2 deployment/protocol owner",
+      "status": "open before production scheme-2 deployment",
+      "decisionRequired": "Choose a zero-fee factory for upgradeable or fee-switchable tokens, or explicitly approve and specify a protocol change addressing view/wrong-delta failures. Existing token-specific FEE_TOKEN_FREEZE_ACK safeguards nonzero-fee deployments but neither removes the freeze nor authorizes real-funds use.",
+      "recoveredSafeguardCommits": [
+        "c0d718578fb4aa855ffcd4a87241a5efabf9732f",
+        "cff088d69c0f2731722894ee8835164b3ec8b221"
+      ],
+      "source": [
+        "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "docs/operators/deployment-runbook.md",
+        "packages/contracts/README.md"
+      ]
+    },
+    "OD11-TIMELOCK-BOUND": {
+      "owner": "policy product/protocol owner",
+      "status": "open",
+      "decisionRequired": "Establish per-network producer/sequencer delay and cancellation-inclusion assumptions before accepting the 1-hour withdrawal / 2-hour destination-change minima for production. No numerical floor or new authority is chosen in this recovery.",
+      "source": [
+        "docs/audits/mythril-14290880802-expiry-dispositions.md"
+      ]
+    },
+    "FEE-TOKEN-SENDER-HOOKS": {
+      "owner": "factory deployer/token policy owner",
+      "status": "existing operational restriction; token-specific suitability unproved",
+      "decisionRequired": "Exclude fee tokens with sender-controlled transfer hooks and assess immutable token behavior, upgrade controls and waiver revenue consequences. The deployment script cannot prove absence of hooks.",
+      "source": [
+        "docs/audits/26-contract-security-review-2026-11.md",
+        "docs/audits/mythril-14290880802-factory-dispositions.md"
+      ]
+    }
+  },
+  "historicalTestQualification": {
+    "sourceRecord": "docs/handoffs/agents/evidence/security-recovery-20261119/mythril-198aa5ba/mythril-198aa5ba-dispositions.json",
+    "qualification": {
+      "command": "forge snapshot --offline --check --no-match-test 'testFuzz|invariant'",
+      "logPath": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-gas.log",
+      "logSha256": "b7697f1170486f7efd756ff786ff850f1c84563200f4a35c8155a089748cd390",
+      "allNonFuzzTestsPassed": 445,
+      "relevantNonFuzzTestsPassed": {
+        "MythrilExpirySweepTest": 9,
+        "MythrilExpiryPolicyTest": 19,
+        "MythrilFactoryDispositionsTest": 32
+      },
+      "fuzzAndInvariantsRunInThisCheck": false,
+      "fullForgeAttempt": "Compilation killed by SIGKILL; no full-suite qualification claimed",
+      "tool": "Forge 1.8.5 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f; solc0.8.28+commit.7893614a"
+    },
+    "newTestsRunForThisReview": false
+  },
+  "limitations": [
+    "No new symbolic campaign, concrete replay, native test, fuzz campaign or production-chain qualification was performed by this review.",
+    "success=true/error=null and a complete retained report do not prove all analyzer paths completed. This report uses the old runner and lacks the stronger per-target process/compiler/campaign sidecars proposed by the separate #255 owner.",
+    "Source trees, runner/config blobs and supplied creation-code prefixes were compared directly. Equal version banners alone are not a native compiler-binary hash or a full campaign identity.",
+    "The three expiry traces exactly match the earlier concrete replay inputs. All eight Factory traces differ; their current code-length constraint is source inference conditional on no deployed code at address 0x1.",
+    "R8 no longer has identical deploy inputs; its old AlreadyDeployed argument is not applicable. R11 no longer has two different callers; the two-caller test remains historical counterevidence only.",
+    "The prior 445-test snapshot excluded fuzz/invariants; its full-suite compilation was SIGKILLed. No full pass or new qualification at 28edbcf is implied.",
+    "Conditional fee-token freeze and sender-hook/gas-waiver revenue risks remain real even if an exact symbolic creation trace is constrained.",
+    "This file is not an allowlist, authenticated owner approval, #255 campaign record or external audit. All eleven findings remain strict failures with zero approved exceptions."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "devnet-fixture-chain-adapters-build",
+  "source_revision": "05f5631d759476793614913c8926cb1727e376b3",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "packages/chain-adapters/tsconfig.build.json"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 5.253,
+  "observed_at": "2026-11-19T08:34:05.945169+00:00",
+  "log": "devnet-fixture-chain-adapters-build.log"
+}

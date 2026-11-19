@@ -1,0 +1,14 @@
+{
+  "name": "relayer-devnet-syntax",
+  "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "--check",
+    "scripts/devnet/e2e.mjs"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 0.266,
+  "observed_at": "2026-11-19T07:22:44.719326+00:00",
+  "log": "relayer-devnet-syntax.log"
+}

@@ -1,0 +1,207 @@
+{
+  "schema": "ghostpay-combined-qualification/1",
+  "recorded_utc": "2026-11-19T07:50:34.648687+00:00",
+  "library_build": {
+    "source": "cbed997a1fd8398975feac8fa23f9162a65f7e73",
+    "command": [
+      "npm",
+      "run",
+      "build:libs"
+    ],
+    "node": "22.23.4",
+    "heap_mib": 768,
+    "exit_code": 0,
+    "seconds": 358.603,
+    "final_source": "cbed997a1fd8398975feac8fa23f9162a65f7e73"
+  },
+  "checks": [
+    {
+      "name": "guard-build",
+      "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/relayer-guard"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 4.466
+    },
+    {
+      "name": "web-regressions",
+      "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+      "command": [
+        "node",
+        "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.supported.test.tsx",
+        "src/lib/pay.permitNonce.test.ts",
+        "src/lib/pay.quoteAge.test.ts",
+        "src/lib/relayerClient.test.ts",
+        "src/features/policy/PolicyAssetCoverage.test.tsx",
+        "src/features/policy/send.test.ts",
+        "src/features/policy/pay.selfcheck.test.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "seconds": 48.78
+    },
+    {
+      "name": "focus-discovery",
+      "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+      "command": [
+        "node",
+        "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/@playwright/test/cli.js",
+        "test",
+        "e2e/focus-scope.spec.ts",
+        "--list"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "seconds": 3.539
+    },
+    {
+      "name": "web-scoped-lint",
+      "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+      "command": [
+        "node",
+        "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src/views/Pay.supported.test.tsx",
+        "e2e/focus-scope.spec.ts"
+      ],
+      "cwd": "apps/web",
+      "exit_code": -6,
+      "seconds": 18.278
+    },
+    {
+      "name": "i18n-check",
+      "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+      "command": [
+        "node",
+        "scripts/i18n/check.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 1.076
+    },
+    {
+      "name": "i18n-extract",
+      "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+      "command": [
+        "node",
+        "scripts/i18n/extract.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 0.76
+    }
+  ],
+  "typed_lint_retry": {
+    "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+    "final_source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+    "command": [
+      "node",
+      "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "../../eslint.config.js",
+      "src/views/Pay.supported.test.tsx",
+      "e2e/focus-scope.spec.ts"
+    ],
+    "cwd": "apps/web",
+    "node": "22.23.4",
+    "heap_mib": 768,
+    "exit_code": 0,
+    "seconds": 24.072,
+    "reason": "The unchanged scoped typed-lint run exhausted the 512 MiB JavaScript heap; retain that result and retry with a bounded 768 MiB cap."
+  },
+  "toolchain": {
+    "node": "22.23.4",
+    "npm": "11.9.0",
+    "vitest": "5.1.0",
+    "typescript": "5.9.3",
+    "eslint": "10.15.0",
+    "@playwright/test": "1.65.1"
+  },
+  "assertions": {
+    "web_test_files": 7,
+    "web_tests_passed": 111,
+    "web_tests_skipped": 0,
+    "focus_discovery_only": true
+  },
+  "review": {
+    "reviewer": "contract_security",
+    "scope": "Coordinator documentation and focus/lean-buffer test source; no browser execution inferred",
+    "records": [
+      "../../handoffs/agents/SECURITY_CROSS_REVIEW_20261119.md",
+      "../../handoffs/agents/WEB_SCOPE_REVIEW_20261119.md"
+    ]
+  },
+  "limits": [
+    "The full library build source is cbed997a; the later relayer integration was followed by an explicit relayer-guard rebuild and the selected web consumer checks at fe7a598d.",
+    "The 512 MiB typed-lint attempt failed with JavaScript heap exhaustion (exit -6); the unchanged 768 MiB retry passed. Both raw results are retained.",
+    "Playwright --list proves test discovery only. Local Chromium startup restrictions prevent browser execution here; hosted execution is required on the next published source.",
+    "These are combined targeted checks, not the complete qualification matrix and not a release-readiness or main-merge claim."
+  ],
+  "evidence": [
+    {
+      "path": "combined-qualification-evidence/remaining-combined-build.json",
+      "bytes": 260,
+      "sha256": "328bea65698bc33d31601090c4ab81c3efd447fcb62ece05bd4938aa4d26d12a"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-build.log",
+      "bytes": 27497,
+      "sha256": "e55f55330b707cd5f72a6b4226f24a8eb5b07a435032457a08472e5709b27d12"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-checks.json",
+      "bytes": 2100,
+      "sha256": "de4eb15483ea3ab41f4ef379700b24b7576839d03f8ed0fc4a8753d4361b4ed5"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-guard-build.log",
+      "bytes": 342,
+      "sha256": "2837984a21c99f5ca19aa1d2d6564ea806d5b1e29913cf880f4b0b1c799cb5e6"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-web-regressions.log",
+      "bytes": 1919,
+      "sha256": "f8f761d19962095d349fabcf4456c57b5d47eb7301858303033a973692aaebfe"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-focus-discovery.log",
+      "bytes": 368,
+      "sha256": "f25075ce99a0e4d7e9e4631f3e1d1880d8915568e6359591c1b18abb50031029"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-web-scoped-lint.log",
+      "bytes": 1912,
+      "sha256": "e421a11eaea21360dc2afe14b1129dfcfbc8ef2980c193da347d0f04440f1a8c"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-i18n-check.log",
+      "bytes": 45670,
+      "sha256": "6efa0141d049699d1910ad48e7f81fac8265ace9f8462820fb1fc9aac4804849"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-i18n-extract.log",
+      "bytes": 5110,
+      "sha256": "dfd920152e388ad128c35edc035f8e433dd326519dc2adcc3768d55f8c3e69ec"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-web-scoped-lint-retry.json",
+      "bytes": 598,
+      "sha256": "bb1d9d586238b8790946b555923320a289e5ba559ec1b25264b3b560d18ef41e"
+    },
+    {
+      "path": "combined-qualification-evidence/remaining-combined-web-scoped-lint-retry.log",
+      "bytes": 174,
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12"
+    }
+  ]
+}

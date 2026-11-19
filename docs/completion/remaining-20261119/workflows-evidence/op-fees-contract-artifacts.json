@@ -1,0 +1,17 @@
+{
+  "source_revision": "308a2148dbf7e23795b223e1f8aeaf6806b4160f",
+  "contract_source_parity": true,
+  "origin_build_record": "relayer-contract-build.json",
+  "independent_copies": [
+    {
+      "path": "packages/contracts/out/GhostPaySweepRelayer.sol/GhostPaySweepRelayer.json",
+      "sha256": "a5b3116db3172ddfcdaf23d572976d933d9a637a1c0c946e5b85be9a13666875",
+      "bytes": 76737
+    },
+    {
+      "path": "packages/contracts/out/PermitToken.sol/PermitToken.json",
+      "sha256": "35be7d1f50da1b6f64293f9f08fa346185a275c0f5b5e3da3c4336cb5db8ac55",
+      "bytes": 76686
+    }
+  ]
+}

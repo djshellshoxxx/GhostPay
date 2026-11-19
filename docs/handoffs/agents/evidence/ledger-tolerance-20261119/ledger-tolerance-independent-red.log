@@ -1,0 +1,24 @@
+{
+  "stage": "red",
+  "conforms": false,
+  "observed": [
+    {
+      "invoiceId": "nothing-owed",
+      "status": "paid",
+      "dueMinor": "0",
+      "paidMinor": "0",
+      "deltaMinor": "0",
+      "paymentIds": [],
+      "latePaymentIds": []
+    },
+    {
+      "invoiceId": "unpaid-positive",
+      "status": "paid",
+      "dueMinor": "50",
+      "paidMinor": "0",
+      "deltaMinor": "-50",
+      "paymentIds": [],
+      "latePaymentIds": []
+    }
+  ]
+}

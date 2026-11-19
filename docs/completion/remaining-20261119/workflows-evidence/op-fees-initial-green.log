@@ -1,0 +1,35 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-op-fees/apps/relayer
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/opFees.test.ts (16 tests | 1 failed) 723ms
+   ❯ R07-4 OP total-cost service regression (4)
+     × quotes execution plus the additional OP reserve 79ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP total-cost service regression > quotes execution plus the additional OP reserve
+AssertionError: expected '1419000' to be '1935000' // Object.is equality
+
+Expected: "1935000"
+Received: "1419000"
+
+ ❯ src/opFees.test.ts:112:35
+    110|   it('quotes execution plus the additional OP reserve', async () => {
+    111|     const s = await service();
+    112|     expect((await s.quote()).fee).toBe('1935000'); // (130k + 300k) gw…
+       |                                   ^
+    113|   });
+    114|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  23:54:28
+   Duration  23.63s (transform 63%, import 33%, tests 3%)
+

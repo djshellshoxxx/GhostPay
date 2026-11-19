@@ -1,0 +1,27 @@
+{
+  "verdict": "PASS",
+  "runtimeSource": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+  "regressionBaseline": "9f68917f1a3721a8d20d23002174a5094223ca20",
+  "authorPacketCommit": "34eee707030b6818021aa535af32d0f566f43bba",
+  "packetFilesVerified": 2,
+  "archivedArtifactsVerified": 23,
+  "availableOriginalFilesVerified": 23,
+  "sourceStatesVerified": 24,
+  "preservedPathsVerified": 18,
+  "receiptRecordsVerified": 7,
+  "integratedPacketFilesVerified": 4,
+  "integratedRegressionSourceAndTestsIdentical": true,
+  "integratedRegressionResult": {
+    "passed": 63,
+    "failed": 0,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "originalSignedProfileFailures": {
+    "acceptedExpiredProfile": 22,
+    "threwDuringClockCoercion": 4
+  },
+  "onlyGuardAndDocumentationChanged": true,
+  "sameRegressionFileBeforeAndAfter": true,
+  "reviewerRanApplicationTests": false
+}

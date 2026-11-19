@@ -6,6 +6,7 @@ const r = (p: string): string => fileURLToPath(new URL(p, import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
+      '@ghostpay/ux-vault/portable': r('../ux-vault/src/portable.ts'),
       '@ghostpay/secret-box': r('../secret-box/src/index.ts'),
       '@ghostpay/core-crypto': r('../core-crypto/src/index.ts'),
     },

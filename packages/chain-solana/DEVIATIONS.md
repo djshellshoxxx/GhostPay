@@ -1,7 +1,35 @@
 # Deviations, verification status and threat notes (chain-solana)
 
-Status (2026-10-21): typecheck, lint and tests pass; 97 tests; coverage 98.71% statements, 97.77% branches,
-98.3% functions, 99.61% lines. **Proof of concept: not audited, never run against a cluster.**
+Status (2026-11-18, TB-08): typecheck, lint and tests pass; 111 tests; coverage 99.41% statements, 98.99% branches,
+98.41% functions, 99.64% lines. **Proof of concept: not audited, never run against a cluster.**
+
+## 0. Format consolidation with `@ghostpay/solana-stealth` (TB-08, 2026-11-18)
+
+ADR-0017 (`docs/adr/ADR-0017-solana-stealth.md`) fixed the scheme the research spec left open, and the web app ships
+it through `@ghostpay/solana-stealth` (`apps/web/src/features/solana/wallet.ts` encodes `st:sol:`;
+`docs/user/solana-payments.md` tells users to hand out `st:sol:` meta-addresses and `gpst1:` + base58 memos). This
+package's own choices (rows 1, 3 and 5 below, and the `[8]` cofactor step) were never ratified and made the CLI
+incompatible: for the same `S`, `V` and `r` it derived a different one-time address and view tag, so a CLI-side
+payer would have paid an address the web wallet never detects. They are now reverted to ADR-0017:
+
+| Item | Before | Now (= ADR-0017 = `@ghostpay/solana-stealth`) |
+|---|---|---|
+| Meta-address | `gpsol:` + base58check(sha256d)(`0x01 ‖ S ‖ V`) | `st:sol:` + base58(`0x01 ‖ cluster ‖ S ‖ V ‖ SHA-256(dst("checksum") ‖ payload)[0..4]`) |
+| Shared point | `K = [8](r·V)` | `Z = r·V` (inputs are torsion-free, see below) |
+| Tweak | `SHA-512(dst("tweak") ‖ K ‖ R ‖ S)` | `SHA-512(dst("shared") ‖ R ‖ Z ‖ S)` |
+| View tag | `SHA-512(dst("view-tag") ‖ K)[0]` | `SHA-256(dst("view-tag") ‖ R ‖ Z)[0]` |
+| Memo | `gpst1:` + base64url(`0x01 ‖ R ‖ tag ‖ metadata`) | `gpst1:` + base58(`R ‖ tag`), no metadata |
+| Adapter | any meta-address | meta-address cluster must match the chain id (`NETWORK_MISMATCH`) |
+
+Legacy inputs fail closed: `gpsol:` with `LEGACY_META_ADDRESS` (a dedicated code so a holder learns why), the
+base64url memo with `INVALID_ANNOUNCEMENT` (the adapter's scan skips it). There is no legacy acceptance path: no
+shipped surface generated `gpsol:` strings (the CLI only inspects meta-addresses; the web app never produced the
+form), and this package never built or sent a transaction, so no on-chain base64url memo is known to exist.
+Unchanged and local to this package: the binary announcer payload (no program exists; ADR-0017 section 6 specifies a
+different instruction) and the deterministic raw-scalar signer (any valid RFC 8032 signature verifies; nonce
+derivation is not an interoperability surface). Kept stricter than the web decoder: `S == V` is refused
+(`KEY_REUSE`). Evidence: `src/interop.test.ts` against `test-vectors/meta-address-sol-tron-v1.json` (generated
+from the web package only) and `test-vectors/solana-stealth.json`.
 
 ## 1. Differences from `docs/remote/chain-ports/solana.md` (research spec, section 2.3 / 2.4)
 
@@ -10,13 +38,13 @@ difference below needs ratifying (or reverting) by that ADR. A change to any has
 
 | # | Spec | This package | Reason |
 |---|---|---|---|
-| 1 | `h = H_s("GhostPay/sol/v1/h" ‖ shared ‖ R)` | `h = H("GhostPay/solana-stealth/v1/tweak", K, R, S)` | Also binds the recipient spend key `S`, so a given `(K, R)` cannot be reinterpreted against another meta-address. No security loss. |
+| 1 | `h = H_s("GhostPay/sol/v1/h" ‖ shared ‖ R)` | `h = SHA-512(dst("shared") ‖ R ‖ Z ‖ S)` (ADR-0017, since TB-08) | Also binds the recipient spend key `S`, so a given `(Z, R)` cannot be reinterpreted against another meta-address. No security loss. |
 | 2 | `H512(tag ‖ …)` | `SHA-512(u8(len(tag)) ‖ tag ‖ …)` | Length-prefixed tag is prefix-free regardless of future tag choices. All parts are fixed 32 bytes. |
-| 3 | Tag names `GhostPay/sol/v1/{h,tag,nonce}` | `GhostPay/solana-stealth/v1/{tweak,view-tag,nonce-prefix}` | Naming only. |
+| 3 | Tag names `GhostPay/sol/v1/{h,tag,nonce}` | `GhostPay/solana-stealth/v1/{shared,view-tag,checksum}` (ADR-0017) and `nonce-prefix` (local signer) | Naming only. |
 | 4 | Nonce prefix `H512(tag ‖ le32(p))[0..32]` | `H(tag, LE32(x), enc(P))[0..32]` | Same PRF of the secret; `P` added as in RFC 8032's binding of prefix to the key pair. No hedging randomness (fully deterministic). |
-| 5 | Meta-address `st:sol:<hex S><hex V>` + version, encoding left to an ADR | `gpsol:` + base58check(`0x01 ‖ S ‖ V`) | Checksummed, versioned, about 100 chars. Decoder also requires byte-identical re-encoding. |
+| 5 | Meta-address `st:sol:<hex S><hex V>` + version, encoding left to an ADR | ADR-0017 `st:sol:` + base58(`0x01 ‖ cluster ‖ S ‖ V ‖ checksum4`) (since TB-08; was `gpsol:`) | Checksummed, versioned, cluster-bound, about 103 chars. |
 | 6 | Receiver: hostile R is "not mine", never an exception | Implemented in `checkAnnouncement` (returns `null`). The binary/memo **decoders** do throw `INVALID_ANNOUNCEMENT`; the adapter's `scan` catches it and skips. Caller-owned inputs (own `S`, `v`, a malformed `expectedAddress`) still throw. | Codec strictness and scan robustness are separate concerns. |
-| 7 | Announcer event `{scheme_id, stealth, caller, ephemeral, metadata}`, `metadata[0]` = view tag | Payload `0x01 ‖ R ‖ view_tag ‖ metadata(0..256)`; no scheme id field (the version byte plays that role); stealth address is not in the payload (it is the funded account of the same transaction, passed to `scan` as `destination`) | No program exists yet; this is the minimal byte layout an announcer or a Memo can carry. When the announcer program is specified, its event should embed exactly these bytes. |
+| 7 | Announcer event `{scheme_id, stealth, caller, ephemeral, metadata}`, `metadata[0]` = view tag | Binary payload `0x01 ‖ R ‖ view_tag ‖ metadata(0..256)`; no scheme id field (the version byte plays that role); stealth address is not in the payload (it is the funded account of the same transaction, passed to `scan` as `destination`). The memo form is ADR-0017's `R ‖ view_tag` in base58 (section 0) | No program exists yet. ADR-0017 section 6 specifies a different instruction; reconcile when the program is built. |
 | 8 | Fee lines `not_deployed` in the PoC (spec section 10) | `not_enforceable` on all three lines | The coordinator brief for this package requires `not_enforceable` until an on-program fee split exists. Both statuses mean "do not charge"; reconcile in the ADR. |
 | 9 | Spec section 14 file layout (`ed25519.ts`, `derive.ts`, `scan.ts`, `spend.ts`) | `point.ts`, `stealth.ts` (derive + scan + spend scalar), `sign.ts`, `announcement.ts`, `pda.ts`, `adapter*.ts` | Organisation only. |
 | 10 | Acceptance: 1,000 round trips, 10,000 signer messages, 100,000 view-tag trials | 60 round trips + 25 differential + 2000 signer cases + 2048 view-tag trials (seeded) | CI time (the suite already takes about 35 s with coverage). Raise locally if needed. |
@@ -24,14 +52,13 @@ difference below needs ratifying (or reverting) by that ADR. A change to any has
 
 ### Cofactor handling
 
-`K = [8](r·V)` on the sender and `K = [8](v·R)` on the receiver (`sharedSecretPoint`, Monero `ge_mul8`
-style), **and** every input point is required to be torsion-free and canonical. For validated inputs the
-multiplication by 8 is a bijection on the prime-order subgroup and changes nothing about security; it is
-defence in depth so that a future relaxation of validation cannot let a torsion component in a hostile `R`
-desynchronise sender and receiver (tested: `[8](k(Q+T)) == [8](kQ)`, and pure torsion maps to the identity,
-which is rejected). No other cofactor multiplication is used: `P = S + h·B` and `x·B` stay in the subgroup
-because `S` is torsion-free, so signatures verify identically under cofactorless (strict) and cofactored
-(ZIP-215) verifiers.
+`Z = r·V` on the sender and `Z = v·R` on the receiver (`sharedSecretPoint`), exactly as ADR-0017. Until TB-08 this
+package multiplied by 8 (`[8](r·V)`, Monero `ge_mul8` style) as defence in depth; that produced different
+addresses from the web package for the same keys and was removed. Safety does not depend on it: every input point
+(`S`, `V`, `R`) is required to be canonical and torsion-free before any secret multiplication, so a hostile `R` can
+neither carry a torsion component nor probe the view key (tested with all 8 small-order points and torsion-mixed
+points, which `checkAnnouncement` rejects as "not mine"). `P = S + h·B` and `x·B` stay in the subgroup because `S`
+is torsion-free, so signatures verify identically under cofactorless (strict) and cofactored (ZIP-215) verifiers.
 
 ## 2. Why signing without a seed is OK
 
@@ -61,10 +88,9 @@ up, and it cannot be imported into standard wallets (spec section 2.4).
 - **View key holder** can detect payments and compute `h` (returned as a redacting `SecretScalar`), but
   not spend. `h` links a payment to its meta-address; treat it as sensitive.
 - **Hostile announcements** (invalid / torsion / non-canonical R, junk payloads, bad destinations) never
-  halt `scan`; they are skipped. Spam costs the scanner about 4.7 ms per announcement in Node 22 (214/s,
-  measured with noble 2.4.0, one variable-base multiplication, one torsion check, one cofactor clear).
-  Torsion check on R is a full multiplication by `L`; it is kept for strictness although `[8]` makes it
-  redundant for correctness.
+  halt `scan`; they are skipped. Spam cost was measured at about 4.7 ms per announcement in Node 22 (214/s,
+  noble 2.4.0, 2026-10-21, with a cofactor clear that TB-08 removed; not re-measured). The torsion check on R
+  (a full multiplication by `L`) is now what keeps torsion out of `Z = v·R`, so it is load-bearing.
 - **View-tag collisions** (1/256): without `expectedAddress`, `checkAnnouncement` returns an unfunded `P`.
   The adapter passes the record's `destination`; callers that do not must confirm balances.
 - **Ephemeral reuse** links payments. `r` is fresh per `deriveStealthPayment` and zeroed after use
@@ -113,10 +139,12 @@ cross-checked by two independent implementations in the test (noble `getPublicKe
 
 ## 6. Self-generated vectors
 
-`test-vectors/self-generated-v1.json` is produced by this package (status field says so). There is no
-external vector set for this scheme. Mitigation: the independent reference implementation recomputes
-every field, and signatures are verified with OpenSSL. A shared spec misreading would still pass both;
-external review of the formulas is required before relying on them.
+`test-vectors/self-generated-v1.json` is produced by this package (status field says so; regenerated 2026-11-18
+for the ADR-0017 scheme). There is no vector set from outside GhostPay for this scheme. Mitigation: the independent
+reference implementation recomputes every field, signatures are verified with OpenSSL, and since TB-08 the package
+also reproduces the web package's vectors (`test-vectors/solana-stealth.json`, recomputed in pure Python by
+`packages/solana-stealth/scripts/crosscheck_vectors.py`). A shared misreading of ADR-0017 would still pass all of
+them; external review of the formulas is required before relying on them.
 
 ## 7. Deviations from `chain-adapters` (`ChainAdapter`)
 

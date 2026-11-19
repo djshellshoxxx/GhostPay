@@ -60,6 +60,32 @@ async function scanText(fragment: string, user: ReturnType<typeof userEvent.setu
 }
 
 describe('Supported build incoming invoice boundary', () => {
+  it.each(['full', 'lean'] as const)('retains an opt-in v1 payer gas buffer in the %s profile', async (profile) => {
+    const { fragment } = await makeParsed();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    setHash(fragment);
+    const rpc = withManifestChain(mockRpc(84532, (method, params) => {
+      if (method === 'eth_gasPrice') return '0x3b9aca00';
+      if (method === 'eth_call' && (params[0] as { to?: unknown }).to === '0x420000000000000000000000000000000000000F') return `0x${'0'.repeat(64)}`;
+      throw new Error(`unexpected ${method}`);
+    }));
+    const discoverWallets = vi.fn(() => Promise.resolve([]));
+    renderWith(<AppShell order={ORDER} profile={profile} />, makeServices({
+      loadManifest: () => Promise.resolve({ status: 'loaded', manifest: backedManifest(84532) }),
+      createRpc: () => Promise.resolve(rpc),
+      discoverWallets,
+    }));
+    const user = userEvent.setup();
+    const buffer = await screen.findByLabelText<HTMLInputElement>(/Add a gas buffer/);
+    expect(buffer.checked).toBe(false);
+    expect(screen.queryByText(/Extra 0\.00024 ETH/)).toBeNull();
+    await user.click(buffer);
+    expect(await screen.findByText(/This publicly links your payment, the one-time address and the buffer/)).toBeTruthy();
+    expect(screen.getByText(/Extra 0\.00024 ETH \(native, not USDC\)/)).toBeTruthy();
+    expect(screen.getByText('Public linkage')).toBeTruthy();
+    expect(discoverWallets).not.toHaveBeenCalled();
+  });
+
   it('opens an actual signed v1 fixed-token invoice', async () => {
     const { fragment } = await makeParsed();
     setHash(fragment);

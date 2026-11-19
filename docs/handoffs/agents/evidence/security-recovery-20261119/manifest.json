@@ -1,0 +1,431 @@
+{
+  "schemaVersion": 1,
+  "archivePurpose": "Byte-preserving archive of completed G1 qualification and the fresh source-pinned Mythril review; no gate approval or new runtime qualification",
+  "archiveDate": "2026-11-19",
+  "archiveBaseCommit": "beee43cc3756c5bdc5374d93625abe1c5638e904",
+  "policyClient": {
+    "recoveryCommit": "7828166cdc10bc146b48ab1339f584c0b2753da2",
+    "historicalSourceHead": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+    "recoveryBase": "0249b30c7c6c3bfeda45287f41d92f8d2152c96c",
+    "qualification": {
+      "policyPackage": {
+        "passed": 118,
+        "failed": 0,
+        "skipped": 0,
+        "anvilCases": 7,
+        "requireAnvil": true,
+        "coverage": {
+          "statements": 97.38,
+          "branches": 95.84,
+          "functions": 100,
+          "lines": 99.57
+        },
+        "thresholdsUnchanged": true
+      },
+      "focusedWeb": {
+        "passed": 121,
+        "failed": 0,
+        "suites": 9,
+        "fullWebSuiteClaimed": false
+      },
+      "libraryTypecheck": "pass",
+      "libraryBuild": "pass",
+      "libraryLint": "pass",
+      "changedWebLint": "pass",
+      "i18n": {
+        "errors": 0,
+        "missingKeys": 0,
+        "warnings": 521,
+        "unusedKeys": 139
+      },
+      "secretScan": "pass",
+      "gitDiffCheck": "pass"
+    },
+    "baseline": {
+      "library": {
+        "failed": 14,
+        "passed": 31
+      },
+      "send": {
+        "failed": 4,
+        "passed": 39
+      },
+      "recordCoverage": {
+        "failed": 5,
+        "passed": 35
+      },
+      "webCoverage": {
+        "failed": 6,
+        "passed": 28
+      },
+      "fullPackageBeforeAnvilFixtureRepair": {
+        "failed": 1,
+        "passed": 117
+      }
+    },
+    "independentReview": {
+      "reviewer": "root coordinator",
+      "n09_n10": "pass",
+      "n11_sec11": "pass",
+      "anvilFixtureRepair": "pass",
+      "protocolLevelSec11Closed": false
+    },
+    "sourceFilesVerifiedAgainstRecoveryCommit": 28,
+    "allOriginalHandoffEvidenceHashesVerified": true,
+    "knownLimitation": "Payers with only a meta-address cannot establish asset coverage; this is existing client mitigation, not protocol-level SEC11 closure."
+  },
+  "mythril": {
+    "analyzedSourceCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "sourceTreeObjects": {
+      "contractsSrc": "dabfd36a98424a4184ee7e267e12815763d1157f",
+      "contractsLib": "b10191d543360a5c102e269cca72883b4303d8c7"
+    },
+    "provenance": {
+      "runId": 44342340082,
+      "jobId": 134935409285,
+      "artifactId": 14462654594,
+      "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44342340082/job/134935409285",
+      "reportBytes": 283168,
+      "reportSha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00",
+      "artifactZipSha256": "5db3cf9ffd6feaf74b1e7c50ca96f97591d0731a9ba975614ffcaa7b7474dff3",
+      "metadata": {
+        "schemaVersion": 1,
+        "analyzer": "mythril",
+        "requestedCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "checkoutCommit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "analysisOutcome": "failure",
+        "runnerExitCode": 1,
+        "reportPresent": true,
+        "fullReportBytes": 283168,
+        "fullReportSha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00",
+        "retainedBytes": 283168,
+        "truncated": false,
+        "retention": "At most the last 8 MiB; truncation applies only to the artifact, not the gate's input."
+      },
+      "tool": {
+        "mythril": "0.24.8",
+        "solc": "0.8.28",
+        "transactions": 3,
+        "executionTimeoutSecondsPerContract": 900,
+        "optimizerRuns": 200,
+        "evmVersion": "cancun"
+      },
+      "freshLocalSymbolicCampaignPerformed": false
+    },
+    "strictGate": {
+      "hostedConclusion": "failure",
+      "runnerExitCode": 1,
+      "findings": 11,
+      "medium": 3,
+      "low": 8,
+      "approvedDispositions": 0,
+      "runnerOrPolicyChanged": false,
+      "releaseBlockerRemains": true
+    },
+    "identityComparison": {
+      "earlierMainCommit": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "earlierMainReportSha256": "40e9faf6e54b4e5f1e683cb07d6522eea55f5bff50fcf46eeb5395d615c932f7",
+      "earlierMainEvidencePath": "docs/handoffs/pages-completion-20261118/evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.json",
+      "bothHave11Findings": true,
+      "currentOnly": [
+        "PolicyAccountFactory|SWC-113|PC-1781"
+      ],
+      "earlierMainOnly": [
+        "PolicyAccountFactory|SWC-113|PC-999"
+      ],
+      "interpretation": "Equal counts do not establish identity. Current report restores SWC113 PC1781 and omits the earlier main SWC113 PC999 record. Matching location keys still do not imply byte-identical traces; exact current hashes and inputs are retained per finding."
+    },
+    "observationalDispositionPath": "mythril-198aa5ba/mythril-198aa5ba-dispositions.json",
+    "findingIdentityKeys": [
+      "GhostPaySweepRelayer|SWC-116|PC-785",
+      "PolicyAccount|SWC-116|PC-1876",
+      "PolicyAccount|SWC-116|PC-5077",
+      "0x72c68108a82e82617b93d1be0d7975d762035015|SWC-110|PC-30",
+      "PolicyAccountFactory|SWC-107|PC-999",
+      "PolicyAccountFactory|SWC-107|PC-1170",
+      "PolicyAccountFactory|SWC-113|PC-1668",
+      "PolicyAccountFactory|SWC-113|PC-1781",
+      "PolicyAccountFactory|SWC-107|PC-2887",
+      "PolicyAccountFactory|SWC-107|PC-2978",
+      "PolicyAccountFactory|SWC-104|PC-2978"
+    ],
+    "freshConcreteReplayIsNotSymbolicQualification": true,
+    "ownerDecisions": {
+      "MYTHRIL-DISPOSITION-POLICY": {
+        "owner": "repository/security owner",
+        "status": "unapproved",
+        "decisionRequired": "Approve a finding-specific, source/bytecode/tool-bound disposition mechanism after independent review, or keep the strict release gate red. Existing candidate checker is not authorization. No SWC-wide suppression, count-based acceptance or ignore-failures change is approved.",
+        "source": [
+          "docs/audits/mythril-14290880802-expiry-dispositions.md",
+          "docs/audits/mythril-14290880802-factory-dispositions.md",
+          "docs/handoffs/consolidation-20261118/NEXT_PHASE_QUEUE.md"
+        ]
+      },
+      "N1-FEE-TOKEN-FREEZE": {
+        "owner": "scheme-2 deployment/protocol owner",
+        "status": "open before production scheme-2 deployment",
+        "decisionRequired": "Choose a zero-fee factory for upgradeable or fee-switchable tokens, or explicitly approve and specify a protocol change addressing view/wrong-delta failures. Existing token-specific FEE_TOKEN_FREEZE_ACK safeguards nonzero-fee deployments but neither removes the freeze nor authorizes real-funds use.",
+        "recoveredSafeguardCommits": [
+          "c0d718578fb4aa855ffcd4a87241a5efabf9732f",
+          "cff088d69c0f2731722894ee8835164b3ec8b221"
+        ],
+        "source": [
+          "docs/audits/mythril-14290880802-factory-dispositions.md",
+          "docs/operators/deployment-runbook.md",
+          "packages/contracts/README.md"
+        ]
+      },
+      "OD11-TIMELOCK-BOUND": {
+        "owner": "policy product/protocol owner",
+        "status": "open",
+        "decisionRequired": "Establish per-network producer/sequencer delay and cancellation-inclusion assumptions before accepting the 1-hour withdrawal / 2-hour destination-change minima for production. No numerical floor or new authority is chosen in this recovery.",
+        "source": [
+          "docs/audits/mythril-14290880802-expiry-dispositions.md"
+        ]
+      },
+      "FEE-TOKEN-SENDER-HOOKS": {
+        "owner": "factory deployer/token policy owner",
+        "status": "existing operational restriction; token-specific suitability unproved",
+        "decisionRequired": "Exclude fee tokens with sender-controlled transfer hooks and assess immutable token behavior, upgrade controls and waiver revenue consequences. The deployment script cannot prove absence of hooks.",
+        "source": [
+          "docs/audits/26-contract-security-review-2026-11.md",
+          "docs/audits/mythril-14290880802-factory-dispositions.md"
+        ]
+      }
+    },
+    "freshSymbolicCampaignRunForArchive": false
+  },
+  "archiveValidation": {
+    "rawCopiedFiles": 36,
+    "allCopiesByteIdentical": true,
+    "hostedZipMembersMatchStandaloneFiles": true,
+    "rawWhitespacePreserved": true,
+    "originalPathsAreHistoricalRuntimeReferences": true,
+    "emptyLogsPreserved": true,
+    "runtimeOrGateChanged": false
+  },
+  "files": {
+    "g1/policy-client-coverage-library-red.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-coverage-library-red.log",
+      "kind": "raw qualification log",
+      "sha256": "22269636374cf18edb6147c320a725f7a734f49f4eafc5deaa63a0967c0d72d7",
+      "bytes": 4178
+    },
+    "g1/policy-client-coverage-tests.patch": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-coverage-tests.patch",
+      "kind": "historical recovery patch",
+      "sha256": "12039add941c0ef4b82e05aa4d6fe0a1bcce3a5edf1fec870ea42a56c497806c",
+      "bytes": 15817
+    },
+    "g1/policy-client-coverage-web-red.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-coverage-web-red.log",
+      "kind": "raw qualification log",
+      "sha256": "1b9b395b93eb9e4fb3ccd248a0868f49345de6a6417b10aae539d0d2f7ac3820",
+      "bytes": 44591
+    },
+    "g1/policy-client-coverage.patch": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-coverage.patch",
+      "kind": "historical recovery patch",
+      "sha256": "1c226bb3ec546472465aae86940a4a6f8c9a36d40edd92d8fd09094e43401510",
+      "bytes": 24159
+    },
+    "g1/policy-client-i18n-check.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-i18n-check.log",
+      "kind": "raw qualification log",
+      "sha256": "2b5894094a594d8aac9c161b39f011eda76b5d004cb9a4c79a526d84c3acc6c0",
+      "bytes": 45209
+    },
+    "g1/policy-client-i18n-extract.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-i18n-extract.log",
+      "kind": "raw qualification log",
+      "sha256": "34d74edfeb3883aa6dc98c21567e08797d53a7cbf6e0f1fbd1dde6a4f8d92808",
+      "bytes": 4934
+    },
+    "g1/policy-client-library-build.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-build.log",
+      "kind": "raw qualification log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "g1/policy-client-library-full-green.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-full-green.log",
+      "kind": "raw qualification log",
+      "sha256": "d9331885b376c1395624d91b42539b1e17964c9b1f4109d3a2e9d14ba8d21f70",
+      "bytes": 1694
+    },
+    "g1/policy-client-library-full.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-full.log",
+      "kind": "raw qualification log",
+      "sha256": "49048a689cac6bca7fbdfabb0a59351f60057565afa87bbf107e3e4086bd2f87",
+      "bytes": 1481
+    },
+    "g1/policy-client-library-green.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-green.log",
+      "kind": "raw qualification log",
+      "sha256": "a52d11202807e59704d732108c3072798f840d98811595a6350037c575d2430b",
+      "bytes": 440
+    },
+    "g1/policy-client-library-lint.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-lint.log",
+      "kind": "raw qualification log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "g1/policy-client-library-typecheck-final.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-typecheck-final.log",
+      "kind": "raw qualification log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "g1/policy-client-library-typecheck.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-typecheck.log",
+      "kind": "raw qualification log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "g1/policy-client-library.patch": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library.patch",
+      "kind": "historical recovery patch",
+      "sha256": "709af78ce903c85ed66382bc148f3b4082c832feb9b3ae0375911e33264396c6",
+      "bytes": 25473
+    },
+    "g1/policy-client-red.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-red.log",
+      "kind": "raw qualification log",
+      "sha256": "0a188a5fc852c775cb08c06f328519257dabcf4b3d2ea37efa0885f9c166bbe1",
+      "bytes": 13342
+    },
+    "g1/policy-client-secrets.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-secrets.log",
+      "kind": "raw qualification log",
+      "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "bytes": 50
+    },
+    "g1/policy-client-send-green.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-send-green.log",
+      "kind": "raw qualification log",
+      "sha256": "881f16fa1361b811b13dbecd46798be7d2c783a2a5629d392d78fa7912261df5",
+      "bytes": 227
+    },
+    "g1/policy-client-send-red.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-send-red.log",
+      "kind": "raw qualification log",
+      "sha256": "947e0792492d8797731c872c401fcda73b01b5606bafe3a2dee9a9f805de442a",
+      "bytes": 4919
+    },
+    "g1/policy-client-send-tests.patch": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-send-tests.patch",
+      "kind": "historical recovery patch",
+      "sha256": "d3740ff36ab243b550b6404421ab3da06a280bebf7677691da6a29c40bfd25da",
+      "bytes": 12377
+    },
+    "g1/policy-client-send.patch": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-send.patch",
+      "kind": "historical recovery patch",
+      "sha256": "8749b569cec7b81b881f2445686102a38745c86ce43e286fd96dad3e679428b8",
+      "bytes": 2572
+    },
+    "g1/policy-client-tests.patch": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-tests.patch",
+      "kind": "historical recovery patch",
+      "sha256": "3df30d03db16bec0480ef123c029f6de1779a65eda07f87abdb87d28f6c49e7c",
+      "bytes": 17913
+    },
+    "g1/policy-client-web-green.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-web-green.log",
+      "kind": "raw qualification log",
+      "sha256": "c29ca4cb380a1b0a2c9b363b373c0b3635023b5ef3696fa480f1f52c19121168",
+      "bytes": 579
+    },
+    "g1/policy-client-web-lint.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-web-lint.log",
+      "kind": "raw qualification log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "g1/POLICY_CLIENT_20261119.md": {
+      "original": {
+        "gitCommit": "7828166cdc10bc146b48ab1339f584c0b2753da2",
+        "path": "docs/handoffs/agents/POLICY_CLIENT_20261119.md"
+      },
+      "kind": "exact committed handoff snapshot",
+      "sha256": "f44eded690b2d4dabe04b2b5b7805a0eef9698ad0cc102f1d401aa97a1dd5876",
+      "bytes": 8273
+    },
+    "g1/POLICY_CLIENT_20261119.json": {
+      "original": {
+        "gitCommit": "7828166cdc10bc146b48ab1339f584c0b2753da2",
+        "path": "docs/handoffs/agents/POLICY_CLIENT_20261119.json"
+      },
+      "kind": "exact committed handoff snapshot",
+      "sha256": "568381abb8ecf346aeb8fd6bceec9d7cb7f19bd40d48f6e168255e0de133ed13",
+      "bytes": 10240
+    },
+    "mythril-198aa5ba/report.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/report.log",
+      "kind": "original hosted artifact",
+      "sha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00",
+      "bytes": 283168
+    },
+    "mythril-198aa5ba/metadata.json": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/metadata.json",
+      "kind": "original hosted artifact",
+      "sha256": "778fde76eb0dda7842fae219377917a733dd48e1a9c6945a57787ef935191fcb",
+      "bytes": 532
+    },
+    "mythril-198aa5ba/mythril-198aa5ba.zip": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/mythril-198aa5ba.zip",
+      "kind": "original hosted artifact",
+      "sha256": "5db3cf9ffd6feaf74b1e7c50ca96f97591d0731a9ba975614ffcaa7b7474dff3",
+      "bytes": 17033
+    },
+    "mythril-198aa5ba/mythril-198aa5ba-dispositions.json": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/mythril-198aa5ba-dispositions.json",
+      "kind": "local observational evidence or harness",
+      "sha256": "47c6476726c73835af2cf036a484e03f3e201f321d3adc40b038984deb963d9a",
+      "bytes": 94629
+    },
+    "mythril-198aa5ba/build-current-mythril-dispositions.py": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/build-current-mythril-dispositions.py",
+      "kind": "local observational evidence or harness",
+      "sha256": "3460cba6759b8658579710542678a94ea77f3d46ae76001c03694b708e83834d",
+      "bytes": 27846
+    },
+    "mythril-198aa5ba/replay-current-mythril.py": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/replay-current-mythril.py",
+      "kind": "local observational evidence or harness",
+      "sha256": "9c449f7d8d0e69e3bd5b6362c7557f87f374021327f53825bb4d637765a5eaa5",
+      "bytes": 5702
+    },
+    "mythril-198aa5ba/mythril-current-concrete-replay.json": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/mythril-current-concrete-replay.json",
+      "kind": "local observational evidence or harness",
+      "sha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+      "bytes": 6120
+    },
+    "mythril-198aa5ba/mythril-current-concrete-replay.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/mythril-current-concrete-replay.log",
+      "kind": "local observational evidence or harness",
+      "sha256": "849804ae5bd4cb4e976f5eb4f680b96030fef95c67f60176ea60361469c3f388",
+      "bytes": 6120
+    },
+    "mythril-198aa5ba/mythril-current-anvil.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/mythril-current-anvil.log",
+      "kind": "local observational evidence or harness",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "mythril-198aa5ba/policy-gas.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-gas.log",
+      "kind": "local observational evidence or harness",
+      "sha256": "b7697f1170486f7efd756ff786ff850f1c84563200f4a35c8155a089748cd390",
+      "bytes": 34815
+    },
+    "mythril-198aa5ba/policy-forge-all.log": {
+      "original": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-forge-all.log",
+      "kind": "original failed full Forge compilation log",
+      "sha256": "b1d904754b4e0fc5ccc437051b3346bbee5c92d9d9aee3c36717d7949c378b4d",
+      "bytes": 96
+    }
+  }
+}

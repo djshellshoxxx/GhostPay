@@ -1,0 +1,919 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T08:41:59.421112+00:00",
+  "task": "Canonical browser devnet fixture followup to deployment-readback parity",
+  "base_sha": "f42553ab44d2bf8f544f0287656bbc184679014d",
+  "peer_dependency": {
+    "original": [
+      "b1a7c888",
+      "8238f66b6beafb46a7a2d1598e5c4c354819fc86"
+    ],
+    "local_imports": [
+      "49c89885e0e4a49f17a69173bff1abc1765ba61c",
+      "29355af7c697a6d424fc3801fe62b8022e083072"
+    ],
+    "qualification": "Peer source separately reviewed and integrated by coordinator; not part of the own cherry-pick sequence."
+  },
+  "own_cherry_pick_sequence_before_packet": [
+    "764dcb6325268af86b028d437ea2d337f8c183ee",
+    "05f5631d759476793614913c8926cb1727e376b3",
+    "5f6af961b25b9759497693ceb14b834bcae54f45"
+  ],
+  "final_runtime_sha": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "requirement": {
+    "source": "Coordinator explicit 2026-11-19 harness followup; existing canonical known-chain manifest verification and Pages c2 token-broadcast evidence.",
+    "gap": "Old runner deployed a custom announcer on31337 and passed that broadcast after switching to84532. Stronger ordinary verification correctly refuses that manifest.",
+    "status": "IMPLEMENTED; test-first RED and native old-fixture failure reproduced; final14/14 and native fixture/readback/signature GREEN; browser qualification remains separate."
+  },
+  "behavior": {
+    "original_deployment": "Keep unchanged DeployDevnet.s.sol on31337 and its original broadcast path for all3 stand-in tokens.",
+    "canonical_setup": "After chain-id switch, reuse loopbackRpc/assertLocalAnvil before installing compiled existing CC0 runtime at imported CANONICAL_ANNOUNCER; exact runtime bytes must read back.",
+    "new_deployment": "Run unmodified Deploy.s.sol on84532 against canonical announcer with existing public Anvil signer/fee recipient and isolated forge outputs.",
+    "preparation": "Require84532 router/sweep CREATE broadcast, canonical router ANNOUNCER, schema/library validation, ordinary on-chain readback and then public Playwright-key signing.",
+    "runner_acceptance": "No new mode or early successful exit. Default and pages browser execution tails remain byte-identical."
+  },
+  "tools": {
+    "node": "22.23.4",
+    "forge": "1.8.5 (51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f)",
+    "anvil": "1.8.5 (51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f)",
+    "solc": "0.8.28+commit.7893614a",
+    "node_heap_mib": 512,
+    "mutex": "/workspace/scratch/6eafdb04d91b/qualification.lock"
+  },
+  "checks": [
+    {
+      "name": "devnet-fixture-chain-adapters-build",
+      "source_revision": "05f5631d759476793614913c8926cb1727e376b3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/chain-adapters/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 5.253,
+      "observed_at": "2026-11-19T08:34:05.945169+00:00",
+      "log": "devnet-fixture-chain-adapters-build.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-chain-adapters-build.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-chain-adapters-build.log"
+    },
+    {
+      "name": "devnet-fixture-unit-red",
+      "source_revision": "05f5631d759476793614913c8926cb1727e376b3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--test",
+        "scripts/testnet/make-manifest.test.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 1,
+      "seconds": 3.743,
+      "observed_at": "2026-11-19T08:35:15.872646+00:00",
+      "log": "devnet-fixture-unit-red.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-unit-red.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-unit-red.log"
+    },
+    {
+      "name": "devnet-fixture-native-red",
+      "source_revision": "05f5631d759476793614913c8926cb1727e376b3",
+      "command": [
+        "python",
+        "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-replay.py",
+        "/workspace/scratch/6eafdb04d91b/GhostPay-devnet-fixture",
+        "red"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 6.643,
+      "observed_at": "2026-11-19T08:35:22.582311+00:00",
+      "log": "devnet-fixture-native-red.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-red.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-red.log"
+    },
+    {
+      "name": "devnet-fixture-unit-green",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--test",
+        "scripts/testnet/make-manifest.test.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 2.048,
+      "observed_at": "2026-11-19T08:37:17.791743+00:00",
+      "log": "devnet-fixture-unit-green.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-unit-green.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-unit-green.log"
+    },
+    {
+      "name": "devnet-fixture-shell-syntax",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "command": [
+        "/bin/bash",
+        "-n",
+        "scripts/beta/browser-devnet.sh"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 0.005,
+      "observed_at": "2026-11-19T08:37:09.170093+00:00",
+      "log": "devnet-fixture-shell-syntax.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-shell-syntax.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-shell-syntax.log"
+    },
+    {
+      "name": "devnet-fixture-helper-syntax",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--check",
+        "apps/web/e2e/devnet/prepare-devnet-manifest.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 0.08,
+      "observed_at": "2026-11-19T08:37:09.304990+00:00",
+      "log": "devnet-fixture-helper-syntax.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-helper-syntax.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-helper-syntax.log"
+    },
+    {
+      "name": "devnet-fixture-tests-syntax",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--check",
+        "scripts/testnet/make-manifest.test.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 0.089,
+      "observed_at": "2026-11-19T08:37:09.449234+00:00",
+      "log": "devnet-fixture-tests-syntax.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-tests-syntax.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-tests-syntax.log"
+    },
+    {
+      "name": "devnet-fixture-native-green",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "command": [
+        "python",
+        "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-replay.py",
+        "/workspace/scratch/6eafdb04d91b/GhostPay-devnet-fixture",
+        "green"
+      ],
+      "cwd": ".",
+      "exit_code": 1,
+      "seconds": 6.519,
+      "observed_at": "2026-11-19T08:37:15.684751+00:00",
+      "log": "devnet-fixture-native-green.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green.log"
+    },
+    {
+      "name": "devnet-fixture-native-green-final",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "command": [
+        "python",
+        "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-replay.py",
+        "/workspace/scratch/6eafdb04d91b/GhostPay-devnet-fixture",
+        "green"
+      ],
+      "cwd": ".",
+      "exit_code": 1,
+      "seconds": 11.784,
+      "observed_at": "2026-11-19T08:38:31.426435+00:00",
+      "log": "devnet-fixture-native-green-final.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-final.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-final.log"
+    },
+    {
+      "name": "devnet-fixture-native-green-verified",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "command": [
+        "python",
+        "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-replay.py",
+        "/workspace/scratch/6eafdb04d91b/GhostPay-devnet-fixture",
+        "green"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 14.598,
+      "observed_at": "2026-11-19T08:39:33.184071+00:00",
+      "log": "devnet-fixture-native-green-verified.log",
+      "receipt": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-verified.json",
+      "raw_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-verified.log"
+    }
+  ],
+  "native_proofs": [
+    {
+      "label": "red",
+      "proof": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-red-proof.json",
+      "replay": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-red-replay.py",
+      "replay_sha256": "fabcfbf2fdd3d95ac0e50c9e1783790419463893aa9f586266cc8679e617299b",
+      "source_revision": "05f5631d759476793614913c8926cb1727e376b3",
+      "steps": [
+        {
+          "name": "deploy-devnet-31337",
+          "exit_code": 0,
+          "seconds": 4.629,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/deploy-devnet-31337.log",
+          "sha256": "de655030b1c11a8b7db5ffa084bff6171384d82aefc8f6eee4ca263d0be5bbd1",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-red-deploy-devnet-31337.log"
+        },
+        {
+          "name": "prepare-manifest",
+          "exit_code": 1,
+          "seconds": 1.754,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/prepare-manifest.log",
+          "sha256": "5f4ff635e53c8ade646c7f5b68df321c98bf21f37df5e4387402116a73fd4ffe",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-red-prepare-manifest.log"
+        }
+      ],
+      "anvil_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-red-anvil.log"
+    },
+    {
+      "label": "green-initial",
+      "proof": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-initial-proof.json",
+      "replay": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-initial-replay.py",
+      "replay_sha256": "43b76b9f1bb9b296118d1b5c94065551805e3c25d9e0685ef43a63471b04132a",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "steps": [
+        {
+          "name": "deploy-devnet-31337",
+          "exit_code": 0,
+          "seconds": 4.04,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-k4im754n/deploy-devnet-31337.log",
+          "sha256": "0363f89c774c50fbde4eb7d25195da40d79748e829f557524370803554a94a6f",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-initial-deploy-devnet-31337.log"
+        },
+        {
+          "name": "seed-canonical-runtime",
+          "exit_code": 0,
+          "seconds": 0.918,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-k4im754n/seed-canonical-runtime.log",
+          "sha256": "bc4e1ad4efd5833e7218a5713a8d59d0b3e47dbd753535a0860be01da22d4e51",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-initial-seed-canonical-runtime.log"
+        }
+      ],
+      "anvil_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-initial-anvil.log"
+    },
+    {
+      "label": "green-readback-cli",
+      "proof": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-readback-cli-proof.json",
+      "replay": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-readback-cli-replay.py",
+      "replay_sha256": "c79047319cf1585cea188d19842da20c0a4ab998331d6d109f08d3f091dd38aa",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "steps": [
+        {
+          "name": "deploy-devnet-31337",
+          "exit_code": 0,
+          "seconds": 3.923,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/deploy-devnet-31337.log",
+          "sha256": "2539774ef83835883f3ef6411d04fa9fa3d2a2e3caba4ac1a5bbf263567381cf",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-deploy-devnet-31337.log"
+        },
+        {
+          "name": "seed-canonical-runtime",
+          "exit_code": 0,
+          "seconds": 1.198,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/seed-canonical-runtime.log",
+          "sha256": "234dd9d86243c62e29d8e3a162eaa0c0c74ab775167888c6c423af849e7545bc",
+          "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/seed-canonical-runtime.stdout",
+          "stdout_sha256": "6fd26b117e78f5e42db415df7ba494ac0f75d41318aed25f5e17dc14909b09e3",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-seed-canonical-runtime.log",
+          "archived_stdout": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-seed-canonical-runtime.stdout"
+        },
+        {
+          "name": "deploy-canonical-84532",
+          "exit_code": 0,
+          "seconds": 3.243,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/deploy-canonical-84532.log",
+          "sha256": "5c7043d6010664e00d9659f22f63da46ce24beeac4b31e54b214510043780b24",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-deploy-canonical-84532.log"
+        },
+        {
+          "name": "prepare-manifest",
+          "exit_code": 0,
+          "seconds": 1.239,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/prepare-manifest.log",
+          "sha256": "2faac1ce0d33093e33435808ac872f6c189b30036c150135df923705e5f20aa5",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-prepare-manifest.log"
+        },
+        {
+          "name": "independent-manifest-readback",
+          "exit_code": 2,
+          "seconds": 0.777,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/independent-manifest-readback.log",
+          "sha256": "0ea40a5fe13d29e452bf1d20382a96063366cc735446047bef18e7c7e12c3b28",
+          "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/independent-manifest-readback.stdout",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-independent-manifest-readback.log",
+          "archived_stdout": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-independent-manifest-readback.stdout"
+        }
+      ],
+      "anvil_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-anvil.log"
+    },
+    {
+      "label": "green-verified",
+      "proof": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-proof.json",
+      "replay": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-replay.py",
+      "replay_sha256": "a853a215149f8b050277f92853ff6601863fc8fbac1e7c0e8228e47096a70b50",
+      "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "steps": [
+        {
+          "name": "deploy-devnet-31337",
+          "exit_code": 0,
+          "seconds": 4.549,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deploy-devnet-31337.log",
+          "sha256": "e5eaca770b8b662f0c462907c505d3ef206b5f2da6f07fab3120c5570381cbf4",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-deploy-devnet-31337.log"
+        },
+        {
+          "name": "seed-canonical-runtime",
+          "exit_code": 0,
+          "seconds": 0.719,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/seed-canonical-runtime.log",
+          "sha256": "234dd9d86243c62e29d8e3a162eaa0c0c74ab775167888c6c423af849e7545bc",
+          "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/seed-canonical-runtime.stdout",
+          "stdout_sha256": "6fd26b117e78f5e42db415df7ba494ac0f75d41318aed25f5e17dc14909b09e3",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-seed-canonical-runtime.log",
+          "archived_stdout": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-seed-canonical-runtime.stdout"
+        },
+        {
+          "name": "deploy-canonical-84532",
+          "exit_code": 0,
+          "seconds": 3.558,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deploy-canonical-84532.log",
+          "sha256": "301037a23913d0b763e40d12a374a78ef512629420d02e83c3892b71437f953a",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-deploy-canonical-84532.log"
+        },
+        {
+          "name": "prepare-manifest",
+          "exit_code": 0,
+          "seconds": 0.974,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/prepare-manifest.log",
+          "sha256": "87e3b7402efee82e072482a1d55ab4abba37d2e66e187e95dd051e7bf07a50f3",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-prepare-manifest.log"
+        },
+        {
+          "name": "independent-manifest-readback",
+          "exit_code": 0,
+          "seconds": 0.93,
+          "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/independent-manifest-readback.log",
+          "sha256": "13997c6601382193d4668cbd4ce9e4134842ed5630f5d6cfa816051b55ec49dc",
+          "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/independent-manifest-readback.stdout",
+          "stdout_sha256": "43e2c62bcfcbb48d251956149910d36f7208fd5148251ac23ee2ddeacb90731e",
+          "archived_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-independent-manifest-readback.log",
+          "archived_stdout": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-independent-manifest-readback.stdout"
+        }
+      ],
+      "anvil_log": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-anvil.log"
+    }
+  ],
+  "final_native_result": {
+    "phase": "green",
+    "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+    "source_sha256": {
+      "scripts/beta/browser-devnet.sh": "e27d6a5f6d5f1f2b1b0cdd5609b37a18485db85f8925d0b7578920c9d285e8d6",
+      "apps/web/e2e/devnet/prepare-devnet-manifest.mjs": "7c25f77738ef4ad7c4a5d1d58a17592c4c0d0701937d181c392bcda5c6fed360",
+      "scripts/testnet/make-manifest.test.mjs": "8396991bc82531b98fac40cf7f27f06ff9f9430605d5ff656192a3b713756394",
+      "packages/chain-adapters/src/deploymentsVerify.ts": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973",
+      "packages/chain-adapters/dist/deploymentsVerify.js": "f82657172746a1411e9059b33c3feb1dc11bc8c3a05119d16bb3b0a9fa85ed26",
+      "packages/contracts/script/Deploy.s.sol": "2e06d10b6dedea114546ca302acd7a9f5a0a85b1107cf84e7cc1941a0b1753e0",
+      "packages/contracts/script/devnet/DeployDevnet.s.sol": "8613019c8bbc6c78fd2b075725e7c19d608f0e9db339dfb3bbad83da75e094d6",
+      "packages/contracts/test/utils/ERC5564Announcer.sol": "9b7f4283fb02c97754cef6136453d38eeaab6c5632e1ccfc41468ae3bddd8e44"
+    },
+    "replay_sha256": "a853a215149f8b050277f92853ff6601863fc8fbac1e7c0e8228e47096a70b50",
+    "observed_at": "2026-11-19T08:39:19.698360+00:00",
+    "work_directory": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba",
+    "acceptance_scope": "native local fixture/readback/signature only; no browser or public-chain acceptance",
+    "public_test_signer_source": "scripts/beta/browser-devnet.sh DEV_DEPLOYER_KEY (public Anvil account 0)",
+    "steps": [
+      {
+        "name": "deploy-devnet-31337",
+        "exit_code": 0,
+        "seconds": 4.549,
+        "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deploy-devnet-31337.log",
+        "sha256": "e5eaca770b8b662f0c462907c505d3ef206b5f2da6f07fab3120c5570381cbf4"
+      },
+      {
+        "name": "seed-canonical-runtime",
+        "exit_code": 0,
+        "seconds": 0.719,
+        "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/seed-canonical-runtime.log",
+        "sha256": "234dd9d86243c62e29d8e3a162eaa0c0c74ab775167888c6c423af849e7545bc",
+        "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/seed-canonical-runtime.stdout",
+        "stdout_sha256": "6fd26b117e78f5e42db415df7ba494ac0f75d41318aed25f5e17dc14909b09e3"
+      },
+      {
+        "name": "deploy-canonical-84532",
+        "exit_code": 0,
+        "seconds": 3.558,
+        "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deploy-canonical-84532.log",
+        "sha256": "301037a23913d0b763e40d12a374a78ef512629420d02e83c3892b71437f953a"
+      },
+      {
+        "name": "prepare-manifest",
+        "exit_code": 0,
+        "seconds": 0.974,
+        "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/prepare-manifest.log",
+        "sha256": "87e3b7402efee82e072482a1d55ab4abba37d2e66e187e95dd051e7bf07a50f3"
+      },
+      {
+        "name": "independent-manifest-readback",
+        "exit_code": 0,
+        "seconds": 0.93,
+        "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/independent-manifest-readback.log",
+        "sha256": "13997c6601382193d4668cbd4ce9e4134842ed5630f5d6cfa816051b55ec49dc",
+        "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/independent-manifest-readback.stdout",
+        "stdout_sha256": "43e2c62bcfcbb48d251956149910d36f7208fd5148251ac23ee2ddeacb90731e"
+      }
+    ],
+    "canonical_announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
+    "runner_seed_source_sha256": "776873840f5eb4ac701a96ecbeeb74b28c24981bd5b9f0b6e13847c94489edfd",
+    "canonical_runtime_artifact_sha256": "b974e8ed887185d777ddb72e1f36b637fa44d68a6ebbbd8d429c4af5faed61b2",
+    "prepare_exit_code": 0,
+    "manifest_result": {
+      "chainId": 84532,
+      "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
+      "router": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      "sweepRelayer": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      "signature": "valid",
+      "readback": "passed",
+      "allowlistedTokens": [
+        "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+        "0x808456652fdb597867f38412077A9182bf77359F"
+      ],
+      "allowlistedTokensHaveNoCode": true
+    },
+    "signed_manifest_sha256": "0a6a71d47d773caa3c749d9442ed33a8d25f9d35451e52e14d38f7f8114ccb37",
+    "original_31337_broadcast_sha256": "d340893c9a785670d32b0ed8a511fbd9f3eee3a0b9fd019b32a380430223754e",
+    "original_31337_broadcast_preserved": true,
+    "stand_in_tokens": [
+      "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9",
+      "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9",
+      "0x5fc8d32690cc91d4c39d9d3abcbd16989f875707"
+    ],
+    "stand_in_token_code_preserved": true,
+    "browser_executed": false,
+    "result": "native fixture/readback passed",
+    "owned_anvil_stopped": true
+  },
+  "source_proof": {
+    "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+    "runtime_source_hashes": [
+      {
+        "path": "scripts/beta/browser-devnet.sh",
+        "sha256": "e27d6a5f6d5f1f2b1b0cdd5609b37a18485db85f8925d0b7578920c9d285e8d6"
+      },
+      {
+        "path": "apps/web/e2e/devnet/prepare-devnet-manifest.mjs",
+        "sha256": "7c25f77738ef4ad7c4a5d1d58a17592c4c0d0701937d181c392bcda5c6fed360"
+      },
+      {
+        "path": "scripts/testnet/make-manifest.test.mjs",
+        "sha256": "8396991bc82531b98fac40cf7f27f06ff9f9430605d5ff656192a3b713756394"
+      }
+    ],
+    "preserved_source_hashes": [
+      {
+        "path": "packages/chain-adapters/src/deploymentsVerify.ts",
+        "sha256": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "packages/contracts/script/Deploy.s.sol",
+        "sha256": "2e06d10b6dedea114546ca302acd7a9f5a0a85b1107cf84e7cc1941a0b1753e0",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "packages/contracts/script/devnet/DeployDevnet.s.sol",
+        "sha256": "8613019c8bbc6c78fd2b075725e7c19d608f0e9db339dfb3bbad83da75e094d6",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "packages/contracts/test/utils/ERC5564Announcer.sol",
+        "sha256": "9b7f4283fb02c97754cef6136453d38eeaab6c5632e1ccfc41468ae3bddd8e44",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "apps/web/e2e/pages-devnet.spec.ts",
+        "sha256": "bffb01d28a5183df5f16fc5f0e519897d1260ed3e55301dc84e48fe7232de124",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "apps/web/playwright.devnet.config.ts",
+        "sha256": "8d998e476a17731e11ec710308f90abd52eb7edb6ca4f40d2f6c2152fe9663b8",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "apps/web/playwright.pages-devnet.config.ts",
+        "sha256": "dd30f7a94a0afc6e227679bfc39f46d5ad4aed7c4107cd35e64e0ab18eed86b2",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "apps/web/e2e/prepare-manifest.mjs",
+        "sha256": "3920a20a2a4920d50c8d807bc9e7d48adc4e553b1bfc4eac1f80ad804944a1b7",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "package.json",
+        "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "c5305bd026b32331d0dd758ac2a359480b9865cc5871c3276ce1ebb6c07ead9e",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      },
+      {
+        "path": "eslint.config.js",
+        "sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+        "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072"
+      }
+    ],
+    "browser_execution_tail_identical_to_peer_baseline": true,
+    "browser_execution_tail_sha256": "f780a22fb68dbd9cbc8b538f31677010371cd1dcb91e35056447b9be60977655",
+    "relevant_dependency_source_and_manifests_match_copy_origin": "6fe060e370ccf168899796708ae4d6bed5e990ef"
+  },
+  "retained_replay_failures": [
+    {
+      "check": "devnet-fixture-native-green",
+      "exit_code": 1,
+      "reason": "Replay combined the existing Node stderr warning with canonical-address stdout; the actual runner captures stdout only. Replay capture corrected; source unchanged."
+    },
+    {
+      "check": "devnet-fixture-native-green-final",
+      "exit_code": 1,
+      "reason": "Deployments and helper signing succeeded, but replay node -e made imported helper path equal argv[1], triggering its CLI usage guard. Replay changed to stdin entry; source unchanged."
+    }
+  ],
+  "source_review": [
+    {
+      "reviewer": "root",
+      "source": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "result": "PASS",
+      "basis": "Independent source/test review delivered2026-11-19 before final native GREEN."
+    },
+    {
+      "reviewer": "contract_security",
+      "source": "5f6af961b25b9759497693ceb14b834bcae54f45",
+      "result": "PASS",
+      "basis": "Independent source review delivered2026-11-19; final raw evidence hash review tracked separately by reviewer."
+    }
+  ],
+  "qualification_limits": [
+    "No browser execution or public-chain/RPC/wallet acceptance. The native replay stops after fixture/readback/signature checks and never claims browser PASS.",
+    "No permanent fixture-only runner mode, timeout extension, skip adjustment, production verifier bypass, contract change or browser isolation change.",
+    "Dependencies were independent copies with relevant source/manifest parity, not a fresh npm-ci claim. Chain-adapters was rebuilt from this worktree before RED.",
+    "Repository ESLint intentionally ignores .mjs files; shell and both changed module syntax checks plus actual module execution are the scoped static qualification, not a lint/typecheck claim.",
+    "Full combined-head hosted browser/application qualification remains coordinator-owned. Historical browser runs are not relabeled as this source."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-chain-adapters-build.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-chain-adapters-build.json",
+      "sha256": "53aa280cb6fe4889d3c6dde75f9b0d140fa4c451c523b6f1e05b239dce7cf00f",
+      "bytes": 466
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-chain-adapters-build.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-chain-adapters-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-unit-red.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-unit-red.json",
+      "sha256": "7707339cbc55c87669d46f32f3a4a3953fac80f1f9a062608499d83c77320ec0",
+      "bytes": 402
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-unit-red.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-unit-red.log",
+      "sha256": "1ae222dfb61b36774329cedb35b4fb57623963ce131bc01dd7fb765eb4ff85ec",
+      "bytes": 11109
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-red.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red.json",
+      "sha256": "02ef4d14223762409ebeb7fb07fe425b4992669efd89796d7e10ceb2d8ba155d",
+      "bytes": 450
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-red.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red.log",
+      "sha256": "16cb2e36dc8df336edeb68cd263b6493713283905888d19844850786fa040b4c",
+      "bytes": 2754
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-unit-green.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-unit-green.json",
+      "sha256": "2b88fad3db2bc6a86cc52038ee4d973cf64eda801bff386698c4e8565a7a09aa",
+      "bytes": 406
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-unit-green.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-unit-green.log",
+      "sha256": "09fc997a0fd02931f8c858dfc43951fe4b3870a6a30c2dcebbb1c37221a467b0",
+      "bytes": 3495
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-shell-syntax.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-shell-syntax.json",
+      "sha256": "9c0bc4ef29ea4f9cdb1fe3bf058c7ca59cfb3ee0104038d3e0e18307740050f7",
+      "bytes": 342
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-shell-syntax.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-shell-syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-helper-syntax.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-helper-syntax.json",
+      "sha256": "8950f54ab7ee18caadb55c73a51c8afa91c973e38938faa7200787a3f0517f5b",
+      "bytes": 421
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-helper-syntax.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-helper-syntax.log",
+      "sha256": "119993fee89521c0aae7896b4a56857f0721429ac7a7a287dd47c5031fa4b6fd",
+      "bytes": 174
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-tests-syntax.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-tests-syntax.json",
+      "sha256": "6b1f8f5081e94a22febd372cf515341b2e2504e5ef0ee4f1c54fac0c50901a6d",
+      "bytes": 411
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-tests-syntax.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-tests-syntax.log",
+      "sha256": "f7494c2d7d97c854731bd741374e092876312e2505d980d910c7bf39d6fc0b5b",
+      "bytes": 175
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green.json",
+      "sha256": "c598d07c223c6e997a47ae5771a4b89209ffb86fbc20f13563e2be3cc01e6124",
+      "bytes": 456
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green.log",
+      "sha256": "14b0788f7937f50eab921b90ac651c17404afe204e2eab4d35b9357ef24d9f96",
+      "bytes": 486
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-final.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-final.json",
+      "sha256": "7db4eff1b59985b159494fd6dcf192a78b4dfd970a95d65be0f5f51548a03e36",
+      "bytes": 469
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-final.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-final.log",
+      "sha256": "12bba747bed3599fe7e9b0189222375b44094136ff231e3b7a0b32862896783c",
+      "bytes": 858
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-verified.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-verified.json",
+      "sha256": "3bdeeec3d0ae3e96eec3fca0f2b4132af160608b7315b2d4f43044deb4f8957a",
+      "bytes": 475
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-verified.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-verified.log",
+      "sha256": "7827d59da0f846969833ddf16aa0a7468fccff3a2d3263ffdb1544efd0269ea3",
+      "bytes": 5236
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-red-proof.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-proof.json",
+      "sha256": "d2b2b21b93b6e36e617c933d01066622aaa020915d2a32fef3c138591d0992f3",
+      "bytes": 2707
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-red-replay.py",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-replay.py",
+      "sha256": "fabcfbf2fdd3d95ac0e50c9e1783790419463893aa9f586266cc8679e617299b",
+      "bytes": 10057
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-red-deploy-devnet-31337.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/deploy-devnet-31337.log",
+      "sha256": "de655030b1c11a8b7db5ffa084bff6171384d82aefc8f6eee4ca263d0be5bbd1",
+      "bytes": 1442
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-red-prepare-manifest.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/prepare-manifest.log",
+      "sha256": "5f4ff635e53c8ade646c7f5b68df321c98bf21f37df5e4387402116a73fd4ffe",
+      "bytes": 243
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-red-anvil.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/anvil.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-initial-proof.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-initial-proof.json",
+      "sha256": "fc3df3c15bbb1f5bea3fe32739590399f3ba8839dc39ba2e2df74e0e11ffc44a",
+      "bytes": 2203
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-initial-replay.py",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-initial-replay.py",
+      "sha256": "43b76b9f1bb9b296118d1b5c94065551805e3c25d9e0685ef43a63471b04132a",
+      "bytes": 10697
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-initial-deploy-devnet-31337.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-k4im754n/deploy-devnet-31337.log",
+      "sha256": "0363f89c774c50fbde4eb7d25195da40d79748e829f557524370803554a94a6f",
+      "bytes": 1446
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-initial-seed-canonical-runtime.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-k4im754n/seed-canonical-runtime.log",
+      "sha256": "bc4e1ad4efd5833e7218a5713a8d59d0b3e47dbd753535a0860be01da22d4e51",
+      "bytes": 218
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-initial-anvil.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-k4im754n/anvil.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-readback-cli-proof.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-readback-cli-proof.json",
+      "sha256": "12c05b56d54b870c4c83a58cdbda3004e6ae075bb3516ce3c1a85a4a98293284",
+      "bytes": 3906
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-readback-cli-replay.py",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-readback-cli-replay.py",
+      "sha256": "c79047319cf1585cea188d19842da20c0a4ab998331d6d109f08d3f091dd38aa",
+      "bytes": 11540
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-deploy-devnet-31337.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/deploy-devnet-31337.log",
+      "sha256": "2539774ef83835883f3ef6411d04fa9fa3d2a2e3caba4ac1a5bbf263567381cf",
+      "bytes": 1446
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-seed-canonical-runtime.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/seed-canonical-runtime.log",
+      "sha256": "234dd9d86243c62e29d8e3a162eaa0c0c74ab775167888c6c423af849e7545bc",
+      "bytes": 176
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-seed-canonical-runtime.stdout",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/seed-canonical-runtime.stdout",
+      "sha256": "6fd26b117e78f5e42db415df7ba494ac0f75d41318aed25f5e17dc14909b09e3",
+      "bytes": 42
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-deploy-canonical-84532.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/deploy-canonical-84532.log",
+      "sha256": "5c7043d6010664e00d9659f22f63da46ce24beeac4b31e54b214510043780b24",
+      "bytes": 1585
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-prepare-manifest.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/prepare-manifest.log",
+      "sha256": "2faac1ce0d33093e33435808ac872f6c189b30036c150135df923705e5f20aa5",
+      "bytes": 367
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-independent-manifest-readback.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/independent-manifest-readback.log",
+      "sha256": "0ea40a5fe13d29e452bf1d20382a96063366cc735446047bef18e7c7e12c3b28",
+      "bytes": 295
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-independent-manifest-readback.stdout",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/independent-manifest-readback.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-readback-cli-anvil.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/anvil.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-green-proof.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-proof.json",
+      "sha256": "2c8a6c1c1416c43a2a862475074e7619561ef600f48082449a179d308d58df10",
+      "bytes": 4913
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-native-replay.py",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-replay.py",
+      "sha256": "a853a215149f8b050277f92853ff6601863fc8fbac1e7c0e8228e47096a70b50",
+      "bytes": 11550
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-deploy-devnet-31337.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deploy-devnet-31337.log",
+      "sha256": "e5eaca770b8b662f0c462907c505d3ef206b5f2da6f07fab3120c5570381cbf4",
+      "bytes": 1446
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-seed-canonical-runtime.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/seed-canonical-runtime.log",
+      "sha256": "234dd9d86243c62e29d8e3a162eaa0c0c74ab775167888c6c423af849e7545bc",
+      "bytes": 176
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-seed-canonical-runtime.stdout",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/seed-canonical-runtime.stdout",
+      "sha256": "6fd26b117e78f5e42db415df7ba494ac0f75d41318aed25f5e17dc14909b09e3",
+      "bytes": 42
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-deploy-canonical-84532.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deploy-canonical-84532.log",
+      "sha256": "301037a23913d0b763e40d12a374a78ef512629420d02e83c3892b71437f953a",
+      "bytes": 1585
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-prepare-manifest.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/prepare-manifest.log",
+      "sha256": "87e3b7402efee82e072482a1d55ab4abba37d2e66e187e95dd051e7bf07a50f3",
+      "bytes": 367
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-independent-manifest-readback.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/independent-manifest-readback.log",
+      "sha256": "13997c6601382193d4668cbd4ce9e4134842ed5630f5d6cfa816051b55ec49dc",
+      "bytes": 176
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-independent-manifest-readback.stdout",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/independent-manifest-readback.stdout",
+      "sha256": "43e2c62bcfcbb48d251956149910d36f7208fd5148251ac23ee2ddeacb90731e",
+      "bytes": 376
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-verified-anvil.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/anvil.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-original-31337-broadcast.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/broadcast/DeployDevnet.s.sol/31337/run-latest.json",
+      "sha256": "d340893c9a785670d32b0ed8a511fbd9f3eee3a0b9fd019b32a380430223754e",
+      "bytes": 61604
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-canonical-84532-broadcast.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/broadcast/Deploy.s.sol/84532/run-latest.json",
+      "sha256": "e563edeedb980e6ff4b21e2b1f16804005cb7c212e4f1c406a9aab169423a386",
+      "bytes": 26655
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-reference-artifact.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/forge-out/ERC5564Announcer.sol/ERC5564Announcer.json",
+      "sha256": "b974e8ed887185d777ddb72e1f36b637fa44d68a6ebbbd8d429c4af5faed61b2",
+      "bytes": 11288
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-signed-84532.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/deployments/84532.json",
+      "sha256": "0a6a71d47d773caa3c749d9442ed33a8d25f9d35451e52e14d38f7f8114ccb37",
+      "bytes": 966
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-green-browser-state.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-edgu6iba/devnet.json",
+      "sha256": "9d7741d41a68d71eb7cc825677dfb15e6bbcef257b6af37df2e111cb3d417b16",
+      "bytes": 531
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-dependency-copy.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-dependency-copy.json",
+      "sha256": "a698ff522de8e437b4d33a07f8410d72a970d9d583f800203f8cedf6b2e7b116",
+      "bytes": 2805
+    },
+    {
+      "path": "docs/completion/remaining-20261119/workflows-evidence/devnet-fixture-source-proof.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-source-proof.json",
+      "sha256": "f66035f520feaabb35f2250d8d8c7138c4284903608b6fbcb721c3c655e0912b",
+      "bytes": 3232
+    }
+  ]
+}

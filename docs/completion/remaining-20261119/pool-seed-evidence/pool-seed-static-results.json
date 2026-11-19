@@ -1,0 +1,14 @@
+[
+  {
+    "name": "typecheck-final",
+    "exit_code": 0,
+    "seconds": 7.477,
+    "source": "02711be2dbfbdea4b644feaad56f6f5bc8a52fe4"
+  },
+  {
+    "name": "lint",
+    "exit_code": 0,
+    "seconds": 16.77,
+    "source": "02711be2dbfbdea4b644feaad56f6f5bc8a52fe4"
+  }
+]

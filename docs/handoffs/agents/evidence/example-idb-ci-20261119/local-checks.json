@@ -1,0 +1,49 @@
+{
+  "existing_example_files": [
+    "examples/merchant-checkout/checkout.test.mjs",
+    "examples/merchant-checkout/money.test.mjs",
+    "examples/merchant-operations/approvals-store.test.mjs",
+    "examples/merchant-operations/refund-batch.test.mjs",
+    "examples/plugin-conformance/conformance.test.mjs",
+    "examples/pos-terminal/parity.test.mjs",
+    "examples/subscription-cron/run.test.mjs",
+    "examples/webhook-receiver/durable.test.mjs"
+  ],
+  "checks": [
+    {
+      "check": "examples",
+      "argv": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--test",
+        "examples/merchant-checkout/checkout.test.mjs",
+        "examples/merchant-checkout/money.test.mjs",
+        "examples/merchant-operations/approvals-store.test.mjs",
+        "examples/merchant-operations/refund-batch.test.mjs",
+        "examples/plugin-conformance/conformance.test.mjs",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/subscription-cron/run.test.mjs",
+        "examples/webhook-receiver/durable.test.mjs"
+      ],
+      "cwd": "/workspace/scratch/6eafdb04d91b/GhostPay-verifier",
+      "exit_code": 0
+    },
+    {
+      "check": "webhook-selftest",
+      "argv": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "examples/webhook-receiver/selftest.mjs"
+      ],
+      "cwd": "/workspace/scratch/6eafdb04d91b/GhostPay-verifier",
+      "exit_code": 0
+    },
+    {
+      "check": "indexeddb-browser",
+      "argv": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "scripts/test-reconciliation-idb.mjs"
+      ],
+      "cwd": "/workspace/scratch/6eafdb04d91b/GhostPay-verifier/apps/web",
+      "exit_code": 1
+    }
+  ]
+}

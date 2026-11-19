@@ -1,0 +1,92 @@
+{
+  "schema": "ghostpay-deployment-verifier-qualification/1",
+  "base": "264cf86b59bc5663136af9cb16f8b5ad67620aea",
+  "requirement": "F-DEP-02 policy implementation bytecode readback",
+  "versions": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "typescript": "5.9.3",
+    "eslint": "10.15.0"
+  },
+  "dependency_setup": "Independent copy of completed GhostPay-ci install and package dist artifacts; unchanged lock blob; not a fresh npm ci",
+  "lockfile_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+  "baseline_runtime_blob": "4c2355a55efd4f747d363b92cb8ad90525da496e",
+  "final_runtime_blob": "a3f3392eb4cbb367c5306fb1abcb7c6c8abe3228",
+  "final_test_blob": "b2c135ef9a7243c181015304cf4536fc299d1902",
+  "sha256": {
+    "runtime": "d8f996b39d6767ae9f460618f8e1bcd373d34bbac5331cdeb7b3a949bfaf9755",
+    "final_tests": "53e203647ef683561aab8b7987a58a8bdaa71c7f055b4325c23125a39518035e",
+    "tests_at_full_package_typecheck": "b3653cd4ec25be301564d577b8cccd81f51024ddb11f59b97759b2f490512dd5"
+  },
+  "checks": [
+    {
+      "check": "baseline plus adverse regressions",
+      "passed": 21,
+      "failed": 3,
+      "skipped": 0,
+      "exit_code": 1,
+      "log": "verify-red.txt"
+    },
+    {
+      "check": "both verifier suites plus manifest validation after runtime fix",
+      "passed": 51,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "log": "verify-green.txt"
+    },
+    {
+      "check": "package typecheck attempt1",
+      "node_heap_mib": 768,
+      "exit_code": -9,
+      "diagnostics": "none captured",
+      "log": "typecheck-attempt1.txt"
+    },
+    {
+      "check": "two-file lint before cleanup",
+      "exit_code": 1,
+      "diagnostics": "two unnecessary fixture type assertions",
+      "log": "lint-attempt2.txt"
+    },
+    {
+      "check": "full package typecheck attempt2",
+      "node_heap_mib": 512,
+      "exit_code": 0,
+      "log": "typecheck-attempt2.txt",
+      "scope_note": "Before equivalent type-only fixture cleanup: explicit it.each case type replaces two Hex assertions. Runtime source unchanged."
+    },
+    {
+      "check": "final two-file lint",
+      "node_heap_mib": 512,
+      "exit_code": 0,
+      "log": "lint-final.txt"
+    },
+    {
+      "check": "final verifier suite after fixture typing cleanup",
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0,
+      "node_heap_mib": 512,
+      "exit_code": 0,
+      "log": "verify-final.txt"
+    },
+    {
+      "check": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "check": "bash scripts/scan-secrets.sh",
+      "exit_code": 0
+    }
+  ],
+  "independent_review": {
+    "reviewer": "root coordinator",
+    "result": "PASS",
+    "scope": "runtime diff and three adverse regression cases, reviewed before type-only fixture cleanup"
+  },
+  "limits": [
+    "No public RPC or real deployed-contract qualification",
+    "No complete combined-source or hosted CI claim",
+    "Initial SIGKILL does not identify a specific compiler/source diagnostic; bounded512MiB package typecheck succeeded"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "local_source": "dbd638867051e5067c0139b516d47637c916f667",
+  "published_head": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+  "verified_tree": "4b063a87f2cb60aa61594a7c1348cbcd0a4fbcd7",
+  "tree_identity_verified": true,
+  "recorded_utc": "2026-11-19T08:36:20.296674+00:00",
+  "destination": "PR210, not yet main",
+  "base_public_main": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+  "archive_paths": [
+    "docs/handoffs/agents/DEPENDENCY_RECONCILE_20261119.md",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/audit-all.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/audit-production.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/audit-summary.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/clean-install.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/clean-install.txt",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/dependency-tooling.txt",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/installed-resolution.source.txt",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/installed-resolution.txt",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/lock-proof.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/paired-update-scope.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/production-tree-npm10.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/production-tree-npm10.stderr.txt",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/production-tree-problems.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/production-tree.stderr.txt",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/source-proof.json",
+    "docs/handoffs/agents/evidence/dependency-reconcile-20261119/targeted-checks.json"
+  ],
+  "archived_files": [
+    {
+      "path": "DEPENDENCY_RECONCILE_20261119.md",
+      "bytes": 6059,
+      "sha256": "df1788fd4fae434b8203586bde38c542f126127ea05c035a60405ac703797826"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/audit-all.json",
+      "bytes": 9307,
+      "sha256": "5c30d302663e2287840e84a958b22969b5640c5110e88cdd3ca5e341ca0abbdb"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/audit-production.json",
+      "bytes": 366,
+      "sha256": "a2a9e0305caa842aa574277712005fc0600e350d218f5ae9e5d78e97256a4473"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/audit-summary.json",
+      "bytes": 863,
+      "sha256": "d3b56b93ba02c87417761f311fd3c6aea699bacce69c90842a3147d6c855a875"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/clean-install.json",
+      "bytes": 799,
+      "sha256": "cd8571da0769800a8721ad6e7f2c1ad8bea906bb67ef996de2010bc7080d397f"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/clean-install.txt",
+      "bytes": 525,
+      "sha256": "46ae47112c2c837f98d72098a22298ad392971a41e0c275babcacf31fd94dd3c"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/dependency-tooling.txt",
+      "bytes": 1940,
+      "sha256": "35660767918d336cec68352f6b8fe51cf3ac4d88af194f205998336cee594214"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/installed-resolution.source.txt",
+      "bytes": 1498,
+      "sha256": "6a10b7a1dd4feb3defa838dfa91d4806831982d8e7f2cedec1ca2a854e417d57"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/installed-resolution.txt",
+      "bytes": 799,
+      "sha256": "7ed318127c3021d7df77bd07b764a4cc5eb55dce7ced0b7378037c1c1f8e9e0b"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/lock-proof.json",
+      "bytes": 1393,
+      "sha256": "e06d8863f9b14c6129cc3a4d64ad7cf0dcd73980353e9e8ec8a22707973a5017"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/paired-update-scope.json",
+      "bytes": 817,
+      "sha256": "ad47e799427b11348c754376dffc6ebf3713df9b2016f33ae7ad9d8730702b80"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/production-tree-npm10.json",
+      "bytes": 830,
+      "sha256": "abe01a1538c974c15d13bf105e7842b1a5f43c0407415e51cf0bc3ae14e3480d"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/production-tree-npm10.stderr.txt",
+      "bytes": 174,
+      "sha256": "e0cb71fe601c6aa0bc77d1c72b7de24eb689cec9d73775860edf39dc4fa5755c"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/production-tree-problems.json",
+      "bytes": 2732,
+      "sha256": "022fa3ce782c9ea4e2f44118043fe6a260722b37a3426b3895175b6fad65baba"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/production-tree.stderr.txt",
+      "bytes": 757,
+      "sha256": "de6ef144beccb5d794f6d6e90a2401d2029443b762628c431016b361c4d9889a"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/source-proof.json",
+      "bytes": 3911,
+      "sha256": "08bdc8b4b370f99300d7727b9d0ce811861dead70150ffe57bc38b64d293d477"
+    },
+    {
+      "path": "evidence/dependency-reconcile-20261119/targeted-checks.json",
+      "bytes": 1119,
+      "sha256": "301a0354032484c66e3d90309eb8527f289b7abcd75ade377959b3661eca94a7"
+    }
+  ]
+}

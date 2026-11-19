@@ -107,8 +107,11 @@ jobs:
         run: node scripts/check-chain-matrix.mjs
       - name: Build profile and emitted-output guard regressions
         run: node --test apps/web/scripts/localBuildProfile.test.mjs
-      - name: Merchant amount parsing and POS parity regressions
-        run: node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs
+      - name: Merchant and integration example regressions
+        run: |
+          shopt -s globstar
+          node --test examples/**/*.test.mjs
+          node examples/webhook-receiver/selftest.mjs
       - name: Locale catalog completeness and template safety
         run: node scripts/i18n/check.mjs
       - run: npm audit --omit=dev --audit-level=high
@@ -190,7 +193,10 @@ jobs:
               fi
               if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi
               if [ "$shard" = 0 ]; then
-                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs scripts/agent/*.test.mjs scripts/recovery/*.test.mjs
+                # Experimental suites support design review; they do not enable fund control or product authority.
+                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs scripts/agent/*.test.mjs scripts/recovery/*.test.mjs \
+                  scripts/experimental/milestone-escrow/model.test.mjs \
+                  scripts/experimental/policy-recovery/model.test.mjs
               fi
               ;;
           esac
@@ -322,6 +328,12 @@ jobs:
             apps/web/test-results/**/accessibility-audit.json
           if-no-files-found: error
           retention-days: 14
+      - name: Reconciliation IndexedDB two-tab acceptance
+        if: matrix.profile == 'full'
+        working-directory: apps/web
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: full
+        run: node scripts/test-reconciliation-idb.mjs
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -547,6 +559,18 @@ jobs:
         run: bash infra/proxy/check-headers.sh
       - name: Self-host release gate and archive checks (fake docker/gh, no network)
         run: bash deploy/selftest.sh
+      - name: Validate public self-host Compose configuration, with and without onion
+        run: |
+          set -euo pipefail
+          compose_config_dir="$(mktemp -d)"
+          trap 'rm -rf "$compose_config_dir"' EXIT
+          export DOCKER_CONFIG="$compose_config_dir"
+          docker compose version
+          # Public configuration only: do not resolve service env_files or invoke the daemon.
+          docker compose --env-file deploy/.env.example -f deploy/docker-compose.yml \
+            config --no-env-resolution --quiet
+          docker compose --env-file deploy/.env.example -f deploy/docker-compose.yml \
+            --profile onion config --no-env-resolution --quiet
       # The expanded suite inherits all 13 original CLI regressions and adds safe-mode matrices.
       - name: Audit CLI path, atomic-write and permission regressions
         run: python3 scripts/tests/audit-permissions.test.py

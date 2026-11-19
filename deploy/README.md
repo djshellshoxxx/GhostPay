@@ -15,15 +15,62 @@ Hardening in `docker-compose.yml`: `read_only`, `cap_drop: ALL`, `no-new-privile
 
 State: the `api-state` named volume holds the relayer's durable state (`/var/lib/ghostpay-relayer/state.json`, config key `state.file`); it is the api container's only writable path besides `/tmp`. Run one api container per volume, back it up and roll back per the [relayer runbook](../docs/operators/relayer-runbook.md). nginx limits request bodies to 16 KiB and exposes only `/api/{healthz,v1/info,v1/quote,v1/sweep}`; `/metrics` is never routed.
 
-You still must: terminate TLS in front of `127.0.0.1:${GHOSTPAY_HTTP_PORT}` (Caddy, Cloudflare Tunnel, host nginx); fund and limit the relayer hot key conservatively; set `allowedOrigins` to your origin; consider egress filtering for the api container (allow only your RPC hosts).
+You still must: terminate TLS in front of `127.0.0.1:${GHOSTPAY_HTTP_PORT}` (Caddy, Cloudflare Tunnel, host nginx) and configure HSTS there; fund and limit the relayer hot key conservatively; set `allowedOrigins` to your origin; consider egress filtering for the api container (allow only your RPC hosts).
 
 Behind the onion service the proxy sees only the Tor container's IP, so per-IP rate limits in the relayer collapse into one bucket; that is a known trade-off, not a bug.
 
 ## Pin images
-`.env.example` uses tags. Before production, resolve them to digests (`docker buildx imagetools inspect`) and pin `name@sha256:...`. Not done here (no network).
+
+The nginx image and Tor base defaults are pinned by tag and digest in
+`docker-compose.yml`, `.env.example` and `tor/Dockerfile`. The existing
+`bash deploy/selftest.sh` checks these pins and their agreement. The relayer's
+build and runtime base images already have digest pins in
+`apps/relayer/Dockerfile`; `ghostpay-relayer:local` and `ghostpay-tor:local` are
+locally built image tags.
+
+| Default | Pinned image | Identity rechecked |
+| --- | --- | --- |
+| Web | `nginxinc/nginx-unprivileged:1.27-alpine@sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0` | 2026-11-19 |
+| Tor base | `debian:bookworm-20261104-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc` | 2026-11-19 |
+
+The identities match the public Docker Hub tag metadata for
+[nginx](https://hub.docker.com/v2/repositories/nginxinc/nginx-unprivileged/tags/1.27-alpine)
+and [Debian](https://hub.docker.com/v2/repositories/library/debian/tags/bookworm-20261104-slim).
+When updating a pin, check the chosen tag and digest with
+`docker buildx imagetools inspect <name>:<tag>`, review the image change, and update
+all corresponding defaults together. Explicit image overrides remain the
+operator's responsibility.
+
+A digest fixes the selected base/image identity; this check is not a vulnerability
+scan or container acceptance. The Tor build still installs packages from apt
+repositories without package-version pins, so the base digest alone does not
+make the complete build reproducible. No container-version migration is implied.
+
+## HSTS at the TLS terminator
+
+The recipe's nginx listener serves HTTP, bound on the host to loopback. Configure
+`Strict-Transport-Security` at the public HTTPS edge that terminates TLS. Select
+the policy for that hostname explicitly; subdomain and preload settings affect
+more than this application and are not set by this recipe. The optional onion
+service and its HTTP listener do not establish public HTTPS acceptance.
+
+Check the actual HTTPS origin after its separately authorized deployment, for
+example with `curl -sI https://<your-origin>/`, and record the resulting HSTS and
+other required headers. Source configuration and the checks below do not prove
+those headers are served by a live origin.
 
 ## Validation status
-`bash deploy/selftest.sh` (also run in CI) covers archive validation (valid bundle, symlink and traversal archives) and the release gate: `--tarball` is refused without `--manifest` or an authenticity check, with a wrong `--expect-sha256`, a commit the manifest does not record or that is not a full lower-case SHA, or a failing `gh attestation verify` (called with exactly `--signer-workflow` release.yml, `--source-ref` the tag, `--source-digest` the commit and `--deny-self-hosted-runners`), and nothing is extracted or started; a verified bundle is installed and nothing starts until `start` is typed or the script is re-run (the printed re-run command keeps `--onion` and a non-default `--env-file`). `bash -n` passes. Docker Compose is unavailable in this environment, so compose config, image builds, container startup, and live mount permissions were not tested. `shellcheck` is unavailable; shell syntax was checked with `bash -n`.
+`bash deploy/selftest.sh` (also run in CI) covers archive validation (valid bundle, symlink and traversal archives) and the release gate: `--tarball` is refused without `--manifest` or an authenticity check, with a wrong `--expect-sha256`, a commit the manifest does not record or that is not a full lower-case SHA, or a failing `gh attestation verify` (called with exactly `--signer-workflow` release.yml, `--source-ref` the tag, `--source-digest` the commit and `--deny-self-hosted-runners`), and nothing is extracted or started; a verified bundle is installed and nothing starts until `start` is typed or the script is re-run (the printed re-run command keeps `--onion` and a non-default `--env-file`). The selftest also rejects unpinned nginx/Tor defaults and disagreement between the public configuration files.
+
+CI separately validates the public Compose configuration with and without the
+`onion` profile. It uses `.env.example`, an empty temporary Docker configuration,
+and `config --no-env-resolution --quiet`: service env files are not resolved and
+no image is pulled, built or started. This validates the Compose model without
+qualifying the operator's private configuration. Local commands, results and
+remaining acceptance are recorded in
+[the scoped handoff](../docs/handoffs/agents/SELFHOST_PINS_20261119.md).
+Image builds, container startup, live mounts, TLS and onion reachability require
+separate acceptance on an actual host.
 
 Spec: `docs/remote/usability/specs/self-host-one-command.md`. Tor notes: `TOR.md`. Bundle notes: `BUILD-WEB.md`.
 

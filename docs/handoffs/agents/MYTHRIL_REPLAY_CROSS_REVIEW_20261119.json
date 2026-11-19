@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "contract_security",
+  "date": "2026-11-19",
+  "verdict": "PASS",
+  "reviewScope": "Independent source and evidence review; no new EVM execution",
+  "reviewedPacketCommit": "5e753eb969455089acf40eca2d3a5859e3debb66",
+  "analyzedSourceCommit": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+  "reportSha256": "84f4f5846b68054fac52dc4968da78996d520c03c4049318ddc62ba4424b642e",
+  "coordinatorMarkdownSha256": "3cd4259955c571e5436ea0cb351530d990ff1a066fcb3bb2319fba677db3b1b2",
+  "coordinatorReceiptSha256": "f8422c3d962a5180f937dca5d6e8eef359e9dec005cd9db904b125bbb7fc3b5a",
+  "findingKeysVerified": [
+    "GhostPaySweepRelayer|SWC-116|PC-785",
+    "PolicyAccount|SWC-116|PC-1876",
+    "PolicyAccount|SWC-116|PC-5077",
+    "0x72c68108a82e82617b93d1be0d7975d762035015|SWC-110|PC-30",
+    "PolicyAccountFactory|SWC-107|PC-999",
+    "PolicyAccountFactory|SWC-107|PC-1170",
+    "PolicyAccountFactory|SWC-113|PC-1668",
+    "PolicyAccountFactory|SWC-113|PC-1781",
+    "PolicyAccountFactory|SWC-107|PC-2887",
+    "PolicyAccountFactory|SWC-107|PC-2978",
+    "PolicyAccountFactory|SWC-104|PC-2978"
+  ],
+  "rawArchiveFilesVerified": 6,
+  "fixedClockConstructorRejections": 8,
+  "fixedClockExpiryRejections": [
+    "InvalidAmount()",
+    "ZeroAmount()",
+    "InvalidDestination()"
+  ],
+  "retainedFirstAttempt": {
+    "coordinatorRecordedExitCode": 1,
+    "timestamps": [
+      1,
+      1,
+      1
+    ],
+    "expiryRejections": [
+      "Expired()",
+      "Expired()",
+      "InvalidDestination()"
+    ]
+  },
+  "fixedClockAttempt": {
+    "coordinatorRecordedExitCode": 0,
+    "timestamps": [
+      0,
+      0,
+      0
+    ],
+    "originalInputsAndAssertionsPreserved": true
+  },
+  "requiredAnalyzerGate": "FAIL: eleven findings; zero approved exceptions; unchanged",
+  "qualificationLimits": [
+    "Only the supplied creation/call inputs and their rejection in the documented local state are established, not all symbolic paths.",
+    "Expiry calls target locally deployed instances; addresses are not asserted equal to the symbolic target addresses.",
+    "The harness overrides the gas cap to 20,000,000 and uses Anvil's default chain/fork configuration; original symbolic nonce, balances and storage are not restored.",
+    "Creation origin is funded/impersonated. Other call origins are funded for eth_call; no live actor is contacted.",
+    "The eight Factory constructors reject before their later modeled deploy steps, which are not executed.",
+    "Silent zero-byte Anvil logs are preserved, not presented as missing data or verbose trace logs.",
+    "The reviewer verifies records and hashes without another EVM run; coordinator-observed process exits are retained as such.",
+    "Strict eleven-finding failure and all owner decisions remain unchanged; this is not a gate exception or external audit."
+  ],
+  "reviewArtifacts": [
+    {
+      "path": "docs/handoffs/agents/MYTHRIL_REPLAY_CROSS_REVIEW_20261119.md",
+      "bytes": 6466,
+      "sha256": "07a128a909aa589b3632508b5d401a330abeaf170d2fdb8cfef8cb9f616decac"
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/mythril-replay-cross-review-20261119/verify.py",
+      "bytes": 11545,
+      "sha256": "51c3cb5cac3b0bf3e85ad629568faa173bc66d2689fe0f5a4185469315aac8a0"
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/mythril-replay-cross-review-20261119/verification.json",
+      "bytes": 15820,
+      "sha256": "6c09a519a68395424f6b10c0e289ed3414aa03ccb933fd0bdac76a131eab1d38"
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/mythril-replay-cross-review-20261119/README.md",
+      "bytes": 1279,
+      "sha256": "2d155dfa6d842dfcd593c63ff4c9ea1265fed5fb54b98b747f415455825b2479"
+    }
+  ]
+}

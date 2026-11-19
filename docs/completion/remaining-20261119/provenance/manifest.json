@@ -1,0 +1,197 @@
+{
+  "schema": "ghostpay-original-history/1",
+  "captured_utc": "2026-11-19T09:17:22.284797+00:00",
+  "repository": "https://github.com/djshellshoxxx/GhostPay.git",
+  "capture_commit": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+  "capture_tree": "f24c415493c8fbd4f2c81dcc46ba0582e59907ff",
+  "heads": [
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-buffered-sweep-20261119",
+      "commit": "7ee1b02775502069af31c657133d258b3622f6b5",
+      "tree": "de7147537684e9897b6be90c2407d64c2f9adcc6"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-confidential-forward-20261119",
+      "commit": "47a0895ab347a259e4ff040400c2b9fdc180e2a1",
+      "tree": "04012018cb85ea98c485f5ebc6de988770d9d37f"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-dependency-reconcile-20261119",
+      "commit": "dbd638867051e5067c0139b516d47637c916f667",
+      "tree": "4b063a87f2cb60aa61594a7c1348cbcd0a4fbcd7"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-deployment-docs-20261119",
+      "commit": "bd6b26dda054fe376dfdc0a347eb4e158c4487a0",
+      "tree": "da947a94454a88ecca27458048a0f9db7f638af6"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-deployment-readback-20261119",
+      "commit": "8238f66b6beafb46a7a2d1598e5c4c354819fc86",
+      "tree": "328ad8782c7d8b25b8ba6185b8a2e8e35745557c"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-design-model-ci-20261119",
+      "commit": "3fa9029d6a921238c9b574e203dd8518b9b9a6b8",
+      "tree": "b41c5aed4a4f74df7836667a751150b73da7addf"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-devnet-canonical-fixture-20261119",
+      "commit": "bd62f0737e34112253380a0919fc3aedaaf2c7db",
+      "tree": "6e63b5c015dab6ff6f28c318677e5326f077b93b"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-example-idb-ci-20261119",
+      "commit": "f3c38f3f3208637eb5673ed9ace2e6975d1a2719",
+      "tree": "91853922a16afccd8fc569a0bd5d33dc66388af5"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-ledger-tolerance-20261119",
+      "commit": "51836d594700e362d033ecb7d1b481d0c9473f8b",
+      "tree": "95c2448052cd87a867e16422e281e453edb75ee9"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-merchant-profile-clock-20261119",
+      "commit": "34eee707030b6818021aa535af32d0f566f43bba",
+      "tree": "6fa8dd51fb603ba23d24e50810502efc15f38f82"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-op-fees-20261119",
+      "commit": "a2afd126b0276cda9ec0429657bbd130e17827ea",
+      "tree": "d6d640692df08c1f9ac90062532f0154474dcf6f"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-op-fees-corrected-baseline-20261119",
+      "commit": "49d68d7b2d71119d43c502a6ff4613c927b36f1c",
+      "tree": "8c33db12a3ac2ed98b56ae0c908222c85c88376c"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-pay-residuals-20261119",
+      "commit": "7b932e3e9467b762877813bf862d3ac5a6b6142b",
+      "tree": "4972afe524fb5fab613c40637f79e8f0080b6e1c"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-policy-client-20261119",
+      "commit": "7828166cdc10bc146b48ab1339f584c0b2753da2",
+      "tree": "52d985a9584993dbfa37d2a0def8244e7c4cac64"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-policy-guard-20261119",
+      "commit": "cff088d69c0f2731722894ee8835164b3ec8b221",
+      "tree": "07cddfa51ccfd2f248db5cc22ce8c264812959cf"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-pool-seed-security-20261119",
+      "commit": "59715cb3a741cfb8d1be7a5333290e3a61752960",
+      "tree": "ec0a6c26d8917bd34558e5c5b58fd1e6b12a758f"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-quote-age-20261119",
+      "commit": "5dca6b4d2ef378618f35a639e192277fe37d0288",
+      "tree": "611997ec32978ce720f5a15b5a843491bfcbde60"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-relayer-recovery-20261119",
+      "commit": "308a2148dbf7e23795b223e1f8aeaf6806b4160f",
+      "tree": "4cd93383b1438e167e365b64decc036e31e653d7"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-remaining-ci-20261119",
+      "commit": "33a4e5b457dfda723dfca027568a0f4bf8983f14",
+      "tree": "03214b58d94115f27d7242dd3c87bf73788154a2"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-remaining-work-20261119",
+      "commit": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "tree": "f24c415493c8fbd4f2c81dcc46ba0582e59907ff"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-selfhost-pins-20261119",
+      "commit": "42ef7f626d5859bdd0940d5c8fee0d93777c38a9",
+      "tree": "01cdafd148f68fa4d26f7b0577ce5c600caade5a"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-slither-visibility-20261119",
+      "commit": "bda57c32039fa4908cacc8fdeecfe29f44d47ad7",
+      "tree": "1776a6c24f6b4304a2313b9a21ef3482104ad54c"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-sol-tron-compat-20261119",
+      "commit": "7be82871a4867210da20e185202be0faa661ed7b",
+      "tree": "295d924893e9c27fa9f5ba411c4a964a9cb67877"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-verifier-parity-20261119",
+      "commit": "5128da10b7916e090922a6fe68469d5f0dddd072",
+      "tree": "29ac8ed3fcb9ec09e3ce8ca12348272c34906ad7"
+    },
+    {
+      "ref": "refs/heads/chatgpt/ghostpay-workflow-recovery-20261119",
+      "commit": "18d44d283ef28197ea84670c9662e81a93c42188",
+      "tree": "79329ce68221e3d734341d63454e14063c3efbe1"
+    }
+  ],
+  "public_prerequisite_tips": [
+    "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+    "7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+    "3c95b2a00bdcfb45dd36242ff40c133dd19d1811"
+  ],
+  "limits": [
+    "This archive preserves original local source identities, not successful qualification or a main merge.",
+    "The capture precedes the generated ledger/archive record and cannot contain its enclosing packaging commit.",
+    "Historical capture scripts may require recorded path mappings and separately installed Node/Foundry dependencies."
+  ],
+  "prerequisites": [
+    {
+      "commit": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+      "subject": "fix(completion): integrate reviewed unassigned security and CLI recoveries"
+    },
+    {
+      "commit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "subject": "docs(handoff): finalize Pages qualification evidence and remaining gates"
+    },
+    {
+      "commit": "7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+      "subject": "Merge #236: align viem and coverage provider on dependency candidate"
+    },
+    {
+      "commit": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "subject": "Merge qualified historical completion prompt (#208)"
+    },
+    {
+      "commit": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "subject": "Merge qualified historical continuation handoff (#216)"
+    },
+    {
+      "commit": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "subject": "Merge historical Pages source audit evidence (#214)"
+    },
+    {
+      "commit": "e454de6abfefda70d82784fafc1d8949b277c334",
+      "subject": "Merge qualified idle-lock, invoice signer and private checkpoint integration (#242)"
+    },
+    {
+      "commit": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "subject": "Merge PR #237: retain qualified beta acceptance logs"
+    }
+  ],
+  "bundle": {
+    "filename": "remaining-work-original-history.bundle",
+    "bytes": 1196924,
+    "sha256": "a46d79b3b669f6b1676ebfbeb3fa718d1d857318476c12f2da4a1af0192419ac"
+  },
+  "verification": {
+    "status": "PASS",
+    "fresh_bare_repository": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git",
+    "fresh_checkout": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/verified-checkout",
+    "network_source": "https://github.com/djshellshoxxx/GhostPay.git",
+    "local_alternates_used": false,
+    "shallow_fetch_used": false,
+    "all_original_heads_and_trees_verified": 25,
+    "repository_aware_report_comparison": "PASS",
+    "current_replay_record_verifier": "PASS; no EVM run",
+    "commands": 9
+  }
+}

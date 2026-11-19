@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-policy-client/apps/web
+
+
+ Test Files  2 passed (2)
+      Tests  43 passed (43)
+   Start at  22:41:13
+   Duration  11.55s (import 57%, transform 22%, tests 20%, worker 1%)
+

@@ -1,0 +1,47 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/relayer-guard
+      Coverage enabled with v8
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:78) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:90) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:102) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  6 passed (6)
+      Tests  183 passed (183)
+   Start at  23:16:29
+   Duration  5.65s (tests 64%, transform 21%, import 10%, worker 5%)
+
+    Isolate  6 workers spawned · ~309ms startup each (spawn + environment, per file)
+             at least ~1.55s faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   98.92 |    94.55 |   99.28 |   99.53 |                   
+ breaker.ts        |   99.04 |    98.68 |     100 |     100 | 134               
+ challenge-bank.ts |     100 |    94.44 |     100 |     100 | 30,170            
+ challenge.ts      |    97.9 |    94.15 |     100 |   99.39 | 482               
+ client.ts         |     100 |       92 |     100 |     100 | 74,79             
+ ip.ts             |   98.57 |    86.48 |   93.33 |   98.24 | 137               
+ limiter.ts        |   99.49 |    97.63 |     100 |     100 | 84-87             
+ secrets.ts        |   97.77 |    94.73 |     100 |   97.43 | 63                
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.92% ( 733/741 )
+Branches     : 94.55% ( 521/551 )
+Functions    : 99.28% ( 138/139 )
+Lines        : 99.53% ( 636/639 )
+================================================================================

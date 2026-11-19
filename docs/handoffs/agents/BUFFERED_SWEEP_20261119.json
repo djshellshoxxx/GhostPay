@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "scope": "F-CTR06 existing v1 buffered direct ERC20 sweep local Anvil acceptance",
+  "branch": "chatgpt/ghostpay-buffered-sweep-20261119",
+  "baseCommit": "cbed997a1fd8398975feac8fa23f9162a65f7e73",
+  "requirements": [
+    "docs/CONTRACTS_SPEC.md sections 1 and 3",
+    "docs/specs/13-gas-buffer-v2.md section 4"
+  ],
+  "baseline": "Missing integration acceptance, not a runtime defect; unchanged contract already implements buffered payment",
+  "sourceSha256": {
+    "packages/chain-adapters/src/router.anvil.test.ts": "b2cd4c75e69e6eae942389b408abae94c327ce812cb010a374612589d27229ec"
+  },
+  "final": {
+    "testsPassed": 4,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "nativeDurationSeconds": 3.54,
+    "requireAnvil": true,
+    "packageTypecheckExit": 0,
+    "scopedLintExit": 0,
+    "fullCoverageClaimed": false,
+    "fullRepositoryQualificationClaimed": false
+  },
+  "negativeControl": "Exact locally signed nonce-0 raw ERC20 transfer refused with insufficient funds while derived signer has zero ETH; same serialized bytes succeed after actual buffered payment",
+  "assertions": [
+    "starting ETH/token/nonce zero",
+    "preview/calldata equality",
+    "payer token debit=gross",
+    "recipient token fee=floor(gross*25/10000)",
+    "stealth tokens=net and ETH=entire buffer",
+    "payer ETH debit=buffer+actual payment gas",
+    "native fee-recipient balance unchanged",
+    "exact matching deployed-announcer event",
+    "metadata net=actual token net",
+    "same signed raw transaction succeeds after payment",
+    "positive actual gas within limit",
+    "stealth ETH=buffer-gasUsed*effectiveGasPrice",
+    "stealth nonce 0 to 1",
+    "destination receives exact net",
+    "stealth token balance zero",
+    "router token and ETH balances zero"
+  ],
+  "fixture": {
+    "grossTokenBaseUnits": "10000003",
+    "feeTokenBaseUnits": "25000",
+    "netTokenBaseUnits": "9975003",
+    "gasLimit": "100000",
+    "maxFeePerGasWei": "2000000000",
+    "safetyBps": "2000",
+    "bufferWei": "240000000000000",
+    "builderConfigChainId": 84532,
+    "anvilTransactionChainId": 31337,
+    "impersonatedStealthSigner": false,
+    "manuallyFundedStealthSigner": false,
+    "standardMockToken": true
+  },
+  "toolchain": {
+    "node": "v24.22.3",
+    "anvil": "1.8.5",
+    "anvilCommit": "51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f",
+    "solcArtifacts": "0.8.28+commit.7893614a",
+    "optimizerRuns": 200,
+    "compilerEvmVersion": "cancun",
+    "nodeOldSpaceMiB": 768,
+    "workers": 1
+  },
+  "independentSourceReview": {
+    "reviewer": "root coordinator",
+    "result": "PASS",
+    "sourceSha256": "b2cd4c75e69e6eae942389b408abae94c327ce812cb010a374612589d27229ec",
+    "scope": "Whole fixture/process and exact final diff; no live-chain or OP fee qualification inferred"
+  },
+  "coordinatorTestsIndependentReview": {
+    "reviewer": "contract_security",
+    "sourceCommit": "cbed997a1fd8398975feac8fa23f9162a65f7e73",
+    "result": "PASS",
+    "sourceFileSha256": {
+      "apps/web/e2e/focus-scope.spec.ts": "78bf34a0a2a9b972918e69eab78d1a67ed6dc4205fbb77884336316a81ad9c91",
+      "apps/web/src/views/Pay.supported.test.tsx": "2c71812716266331256a4b406b38de1a7f1299eca2b2e5dce218706023801392",
+      "docs/handoffs/LEAN_RELEASE_SCOPE.md": "6fbb7ca2ea6b93f51d6244bba37431777141aaf4daaf1844dcc214f84d8e86ed"
+    },
+    "reviewDocument": "docs/handoffs/agents/WEB_SCOPE_REVIEW_20261119.md",
+    "executionOwnedBy": "root coordinator",
+    "playwrightListIsNotExecution": true
+  },
+  "limits": [
+    "disposable local EVM and standard mock token only",
+    "no live network, real token or wallet/UI acceptance",
+    "not OP Stack additional-fee qualification",
+    "no runtime/fee policy/authority/feature-flag change",
+    "focused native test runs with coverage=false; thresholds unchanged"
+  ],
+  "evidence": {
+    "buffered-sweep-artifacts.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-artifacts.json",
+      "archivedPath": "docs/handoffs/agents/evidence/buffered-sweep-20261119/buffered-sweep-artifacts.json",
+      "bytes": 5959,
+      "sha256": "3dcf91554f48eef4229a6b52cb1161ac14e71207eaaa378084dd1c8054c2224f"
+    },
+    "buffered-sweep-checks.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-checks.json",
+      "archivedPath": "docs/handoffs/agents/evidence/buffered-sweep-20261119/buffered-sweep-checks.json",
+      "bytes": 2138,
+      "sha256": "6ba8afb76fe3e6b6737104796b2da7b4335e10ad0f2608d2328efea9b60530bd"
+    },
+    "buffered-sweep-anvil.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-anvil.log",
+      "archivedPath": "docs/handoffs/agents/evidence/buffered-sweep-20261119/buffered-sweep-anvil.log",
+      "bytes": 240,
+      "sha256": "343b20a178964aa6b825b7708a094939af54176a462ebcdfb043f4190b587b37"
+    },
+    "buffered-sweep-anvil-final.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-anvil-final.log",
+      "archivedPath": "docs/handoffs/agents/evidence/buffered-sweep-20261119/buffered-sweep-anvil-final.log",
+      "bytes": 228,
+      "sha256": "5e7c70e9fe09bdbf2613f00d8fb424f26f6ca4e2cec2ac62c5f7139e97056b7c"
+    },
+    "buffered-sweep-typecheck.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-typecheck.log",
+      "archivedPath": "docs/handoffs/agents/evidence/buffered-sweep-20261119/buffered-sweep-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "buffered-sweep-lint.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-lint.log",
+      "archivedPath": "docs/handoffs/agents/evidence/buffered-sweep-20261119/buffered-sweep-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "buffered-sweep.patch": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep.patch",
+      "archivedPath": "docs/handoffs/agents/evidence/buffered-sweep-20261119/buffered-sweep.patch",
+      "bytes": 9766,
+      "sha256": "800c46e9ae3166b008c4359358c059bc9621453db7f092e38a9b8c9f49fc68b5"
+    },
+    "run-buffered-sweep-checks.py": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/run-buffered-sweep-checks.py",
+      "archivedPath": "docs/handoffs/agents/evidence/buffered-sweep-20261119/run-buffered-sweep-checks.py",
+      "bytes": 2459,
+      "sha256": "ef5f8b70bff36a363658674da8f1f1bb7a292bc9c88a820ecbe6818d0c2c9506"
+    }
+  }
+}

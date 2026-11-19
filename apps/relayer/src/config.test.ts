@@ -8,7 +8,7 @@ import { canonicalManifestJson, loadDeployment, manifestDigest, manifestSigningB
 import { keccak256, toBytes } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { TrustedProxies, bucketKey, parseIp, resolveClientIp, type ParsedIp } from '@ghostpay/relayer-guard';
-import { DEV_CHAIN_ID, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
+import { DEV_CHAIN_ID, defaultMaxPerClient, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
 import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
 import { DEST, FEE_TO, HOT_ADDRESS, NOPERMIT, ORIGIN, STRANGER, SWEEP_CONTRACT, USDC } from './harness.testutil.js';
 
@@ -33,13 +33,14 @@ const good = (over: Json = {}): Json => ({ allowedOrigins: [ORIGIN], state: { fi
 const ctx = (over: Partial<ConfigContext> = {}): ConfigContext => ({ env: {}, hotKeyAddress: HOT_ADDRESS, readManifest: () => undefined, ...over });
 const parse = (raw: unknown, c: Partial<ConfigContext> = {}) => parseConfig(raw, ctx(c));
 
-const MANIFEST = (chainId: number, sweep: string = SWEEP_CONTRACT): string =>
+// The fee recipient defaults to the `feeTo` of `chain()`: a relayer whose feeTo differs from a manifest is refused (R07-2).
+const MANIFEST = (chainId: number, sweep: string = SWEEP_CONTRACT, feeRecipient: string = FEE_TO): string =>
   JSON.stringify({
     chainId,
     announcer: '0x55649e01b5df198d18d95b5cc5051630cfd45564',
     router: DEST,
     sweepRelayer: sweep,
-    feeRecipient: STRANGER,
+    feeRecipient,
     feeBps: 25,
     deployTx: { router: `0x${'11'.repeat(32)}`, sweepRelayer: `0x${'22'.repeat(32)}` },
     solcVersion: '0.8.28',
@@ -51,8 +52,8 @@ const MANIFEST = (chainId: number, sweep: string = SWEEP_CONTRACT): string =>
 // Pinned test release key + a manifest signed with it (CHAIN-ADAPTERS-05: the relayer must authenticate manifests).
 const SK = new Uint8Array(32).fill(7);
 const KEY = Array.from(secp256k1.getPublicKey(SK, true), (byte) => byte.toString(16).padStart(2, '0')).join('');
-const SIGNED = (chainId: number, sweep: string = SWEEP_CONTRACT, signer: Uint8Array = SK): string => {
-  const text = MANIFEST(chainId, sweep);
+const SIGNED = (chainId: number, sweep: string = SWEEP_CONTRACT, signer: Uint8Array = SK, feeRecipient: string = FEE_TO): string => {
+  const text = MANIFEST(chainId, sweep, feeRecipient);
   const manifest = loadDeployment(text, chainId);
   const digest = Uint8Array.from(manifestDigest(manifest).slice(2).match(/../g) ?? [], (byte) => parseInt(byte, 16));
   const signature = `0x${Array.from(secp256k1.sign(digest, signer, { prehash: false, lowS: true }), (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
@@ -86,7 +87,7 @@ describe('parseConfig', () => {
     expect(c.quoteTtlSeconds).toBe(60);
     expect(c.minDeadlineSeconds).toBe(30);
     expect(c.maxDeadlineSeconds).toBe(1800);
-    expect(c.queue).toEqual({ maxPending: 16, receiptTimeoutSeconds: 120 });
+    expect(c.queue).toEqual({ maxPending: 16, maxPerClient: 4, receiptTimeoutSeconds: 120 });
     expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 });
     expect(c.trustedProxies).toEqual([]);
     expect(c.rateLimit).toMatchObject({ quoteGlobalPerMinute: 600, quoteGlobalBurst: 100, quoteGroupPerMinute: 60, quoteGroupBurst: 20 });
@@ -150,6 +151,32 @@ describe('parseConfig', () => {
     expect(() => parse(good(), { env: { METRICS_ENABLED: 'true' } })).toThrow(/METRICS_ENABLED/);
     expect(() => parse(good(), { env: { METRICS_BIND: '999.1.1.1' } })).toThrow(/METRICS_BIND/);
     expect(() => parse(good(), { env: { METRICS_PORT: '65536' } })).toThrow(/METRICS_PORT/);
+  });
+
+  // Regression (LF-074edb61e-4 / LF-2789f780b-2, dropped by 84c2c185): per-client lane cap.
+  it('caps lane slots per client (queue.maxPerClient, default min(maxPending, max(2, ceil(maxPending/4))))', () => {
+    expect(parse(good()).queue.maxPerClient).toBe(4);
+    for (const [maxPending, expected] of [[1, 1], [2, 2], [4, 2], [8, 2], [9, 3], [16, 4], [1024, 256]] as const) {
+      expect(parse(good({ queue: { maxPending } })).queue.maxPerClient).toBe(expected);
+      expect(defaultMaxPerClient(maxPending)).toBe(expected);
+    }
+    expect(parse(good({ queue: { maxPending: 8, maxPerClient: 8 } })).queue.maxPerClient).toBe(8);
+    expect(parse(good({ queue: { maxPending: 8, maxPerClient: 1 } })).queue.maxPerClient).toBe(1);
+    for (const bad of [0, 9, 1.5, '2', -1]) {
+      expect(() => parse(good({ queue: { maxPending: 8, maxPerClient: bad } }))).toThrow(/queue\.maxPerClient/);
+    }
+  });
+
+  // Regression (LF-6f25385ce-1, dropped by 84c2c185): per-peer TCP connection cap.
+  it('caps connections per peer (server.maxConnectionsPerIp, default 64, at most the global 1024)', () => {
+    expect(parse(good()).server).toEqual({ maxConnectionsPerIp: 64 });
+    expect(parse(good({ server: { maxConnectionsPerIp: 8 } })).server.maxConnectionsPerIp).toBe(8);
+    expect(parse(good({ server: { maxConnectionsPerIp: 1024 } })).server.maxConnectionsPerIp).toBe(1024);
+    for (const bad of [0, 1025, 1.5, '8', -1]) {
+      expect(() => parse(good({ server: { maxConnectionsPerIp: bad } }))).toThrow(/server\.maxConnectionsPerIp/);
+    }
+    expect(() => parse(good({ server: { maxConnections: 5 } }))).toThrow(/^config \$\.server\.maxConnections: unknown key$/);
+    expect(() => parse(good({ server: [] }))).toThrow(/server/);
   });
 
   it('requires explicit opt-in before using the hot key as fee recipient', () => {
@@ -341,6 +368,21 @@ describe('parseConfig', () => {
       expect(() => parseReleaseKeys('nope')).toThrow(/GHOSTPAY_RELEASE_PUBKEYS/);
       expect(() => parseReleaseKeys(Array(9).fill(KEY).join(','))).toThrow(/GHOSTPAY_RELEASE_PUBKEYS/);
     });
+    // Regression (R07-2 / LF-2d64ee5c3-2, dropped by 84c2c185): the web client refuses every quote whose feeTo is not
+    // the manifest's feeRecipient, so such a relayer would start cleanly and serve nothing. Fail at config load.
+    it('refuses a feeTo that differs from the signed manifest feeRecipient', () => {
+      const raw = good({ chains: [chain({ sweepRelayer: undefined })] });
+      expect(() => parse(raw, { releaseKeys: [KEY], readManifest: (id) => SIGNED(id, SWEEP_CONTRACT, SK, STRANGER) })).toThrow(
+        /^config chains\[0\]\.feeTo: differs from the deployment manifest feeRecipient/,
+      );
+      const hotFee = good({ allowFeeToHotKey: true, chains: [chain({ sweepRelayer: undefined, feeTo: undefined })] });
+      expect(() => parse(hotFee, { releaseKeys: [KEY], readManifest: (id) => SIGNED(id) })).toThrow(/feeTo: differs from the deployment manifest feeRecipient/);
+      expect(parse(hotFee, { releaseKeys: [KEY], readManifest: (id) => SIGNED(id, SWEEP_CONTRACT, SK, HOT_ADDRESS) }).chains[0]?.feeTo).toBe(HOT_ADDRESS);
+      const lower = good({ chains: [chain({ sweepRelayer: undefined, feeTo: FEE_TO.toLowerCase() })] });
+      expect(parse(lower, { releaseKeys: [KEY], readManifest: (id) => SIGNED(id) }).chains[0]?.feeTo).toBe(FEE_TO);
+      // Without a manifest the operator's feeTo stands (testnet / dev).
+      expect(parse(good({ chains: [chain({ feeTo: STRANGER })] })).chains[0]?.feeTo).toBe(STRANGER);
+    });
     it('reads a signed manifest for testnets', () => {
       const c = parse(good({ chains: [chain({ sweepRelayer: undefined })] }), { releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
       expect(c.chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
@@ -351,7 +393,8 @@ describe('parseConfig', () => {
 describe('example config', () => {
   it('stays valid (with a manifest for the chain)', () => {
     const raw: unknown = JSON.parse(readFileSync(new URL('../relayer.config.example.json', import.meta.url), 'utf8'));
-    const c = parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
+    const feeTo = (raw as { chains: { feeTo: string }[] }).chains[0]?.feeTo ?? '';
+    const c = parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id, SWEEP_CONTRACT, SK, feeTo) });
     expect(c.chains[0]?.chainId).toBe(84532);
     expect(c.chains[0]?.tokens[0]?.symbol).toBe('USDC');
   });
@@ -393,7 +436,8 @@ describe('deploy recipe wiring (L5-05, L7-L3)', () => {
   };
   const example = (): ReturnType<typeof parseConfig> => {
     const raw: unknown = JSON.parse(deploy('config/relayer.config.example.json'));
-    return parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
+    const feeTo = (raw as { chains: { feeTo: string }[] }).chains[0]?.feeTo ?? '';
+    return parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id, SWEEP_CONTRACT, SK, feeTo) });
   };
 
   it('pins the compose subnets that nginx and the relayer trust', () => {

@@ -27,11 +27,21 @@ regressions are retained.
 The separate coordinator reviewed the source diff and found no blocking issue. This is
 separate-agent source review, not a formal external audit or GitHub approval.
 
-The full original CLI coverage command is still running at this checkpoint. Initial full CLI
-lint exited 137 without a source diagnostic; an isolated serialized retry, corrected build and
-compiled acceptance are pending. These are not represented as passing. The coordinator may
-integrate the regression-backed source while preserving these separate qualification gates.
-No main merge, deployment or release is claimed.
+The coordinator integrated this source through candidate checkpoint `3ef2494d`. Local full
+qualification remains **failed/incomplete**, with every original test and coverage budget retained:
+
+| Gate | Actual local result |
+|---|---|
+| Full CLI coverage, Node 24 | The first reconcile suite reported 3 failed cases out of 26 after 591.032s. The cases consumed the unchanged 60-second test budget. The remaining run was interrupted (exit 130); no final coverage or whole-suite pass exists. |
+| CLI lint | Initial and serialized retry both exited 137 without an ESLint source diagnostic. |
+| Corrected CLI build | Passed in 17.839s. The build was produced from clean checkout `1ad4c9a35c17c71649fe52c8b3f83fe2e23f1f01`, with runtime source unchanged from `8ab2ca33`; its generated stamp records the checkout SHA and `dirty:false`. |
+| Compiled acceptance, Node 24 | 20/21 groups passed; merchant-planning/diagnostics failed because a child was SIGKILLed. The helper's original 25-second child limit remains intact. Exit 1 after 419.951s. |
+| Exact failed compiled group, Node 22.23.4 | Failed in its before hook when an invoice child was SIGKILLed, exit 1 after 93.865s. This does not clear the compiled gate. |
+| Exact three failed reconcile cases, Node 22.23.4 | 3 selected cases passed, 23 deliberately unselected/skipped; exit 0 in 24.302s, coverage disabled for this bounded retry, with the original timeouts unchanged. This resolves those selected behavioral checks but does not establish whole CLI coverage. |
+
+Raw logs preserve each failure. Hosted qualification on the coordinator's combined candidate
+is a separate gate; the source regressions and typecheck do not substitute for it. No main
+merge, deployment or release is claimed.
 
 Local toolchain: Node 24.22.3, npm 11.9.0, Vitest 5.1.0; memory cap 768 MiB and one Vitest worker.
 Offline npm installation exited 137; independent dependency copies used a byte-identical lock

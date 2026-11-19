@@ -1,0 +1,58 @@
+{
+  "source": "6fe060e3",
+  "tests_final": {
+    "relayer": 246,
+    "deployment_readback": 64,
+    "skipped": 0
+  },
+  "first_attempt": {
+    "passed": 241,
+    "failed": 1,
+    "skipped": 4,
+    "reason": "Required native build artifacts absent; prerequisite failed. No application assertion failure was hidden."
+  },
+  "artifacts": "Two previously built files copied only after exact SHA256 and all29embedded metadata source Keccak hashes matched current source.",
+  "full_coverage": false,
+  "files": [
+    {
+      "path": "initial/relayer-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "initial/relayer-integrated.log",
+      "bytes": 3147,
+      "sha256": "81a90ef743ee1f2ab3f4d8536d74224f2094174e81d0d2d21f90e8993db580d6"
+    },
+    {
+      "path": "initial/results.json",
+      "bytes": 1500,
+      "sha256": "3d977d5e0b4d487b6ef4d373b576c94272f9afe283fb202fda51edd28f4c1d38"
+    },
+    {
+      "path": "initial/artifact-source-parity.json",
+      "bytes": 4547,
+      "sha256": "48d2e5854a4906ef85fd399b16e1b11493833e7a64c7a38115e45591bacc2331"
+    },
+    {
+      "path": "initial/adapters-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final/relayer-integrated.log",
+      "bytes": 1986,
+      "sha256": "318ef79ff003ddb1e46798d31f3f072ca09c5fd8ae9fce567f1d0c77817473c5"
+    },
+    {
+      "path": "final/results.json",
+      "bytes": 1331,
+      "sha256": "1a0103becce4530a26316a2f3af1be6432c76afe571d8d4e8a706e2dd554fc78"
+    },
+    {
+      "path": "final/readback-integrated.log",
+      "bytes": 1130,
+      "sha256": "be8488c2ef84a002ab5b0d75a26483aee87f775b7562af26b9bfdbd8765de762"
+    }
+  ]
+}

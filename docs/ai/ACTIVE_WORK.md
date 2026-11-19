@@ -1,3 +1,294 @@
+# Independent merchant-profile clock review — 2026-11-19
+
+Worker: contract_security; evidence branch
+`chatgpt/ghostpay-buffered-sweep-20261119`, base
+`4d250dbdcde3aaf8093f9bcc643581c7261f8520`. Read-only review of
+workflow_fixes' clock repair `67caefd2f0a696f115abbc61a7cfc7ccf923f731`
+and genuine signed-profile regression `9f68917f1a3721a8d20d23002174a5094223ca20`.
+Owned paths are this entry,
+`docs/handoffs/agents/MERCHANT_PROFILE_CLOCK_CROSS_REVIEW_20261119.{md,json}`
+and `docs/handoffs/agents/evidence/merchant-profile-clock-cross-review-20261119/`.
+Acceptance: verify original-source/test identity and signed-profile RED/GREEN
+evidence; preserve all finite clock comparisons, existing expiry/result semantics
+and size/format/signature precedence. Record conditional caller-clock reachability
+without asserting a remote exploit, archive exact checks, then freeze this branch
+for the coordinator's source bundle. No runtime, dependency, browser, JSON-array,
+other-owner, gate, deployment or remote changes. Status: source and archived
+evidence review PASS. Author packet `34eee707` and integrated packet `3c6f81fe`
+are verified; author and coordinator each pass the same 63 clock cases. Full
+package coverage remains exit 1 (786 passed / one timeout in an unchanged
+passphrase test), with no coverage report; the isolated 1/1 diagnostic does not
+erase that result. All 23 original author artifacts match their archives. No
+reviewer application-test rerun. This branch is frozen after the review commit;
+all earlier owned worktrees are clean and frozen for source-bundle capture.
+
+# Merchant profile verification clock — 2026-11-19
+
+Worker: workflow_fixes; task `RW-MERCHANT-PROFILE-CLOCK`; branch
+`chatgpt/ghostpay-merchant-profile-clock-20261119`, isolated
+`GhostPay-merchant-profile-clock` worktree, base `8a2ce1da1507771935b88bdc91ecad9eb5c540cb`.
+Coordinator explicitly assigned the conditional Low `GP-AUD-208-01` from audit PR #266,
+head `75dc9d3b29e3449b56e13889496c3771ec7c2f93`. Own paths:
+`packages/invoice-schema/src/merchantProfile.ts`, its existing test file, this entry,
+and a scoped author evidence packet. First inspect the verification contract and all
+callers, then reproduce the invalid-clock expiry bypass with a genuinely signed expired
+profile before changing runtime. Cover NaN, negative Infinity, undefined and runtime
+wrong types plus relevant ordinary finite boundary controls. Preserve existing result
+semantics and intended ordinary calls; independently review before consolidation.
+No #265 JSON-array handling, pinned invoice signer, private scan checkpoint, recovery,
+other excluded owner stream, protocol/domain/format change, push, merge or completion
+ledger modification. Full merchant-profile file and practical focused package static/
+test gates use the existing qualification mutex; retain original source and RED/GREEN.
+Status: author source complete and frozen after the evidence commit. Claim `4ea57693`,
+genuine signed-profile RED `9f68917f` (26 failed / 37 passed), runtime `67caefd2`.
+Full merchant-profile GREEN 63/63; package build/typecheck/lint PASS. Broader full package
+remains failed: 786/787, one unchanged passphrase 60-second timeout, no coverage report.
+One authorized exact-case diagnostic rerun passed under the original budget and does not
+supersede that failure. Root and contract_security source/RED review PASS. No more runs.
+Author packet: `docs/handoffs/agents/MERCHANT_PROFILE_CLOCK_20261119.{md,json}`.
+
+# Browser devnet canonical manifest fixture — 2026-11-19
+
+Worker: workflow_fixes; branch `chatgpt/ghostpay-devnet-canonical-fixture-20261119`,
+isolated `GhostPay-devnet-fixture` worktree. Root base `f42553ab`; read-only dependency
+inputs are backlog_ci's claims/source `b1a7c888`/`8238f66b`, imported as `49c89885`/
+`29355af7`. Own paths: `scripts/beta/browser-devnet.sh`,
+`apps/web/e2e/devnet/prepare-devnet-manifest.mjs`, focused helper regressions in
+`scripts/testnet/make-manifest.test.mjs`, this entry and a scoped evidence packet.
+Confirmed gap: the old runner switches a DeployDevnet 31337 deployment with a fresh
+noncanonical announcer to 84532; the stronger known-chain readback correctly rejects
+that fixture. Preserve the original 31337 broadcast for Pages c2 stand-in-token evidence.
+After proving the loopback node is Anvil on 84532, install the existing compiled CC0
+reference runtime at the canonical announcer address, then use the unmodified
+`Deploy.s.sol` for the 84532 router/sweep broadcast. The helper must consume that
+broadcast and assert the canonical getter/code through the normal verifier before signing.
+Acceptance: actual failing old native fixture under the stronger verifier, focused RED
+before helper changes, bounded real Anvil deployment/seeding/readback/signature checks,
+existing manifest tests and shell/static checks, and independent review. Keep the default
+runner's full browser requirement; no permanent fixture-only mode or browser-pass claim.
+No production verifier or contract change, timeout/skip relaxation, web isolation change,
+new provider, public network call, deployment outside owned local Anvil, push or merge.
+Status: complete locally. Claim `764dcb63`, RED `05f5631d`, runtime `5f6af961`.
+Actual RED: 5 failed / 9 passed plus a real old-fixture canonical mismatch before output.
+GREEN: 14/14 manifest tooling tests, all scoped syntax checks, and native Anvil fixture,
+runtime seeding, both deployments, ordinary readback and public test signature verification.
+Original 31337 broadcast and token code retained; allowlisted token addresses remain empty.
+Root and contract_security source review PASS. Both replay-only failures are retained.
+No browser acceptance is claimed; default/pages browser execution remains mandatory.
+See `docs/completion/remaining-20261119/workflows-devnet-fixture.{md,json}`.
+
+# Library and optional-relayer deployment readback parity — 2026-11-19
+
+Worker: backlog_ci; branch `chatgpt/ghostpay-deployment-readback-20261119`;
+base `db724aa68a21fde8fe35c14baab9ec55a40984f0`. Owned paths:
+`packages/chain-adapters/src/deploymentsVerify.ts` and its test;
+`apps/relayer/src/runtime.ts` and its test; this claim and the scoped handoff/evidence.
+Acceptance: reproduce the primary-only startup check and noncanonical known-chain
+announcer acceptance; reuse existing `requestWithFallbackCheck` and
+`canonicalAnnouncer` to require agreement for every manifest read when a secondary
+is explicitly supplied, fail closed on its absence/failure/mismatch, and preserve
+single-provider behavior and development chain 31337. No new provider, contract
+identity, signing rule, chain enablement, web wiring, deployment or paid workflow
+activation. Coordinator confirmed #250 does not own these files; #251 retains
+browser second-provider consent/wiring. Independent review precedes integration.
+Status: baseline 12 library and 6 relayer regressions failed as expected; corrected
+library 64/64, relayer 149/149 and unchanged web manifest consumer 14/14 pass with
+zero skips. Both workspace typechecks, affected builds and separately scoped
+lints pass; the earlier combined lint heap exhaustion remains recorded. Root
+independent source review passed. Combined-head hosted qualification and the
+separately assigned synthetic-84532 devnet fixture correction remain pending.
+See `docs/handoffs/agents/DEPLOYMENT_READBACK_PARITY_20261119.md`.
+
+# Concurrent security-source comparison — 2026-11-19
+
+Worker: contract_security; branch `chatgpt/ghostpay-ledger-tolerance-20261119`,
+base `5fadb4ff709701bff2a5f08fac548d24c2de42ad`. Owned paths are this entry,
+`docs/handoffs/agents/SECURITY_CROSS_REVIEW_20261119.md` and its JSON/raw diagnostic
+records. Compare live #255 at `ea47fa75` with our deployment guard and observational
+evidence, and independently review coordinator documentation at `854fa4c7`.
+Acceptance: pin exact sources, identify stronger behavior and merge overlaps,
+retain owner decisions, and avoid duplicate implementation. No source PR/runtime
+edits or qualification claims for unrun checks.
+
+# Policy client and current Mythril evidence archive — 2026-11-19
+
+Worker: contract_security, remaining-work coordinator.
+Branch: `chatgpt/ghostpay-ledger-tolerance-20261119`, archive base
+`beee43cc3756c5bdc5374d93625abe1c5638e904`. Owned paths are this registry entry
+and `docs/handoffs/agents/evidence/security-recovery-20261119/` only. Preserve
+the completed G1 recovery's original raw qualification logs/patches and committed
+handoffs, together with the fresh hosted Mythril report for source `198aa5ba`,
+per-finding dispositions and concrete replay evidence. Acceptance: verify every
+copied byte against its original and recorded SHA-256, retain original failing
+checks and current strict Mythril failure, and record source/tool/run provenance.
+This is an evidence-only follow-up; no runtime, analyzer policy or gate changes.
+Status: 36 original files preserved; all copied hashes, 28 G1 source hashes and
+the hosted ZIP/report/metadata parity verified. Eleven current Mythril findings
+remain a strict failure with no approved exceptions.
+
+# Merchant ledger tolerance recovery — 2026-11-19
+
+Worker: contract_security, remaining-work coordinator; Caveman investigate-first.
+Branch: `chatgpt/ghostpay-ledger-tolerance-20261119`, base
+`3db3c3597666ceb77862481ee8ed4a38a6d2ff81`. Owned paths are
+`packages/merchant-ledger/src/reconcile.ts`, `ledger.test.ts`, this registry
+entry and the scoped handoff. Selectively recover only #220 D-2 from
+`6db114920589a38dbbb5d52f45bb7a52be98d9b6`: a positive-due invoice must have
+a counted payment before tolerance can make it paid; zero-due invoices retain
+the existing settled behavior. Source PR/workspaces remain read-only.
+Acceptance: independently reproduce the unpaid-to-paid error, prove the existing
+regression fails, preserve zero-due and counted-payment tolerance semantics, run
+the package's unchanged tests/coverage and scoped static checks, then obtain
+coordinator review before consolidation. No protocol, dependency or gate change.
+Status: independent direct-source probe and historical regression reproduced the
+unpaid-to-paid error. Recovery passes all 28 package tests, unchanged coverage
+thresholds, typecheck and scoped lint. Zero-due settlement is explicitly preserved;
+coordinator source review passed. Raw evidence is archived in the scoped packet.
+
+# Fresh #246 Mythril identity and evidence review — 2026-11-19
+
+Worker: contract_security; branch `chatgpt/ghostpay-buffered-sweep-20261119`, base
+`75bbdb8765899a134dd240f7c66efa0a2d261904`. Owned paths are this entry,
+`docs/handoffs/agents/MYTHRIL_28EDBCF_REVIEW_20261119.md` and
+`docs/handoffs/agents/evidence/mythril-28edbcf-20261119/`. Compare the complete
+fresh #246 hosted report for `28edbcf5` with the preserved `198aa5ba` report by
+exact finding, source, input and trace identities. Preserve fresh raw evidence,
+correct any trace-specific interpretation that no longer applies, and retain
+the strict eleven-finding failure and unapproved owner decisions. This is
+read-only analysis plus evidence records; no new analyzer campaign, runtime,
+test-budget, release-policy or source-PR modification.
+Status: five original files and ZIP parity verified. All eleven source/location
+observations match, but eight Factory traces differ in 45 primitive fields;
+the current R8 distinct-deploy and R11 same-caller corrections are explicit.
+The reproducible per-finding packet preserves strict exit 1, zero exceptions,
+historical replay limits and all owner decisions. No new campaign was run.
+
+# Independent OP fee accounting review — 2026-11-19
+
+Worker: contract_security; evidence branch
+`chatgpt/ghostpay-buffered-sweep-20261119`, base `80cc1109`. Read-only runtime
+review of workflow_fixes' `0aef3a25` in its isolated OP-fee worktree; later
+receipt-status correction remains owned by that worker. Owned paths here are
+this entry, `docs/handoffs/agents/OP_FEE_SOURCE_REVIEW_20261119.{md,json}` and
+`docs/handoffs/agents/evidence/op-fee-source-review-20261119/`. Review exact
+transaction sizing/signature overhead, canonical receipt-block binding,
+reservation/actual-settlement accounting, malformed data and non-OP behavior.
+Preserve primary-source identities and the independent old/new status probe.
+No runtime, dependency, policy, owner-worktree, merge or deployment edits.
+Status: new OP accounting source reviewed PASS. The independent baseline probe
+identified inherited malformed receipt-status acceptance; owner regression
+reproduced 16 failures/8 valid controls. Narrow repair `2af11e38` independently
+reviewed PASS with 97/97 focused author checks. TypeScript argument correction
+`de253aaf` separately reviewed as preserving the request objects. Original
+source/probe/RED/GREEN identities and full qualification limits are retained.
+
+# Independent current Mythril replay review — 2026-11-19
+
+Worker: contract_security; evidence branch
+`chatgpt/ghostpay-buffered-sweep-20261119`, base `ef4e95d6`. Read-only review of
+the coordinator's additive concrete replay for hosted source `28edbcf5`.
+Owned paths are this entry,
+`docs/handoffs/agents/MYTHRIL_REPLAY_CROSS_REVIEW_20261119.{md,json}` and
+`docs/handoffs/agents/evidence/mythril-replay-cross-review-20261119/`.
+Verify original report/finding/input identity, all archived file and binary
+hashes, the retained failed timestamp assumption, unchanged assertions/input
+construction, and the corrected zero-interval observations. Record local
+target/gas/state/hash-encoding limits. Do not rerun Anvil, change the executed
+coordinator scripts or modify strict analyzer/owner policy.
+
+Completed: independent PASS on packet `5e753eb9`, with all six raw archive
+hashes, all eleven keyed creation/call inputs, eight original address-`0x1`
+constructor rejections, both clock outcomes and the exact assertion-preserving
+script correction verified. Original failed attempt and local execution limits
+are explicit. No new EVM run or analyzer policy change.
+
+# Independent action runtime review — 2026-11-19
+
+Worker: contract_security; evidence branch
+`chatgpt/ghostpay-buffered-sweep-20261119`, base `cbff782b`. Read-only review of
+root source `f42553ab`, limited to the two pinned create-pull-request action
+updates. Owns this entry,
+`docs/handoffs/agents/ACTION_RUNTIME_CROSS_REVIEW_20261119.{md,json}` and
+`docs/handoffs/agents/evidence/action-runtime-cross-review-20261119/`.
+Compare exact committed workflow bytes, independently retrieve both upstream
+action manifests, verify the used interface and unchanged authority, and retain
+the coordinator's existing local qualification. No live workflow dispatch,
+paid execution, pull request creation or source mutation is part of this review.
+
+Completed: source/interface PASS. Each workflow differs only in the one pinned
+SHA/version-comment replacement. Independently retrieved upstream manifests
+differ only in the Node runtime declaration, with identical inputs/defaults and
+outputs; the v8.1.3 ref resolves to the new pin. Coordinator's 33/33 local checks
+and pin/secrets receipts are retained with clear attribution.
+
+# Independent combined integration review — 2026-11-19
+
+Worker: contract_security; isolated evidence branch based on `fc506491`.
+Read-only review of root runtime `6fe060e3`, OP/status source `a2afd126`, configured
+secondary/canonical readback `8238f66b`, and action pins `f42553ab`. Owns this
+entry, `docs/handoffs/agents/COMBINED_INTEGRATION_CROSS_REVIEW_20261119.{md,json}`
+and `docs/handoffs/agents/evidence/combined-integration-cross-review-20261119/`.
+Verify source parity, caller/guard interaction and existing qualification/raw
+artifact provenance. Preserve the first missing-artifact failure. No runtime
+edit, suite rerun, compilation, deployment, browser or paid workflow execution.
+
+Completed: scoped integration PASS. Twelve source files match their reviewed
+checkpoints, all eight coordinator evidence files match their committed hashes,
+and both exact artifacts plus all 29 metadata source hashes match `6fe060e3`.
+The original 241-pass/1-failure/4-skip prerequisite result remains; the unchanged
+required-Anvil selection passes 246/246 and readback passes 64/64. No coverage,
+full test-source typecheck, public OP or browser acceptance claim.
+
+# Independent canonical devnet fixture review — 2026-11-19
+
+Worker: contract_security; isolated evidence branch based on `eed26a15`.
+Owns this entry, `docs/handoffs/agents/DEVNET_FIXTURE_CROSS_REVIEW_20261119.{md,json}`
+and `docs/handoffs/agents/evidence/devnet-fixture-cross-review-20261119/`.
+Read-only review of runner/helper repair `5f6af961`, regression source `05f5631d`
+and the author's archived packet `bd62f073`. Check local endpoint admission,
+compiled canonical runtime provenance, preserved token broadcast, ordinary
+readback before signing, unchanged browser execution and exact failure/pass
+evidence. No source mutation, native replay or browser run by this reviewer.
+
+Completed: source/evidence PASS. All 57 raw files and 14 source hashes match the
+committed packet; unchanged regressions improve from 5 failed/9 passed to 14/14.
+The old native rejection and two replay-wrapper failures remain explicit. Final
+native evidence and an independent offline signature check pass, with unchanged
+mandatory browser branches and no browser/public-chain acceptance claim.
+
+# Buffered ERC-20 sweep native acceptance — 2026-11-19
+
+Worker: contract_security; branch `chatgpt/ghostpay-buffered-sweep-20261119`, base
+`cbed997a1fd8398975feac8fa23f9162a65f7e73`. Owned paths are
+`packages/chain-adapters/src/router.anvil.test.ts`, this entry, and the scoped
+handoff/evidence packet. Existing Anvil router tests cover fee math but not the
+spec 13 section 4 / CONTRACTS_SPEC sections 1 and 3 acceptance case of a direct
+ERC-20 sweep paid only from the router's gas buffer (F-CTR06). Acceptance: derive
+and verify a fresh stealth signer with zero starting ETH, demonstrate the
+no-buffer insufficient-funds control, execute an actual buffered token payment
+and signed sweep, and assert exact token/native/gas/nonce accounting. Use the
+existing compiled local contracts and unchanged qualification budgets; obtain
+independent coordinator review. No contract, UI, fee policy, feature flag,
+authority or other owner's implementation changes are claimed.
+Status: the full focused native file passes 4/4 with REQUIRE_ANVIL=1; package
+typecheck and scoped typed lint exit 0. Coordinator independently reviewed the
+final test source and approved the stated local acceptance scope. Raw command
+receipts, source/artifact identities and logs are in the scoped handoff packet.
+# Experimental design-support model CI coverage — 2026-11-19
+
+Worker: backlog_ci; branch `chatgpt/ghostpay-design-model-ci-20261119`.
+Base: `fe7a598d589057c139ef0f823fa02b7c0cc38e04`.
+Owned paths: the existing rest-0 Node-test invocation in `.github/workflows/ci.yml`,
+this claim and `docs/handoffs/agents/DESIGN_MODEL_CI_20261119.md` with evidence.
+Acceptance: run the existing milestone-escrow and policy-recovery model suites,
+then include those two files in the existing CI invocation while preserving all
+current test patterns, gates, triggers and permissions. Models and product code
+remain unchanged. This is design-support test wiring; it does not implement
+fund control, select an authority model, activate recovery or qualify a release.
+Status: the unchanged existing models pass 38/38 with no skips. YAML/shell and
+argument-preservation checks, 114 action pins, secret scan and diff check pass.
+Independent coordinator source review passed; combined hosted CI remains pending.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
@@ -25,6 +316,16 @@ recovery/keypair exports and Mythril remediation. Their UI, service policy, sett
 Sweep, catalogs, consolidation ledgers and release gates are not owned by this task. The
 five lower-level transport files were compared against these heads and are unchanged; this
 lane extends existing adapters without a second policy engine. Recheck all heads before PR.
+
+# Pages idle-clock integration — 2026-11-18
+
+Worker: ChatGPT coordinator, with independent privacy-review implementation and source review.
+Branch: `chatgpt/ghostpay-pages-idle-clock-20261118`; base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/AppShell.tsx`, `apps/web/src/AppShell.idleClock.test.tsx`, and the idle-clock handoff.
+Acceptance: reproduce clock rollback on current main, retain sleep-aware wall-time checks, add monotonic expiry,
+preserve sole-copy key recovery policy, pass focused shell tests and scoped lint, then require exact-head CI.
+The test file is imported from the separate review lane; product edits start after this claim. PR #209's frame and
+unload changes remain on its own branch. No deployment, signing, publication, mainnet, or release-gate changes.
 
 # Repository consolidation — 2026-11-18 (active)
 
@@ -74,6 +375,131 @@ found no security blocker; its misleading-zero-fee diagnostic correction is
 included in the follow-up commit. Policy shell 22/22, scoped Node checks 68/68,
 deployment/checksum 5/5 and native gas snapshot 445/445 passed. Full Forge compilation
 was killed by SIGKILL, so full fuzz/invariant qualification remains unclaimed.
+# OP Stack relayer fee accounting — 2026-11-19
+
+Receipt-status follow-up (separate inherited R07 defect, explicitly authorized by
+the coordinator after independent review): `chain.ts` must return a mined receipt
+only for exact `success`/`reverted` status. Missing/unknown status must make lookup
+fail and receipt waiting remain unsettled, on OP and non-OP chains alike. Own the
+shared status admission helper and missing/unknown/valid-control tests in the same
+receipt path. Capture a new RED before this follow-up, preserve the completed OP
+full-suite result at `6d23e5b6`, and obtain independent final-delta review.
+
+Status: R07-4 runtime and separate inherited status admission implemented and independently reviewed PASS.
+Full OP relayer coverage 556/556 at 6d23e5b6; post-status 97-case selection and final 62 regressions pass;
+runtime build and scoped lint pass. Two whole-package typechecks were SIGKILL and remain unqualified.
+Public OP-chain and combined-head hosted acceptance remain separate. Exact sources, retained failures,
+review commits and raw hashes are in `docs/completion/remaining-20261119/workflows-op-fees.{md,json}`.
+
+Worker: workflow_fixes; branch `chatgpt/ghostpay-op-fees-20261119`, isolated
+`GhostPay-op-fees` worktree, base `7be82871` (completed compatibility packet).
+Coordinator `fe7a598d` relayer/guard source is byte-identical to this base.
+Requirement: #218 R07-4 / `d894106e382c143c511912cb443cb980f5cf9731`, the
+remaining total-cost accounting gap in `apps/relayer/DEVIATIONS.md`, and the
+coordinator's explicit implementation directive. Historical branches stay read-only.
+Owned paths: `apps/relayer/src/chain.ts`, new local OP fee helper and tests,
+`service.ts`, `budget.ts`, their focused regression fixtures, relayer README and
+DEVIATIONS, this entry and `workflows-op-fees` evidence. No web Sweep helper edits.
+Acceptance: first reproduce execution-only under-reservation; include L1 and
+operator fees in quotes, fee coverage and daily/loss reserves using the existing
+OP oracle predeploy and 2x reserve policy. Bound legacy unsigned transaction size
+correctly for quote; recheck fees against the actual signed transaction before
+broadcast; settle actual receipt L1 and receipt-block operator fees without
+counting fees twice or guessing fork formulas. Missing/malformed oracle/receipt
+fee data must fail closed. Preserve non-OP behavior, signed-quote fields, journal
+privacy, unknown-send reservations, dependency pins and excluded owner streams.
+Run targeted RED/GREEN, unchanged relayer coverage including required Anvil,
+package build/typecheck/lint, and independent coordinator source review. Public
+OP-chain acceptance remains a separately recorded qualification gate. No new
+provider, wallet, custody or amount authority; no push, merge or deployment.
+
+# Solana/TRON CLI compatibility recovery — 2026-11-19
+
+Worker: workflow_fixes; branch `chatgpt/ghostpay-sol-tron-compat-20261119` in
+`GhostPay-compat`, base `308a2148` (completed relayer recovery qualification).
+Authority: coordinator explicitly authorized coherent PR #211 compatibility after relayer;
+this is the existing ADR-0017/ADR-0019 web scheme and formats, not a new protocol.
+Source: #211 `a92658b1ef6b95ff0145b2e1933d0047d51289d5`; implementation sources
+`179a5b433f35396ca4f0961c99226dbb38e4e4cd`, `28ce8a0b6fe22458505da6a77ae7c7cf81db8864`,
+`b9af22a9c85c6a8674d8ac72d7f038954ce713b9`, shared vectors
+`e2427c20387aa2e228309c49a1558d3edc6583ce`, and the G5b CLI companion in `1b28f355`.
+Owned paths: `packages/chain-solana/**`, `packages/chain-tron/**` excluding manifests;
+`packages/cli/src/{chain-commands.test.ts,payment-context.ts,commands/chain.ts}`;
+`test-vectors/meta-address-sol-tron-v1.json`; this claim and scoped workflow evidence.
+Acceptance: reproduce current CLI/web format and payment mismatch; restore coherent
+meta-address, memo and derivation parity using source-pinned shared vectors and differential
+web-package tests; reject retired formats with fixed errors; retain CLI testnet-only behavior;
+refuse TRON build when its GPT1 memo cannot be bound to transaction bytes. Actual failing
+regressions precede implementation, including the builder refusal separately after codec
+recovery. Package coverage/build/typecheck/lint and focused CLI checks retain original gates.
+Live #250 at `22af2074a086d9957a18e310ef8572b28d1facd0` and its ACTIVE_WORK claim were
+read through the connector: it owns chain-adapters deployments/quote/rpc and tron-adapter
+RPC completeness, not these CLI-side packages. #252 Sweep consent stays with its owner.
+No edits to web `solana-stealth`/`tron-adapter`, browser transport, recovery, scan checkpoint,
+pinned signer, BTC scan, TM1–15, idle locking, dependencies, wallets, RPC configuration or
+remote branches. Pure/local fakes only; no network/provider/wallet calls, push or merge.
+Status: runtime `9c014e2b` independently reviewed PASS; actual baseline failures retained.
+Solana 111/111 and TRON 57/57 package coverage passed with original thresholds; CLI 45/45,
+all three typechecks, builds, scoped/separate lint and web-only vector reproduction passed.
+Evidence: `docs/completion/remaining-20261119/workflows-compat.{json,md}`. No external
+chain acceptance or independent cryptographic audit is claimed.
+
+# Optional relayer and abuse-limit recovery — 2026-11-19
+
+Worker: workflow_fixes; branch `chatgpt/ghostpay-relayer-recovery-20261119` in its
+completed workflow worktree, base `d84292a3` (quote and Pay residual implementations).
+Source: PR #218 `b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, delta from
+`5467c158069c5bab264b6a653ac56e89e13f3e13`; historical owner branches remain read-only.
+Owned scope: additive relayer/relayer-guard hardening and associated tests/docs;
+manifest fee fixture in `scripts/devnet/e2e.mjs`; one refusal classification plus its
+regression in `apps/web/src/lib/relayerClient.ts`. Preserve the current privacy config,
+zero-log wrapper, request padding, ingress restrictions and exact dependency pins.
+Requirements: R07-2/R07-3, LF-074edb61e-1/-4/-7/-8/-9, LF-2789f780b-2/-3,
+LF-29de09c05-1/-4, LF-6f25385ce-1, T-dd756b08-3/-4. R07-4 OP Stack total-cost
+accounting stays an explicit unimplemented interface/policy follow-up.
+Acceptance: execute historical hardening and abuse regressions on the unchanged base;
+selectively apply the donor delta while retaining newer behavior; exercise affected
+relayer, limiter and pool consumer checks, native local tests where available, package
+typecheck/build and separate-project lint; independent coordinator review before integration.
+Use the existing qualification mutex with `flock --close`, Node 22 and a 768 MiB cap.
+No hosted relayer, protocol redesign, contract source change, public provider/wallet call,
+new egress, push, merge, deployment or excluded feature-stream edit.
+Status: source `e7b14844` independently reviewed PASS. Baseline regressions reproduced;
+full relayer 518/518 including required Anvil, limiter 183/183, pool consumer 35/35 and
+web client 34/34 passed. Original coverage gates, package builds/typechecks and separate
+package/client lint passed. R07-4 is open, pending a dedicated source-based cost-accounting
+feasibility/implementation pass; no external blocker is assumed. Evidence: `workflows-relayer`
+under `docs/completion/remaining-20261119/`.
+
+# Payment nonce and delay-label recovery — 2026-11-19
+
+Worker: workflow_fixes; branch `chatgpt/ghostpay-pay-residuals-20261119`.
+Base: quote-age recovery and its evidence, `eb92878c`.
+Source: `65392fcefefdb102bf71863d25f4a5ed9cd07e21`, #218 L3 residuals
+LF-65392fcef-3/-4. Owned paths: the permit nonce reader in `apps/web/src/lib/pay.ts`,
+its isolated regression; `apps/web/src/lib/format.ts` minute formatting and the existing
+Pay delay label plus one component regression. Acceptance: malformed RPC nonce words
+must fail as a fixed user-facing error; the displayed delay must retain fractional minutes;
+capture actual baseline failures, preserve valid nonce behavior and all scheduling/signing
+logic, and qualify focused checks. No wallet/provider network calls, cryptographic protocol,
+private scan, recovery, browser isolation, signer policy or idle-lock changes.
+
+# Quote freshness recovery — 2026-11-19
+
+Worker: workflow_fixes; branch `chatgpt/ghostpay-quote-age-20261119`.
+Base: `1ad4c9a3` (reviewed R11 CLI recovery on PR #238).
+Owned paths: feed freshness in `packages/chain-adapters/src/quote.ts` and focused quote tests;
+`apps/web/src/lib/pay.ts` and focused quote/permit tests; additive freshness-error locale
+entries and security-key list; L3 fractional-minute formatting and its existing Pay label.
+Requirement: #218 L3 / LF-365f017ac-1 / LF-7aee9060b-1 (feed heartbeat plus 300-second
+margin must cap the seller-authored quote window); LF-65392fcef-3/-4 (permit nonce ABI
+size and accurate fractional-minute display). Historical fixes: `365f017ac47c02734bf1f69ade4f28a8828e1cd9`,
+`7aee9060b0361de5a8b053d54f0a3927fe4fda62`, `65392fcefefdb102bf71863d25f4a5ed9cd07e21`.
+Acceptance: reproduce stale-price acceptance and missing-metadata behavior first; validate
+trusted feed heartbeat, preserve stricter quote age and existing oracle/permit checks; run
+focused regressions and related suites, typecheck/lint and independent coordinator review.
+No cryptographic scheme, signer policy, private scan, recovery, network isolation or idle
+lock change. No new service, dependency, deployment or production release.
 
 # Remaining workflow fix recovery — 2026-11-19
 
@@ -91,6 +517,28 @@ alignment and all newer behavior; complete focused and full CLI tests/typecheck/
 independent source review, and coordinator consolidation. No merge/push/deployment.
 Excluded seven feature streams remain read-only. Current user directive explicitly
 authorizes CLI/optional-relayer fixes beyond the previous Pages-only milestone.
+
+# Policy-client validation recovery — 2026-11-19
+
+Worker: contract_security, Caveman investigate-first; coordinator-owned remaining work.
+Branch: `chatgpt/ghostpay-policy-client-20261119`, base `0249b30c`.
+Owned paths: #211 G1/N09–N11 changes under `packages/policy-scheme/src`, that
+package README, `apps/web/src/features/policy`, exact required policy locale and
+security-key additions, scoped policy API documentation, this claim and handoff.
+No dependency manifests, protocol/domain/typehash changes, numerical delay-policy
+changes, excluded privacy/recovery implementation or source-PR mutations.
+Acceptance: recover source-pinned validation and signing checks first; reproduce
+their historical regression tests, then recover send binding and existing asset
+coverage checks; run affected suites with unchanged assertions/thresholds, obtain
+independent coordinator review and consolidate. Original #211 is read-only.
+Status: existing recovery complete with one test-only Anvil fixture correction
+needed by the newly enforced proof check. Baselines reproduced 14 library,
+4 send-binding, 5 record-coverage and 6 UI/logic failures. Full policy package
+118/118 (all 7 Anvil cases), focused web/security keys 121/121, library
+typecheck/build, scoped lint, locale checks, secret scan and independent
+coordinator source review pass. Coverage thresholds and budgets are unchanged.
+Only client SEC11 mitigation is recovered; unknown asset coverage and protocol
+owner decisions remain open. See `docs/handoffs/agents/POLICY_CLIENT_20261119.md`.
 
 # Confidential-router return-data defense recovery — 2026-11-19
 
@@ -111,6 +559,79 @@ independent coordinator source review pass. Full default and 768-MiB-capped runs
 both exit 137, as does a mutex-protected seven-case selection after two passes;
 whole-package qualification is explicitly blocked locally, not claimed passing.
 See `docs/handoffs/agents/CONFIDENTIAL_FORWARD_20261119.md`.
+
+# Self-host image defaults and Compose validation — 2026-11-19
+
+Worker: backlog_ci; branch `chatgpt/ghostpay-selfhost-pins-20261119`;
+base `bda57c32`. Owns `deploy/.env.example`, `deploy/docker-compose.yml`,
+`deploy/tor/Dockerfile`, `deploy/selftest.sh`, `deploy/README.md`, the explanatory
+comment in `deploy/nginx/security-headers.conf`, one config validation step in
+the existing `ci.yml` job, and the scoped handoff/evidence.
+Acceptance: recover verified image digest defaults and their regression checks
+from PR #209; validate the public Compose configuration with all services enabled
+without resolving service env files or invoking image/container lifecycle actions.
+Preserve explicit operator execution, release gates and existing workflow policy.
+No schedules, credentials, version migration, deployment or live-host claim.
+Status: baseline selftest fails on exactly three unpinned defaults; corrected
+selftest passes. Official checksum-verified Compose 5.8.0 validates public config
+with and without onion. YAML/shell, header parity and 114 action pins pass.
+Independent coordinator source review passed; hosted and live-host acceptance remain separate.
+
+# Full-severity Slither visibility — 2026-11-19
+
+Worker: backlog_ci; branch `chatgpt/ghostpay-slither-visibility-20261119`;
+base `f3c38f3f`. Owns only the existing nightly Slither job, this claim and
+`docs/handoffs/agents/SLITHER_VISIBILITY_20261119.md` with evidence.
+Acceptance: selectively recover PR #209/08c26b12 reporting of low, informational
+and ignored findings, preserving the existing Medium/High gate byte for byte,
+all workflow triggers and every unrelated job. No release-test relaxation,
+new schedule, finding suppression, analyzer-disposition approval or deployment.
+Status: workflow structure, shell syntax and 114 pinned action references pass.
+Report flags verified against the published pinned Slither wheel; no full local
+analyzer campaign claimed. Independent review and hosted qualification pending.
+
+# Existing merchant and IndexedDB CI coverage — 2026-11-19
+
+Worker: backlog_ci; branch `chatgpt/ghostpay-example-idb-ci-20261119`;
+base `bd6b26dd`. Owns the existing `ci.yml` example/test steps, this claim,
+and `docs/handoffs/agents/EXAMPLE_IDB_CI_20261119.md` with evidence.
+Acceptance: execute all existing example test files and the webhook selftest in
+the current build/check job, and the existing two-tab IndexedDB browser check in
+the full-profile browser job. Preserve existing tests, skips, timeouts, permissions,
+release gates and publishing policy. No schedules, package metadata or app runtime
+changes. Record actual local and hosted qualification limits before integration.
+Status: 60/60 example tests and webhook selftest pass; local Chromium launch is
+blocked by socket EPERM before IDB assertions. Source review passed; hosted IDB
+acceptance remains required. No gate was skipped or weakened.
+
+# Deployment tooling and registry documentation parity — 2026-11-19
+
+Worker: backlog_ci; branch `chatgpt/ghostpay-deployment-docs-20261119`;
+base `5128da10`. Owns `packages/chain-adapters/TODO-VERIFY.md`, its README's
+verification-status pointer, `docs/operators/testnet-runbook.md`, this claim and
+`docs/handoffs/agents/DEPLOYMENT_DOC_PARITY_20261119.md`.
+Acceptance: correct F-DEP-04/F-DEP-05 stale source claims, distinguish the client
+registry from the deployment-script allowlist, preserve signed-manifest review
+and explicit deployment authorization, and retain all unresolved live acceptance.
+No contract, deployment, package metadata, public RPC or signing changes.
+Status: source parity corrected; configuration matrix and 14 relative links pass.
+Strict release readiness remains blocked. Independent coordinator review requested.
+
+# Deployment verifier policy implementation parity — 2026-11-19
+
+Worker: backlog_ci; independent reviewer: coordinator. Branch:
+`chatgpt/ghostpay-verifier-parity-20261119`; base: `264cf86b`.
+Owned paths: `packages/chain-adapters/src/verify.ts`, its focused tests,
+this claim and `docs/handoffs/agents/DEPLOYMENT_VERIFIER_PARITY_20261119.md`.
+Acceptance: reproduce F-DEP-02 missing policy implementation bytecode verification,
+reject missing or mismatched implementation code against the existing signed manifest,
+and preserve configured provider agreement. No ABI, manifest format, provider selection,
+or deployment changes. Record focused regression, typecheck and lint evidence before
+independent review and coordinator integration.
+Status: 21 pass / 3 fail red, 51/51 focused deployment green, 24/24 final verifier
+green, scoped typed lint and package TypeScript pass. The coordinator independently
+reviewed the source. Failed resource/lint attempts are retained in the handoff;
+combined hosted qualification and integration remain coordinator owned.
 
 # Pages smoke render-error regression — 2026-11-18
 
@@ -606,6 +1127,16 @@ Owned paths: `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md` and this claim
 Acceptance: independently review new delegated registry signing, isolated escrow supporting harness, corrected worker fetch injection/CI setup, browser regression repairs, and oracle critical-message integration. Preserve prior reviewed-source evidence and separate execution, external acceptance, and final-candidate gates. Record findings at exact source pins and execute bounded focused regressions when available.
 
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
+# Qualified source promotion — 2026-11-18
+
+Worker: ChatGPT integration coordinator. Branch: `integration/ghostpay-qualified-fixes-20261118`.
+Base: `5a33a435ffbb4711d0a5fa69ade9d32ad4f8b929` (reviewed PR #241 merged into main).
+Owned paths: integration of already independently reviewed #237, #227, #234 and #235; their nonconflicting source/tests;
+this registry and `docs/consolidation/master-20261118/QUALIFIED_GROUP.md`.
+Acceptance: preserve all source parents and worker claims, qualify the combined tree against current main, independently review,
+then merge only with successful applicable checks. Existing strict Mythril release failure remains explicit and unchanged.
+No deployment, release, branch deletion or shared-branch rewrite.
+
 
 
 ## Beta acceptance log artifact capture — 2026-11-18
@@ -629,6 +1160,8 @@ source after checking the pinned upstream filter, retained logs and unchanged up
 dependency, build, upload or rerun. Hosted artifact existence remains unverified; early failures can still
 precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
 limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
+
+
 
 # Own-node request guard — 2026-11-18
 
@@ -695,3 +1228,121 @@ cancellation tests pass. Secret scan/action pins/diff checks pass. Fresh high-th
 passes after upstream picomatch withdrawal; 17 development-only low entries remain explicit.
 Source pins and qualification evidence: `docs/handoffs/agents/REMAINING_CI_20261119.md`.
 Await coordinator independent review and combined-source integration/qualification.
+
+## Remaining-work pool seed backup security — 2026-11-19
+
+Worker: root, Caveman investigate-first. Branch: `chatgpt/ghostpay-pool-seed-security-20261119`.
+Base: `824091cf0bef4128641264fde3b606243ef66af3`; current main checked before claim.
+Sources: SEC-16 in PR #205, audit 24 L8-07, and PS-10 in the existing pool SDK audit.
+Owned paths: `packages/pool-sdk/src/store.ts`, seed-backup regression tests and existing seed fixtures,
+`packages/pool-sdk/{README.md,package.json,vitest.config.ts}`, the corresponding local workspace dependency
+entry in `package-lock.json`, generated package map, and a source-pinned completion handoff.
+Acceptance: bound attacker-controlled seed-backup parsing/KDF work before derivation, use the existing
+keystore passphrase policy for new exports, authenticate the versioned seed header, preserve bounded legacy
+v1 recovery with exact legacy password bytes/AAD, wipe owned temporary secret buffers, and retain test coverage.
+This is the separate experimental pool seed format; no Spec 18, ux-vault source, pool payment protocol,
+contract, authority, deployment, publishing or release-policy change. Independent review: contract_security.
+## Shared invoice signer-policy extraction — 2026-11-18
+
+Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-invoice-validation-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (main). Source reviewed:
+PR #218 `b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, #209
+`b5e2ea3e5030b56c79063eb1f91c8a634ee5d740`, and #211
+`a92658b1ef6b95ff0145b2e1933d0047d51289d5`.
+
+Owned paths: `packages/invoice-schema/src/{envelope.ts,errors.ts,pinnedSigner.test.ts}`;
+`packages/invoice-schema/{README.md,DEVIATIONS.md}`; `packages/ux-core/src/{errors.ts,errors.test.ts}`;
+this claim; `docs/handoffs/agents/INVOICE_VALIDATION_20261118.md`.
+
+Acceptance: reproduce the missing opt-in `requirePinnedSigner` contract on main before implementation;
+restore only the shared parser guard and fixed typed error/catalog entries; verify real signatures,
+plaintext/encrypted/passphrase paths, invalid-signature precedence, default compatibility and
+unchanged format/schema/decryption failures. Run affected package tests/typecheck/lint/build and
+existing browser-consumer regressions with matching compiled packages. Document that no current
+browser caller opts into this policy and that default unpinned-seller review remains unchanged.
+No CLI, relayer, backend, experimental, dependency, cryptographic-format or browser trust-policy
+changes. Independent source review and exact-head hosted CI remain integration gates; no publication
+or browser-execution claim from this worker.
+
+Status: additive API implementation and local review complete at product/test source
+`079222115f494d966f1f25be31ffca4d66346461`; regression commit `e3a34d4081aa63d05f36c2e82961299fadaf3f76`
+reproduces 10 signer-policy failures and 1 catalog failure against main. Full invoice-schema 728/728 and
+ux-core 119/119 pass with original coverage thresholds; affected package typecheck/lint/build pass.
+Existing Pay/Receipt tests pass 153/153 at `964b60d6`, before the sole final catalog identity-wording
+correction. Privacy reviewer independently passes 13 signer + 15 catalog tests at final source;
+coordinator independently passes the same 13 signer cases. Both source reviews find no blocker.
+These independent counts overlap author coverage. No browser/default enforcement, cryptographic format,
+optional backend or experimental changes. Exact-head hosted CI and browser acceptance remain separate.
+Evidence and integration limits: `docs/handoffs/agents/INVOICE_VALIDATION_20261118.md`.
+
+
+
+## Main-targeted Pages checkpoint v4 extraction — 2026-11-18
+
+Worker: ChatGPT privacy_review, Caveman surgical-patch.
+Branch: `chatgpt/ghostpay-pages-checkpoint-v4-20261118`; base main
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. Reviewed #222-lane source input:
+`1dd0fa6152f67010dd38db35d46d102130b583f3`, preserved with its handoff at
+`f90499d2925a965b73533da2650c60ca9ea119ed`.
+Owned paths: `apps/web/src/lib/scanClient.ts`, `apps/web/src/lib/scanClient.test.ts`,
+`apps/web/src/lib/scanCursorSlot.ts`, `apps/web/src/lib/scanCursorSlot.test.ts`,
+`apps/web/src/lib/scanCheckpointPrivacy.test.ts`,
+`apps/web/src/lib/scannerCore.spam.nocov.test.ts`, checkpoint row only in
+`docs/threat-model/PRIVACY_THREAT_MODEL.md` and the browser-profile row only in
+`docs/threat-model/THREAT_MODEL.md` (coordinator-approved), this claim and
+`docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`.
+Acceptance: extract only identity-bound v4 checkpoint persistence/lending and the
+relevant regressions onto main; preserve main scanner body, evidence/reorg/finality
+checks and application behavior. No #222 bulk-evidence feature, transport/BTC/contract
+or dependency changes. Reproduce main's legacy behavior before product edits; run
+focused/full scanClient tests, million-announcement resume, whole-web typecheck and
+scoped lint; request independent source/test review. Record both source lanes, old
+record rescan and privacy/storage limits. No remote mutation, duplicate PR, merge,
+deployment or local browser-pass claim.
+Status: completed at main product/test source
+`7c37de5154ac18e06725ecde6d194185b2e820f2`. Main RED commit
+`1d8e61776b2e28a4a4d2e082399eefe58148ea7c` reproduced 5 failures/2 controls.
+Full scanner/privacy/helper selection passed 110/110; million-announcement resume
+passed 1/1; full-web typecheck1536MiB and scoped lint passed. Independent recovery_review
+found no blocking source issue and reran 20 privacy/helper plus 3 pending-corroboration
+lifecycle cases at the exact source. Main scanner bytes before persistence are unchanged
+except the helper import; no #222 bulk-evidence code was copied. Public/unauthenticated
+cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal dependency,
+sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
+See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
+candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+## Remaining SDK and registry documentation — 2026-11-19
+
+Worker: root; branch `chatgpt/ghostpay-remaining-work-20261119`, base `dfdc5d51`.
+Sources: F-PROTO-12 missing SDK README, F-CTR-04 stale ADR-0018, F-WEB-18 embed header path,
+and current quote/RPC source. Owned paths: `packages/sdk/README.md`, `docs/adr/ADR-0018-erc6538.md`,
+`packages/chain-adapters/README.md`, comment in `apps/web/src/lib/embedHost.ts`.
+Acceptance: document actual exports and verdict semantics without changing payment authorization,
+state current delegated/ENS support and deployment-verification limits, correct source paths,
+and validate relative links. No protocol, authority, deployment, release or runtime behavior change.
+
+## Remaining focus and lean-buffer acceptance — 2026-11-19
+
+Worker: root; source `74a1e38a`, current main `e454de6a`. Sources: SEC-30/R-04
+and F-WEB-05, historical focus test `407868a1`. Owned paths: new
+`apps/web/e2e/focus-scope.spec.ts`, one full/lean v1 buffer case in
+`apps/web/src/views/Pay.supported.test.tsx`, lean scope clarification and evidence.
+Acceptance: preserve the accepted AppShell focus behavior in a browser regression;
+prove the v1 buffer is initially off in both profiles and displays its amount/public
+linkage only after opt-in. No application behavior or seven owned feature changes.
+Browser execution remains a hosted gate if the local Chromium socket restriction persists.
+
+## Remaining GitHub Action runtime maintenance — 2026-11-19
+
+Worker: root; branch `chatgpt/ghostpay-remaining-work-20261119`, base `5e753eb9`.
+Source: unassigned dependency PR #207, independently reviewed at
+`199ab7ef1e80e6368fdc17c09b94c87a62871861`, and GitHub's Node 20 action-runtime retirement.
+Owned paths: the two `peter-evans/create-pull-request` pins in
+`.github/workflows/ghostpay-codex-cloud.yml` and
+`.github/workflows/ghostpay-parallel-review.yml`, this claim and the review evidence.
+Acceptance: adopt the reviewed Node 24 action while preserving every trigger,
+permission, input, output consumer and paid-workflow activation condition; run
+the existing automation hardening/workflow tests and action-pin checks; obtain
+independent source review. No workflow dispatch or paid-agent activation.
+The unrelated setup-python v7 upgrade remains optional maintenance.

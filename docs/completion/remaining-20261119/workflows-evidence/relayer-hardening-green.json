@@ -1,0 +1,19 @@
+{
+  "name": "relayer-hardening-green",
+  "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/hardening.test.ts",
+    "src/privacy.test.ts",
+    "src/config.test.ts",
+    "--maxWorkers=1",
+    "--no-file-parallelism"
+  ],
+  "cwd": "apps/relayer",
+  "exit_code": 0,
+  "seconds": 12.506,
+  "observed_at": "2026-11-19T07:16:13.999869+00:00",
+  "log": "relayer-hardening-green.log"
+}

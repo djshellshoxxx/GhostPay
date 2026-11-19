@@ -40,6 +40,9 @@ chain and token allowlist (`chain_not_supported`, `token_not_supported` 422) -> 
 `permit_value_too_low`) -> `feeTo` equals the relayer's (`fee_to_mismatch`) -> quote token authentic (`invalid_quote` 400),
 unexpired (`quote_expired` 410), `sweep.fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) ->
 deadline in `(now+min, now+max]`, max 1800 s (`deadline_too_soon/far`) -> contract static rules (`invalid_order`) ->
+signature form as OpenZeppelin `ECDSA.recover` requires it: low `s`, `v` 27 or 28 (`invalid_signature` 422, no RPC call
+and no owner strike) -> client lane ticket (`client_queue_full` 429 + `Retry-After: 5`: a client network bucket, IPv4 address or IPv6 /64, holds at
+most `queue.maxPerClient` sweeps between this point and the settlement of their lane jobs; taken before the first await) ->
 signature recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
 proven owner) -> per-owner failure counter (`owner_failure_limit` 429 + `Retry-After`: 3 costly user-attributable
 failures per hour, spec 04) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker (`breaker_open` 503) ->
@@ -59,16 +62,23 @@ covers the estimated gas (`fee_below_gas_cost` 422), gas price re-read (cap; `ga
 remain), second simulation with the same checks, the deadline once more (same class; a slow simulation can use up the
 margin), loss budget reservation (`loss_budget_exhausted` 429), daily budget (`budget_exhausted` 503 + `Retry-After`) ->
 state journal record (`state_unavailable` 503 + `Retry-After` when it cannot be written; nothing is signed) -> sign ->
+OP signed-transaction fee recheck (if applicable; refusal broadcasts nothing) -> final order/feed deadline check ->
 journal the transaction hash (`state_unavailable` 503 on failure; nothing is broadcast) -> send (`send_failed` 503). A
 send whose outcome is unknown blocks the chain's lane (`send_unsettled` 503 + `Retry-After`) until reconciliation shows
 whether its nonce was used. A mined revert also counts against the owner.
+
+Admission bounds: `queue.maxPending` (default 16, 1..1024) sweeps queued or in flight per chain; `queue.maxPerClient`
+(default `min(maxPending, max(2, ceil(maxPending / 4)))`, 1..`maxPending`) of them per client network bucket, counted from
+the ticket (before signature recovery) until the lane job settles; `server.maxConnectionsPerIp` (default 64, 1..1024)
+open connections per peer. There is no simulation outside the lane: the in-lane order-state reads come before both
+simulations, so an unfunded sweep costs three reads in the lane, not a simulation.
 
 Quote pricing: `gas.griefReserveBps` (default 0, max 5000) is added to the gas term before the F-SPONSOR formula, so the fee
 carries a margin for gas lost when an owner drains or revokes first; how to derive a value from measured gas and the
 observed mined-revert rate is in `docs/audits/26-relayer-completion.md` section 4a. `quoteTtlSeconds` is at most 60 (default 60).
 
-Other classes: `invalid_*` 400 (field-level validation), `unsupported_media_type` 415, `body_too_large` 413,
-`rate_limited_ip` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
+Other classes: `invalid_*` 400 (field-level validation; `invalid_url` for a request target that does not parse), `unsupported_media_type` 415, `body_too_large` 413,
+`rate_limited_ip` / `client_queue_full` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
 `internal_error` 500.
 
 **Client contract (pre-broadcast classes).** Every 4xx class above is returned before the relayer broadcasts: `send` is
@@ -101,17 +111,56 @@ signatures stop startup. The web build and ops monitor use the same manifest dig
 | `allowFeeToHotKey` | Defaults to `false`; set `true` only when fee proceeds are intentionally sent to the signing key. `feeTo` must be explicit otherwise, and zero/precompile recipients are rejected. |
 
 Per chain: `rpcUrl`|`rpcUrlEnv`, `sweepRelayer` (optional; taken from the manifest when present, must match it if both),
-`feeTo` (required unless `allowFeeToHotKey: true`), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
+`feeTo` (required unless `allowFeeToHotKey: true`; when a signed manifest exists for the chain it must equal the
+manifest's `feeRecipient`, because the web client refuses every quote whose `feeTo` differs: startup stops otherwise), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
 chain-adapters allowlist or must be given), exactly one of `nativeUsdPrice` or `nativeUsdFeed`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`,
 `dailyBudgetWei`, `minBalanceWei`. Operator numbers (`gasUnits`, fixed `nativeUsdPrice`, caps, budget) have no defaults on
 purpose and must be set from your own measurements. The example file's values are placeholders, not measurements.
 
-Fee: `sponsorFee(amount, gasUnits * eth_gasPrice converted at nativeUsdPrice with the stablecoin fixed at 1.0)` from
+Fee: `sponsorFee(amount, native transaction cost converted at nativeUsdPrice with the stablecoin fixed at 1.0)` from
 chain-adapters = `clamp(max(gas x 1.10, 50 bps), cap 300 bps)`. If the cap cannot cover raw gas cost the quote is refused
 (`amount_too_small`). At send time, the relayer reads token balance/allowance/nonce, simulates twice, checks the actual
 estimated gas cost against `gas.coverPercent` (default 100%), and refuses if `eth_gasPrice` moves more than
 `gas.maxMovePercent` (default 25%) between simulations. Quote gas prices are cached for `gas.quoteCacheSeconds` (default 3).
 Non-stable tokens are unsupported in v1.
+
+### OP Stack total transaction cost (R07-4)
+
+For chains marked `opStack` in the existing chain catalog, the native cost includes execution gas plus a reserve
+of **2 × (L1 data fee + operator fee)**. This is the same reserve multiplier and GasPriceOracle predeploy
+(`0x420000000000000000000000000000000000000F`) used by the web direct-sweep helper. Other chains keep execution-only
+accounting and make no fee-oracle calls. The signed quote fields, contract order, fee cap and 110% sponsor multiplier
+are unchanged.
+
+Quotes call `getL1FeeUpperBound` with a conservative **unsigned legacy transaction size**: both sweep entrypoints have
+fixed-width ABI fields and the admitted signature is exactly 65 bytes. Permit-capable tokens use the larger permit
+shape. The size includes RLP framing, maximum-width transaction integers and EIP-155 signing fields. It does not
+pretend that a zero-filled placeholder has the future signed transaction's compression ratio. The oracle adds the
+signature overhead itself. Operator fees come from `getOperatorFee(gas)`, allowing the oracle to select its fork's
+formula. Quote fee reads share an in-flight lookup and the existing `gas.quoteCacheSeconds` TTL, with at most two
+calldata shapes per chain. Repeated oracle failures trip the breaker independently of healthy gas-price reads.
+
+Both send-time simulations obtain a fresh reserve for the actual selected entrypoint; this reserve is included in
+fee coverage and in daily/loss reservations. After signing, the chain client reconstructs the unsigned RLP from the
+exact signed transaction and calls `getL1Fee` and `getOperatorFee` again. If the new reserve exceeds the held reserve,
+or either answer is missing or malformed, it refuses before the journal's signed-hash hook and before broadcast.
+The order and feed deadlines are checked again after these asynchronous reads. No additional signed bytes, calldata,
+owner or destination fields are added to the journal or logs.
+
+Settlement charges `gasUsed × signed gasPrice + receipt.l1Fee + operatorFee(gasUsed)` exactly once, without the reserve
+multiplier. The operator lookup uses the receipt's **block hash with `requireCanonical: true`**, so a changing latest
+block or a reorganization cannot select a different fee schedule silently. Missing L1 fee data, an unsupported
+canonical-block query or an unavailable/malformed operator answer leaves the reservation unsettled for later lookup,
+including after restart. Actual cost above the reserve is recorded even when it exceeds the configured daily limit;
+remaining capacity stays zero. Existing prior-day and loss-window settlement rules remain in force.
+
+The configured RPC must support those oracle getters and canonical-block calls. An absent/reverting operator getter
+is refused, rather than interpreted as evidence of a pre-Isthmus zero; a genuine zero answer is accepted. Optimism
+documents `getL1FeeUpperBound` as a practical compression estimator, and the 2× reserve is a policy margin—not a
+guarantee against arbitrary fee rises before inclusion. Public OP-chain qualification remains separate from local
+mock-RPC and non-OP Anvil acceptance. Oracle interface source:
+[Optimism GasPriceOracle 1.6.0](https://github.com/ethereum-optimism/optimism/blob/develop/packages/contracts-bedrock/src/L2/GasPriceOracle.sol),
+observed Git blob `ab6cdcf80c4fe4336aa0711d91982bc282c96f77` on 2026-11-19.
 
 Optional source checks:
 
@@ -121,6 +170,8 @@ Optional source checks:
   same finalized block number, hash, parent hash and timestamp. A mismatch returns `503 rpc_disagree`; missing
   headers, unavailable sources or tip lag greater than the configured chain finality depth return `503 rpc_unavailable`.
   This is canonical-header agreement, not agreement about every contract read or a guarantee that no reorganization follows.
+  Separately, when a deployment manifest is loaded, startup requires that configured secondary to agree on every
+  manifest readback (router fee fields and router/relayer/announcer/policy code); either provider's failure stops startup.
 - `nativeUsdFeed: { "maxAgeSeconds": 300 }` explicitly selects the existing native-symbol/USD entry from the
   chain-adapters registry. Remove `nativeUsdPrice` when selecting this mode. Missing registry entries fail startup;
   no address is inferred and no feed is activated by default. `maxAgeSeconds` must be an integer in `1..604800`.
@@ -139,6 +190,10 @@ The browser conservatively treats these HTTP 503 responses as uncertain; the ser
 the origin or outcome of an arbitrary intermediary response and do not grant automatic retry authority.
 
 ### Restart safety (state journal)
+
+On every chain, a mined receipt must match the requested transaction hash and have exactly `success` or `reverted`
+status. Missing/unknown status is an RPC failure on lookup and an unsettled timeout during receipt waiting. The
+relayer keeps its reservation for later reconciliation; malformed status is never interpreted as a mined revert.
 
 `state` is required: `{ "file": "/var/lib/ghostpay-relayer/state.json" }` (absolute path; its directory must be writable
 by the service user and is the only path the relayer writes) or `{ "ephemeral": true }` (requires `NODE_ENV=development` or `NODE_ENV=test`; missing, production,
@@ -205,7 +260,8 @@ holds no user data (nonce, tx hash, wei amounts; records deleted on settlement).
   (deadline <= 30 min bounds that).
 - **Drain protection:** per-IP and per-owner token buckets (bounded LRU), simulation before every send, gas price cap,
   gas limit cap, per-chain daily budget, balance floor, error-rate breaker with half-open probe, one in-flight transaction
-  per chain with a bounded queue, 16 KiB body cap, header/request timeouts, connection cap.
+  per chain with a bounded queue, 16 KiB body cap, header/request timeouts (10 s / 15 s, enforced by a 1 s check instead of Node's 30 s default), connection cap (1024 in total and
+  `server.maxConnectionsPerIp` per peer, default 64, 1..1024; peers in `trustedProxies` are exempt).
 - **Quote integrity:** HMAC binds the whole order; tampering or replaying across chains/tokens/owners fails.
 - **Not covered:** per-owner limits apply to `/v1/sweep` only (quotes are unauthenticated, limited only per client IP,
   per client network group and process-wide, see RELAYER-01 below); a distributed
@@ -243,13 +299,13 @@ only; gas units in the example config are placeholders.
 
 - `privacy` (TM11, all optional; see `PRIVACY.md`): `zeroLog` (default false) drops per-request log lines and request ids; `ingress` is `direct`, `trusted-proxy` (default when `trustedProxies` is not empty) or `onion` (loopback `listen.host`, empty `trustedProxies`; untested with a real Tor); `bodyPadding` is `optional` (default, accepts padded and unpadded bodies during the transition) or `required` (unpadded bodies get `400 invalid_pad`). A `pad` member must be bounded lowercase hex and is discarded before validation.
 - `trustedProxies` (CIDR list, default empty) replaces `trustProxyHops`. `X-Forwarded-For` is honoured only when the socket peer is listed, walked right to left; a broken chain gets `400 invalid_client_address`. Buckets are IPv4 /32 and IPv6 /64, hashed with the rotating salt (S3-07).
-- Breaker: every admission is a permit settled on every path; user-attributable results (simulation revert, nonce used, caps) are neutral; an RPC failure on any in-lane read, the gas price included, counts as a failure (L5-10), while the gas price cap (`gas_price_too_high`) stays neutral; `breaker.probeTimeoutSeconds` expires a stuck probe (S3-05). A broadcast sweep's permit is settled when its receipt wait ends, not at broadcast (L5-06): a mined sweep is a success, a receipt timeout a failure. So a half-open probe stays in flight until its receipt (other sweeps get `breaker_open` meanwhile). It expires and re-opens the breaker only when it is not settled within `breaker.probeTimeoutSeconds` (the in-lane work up to its broadcast) plus `queue.receiptTimeoutSeconds` (its receipt wait), 60 + 120 s by default, so the receipt decides a broadcast probe: keep `queue.receiptTimeoutSeconds` above the chain's usual confirmation time. A mined revert after a passing simulation is charged to `lossBudget` (per network bucket and per destination, plus global; `429 loss_budget_exhausted`) and does not feed the breaker (S3-06): its permit is settled neutral, which frees a half-open probe without closing the breaker.
+- Breaker: every admission is a permit settled on every path; user-attributable results (simulation revert, nonce used, caps) are neutral; an RPC failure on any in-lane read, the gas price included, counts as a failure (L5-10), while `/v1/quote` gas price reads stay out of the count window: `breaker.minSamples` consecutive failed reads with no good read in between open a closed breaker (a quote never takes or settles the half-open probe and never re-opens an open breaker), and the gas price cap (`gas_price_too_high`) stays neutral; `breaker.probeTimeoutSeconds` expires a stuck probe (S3-05). A broadcast sweep's permit is settled when its receipt wait ends, not at broadcast (L5-06): a mined sweep is a success, a receipt timeout a failure. So a half-open probe stays in flight until its receipt (other sweeps get `breaker_open` meanwhile). It expires and re-opens the breaker only when it is not settled within `breaker.probeTimeoutSeconds` (the in-lane work up to its broadcast) plus `queue.receiptTimeoutSeconds` (its receipt wait), 60 + 120 s by default, so the receipt decides a broadcast probe: keep `queue.receiptTimeoutSeconds` above the chain's usual confirmation time. A mined revert after a passing simulation is charged to `lossBudget` (per network bucket and per destination, plus global; `429 loss_budget_exhausted`) and does not feed the breaker (S3-06): its permit is settled neutral, which frees a half-open probe without closing the breaker.
 - Loss budget (L5-02, L5-04): each sweep makes one reservation that charges its destination, its network bucket and that bucket's group (IPv4 /24, IPv6 /48), each up to `perKeyWei`, and the global cap once. A quarter of `globalWei` is kept for sweeps whose keys and groups lost nothing in the current window, so sources that keep losing cannot spend it. That is not a service guarantee: a network group (IPv4 /24, IPv6 /48) new to the window is clean until its first loss and destinations are free, so enough distinct groups, one loss each, can still use up that quarter and refuse every sweep until the window ends (open, like RELAYER-01 below). Size `globalWei` with that in mind: the quarter lasts for about (`globalWei` / 4) / (gas cost of one sweep) such first losses. Keys and groups live in two tables of `maxKeys` entries that evict only entries from an earlier window; while a table is full of live entries, newcomers share one overflow entry per kind (destination, network), counted by `relayer_loss_budget_overflow_total`. Mined reverts that reach the breaker's own thresholds (at least `breaker.minSamples` reverts making up at least `breaker.failureRatio` of the last `breaker.windowSize` mined sweeps within `lossBudget.windowSeconds`) send a `mined_revert_rate` alert and report `minedReverts: "sustained"` and `degraded` on `/healthz`, without opening the breaker.
 - `rateLimit.quoteGroupPerMinute/Burst` (default 60 per minute, burst 20): `/v1/quote` budget per client IPv4 /24 or IPv6 /48 (`429 rate_limited_ip`), checked before `rateLimit.quoteGlobalPerMinute/Burst`, the process-wide `/v1/quote` budget (`429 rate_limited_global`, counted as `relayer_quote_budget_denied_total` and alerted as `quote_budget_exhausted`), which only a well-formed quote request spends (L5-03). Keep the group values well below the global ones. The quote-path gas price is reused for `gas.quoteCacheSeconds` (3 s) and concurrent quotes that find it cold share one lookup.
 - Open item (RELAYER-01): enough networks together can still exhaust the global quote budget and so refuse every quote, and with it every relayed sweep; each network group only buys `quoteGroupPerMinute` of it. The durable fix, pricing the fee at sweep time so that quotes need no global budget, is not implemented.
 - Alerts: `ALERT_WEBHOOK_URL`, `ALERT_WEBHOOK_ALLOWED_HOSTS`, and `ALERT_WEBHOOK_SECRET` configure signed webhook delivery. The body uses `{event, chainId, value, threshold, ts}`, carries no request data, and uses HMAC-SHA256 in `X-GP-Signature`. Delivery deduplicates per event and chain for 15 minutes. Existing alert kinds include breaker open, low balance, budget exhaustion, mined reverts, receipt timeout, and quote budget exhaustion.
 - Receipt timeouts (L5-06): a sweep whose receipt is not seen within `queue.receiptTimeoutSeconds` counts as a breaker failure (the sweep's own permit is settled with it, see Breaker above) and sends a `receipt_timeout` alert. Its daily-budget and loss reservations are kept, and the start of each later job on that chain looks its receipt up again (`eth_getTransactionReceipt`, at most 8 per chain, dropped after 24 h): once mined it is settled like any receipt (unused budget returned, a revert charged). Open item: nothing replaces (fee bump) or cancels a stuck transaction; the lane moves on after the timeout with the nonce re-read from the pending count.
-- Metrics (separate listener; `/metrics` and `/v1/stats`): `relayer_http_requests_total`, `relayer_reject_total`, `relayer_quotes_total`, `relayer_gas_spent_wei_total`, `relayer_fee_earned_usd_micro_total`, `relayer_fee_unknown_total`, `relayer_loss_wei_total`, `relayer_sweep_receipts_total`, histograms `relayer_sweep_latency_seconds` and `relayer_rpc_latency_seconds`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_receipt_timeouts_total`, `relayer_loss_budget_denied_total`, `relayer_loss_budget_overflow_total`, `relayer_quote_budget_denied_total`, `relayer_owner_failures_total`, `relayer_permit_skipped_total`, `relayer_permit_failures_total{class}`, `relayer_permit_diagnosis_failures_total`, `relayer_send_outcome_unknown_total`, `relayer_send_not_broadcast_total`, `relayer_state_restored_total`, `relayer_state_write_failures_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_daily_budget_remaining_wei`, `relayer_queue_pending`, `relayer_unsettled_transactions{state=pending|unknown}`, `relayer_hot_balance_wei` (last pre-send read). `/healthz` adds `sends: settled|unsettled` per chain. Alert kind `state_write_failed` is new.
+- Metrics (separate listener; `/metrics` and `/v1/stats`): `relayer_http_requests_total`, `relayer_reject_total`, `relayer_quotes_total`, `relayer_gas_spent_wei_total`, `relayer_fee_earned_usd_micro_total`, `relayer_fee_unknown_total`, `relayer_loss_wei_total`, `relayer_sweep_receipts_total`, histograms `relayer_sweep_latency_seconds` and `relayer_rpc_latency_seconds`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_receipt_timeouts_total`, `relayer_loss_budget_denied_total`, `relayer_loss_budget_overflow_total`, `relayer_quote_budget_denied_total`, `relayer_owner_failures_total`, `relayer_permit_skipped_total`, `relayer_permit_failures_total{class}`, `relayer_permit_diagnosis_failures_total`, `relayer_send_outcome_unknown_total`, `relayer_send_not_broadcast_total`, `relayer_state_restored_total`, `relayer_state_write_failures_total`, `relayer_connections_refused_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_daily_budget_remaining_wei`, `relayer_queue_pending`, `relayer_unsettled_transactions{state=pending|unknown}`, `relayer_hot_balance_wei` (last pre-send read). `/healthz` adds `sends: settled|unsettled` per chain. Alert kind `state_write_failed` is new.
 - Unverified: nothing here has run behind a real proxy, Prometheus or webhook receiver.
 
 Set `LOG_LEVEL=info|warn|error` to filter JSON logs (default `info`). Unknown values fail startup without echoing their contents. Metrics are observational and reset on restart; consult the protected journal for transaction recovery. See [the monitoring runbook](../../docs/operators/relayer-monitoring.md) for units, fee assumptions, timing boundaries, and missing-data treatment.

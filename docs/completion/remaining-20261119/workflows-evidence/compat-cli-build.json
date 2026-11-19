@@ -1,0 +1,13 @@
+{
+  "name": "compat-cli-build",
+  "source_revision": "c7229b9523aaa6c45fad4e870e11646d98c591ad",
+  "command": [
+    "python",
+    "/workspace/scratch/6eafdb04d91b/workflow-evidence/build_compat_cli.py"
+  ],
+  "cwd": "packages/cli",
+  "exit_code": 0,
+  "seconds": 6.131,
+  "observed_at": "2026-11-19T07:42:17.582458+00:00",
+  "log": "compat-cli-build.log"
+}

@@ -1,0 +1,121 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-policy-client/apps/web
+
+ ❯ src/features/policy/send.test.ts (41 tests | 3 failed) 2172ms
+   ❯ policy payment sending (single use and final-gate details) (14)
+     × refuses a payERC20 whose ephemeral key R or view tag differs from the prepared payment 67ms
+     × refuses a payNative whose ephemeral key R or view tag differs from the prepared payment 40ms
+     × refuses calldata whose metadata matches a prepared payment that was edited to it 33ms
+ ❯ src/features/policy/pay.selfcheck.test.ts (2 tests | 1 failed) 312ms
+   ❯ preparePolicyPayment self-check binds R and the view tag to the derivation (2)
+     × refuses a built call with another R or view tag (same owner and policy hash) 89ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/policy/pay.selfcheck.test.ts > preparePolicyPayment self-check binds R and the view tag to the derivation > refuses a built call with another R or view tag (same owner and policy hash)
+AssertionError: expected [ 'prepared', 'prepared' ] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "The prepared payment failed its self-check. Nothing was sent.",
+-   "The prepared payment failed its self-check. Nothing was sent.",
++   "prepared",
++   "prepared",
+  ]
+
+ ❯ src/features/policy/pay.selfcheck.test.ts:54:17
+     52|       }
+     53|     });
+     54|     expect(got).toEqual(changes.map(() => 'The prepared payment failed…
+       |                 ^
+     55|   });
+     56| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/features/policy/send.test.ts > policy payment sending (single use and final-gate details) > refuses a payERC20 whose ephemeral key R or view tag differs from the prepared payment
+AssertionError: expected [ 'sent', 'sent', 'sent' ] to deeply equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "Blocked: the payment calldata does not match the derived policy account. Nothing was sent.",
+-   "Blocked: the payment calldata does not match the derived policy account. Nothing was sent.",
+-   "Blocked: the payment calldata does not match the derived policy account. Nothing was sent.",
++   "sent",
++   "sent",
++   "sent",
+  ]
+
+ ❯ src/features/policy/send.test.ts:365:17
+    363|       got.push(await t.run(...consistent(t, p)).then(() => 'sent', (e:…
+    364|     }
+    365|     expect(got).toEqual(changes.map(() => 'Blocked: the payment callda…
+       |                 ^
+    366|     expect(t.walletSends()).toBe(0);
+    367|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/features/policy/send.test.ts > policy payment sending (single use and final-gate details) > refuses a payNative whose ephemeral key R or view tag differs from the prepared payment
+AssertionError: expected [ 'sent', 'sent' ] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "Blocked: the payment calldata does not match the derived policy account. Nothing was sent.",
+-   "Blocked: the payment calldata does not match the derived policy account. Nothing was sent.",
++   "sent",
++   "sent",
+  ]
+
+ ❯ src/features/policy/send.test.ts:377:17
+    375|       got.push(await t.run(...consistent(t, p)).then(() => 'sent', (e:…
+    376|     }
+    377|     expect(got).toEqual(changes.map(() => 'Blocked: the payment callda…
+       |                 ^
+    378|     expect(t.walletSends()).toBe(0);
+    379|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/features/policy/send.test.ts > policy payment sending (single use and final-gate details) > refuses calldata whose metadata matches a prepared payment that was edited to it
+AssertionError: promise resolved "{ …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "hash": "0x9999999999999999999999999999999999999999999999999999999999999999",
++   "receipt": {
++     "blockNumber": 16n,
++     "status": "success",
++   },
++   "verification": "verified",
+  }
+
+ ❯ src/features/policy/send.test.ts:386:45
+    384|     const metadata = decodeFunctionData({ abi: ghostPayPolicyRouterAbi…
+    385|     const p = { ...t.prepared, built: { ...t.prepared.built, metadata,…
+    386|     await expect(t.run(...consistent(t, p))).rejects.toThrow(/derived …
+       |                                             ^
+    387|     expect(t.walletSends()).toBe(0);
+    388|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 39 passed (43)
+   Start at  22:39:43
+   Duration  17.58s (import 46%, transform 38%, tests 16%)
+
+    Isolate  2 workers spawned · ~900ms startup each (spawn + environment, per file)
+             at least ~900ms faster with isolate: false — reuses workers across files instead of one per file
+

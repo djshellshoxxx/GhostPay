@@ -1,5 +1,45 @@
 # @ghostpay/pool-sdk
 
+## Seed backup format and compatibility (SEC-16 / PS-10)
+
+New `exportSeedEncrypted` backups use **version 2**. They contain only `v`, `logN`, `salt`, `iv`, and `ct`.
+The salt is 16 random bytes and the AES-GCM IV is 12 random bytes. `createPoolSeed` generates 32-byte seeds;
+the backup API preserves the note SDK's supported variable-length seeds within an explicit 16..512-byte bound.
+Binary fields use canonical padded base64. `ct` is the encrypted seed followed by the 16-byte GCM tag.
+
+Version 2 derives a 32-byte key with scrypt over the UTF-8 encoding of the NFKC-normalized passphrase,
+`N = 2 ** logN`, `r = 8`, and `p = 1`. New writes default to `logN = 17`; the optional test override is
+restricted to integers 14 through 18. Use the default for real backups. New exports apply the existing
+portable-keystore passphrase checker, including its 14-character minimum and strength assessment.
+No new passphrase is accepted merely because it has eight characters.
+
+AES-256-GCM authenticates the following UTF-8 JSON array, with no extra whitespace:
+
+```text
+["ghostpay/pool-seed/v2",logN,"<salt base64>","<iv base64>"]
+```
+
+This binds the seed-specific version/domain and KDF/header parameters. Changing a version, cost, salt,
+or nonce cannot turn an existing backup into a different valid envelope. The key is imported into WebCrypto
+as non-extractable. Owned password/key byte buffers and temporary seed copies are wiped on success and
+failure; immutable JavaScript strings and engine-internal copies still cannot be reliably erased.
+
+Imports validate the small envelope and canonical field lengths before any KDF work, accept no unknown
+fields, and cap scrypt at `N = 2 ** 18` with an explicit 512 MiB allocation ceiling. The input is bounded
+to 1,024 string code units and the passphrase to 1,024 code units before and after normalization.
+Malformed data, unsupported costs, bad authentication, and non-seed plaintext return the same coarse
+`STORE_CORRUPT` error without returning partial state or input text.
+
+Existing **version 1** backups remain readable for integer `logN` values 10 through 18. Their original
+password bytes are used without normalization, their original `ghostpay/pool-notes/v1` AAD is preserved,
+and old short passwords are accepted for recovery. Export strength rules apply only to new writes.
+Version 1 files requesting costs 19 or 20, or seeds above 512 bytes, are refused before KDF allocation; those
+unusually expensive/large legacy files require a separate controlled offline recovery environment.
+Legacy 16-, 31-, 33-, 64- and 512-byte seeds remain readable. Old readers do not understand version 2.
+The note-store format and pool payment/withdrawal protocol are unchanged.
+
+The compatibility tests independently generate legacy data and decrypt new data with `node:crypto`.
+
 Client SDK for the GhostPay **testnet-only** shielded pool (spec: `docs/remote/privacy-specs/shielded-pool.md`).
 Private, ESM, `UNLICENSED`. Not audited. Nothing here has touched a public chain.
 

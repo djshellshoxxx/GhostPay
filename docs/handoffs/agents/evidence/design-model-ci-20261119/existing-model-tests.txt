@@ -1,0 +1,246 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:14) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: creation requires explicit authority variants and bounded exact terms
+ok 1 - creation requires explicit authority variants and bounded exact terms
+  ---
+  duration_ms: 3.119997
+  type: 'test'
+  ...
+# Subtest: exact funding is accepted once and does not lose bigint precision
+ok 2 - exact funding is accepted once and does not lose bigint precision
+  ---
+  duration_ms: 5.992097
+  type: 'test'
+  ...
+# Subtest: all state/action pairs follow the explicit transition table
+ok 3 - all state/action pairs follow the explicit transition table
+  ---
+  duration_ms: 12.026674
+  type: 'test'
+  ...
+# Subtest: submission fixes the release clock; another submission cannot extend it
+ok 4 - submission fixes the release clock; another submission cannot extend it
+  ---
+  duration_ms: 13.383501
+  type: 'test'
+  ...
+# Subtest: dispute closes exactly when release becomes eligible, for both release variants
+ok 5 - dispute closes exactly when release becomes eligible, for both release variants
+  ---
+  duration_ms: 2.416887
+  type: 'test'
+  ...
+# Subtest: timeout is explicitly permissionless; mutual release needs both current authorizations
+ok 6 - timeout is explicitly permissionless; mutual release needs both current authorizations
+  ---
+  duration_ms: 3.09014
+  type: 'test'
+  ...
+# Subtest: mutual refunds work before or after submission; unilateral refund never works
+ok 7 - mutual refunds work before or after submission; unilateral refund never works
+  ---
+  duration_ms: 1.199461
+  type: 'test'
+  ...
+# Subtest: only a party can dispute and a dispute prevents the normal release and refund paths
+ok 8 - only a party can dispute and a dispute prevents the normal release and refund paths
+  ---
+  duration_ms: 1.199432
+  type: 'test'
+  ...
+# Subtest: arbiter is optional and fixed; it may choose only the two committed destinations
+ok 9 - arbiter is optional and fixed; it may choose only the two committed destinations
+  ---
+  duration_ms: 2.94088
+  type: 'test'
+  ...
+# Subtest: a favorable dispute decision preserves the release lock, while refund can settle earlier
+ok 10 - a favorable dispute decision preserves the release lock, while refund can settle earlier
+  ---
+  duration_ms: 3.988035
+  type: 'test'
+  ...
+# Subtest: every authority-affecting term and exact action payload is bound to the authorization
+ok 11 - every authority-affecting term and exact action payload is bound to the authorization
+  ---
+  duration_ms: 7.79939
+  type: 'test'
+  ...
+# Subtest: cross-chain, cross-stage, token and terms replay fail even at the same stage nonce
+ok 12 - cross-chain, cross-stage, token and terms replay fail even at the same stage nonce
+  ---
+  duration_ms: 1.6194
+  type: 'test'
+  ...
+# Subtest: malformed, failed, expired and duplicate authorizations consume no state or nonce
+ok 13 - malformed, failed, expired and duplicate authorizations consume no state or nonce
+  ---
+  duration_ms: 3.144201
+  type: 'test'
+  ...
+# Subtest: all terminal outcomes forbid any further payout, refund or funding
+ok 14 - all terminal outcomes forbid any further payout, refund or funding
+  ---
+  duration_ms: 12.420372
+  type: 'test'
+  ...
+# Subtest: bounded integer arithmetic, monotone inclusion time and nonce overflow fail atomically
+ok 15 - bounded integer arithmetic, monotone inclusion time and nonce overflow fail atomically
+  ---
+  duration_ms: 1.782576
+  type: 'test'
+  ...
+# Subtest: canonical replay recovers exact state and discards an orphaned payment outcome
+ok 16 - canonical replay recovers exact state and discards an orphaned payment outcome
+  ---
+  duration_ms: 4.161982
+  type: 'test'
+  ...
+# Subtest: mutual-only dispute resolution can remain locked indefinitely: no liveness overclaim
+ok 17 - mutual-only dispute resolution can remain locked indefinitely: no liveness overclaim
+  ---
+  duration_ms: 2.315315
+  type: 'test'
+  ...
+# Subtest: a compromised fixed arbiter can choose either party: authority cost stays explicit
+ok 18 - a compromised fixed arbiter can choose either party: authority cost stays explicit
+  ---
+  duration_ms: 0.895751
+  type: 'test'
+  ...
+# Subtest: finite adversarial exploration preserves value, destinations and terminal finality
+ok 19 - finite adversarial exploration preserves value, destinations and terminal finality
+  ---
+  duration_ms: 5456.075668
+  type: 'test'
+  ...
+# 15444 attempted transitions; 396 reachable states across four explicit variants
+# (node:15) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ADR-0023 admits an arbitrarily long continuous-owner-activity counterexample
+ok 20 - ADR-0023 admits an arbitrarily long continuous-owner-activity counterexample
+  ---
+  duration_ms: 23.871697
+  type: 'test'
+  ...
+# Subtest: counterfactual commitments and one-time clone initialization are mandatory
+ok 21 - counterfactual commitments and one-time clone initialization are mandatory
+  ---
+  duration_ms: 1.619139
+  type: 'test'
+  ...
+# Subtest: recovery remains possible immediately after accepted owner activity
+ok 22 - recovery remains possible immediately after accepted owner activity
+  ---
+  duration_ms: 2.673579
+  type: 'test'
+  ...
+# Subtest: continuous malicious owner activity and repeated cancellation have a fixed bound
+ok 23 - continuous malicious owner activity and repeated cancellation have a fixed bound
+  ---
+  duration_ms: 6.811024
+  type: 'test'
+  ...
+# Subtest: objection boundary is exclusive and extends from admission, not its submission time
+ok 24 - objection boundary is exclusive and extends from admission, not its submission time
+  ---
+  duration_ms: 0.787578
+  type: 'test'
+  ...
+# Subtest: all bounded owner-action schedules preserve liveness after a recovery is admitted
+ok 25 - all bounded owner-action schedules preserve liveness after a recovery is admitted
+  ---
+  duration_ms: 189.835739
+  type: 'test'
+  ...
+# 812 adversarial transitions; 120 final states
+# Subtest: beginning recovery cancels a queued rotation and blocks replacement while pending
+ok 26 - beginning recovery cancels a queued rotation and blocks replacement while pending
+  ---
+  duration_ms: 0.832673
+  type: 'test'
+  ...
+# Subtest: canonical transaction order selects current destination; a former destination cannot recover
+ok 27 - canonical transaction order selects current destination; a former destination cannot recover
+  ---
+  duration_ms: 0.698231
+  type: 'test'
+  ...
+# Subtest: rotating an address away and back does not revive former authority signatures
+ok 28 - rotating an address away and back does not revive former authority signatures
+  ---
+  duration_ms: 9.347075
+  type: 'test'
+  ...
+# Subtest: signature domain, action, replacement owner, epochs and nonce are all bound
+ok 29 - signature domain, action, replacement owner, epochs and nonce are all bound
+  ---
+  duration_ms: 4.055632
+  type: 'test'
+  ...
+# Subtest: failed or expired authorization never consumes a nonce or changes pending operations
+ok 30 - failed or expired authorization never consumes a nonce or changes pending operations
+  ---
+  duration_ms: 11.337812
+  type: 'test'
+  ...
+# Subtest: accepted ERC-1271 authorization cannot be revoked to stall permissionless execution
+ok 31 - accepted ERC-1271 authorization cannot be revoked to stall permissionless execution
+  ---
+  duration_ms: 7.389811
+  type: 'test'
+  ...
+# Subtest: nonces stay consumed after execution and old owner authorizations do not survive rotation
+ok 32 - nonces stay consumed after execution and old owner authorizations do not survive rotation
+  ---
+  duration_ms: 1.056022
+  type: 'test'
+  ...
+# Subtest: an objection cannot target another recovery epoch, and failure consumes no nonce
+ok 33 - an objection cannot target another recovery epoch, and failure consumes no nonce
+  ---
+  duration_ms: 0.470252
+  type: 'test'
+  ...
+# Subtest: pending withdrawals are frozen then invalidated without iterating attacker-grown history
+ok 34 - pending withdrawals are frozen then invalidated without iterating attacker-grown history
+  ---
+  duration_ms: 327.394377
+  type: 'test'
+  ...
+# Subtest: canonical replay after restart yields the same result, orphaned recovery never completes
+ok 35 - canonical replay after restart yields the same result, orphaned recovery never completes
+  ---
+  duration_ms: 5.95624
+  type: 'test'
+  ...
+# Subtest: the model exposes the new destination-compromise authority, instead of denying it
+ok 36 - the model exposes the new destination-compromise authority, instead of denying it
+  ---
+  duration_ms: 0.462117
+  type: 'test'
+  ...
+# Subtest: a malicious current destination can repeatedly freeze withdrawals: an explicit trade-off
+ok 37 - a malicious current destination can repeatedly freeze withdrawals: an explicit trade-off
+  ---
+  duration_ms: 0.952037
+  type: 'test'
+  ...
+# Subtest: invalid or overflowing time inputs fail closed
+ok 38 - invalid or overflowing time inputs fail closed
+  ---
+  duration_ms: 17.473819
+  type: 'test'
+  ...
+1..38
+# tests 38
+# suites 0
+# pass 38
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6834.813057

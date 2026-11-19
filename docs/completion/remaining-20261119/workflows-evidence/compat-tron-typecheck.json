@@ -1,0 +1,16 @@
+{
+  "name": "compat-tron-typecheck",
+  "source_revision": "9c014e2bcb32ae28719b8bfd92b079bafb5ea1e3",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "packages/chain-tron/tsconfig.json",
+    "--noEmit"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 4.615,
+  "observed_at": "2026-11-19T07:40:56.534498+00:00",
+  "log": "compat-tron-typecheck.log"
+}

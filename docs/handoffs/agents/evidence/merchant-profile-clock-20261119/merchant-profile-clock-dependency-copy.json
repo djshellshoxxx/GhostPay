@@ -1,0 +1,13 @@
+{
+  "source_revision": "f8849a0c416f23c45d128a258dac886af3c7255d",
+  "source": "/workspace/scratch/6eafdb04d91b/GhostPay",
+  "destination": "/workspace/scratch/6eafdb04d91b/GhostPay-merchant-profile-clock",
+  "independent_copies": [
+    "node_modules",
+    "packages/core-crypto/dist",
+    "packages/invoice-schema/dist"
+  ],
+  "workspace_links_resolve_within_destination": true,
+  "seconds": 28.021,
+  "qualification": "Invoice-schema builds/tests use this worktree source; no clean npm-ci claim."
+}

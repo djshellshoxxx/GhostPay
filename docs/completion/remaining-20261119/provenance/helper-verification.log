@@ -1,0 +1,38 @@
+/workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/remaining-work-original-history.bundle is okay
+The bundle contains these 25 refs:
+7ee1b02775502069af31c657133d258b3622f6b5 refs/heads/chatgpt/ghostpay-buffered-sweep-20261119
+47a0895ab347a259e4ff040400c2b9fdc180e2a1 refs/heads/chatgpt/ghostpay-confidential-forward-20261119
+dbd638867051e5067c0139b516d47637c916f667 refs/heads/chatgpt/ghostpay-dependency-reconcile-20261119
+bd6b26dda054fe376dfdc0a347eb4e158c4487a0 refs/heads/chatgpt/ghostpay-deployment-docs-20261119
+8238f66b6beafb46a7a2d1598e5c4c354819fc86 refs/heads/chatgpt/ghostpay-deployment-readback-20261119
+3fa9029d6a921238c9b574e203dd8518b9b9a6b8 refs/heads/chatgpt/ghostpay-design-model-ci-20261119
+bd62f0737e34112253380a0919fc3aedaaf2c7db refs/heads/chatgpt/ghostpay-devnet-canonical-fixture-20261119
+f3c38f3f3208637eb5673ed9ace2e6975d1a2719 refs/heads/chatgpt/ghostpay-example-idb-ci-20261119
+51836d594700e362d033ecb7d1b481d0c9473f8b refs/heads/chatgpt/ghostpay-ledger-tolerance-20261119
+34eee707030b6818021aa535af32d0f566f43bba refs/heads/chatgpt/ghostpay-merchant-profile-clock-20261119
+a2afd126b0276cda9ec0429657bbd130e17827ea refs/heads/chatgpt/ghostpay-op-fees-20261119
+49d68d7b2d71119d43c502a6ff4613c927b36f1c refs/heads/chatgpt/ghostpay-op-fees-corrected-baseline-20261119
+7b932e3e9467b762877813bf862d3ac5a6b6142b refs/heads/chatgpt/ghostpay-pay-residuals-20261119
+7828166cdc10bc146b48ab1339f584c0b2753da2 refs/heads/chatgpt/ghostpay-policy-client-20261119
+cff088d69c0f2731722894ee8835164b3ec8b221 refs/heads/chatgpt/ghostpay-policy-guard-20261119
+59715cb3a741cfb8d1be7a5333290e3a61752960 refs/heads/chatgpt/ghostpay-pool-seed-security-20261119
+5dca6b4d2ef378618f35a639e192277fe37d0288 refs/heads/chatgpt/ghostpay-quote-age-20261119
+308a2148dbf7e23795b223e1f8aeaf6806b4160f refs/heads/chatgpt/ghostpay-relayer-recovery-20261119
+33a4e5b457dfda723dfca027568a0f4bf8983f14 refs/heads/chatgpt/ghostpay-remaining-ci-20261119
+1cb5f907923a2d67587a303882b10c9bfea175b7 refs/heads/chatgpt/ghostpay-remaining-work-20261119
+42ef7f626d5859bdd0940d5c8fee0d93777c38a9 refs/heads/chatgpt/ghostpay-selfhost-pins-20261119
+bda57c32039fa4908cacc8fdeecfe29f44d47ad7 refs/heads/chatgpt/ghostpay-slither-visibility-20261119
+7be82871a4867210da20e185202be0faa661ed7b refs/heads/chatgpt/ghostpay-sol-tron-compat-20261119
+5128da10b7916e090922a6fe68469d5f0dddd072 refs/heads/chatgpt/ghostpay-verifier-parity-20261119
+18d44d283ef28197ea84670c9662e81a93c42188 refs/heads/chatgpt/ghostpay-workflow-recovery-20261119
+The bundle requires these 8 refs:
+28edbcf55093a6d6056232fd59ef37a2ae832b9a 
+198aa5baff22272453733a0f3dcfcac0e0994eec 
+7fab4b92f90d65dd8d3e992eaca2483187f544a7 
+14ded337a10c140d7a9f9a9238ec038587d925bb 
+a36f48da526b818a5940a7a0ed2ae7303ef17056 
+ffd982a7aea2856c186b40ef236a39720a1b81f5 
+e454de6abfefda70d82784fafc1d8949b277c334 
+58d89b39b27a66454ebf392bcd35d5c68b57b2f8 
+The bundle uses this hash algorithm: sha1
+PASS: bundle digest, prerequisites and all 25 original source heads verified with imported tree identities

@@ -765,7 +765,7 @@ describe('an approval or revoke whose transaction the RPC never returns is not r
 });
 
 describe('final payment guard rechecks invoice and fiat quote validity (P1)', () => {
-  const FEED: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sourceRef: 'test fixture' };
+  const FEED: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', heartbeatSec: 86_400, sourceRef: 'test fixture' };
   const feedRpc = (): MockRpc => mockRpc(84532, (_m, params) => {
     const data = (params[0] as { data: string }).data;
     if (data.startsWith('0x313ce567')) return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'decimals', result: 8 });

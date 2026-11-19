@@ -1,0 +1,49 @@
+{
+  "schema": "ghostpay-existing-example-idb-ci/1",
+  "base": "bd6b26dda054fe376dfdc0a347eb4e158c4487a0",
+  "ci_sha256": "f1eebf12ffcfe01bd599920e61e5c9bae8b333f45b26ef30b7121a04a84dc88d",
+  "idb_script_blob": "c0d9374077be489078390e53d27f488da427de3e",
+  "node": "22.23.4",
+  "node_heap_mib": 512,
+  "before": {
+    "example_files_executed_by_ci": 2,
+    "idb_script_invoked_by_ci": false
+  },
+  "after": {
+    "example_files_executed_by_ci": 8,
+    "webhook_selftest": true,
+    "idb_script": "full-profile e2e job, after build artifact retention"
+  },
+  "local_results": {
+    "examples": {
+      "passed": 60,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "webhook_selftest": {
+      "exit_code": 0
+    },
+    "indexeddb_browser": {
+      "exit_code": 1,
+      "state": "environment-blocked-before-application-assertions",
+      "reason": "Chromium process_singleton_posix.cc socket() EPERM; process SIGABRT",
+      "browser_acceptance_claimed": false
+    }
+  },
+  "structural_checks": {
+    "yaml_parse": "pass",
+    "existing_action_references_pinned": 113,
+    "git_diff_check": "pass"
+  },
+  "independent_review": {
+    "reviewer": "root coordinator",
+    "result": "PASS",
+    "scope": "current workflow diff and existing IndexedDB script"
+  },
+  "limits": [
+    "Copied independently installed dependencies/library artifacts; no fresh install claim",
+    "Hosted candidate CI must execute added IDB acceptance successfully",
+    "No permission, timeout, skip, release, deployment, schedule or runtime changes"
+  ]
+}

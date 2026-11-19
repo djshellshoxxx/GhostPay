@@ -1,0 +1,14 @@
+{
+  "name": "relayer-contract-build",
+  "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+  "command": [
+    "/workspace/scratch/75c78c17e2fc/contract-tools/forge",
+    "build",
+    "--offline"
+  ],
+  "cwd": "packages/contracts",
+  "exit_code": 0,
+  "seconds": 42.937,
+  "observed_at": "2026-11-19T07:17:28.657730+00:00",
+  "log": "relayer-contract-build.log"
+}

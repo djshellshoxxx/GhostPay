@@ -1,0 +1,64 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-pool-seed/packages/pool-sdk
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/seed-backup-interop.test.ts (13 tests | 10 failed | 3 skipped) 1944ms
+   ❯ seed backup independent cryptographic compatibility (13)
+     × preserves supported legacy seeds with 16 bytes 26ms
+     × preserves supported legacy seeds with 31 bytes 7ms
+     × preserves supported legacy seeds with 33 bytes 24ms
+     × preserves supported legacy seeds with 64 bytes 7ms
+     × preserves supported legacy seeds with 512 bytes 4ms
+     × continues backing up supported seeds with 16 bytes 280ms
+     × continues backing up supported seeds with 31 bytes 245ms
+     × continues backing up supported seeds with 33 bytes 817ms
+     × continues backing up supported seeds with 64 bytes 279ms
+     × continues backing up supported seeds with 512 bytes 243ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > preserves supported legacy seeds with 16 bytes
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > preserves supported legacy seeds with 31 bytes
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > preserves supported legacy seeds with 33 bytes
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > preserves supported legacy seeds with 64 bytes
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > preserves supported legacy seeds with 512 bytes
+PoolSdkError: seed backup could not be opened
+ ❯ fail src/errors.ts:33:9
+     31| /** Throws a {@link PoolSdkError}. */
+     32| export function fail(code: PoolSdkErrorCode, message: string): never {
+     33|   throw new PoolSdkError(code, message);
+       |         ^
+     34| }
+     35|
+ ❯ importSeedEncrypted src/store.ts:208:12
+ ❯ src/seed-backup-interop.test.ts:22:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > continues backing up supported seeds with 16 bytes
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > continues backing up supported seeds with 31 bytes
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > continues backing up supported seeds with 33 bytes
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > continues backing up supported seeds with 64 bytes
+ FAIL  src/seed-backup-interop.test.ts > seed backup independent cryptographic compatibility > continues backing up supported seeds with 512 bytes
+PoolSdkError: pool seed must have 32 bytes
+ ❯ fail src/errors.ts:33:9
+     31| /** Throws a {@link PoolSdkError}. */
+     32| export function fail(code: PoolSdkErrorCode, message: string): never {
+     33|   throw new PoolSdkError(code, message);
+       |         ^
+     34| }
+     35|
+ ❯ exportSeedEncrypted src/store.ts:190:36
+ ❯ src/seed-backup-interop.test.ts:28:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 3 skipped (13)
+   Start at  22:56:47
+   Duration  5.35s (tests 39%, import 39%, transform 21%)
+

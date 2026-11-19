@@ -1,0 +1,39 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-merchant-profile-clock/packages/invoice-schema
+
+(node:40) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > round trips; only alg, chainId, signer and KDF header are in clear
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > matches an independent scrypt + AES-GCM implementation with the documented AAD
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > default cost is 2^17 and round trips
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > salt and nonce are fresh per encode
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > openFragment reports needsPassphrase without KDF work, then opens with it
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > parseFragment without a passphrase throws PassphraseRequiredError
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > wrong passphrase yields one generic typed error
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > tampering any authenticated field gives the same WrongPassphraseError (no oracle)
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > truncated ciphertext fails closed
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > KDF parameters outside the allow-list are refused before any derivation (no DoS)
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > structural problems are typed schema/base64 errors
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > downgrade: re-labelling a PW envelope as A256GCM or none is rejected
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > link substitution: a passphrase supplied for a non-passphrase link is refused
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > signature still covers the plaintext: a re-encrypted altered invoice is invalid-signature
+ ✓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > authentic but malformed plaintext gives typed errors (reachable only with the passphrase) 5057ms
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > unicode: NFKC-equivalent passphrases open the same link
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > passphrase policy: length in code points, byte cap, lone surrogates, type
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > encode option conflicts are refused
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > refuses an invalid signature and oversize invoices at encode
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > old v1 links are unaffected and report passphraseProtected=false
+ ↓ src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > missing Web Crypto is UnsupportedError, not a wrong-passphrase error
+ ↓ src/passphrase.test.ts > passphrase internals > derivePassphraseKey refuses disallowed parameters and salts (defence in depth)
+ ↓ src/passphrase.test.ts > passphrase internals > AAD layout is magic || chainId u64 || signer || N,r,p u32 || salt
+ ↓ src/passphrase.test.ts > passphrase fuzzing > passphraseToBytes: policy error or NFKC UTF-8 bytes; NFKC-idempotent
+ ↓ src/passphrase.test.ts > passphrase fuzzing > structurally mutated PW envelopes fail closed with typed errors
+ ↓ src/passphrase.test.ts > passphrase fuzzing > random ciphertext bytes never open and never throw untyped errors
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 25 skipped (26)
+   Start at  01:09:27
+   Duration  5.58s (tests 95%, import 3%, transform 1%)
+

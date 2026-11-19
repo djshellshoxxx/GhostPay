@@ -1,0 +1,47 @@
+{
+  "phase": "red",
+  "source_revision": "05f5631d759476793614913c8926cb1727e376b3",
+  "source_sha256": {
+    "scripts/beta/browser-devnet.sh": "54e377401205f202f150315e9b9d967a48af46942a9316eea7079bc1ddcb8b0b",
+    "apps/web/e2e/devnet/prepare-devnet-manifest.mjs": "9533e9272b041de087613b6aef2ca02ae13aa2a36bf092145f74651fd5e1377c",
+    "scripts/testnet/make-manifest.test.mjs": "8396991bc82531b98fac40cf7f27f06ff9f9430605d5ff656192a3b713756394",
+    "packages/chain-adapters/src/deploymentsVerify.ts": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973",
+    "packages/chain-adapters/dist/deploymentsVerify.js": "f82657172746a1411e9059b33c3feb1dc11bc8c3a05119d16bb3b0a9fa85ed26",
+    "packages/contracts/script/Deploy.s.sol": "2e06d10b6dedea114546ca302acd7a9f5a0a85b1107cf84e7cc1941a0b1753e0",
+    "packages/contracts/script/devnet/DeployDevnet.s.sol": "8613019c8bbc6c78fd2b075725e7c19d608f0e9db339dfb3bbad83da75e094d6",
+    "packages/contracts/test/utils/ERC5564Announcer.sol": "9b7f4283fb02c97754cef6136453d38eeaab6c5632e1ccfc41468ae3bddd8e44"
+  },
+  "observed_at": "2026-11-19T08:35:16.023175+00:00",
+  "work_directory": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc",
+  "acceptance_scope": "native local fixture/readback/signature only; no browser or public-chain acceptance",
+  "public_test_signer_source": "scripts/beta/browser-devnet.sh DEV_DEPLOYER_KEY (public Anvil account 0)",
+  "steps": [
+    {
+      "name": "deploy-devnet-31337",
+      "exit_code": 0,
+      "seconds": 4.629,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/deploy-devnet-31337.log",
+      "sha256": "de655030b1c11a8b7db5ffa084bff6171384d82aefc8f6eee4ca263d0be5bbd1"
+    },
+    {
+      "name": "prepare-manifest",
+      "exit_code": 1,
+      "seconds": 1.754,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/prepare-manifest.log",
+      "sha256": "5f4ff635e53c8ade646c7f5b68df321c98bf21f37df5e4387402116a73fd4ffe"
+    }
+  ],
+  "prepare_exit_code": 1,
+  "expected_failure": "old 31337 custom-announcer fixture refused by the stronger 84532 canonical verifier before signing/output",
+  "original_31337_broadcast_sha256": "5a9f85f4096cb8b64d67909c289b0374827bd6227932576e3b80eb2cdd637653",
+  "original_31337_broadcast_preserved": true,
+  "stand_in_tokens": [
+    "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9",
+    "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9",
+    "0x5fc8d32690cc91d4c39d9d3abcbd16989f875707"
+  ],
+  "stand_in_token_code_preserved": true,
+  "browser_executed": false,
+  "result": "expected old-fixture failure reproduced",
+  "owned_anvil_stopped": true
+}

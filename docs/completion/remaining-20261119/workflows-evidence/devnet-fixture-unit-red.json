@@ -1,0 +1,14 @@
+{
+  "name": "devnet-fixture-unit-red",
+  "source_revision": "05f5631d759476793614913c8926cb1727e376b3",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "--test",
+    "scripts/testnet/make-manifest.test.mjs"
+  ],
+  "cwd": ".",
+  "exit_code": 1,
+  "seconds": 3.743,
+  "observed_at": "2026-11-19T08:35:15.872646+00:00",
+  "log": "devnet-fixture-unit-red.log"
+}

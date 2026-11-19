@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "contract_security",
+  "reviewDate": "2026-11-19",
+  "reviewType": "independent team source review; not external audit or merge approval",
+  "runtimeSourceCommit": "de253aaf7f4139c8778b73cd7a9e052f9438e91e",
+  "runtimeReviewResult": "PASS for OP fee accounting plus the receipt-status and equivalent call-argument deltas; package/final repository qualification remains separate",
+  "testCheckpoint": "0b7fbfbaedaef688ce337f1ecfe3d7940bdfa4da",
+  "documentationCheckpoint": "6d23e5b69bf6b2c4a56b2a4527d64aa6fa74aad5",
+  "sourceManifest": "evidence/op-fee-source-review-20261119/manifest.json",
+  "acceptedBoundaries": [
+    "conservative unsigned legacy RLP shape before complete order inputs",
+    "exact signed envelope repricing without double signature overhead",
+    "fresh fee coverage and both reserves before nonce",
+    "synchronous final deadline and journal hook after OP reads",
+    "canonical receipt-block operator lookup",
+    "missing/malformed fee components remain unsettled",
+    "actual overage charged once to daily and reverted loss budgets",
+    "existing day/window and restart-reservation rules",
+    "same quote MAC fields, signing authority, journal privacy and dependencies",
+    "non-OP paths do not call fee oracle"
+  ],
+  "reviewerExecuted": [
+    {
+      "kind": "pinned-source fake-RPC probe",
+      "cases": 8,
+      "sourceCommits": [
+        "a6bcaf38c4aa1f1dfc21e593816b4ac1a980ab1e",
+        "0aef3a254da123c4ec2d873bc0490cf22c739709"
+      ],
+      "exitCode": 0,
+      "result": "valid success plus missing/0x2/0x02 status behavior observed identically before and after OP implementation",
+      "evidence": "evidence/op-fee-source-review-20261119/op-receipt-status-probe.json",
+      "limitations": "Fake transport, exact Git source transpiled without typecheck. No real RPC, wallet signing, package/full-suite qualification or production OP execution. Original harness paths preserved."
+    }
+  ],
+  "workerReportedQualification": [
+    {
+      "sourceCommit": "0b7fbfbaedaef688ce337f1ecfe3d7940bdfa4da",
+      "focusedPassed": 38,
+      "focusedFailed": 0,
+      "reviewerReran": false,
+      "fullCoverageAndStatic": "Full coverage subsequently inspected at6d23e5b6; not relabeled as final-source qualification"
+    }
+  ],
+  "findings": [
+    {
+      "id": "R07-RECEIPT-STATUS-1",
+      "severity": "Low",
+      "classification": "inherited malformed-receipt acceptance and conservative loss misclassification",
+      "status": "closed in scoped runtime and regression evidence; final repository gates separate",
+      "owner": "workflow_fixes",
+      "introducedByOPChange": false,
+      "baselineSourceCommit": "a6bcaf38c4aa1f1dfc21e593816b4ac1a980ab1e",
+      "currentSourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "locations": [
+        "apps/relayer/src/chain.ts:createViemChainClient.getReceipt/waitForReceipt",
+        "apps/relayer/src/service.ts:hasReceiptFees/settleReceipt"
+      ],
+      "observation": "Missing/unknown receipt status survives the viem formatter as null/undefined, while valid fees and gas permit the service to settle via the non-success mined-loss branch. OP fee components are counted; no new omission/refund bypass reproduced.",
+      "requiredFix": "Require an explicit success or reverted status before settlement; preserve lookup-failure/timeout handling for malformed values.",
+      "requiredRegression": [
+        "missing and unknown getReceipt status refuses",
+        "missing and unknown waitForReceipt status remains timeout/unsettled",
+        "valid success/reverted controls preserved",
+        "non-OP behavior preserved"
+      ],
+      "deltaReview": "PASS at2af11e3816d3b9de93df5fab4d35e39c68447a9b; no signing, fee-formula or journal expansion",
+      "correctionCommit": "2af11e3816d3b9de93df5fab4d35e39c68447a9b"
+    }
+  ],
+  "limitations": [
+    "2x fee reserve is a policy margin, not a proof against arbitrary future fees",
+    "OP upper-size fee estimator is practical compression estimation",
+    "configured RPC, canonical-block support, oracle/historical-state availability remain deployment assumptions",
+    "no actual public OP transaction or deployment was performed",
+    "full package and final repository qualification remain separate",
+    "Later TypeScript expression correction is source-equivalent but not falsely assigned the earlier97-test execution receipt"
+  ],
+  "primarySources": [
+    {
+      "repository": "ethereum-optimism/optimism",
+      "commit": "06de20f199ebf615649bc0f9caf4c1cd176c1e8a",
+      "path": "packages/contracts-bedrock/src/L2/GasPriceOracle.sol",
+      "gitBlob": "ab6cdcf80c4fe4336aa0711d91982bc282c96f77",
+      "bytes": 13711,
+      "url": "https://github.com/ethereum-optimism/optimism/blob/06de20f199ebf615649bc0f9caf4c1cd176c1e8a/packages/contracts-bedrock/src/L2/GasPriceOracle.sol"
+    },
+    {
+      "repository": "ethereum-optimism/op-geth",
+      "commit": "79e9d244748a1201fe686ca8a882b5fe7e173348",
+      "path": "core/state_transition.go",
+      "gitBlob": "d8c52238c610d85fe92f6ed6e07aafe99afa13fd",
+      "bytes": 32614,
+      "url": "https://github.com/ethereum-optimism/op-geth/blob/79e9d244748a1201fe686ca8a882b5fe7e173348/core/state_transition.go"
+    }
+  ],
+  "initialRuntimeSourceCommit": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+  "receiptStatusCorrection": {
+    "sourceCommit": "2af11e3816d3b9de93df5fab4d35e39c68447a9b",
+    "sourceReview": "PASS",
+    "baselineTestCommit": "f3c0c795c7f9366cde982dc8e28e0cc1dd6870c2",
+    "baselineFailed": 16,
+    "baselineValidControlsPassed": 8,
+    "baselineUnselected": 38,
+    "finalFocusedPassed": 97,
+    "finalFocusedFailed": 0,
+    "finalFocusedSeconds": 19.589,
+    "finalFocusedSource": "2af11e3816d3b9de93df5fab4d35e39c68447a9b",
+    "authorCommandsReviewerInspected": true,
+    "reviewerReran": false,
+    "change": "Literal success/reverted guard on both receipt paths after transaction-hash binding and before OP oracle reads. Invalid lookup gives fixed rpc_failure; invalid wait gives timeout.",
+    "evidence": [
+      "evidence/op-fee-source-review-20261119/op-receipt-status-red.json",
+      "evidence/op-fee-source-review-20261119/op-receipt-status-red.log",
+      "evidence/op-fee-source-review-20261119/op-fees-final-targeted.json",
+      "evidence/op-fee-source-review-20261119/op-fees-final-targeted.log"
+    ]
+  },
+  "callArgumentCorrection": {
+    "sourceCommit": "de253aaf7f4139c8778b73cd7a9e052f9438e91e",
+    "sourceReview": "PASS",
+    "reason": "TypeScript discriminated union rejected optional object spread",
+    "runtimeEffect": "None: both whole-object branches preserve the same fields and EIP-1898 canonicality",
+    "qualificationLimit": "97-case run is pinned to earlier2af11e38; later build/static receipts remain with implementation owner"
+  },
+  "inspectedAuthorFullCoverage": {
+    "sourceCommit": "6d23e5b69bf6b2c4a56b2a4527d64aa6fa74aad5",
+    "passed": 556,
+    "failed": 0,
+    "exitCode": 0,
+    "seconds": 296.016,
+    "statements": 96.98,
+    "branches": 92.92,
+    "functions": 98.2,
+    "lines": 98.77,
+    "preReceiptStatusRepair": true,
+    "reviewerReran": false,
+    "archiveOwner": "workflow_fixes",
+    "logSha256": "d3a0c122c5c66af209663b4c516ef07169c2257b29ef05e99462685829bd4696"
+  }
+}

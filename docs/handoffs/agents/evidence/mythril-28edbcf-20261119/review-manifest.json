@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+  "rawFilesManifest": "raw-manifest.json",
+  "derivedFiles": {
+    "compare-reports.py": {
+      "bytes": 26102,
+      "sha256": "0a0a5e369315a0c97662ebecbd581ca3602f5007e119489b18498f191f09bdbb"
+    },
+    "comparison-and-dispositions.json": {
+      "bytes": 178718,
+      "sha256": "904e2dc6df50e0d43e69db198565da9b0cc026260a08edf2ebe6d759e1162697"
+    },
+    "README.md": {
+      "bytes": 1142,
+      "sha256": "a8002d953774dd684742cc81300571f430ecec5f9a12bcccfb266075d696ab74"
+    },
+    "raw-manifest.json": {
+      "bytes": 1356,
+      "sha256": "fa3486c61994ed273e4fc86396292da454ee8d8e5021186f584eedead705d1f2"
+    },
+    "../../MYTHRIL_28EDBCF_REVIEW_20261119.md": {
+      "bytes": 12210,
+      "sha256": "ade9711e6312583ffa348742e2057603e024db30736ecb8daa976def4e2a9ae3"
+    }
+  },
+  "verification": "compare-reports.py --check exit 0; no new analyzer or replay"
+}

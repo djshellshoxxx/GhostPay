@@ -1,0 +1,14 @@
+{
+  "name": "devnet-fixture-shell-syntax",
+  "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "command": [
+    "/bin/bash",
+    "-n",
+    "scripts/beta/browser-devnet.sh"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 0.005,
+  "observed_at": "2026-11-19T08:37:09.170093+00:00",
+  "log": "devnet-fixture-shell-syntax.log"
+}

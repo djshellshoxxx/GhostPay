@@ -1,0 +1,28 @@
+[
+  {
+    "check": "lint-final",
+    "argv": [
+      "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+      "node_modules/eslint/bin/eslint.js",
+      "--config",
+      "eslint.config.js",
+      "packages/chain-adapters/src/verify.ts",
+      "packages/chain-adapters/src/verify.test.ts"
+    ],
+    "node_heap_mib": 512,
+    "exit_code": 0
+  },
+  {
+    "check": "verify-final",
+    "argv": [
+      "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/verify.test.ts",
+      "--coverage=false",
+      "--maxWorkers=1"
+    ],
+    "node_heap_mib": 512,
+    "exit_code": 0
+  }
+]

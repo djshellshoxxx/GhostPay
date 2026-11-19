@@ -1,0 +1,18 @@
+{
+  "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+  "final_source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+  "command": [
+    "node",
+    "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/eslint/bin/eslint.js",
+    "--config",
+    "../../eslint.config.js",
+    "src/views/Pay.supported.test.tsx",
+    "e2e/focus-scope.spec.ts"
+  ],
+  "cwd": "apps/web",
+  "node": "22.23.4",
+  "heap_mib": 768,
+  "exit_code": 0,
+  "seconds": 24.072,
+  "reason": "The unchanged scoped typed-lint run exhausted the 512 MiB JavaScript heap; retain that result and retry with a bounded 768 MiB cap."
+}

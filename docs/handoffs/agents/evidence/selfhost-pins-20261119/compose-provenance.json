@@ -1,0 +1,9 @@
+{
+  "source": "https://github.com/docker/compose/releases/tag/v5.8.0",
+  "url": "https://github.com/docker/compose/releases/download/v5.8.0/docker-compose-linux-x86_64",
+  "sha256": "b8840f5008c447f41fce0a57ae3adeab42c89b1eb6e6012524bcabbfb4ffbaf6",
+  "checksum_file": "b8840f5008c447f41fce0a57ae3adeab42c89b1eb6e6012524bcabbfb4ffbaf6 *docker-compose-linux-x86_64",
+  "size": 34442228,
+  "observed_at": "2026-11-19T07:12:10.763706+00:00",
+  "purpose": "read-only Compose config validation; no Docker daemon or image lifecycle command"
+}

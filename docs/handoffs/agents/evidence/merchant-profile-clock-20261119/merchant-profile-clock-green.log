@@ -1,0 +1,76 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-merchant-profile-clock/packages/invoice-schema
+
+(node:40) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/merchantProfile.test.ts > merchant profile > round-trips through JSON text 8ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects changed amount, token, origin and allowAmount (signature) 17ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects bad signatures, wrong signer, wrong merchantId 6ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects expired profiles and oversize input 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > rejects unknown keys, bad origins, duplicate template ids, __proto__ and non-objects 1ms
+ ✓ src/merchantProfile.test.ts > merchant profile > refuses to sign with a mismatched key 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > establishes a valid signature and ordinary expired control for the clock regression 10ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects NaN without coercion or throwing 5ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects positive Infinity without coercion or throwing 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects negative Infinity without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects undefined without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects null without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects numeric string without coercion or throwing 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects empty string without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects false without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects true without coercion or throwing 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects bigint without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects symbol without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects object without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects coercible object without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > rejects throwing valueOf without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at negative finite 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at negative fractional 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at minimum finite 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at epoch 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at negative zero 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at smallest positive finite 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at whole second before expiry 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves valid comparison at fractional second before expiry 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at exact expiry 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at fractional second after expiry 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at ordinary current time 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at maximum safe integer 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > object signed profile clock > preserves expired comparison at maximum finite 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects NaN without coercion or throwing 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects positive Infinity without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects negative Infinity without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects undefined without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects null without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects numeric string without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects empty string without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects false without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects true without coercion or throwing 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects bigint without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects symbol without coercion or throwing 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects object without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects coercible object without coercion or throwing 2ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > rejects throwing valueOf without coercion or throwing 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at negative finite 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at negative fractional 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at minimum finite 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at epoch 5ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at negative zero 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at smallest positive finite 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at whole second before expiry 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves valid comparison at fractional second before expiry 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at exact expiry 3ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at fractional second after expiry 9ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at ordinary current time 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at maximum safe integer 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > JSON signed profile clock > preserves expired comparison at maximum finite 4ms
+ ✓ src/merchantProfile.test.ts > merchant profile > preserves size, format and signature error precedence when the clock is invalid 12ms
+ ✓ src/merchantProfile.test.ts > merchant profile > fuzz: random single-char mutations never throw and never verify to a different profile 176ms
+
+ Test Files  1 passed (1)
+      Tests  63 passed (63)
+   Start at  01:08:36
+   Duration  815ms (tests 72%, import 22%, transform 5%, worker 2%)
+

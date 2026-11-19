@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-19T08:23:12.389330+00:00",
+  "requirement": "F-DEP-02/spec01 lower verifier and optional-relayer readback parity",
+  "author": "backlog_ci",
+  "independent_reviewer": "root coordinator",
+  "independent_source_review": "PASS",
+  "source_base": "db724aa68a21fde8fe35c14baab9ec55a40984f0",
+  "claim_commit": "b1a7c8885f9e5dc3a33d11a33b13175e55094ca8",
+  "branch": "chatgpt/ghostpay-deployment-readback-20261119",
+  "node": "22.23.4",
+  "node_binary": "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+  "node_heap_mib": 512,
+  "mutex": "/workspace/scratch/6eafdb04d91b/qualification.lock",
+  "mutex_option": "--close",
+  "lock_blob": "7c405185908b8d8e2410b5aba2ad1800f95d1547",
+  "sources": {
+    "packages/chain-adapters/src/deploymentsVerify.ts": {
+      "base_sha256": "67afe5a3f8aea9ade18df20a692432aa03832660b03cc7dac76d335a2c4c1aaf",
+      "qualified_sha256": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973"
+    },
+    "packages/chain-adapters/src/deploymentsVerify.test.ts": {
+      "base_sha256": "0a49e499b81f9e0a2aa4b3d283f28a854fd56691f51941187ba4002fa5a70b30",
+      "qualified_sha256": "b0007d074627b1ed11e17a4a250e49c203c13fd42582b8d3577fb5cf27302d53"
+    },
+    "apps/relayer/src/runtime.ts": {
+      "base_sha256": "7308a2b735950065a126c1c6c7d7853b56cfdfafd3971e323ff90ad4138d7b6f",
+      "qualified_sha256": "aa0ced51e98cb86e1558b08154ac7e12d82e4c562dfe041f0f5bbee453e3e55f"
+    },
+    "apps/relayer/src/runtime.test.ts": {
+      "base_sha256": "6531a738245a1892d0d1af022e36030b3c246cfe4e45d0ed604dd348a963a9bf",
+      "qualified_sha256": "c3541428e7b0418cd85c0700236655be2d1dca12782638646010e02e1b215274"
+    }
+  },
+  "regression_patch_sha256": "96c28dc492344236f8732fc1cabcf48602e23f3e5cc221a67f4891a477d4e5a6",
+  "regressions_unchanged_after_baseline": true,
+  "checks": [
+    {
+      "name": "library_red",
+      "command": "cd packages/chain-adapters && node ../../node_modules/vitest/vitest.mjs run src/deploymentsVerify.test.ts --coverage=false --maxWorkers=1",
+      "exit_code": 1,
+      "passed": 15,
+      "failed": 12,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "library-red.log",
+        "sha256": "00e9072c408891f3a87c0c2f5e142b8ee968b6d25bb68713863799acd98456e8"
+      }
+    },
+    {
+      "name": "relayer_red",
+      "command": "cd apps/relayer && node ../../node_modules/vitest/vitest.mjs run src/runtime.test.ts --coverage=false --maxWorkers=1",
+      "exit_code": 1,
+      "passed": 10,
+      "failed": 6,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "relayer-red.log",
+        "sha256": "c1be124129d372975a11daa904fe1ed57ca3d09bbcbc08d39655c12de3e9c410"
+      }
+    },
+    {
+      "name": "library_green",
+      "command": "cd packages/chain-adapters && node ../../node_modules/vitest/vitest.mjs run src/deploymentsVerify.test.ts src/verify.test.ts src/deployments.test.ts --coverage=false --maxWorkers=1",
+      "exit_code": 0,
+      "passed": 64,
+      "failed": 0,
+      "skipped": 0,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "library-green.log",
+        "sha256": "5e8845604229cd84ed6d9eeec6f6fda4dec4c8a47e09e4a14ed8999b9b5daf53"
+      }
+    },
+    {
+      "name": "relayer_green",
+      "command": "cd apps/relayer && node ../../node_modules/vitest/vitest.mjs run src/runtime.test.ts src/config.test.ts src/sourceChecks.test.ts src/sources.api.test.ts --coverage=false --maxWorkers=1",
+      "exit_code": 0,
+      "passed": 149,
+      "failed": 0,
+      "skipped": 0,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "relayer-green.log",
+        "sha256": "d99886d2d2f2e6dda1fc54e4b5a645a9430e313b2bdcfd9f664b04de4d43af5b"
+      }
+    },
+    {
+      "name": "web_consumer",
+      "command": "cd apps/web && node ../../node_modules/vitest/vitest.mjs run src/lib/manifest.test.ts --coverage=false --maxWorkers=1",
+      "exit_code": 0,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "web-consumer.log",
+        "sha256": "d7028cb02b0fd76ec689d390fd6ecdf3b51c8485072dc512805e3cf78ee67703"
+      }
+    },
+    {
+      "name": "library_typecheck",
+      "command": "node node_modules/typescript/bin/tsc -p packages/chain-adapters/tsconfig.json --noEmit",
+      "exit_code": 0,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "library-typecheck.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "relayer_typecheck",
+      "command": "node node_modules/typescript/bin/tsc -p apps/relayer/tsconfig.json --noEmit",
+      "exit_code": 0,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "relayer-typecheck.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "affected_build",
+      "command": "node node_modules/typescript/bin/tsc -p packages/chain-adapters/tsconfig.build.json && node node_modules/typescript/bin/tsc -p apps/relayer/tsconfig.build.json",
+      "exit_code": 0,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "affected-build.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "combined_lint_resource_failure",
+      "command": "node node_modules/eslint/bin/eslint.js --config eslint.config.js packages/chain-adapters/src/deploymentsVerify.ts packages/chain-adapters/src/deploymentsVerify.test.ts apps/relayer/src/runtime.ts apps/relayer/src/runtime.test.ts",
+      "exit_code": 134,
+      "reason": "V8 heap exhausted at512MiB; no lint verdict",
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "scoped-lint.log",
+        "sha256": "7d035348c1c0a213e3be103664e8e9041f27573c04fe74a13d442697bfa2baf5"
+      }
+    },
+    {
+      "name": "library_scoped_lint",
+      "command": "node node_modules/eslint/bin/eslint.js --config eslint.config.js packages/chain-adapters/src/deploymentsVerify.ts packages/chain-adapters/src/deploymentsVerify.test.ts",
+      "exit_code": 0,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "library-lint.log",
+        "sha256": "b9b30cc4cdcbca10e057e9a766cb2086342ee401e86da1d4e11ecbc2c413c4fe"
+      }
+    },
+    {
+      "name": "relayer_scoped_lint",
+      "command": "node node_modules/eslint/bin/eslint.js --config eslint.config.js apps/relayer/src/runtime.ts apps/relayer/src/runtime.test.ts",
+      "exit_code": 0,
+      "raw_log": {
+        "artifact": "execution-logs.json",
+        "key": "relayer-lint.log",
+        "sha256": "b9b30cc4cdcbca10e057e9a766cb2086342ee401e86da1d4e11ecbc2c413c4fe"
+      }
+    }
+  ],
+  "qualification_limits": {
+    "full_workspace_coverage_run": false,
+    "hosted_combined_head_qualified": false,
+    "native_anvil_or_playwright_run": false,
+    "public_rpc_or_deployment": false
+  },
+  "compatibility_followup": {
+    "owner": "workflow_fixes via root coordinator",
+    "status": "PENDING",
+    "issue": "Synthetic84532 browser fixture reuses a31337 noncanonical-announcer deployment",
+    "paths": [
+      "scripts/beta/browser-devnet.sh",
+      "apps/web/e2e/devnet/prepare-devnet-manifest.mjs"
+    ],
+    "root_policy_bypass_permitted": false
+  },
+  "excluded_browser_provider_wiring_owner": "PR251",
+  "no_runtime_paths_changed_beyond": [
+    "packages/chain-adapters/src/deploymentsVerify.ts",
+    "apps/relayer/src/runtime.ts"
+  ],
+  "regression_patch_artifact": "regressions.json",
+  "execution_logs_artifact_sha256": "9a3e548ce3a4fad802723f9cd70fb03022315f497141dc1ef59cf055f0c6bbd6"
+}

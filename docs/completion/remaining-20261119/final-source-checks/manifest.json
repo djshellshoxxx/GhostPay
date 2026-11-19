@@ -1,0 +1,62 @@
+{
+  "source": "3c6f81fe54d6f4f09354c9d647bbb1cf6bf053e6",
+  "recorded_utc": "2026-11-19T09:13:04.411001+00:00",
+  "checks": [
+    {
+      "name": "action-pins",
+      "command": [
+        "bash",
+        "scripts/check-actions-pinned.sh"
+      ],
+      "exit_code": 0,
+      "seconds": 0.327,
+      "file": "action-pins.log",
+      "bytes": 85,
+      "sha256": "1c76b6edc75d44dd7954440b2f7653a3693ebfd7f137619df92dd66e1a51b515"
+    },
+    {
+      "name": "secret-scan",
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "exit_code": 0,
+      "seconds": 0.306,
+      "file": "secret-scan.log",
+      "bytes": 50,
+      "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+    },
+    {
+      "name": "package-map",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "scripts/agent/package-map.mjs",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.194,
+      "file": "package-map.log",
+      "bytes": 202,
+      "sha256": "a15bd188f42230fc5d7822edadfa0163656b5dac8819359571912631307f8de7"
+    },
+    {
+      "name": "runtime-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+        "HEAD",
+        "--",
+        ".",
+        ":!docs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.275,
+      "file": "runtime-whitespace.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "limits": "Runtime whitespace excludes docs because verbatim execution archives intentionally retain original whitespace. The existing secret scanner retains its repository-defined scope; this is not a new comprehensive secret audit."
+}

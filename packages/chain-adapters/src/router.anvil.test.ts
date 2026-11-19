@@ -1,12 +1,14 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { createPublicClient, createWalletClient, defineChain, getAddress, http, parseAbi, type Abi, type Address, type Hex } from 'viem';
+import { deriveStealthSecret, parseMetadata, unsafeRevealSecret, zeroize } from '@ghostpay/core-crypto';
+import { bytesToHex, createPublicClient, createWalletClient, defineChain, encodeFunctionData, getAddress, http, parseAbi, parseEventLogs, type Abi, type Address, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { erc5564AnnouncerAbi } from './abi/announcer.js';
 import { findChain } from './config/chains.js';
 import { validateManifest } from './deployments.js';
-import { routerFee, routerSplit } from './fees.js';
+import { calculateBuffer, FEE_SCHEDULE, routerFee, routerSplit } from './fees.js';
 import { manifestJson, payment, recipient } from './fixtures.testutil.js';
 import { assertPreviewMatchesCalldata, buildPaymentTx } from './router.js';
 
@@ -67,6 +69,7 @@ describe('router fee differential vs compiled router (anvil)', () => {
     let proc: ChildProcess | undefined;
     let url = '';
     let router: Address;
+    let announcer: Address;
     let token: Address;
     const chain = findChain(84532);
     const payer = privateKeyToAccount(PAYER_KEY);
@@ -94,7 +97,7 @@ describe('router fee differential vs compiled router (anvil)', () => {
         const hash = await w.deployContract({ abi: art.abi, bytecode: art.bytecode, args, chain: null, account: w.account as never });
         return getAddress((await p.waitForTransactionReceipt({ hash })).contractAddress as Address);
       };
-      const announcer = await deploy(ART.announcer);
+      announcer = await deploy(ART.announcer);
       router = await deploy(ART.router, [announcer, FEE_RECIPIENT]);
       token = await deploy(ART.token, ['USD Coin', 'USDC', 6]);
       const mint = await wallet(PAYER_KEY).writeContract({ address: token, abi: erc20, functionName: 'mint', args: [payer.address, 2n ** 200n], chain: null, account: payer });
@@ -108,7 +111,7 @@ describe('router fee differential vs compiled router (anvil)', () => {
     });
 
     const deployment = (): ReturnType<typeof validateManifest> =>
-      validateManifest({ ...manifestJson(84532), router, feeRecipient: FEE_RECIPIENT }, 84532);
+      validateManifest({ ...manifestJson(84532), router, announcer, feeRecipient: FEE_RECIPIENT }, 84532);
 
     // Calldata does not contain the chain id, so payments are built under the 84532 table entry and sent to anvil.
     const build = (gross: bigint, isNative: boolean): ReturnType<typeof buildPaymentTx> => {
@@ -153,6 +156,102 @@ describe('router fee differential vs compiled router (anvil)', () => {
         expect((await p.waitForTransactionReceipt({ hash })).status).toBe('success');
         expect((await p.getBalance({ address: FEE_RECIPIENT })) - feeBefore, `fee gross=${gross.toString()}`).toBe(split.fee);
         expect(await p.getBalance({ address: built.preview.stealth }), `net gross=${gross.toString()}`).toBe(split.net);
+      }
+    });
+
+    it('sweeps ERC-20 from a derived stealth signer using only the payer gas buffer (F-CTR06)', async () => {
+      if (chain === undefined) throw new Error('chain table lacks 84532');
+      const seller = recipient();
+      let secret: ReturnType<typeof deriveStealthSecret> | undefined;
+      let plain: Uint8Array | undefined;
+      try {
+        const p = pub();
+        const derived = payment(seller.meta);
+        const gross = 10_000_003n;
+        const split = routerSplit(gross);
+        const gas = 100_000n;
+        const maxFeePerGas = 2_000_000_000n;
+        const maxPriorityFeePerGas = 1_000_000_000n;
+        const bufferWei = calculateBuffer({ estimatedSweepGas: gas, maxFeePerGas, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS });
+        const built = buildPaymentTx({
+          chain, deployment: deployment(), invoice: { chainId: 84532, token: token.toLowerCase() },
+          payment: derived, grossAmount: gross, deadline: 4_000_000_000n,
+          buffer: { bufferWei, maxBufferWei: bufferWei },
+          findTokenFn: (_c, address) => ({ chainId: 84532, address: getAddress(address), symbol: 'MOCK', decimals: 6, permit: false }),
+        });
+        assertPreviewMatchesCalldata(built.preview, built.tx, 84532);
+        expect(built.preview.method).toBe('payERC20WithBuffer');
+        expect(built.tx.value).toBe(bufferWei);
+        secret = deriveStealthSecret({
+          schemeId: 1n, stealthAddress: derived.stealthAddress,
+          ephemeralPublicKey: built.preview.ephemeralPublicKey, metadata: built.preview.metadata,
+        }, seller.keys);
+        plain = unsafeRevealSecret(secret);
+        // Disposable local-only signer; neither its key nor an impersonation RPC is sent to Anvil.
+        const stealth = privateKeyToAccount(bytesToHex(plain));
+        zeroize(plain);
+        expect(stealth.address).toBe(derived.stealthAddress);
+        const destination = privateKeyToAccount(`0x${'bb'.repeat(32)}`).address;
+        const transferAbi = parseAbi(['function transfer(address,uint256) returns (bool)']);
+        const data = encodeFunctionData({ abi: transferAbi, functionName: 'transfer', args: [destination, split.net] });
+        const serialized = await stealth.signTransaction({
+          chainId: 31337, type: 'eip1559', nonce: 0, to: token, data, value: 0n,
+          gas, maxFeePerGas, maxPriorityFeePerGas,
+        });
+        const balance = (address: Address): Promise<bigint> => p.readContract({ address: token, abi: erc20, functionName: 'balanceOf', args: [address] });
+        expect(await p.getBalance({ address: stealth.address })).toBe(0n);
+        expect(await balance(stealth.address)).toBe(0n);
+        expect(await p.getTransactionCount({ address: stealth.address })).toBe(0);
+        // This exact signed transaction is refused without gas; it is resubmitted unchanged after the payment.
+        await expect(p.sendRawTransaction({ serializedTransaction: serialized })).rejects.toThrow(/insufficient funds/i);
+        expect(await p.getBalance({ address: stealth.address })).toBe(0n);
+        expect(await p.getTransactionCount({ address: stealth.address })).toBe(0);
+
+        const payerNativeBefore = await p.getBalance({ address: payer.address });
+        const payerTokenBefore = await balance(payer.address);
+        const feeNativeBefore = await p.getBalance({ address: FEE_RECIPIENT });
+        const feeTokenBefore = await balance(FEE_RECIPIENT);
+        const destinationBefore = await balance(destination);
+        const paid = await wallet(PAYER_KEY).sendTransaction({ ...built.tx, chain: null, account: payer });
+        const paymentReceipt = await p.waitForTransactionReceipt({ hash: paid });
+        expect(paymentReceipt.status).toBe('success');
+        expect(await p.getBalance({ address: stealth.address })).toBe(bufferWei);
+        expect(await balance(stealth.address)).toBe(split.net);
+        expect(await balance(payer.address)).toBe(payerTokenBefore - gross);
+        expect(await balance(FEE_RECIPIENT)).toBe(feeTokenBefore + split.fee);
+        expect(await p.getBalance({ address: FEE_RECIPIENT })).toBe(feeNativeBefore);
+        expect(await p.getBalance({ address: payer.address })).toBe(payerNativeBefore - bufferWei - paymentReceipt.gasUsed * paymentReceipt.effectiveGasPrice);
+        expect(await p.getTransactionCount({ address: stealth.address })).toBe(0);
+        const announcements = parseEventLogs({ abi: erc5564AnnouncerAbi, eventName: 'Announcement', logs: paymentReceipt.logs })
+          .filter((event) => event.address.toLowerCase() === announcer.toLowerCase());
+        expect(announcements).toHaveLength(1);
+        expect(announcements[0]!.args).toEqual({
+          schemeId: 1n, stealthAddress: stealth.address, caller: router,
+          ephemeralPubKey: built.preview.ephemeralPublicKey, metadata: built.preview.metadata,
+        });
+        expect(parseMetadata(announcements[0]!.args.metadata)?.netAmount).toBe(split.net);
+
+        const swept = await p.sendRawTransaction({ serializedTransaction: serialized });
+        const sweepReceipt = await p.waitForTransactionReceipt({ hash: swept });
+        expect(sweepReceipt.status).toBe('success');
+        expect(sweepReceipt.from).toBe(stealth.address.toLowerCase());
+        expect(sweepReceipt.to).toBe(token.toLowerCase());
+        expect(sweepReceipt.gasUsed).toBeGreaterThan(0n);
+        expect(sweepReceipt.gasUsed).toBeLessThanOrEqual(gas);
+        expect(sweepReceipt.effectiveGasPrice).toBeGreaterThan(0n);
+        const nativeFee = sweepReceipt.gasUsed * sweepReceipt.effectiveGasPrice;
+        expect(nativeFee).toBeLessThan(bufferWei);
+        expect(await p.getBalance({ address: stealth.address })).toBe(bufferWei - nativeFee);
+        expect(await p.getTransactionCount({ address: stealth.address })).toBe(1);
+        expect(await balance(stealth.address)).toBe(0n);
+        expect(await balance(destination)).toBe(destinationBefore + split.net);
+        expect(await balance(FEE_RECIPIENT)).toBe(feeTokenBefore + split.fee);
+        expect(await balance(router)).toBe(0n);
+        expect(await p.getBalance({ address: router })).toBe(0n);
+      } finally {
+        if (plain !== undefined) zeroize(plain);
+        if (secret !== undefined) zeroize(secret);
+        zeroize(seller.keys.spendingSecret, seller.keys.viewingSecret);
       }
     });
   });

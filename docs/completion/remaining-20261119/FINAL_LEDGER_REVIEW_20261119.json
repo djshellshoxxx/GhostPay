@@ -1,0 +1,219 @@
+{
+  "schema": "ghostpay-final-independent-ledger-review/1",
+  "reviewer": "/root/backlog_ci",
+  "author_and_coordinator": "/root",
+  "reviewed_at_utc": "2026-11-19T09:23:17.146149+00:00",
+  "result": "PASS",
+  "review_type": "Independent read-only ledger semantics, source/evidence identities and original-history provenance review",
+  "source_commit": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+  "source_tree": "f24c415493c8fbd4f2c81dcc46ba0582e59907ff",
+  "ledger_snapshot_utc": "2026-11-19T09:21:11.859589+00:00",
+  "census_retrieved_at": "2026-11-19T08:49:00Z",
+  "census_time_limit": "The API inventory is the explicitly bounded approximately 08:49 UTC census, not a claim that concurrent public PRs or hosted checks cannot change.",
+  "artifact_sha256": {
+    "ledger.json": "da1af9b3d93649389a52c9cf02cd4fd7cfc2a68d18ec5d4badaaca13dd8096de",
+    "feature-crosswalk.json": "759aebf53028d3ad88fc47f388b7168cc0c85e7a809f535a366f8aa8f83eea19",
+    "security-crosswalk.json": "9057ceae32c6c2da6e0168cc5062ad9f66f5412a5dd0eaa52ea8b3440ff0f8fd",
+    "pr-inventory.json": "e349818c790a33ebda8e3fb14439b5ca48e2d5b5a0aac80d8c3bd1686cafa6b7",
+    "README.md": "b72912122cfc743f661eefee8550e1ba7f9ccdf225e34c6fbae4440cab9e4ec4"
+  },
+  "mechanical_review": {
+    "schema": "ghostpay-independent-ledger-review/1",
+    "reviewer": "backlog_ci",
+    "reviewed_at_utc": "2026-11-19T09:22:15.459497+00:00",
+    "source_snapshot": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+    "local_head_at_review": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+    "ledger_snapshot": "2026-11-19T09:21:11.859589+00:00",
+    "census_retrieved_at": "2026-11-19T08:49:00Z",
+    "artifact_sha256": {
+      "ledger.json": "da1af9b3d93649389a52c9cf02cd4fd7cfc2a68d18ec5d4badaaca13dd8096de",
+      "feature-crosswalk.json": "759aebf53028d3ad88fc47f388b7168cc0c85e7a809f535a366f8aa8f83eea19",
+      "security-crosswalk.json": "9057ceae32c6c2da6e0168cc5062ad9f66f5412a5dd0eaa52ea8b3440ff0f8fd",
+      "pr-inventory.json": "e349818c790a33ebda8e3fb14439b5ca48e2d5b5a0aac80d8c3bd1686cafa6b7",
+      "README.md": "b72912122cfc743f661eefee8550e1ba7f9ccdf225e34c6fbae4440cab9e4ec4"
+    },
+    "checked": {
+      "completed_source_refs": 102,
+      "task_evidence_paths": 80,
+      "resolved_source_test_paths": 1740,
+      "supported_scope_evidence_paths": 39,
+      "source_hash_cells": 930,
+      "pr_object_ancestry_and_diffs": 264,
+      "census_rows": 264
+    },
+    "recomputed_counts": {
+      "tasks": 87,
+      "statuses": {
+        "INTEGRATED": 50,
+        "MERGED": 1,
+        "BLOCKED": 12,
+        "SUPERSEDED": 11,
+        "REQUIRES OWNER DECISION": 13
+      },
+      "already_complete_at_start": 9,
+      "integrated_tasks": 50,
+      "superseded_total": 11,
+      "scope_reference_only": 2,
+      "newly_implemented_integrated": 51,
+      "main_merged": 1,
+      "historical_features": 194,
+      "historical_security_records": 49,
+      "prs": 264,
+      "open_prs": 59,
+      "github_confirmed_pr_merges": 63,
+      "closed_unmerged_prs": 142,
+      "non_pr_issues": 1,
+      "excluded_owner_streams": 7
+    },
+    "issues": [],
+    "observations": [
+      {
+        "kind": "evidence_added_after_recorded_source",
+        "task": "RW-SOURCE-PROVENANCE",
+        "path": "docs/completion/remaining-20261119/provenance/manifest.json"
+      },
+      {
+        "kind": "evidence_added_after_recorded_source",
+        "task": "RW-SOURCE-PROVENANCE",
+        "path": "docs/completion/remaining-20261119/provenance/verification-commands.json"
+      },
+      {
+        "kind": "evidence_added_after_recorded_source",
+        "task": "RW-SOURCE-PROVENANCE",
+        "path": "docs/completion/remaining-20261119/provenance/helper-verification.json"
+      }
+    ],
+    "bundle": {
+      "heads": 25,
+      "sha256": "a46d79b3b669f6b1676ebfbeb3fa718d1d857318476c12f2da4a1af0192419ac",
+      "bytes": 1196924,
+      "local_bundle_verify_exit": 0,
+      "limit": "Local integrity/prerequisite check. Fresh-public-only restoration receipt needs separate independent source review; this command does not create or import refs."
+    },
+    "mechanical_result": "PASS",
+    "authority": "Read-only review; no repository mutation, git ref change, publication, merge or deployment.",
+    "limitation": "Mechanical integrity does not establish fresh hosted qualification or replace the separate semantic/source review."
+  },
+  "provenance_review": {
+    "result": "PASS",
+    "archive": {
+      "filename": "remaining-work-original-history.bundle",
+      "bytes": 1196924,
+      "sha256": "a46d79b3b669f6b1676ebfbeb3fa718d1d857318476c12f2da4a1af0192419ac"
+    },
+    "capture_commit": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+    "capture_tree": "f24c415493c8fbd4f2c81dcc46ba0582e59907ff",
+    "advertised_original_heads": 25,
+    "full_public_prerequisite_tips": [
+      "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+      "7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+      "3c95b2a00bdcfb45dd36242ff40c133dd19d1811"
+    ],
+    "actual_boundary_prerequisites": [
+      "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+      "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+      "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "e454de6abfefda70d82784fafc1d8949b277c334",
+      "58d89b39b27a66454ebf392bcd35d5c68b57b2f8"
+    ],
+    "independent_original_object_scan": {
+      "capture_commit": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "files_scanned": 265,
+      "resolvable_commit_references_including_abbreviations": 160,
+      "references_available_in_fresh_restore": 115,
+      "missing_historical_public_context": 45,
+      "missing_unpublished_original_source_objects": {},
+      "missing_executable_reference_objects": {},
+      "fresh_repository_has_alternates": false,
+      "fresh_repository_is_shallow": false,
+      "connectivity_check_exit": 0,
+      "recorded_verification_commands": 9,
+      "recorded_command_failures": [],
+      "public_fetch_argv": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "https://github.com/djshellshoxxx/GhostPay.git",
+        "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "14ded337a10c140d7a9f9a9238ec038587d925bb",
+        "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+        "7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+        "3c95b2a00bdcfb45dd36242ff40c133dd19d1811"
+      ],
+      "helper_log_digest_matches": true,
+      "helper_source_matches_final_capture": true,
+      "independent_helper_with_imported_trees": "PASS; rerun by backlog_ci against the recorded fresh repository"
+    },
+    "independent_helper_execution": {
+      "reviewer": "/root/backlog_ci",
+      "run_at_utc": "2026-11-19T09:22:11.627916+00:00",
+      "source": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "command": [
+        "python",
+        "/workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/verify-history.py",
+        "--repo",
+        "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git",
+        "--check-imported"
+      ],
+      "exit_code": 0,
+      "output": "The bundle contains these 25 refs:\n7ee1b02775502069af31c657133d258b3622f6b5 refs/heads/chatgpt/ghostpay-buffered-sweep-20261119\n47a0895ab347a259e4ff040400c2b9fdc180e2a1 refs/heads/chatgpt/ghostpay-confidential-forward-20261119\ndbd638867051e5067c0139b516d47637c916f667 refs/heads/chatgpt/ghostpay-dependency-reconcile-20261119\nbd6b26dda054fe376dfdc0a347eb4e158c4487a0 refs/heads/chatgpt/ghostpay-deployment-docs-20261119\n8238f66b6beafb46a7a2d1598e5c4c354819fc86 refs/heads/chatgpt/ghostpay-deployment-readback-20261119\n3fa9029d6a921238c9b574e203dd8518b9b9a6b8 refs/heads/chatgpt/ghostpay-design-model-ci-20261119\nbd62f0737e34112253380a0919fc3aedaaf2c7db refs/heads/chatgpt/ghostpay-devnet-canonical-fixture-20261119\nf3c38f3f3208637eb5673ed9ace2e6975d1a2719 refs/heads/chatgpt/ghostpay-example-idb-ci-20261119\n51836d594700e362d033ecb7d1b481d0c9473f8b refs/heads/chatgpt/ghostpay-ledger-tolerance-20261119\n34eee707030b6818021aa535af32d0f566f43bba refs/heads/chatgpt/ghostpay-merchant-profile-clock-20261119\na2afd126b0276cda9ec0429657bbd130e17827ea refs/heads/chatgpt/ghostpay-op-fees-20261119\n49d68d7b2d71119d43c502a6ff4613c927b36f1c refs/heads/chatgpt/ghostpay-op-fees-corrected-baseline-20261119\n7b932e3e9467b762877813bf862d3ac5a6b6142b refs/heads/chatgpt/ghostpay-pay-residuals-20261119\n7828166cdc10bc146b48ab1339f584c0b2753da2 refs/heads/chatgpt/ghostpay-policy-client-20261119\ncff088d69c0f2731722894ee8835164b3ec8b221 refs/heads/chatgpt/ghostpay-policy-guard-20261119\n59715cb3a741cfb8d1be7a5333290e3a61752960 refs/heads/chatgpt/ghostpay-pool-seed-security-20261119\n5dca6b4d2ef378618f35a639e192277fe37d0288 refs/heads/chatgpt/ghostpay-quote-age-20261119\n308a2148dbf7e23795b223e1f8aeaf6806b4160f refs/heads/chatgpt/ghostpay-relayer-recovery-20261119\n33a4e5b457dfda723dfca027568a0f4bf8983f14 refs/heads/chatgpt/ghostpay-remaining-ci-20261119\n1cb5f907923a2d67587a303882b10c9bfea175b7 refs/heads/chatgpt/ghostpay-remaining-work-20261119\n42ef7f626d5859bdd0940d5c8fee0d93777c38a9 refs/heads/chatgpt/ghostpay-selfhost-pins-20261119\nbda57c32039fa4908cacc8fdeecfe29f44d47ad7 refs/heads/chatgpt/ghostpay-slither-visibility-20261119\n7be82871a4867210da20e185202be0faa661ed7b refs/heads/chatgpt/ghostpay-sol-tron-compat-20261119\n5128da10b7916e090922a6fe68469d5f0dddd072 refs/heads/chatgpt/ghostpay-verifier-parity-20261119\n18d44d283ef28197ea84670c9662e81a93c42188 refs/heads/chatgpt/ghostpay-workflow-recovery-20261119\nThe bundle requires these 8 refs:\n28edbcf55093a6d6056232fd59ef37a2ae832b9a \n198aa5baff22272453733a0f3dcfcac0e0994eec \n7fab4b92f90d65dd8d3e992eaca2483187f544a7 \n14ded337a10c140d7a9f9a9238ec038587d925bb \na36f48da526b818a5940a7a0ed2ae7303ef17056 \nffd982a7aea2856c186b40ef236a39720a1b81f5 \ne454de6abfefda70d82784fafc1d8949b277c334 \n58d89b39b27a66454ebf392bcd35d5c68b57b2f8 \nThe bundle uses this hash algorithm: sha1\nPASS: bundle digest, prerequisites and all 25 original source heads verified with imported tree identities\n/workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/remaining-work-original-history.bundle is okay\n",
+      "output_sha256": "0f5363964bcbc61a21d41672df047d5b757a9d5871fe28ba7ceaff4c49ddcc97",
+      "scope": "Read-only re-execution against the recorded fresh public-prerequisite-plus-bundle bare repository. No refs imported or mutated by this independent rerun."
+    },
+    "receipt_sha256": {
+      "manifest.json": "844e4fa81f83f0b31fb470e53df429c1ae384490fc2f465df41941e49c460aba",
+      "verification-commands.json": "f1be13c5ef5ccbcf21026f058929ac43f5942cc5c8a7a5fc353de8e0dafc7c7b",
+      "helper-verification.json": "21bc12607ebde03fb8dcf5c03b8f78896c9f1703871981ed26517609dc99b5ec",
+      "helper-verification.log": "d0d502df67ee4a8c360a4075296537ef0136c1438c2be076f1eb28763fe46ba7",
+      "README.md": "9155991e9e232effc17fff2afffa6e4167147deaebaa9d193051717a92e3af3f",
+      "verify-history.py": "42ff56a33c8a3c1a1fedff97d17089afea65f26ca4d778011d75bb6b44c622b0"
+    },
+    "fresh_restoration_receipt_review": "Nine recorded commands all exited zero. The receipt initializes an empty bare repository, fetches only the five public full-ancestry tips without depth or reference options, verifies the bundle before import, imports evidence refs, checks connectivity, checks out the capture, and runs the two repository-aware read-only evidence verifiers. The recorded repository has no alternates or shallow boundary. Independent review reran the published helper and connectivity check against this restored repository.",
+    "scope_limit": "The original-object scan covers 265 current handoff/completion files and 160 resolvable commit references, including abbreviations. Forty-five absent references are historical public-PR context available from fetched public ancestry, not unpublished worker objects or executable git-show constants. This is not a promise of every historical PR object being included offline."
+  },
+  "semantic_review": {
+    "result": "PASS",
+    "unresolved_review_defects": [],
+    "validated_points": [
+      "All 87 normalized task rows are counted once. Status buckets are 50 INTEGRATED, one MERGED, 12 BLOCKED, 11 SUPERSEDED and 13 REQUIRES OWNER DECISION. There is no IN PROGRESS row. The 51 newly integrated-or-main-merged rows are an overlapping implementation measure, not overall release acceptance.",
+      "The nine already-complete rows and two scope-boundary references have distinct machine-readable subtypes. The 194 feature rows, 49 security rows, 264 PR rows and seven excluded streams are crosswalks, not extra completed tasks.",
+      "Historical requirement, defect and test-gap cells remain nested under historical_assessment. Current source, supported scope, task and owner dispositions are separate; stale historical percentages are not presented as current qualification.",
+      "Every completed task has source and evidence references. No main merge is inferred from ancestry or an open PR merge-commit field. PR237 is the one task-level main merge at 58d89b39; PR236 merged into dependency branch210 at 7fab4b92 and is explicitly not a main merge.",
+      "PR207 action compatibility maintenance is distinct from the already-excluded paid activation boundary. Two Node24 action pins are selectively recovered; setup-python major remains optional and no new paid activation approval is requested.",
+      "F-WEB-14 registry publish/clear browser confirmation and only-user-RPC egress acceptance remain open under OWN-NETWORK/PR251. The corrected unit and Anvil paths exist; the completed ADR documentation task does not close browser acceptance.",
+      "F-AA-02 retains four separate deployment, versioned invoice, ordinary status and browser lifecycle gates. N09/N10/N11 and known-asset client checks do not imply full scheme-2 production completion. F-AA-04 is design/reference only; F-A11Y-03 is unestablished external/native acceptance.",
+      "F-MER-06 closes existing Node example and webhook-selftest CI wiring while preserving unqualified static/manual POS browser and QR behavior. Broader proposed terminal behavior is not claimed as implemented.",
+      "PR265 remains with its existing owner. PR266 is mapped to the claimed and reviewed merchant-profile clock task, F-WEB-19 and F-MER-05. Its supplied-clock condition, finite-input compatibility and lack of an established remote exploit remain explicit.",
+      "The clock-focused 63-case passes do not erase the unchanged full invoice-suite timeout. The 786/787 failed full run, isolated selected-case diagnostic, prior local resource failures and strict Mythril failure remain separate from passing scoped evidence.",
+      "Dependency and final integrated qualification remain BLOCKED. Existing source reviews, controlled Anvil tests and an archive integrity pass do not establish exact final-head hosted success, live network acceptance, external audit or release readiness.",
+      "Integration wording now says preserving current main, without asserting that all of main is qualified."
+    ]
+  },
+  "relayer_documentation_review": {
+    "result": "PASS",
+    "reviewed_commit": "b6cdbfd7f1049acb901221f355299e0b60251caf",
+    "evidence_path": "docs/completion/remaining-20261119/RELAYER_DOCUMENTATION_REVIEW_20261119.json",
+    "evidence_sha256": "0b6b4aa3679822b41d315fb1cf7620a7886145587975f4669caf35b8acf62370",
+    "summary": "Optional feed/fixed pricing, policy manifest support, startup versus ongoing provider agreement, runtime dependencies and alert behavior match the inspected source. The recorded controlled-chain 246-case result is supported by all eight retained file hashes. No runtime or transaction-authority change is claimed."
+  },
+  "accepted_packaging_observations": {
+    "paths": [
+      "docs/completion/remaining-20261119/provenance/manifest.json",
+      "docs/completion/remaining-20261119/provenance/verification-commands.json",
+      "docs/completion/remaining-20261119/provenance/helper-verification.json"
+    ],
+    "disposition": "Expected post-capture provenance receipts. The bundle and generated ledger are created after the frozen source commit; the archive cannot contain its enclosing packaging commit. README and publication_identity_note describe this boundary. These files exist and their current identities were checked. Final publication must preserve these reviewed bytes.",
+    "final_review_self_reference": "This review is written only to scratch. It does not require, hash or claim inclusion of its own eventual repository copy or the future packaging/publication commit."
+  },
+  "remaining_qualification_limits": [
+    "This PASS establishes ledger and provenance integrity at the recorded snapshot, not that all product or release requirements are satisfied.",
+    "Final exact-head hosted checks, strict analyzer closure, owner stream integration and external/native acceptance remain the blockers shown in the ledger.",
+    "Original capture tools with absolute or sibling-worktree paths still require the recorded path mapping and separately installed Node/Foundry dependencies; restoring Git objects alone does not execute them.",
+    "No source edits, Git ref changes, push, merge, remote comments, deployment, paid activation or new EVM/browser campaign were performed by this final reviewer."
+  ]
+}

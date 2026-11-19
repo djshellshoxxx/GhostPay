@@ -17,6 +17,25 @@ const body: MerchantProfileBody = {
   exp: NOW + 1000,
 };
 const good = signMerchantProfile(body, KEY);
+// This profile is genuinely signed and expired at NOW; changing exp on an existing signed object would only
+// exercise the signature failure, not the caller-clock boundary under review.
+const expired = signMerchantProfile({ ...body, exp: NOW - 1 }, KEY);
+const invalidClocks: readonly [string, unknown][] = [
+  ['NaN', Number.NaN],
+  ['positive Infinity', Number.POSITIVE_INFINITY],
+  ['negative Infinity', Number.NEGATIVE_INFINITY],
+  ['undefined', undefined],
+  ['null', null],
+  ['numeric string', '0'],
+  ['empty string', ''],
+  ['false', false],
+  ['true', true],
+  ['bigint', 0n],
+  ['symbol', Symbol('clock')],
+  ['object', {}],
+  ['coercible object', { valueOf: () => NOW - 2 }],
+  ['throwing valueOf', { valueOf: () => { throw new Error('clock must not be coerced'); } }],
+];
 
 function tampered(patch: Record<string, unknown>): unknown {
   return { ...good, ...patch };
@@ -55,6 +74,49 @@ describe('merchant profile', () => {
   });
   it('refuses to sign with a mismatched key', () => {
     expect(() => signMerchantProfile(body, new Uint8Array(32).fill(9))).toThrow();
+  });
+  it('establishes a valid signature and ordinary expired control for the clock regression', () => {
+    for (const input of [expired, JSON.stringify(expired)]) {
+      expect(verifyMerchantProfile(input, expired.exp - 1)).toEqual({ ok: true, profile: expired });
+      expect(verifyMerchantProfile(input, NOW)).toEqual({ ok: false, reason: 'expired' });
+    }
+  });
+  for (const encoding of ['object', 'JSON'] as const) {
+    describe(`${encoding} signed profile clock`, () => {
+      const input = encoding === 'JSON' ? JSON.stringify(expired) : expired;
+      it.each(invalidClocks)('rejects %s without coercion or throwing', (_name, now) => {
+        // Deliberately exercise JavaScript callers that do not have the TypeScript parameter constraint.
+        expect(verifyMerchantProfile(input, now as number)).toEqual({ ok: false, reason: 'expired' });
+      });
+      it.each([
+        ['negative finite', -1],
+        ['negative fractional', -0.5],
+        ['minimum finite', -Number.MAX_VALUE],
+        ['epoch', 0],
+        ['negative zero', -0],
+        ['smallest positive finite', Number.MIN_VALUE],
+        ['whole second before expiry', expired.exp - 1],
+        ['fractional second before expiry', expired.exp - 0.25],
+      ] as const)('preserves valid comparison at %s', (_name, now) => {
+        expect(verifyMerchantProfile(input, now)).toEqual({ ok: true, profile: expired });
+      });
+      it.each([
+        ['exact expiry', expired.exp],
+        ['fractional second after expiry', expired.exp + 0.25],
+        ['ordinary current time', NOW],
+        ['maximum safe integer', Number.MAX_SAFE_INTEGER],
+        ['maximum finite', Number.MAX_VALUE],
+      ] as const)('preserves expired comparison at %s', (_name, now) => {
+        expect(verifyMerchantProfile(input, now)).toEqual({ ok: false, reason: 'expired' });
+      });
+    });
+  }
+  it('preserves size, format and signature error precedence when the clock is invalid', () => {
+    for (const now of [Number.NaN, undefined, Symbol('clock')]) {
+      expect(verifyMerchantProfile(' '.repeat(MAX_PROFILE_BYTES + 1), now as number)).toEqual({ ok: false, reason: 'size' });
+      expect(verifyMerchantProfile({ ...expired, extra: 1 }, now as number)).toEqual({ ok: false, reason: 'format' });
+      expect(verifyMerchantProfile({ ...expired, name: 'Forged' }, now as number)).toEqual({ ok: false, reason: 'signature' });
+    }
   });
   it('fuzz: random single-char mutations never throw and never verify to a different profile', () => {
     let s = 12345;

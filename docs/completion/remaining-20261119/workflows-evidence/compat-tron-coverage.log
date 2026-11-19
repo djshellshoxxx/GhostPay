@@ -1,0 +1,39 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-compat/packages/chain-tron
+      Coverage enabled with v8
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:78) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:90) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:102) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:114) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  7 passed (7)
+      Tests  57 passed (57)
+   Start at  23:31:51
+   Duration  12.16s (tests 62%, import 30%, transform 6%, worker 2%)
+
+    Isolate  7 workers spawned · ~423ms startup each (spawn + environment, per file)
+             at least ~2.54s faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+No files with missing coverage.
+6 files fully covered.
+
+=============================== Coverage summary ===============================
+Statements   : 100% ( 166/166 )
+Branches     : 100% ( 105/105 )
+Functions    : 100% ( 38/38 )
+Lines        : 100% ( 139/139 )
+================================================================================

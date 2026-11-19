@@ -1,0 +1,660 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T07:23:59.622424+00:00",
+  "base_sha": "d84292a3b5030bdfe47b528db44f71944406dc4f",
+  "claim_sha": "c5257dc1a344bc6923fd31c2d02d43078b480fdc",
+  "regression_sha": "ba54af382df5beefb11a5fe2455b59d99a9a1e87",
+  "implementation_sha": "e7b148442753121c32f733328bb07bb4f28869d0",
+  "donor_pr": 218,
+  "donor_head": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+  "donor_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+  "historical_source_commits": [
+    {
+      "sha": "86f7116a18ffd42153aabd3b3e71b9244df797e0",
+      "subject": "fix(relayer): a failing log sink never takes the process down"
+    },
+    {
+      "sha": "15ade65a5d83a89f6eb108d45018495217238f12",
+      "subject": "fix(relayer): cap concurrent TCP connections per peer"
+    },
+    {
+      "sha": "c3d8a021906c0f6bad712826ad3f8bfdb3891dde",
+      "subject": "fix(relayer): per-client cap on lane slots, reserved before the first await"
+    },
+    {
+      "sha": "885ea53859be0054f9cee58ed6b68ba40742d105",
+      "subject": "fix(relayer): answer a malformed request target with 400 invalid_url"
+    },
+    {
+      "sha": "f996a11550d752b834b66dd4cda2eae467c9a29b",
+      "subject": "fix(relayer): refuse high-S and non-27/28 sweep signatures before any RPC call"
+    },
+    {
+      "sha": "3623bc299d32e6aea4e1f00f2adf7e1f1b9ed715",
+      "subject": "fix(relayer): quote-path gas price RPC failures feed the circuit breaker"
+    },
+    {
+      "sha": "1f866c99ea20b41546dbaa7972a95a0e2054d7d9",
+      "subject": "fix(relayer): only consecutive quote gas price failures open the breaker"
+    },
+    {
+      "sha": "d7d25cbed26f271a2e015caddb2ea72b755b8505",
+      "subject": "fix(relayer): enforce header and request timeouts every second"
+    },
+    {
+      "sha": "6bc4a4dbdd8fc907614d27298983e2b017cd4a06",
+      "subject": "fix(relayer): refuse a feeTo that differs from the manifest fee recipient"
+    },
+    {
+      "sha": "964e703579b6a2c2697be6ff65d644158d68f472",
+      "subject": "fix(relayer-guard): per-group overflow buckets by default (M-3)"
+    },
+    {
+      "sha": "bb9db1290164280b9da57c5f6f96e3f85240edf3",
+      "subject": "fix(relayer-guard): bounded idle scan on eviction and stats() (L-8)"
+    },
+    {
+      "sha": "a831a45f234ce567b628205b8d6e5a658abcab37",
+      "subject": "docs(relayer-guard): document per-group overflow, idle scan and stats()"
+    },
+    {
+      "sha": "02648c9286ebb57e907b20fd9100f22e5105b1c6",
+      "subject": "style(relayer-guard): prettier format of the limiter abuse tests"
+    },
+    {
+      "sha": "23ce9902c1bf3c6432963f293d90b471c136bb9e",
+      "subject": "fix(relayer-guard): keep entries one resolution holds out of the idle scan"
+    },
+    {
+      "sha": "8db74f4fa486f41fd7476723ba57b90f56ffa3bf",
+      "subject": "fix(web): treat the relayer's client_queue_full refusal as pre-broadcast"
+    },
+    {
+      "sha": "8e76689793343ce34f8ae4a5e1910b191e4a2930",
+      "subject": "fix(devnet): pay the relayer fee to the manifest fee recipient in the library e2e"
+    },
+    {
+      "sha": "d894106e382c143c511912cb443cb980f5cf9731",
+      "subject": "docs(relayer): record the unaccounted OP Stack L1 data fee (R07-4)"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R07-3 / LF-074edb61e-8",
+      "requirement": "A failed logging sink must not terminate the relayer or reject a request handler.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "LF-6f25385ce-1 / S3-18",
+      "requirement": "Bound concurrent peer connections with trusted-proxy exemption and no address logging.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "LF-074edb61e-4 / LF-2789f780b-2 / LF-29de09c05-1",
+      "requirement": "Reserve a per-client lane ticket before the first await and retain it until settlement.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "LF-29de09c05-4",
+      "requirement": "Malformed request targets return fixed 400 invalid_url.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "LF-074edb61e-7",
+      "requirement": "Noncanonical high-S or non-27/28 sweep signatures are rejected before chain calls.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "LF-074edb61e-1",
+      "requirement": "Consecutive quote gas-price RPC failures open the breaker without diluting send/receipt failure evidence or taking the sweep probe.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "LF-074edb61e-9",
+      "requirement": "Header/request timeout checks run every second rather than Node default 30 seconds.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "R07-2 / LF-2d64ee5c3-2",
+      "requirement": "Configured fee recipient matches the signed manifest when one is supplied.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "T-dd756b08-3 / M-3",
+      "requirement": "Bounded per-group overflow is the limiter default; shared overflow is last resort.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "T-dd756b08-4 / L-8 / review R1",
+      "requirement": "Scan at most eight oldest entries for idle eviction, expose counters only, and never evict entries held by the same reserveAll operation.",
+      "status": "IMPLEMENTED; FULL PACKAGE GREEN"
+    },
+    {
+      "id": "LF-2789f780b-3",
+      "requirement": "Bound doomed-request simulation and preserve fair lane admission.",
+      "status": "CURRENT ARCHITECTURE RETAINED",
+      "detail": "Current serial lane reads funding/order state before simulation; per-client tickets bound admission before awaits. The obsolete out-of-lane simulation was not restored. Multi-bucket floods can still consume cheap-read lane work; existing global queue/rate/loss caps remain."
+    },
+    {
+      "id": "R07-4",
+      "requirement": "Account for OP-stack L1 data/operator charges in quote, send checks, reservations and settlement.",
+      "status": "OPEN; NOT IMPLEMENTED IN THIS RECOVERY",
+      "detail": "The donor only documented execution-gas-only accounting. Coordinator requested a further source-based feasibility review of existing helpers after Sol/TRON compatibility; no external blocker or complete relayer qualification is claimed for this cost gap."
+    }
+  ],
+  "preservation": {
+    "privacy_parser_and_types": "byte-identical to ba54af38",
+    "zero_log_wrapper": "byte-identical to ba54af38",
+    "unpadBody": "byte-identical to ba54af38",
+    "runtime_ts": "byte-identical to ba54af38",
+    "manifests_and_lockfile": "unchanged",
+    "merge_conflict": "Only config top-level allowlist; retained both new server and existing privacy keys.",
+    "excluded_owner_streams": "No source edits."
+  },
+  "environment": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "node_options": "--max-old-space-size=768",
+    "qualification_lock": "flock --close /workspace/scratch/6eafdb04d91b/qualification.lock; independent command releases lock",
+    "foundry": "1.8.5",
+    "solc": "0.8.28",
+    "dependencies": "Independent existing matching-lock copies; no clean npm-ci claim. Source-identical compiled package outputs reused, relayer-guard and relayer rebuilt here.",
+    "package_lock_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2"
+  },
+  "review": {
+    "reviewer": "root coordinator, independent of implementation",
+    "result": "PASS for exact source e7b14844 and baseline regressions; confirmed admission order, settlement ticket lifetime, bounded limiter eviction, quote-breaker isolation, fixed URL/log errors and preserved privacy/padding.",
+    "nonblocking_note": "LaneTicket release then submit is not prevented by its internal API, despite its exactly-one comment; the service finally/release flow cannot do that. No HTTP-path regression demonstrated; no scope expansion."
+  },
+  "checks": [
+    {
+      "name": "relayer-hardening-red",
+      "source_revision": "ba54af382df5beefb11a5fe2455b59d99a9a1e87",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/hardening.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 1,
+      "seconds": 22.041,
+      "observed_at": "2026-11-19T07:05:46.575716+00:00",
+      "log": "relayer-hardening-red.log",
+      "node": "22.23.4",
+      "passed": 7,
+      "failed": 23,
+      "skipped": 0,
+      "unhandled_errors": 6,
+      "result": "Actual failing admission/breaker/URL/signature assertions and absent helpers; six socket rejections arose while baseline failed cases closed held requests. The full corrected suite has no unhandled errors."
+    },
+    {
+      "name": "limiter-abuse-red",
+      "source_revision": "ba54af382df5beefb11a5fe2455b59d99a9a1e87",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/limiter.abuse.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "packages/relayer-guard",
+      "exit_code": 1,
+      "seconds": 1.405,
+      "observed_at": "2026-11-19T07:05:24.483542+00:00",
+      "log": "limiter-abuse-red.log",
+      "node": "22.23.4",
+      "passed": 7,
+      "failed": 8,
+      "skipped": 0
+    },
+    {
+      "name": "relayer-hardening-green",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/hardening.test.ts",
+        "src/privacy.test.ts",
+        "src/config.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 0,
+      "seconds": 12.506,
+      "observed_at": "2026-11-19T07:16:13.999869+00:00",
+      "log": "relayer-hardening-green.log",
+      "node": "22.23.4",
+      "passed": 154,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "limiter-coverage-green",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/relayer-guard",
+      "exit_code": 0,
+      "seconds": 6.675,
+      "observed_at": "2026-11-19T07:16:35.387581+00:00",
+      "log": "limiter-coverage-green.log",
+      "node": "22.23.4",
+      "passed": 183,
+      "failed": 0,
+      "skipped": 0,
+      "coverage_percent": {
+        "statements": 98.92,
+        "branches": 94.55,
+        "functions": 99.28,
+        "lines": 99.53
+      }
+    },
+    {
+      "name": "relayer-contract-build",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/workspace/scratch/75c78c17e2fc/contract-tools/forge",
+        "build",
+        "--offline"
+      ],
+      "cwd": "packages/contracts",
+      "exit_code": 0,
+      "seconds": 42.937,
+      "observed_at": "2026-11-19T07:17:28.657730+00:00",
+      "log": "relayer-contract-build.log",
+      "node": null,
+      "environment": {
+        "FOUNDRY_SOLC": "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28"
+      }
+    },
+    {
+      "name": "relayer-full-coverage",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 0,
+      "seconds": 65.696,
+      "observed_at": "2026-11-19T07:19:05.579916+00:00",
+      "log": "relayer-full-coverage.log",
+      "node": "22.23.4",
+      "passed": 518,
+      "failed": 0,
+      "skipped": 0,
+      "environment": {
+        "REQUIRE_ANVIL": "1",
+        "ANVIL_BIN": "/workspace/scratch/75c78c17e2fc/contract-tools/anvil"
+      },
+      "coverage_percent": {
+        "statements": 96.92,
+        "branches": 92.58,
+        "functions": 98.13,
+        "lines": 98.77
+      }
+    },
+    {
+      "name": "relayer-guard-build",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/relayer-guard/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 3.575,
+      "observed_at": "2026-11-19T07:19:26.870850+00:00",
+      "log": "relayer-guard-build.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "relayer-pool-consumer-green",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/service.test.ts",
+        "src/http.test.ts",
+        "src/workerB.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "packages/pool-relayer",
+      "exit_code": 0,
+      "seconds": 7.31,
+      "observed_at": "2026-11-19T07:19:34.245253+00:00",
+      "log": "relayer-pool-consumer-green.log",
+      "node": "22.23.4",
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "This worktree source only; combined-candidate pool seed policy changes are coordinator-owned and require their own combined checks."
+    },
+    {
+      "name": "relayer-app-typecheck",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/relayer/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 22.285,
+      "observed_at": "2026-11-19T07:20:06.588142+00:00",
+      "log": "relayer-app-typecheck.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "relayer-web-consumer-green",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/relayerClient.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "seconds": 5.105,
+      "observed_at": "2026-11-19T07:20:11.785145+00:00",
+      "log": "relayer-web-consumer-green.log",
+      "node": "22.23.4",
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "relayer-guard-typecheck",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/relayer-guard/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 4.015,
+      "observed_at": "2026-11-19T07:20:16.422856+00:00",
+      "log": "relayer-guard-typecheck.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "relayer-app-build",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/relayer/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 9.662,
+      "observed_at": "2026-11-19T07:20:26.150050+00:00",
+      "log": "relayer-app-build.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "relayer-app-lint",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/relayer/src"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 53.585,
+      "observed_at": "2026-11-19T07:21:19.824816+00:00",
+      "log": "relayer-app-lint.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "relayer-guard-lint",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "packages/relayer-guard/src"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 15.944,
+      "observed_at": "2026-11-19T07:21:35.904878+00:00",
+      "log": "relayer-guard-lint.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "relayer-web-lint",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/relayerClient.test.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 37.45,
+      "observed_at": "2026-11-19T07:22:13.510120+00:00",
+      "log": "relayer-web-lint.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "relayer-devnet-syntax",
+      "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--check",
+        "scripts/devnet/e2e.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 0.266,
+      "observed_at": "2026-11-19T07:22:44.719326+00:00",
+      "log": "relayer-devnet-syntax.log",
+      "node": "22.23.4"
+    }
+  ],
+  "limits": [
+    "Local Anvil and controlled fixtures only; no public-chain/provider/wallet acceptance or deployment.",
+    "No compiled devnet transaction run here; manifest fixture was syntax checked and config/native relayer tests passed.",
+    "Combined-candidate hosted qualification remains coordinator-owned.",
+    "R07-4 remains open for a dedicated feasibility/implementation pass."
+  ],
+  "raw_evidence": [
+    {
+      "path": "workflows-evidence/relayer-hardening-red.json",
+      "sha256": "cdf5fb3b9d65d4fba52c0da5319ade6eb4b3622c8412dec7923f1af14ee129eb",
+      "bytes": 480
+    },
+    {
+      "path": "workflows-evidence/relayer-hardening-red.log",
+      "sha256": "6a637f2865edcfe75d073814a6db32124430d76078a829f722f5cf3653eea5af",
+      "bytes": 30920
+    },
+    {
+      "path": "workflows-evidence/limiter-abuse-red.json",
+      "sha256": "2a70c6e77553b5c6f179cb769d551012d93be4c0d8308ab17473f934e37dd4a5",
+      "bytes": 485
+    },
+    {
+      "path": "workflows-evidence/limiter-abuse-red.log",
+      "sha256": "615641d4f64426fa191f533098471eaf7cc83548b9a3ef83beb3adfc2daa876e",
+      "bytes": 8210
+    },
+    {
+      "path": "workflows-evidence/relayer-hardening-green.json",
+      "sha256": "c96cf21ec589d3048d53e6c49cd3186ff0e88cdd056fef9d5e78b52d06ed2907",
+      "bytes": 542
+    },
+    {
+      "path": "workflows-evidence/relayer-hardening-green.log",
+      "sha256": "39b4ba2bb0d5442d44e5ddd89ad23da1910619728340abfbc79c1ee939b36a27",
+      "bytes": 917
+    },
+    {
+      "path": "workflows-evidence/limiter-coverage-green.json",
+      "sha256": "ccc5cf7190e518b04cbb3ccdfdbd90a2a91e86befb90e9932d019d16e9f3bfe5",
+      "bytes": 485
+    },
+    {
+      "path": "workflows-evidence/limiter-coverage-green.log",
+      "sha256": "573b802c884180a47a7d536ca58219cdaaaf9a6235ea242e3b85c14bb001d2ff",
+      "bytes": 2991
+    },
+    {
+      "path": "workflows-evidence/relayer-contract-build.json",
+      "sha256": "ab191519c6e3b3070eca7f105b715f1bf6be40e75d4438685aa62f34df6038a1",
+      "bytes": 375
+    },
+    {
+      "path": "workflows-evidence/relayer-contract-build.log",
+      "sha256": "967a8ca19c3155f629904acc0469162ed1ffd66f62c37c1d715f08e266c81b62",
+      "bytes": 6033
+    },
+    {
+      "path": "workflows-evidence/relayer-full-coverage.json",
+      "sha256": "b7d1b413c4066d1526cab5ae88ae3d3bb988d3a0e5e0af40c712b93ecc5566a4",
+      "bytes": 474
+    },
+    {
+      "path": "workflows-evidence/relayer-full-coverage.log",
+      "sha256": "86841f7cc33e6b5288f3ddf9b6e45c5f708f847ccfdb6842d80b10837e2e9c07",
+      "bytes": 6363
+    },
+    {
+      "path": "workflows-evidence/relayer-guard-build.json",
+      "sha256": "98b80a49100f09a6465e56d5ff8fb136364a1e14301beb42242d88f6bb269499",
+      "bytes": 433
+    },
+    {
+      "path": "workflows-evidence/relayer-guard-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/relayer-pool-consumer-green.json",
+      "sha256": "b8be3095f79b203ea54529b344f1da9aebed9deb1325ee3a342baa279d6c4efd",
+      "bytes": 553
+    },
+    {
+      "path": "workflows-evidence/relayer-pool-consumer-green.log",
+      "sha256": "66c5554bbf4eb71be181a87d73ddee7666a681eaf9871908cdc32d887fccd1d8",
+      "bytes": 1121
+    },
+    {
+      "path": "workflows-evidence/relayer-app-typecheck.json",
+      "sha256": "4f9e0ea9427de23ed9423a230bb2fda8b4174c21197a04ada76fbb9122e220c7",
+      "bytes": 438
+    },
+    {
+      "path": "workflows-evidence/relayer-app-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/relayer-web-consumer-green.json",
+      "sha256": "d6eaad7c8977ccaea5b8504d571a4b0bc74f89260501353440031ee54b098a3f",
+      "bytes": 498
+    },
+    {
+      "path": "workflows-evidence/relayer-web-consumer-green.log",
+      "sha256": "d038f727f4eabd72537687016434283d5dc9efe842c296bb9e9b2cc2d7b8b982",
+      "bytes": 559
+    },
+    {
+      "path": "workflows-evidence/relayer-guard-typecheck.json",
+      "sha256": "63bb93957d0fda812d822b710e70f8b92919a9b573af60ff8d631bb83d6ec396",
+      "bytes": 451
+    },
+    {
+      "path": "workflows-evidence/relayer-guard-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/relayer-app-build.json",
+      "sha256": "d9141ee1ec95daa7c64ca5a8af1e8bfd6a34198ee36c21325ae4065448a60154",
+      "bytes": 419
+    },
+    {
+      "path": "workflows-evidence/relayer-app-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/relayer-app-lint.json",
+      "sha256": "6fa7983c6ab183db072a1cf17846180e9e992a81e4f42923c16f253eba4eb964",
+      "bytes": 434
+    },
+    {
+      "path": "workflows-evidence/relayer-app-lint.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "workflows-evidence/relayer-guard-lint.json",
+      "sha256": "1ddac59bf3cf60a15c3ea1dc93c22f2b72f1a2fe482f776b8070229be130e2bb",
+      "bytes": 448
+    },
+    {
+      "path": "workflows-evidence/relayer-guard-lint.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "workflows-evidence/relayer-web-lint.json",
+      "sha256": "0944a6a98673f3ea4ee10f7f7c9eadde89a33ee8ae013342568b2d528a855902",
+      "bytes": 496
+    },
+    {
+      "path": "workflows-evidence/relayer-web-lint.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "workflows-evidence/relayer-devnet-syntax.json",
+      "sha256": "5786cb75de26f6f1f4b9fc7f3f030ab2e06e06ee3400de16f28f30417cd704de",
+      "bytes": 383
+    },
+    {
+      "path": "workflows-evidence/relayer-devnet-syntax.log",
+      "sha256": "e0cb71fe601c6aa0bc77d1c72b7de24eb689cec9d73775860edf39dc4fa5755c",
+      "bytes": 174
+    }
+  ]
+}

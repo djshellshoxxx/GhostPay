@@ -1,0 +1,20 @@
+{
+  "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
+  "bytecodeHashes": {
+    "router": "0xd1507c89ddb56bdc5f5516a4e74de0218be0548c24f7a480b9a153dfe3a8acd1",
+    "sweepRelayer": "0xd00cb890b685b739b1eef88639015b758f9f3e3a783b55a3fb188868ab5840b0"
+  },
+  "chainId": 84532,
+  "commit": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "date": "2026-11-19T08:39:30.000Z",
+  "deployTx": {
+    "router": "0xa3d83565ae3878fce244edc5df75603009ab7897a94df516fbc63a13bbc334ae",
+    "sweepRelayer": "0xab34e316887c7fab4eaa3abb8395f5fe4de52221fed6927a249f99d146f2c860"
+  },
+  "feeBps": 25,
+  "feeRecipient": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+  "router": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+  "solcVersion": "0.8.28+commit.7893614a",
+  "sweepRelayer": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+  "signature": "0x62379af88c5a9c831003908171569a7a61ef2a311ca1b9578e8c00d0c31251212ea8c52e43eb7f3d66273d3f08fa81457241dfc96a1be9d06769539a71e42be4"
+}

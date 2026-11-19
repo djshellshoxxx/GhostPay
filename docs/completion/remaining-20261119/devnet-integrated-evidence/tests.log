@@ -1,0 +1,98 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: valid manifest passes schema and the chain-adapters validator
+ok 1 - valid manifest passes schema and the chain-adapters validator
+  ---
+  duration_ms: 15.573843
+  type: 'test'
+  ...
+# Subtest: unknown key, missing field, bad address and bad date are reported
+ok 2 - unknown key, missing field, bad address and bad date are reported
+  ---
+  duration_ms: 0.729469
+  type: 'test'
+  ...
+# Subtest: policyFactory requires the other policy fields (dependentRequired)
+ok 3 - policyFactory requires the other policy fields (dependentRequired)
+  ---
+  duration_ms: 0.390393
+  type: 'test'
+  ...
+# Subtest: legacy --copy-web fails with safe offline-signing guidance
+ok 4 - legacy --copy-web fails with safe offline-signing guidance
+  ---
+  duration_ms: 710.74612
+  type: 'test'
+  ...
+# Subtest: feeBps outside 0..10000 and non-25 feeBps are rejected
+ok 5 - feeBps outside 0..10000 and non-25 feeBps are rejected
+  ---
+  duration_ms: 1.47072
+  type: 'test'
+  ...
+# Subtest: devnet manifest accepts the canonical 84532 Deploy router/sweep broadcast and verifies its signature
+ok 6 - devnet manifest accepts the canonical 84532 Deploy router/sweep broadcast and verifies its signature
+  ---
+  duration_ms: 153.791362
+  type: 'test'
+  ...
+# Subtest: devnet manifest refuses the original 31337 token broadcast before contract reads or output
+ok 7 - devnet manifest refuses the original 31337 token broadcast before contract reads or output
+  ---
+  duration_ms: 15.337639
+  type: 'test'
+  ...
+# Subtest: devnet manifest refuses noncanonical router announcer before output
+ok 8 - devnet manifest refuses noncanonical router announcer before output
+  ---
+  duration_ms: 13.966879
+  type: 'test'
+  ...
+# Subtest: devnet manifest refuses missing canonical announcer code before output
+ok 9 - devnet manifest refuses missing canonical announcer code before output
+  ---
+  duration_ms: 369.473178
+  type: 'test'
+  ...
+# Subtest: devnet manifest refuses failed router deployment receipt before output
+ok 10 - devnet manifest refuses failed router deployment receipt before output
+  ---
+  duration_ms: 11.467659
+  type: 'test'
+  ...
+# Subtest: devnet manifest refuses wrong eth_chainId before contract reads or output
+ok 11 - devnet manifest refuses wrong eth_chainId before contract reads or output
+  ---
+  duration_ms: 3.508744
+  type: 'test'
+  ...
+# Subtest: devnet manifest refuses non-Anvil client before contract reads or output
+ok 12 - devnet manifest refuses non-Anvil client before contract reads or output
+  ---
+  duration_ms: 16.654471
+  type: 'test'
+  ...
+# Subtest: devnet manifest refuses inconsistent Anvil chain before contract reads or output
+ok 13 - devnet manifest refuses inconsistent Anvil chain before contract reads or output
+  ---
+  duration_ms: 15.04492
+  type: 'test'
+  ...
+# Subtest: devnet RPC transport refuses remote, TLS and credentialed URLs before connecting
+ok 14 - devnet RPC transport refuses remote, TLS and credentialed URLs before connecting
+  ---
+  duration_ms: 0.689513
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3721.806109

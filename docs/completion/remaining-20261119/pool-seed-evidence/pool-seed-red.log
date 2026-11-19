@@ -1,0 +1,391 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-pool-seed/packages/pool-sdk
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/seed-backup-security.test.ts (22 tests | 20 failed) 181ms
+   ❯ SEC-16 seed backup bounds and policy (22)
+     × rejects a weak new export before KDF work 53ms
+     × rejects a weak new export before KDF work 9ms
+     × rejects a weak new export before KDF work 8ms
+     × rejects a weak new export before KDF work 11ms
+     × writes a versioned seed envelope using the keystore default and explicit memory cap 19ms
+     × refuses unsafe export cost 9 before the KDF 10ms
+     × refuses unsafe export cost 13 before the KDF 4ms
+     × refuses unsafe export cost 19 before the KDF 2ms
+     × refuses unsafe export cost 20 before the KDF 3ms
+     × refuses unsafe export cost 14.5 before the KDF 7ms
+     × refuses unsafe export cost NaN before the KDF 1ms
+     × refuses unsafe export cost Infinity before the KDF 7ms
+     × refuses malicious legacy cost 19 before the KDF 4ms
+     × refuses malicious legacy cost 20 before the KDF 9ms
+     × refuses malicious legacy cost 10.5 before the KDF 2ms
+     × rejects malformed or oversized fields before the KDF 5ms
+     × refuses legacy plaintext with 31 bytes instead of a seed 7ms
+     × refuses legacy plaintext with 33 bytes instead of a seed 2ms
+     × normalizes only v2 password bytes and retains exact legacy behavior 3ms
+     × authenticates version, cost and salt even if the KDF returns the same key 7ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > rejects a weak new export before KDF work
+AssertionError: promise resolved "'{"v":1,"logN":15,"salt":"kyzSn5XGoEru…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":15,\"salt\":\"kyzSn5XGoErucXMe07cX5w==\",\"iv\":\"m6CDPuHbvoe9Swq7\",\"ct\":\"lEwSd0j6ZMN/ftBpYpItalKu1oN5sTYAfu7ns7riSYPyyrmeAFITEo7pmHwQvpRC\"}"
+
+ ❯ src/seed-backup-security.test.ts:30:54
+     28| describe('SEC-16 seed backup bounds and policy', () => {
+     29|   it.each(['12345678', 'abcdefghijklm', 'aaaaaaaaaaaaaa', 'GhostPay202…
+     30|     await expect(exportSeedEncrypted(seed, password)).rejects.toMatchO…
+       |                                                      ^
+     31|     expect(observed.calls).toHaveLength(0);
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > rejects a weak new export before KDF work
+AssertionError: promise resolved "'{"v":1,"logN":15,"salt":"Lb+Q++vl2mSM…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":15,\"salt\":\"Lb+Q++vl2mSMCuzj4GNgkg==\",\"iv\":\"2ZXPI2HdsMcx7ZI4\",\"ct\":\"8jw0v9jXdyiteuMCt0z6Z87+RsM7BM39EiFTPvhuigANjjZrPqnqleyASekT3a6H\"}"
+
+ ❯ src/seed-backup-security.test.ts:30:54
+     28| describe('SEC-16 seed backup bounds and policy', () => {
+     29|   it.each(['12345678', 'abcdefghijklm', 'aaaaaaaaaaaaaa', 'GhostPay202…
+     30|     await expect(exportSeedEncrypted(seed, password)).rejects.toMatchO…
+       |                                                      ^
+     31|     expect(observed.calls).toHaveLength(0);
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > rejects a weak new export before KDF work
+AssertionError: promise resolved "'{"v":1,"logN":15,"salt":"7L+DQG3uCryH…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":15,\"salt\":\"7L+DQG3uCryH2+PxWCTfzw==\",\"iv\":\"3iCRrqyJnCf7sQTt\",\"ct\":\"dSzAm1JIeLwmyTnU3O84HMPMd75BxwPxMz/gQNwSKT3UrrZZo9Ja6o6rcFnZvTav\"}"
+
+ ❯ src/seed-backup-security.test.ts:30:54
+     28| describe('SEC-16 seed backup bounds and policy', () => {
+     29|   it.each(['12345678', 'abcdefghijklm', 'aaaaaaaaaaaaaa', 'GhostPay202…
+     30|     await expect(exportSeedEncrypted(seed, password)).rejects.toMatchO…
+       |                                                      ^
+     31|     expect(observed.calls).toHaveLength(0);
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > rejects a weak new export before KDF work
+AssertionError: promise resolved "'{"v":1,"logN":15,"salt":"l3UFrIpNBX9Q…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":15,\"salt\":\"l3UFrIpNBX9QYgSeuAQJ1w==\",\"iv\":\"Ar1xxfhvHOPHgbtI\",\"ct\":\"stoqry2WhvnXB25I6VY+448HNmgjmFft4FaO/rLS2VvHK4QhIUG3GrA8jafNMXvp\"}"
+
+ ❯ src/seed-backup-security.test.ts:30:54
+     28| describe('SEC-16 seed backup bounds and policy', () => {
+     29|   it.each(['12345678', 'abcdefghijklm', 'aaaaaaaaaaaaaa', 'GhostPay202…
+     30|     await expect(exportSeedEncrypted(seed, password)).rejects.toMatchO…
+       |                                                      ^
+     31|     expect(observed.calls).toHaveLength(0);
+     32|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > writes a versioned seed envelope using the keystore default and explicit memory cap
+AssertionError: expected 1 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 1
+
+ ❯ src/seed-backup-security.test.ts:36:25
+     34|   it('writes a versioned seed envelope using the keystore default and …
+     35|     const backup = JSON.parse(await exportSeedEncrypted(seed, PASSWORD…
+     36|     expect(backup['v']).toBe(2);
+       |                         ^
+     37|     expect(backup['logN']).toBe(17);
+     38|     expect(observed.calls[0]).toMatchObject({ N: 1 << 17, maxmem: 2 **…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses unsafe export cost 9 before the KDF
+AssertionError: promise resolved "'{"v":1,"logN":9,"salt":"JOor8v09ZGHVW…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":9,\"salt\":\"JOor8v09ZGHVWTfMiejN8A==\",\"iv\":\"YLVkl7smVKIK4dNV\",\"ct\":\"iVTMGzvIijH5oBX59z3aEW3Ch5EF63T/RAq6MA0BHt7tmoVdIjKRRvPfrsNgWcOM\"}"
+
+ ❯ src/seed-backup-security.test.ts:43:64
+     41|
+     42|   it.each([9, 13, 19, 20, 14.5, NaN, Infinity])('refuses unsafe export…
+     43|     await expect(exportSeedEncrypted(seed, PASSWORD, { logN })).reject…
+       |                                                                ^
+     44|     expect(observed.calls).toHaveLength(0);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses unsafe export cost 13 before the KDF
+AssertionError: promise resolved "'{"v":1,"logN":13,"salt":"E54WkwmW4bdv…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":13,\"salt\":\"E54WkwmW4bdv3O4i1RrDYQ==\",\"iv\":\"Uzn2Ck06UrcQ3bnO\",\"ct\":\"dAtISgKUyQvnWyQHJaoXTHGV2zao55k21Ea9z2H0bCqNz56hMn/rhNLrdwCk2bek\"}"
+
+ ❯ src/seed-backup-security.test.ts:43:64
+     41|
+     42|   it.each([9, 13, 19, 20, 14.5, NaN, Infinity])('refuses unsafe export…
+     43|     await expect(exportSeedEncrypted(seed, PASSWORD, { logN })).reject…
+       |                                                                ^
+     44|     expect(observed.calls).toHaveLength(0);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses unsafe export cost 19 before the KDF
+AssertionError: promise resolved "'{"v":1,"logN":19,"salt":"/MfHY8Eer3Eb…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":19,\"salt\":\"/MfHY8Eer3Ebu2dbw9m+AQ==\",\"iv\":\"IRmi8sp7bVBR3fWA\",\"ct\":\"qHBqVOHzH9vzqvUGmf7/XHqb50XeZnnWgbrmDn7u+12mzEQZsnZsGZ9aKQIfa1en\"}"
+
+ ❯ src/seed-backup-security.test.ts:43:64
+     41|
+     42|   it.each([9, 13, 19, 20, 14.5, NaN, Infinity])('refuses unsafe export…
+     43|     await expect(exportSeedEncrypted(seed, PASSWORD, { logN })).reject…
+       |                                                                ^
+     44|     expect(observed.calls).toHaveLength(0);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses unsafe export cost 20 before the KDF
+AssertionError: promise resolved "'{"v":1,"logN":20,"salt":"OIKpB+m03q9D…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":20,\"salt\":\"OIKpB+m03q9Dv0Arhdx8hg==\",\"iv\":\"VIQ44RVfr9ndth+E\",\"ct\":\"EIsNh4Bew545UbgPdKpNTFWa/GvXXo1otW2pEcSt/U6c0wI9NRYqP0pngg6An5I0\"}"
+
+ ❯ src/seed-backup-security.test.ts:43:64
+     41|
+     42|   it.each([9, 13, 19, 20, 14.5, NaN, Infinity])('refuses unsafe export…
+     43|     await expect(exportSeedEncrypted(seed, PASSWORD, { logN })).reject…
+       |                                                                ^
+     44|     expect(observed.calls).toHaveLength(0);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses unsafe export cost 14.5 before the KDF
+AssertionError: promise resolved "'{"v":1,"logN":14.5,"salt":"F74UJ5/Ref…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":14.5,\"salt\":\"F74UJ5/RefjcRqeEVoq9nA==\",\"iv\":\"fs7mvS25F6hPguSV\",\"ct\":\"hmh5A5pI+DaUqE05cVUfLNiGA6oaURI1BjyRCrbcz6W4zqOu8NbmDSQzJLwvDiqO\"}"
+
+ ❯ src/seed-backup-security.test.ts:43:64
+     41|
+     42|   it.each([9, 13, 19, 20, 14.5, NaN, Infinity])('refuses unsafe export…
+     43|     await expect(exportSeedEncrypted(seed, PASSWORD, { logN })).reject…
+       |                                                                ^
+     44|     expect(observed.calls).toHaveLength(0);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses unsafe export cost NaN before the KDF
+AssertionError: promise resolved "'{"v":1,"logN":null,"salt":"4jpxjTlwzr…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":null,\"salt\":\"4jpxjTlwzrIRTzKZ5HYbFw==\",\"iv\":\"dsOhxS1IJLRtXLjZ\",\"ct\":\"h12QI0HBEbS7kLlBCLY6B1VK3NTbXcOh/EISLOPleq1g2N2yLURtj8rh68dB8gYO\"}"
+
+ ❯ src/seed-backup-security.test.ts:43:64
+     41|
+     42|   it.each([9, 13, 19, 20, 14.5, NaN, Infinity])('refuses unsafe export…
+     43|     await expect(exportSeedEncrypted(seed, PASSWORD, { logN })).reject…
+       |                                                                ^
+     44|     expect(observed.calls).toHaveLength(0);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses unsafe export cost Infinity before the KDF
+AssertionError: promise resolved "'{"v":1,"logN":null,"salt":"xreSoiYb1X…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"{\"v\":1,\"logN\":null,\"salt\":\"xreSoiYb1XWAFkJAJfofeA==\",\"iv\":\"yL/bpgX6yczrerVc\",\"ct\":\"IIRaHmunJh7ZaUT4PUiAgc7y7PwVd8yFdvIE4b/6JX6g1KpCYq2rD2y5UqcFEmjO\"}"
+
+ ❯ src/seed-backup-security.test.ts:43:64
+     41|
+     42|   it.each([9, 13, 19, 20, 14.5, NaN, Infinity])('refuses unsafe export…
+     43|     await expect(exportSeedEncrypted(seed, PASSWORD, { logN })).reject…
+       |                                                                ^
+     44|     expect(observed.calls).toHaveLength(0);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses malicious legacy cost 19 before the KDF
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses malicious legacy cost 20 before the KDF
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses malicious legacy cost 10.5 before the KDF
+AssertionError: promise resolved "[SecretBox pool-seed redacted]" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
+- }
++ SecretBox {}
+
+ ❯ src/seed-backup-security.test.ts:48:93
+     46|
+     47|   it.each([19, 20, 10.5, -1])('refuses malicious legacy cost %s before…
+     48|     await expect(importSeedEncrypted(JSON.stringify({ ...await legacy(…
+       |                                                                                             ^
+     49|     expect(observed.calls).toHaveLength(0);
+     50|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > rejects malformed or oversized fields before the KDF
+AssertionError: promise resolved "[SecretBox pool-seed redacted]" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
+- }
++ SecretBox {}
+
+ ❯ src/seed-backup-security.test.ts:55:90
+     53|     const valid = await legacy();
+     54|     for (const delta of [{ salt: 'A'.repeat(4096) }, { salt: `${String…
+     55|       await expect(importSeedEncrypted(JSON.stringify({ ...valid, ...d…
+       |                                                                                          ^
+     56|       expect(observed.calls).toHaveLength(0);
+     57|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses legacy plaintext with 31 bytes instead of a seed
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > refuses legacy plaintext with 33 bytes instead of a seed
+AssertionError: promise resolved "[SecretBox pool-seed redacted]" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
+- }
++ SecretBox {}
+
+ ❯ src/seed-backup-security.test.ts:61:86
+     59|
+     60|   it.each([0, 31, 33])('refuses legacy plaintext with %s bytes instead…
+     61|     await expect(importSeedEncrypted(JSON.stringify(await legacy(lengt…
+       |                                                                                      ^
+     62|   });
+     63|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > normalizes only v2 password bytes and retains exact legacy behavior
+AssertionError: expected 'Ｑquartz lantern velvet orbit 739!' to be 'Qquartz lantern velvet orbit 739!' // Object.is equality
+
+Expected: "Qquartz lantern velvet orbit 739!"
+Received: "Ｑquartz lantern velvet orbit 739!"
+
+ ❯ src/seed-backup-security.test.ts:67:41
+     65|     const password = `Ｑ${PASSWORD}`;
+     66|     const current = await exportSeedEncrypted(seed, password, { logN: …
+     67|     expect(observed.calls[0]?.password).toBe(password.normalize('NFKC'…
+       |                                         ^
+     68|     const restored = await importSeedEncrypted(current, password);
+     69|     restored.dispose();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/20]⎯
+
+ FAIL  src/seed-backup-security.test.ts > SEC-16 seed backup bounds and policy > authenticates version, cost and salt even if the KDF returns the same key
+AssertionError: promise resolved "[SecretBox pool-seed redacted]" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
+- }
++ SecretBox {}
+
+ ❯ src/seed-backup-security.test.ts:79:91
+     77|     const backup = JSON.parse(await exportSeedEncrypted(seed, PASSWORD…
+     78|     for (const delta of [{ v: 1 }, { logN: 15 }, { salt: b64(new Uint8…
+     79|       await expect(importSeedEncrypted(JSON.stringify({ ...backup, ...…
+       |                                                                                           ^
+     80|     }
+     81|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/20]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  20 failed | 2 passed (22)
+   Start at  22:40:03
+   Duration  4.19s (import 70%, transform 23%, tests 6%, worker 1%)
+

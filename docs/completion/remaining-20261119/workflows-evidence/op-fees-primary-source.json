@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-11-19",
+  "source": "https://github.com/ethereum-optimism/optimism/blob/develop/packages/contracts-bedrock/src/L2/GasPriceOracle.sol",
+  "git_blob": "ab6cdcf80c4fe4336aa0711d91982bc282c96f77",
+  "version": "1.6.0",
+  "interfaces": {
+    "getL1Fee": "Unsigned fully RLP-encoded transaction; oracle adds signature overhead.",
+    "getL1FeeUpperBound": "Unsigned RLP size; Fjord-supported practical compression estimator, not an absolute future-fee bound.",
+    "getOperatorFee": "The oracle chooses its own pre-Isthmus/Isthmus/Jovian behavior; implementation does not duplicate a formula."
+  },
+  "local_existing_policy": {
+    "path": "apps/web/src/lib/opStackFee.ts",
+    "revision": "7be82871",
+    "predeploy": "0x420000000000000000000000000000000000000F",
+    "reserve_multiplier": "2"
+  },
+  "chain_access": "No public chain/RPC requests made for this qualification. Existing configured ChainClient transport only in implementation; tests use controlled transports and local Anvil."
+}

@@ -76,6 +76,11 @@ export class FakeChain implements ChainClient {
   public getPendingNonce(): Promise<number> {
     return Promise.resolve(this.pendingNonce);
   }
+  public estimateFeeReserve(gas: bigint, withPermit: boolean): Promise<bigint> {
+    void gas;
+    void withPermit;
+    return Promise.resolve(0n);
+  }
   public readOrderState(call: SweepCall): Promise<OrderState> {
     if (this.rpcDown) return Promise.reject(new Error('down'));
     return Promise.resolve({
@@ -168,7 +173,8 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000, quoteGroupPerMinute: 6000, quoteGroupBurst: 1000 },
     breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 },
     lossBudget: { windowSeconds: 3600, perKeyWei: 10n ** 16n, globalWei: 10n ** 17n, maxKeys: 100 },
-    queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
+    server: { maxConnectionsPerIp: 64 },
+    queue: { maxPending: 4, maxPerClient: 2, receiptTimeoutSeconds: 30 },
     shutdownGraceSeconds: 2,
     metricsEnabled: false,
     metricsBind: '127.0.0.1',

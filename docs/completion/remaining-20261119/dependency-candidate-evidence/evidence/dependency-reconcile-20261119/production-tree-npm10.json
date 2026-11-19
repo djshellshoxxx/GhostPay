@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "/workspace/scratch/6eafdb04d91b/qualification-tools/npm-10.9.9/package/bin/npm-cli.js",
+    "ls",
+    "--all",
+    "--omit=dev"
+  ],
+  "exit_code": 0,
+  "source": "https://registry.npmjs.org/npm/10.9.9",
+  "tarball": "https://registry.npmjs.org/npm/-/npm-10.9.9.tgz",
+  "integrity_verified": "sha512-1g+6jLQvaIuB4zwvHL7yrXuXcWZwDsCtBX8bbWDqbvJSSr9nPiDDWTHNgwXR27iIcTTW7v3A57hDW9RYv2W4Yg==",
+  "tarball_sha256": "c80bd097147cce32e31010b791bab8c71a26a5e10668210ec9d2e7f4c7cea2a1",
+  "node": "22.23.4",
+  "npm": "10.9.9",
+  "node_official_version_source": "https://nodejs.org/dist/index.json",
+  "upstream_related_issue": "https://github.com/npm/cli/issues/9514",
+  "lock_unchanged": true,
+  "repository_changes_for_tool_parity": false
+}

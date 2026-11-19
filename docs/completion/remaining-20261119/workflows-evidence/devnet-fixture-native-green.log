@@ -1,0 +1,9 @@
+green: deploy-devnet-31337
+(node:94) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+green: seed-canonical-runtime
+Traceback (most recent call last):
+  File "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-replay.py", line 140, in <module>
+    assert seed_log.read_text() == canonical
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,14 @@
+{
+  "phase": "pin-regression-before-default-fix",
+  "exit_code": 1,
+  "command": [
+    "flock",
+    "--close",
+    "/workspace/scratch/6eafdb04d91b/qualification.lock",
+    "bash",
+    "deploy/selftest.sh"
+  ],
+  "node": "22.23.4",
+  "selftest_sha256": "7512f5d5ab2d105eb03fe8880e57c79ff46b354748a68b3027129b6440b2f549",
+  "compose_sha256": "3b7a8c689a04b20f8ba72a62a5b0abdc3df22f5ec2a1f3b2fdc9a64266854701"
+}

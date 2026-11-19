@@ -1,0 +1,103 @@
+{
+  "schema": "ghostpay-independent-documentation-review/1",
+  "reviewer": "/root/backlog_ci",
+  "author": "/root",
+  "reviewed_at_utc": "2026-11-19T09:14:17.780267+00:00",
+  "source_commit": "b6cdbfd7f1049acb901221f355299e0b60251caf",
+  "result": "PASS",
+  "scope": "Independent read-only source and recorded-evidence review of the two-file relayer documentation diff. No runtime change or test rerun performed by this review.",
+  "changed_files": [
+    "apps/relayer/DEVIATIONS.md",
+    "apps/relayer/README.md"
+  ],
+  "inspected_source_files": [
+    {
+      "path": "apps/relayer/DEVIATIONS.md",
+      "git_blob": "82f1020c50c6b010d474483037067e8f1de11cc0",
+      "sha256": "6b10d62c049d204a6842d1e22d7a6212743a8d3b7764a0a8c31bfe433ab511ea"
+    },
+    {
+      "path": "apps/relayer/README.md",
+      "git_blob": "2845eadce71397c6a4cda42da69019be1c9c4817",
+      "sha256": "8507d17b93ada526e9d567440c2c9c71ebfc13cad25d9ae848bc6b49a7070c9a"
+    },
+    {
+      "path": "apps/relayer/src/config.ts",
+      "git_blob": "6800de3a2eca21495fea8d56ffdba9ef1ee34b5c",
+      "sha256": "e29b6d11f76c58b58bd1b36259c1e7c03612536df77d273886a9b394c0f21f29"
+    },
+    {
+      "path": "apps/relayer/src/runtime.ts",
+      "git_blob": "29997bea69cd397da62512e28e37f8d1949667e0",
+      "sha256": "aa0ced51e98cb86e1558b08154ac7e12d82e4c562dfe041f0f5bbee453e3e55f"
+    },
+    {
+      "path": "apps/relayer/src/service.ts",
+      "git_blob": "2bbecfba697b6e83a5167334c1393bfa29fd7a7a",
+      "sha256": "2f16b217585fbc44f2f857230a7eac8e872b8c109e902d3e9bb818e1011ebf73"
+    },
+    {
+      "path": "apps/relayer/src/alerts.ts",
+      "git_blob": "f45322183ad13da699744dcc2a035fff40b2edec",
+      "sha256": "580a4fb2b42fc31914c0c64b171d9ae0099085cc5a0df7e95f191a4ad8e00525"
+    },
+    {
+      "path": "apps/relayer/package.json",
+      "git_blob": "98933cea02cb5087e86603f235bf27078763ada8",
+      "sha256": "67ba77e9fada1dcde9ebdc0d2a6e4d9196de04fd37c9d77ecaecb346d3f204ef"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.ts",
+      "git_blob": "a6d2aa4c10ec317cd3c91b0ac09447d755180425",
+      "sha256": "1916865d1c6c357b2d16204089c260b554fda2401ac17b06cff0d96465739220"
+    },
+    {
+      "path": "packages/chain-adapters/src/deploymentsVerify.ts",
+      "git_blob": "4a04a427826dc9ac50d1d398318fa397047b150f",
+      "sha256": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973"
+    },
+    {
+      "path": "apps/relayer/src/e2e.anvil.test.ts",
+      "git_blob": "1a0e2ca095527f889e744bb65caebb1bdf24af04",
+      "sha256": "68a6c294e46601266fd7d6f4b5a84a859899ab48382b8c66f21b4db0a3e1de85"
+    }
+  ],
+  "findings": [
+    {
+      "area": "Native USD pricing",
+      "result": "PASS",
+      "evidence": "config.ts requires exactly one fixed nativeUsdPrice or explicit nativeUsdFeed selection. Existing registry entries are required; runtime selects configured feed or fixed mode. Documentation retains fail-closed reads, stablecoin parity assumption and external live-feed/depeg limits."
+    },
+    {
+      "area": "Manifest verification",
+      "result": "PASS",
+      "evidence": "Validated optional nested policy fields are supported and unknown fields remain rejected. Startup verifies policy implementation/factory hashes along with router/relayer hashes, router getters and known-chain canonical announcer. Configured secondary agreement is required for every startup manifest read; ongoing header agreement remains a distinct check."
+    },
+    {
+      "area": "Dependencies and alerts",
+      "result": "PASS",
+      "evidence": "Four runtime dependencies match package.json. service.ts emits low_balance and breaker_tripped_low_balance and updates breaker metrics; runtime defaults to nullAlerts and only creates the configured HTTPS/HMAC webhook. No operational pager/scrape acceptance is asserted."
+    },
+    {
+      "area": "Anvil evidence wording",
+      "result": "PASS",
+      "evidence": "The retained combined selection at 6fe060e370ccf168899796708ae4d6bed5e990ef passes 246 tests across eight relayer files with required Anvil and zero final skips. Its e2e source contains permit front-running, owner-sweeps-first and restart scenarios. The initial 241-pass/one-failure/four-skip artifact prerequisite attempt remains recorded."
+    }
+  ],
+  "recorded_evidence_check": {
+    "path": "docs/completion/remaining-20261119/combined-relayer-readback-evidence/manifest.json",
+    "sha256": "f15d6445cc3bcf75bddf4fe2c4cad8acba02ad2b7f8c2076e5d07ed0be4d078f",
+    "listed_files_verified": 8,
+    "byte_or_digest_mismatches": [],
+    "source": "6fe060e370ccf168899796708ae4d6bed5e990ef",
+    "relayer_tests_passed": 246,
+    "readback_tests_passed": 64,
+    "final_skipped": 0
+  },
+  "limits": [
+    "No new runtime, dependency, provider selection, transaction authority or CI gate was introduced by the reviewed documentation diff.",
+    "Recorded targeted qualification is not a whole-workspace coverage result or an independent rerun.",
+    "Local controlled-chain Anvil execution does not qualify public OP chains, live feeds, external webhook delivery, Prometheus scraping or production deployment.",
+    "Final exact-head hosted qualification and external acceptance remain separate."
+  ]
+}
