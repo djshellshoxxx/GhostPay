@@ -1295,3 +1295,19 @@ tests and obtain an independent recovery-worker review. No broad checks or remot
 Status: implemented at `9bc9f1a19abedfc667db7931c9892d6cee1190d0`; baseline 3 failures/1 control,
 30 focused tests pass. Independent scoped source review found no blocker; combined hosted
 qualification remains required. See `docs/handoffs/home-release-hash-20261119/REVIEW.md`.
+
+# TRON integration failure repair — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT branch_recon, assigned by the current consolidation coordinator.
+Branch: `codex/ghostpay-tron-integration-repair-20261119`.
+Base: `e76451ad56ba1634eed9d03468961900433fd130`.
+Owned paths: `apps/web/src/features/chainViews.i18n.test.tsx`, the related
+`chain.hardening.test.ts` coverage and TRON shared fixtures; `TronView.tsx`
+and TRON chain/network/RPC wiring only if the reproduced root cause requires
+a runtime correction; this claim and scoped qualification evidence.
+Acceptance: reproduce the common TRON outcome/authority failures with current
+verified library artifacts; identify runtime versus fixture cause; preserve
+strict provider/genesis validation, receipt integrity and all authority/outcome
+assertions; implement the smallest correction, run focused original-config
+tests and obtain independent worker review. No root checkout mutation,
+dependency upgrade, mainnet request, deployment or remote write.
