@@ -1,0 +1,398 @@
+{
+  "census_observed_at": "2026-11-19 08:22:46 UTC",
+  "checks_observed_at": "2026-11-19T08:21:41Z",
+  "prior_inventory_captured_at": "2026-11-19T08:08:41.919437+00:00",
+  "baseline": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+  "baseline_unchanged": true,
+  "census": {
+    "branches": 272,
+    "pull_requests": 262,
+    "pr_states": {
+      "merged": 62,
+      "closed_unmerged": 142,
+      "open": 58
+    }
+  },
+  "delta_summary": {
+    "new_refs": 3,
+    "moved_refs": 4,
+    "removed_refs": 0,
+    "unchanged_refs": 265,
+    "new_pull_requests_since_prior_census_count": 4
+  },
+  "delta": [
+    {
+      "name": "automation/ghostpay-integration-lock",
+      "change": "MOVED",
+      "previous_head": "914f8ce742e4282cc318268c088c8f4285556245",
+      "head": "3ae60de55add2763aa7d7a44033d11b96df13adb",
+      "previous_classification": "RETAIN_FOR_REFERENCE",
+      "review_depth": "MECHANICAL_PINNED_HEAD_ONLY",
+      "prs": [],
+      "git_object_available": true,
+      "ahead": 2,
+      "behind": 15,
+      "ancestor": false,
+      "merge_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "unique_non_merge_patches": 2,
+      "patch_equivalent_commits": 0,
+      "changed_file_count": 3902,
+      "changed_paths_preview": [
+        ".claude/skills/ghostpay-affected-checks/SKILL.md",
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        ".claude/skills/ghostpay-package-map/SKILL.md",
+        ".claude/skills/ghostpay-security-invariants/REFERENCE.md",
+        ".claude/skills/ghostpay-security-invariants/SKILL.md",
+        ".devcontainer/devcontainer.json"
+      ],
+      "changed_paths_preview_truncated": true,
+      "head_subject": "automation: release integration lock and record completed cycle 20261119T073600Z",
+      "previous_head_is_ancestor": true,
+      "commits_since_previous_head": 1,
+      "tree_change_since_previous_head_count": 1,
+      "classification": "RETAIN_FOR_REFERENCE",
+      "merge": "not an application branch",
+      "conflict_files": [],
+      "decision_evidence": "Metadata-only integration-lock ref. Do not merge its tree into application branches. The pinned lease is released; no claim or release was performed in this review.",
+      "metadata_tree_paths": [
+        "integration-lock.json"
+      ],
+      "lock_metadata": {
+        "format": "ghostpay-integration-lock/1",
+        "status": "released",
+        "owner": "20261119T073600Z-root",
+        "generation": 1,
+        "base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+        "acquired_at": "2026-11-19T07:55:03.000Z",
+        "heartbeat_at": "2026-11-19T07:55:03.000Z",
+        "expires_at": "2026-11-19T08:55:03.000Z",
+        "released_at": "2026-11-19T08:16:59.000Z"
+      },
+      "check_observations": []
+    },
+    {
+      "name": "automation/20261119T073600Z/coordinator/integration-lock",
+      "change": "NEW",
+      "previous_head": null,
+      "head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "previous_classification": null,
+      "review_depth": "MECHANICAL_PINNED_HEAD_ONLY",
+      "prs": [
+        {
+          "number": 261,
+          "state": "open",
+          "draft": true,
+          "head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+          "base": "main",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/261"
+        }
+      ],
+      "git_object_available": true,
+      "ahead": 2,
+      "behind": 15,
+      "ancestor": false,
+      "merge_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "unique_non_merge_patches": 2,
+      "patch_equivalent_commits": 0,
+      "changed_file_count": 19,
+      "changed_paths_preview": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/automation/BRANCH_INVENTORY.md",
+        "docs/automation/BUG_BACKLOG.md",
+        "docs/automation/CYCLE_HISTORY.md",
+        "docs/automation/FEATURE_BACKLOG.md",
+        "docs/automation/MASTER_STATUS.md"
+      ],
+      "changed_paths_preview_truncated": true,
+      "head_subject": "docs(automation): reconcile final review and published checkpoints",
+      "merge": "clean",
+      "conflict_files": [],
+      "merge_simulation_exit_code": 0,
+      "classification": "ACTIVE_DEVELOPMENT",
+      "decision_evidence": "Pinned head has an open draft owner PR and unique non-merge patches. Mechanical mergeability does not clear source review, scope reconciliation or exact-head required checks.",
+      "check_observations": []
+    },
+    {
+      "name": "chatgpt/btc-spent-private-scan-20261118",
+      "change": "MOVED",
+      "previous_head": "2364284a2717a22b895fcb7badeb2e7ae6bb0e48",
+      "head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "previous_classification": "PARTIALLY_RECOVERABLE",
+      "review_depth": "MECHANICAL_PINNED_HEAD_ONLY",
+      "prs": [
+        {
+          "number": 244,
+          "state": "open",
+          "draft": true,
+          "head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+          "base": "main",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/244"
+        }
+      ],
+      "git_object_available": true,
+      "ahead": 18,
+      "behind": 36,
+      "ancestor": false,
+      "merge_base": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "unique_non_merge_patches": 16,
+      "patch_equivalent_commits": 0,
+      "changed_file_count": 63,
+      "changed_paths_preview": [
+        "apps/web/DEVIATIONS.md",
+        "apps/web/e2e/btc-spent-consent.spec.ts",
+        "apps/web/e2e/btc-worker.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json"
+      ],
+      "changed_paths_preview_truncated": true,
+      "head_subject": "fix(btc): bind provider result labels to scan consent",
+      "previous_head_is_ancestor": true,
+      "commits_since_previous_head": 1,
+      "tree_change_since_previous_head_count": 2,
+      "merge": "clean",
+      "conflict_files": [],
+      "merge_simulation_exit_code": 0,
+      "classification": "ACTIVE_DEVELOPMENT",
+      "decision_evidence": "Pinned head has an open draft owner PR and unique non-merge patches. Mechanical mergeability does not clear source review, scope reconciliation or exact-head required checks.",
+      "check_observations": []
+    },
+    {
+      "name": "codex/ghostpay-feature-consolidation-20261119",
+      "change": "NEW",
+      "previous_head": null,
+      "head": "b1757f5b797e05ec9549cf0fe897615196c02a1d",
+      "previous_classification": null,
+      "review_depth": "MECHANICAL_PINNED_HEAD_ONLY",
+      "prs": [
+        {
+          "number": 262,
+          "state": "open",
+          "draft": true,
+          "head": "b1757f5b797e05ec9549cf0fe897615196c02a1d",
+          "base": "main",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/262"
+        }
+      ],
+      "git_object_available": true,
+      "ahead": 181,
+      "behind": 0,
+      "ancestor": false,
+      "merge_base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "unique_non_merge_patches": 136,
+      "patch_equivalent_commits": 0,
+      "changed_file_count": 913,
+      "changed_paths_preview": [
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        ".github/actions/setup-forge/action.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        ".github/workflows/pages.yml"
+      ],
+      "changed_paths_preview_truncated": true,
+      "head_subject": "merge: bind profiles and private checkpoints to current authority",
+      "merge": "clean",
+      "conflict_files": [],
+      "merge_simulation_exit_code": 0,
+      "classification": "ACTIVE_DEVELOPMENT",
+      "decision_evidence": "Pinned head has an open draft owner PR and unique non-merge patches. Mechanical mergeability does not clear source review, scope reconciliation or exact-head required checks.",
+      "check_observations": []
+    },
+    {
+      "name": "integration/ghostpay-master-consolidation-20261118",
+      "change": "MOVED",
+      "previous_head": "b529a720cfbfa3c1056cc71085b4f163078e7591",
+      "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "previous_classification": "PARTIALLY_RECOVERABLE",
+      "review_depth": "MECHANICAL_PINNED_HEAD_ONLY",
+      "prs": [
+        {
+          "number": 264,
+          "state": "open",
+          "draft": true,
+          "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+          "base": "main",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/264"
+        }
+      ],
+      "git_object_available": true,
+      "ahead": 222,
+      "behind": 0,
+      "ancestor": false,
+      "merge_base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "unique_non_merge_patches": 170,
+      "patch_equivalent_commits": 0,
+      "changed_file_count": 1062,
+      "changed_paths_preview": [
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        ".github/actions/setup-forge/action.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        ".github/workflows/nightly.yml"
+      ],
+      "changed_paths_preview_truncated": true,
+      "head_subject": "Preserve combined runtime results and independent caller acceptance",
+      "previous_head_is_ancestor": true,
+      "commits_since_previous_head": 107,
+      "tree_change_since_previous_head_count": 215,
+      "merge": "clean",
+      "conflict_files": [],
+      "merge_simulation_exit_code": 0,
+      "classification": "ACTIVE_DEVELOPMENT",
+      "decision_evidence": "Pinned head has an open draft owner PR and unique non-merge patches. Mechanical mergeability does not clear source review, scope reconciliation or exact-head required checks.",
+      "check_observations": []
+    },
+    {
+      "name": "integration/ghostpay-recovery-reconciled-20261119",
+      "change": "MOVED",
+      "previous_head": "789e63501c1628d602006dbd324a36f8a9c50d71",
+      "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "previous_classification": "ACTIVE_DEVELOPMENT",
+      "review_depth": "MECHANICAL_PINNED_HEAD_ONLY",
+      "prs": [
+        {
+          "number": 260,
+          "state": "open",
+          "draft": true,
+          "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+          "base": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/260"
+        }
+      ],
+      "git_object_available": true,
+      "ahead": 92,
+      "behind": 37,
+      "ancestor": false,
+      "merge_base": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "unique_non_merge_patches": 76,
+      "patch_equivalent_commits": 0,
+      "changed_file_count": 639,
+      "changed_paths_preview": [
+        ".github/actions/setup-forge/action.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        ".github/workflows/pages.yml",
+        "README.md"
+      ],
+      "changed_paths_preview_truncated": true,
+      "head_subject": "docs(recovery): record reconciled source and five red-green regressions",
+      "previous_head_is_ancestor": true,
+      "commits_since_previous_head": 1,
+      "tree_change_since_previous_head_count": 3,
+      "merge": "conflicts",
+      "conflict_files": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "merge_simulation_exit_code": 1,
+      "classification": "ACTIVE_DEVELOPMENT",
+      "decision_evidence": "Pinned head has an open draft owner PR and unique non-merge patches. Mechanical mergeability does not clear source review, scope reconciliation or exact-head required checks.",
+      "check_observations": [
+        {
+          "pr": "260",
+          "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+          "total": 6,
+          "counts": {
+            "skipped": 1,
+            "queued": 5
+          },
+          "pending": [
+            "Pages artifact on anvil (browser)",
+            "Build and verify the Pages site",
+            "kit",
+            "qualify-ghostpay-web",
+            "beta acceptance (lib + cli + browser on anvil)"
+          ],
+          "failures": []
+        }
+      ]
+    },
+    {
+      "name": "maintenance/ghostpay-branch-audit-20261119",
+      "change": "NEW",
+      "previous_head": null,
+      "head": "d2029c3991373499845ea4b87b45ad7b74465c92",
+      "previous_classification": null,
+      "review_depth": "MECHANICAL_PINNED_HEAD_ONLY",
+      "prs": [
+        {
+          "number": 263,
+          "state": "open",
+          "draft": true,
+          "head": "d2029c3991373499845ea4b87b45ad7b74465c92",
+          "base": "main",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/263"
+        }
+      ],
+      "git_object_available": true,
+      "ahead": 3,
+      "behind": 0,
+      "ancestor": false,
+      "merge_base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "unique_non_merge_patches": 2,
+      "patch_equivalent_commits": 0,
+      "changed_file_count": 14,
+      "changed_paths_preview": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/maintenance/BRANCH_AUDIT.md",
+        "docs/maintenance/CONSOLIDATION_LOG.md",
+        "docs/maintenance/CONSOLIDATION_PLAN.md",
+        "docs/maintenance/RECOVERED_WORK.md",
+        "docs/maintenance/RELEASE_READINESS.md"
+      ],
+      "changed_paths_preview_truncated": true,
+      "head_subject": "docs: preserve exhaustive branch inventory and verified recovery checkpoint",
+      "merge": "clean",
+      "conflict_files": [],
+      "merge_simulation_exit_code": 0,
+      "classification": "ACTIVE_DEVELOPMENT",
+      "decision_evidence": "Pinned head has an open draft owner PR and unique non-merge patches. Mechanical mergeability does not clear source review, scope reconciliation or exact-head required checks.",
+      "check_observations": [
+        {
+          "pr": "263",
+          "sha": "d2029c3991373499845ea4b87b45ad7b74465c92",
+          "total": 5,
+          "counts": {
+            "queued": 5
+          },
+          "pending": [
+            "secrets-and-egress",
+            "changes",
+            "Analyze (actions)",
+            "Analyze (javascript-typescript)",
+            "Analyze (python)"
+          ],
+          "failures": []
+        }
+      ]
+    }
+  ],
+  "removed_refs": [],
+  "graph_totals": {
+    "method": "Carry forward metrics only for exact unchanged heads at the identical main baseline; recompute changed heads using pinned Git objects, merge-base, rev-list, git cherry and bounded merge-tree. No global census refresh or whole-repository semantic re-audit.",
+    "ancestor_contained_including_main": 172,
+    "ancestor_contained_excluding_main": 171,
+    "non_ancestor_heads": 100,
+    "non_ancestor_heads_with_unique_non_merge_patches": 87,
+    "non_ancestor_heads_with_zero_unique_non_merge_patches": 13,
+    "unknown_graph_heads": [],
+    "classification_counts": {
+      "SAFE_TO_DELETE_AFTER_VERIFICATION": 171,
+      "ACTIVE_DEVELOPMENT": 16,
+      "RETAIN_FOR_REFERENCE": 18,
+      "REPAIR_THEN_MERGE": 15,
+      "DUPLICATE_OR_SUPERSEDED": 25,
+      "PARTIALLY_RECOVERABLE": 22,
+      "SECURITY_BLOCKED": 5
+    },
+    "classification_scope": "Unchanged-head disposition labels are carried forward. Changed active owner heads are conservatively ACTIVE_DEVELOPMENT unless contained, patch-equivalent or metadata-only. These totals are not a claim of complete semantic qualification."
+  },
+  "limitations": [
+    "Frozen census ends at 2026-11-19 08:22:46 UTC; later remote changes are not included.",
+    "No new CI execution, test execution, source-owner branch mutation, main merge or deployment occurred.",
+    "Historical semantic findings remain attached to their original source heads; moved heads require independent review and exact-head checks."
+  ],
+  "review_depth_definition": "MECHANICAL_PINNED_HEAD_ONLY means Git ancestry, patch equivalence, file-count and bounded merge simulation for the seven frozen heads. No full semantic review, runtime execution, fresh CI execution or merge qualification is implied."
+}
