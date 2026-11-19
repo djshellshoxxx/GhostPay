@@ -1,5 +1,0 @@
-# Regenerate with `npm run build:circuits` (INSECURE DEV CEREMONY). Large and reproducible.
-build/
-.tools/
-foundry/out/
-foundry/cache/

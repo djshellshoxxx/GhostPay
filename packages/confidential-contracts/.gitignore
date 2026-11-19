@@ -1,7 +1,0 @@
-artifacts/
-cache/
-typechain-types/
-out/
-fhevmTemp/
-crytic-export/
-corpus*/

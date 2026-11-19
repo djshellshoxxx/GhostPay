@@ -1,0 +1,12 @@
+{
+  "format": "ghostpay-integration-lock/1",
+  "status": "held",
+  "owner": "20261119T073600Z-root",
+  "token": "66f0140c-35fc-4c20-ac51-62c8ce5a6887",
+  "generation": 1,
+  "base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+  "acquired_at": "2026-11-19T07:55:03.000Z",
+  "heartbeat_at": "2026-11-19T07:55:03.000Z",
+  "expires_at": "2026-11-19T08:55:03.000Z",
+  "transport": "authorized-github-connector"
+}
