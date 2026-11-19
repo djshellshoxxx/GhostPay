@@ -178,7 +178,8 @@ export function parseStrictJson(text: string): JsonValue {
  * Deterministic canonical JSON: sorted keys, no whitespace, integers only.
  *
  * @remarks Keys sorted by UTF-16 code unit order (all schema keys are ASCII).
- * Arrays must be dense and contain no extra own keys.\n * Strings use `JSON.stringify` escaping; callers must have validated them as
+ * Arrays must be dense and contain no extra own keys.
+ * Strings use `JSON.stringify` escaping; callers must have validated them as
  * well-formed NFC. Numbers must be non-negative safe integers; floats, NaN,
  * negatives, `undefined`, functions, bigint and non-plain objects throw.
  *
