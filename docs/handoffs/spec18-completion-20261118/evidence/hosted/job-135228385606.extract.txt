@@ -1,0 +1,42 @@
+Job: 135228385606 (beta acceptance (lib + cli + browser on anvil))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273428/job/135228385606
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135228385606/logs
+Fetched at: 2026-11-19T00:05:33.243Z
+Job API conclusion: success
+Published head: 032c42fc3d5e52d8428a7907775835b5d1ed3704
+Checked-out commit(s): b53f116b825d7cf6e85681fc835aec18ef7add75
+Decoded raw log SHA256: 44fd38d66439aa43a3b184a172b826a8838b9245c0c7f168c11d3a2f98bb685d
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L130: 2026-11-19T00:00:51.8560648Z ##[endgroup]
+L131: 2026-11-19T00:00:51.8562523Z [command]/usr/bin/git log -1 --format=%H
+L132: 2026-11-19T00:00:51.8568844Z b53f116b825d7cf6e85681fc835aec18ef7add75
+L133: 2026-11-19T00:00:51.8576620Z ##[group]Removing auth
+[omitted]
+L171: 2026-11-19T00:00:52.4913772Z with:
+L172: 2026-11-19T00:00:52.4913909Z   node-version: 22
+L173: 2026-11-19T00:00:52.4914055Z   cache: npm
+[omitted]
+L179: 2026-11-19T00:00:52.6539492Z ##[group]Environment details
+L180: 2026-11-19T00:00:52.8928328Z node: v22.23.4
+L181: 2026-11-19T00:00:52.8928534Z npm: 10.9.9
+[omitted]
+L196: 2026-11-19T00:00:56.3076248Z ##[group]Run npm ci --ignore-scripts
+L197: 2026-11-19T00:00:56.3076500Z npm ci --ignore-scripts
+[omitted]
+L619: 2026-11-19T00:01:27.8619952Z ##[group]Run bash scripts/beta/acceptance.sh --skip-build
+L620: 2026-11-19T00:01:27.8620716Z bash scripts/beta/acceptance.sh --skip-build
+L621: 2026-11-19T00:01:27.8673937Z shell: /usr/bin/bash -e {0}
+[omitted]
+L772: 2026-11-19T00:02:40.2937742Z == CLI devnet e2e: 124/124 checks passed
+L773: 2026-11-19T00:02:40.2943395Z gap assertions (fail-closed on 31337): 11
+L774: 2026-11-19T00:02:40.2943794Z CLI DEVNET E2E OK
+[omitted]
+L795: 2026-11-19T00:03:05.3782374Z   ✓  1 e2e/devnet-journey.spec.ts:71:1 › real chain: keys -> signed invoice -> consented payment (pending, then included) -> reload keeps hash, no duplicate -> scan (pending, then final) -> bound receipt -> direct sweep -> no second sweep (5.7s)
+L796: 2026-11-19T00:03:07.3613362Z   ✓  2 e2e/devnet-journey.spec.ts:244:1 › real chain: reload while the payment is still pending keeps its hash and blocks a duplicate; it is mined exactly once (2.0s)
+[omitted]
+L798: 2026-11-19T00:03:09.1088509Z   ✓  3 e2e/devnet-journey.spec.ts:285:1 › real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment (1.7s)
+[omitted]
+L800: 2026-11-19T00:03:09.1585471Z   3 passed (25.2s)
+L801: 2026-11-19T00:03:09.1813563Z browser-devnet: PASS

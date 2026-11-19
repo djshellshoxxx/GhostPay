@@ -1,0 +1,388 @@
+{
+  "status": "blocked_by_automatic_approval_review",
+  "automatic_review_reason": "npm audit would send the repository\u2019s dependency metadata, potentially including private package names and version information, to the untrusted public registry.npmjs.org; the transcript contains no end-user authorization for that specific disclosure.",
+  "new_audit_execution_claimed": false,
+  "new_audit_report_obtained": false,
+  "current_vulnerability_totals": null,
+  "current_affected_names": null,
+  "current_command_exit_codes": null,
+  "full_attempt_observation": "No audit JSON or audit result was produced. Only runtime warnings were captured before the tool session was rejected. No retry followed.",
+  "production_attempt_observation": "Not attempted after automatic approval review rejected the full audit session.",
+  "runtime": {
+    "node_path": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+    "node_version": "v22.23.5",
+    "npm_path": "/home/agent/.npm/_npx/c3b7dd07abd2a8cc/node_modules/npm/bin/npm-cli.js",
+    "npm_version": "11.21.2",
+    "NODE_OPTIONS": "--max-old-space-size=768",
+    "head_at_start": "6cd9c2f0354f97cc7b100608cb868b47ea461b36",
+    "lock_git_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+    "base_238_lock_git_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+    "package_lock_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2"
+  },
+  "lock_comparison": {
+    "working_copy_git_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+    "base_238_git_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+    "published_tested_runtime_git_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+    "working_copy_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2"
+  },
+  "historical_evidence": [
+    {
+      "scope": "full",
+      "historical_only": true,
+      "artifact_path": "docs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-full.json",
+      "artifact_source_commit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "artifact_git_blob": "8040ebf220b1491b3d3c7183ac4d72cac4fe2e96",
+      "artifact_sha256": "d634c3aafcc6c79c9f410f40c616607363966b87ef43694ca0390ff802fbce78",
+      "artifact_url": "https://github.com/djshellshoxxx/GhostPay/blob/198aa5baff22272453733a0f3dcfcac0e0994eec/docs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-full.json",
+      "execution_source_reported_by_completion_report": "e8c77e7e8699dd16b86b7a1ff90b834594d07105 (local), published identical runtime tree at 9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "reported_exit_code": 1,
+      "totals": {
+        "info": 0,
+        "low": 16,
+        "moderate": 0,
+        "high": 14,
+        "critical": 0,
+        "total": 30
+      },
+      "affected": [
+        {
+          "name": "@ethersproject/abi",
+          "severity": "low",
+          "direct": false,
+          "range": "5.0.10 - 5.8.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "@ethersproject/hash"
+          ]
+        },
+        {
+          "name": "@ethersproject/abstract-provider",
+          "severity": "low",
+          "direct": false,
+          "range": "*",
+          "advisory_urls": [],
+          "via_packages": [
+            "@ethersproject/transactions"
+          ]
+        },
+        {
+          "name": "@ethersproject/abstract-signer",
+          "severity": "low",
+          "direct": false,
+          "range": "*",
+          "advisory_urls": [],
+          "via_packages": [
+            "@ethersproject/abstract-provider"
+          ]
+        },
+        {
+          "name": "@ethersproject/hash",
+          "severity": "low",
+          "direct": false,
+          "range": "5.0.6 - 5.8.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "@ethersproject/abstract-signer"
+          ]
+        },
+        {
+          "name": "@ethersproject/signing-key",
+          "severity": "low",
+          "direct": false,
+          "range": "<=5.8.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "elliptic"
+          ]
+        },
+        {
+          "name": "@ethersproject/transactions",
+          "severity": "low",
+          "direct": false,
+          "range": "<=5.8.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "@ethersproject/signing-key"
+          ]
+        },
+        {
+          "name": "@fhevm/hardhat-plugin",
+          "severity": "low",
+          "direct": true,
+          "range": "*",
+          "advisory_urls": [],
+          "via_packages": [
+            "@nomicfoundation/hardhat-ethers",
+            "hardhat"
+          ]
+        },
+        {
+          "name": "@nomicfoundation/hardhat-chai-matchers",
+          "severity": "low",
+          "direct": true,
+          "range": "<=2.1.2",
+          "advisory_urls": [],
+          "via_packages": [
+            "@nomicfoundation/hardhat-ethers",
+            "hardhat"
+          ]
+        },
+        {
+          "name": "@nomicfoundation/hardhat-ethers",
+          "severity": "low",
+          "direct": true,
+          "range": "<=3.1.3",
+          "advisory_urls": [],
+          "via_packages": [
+            "hardhat"
+          ]
+        },
+        {
+          "name": "@nomicfoundation/hardhat-network-helpers",
+          "severity": "low",
+          "direct": true,
+          "range": "<=1.1.2",
+          "advisory_urls": [],
+          "via_packages": [
+            "ethereumjs-util",
+            "hardhat"
+          ]
+        },
+        {
+          "name": "@sentry/node",
+          "severity": "low",
+          "direct": false,
+          "range": "4.0.0-beta.0 - 7.74.2-alpha.1",
+          "advisory_urls": [],
+          "via_packages": [
+            "cookie"
+          ]
+        },
+        {
+          "name": "@typescript-eslint/eslint-plugin",
+          "severity": "high",
+          "direct": false,
+          "range": ">=8.47.1-alpha.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "@typescript-eslint/parser",
+            "@typescript-eslint/type-utils",
+            "@typescript-eslint/utils"
+          ]
+        },
+        {
+          "name": "@typescript-eslint/parser",
+          "severity": "high",
+          "direct": false,
+          "range": ">=8.47.1-alpha.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "@typescript-eslint/typescript-estree"
+          ]
+        },
+        {
+          "name": "@typescript-eslint/type-utils",
+          "severity": "high",
+          "direct": false,
+          "range": ">=8.47.1-alpha.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "@typescript-eslint/typescript-estree",
+            "@typescript-eslint/utils"
+          ]
+        },
+        {
+          "name": "@typescript-eslint/typescript-estree",
+          "severity": "high",
+          "direct": false,
+          "range": ">=8.47.1-alpha.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "tinyglobby"
+          ]
+        },
+        {
+          "name": "@typescript-eslint/utils",
+          "severity": "high",
+          "direct": false,
+          "range": ">=8.47.1-alpha.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "@typescript-eslint/typescript-estree"
+          ]
+        },
+        {
+          "name": "@vitejs/plugin-react",
+          "severity": "high",
+          "direct": true,
+          "range": ">=6.0.0-beta.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "vite"
+          ]
+        },
+        {
+          "name": "@vitest/coverage-v8",
+          "severity": "high",
+          "direct": true,
+          "range": ">=3.2.0-beta.1",
+          "advisory_urls": [],
+          "via_packages": [
+            "vitest"
+          ]
+        },
+        {
+          "name": "cookie",
+          "severity": "low",
+          "direct": false,
+          "range": "<0.7.0",
+          "advisory_urls": [
+            "https://github.com/advisories/GHSA-pxg6-pf52-xh8x"
+          ],
+          "via_packages": []
+        },
+        {
+          "name": "elliptic",
+          "severity": "low",
+          "direct": false,
+          "range": "*",
+          "advisory_urls": [
+            "https://github.com/advisories/GHSA-848j-6mx2-7j84"
+          ],
+          "via_packages": []
+        },
+        {
+          "name": "ethereum-cryptography",
+          "severity": "low",
+          "direct": false,
+          "range": "0.1.0 - 0.1.3",
+          "advisory_urls": [],
+          "via_packages": [
+            "secp256k1"
+          ]
+        },
+        {
+          "name": "ethereumjs-util",
+          "severity": "low",
+          "direct": false,
+          "range": "4.5.1 || 5.2.1 || 6.2.1 || >=7.0.3",
+          "advisory_urls": [],
+          "via_packages": [
+            "ethereum-cryptography"
+          ]
+        },
+        {
+          "name": "fdir",
+          "severity": "high",
+          "direct": false,
+          "range": ">=5.2.1",
+          "advisory_urls": [],
+          "via_packages": [
+            "picomatch"
+          ]
+        },
+        {
+          "name": "hardhat",
+          "severity": "high",
+          "direct": true,
+          "range": "0.1.0-rc.0 - 3.0.0-next.32",
+          "advisory_urls": [],
+          "via_packages": [
+            "@ethersproject/abi",
+            "@sentry/node",
+            "tinyglobby"
+          ]
+        },
+        {
+          "name": "picomatch",
+          "severity": "high",
+          "direct": false,
+          "range": "*",
+          "advisory_urls": [
+            "https://github.com/advisories/GHSA-fc5q-39xc-vjpf"
+          ],
+          "via_packages": []
+        },
+        {
+          "name": "secp256k1",
+          "severity": "low",
+          "direct": false,
+          "range": ">=2.0.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "elliptic"
+          ]
+        },
+        {
+          "name": "tinyglobby",
+          "severity": "high",
+          "direct": false,
+          "range": "*",
+          "advisory_urls": [],
+          "via_packages": [
+            "fdir",
+            "picomatch"
+          ]
+        },
+        {
+          "name": "typescript-eslint",
+          "severity": "high",
+          "direct": true,
+          "range": ">=8.47.1-alpha.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "@typescript-eslint/eslint-plugin",
+            "@typescript-eslint/parser",
+            "@typescript-eslint/typescript-estree",
+            "@typescript-eslint/utils"
+          ]
+        },
+        {
+          "name": "vite",
+          "severity": "high",
+          "direct": true,
+          "range": ">=6.3.0-beta.0",
+          "advisory_urls": [],
+          "via_packages": [
+            "picomatch",
+            "tinyglobby"
+          ]
+        },
+        {
+          "name": "vitest",
+          "severity": "high",
+          "direct": true,
+          "range": ">=3.1.2",
+          "advisory_urls": [],
+          "via_packages": [
+            "@vitest/coverage-v8",
+            "picomatch",
+            "tinyglobby",
+            "vite"
+          ]
+        }
+      ]
+    },
+    {
+      "scope": "production",
+      "historical_only": true,
+      "artifact_path": "docs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-production.json",
+      "artifact_source_commit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "artifact_git_blob": "9e5970747ea87b6280ed914d421d948365a23d4a",
+      "artifact_sha256": "a2a9e0305caa842aa574277712005fc0600e350d218f5ae9e5d78e97256a4473",
+      "artifact_url": "https://github.com/djshellshoxxx/GhostPay/blob/198aa5baff22272453733a0f3dcfcac0e0994eec/docs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-production.json",
+      "execution_source_reported_by_completion_report": "e8c77e7e8699dd16b86b7a1ff90b834594d07105 (local), published identical runtime tree at 9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "reported_exit_code": 0,
+      "totals": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "affected": []
+    }
+  ],
+  "interpretation": "The lock content is unchanged, but advisory databases may change. Historical reports do not establish current dependency-audit results. No dependency changes, suppressions, alternate transport, workflow dispatch or gate weakening was performed."
+}

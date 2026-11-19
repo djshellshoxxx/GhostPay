@@ -1,0 +1,51 @@
+Job: 135228385513 (Pages artifact on anvil (browser))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273443/job/135228385513
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135228385513/logs
+Fetched at: 2026-11-19T00:07:42.455Z
+Job API conclusion: success
+Published head: 032c42fc3d5e52d8428a7907775835b5d1ed3704
+Checked-out commit(s): b53f116b825d7cf6e85681fc835aec18ef7add75
+Decoded raw log SHA256: d57743f94c071cfc985a7df7cb9bd4a54582965f8741f66e45ec6ebbf30eeab2
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L130: 2026-11-19T00:00:12.6451583Z ##[endgroup]
+L131: 2026-11-19T00:00:12.6452941Z [command]/usr/bin/git log -1 --format=%H
+L132: 2026-11-19T00:00:12.6473364Z b53f116b825d7cf6e85681fc835aec18ef7add75
+L133: 2026-11-19T00:00:12.6483265Z ##[group]Removing auth
+[omitted]
+L162: 2026-11-19T00:00:12.8002781Z with:
+L163: 2026-11-19T00:00:12.8003031Z   node-version: 22
+L164: 2026-11-19T00:00:12.8003283Z   cache: npm
+[omitted]
+L170: 2026-11-19T00:00:13.0284642Z ##[group]Environment details
+L171: 2026-11-19T00:00:13.3879971Z node: v22.23.4
+L172: 2026-11-19T00:00:13.3881045Z npm: 10.9.9
+[omitted]
+L186: 2026-11-19T00:00:18.1266157Z ##[group]Run npm ci --ignore-scripts
+L187: 2026-11-19T00:00:18.1266558Z npm ci --ignore-scripts
+[omitted]
+L887: 2026-11-19T00:03:21.6602179Z ##[group]Run bash scripts/beta/browser-devnet.sh
+L888: 2026-11-19T00:03:21.6602587Z bash scripts/beta/browser-devnet.sh
+L889: 2026-11-19T00:03:21.6652886Z shell: /usr/bin/bash -e {0}
+[omitted]
+L909: 2026-11-19T00:03:52.9687309Z   ✓   1 e2e/pages-devnet.spec.ts:135:1 › Pages RPC proxy preserves upstream HTTP failure status (306ms)
+L910: 2026-11-19T00:03:53.5081420Z   ✓   2 e2e/pages-devnet.spec.ts:214:3 › GitHub Pages artifact on a real devnet › a. the artifact loads under /GhostPay/: served bytes = SHA256SUMS, lean navigation only, enforced meta CSP, build-info commit = git HEAD (407ms)
+L911: 2026-11-19T00:03:57.7044246Z   ✓   3 e2e/pages-devnet.spec.ts:279:3 › GitHub Pages artifact on a real devnet › b. seller: keys, encrypted keystore download, vault passphrase, signed registered invoice whose link lives under /GhostPay/ and opens on Pay (4.2s)
+L912: 2026-11-19T00:04:01.8565037Z   ✓   4 e2e/pages-devnet.spec.ts:357:3 › GitHub Pages artifact on a real devnet › c. buyer: connect the test wallet, review, explicit confirm, native ETH payment pending -> included, duplicate blocked after reload (4.1s)
+L913: 2026-11-19T00:04:02.0534341Z   ✓   5 e2e/pages-devnet.spec.ts:427:3 › GitHub Pages artifact on a real devnet › c2. ERC-20 on this devnet: the lean build offers only the canonical Base Sepolia USDC/EURC, which DeployDevnet does not deploy, and no gas-buffer control (finding, not faked) (188ms)
+L914: 2026-11-19T00:04:05.3489318Z   ✓   6 e2e/pages-devnet.spec.ts:447:3 › GitHub Pages artifact on a real devnet › d. seller: scan finds the payment (pending, then final), receipt bound to the invoice, ledger entry, direct sweep on chain, second sweep refused (3.3s)
+L915: 2026-11-19T00:04:08.8592837Z   ✓   7 e2e/pages-devnet.spec.ts:561:3 › GitHub Pages artifact on a real devnet › e. restart the seller browser process: vault unlock (wrong passphrase refused first) restores keys, invoice registry, ledger and scan checkpoint from disk (3.5s)
+L916: 2026-11-19T00:04:12.5263695Z   ✓   8 e2e/pages-devnet.spec.ts:637:3 › GitHub Pages artifact on a real devnet › f. restore in a brand-new profile: damaged and wrong-passphrase backups refused, then the downloaded backup restores the keys; rescan shows the payment once, already swept (3.7s)
+[omitted]
+L919: 2026-11-19T00:04:12.7083710Z   ✓   9 e2e/pages-devnet.spec.ts:725:3 › GitHub Pages artifact on a real devnet › a (whole journey). every request of every page and worker went only to the site under /GhostPay/ or the routed devnet RPC (114ms)
+L920: 2026-11-19T00:04:55.7811155Z   ✓  10 e2e/pages-devnet.spec.ts:753:3 › GitHub Pages artifact: refusals › a same-nonce wallet cancellation never becomes a payment confirmation or permits a duplicate retry (43.1s)
+L921: 2026-11-19T00:04:56.0482526Z   ✓  11 e2e/pages-devnet.spec.ts:823:3 › GitHub Pages artifact: refusals › the Home release check stays inside /GhostPay/ and shows the served entry script hash (255ms)
+L922: 2026-11-19T00:04:56.9605720Z   ✓  12 e2e/pages-devnet.spec.ts:841:3 › GitHub Pages artifact: refusals › g. a tampered invoice fragment (amount changed after signing) is refused on the Pay view; nothing reaches the wallet (903ms)
+L923: 2026-11-19T00:04:58.0945370Z   ✓  13 e2e/pages-devnet.spec.ts:874:3 › GitHub Pages artifact: refusals › g. Settings refuses invalid RPC endpoints (plain http, embedded credentials, not a URL) without changing the saved RPC or contacting them (1.1s)
+L924: 2026-11-19T00:05:00.1538452Z   ✓  14 e2e/pages-devnet.spec.ts:916:3 › GitHub Pages artifact: refusals › g. RPC unavailable: payment preparation and scanning show an error, the app keeps working and nothing is marked paid or sent (2.0s)
+L925: 2026-11-19T00:05:02.5497213Z   ✓  15 e2e/pages-devnet.spec.ts:975:3 › GitHub Pages artifact: refusals › g. wallet rejection: the user rejects in the wallet, the app says so and the invoice stays unpaid on chain (2.4s)
+L926: 2026-11-19T00:05:05.2029744Z   ✓  16 e2e/pages-devnet.spec.ts:1017:3 › GitHub Pages artifact: refusals › g. an expired invoice (shortest UI expiry, 1 hour) is refused at review and at send by the browser clock, and by the router on chain (2.6s)
+[omitted]
+L928: 2026-11-19T00:05:05.2536266Z   16 passed (1.6m)
+L929: 2026-11-19T00:05:05.2821140Z browser-devnet: PASS (pages)

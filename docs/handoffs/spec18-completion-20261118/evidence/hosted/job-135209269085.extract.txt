@@ -1,0 +1,334 @@
+Job: 135209269085 (ts-typecheck)
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44419497914/job/135209269085
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135209269085/logs
+Fetched at: 2026-11-18T23:27:10.508Z
+Job API conclusion: success
+Published head: 041db448baa7fd094f8b1ad37f3f7377c98bcab1
+Checked-out commit(s): ad0f03acfae81439640f74fce5562d475227197f
+Decoded raw log SHA256: da3e678a27d97796a6befbac8b005a146a77c0ca672c93889d60ce286b19dcea
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L128: 2026-11-18T23:19:57.5838475Z ##[endgroup]
+L129: 2026-11-18T23:19:57.5896977Z [command]/usr/bin/git log -1 --format=%H
+L130: 2026-11-18T23:19:57.5927313Z ad0f03acfae81439640f74fce5562d475227197f
+L131: 2026-11-18T23:19:57.5939485Z ##[group]Removing auth
+[omitted]
+L169: 2026-11-18T23:19:58.1869122Z with:
+L170: 2026-11-18T23:19:58.1869318Z   node-version: 22
+L171: 2026-11-18T23:19:58.1869533Z   cache: npm
+[omitted]
+L177: 2026-11-18T23:19:59.0749459Z ##[group]Environment details
+L178: 2026-11-18T23:20:00.5049956Z node: v22.23.4
+L179: 2026-11-18T23:20:00.5050379Z npm: 10.9.9
+[omitted]
+L194: 2026-11-18T23:20:04.7243327Z ##[group]Run npm ci --ignore-scripts
+L195: 2026-11-18T23:20:04.7243745Z npm ci --ignore-scripts
+[omitted]
+L234: 2026-11-18T23:20:20.4263385Z ##[group]Run npm run build:libs
+L235: 2026-11-18T23:20:20.4263693Z npm run build:libs
+[omitted]
+L551: 2026-11-18T23:22:22.4921866Z ##[group]Run npm run typecheck
+L552: 2026-11-18T23:22:22.4922204Z npm run typecheck
+[omitted]
+L556: 2026-11-18T23:22:22.6003772Z > ghostpay@0.1.0 typecheck
+L557: 2026-11-18T23:22:22.6004268Z > npm run typecheck --workspaces --if-present
+L558: 2026-11-18T23:22:22.6004541Z 
+[omitted]
+L560: 2026-11-18T23:22:22.7399115Z > @ghostpay/address-safety@0.1.0 typecheck
+L561: 2026-11-18T23:22:22.7399694Z > tsc -p tsconfig.json --noEmit
+L562: 2026-11-18T23:22:22.7400078Z 
+[omitted]
+L564: 2026-11-18T23:22:24.6539340Z > @ghostpay/amount-blur@0.1.0 typecheck
+L565: 2026-11-18T23:22:24.6539920Z > tsc -p tsconfig.json --noEmit
+L566: 2026-11-18T23:22:24.6540144Z 
+[omitted]
+L568: 2026-11-18T23:22:26.3394186Z > @ghostpay/btc-family@0.1.0 typecheck
+L569: 2026-11-18T23:22:26.3394748Z > tsc -p tsconfig.json --noEmit
+L570: 2026-11-18T23:22:26.3394970Z 
+[omitted]
+L572: 2026-11-18T23:22:28.1935462Z > @ghostpay/btc-payjoin@0.1.0 typecheck
+L573: 2026-11-18T23:22:28.1936367Z > tsc -p tsconfig.json --noEmit
+L574: 2026-11-18T23:22:28.1936710Z 
+[omitted]
+L576: 2026-11-18T23:22:30.6500608Z > @ghostpay/btc-silent-payments@0.1.0 typecheck
+L577: 2026-11-18T23:22:30.6501166Z > tsc -p tsconfig.json --noEmit
+L578: 2026-11-18T23:22:30.6501411Z 
+[omitted]
+L580: 2026-11-18T23:22:34.0519203Z > @ghostpay/chain-adapters@0.1.0 typecheck
+L581: 2026-11-18T23:22:34.0519777Z > tsc -p tsconfig.json --noEmit
+L582: 2026-11-18T23:22:34.0519981Z 
+[omitted]
+L584: 2026-11-18T23:22:43.0999980Z > @ghostpay/chain-evm-extra@0.1.0 typecheck
+L585: 2026-11-18T23:22:43.1000594Z > tsc -p tsconfig.json --noEmit
+L586: 2026-11-18T23:22:43.1000830Z 
+[omitted]
+L588: 2026-11-18T23:22:45.1690758Z > @ghostpay/chain-solana@0.1.0 typecheck
+L589: 2026-11-18T23:22:45.1691264Z > tsc -p tsconfig.json --noEmit
+L590: 2026-11-18T23:22:45.1691466Z 
+[omitted]
+L592: 2026-11-18T23:22:46.9630022Z > @ghostpay/chain-tron@0.1.0 typecheck
+L593: 2026-11-18T23:22:46.9630842Z > tsc -p tsconfig.json --noEmit
+L594: 2026-11-18T23:22:46.9631197Z 
+[omitted]
+L596: 2026-11-18T23:22:48.4526287Z > @ghostpay/cli@0.1.0 typecheck
+L597: 2026-11-18T23:22:48.4526886Z > tsc -p tsconfig.json --noEmit
+L598: 2026-11-18T23:22:48.4527090Z 
+[omitted]
+L600: 2026-11-18T23:22:54.4389737Z > @ghostpay/confidential-amounts@0.1.0 typecheck
+L601: 2026-11-18T23:22:54.4390273Z > tsc -p tsconfig.json --noEmit
+L602: 2026-11-18T23:22:54.4390490Z 
+[omitted]
+L604: 2026-11-18T23:22:59.7123920Z > @ghostpay/confidential-contracts@0.1.0 typecheck
+L605: 2026-11-18T23:22:59.7124699Z > tsc -p tsconfig.json --noEmit
+L606: 2026-11-18T23:22:59.7125026Z 
+[omitted]
+L608: 2026-11-18T23:23:01.1881491Z > @ghostpay/core-crypto@0.1.0 typecheck
+L609: 2026-11-18T23:23:01.1881991Z > tsc -p tsconfig.json --noEmit
+L610: 2026-11-18T23:23:01.1882217Z 
+[omitted]
+L612: 2026-11-18T23:23:03.9898846Z > @ghostpay/donation@0.1.0 typecheck
+L613: 2026-11-18T23:23:03.9899635Z > tsc -p tsconfig.json --noEmit
+L614: 2026-11-18T23:23:03.9900064Z 
+[omitted]
+L616: 2026-11-18T23:23:06.0184153Z > @ghostpay/external-pools@0.1.0 typecheck
+L617: 2026-11-18T23:23:06.0184718Z > tsc -p tsconfig.json --noEmit
+L618: 2026-11-18T23:23:06.0184948Z 
+[omitted]
+L620: 2026-11-18T23:23:09.4091668Z > @ghostpay/external-pools-privacypools@0.1.0 typecheck
+L621: 2026-11-18T23:23:09.4092321Z > tsc -p tsconfig.json --noEmit
+L622: 2026-11-18T23:23:09.4092541Z 
+[omitted]
+L624: 2026-11-18T23:23:13.7221101Z > @ghostpay/external-pools-railgun@0.1.0 typecheck
+L625: 2026-11-18T23:23:13.7221989Z > tsc -p tsconfig.json --noEmit
+L626: 2026-11-18T23:23:13.7222370Z 
+[omitted]
+L628: 2026-11-18T23:23:17.2701724Z > @ghostpay/hops@0.1.0 typecheck
+L629: 2026-11-18T23:23:17.2702355Z > tsc -p tsconfig.json --noEmit
+L630: 2026-11-18T23:23:17.2702685Z 
+[omitted]
+L632: 2026-11-18T23:23:19.5217332Z > @ghostpay/hygiene@0.1.0 typecheck
+L633: 2026-11-18T23:23:19.5218008Z > tsc -p tsconfig.json --noEmit
+L634: 2026-11-18T23:23:19.5218249Z 
+[omitted]
+L636: 2026-11-18T23:23:21.9313625Z > @ghostpay/i18n@0.1.0 typecheck
+L637: 2026-11-18T23:23:21.9314109Z > tsc -p tsconfig.json --noEmit
+L638: 2026-11-18T23:23:21.9314349Z 
+[omitted]
+L640: 2026-11-18T23:23:23.7978667Z > @ghostpay/invoice-schema@0.1.0 typecheck
+L641: 2026-11-18T23:23:23.7979286Z > tsc -p tsconfig.json --noEmit
+L642: 2026-11-18T23:23:23.7979524Z 
+[omitted]
+L644: 2026-11-18T23:23:26.0745354Z > @ghostpay/merchant-billing@0.1.0 typecheck
+L645: 2026-11-18T23:23:26.0746118Z > tsc -p tsconfig.json --noEmit
+L646: 2026-11-18T23:23:26.0746361Z 
+[omitted]
+L648: 2026-11-18T23:23:28.0353134Z > @ghostpay/merchant-hooks@0.1.0 typecheck
+L649: 2026-11-18T23:23:28.0353863Z > tsc -p tsconfig.json --noEmit
+L650: 2026-11-18T23:23:28.0354178Z 
+[omitted]
+L652: 2026-11-18T23:23:29.5492270Z > @ghostpay/merchant-ledger@0.1.0 typecheck
+L653: 2026-11-18T23:23:29.5492763Z > tsc -p tsconfig.json --noEmit
+L654: 2026-11-18T23:23:29.5492972Z 
+[omitted]
+L656: 2026-11-18T23:23:30.8636718Z > @ghostpay/merchant-multisig@0.1.0 typecheck
+L657: 2026-11-18T23:23:30.8637218Z > tsc -p tsconfig.json --noEmit
+L658: 2026-11-18T23:23:30.8637425Z 
+[omitted]
+L660: 2026-11-18T23:23:32.5239354Z > @ghostpay/metadata-hardening@0.1.0 typecheck
+L661: 2026-11-18T23:23:32.5239937Z > tsc -p tsconfig.json --noEmit
+L662: 2026-11-18T23:23:32.5240193Z 
+[omitted]
+L664: 2026-11-18T23:23:35.0839609Z > @ghostpay/net-harness@0.1.0 typecheck
+L665: 2026-11-18T23:23:35.0840145Z > tsc -p tsconfig.json --noEmit
+L666: 2026-11-18T23:23:35.0840350Z 
+[omitted]
+L676: 2026-11-18T23:23:37.9529807Z > @ghostpay/net-transport@0.1.0 typecheck
+L677: 2026-11-18T23:23:37.9530369Z > tsc -p tsconfig.json --noEmit
+L678: 2026-11-18T23:23:37.9530582Z 
+[omitted]
+L680: 2026-11-18T23:23:40.0665550Z > @ghostpay/ops-monitor@0.1.0 typecheck
+L681: 2026-11-18T23:23:40.0666698Z > tsc -p tsconfig.json --noEmit
+L682: 2026-11-18T23:23:40.0666938Z 
+[omitted]
+L684: 2026-11-18T23:23:42.6704172Z > @ghostpay/payer-sponsor@0.1.0 typecheck
+L685: 2026-11-18T23:23:42.6704708Z > tsc -p tsconfig.json --noEmit
+L686: 2026-11-18T23:23:42.6704914Z 
+[omitted]
+L688: 2026-11-18T23:23:48.7587291Z > @ghostpay/payment-uri@0.1.0 typecheck
+L689: 2026-11-18T23:23:48.7587763Z > tsc -p tsconfig.json --noEmit
+L690: 2026-11-18T23:23:48.7587972Z 
+[omitted]
+L692: 2026-11-18T23:23:50.4700800Z > @ghostpay/pir-two-server@0.1.0 typecheck
+L693: 2026-11-18T23:23:50.4701405Z > tsc -p tsconfig.json --noEmit
+L694: 2026-11-18T23:23:50.4701656Z 
+[omitted]
+L696: 2026-11-18T23:23:52.2256217Z > @ghostpay/plugin-api@0.1.0 typecheck
+L697: 2026-11-18T23:23:52.2256864Z > tsc -p tsconfig.json --noEmit
+L698: 2026-11-18T23:23:52.2257105Z 
+[omitted]
+L700: 2026-11-18T23:23:53.7478984Z > @ghostpay/policy-scheme@0.1.0 typecheck
+L701: 2026-11-18T23:23:53.7479762Z > tsc -p tsconfig.json --noEmit
+L702: 2026-11-18T23:23:53.7480106Z 
+[omitted]
+L704: 2026-11-18T23:23:59.2666094Z > @ghostpay/pool-circuits@0.1.0 typecheck
+L705: 2026-11-18T23:23:59.2666688Z > tsc -p tsconfig.json --noEmit
+L706: 2026-11-18T23:23:59.2666915Z 
+[omitted]
+L708: 2026-11-18T23:24:00.7321029Z > @ghostpay/pool-prover@0.1.0 typecheck
+L709: 2026-11-18T23:24:00.7321709Z > tsc -p tsconfig.json --noEmit
+L710: 2026-11-18T23:24:00.7322379Z 
+[omitted]
+L712: 2026-11-18T23:24:02.1282908Z > @ghostpay/pool-relayer@0.1.0 typecheck
+L713: 2026-11-18T23:24:02.1283620Z > tsc -p tsconfig.json --noEmit
+L714: 2026-11-18T23:24:02.1283875Z 
+[omitted]
+L716: 2026-11-18T23:24:07.9950814Z > @ghostpay/pool-sdk@0.1.0 typecheck
+L717: 2026-11-18T23:24:07.9951536Z > tsc -p tsconfig.json --noEmit
+L718: 2026-11-18T23:24:07.9951797Z 
+[omitted]
+L720: 2026-11-18T23:24:10.9663271Z > @ghostpay/privacy-pipeline@0.1.0 typecheck
+L721: 2026-11-18T23:24:10.9663812Z > tsc -p tsconfig.json --noEmit
+L722: 2026-11-18T23:24:10.9664030Z 
+[omitted]
+L724: 2026-11-18T23:24:13.5678887Z > @ghostpay/privacy-profiles@0.1.0 typecheck
+L725: 2026-11-18T23:24:13.5679735Z > tsc -p tsconfig.json --noEmit
+L726: 2026-11-18T23:24:13.5680120Z 
+[omitted]
+L728: 2026-11-18T23:24:15.5060720Z > @ghostpay/qr-exchange@0.1.0 typecheck
+L729: 2026-11-18T23:24:15.5061353Z > tsc -p tsconfig.json --noEmit
+L730: 2026-11-18T23:24:15.5061566Z 
+[omitted]
+L732: 2026-11-18T23:24:18.1913018Z > @ghostpay/relayer-guard@0.1.0 typecheck
+L733: 2026-11-18T23:24:18.1913479Z > tsc -p tsconfig.json --noEmit
+L734: 2026-11-18T23:24:18.1913678Z 
+[omitted]
+L736: 2026-11-18T23:24:19.9536878Z > @ghostpay/sandbox@0.1.0 typecheck
+L737: 2026-11-18T23:24:19.9537560Z > tsc -p tsconfig.json --noEmit
+L738: 2026-11-18T23:24:19.9537884Z 
+[omitted]
+L748: 2026-11-18T23:24:23.0278468Z > @ghostpay/scan-source@0.1.0 typecheck
+L749: 2026-11-18T23:24:23.0279007Z > tsc -p tsconfig.json --noEmit
+L750: 2026-11-18T23:24:23.0279326Z 
+[omitted]
+L752: 2026-11-18T23:24:26.2661379Z > @ghostpay/sdk@0.1.0 typecheck
+L753: 2026-11-18T23:24:26.2662230Z > tsc -p tsconfig.json --noEmit
+L754: 2026-11-18T23:24:26.2662828Z 
+[omitted]
+L756: 2026-11-18T23:24:26.2663202Z > @ghostpay/secret-box@0.1.0 typecheck
+L757: 2026-11-18T23:24:26.2663998Z > tsc -p tsconfig.json --noEmit
+L758: 2026-11-18T23:24:26.2664356Z 
+[omitted]
+L760: 2026-11-18T23:24:27.6773110Z > @ghostpay/solana-stealth@0.1.0 typecheck
+L761: 2026-11-18T23:24:27.6773671Z > tsc -p tsconfig.json --noEmit
+L762: 2026-11-18T23:24:27.6773912Z 
+[omitted]
+L764: 2026-11-18T23:24:29.8463875Z > @ghostpay/tron-adapter@0.1.0 typecheck
+L765: 2026-11-18T23:24:29.8464330Z > tsc -p tsconfig.json --noEmit
+L766: 2026-11-18T23:24:29.8464920Z 
+[omitted]
+L768: 2026-11-18T23:24:31.6031933Z > @ghostpay/tx-review@0.1.0 typecheck
+L769: 2026-11-18T23:24:31.6032462Z > tsc -p tsconfig.json --noEmit
+L770: 2026-11-18T23:24:31.6032698Z 
+[omitted]
+L772: 2026-11-18T23:24:33.8398723Z > @ghostpay/ux-connect@0.1.0 typecheck
+L773: 2026-11-18T23:24:33.8399330Z > tsc -p tsconfig.json --noEmit
+L774: 2026-11-18T23:24:33.8399578Z 
+[omitted]
+L776: 2026-11-18T23:24:35.4658945Z > @ghostpay/ux-core@0.1.0 typecheck
+L777: 2026-11-18T23:24:35.4659633Z > tsc -p tsconfig.json --noEmit
+L778: 2026-11-18T23:24:35.4659973Z 
+[omitted]
+L780: 2026-11-18T23:24:37.2986813Z > @ghostpay/ux-export@0.1.0 typecheck
+L781: 2026-11-18T23:24:37.2987265Z > tsc -p tsconfig.json --noEmit
+L782: 2026-11-18T23:24:37.2987464Z 
+[omitted]
+L784: 2026-11-18T23:24:38.8834544Z > @ghostpay/ux-fees@0.1.0 typecheck
+L785: 2026-11-18T23:24:38.8835397Z > tsc -p tsconfig.json --noEmit
+L786: 2026-11-18T23:24:38.8835950Z 
+[omitted]
+L788: 2026-11-18T23:24:40.4772051Z > @ghostpay/ux-fiat@0.1.0 typecheck
+L789: 2026-11-18T23:24:40.4772629Z > tsc -p tsconfig.json --noEmit
+L790: 2026-11-18T23:24:40.4772874Z 
+[omitted]
+L792: 2026-11-18T23:24:41.8300032Z > @ghostpay/ux-flow@0.1.0 typecheck
+L793: 2026-11-18T23:24:41.8300732Z > tsc -p tsconfig.json --noEmit
+L794: 2026-11-18T23:24:41.8301059Z 
+[omitted]
+L796: 2026-11-18T23:24:43.3541245Z > @ghostpay/ux-guide@0.1.0 typecheck
+L797: 2026-11-18T23:24:43.3541734Z > tsc -p tsconfig.json --noEmit
+L798: 2026-11-18T23:24:43.3541965Z 
+[omitted]
+L800: 2026-11-18T23:24:44.8913654Z > @ghostpay/ux-i18n@0.1.0 typecheck
+L801: 2026-11-18T23:24:44.8914338Z > tsc -p tsconfig.json --noEmit
+L802: 2026-11-18T23:24:44.8914652Z 
+[omitted]
+L804: 2026-11-18T23:24:45.9975828Z > @ghostpay/ux-intake@0.1.0 typecheck
+L805: 2026-11-18T23:24:45.9976298Z > tsc -p tsconfig.json --noEmit
+L806: 2026-11-18T23:24:45.9976510Z 
+[omitted]
+L808: 2026-11-18T23:24:47.5657083Z > @ghostpay/ux-links@0.1.0 typecheck
+L809: 2026-11-18T23:24:47.5657755Z > tsc -p tsconfig.json --noEmit
+L810: 2026-11-18T23:24:47.5658076Z 
+[omitted]
+L812: 2026-11-18T23:24:49.1204449Z > @ghostpay/ux-notify@0.1.0 typecheck
+L813: 2026-11-18T23:24:49.1205100Z > tsc -p tsconfig.json --noEmit
+L814: 2026-11-18T23:24:49.1205406Z 
+[omitted]
+L816: 2026-11-18T23:24:50.7215592Z > @ghostpay/ux-presets@0.1.0 typecheck
+L817: 2026-11-18T23:24:50.7217063Z > tsc -p tsconfig.json --noEmit
+L818: 2026-11-18T23:24:50.7217487Z 
+[omitted]
+L820: 2026-11-18T23:24:52.2817566Z > @ghostpay/ux-privacy@0.1.0 typecheck
+L821: 2026-11-18T23:24:52.2818048Z > tsc -p tsconfig.json --noEmit
+L822: 2026-11-18T23:24:52.2818271Z 
+[omitted]
+L824: 2026-11-18T23:24:53.6949817Z > @ghostpay/ux-receipts@0.1.0 typecheck
+L825: 2026-11-18T23:24:53.6950285Z > tsc -p tsconfig.json --noEmit
+L826: 2026-11-18T23:24:53.6950491Z 
+[omitted]
+L828: 2026-11-18T23:24:55.2063768Z > @ghostpay/ux-sandbox@0.1.0 typecheck
+L829: 2026-11-18T23:24:55.2064272Z > tsc -p tsconfig.json --noEmit
+L830: 2026-11-18T23:24:55.2064494Z 
+[omitted]
+L832: 2026-11-18T23:24:56.3057931Z > @ghostpay/ux-schedule@0.1.0 typecheck
+L833: 2026-11-18T23:24:56.3058616Z > tsc -p tsconfig.json --noEmit
+L834: 2026-11-18T23:24:56.3058949Z 
+[omitted]
+L836: 2026-11-18T23:24:57.8285498Z > @ghostpay/ux-vault@0.1.0 typecheck
+L837: 2026-11-18T23:24:57.8286142Z > tsc -p tsconfig.json --noEmit
+L838: 2026-11-18T23:24:57.8286339Z 
+L839: 2026-11-18T23:25:03.2058920Z 
+L840: 2026-11-18T23:25:03.2059637Z > @ghostpay/relayer@0.1.0 typecheck
+L841: 2026-11-18T23:25:03.2060321Z > tsc -p tsconfig.json --noEmit
+L842: 2026-11-18T23:25:03.2060544Z 
+L843: 2026-11-18T23:25:10.4962414Z 
+L844: 2026-11-18T23:25:10.4963060Z > @ghostpay/web@0.1.0 typecheck
+L845: 2026-11-18T23:25:10.4963627Z > tsc -p tsconfig.json --noEmit
+L846: 2026-11-18T23:25:10.4963872Z 
+L847: 2026-11-18T23:25:29.9714273Z Post job cleanup.
+L848: 2026-11-18T23:25:29.9718961Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__3b947061-c0fa-4de7-9972-50f19015250e.libs]
+L849: 2026-11-18T23:25:30.8235512Z Post job cleanup.
+L850: 2026-11-18T23:25:31.0351950Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --files-from manifest.txt --use-compress-program zstdmt
+L851: 2026-11-18T23:25:31.3392448Z Failed to save: Unable to reserve cache with key libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2, another job may be creating this cache.
+L852: 2026-11-18T23:25:31.3477761Z ##[end-action id=__3b947061-c0fa-4de7-9972-50f19015250e.libs;outcome=success;conclusion=success;duration_ms=1375]
+L853: 2026-11-18T23:25:31.3481495Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__3b947061-c0fa-4de7-9972-50f19015250e.__actions_setup-node]
+L854: 2026-11-18T23:25:31.3551994Z Post job cleanup.
+L855: 2026-11-18T23:25:31.4700183Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c, not saving cache.
+L856: 2026-11-18T23:25:31.4767547Z ##[end-action id=__3b947061-c0fa-4de7-9972-50f19015250e.__actions_setup-node;outcome=success;conclusion=success;duration_ms=128]
+L857: 2026-11-18T23:25:31.4856518Z Post job cleanup.
+L858: 2026-11-18T23:25:31.5758857Z [command]/usr/bin/git version
+L859: 2026-11-18T23:25:31.5807892Z git version 2.56.1
+L860: 2026-11-18T23:25:31.5879429Z Temporarily overriding HOME='/home/runner/work/_temp/fe371d38-86eb-49e1-9e74-663e2d21937c' before making global git config changes
+L861: 2026-11-18T23:25:31.5881296Z Adding repository directory to the temporary git global config as a safe directory
+L862: 2026-11-18T23:25:31.5885011Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+L863: 2026-11-18T23:25:31.5944995Z Removing SSH command configuration
+L864: 2026-11-18T23:25:31.5946232Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+L865: 2026-11-18T23:25:31.5993669Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+L866: 2026-11-18T23:25:31.6312866Z Removing HTTP extra header
+L867: 2026-11-18T23:25:31.6319843Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+L868: 2026-11-18T23:25:31.6364266Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+L869: 2026-11-18T23:25:31.6690330Z Removing includeIf entries pointing to credentials config files
+L870: 2026-11-18T23:25:31.6697052Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+L871: 2026-11-18T23:25:31.6733224Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+L872: 2026-11-18T23:25:31.7188851Z Cleaning up orphan processes

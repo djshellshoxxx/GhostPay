@@ -1,0 +1,313 @@
+{
+  "job": {
+    "id": 135232142944,
+    "name": "ts-test (rest-0)",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+    "started_at": "2026-11-19T00:14:37Z",
+    "completed_at": "2026-11-19T00:18:14Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273430/job/135232142944"
+  },
+  "fetched_at": "2026-11-19T00:24:42.642Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135232142944/logs",
+  "decoded_log_sha256": "114d2637da9fea2c2a6c90f091b89776b258167f7f47baa6401d89a07ca2be68",
+  "decoded_log_bytes": 256106,
+  "compressed_log_bytes": 48754,
+  "compressed_log_sha256": "42e4ddf0e6ac74632deb3f7b2536984f8ee237a2ceabcdeea72572fdc4b94119",
+  "log_file": "job-135232142944.log.gz",
+  "checkout_shas": [
+    "b53f116b825d7cf6e85681fc835aec18ef7add75"
+  ],
+  "selected_browser_cases": [],
+  "skipped_cases": [],
+  "summary_lines": [
+    {
+      "line": 465,
+      "text": "2026-11-19T00:15:28.6154583Z  Test Files  6 passed (6)"
+    },
+    {
+      "line": 466,
+      "text": "2026-11-19T00:15:28.6155945Z       Tests  95 passed (95)"
+    },
+    {
+      "line": 468,
+      "text": "2026-11-19T00:15:28.6160851Z    Duration  4.70s (tests 71%, import 21%, transform 6%, worker 1%)"
+    },
+    {
+      "line": 500,
+      "text": "2026-11-19T00:15:30.0400075Z  Test Files  4 passed (4)"
+    },
+    {
+      "line": 501,
+      "text": "2026-11-19T00:15:30.0401583Z       Tests  76 passed (76)"
+    },
+    {
+      "line": 503,
+      "text": "2026-11-19T00:15:30.0405556Z    Duration  732ms (import 62%, transform 19%, tests 12%, worker 7%)"
+    },
+    {
+      "line": 537,
+      "text": "2026-11-19T00:15:35.6943998Z  Test Files  10 passed (10)"
+    },
+    {
+      "line": 538,
+      "text": "2026-11-19T00:15:35.6945879Z       Tests  158 passed (158)"
+    },
+    {
+      "line": 540,
+      "text": "2026-11-19T00:15:35.6951406Z    Duration  5.22s (tests 76%, import 15%, transform 6%, worker 2%)"
+    },
+    {
+      "line": 607,
+      "text": "2026-11-19T00:16:02.7967899Z  Test Files  10 passed (10)"
+    },
+    {
+      "line": 608,
+      "text": "2026-11-19T00:16:02.7969071Z       Tests  97 passed (97)"
+    },
+    {
+      "line": 610,
+      "text": "2026-11-19T00:16:02.7973473Z    Duration  26.65s (tests 96%, import 2%, transform 1%, worker 1%)"
+    },
+    {
+      "line": 646,
+      "text": "2026-11-19T00:16:05.2784421Z  Test Files  7 passed (7)"
+    },
+    {
+      "line": 647,
+      "text": "2026-11-19T00:16:05.2785793Z       Tests  88 passed (88)"
+    },
+    {
+      "line": 649,
+      "text": "2026-11-19T00:16:05.2790930Z    Duration  2.01s (import 70%, tests 15%, transform 11%, worker 3%)"
+    },
+    {
+      "line": 697,
+      "text": "2026-11-19T00:16:12.1060737Z  Test Files  7 passed | 1 skipped (8)"
+    },
+    {
+      "line": 698,
+      "text": "2026-11-19T00:16:12.1062499Z       Tests  73 passed | 4 skipped (77)"
+    },
+    {
+      "line": 700,
+      "text": "2026-11-19T00:16:12.1066741Z    Duration  6.37s (tests 66%, import 29%, transform 4%, worker 1%)"
+    },
+    {
+      "line": 732,
+      "text": "2026-11-19T00:16:21.1717197Z  Test Files  5 passed (5)"
+    },
+    {
+      "line": 733,
+      "text": "2026-11-19T00:16:21.1718532Z       Tests  142 passed (142)"
+    },
+    {
+      "line": 735,
+      "text": "2026-11-19T00:16:21.1723499Z    Duration  8.60s (tests 70%, import 21%, transform 8%, worker 1%)"
+    },
+    {
+      "line": 773,
+      "text": "2026-11-19T00:16:23.3075440Z  Test Files  10 passed (10)"
+    },
+    {
+      "line": 774,
+      "text": "2026-11-19T00:16:23.3077049Z       Tests  275 passed (275)"
+    },
+    {
+      "line": 776,
+      "text": "2026-11-19T00:16:23.3081984Z    Duration  1.68s (import 42%, tests 27%, transform 24%, worker 7%)"
+    },
+    {
+      "line": 815,
+      "text": "2026-11-19T00:16:45.4330757Z  Test Files  6 passed (6)"
+    },
+    {
+      "line": 816,
+      "text": "2026-11-19T00:16:45.4332224Z       Tests  92 passed (92)"
+    },
+    {
+      "line": 818,
+      "text": "2026-11-19T00:16:45.4337482Z    Duration  21.66s (tests 97%, import 2%, transform 1%)"
+    },
+    {
+      "line": 866,
+      "text": "2026-11-19T00:16:51.2922209Z  Test Files  5 passed (5)"
+    },
+    {
+      "line": 867,
+      "text": "2026-11-19T00:16:51.2923381Z       Tests  156 passed (156)"
+    },
+    {
+      "line": 869,
+      "text": "2026-11-19T00:16:51.2929534Z    Duration  3.97s (tests 42%, import 39%, transform 17%, worker 1%)"
+    },
+    {
+      "line": 909,
+      "text": "2026-11-19T00:16:53.1684068Z  Test Files  3 passed (3)"
+    },
+    {
+      "line": 910,
+      "text": "2026-11-19T00:16:53.1688003Z       Tests  199 passed (199)"
+    },
+    {
+      "line": 912,
+      "text": "2026-11-19T00:16:53.1693504Z    Duration  1.40s (tests 62%, transform 22%, import 13%, worker 3%)"
+    },
+    {
+      "line": 957,
+      "text": "2026-11-19T00:16:56.3871044Z  Test Files  5 passed | 2 skipped (7)"
+    },
+    {
+      "line": 958,
+      "text": "2026-11-19T00:16:56.3872616Z       Tests  43 passed | 9 skipped (52)"
+    },
+    {
+      "line": 960,
+      "text": "2026-11-19T00:16:56.3877985Z    Duration  2.76s (import 67%, transform 15%, tests 15%, worker 3%)"
+    },
+    {
+      "line": 998,
+      "text": "2026-11-19T00:17:33.9880767Z  Test Files  5 passed (5)"
+    },
+    {
+      "line": 999,
+      "text": "2026-11-19T00:17:33.9882358Z       Tests  176 passed (176)"
+    },
+    {
+      "line": 1001,
+      "text": "2026-11-19T00:17:33.9888084Z    Duration  37.14s (tests 98%, import 1%, transform 1%)"
+    },
+    {
+      "line": 1038,
+      "text": "2026-11-19T00:17:35.3924385Z  Test Files  9 passed (9)"
+    },
+    {
+      "line": 1039,
+      "text": "2026-11-19T00:17:35.3925460Z       Tests  95 passed (95)"
+    },
+    {
+      "line": 1041,
+      "text": "2026-11-19T00:17:35.3930361Z    Duration  948ms (transform 34%, import 25%, tests 24%, worker 17%)"
+    },
+    {
+      "line": 1077,
+      "text": "2026-11-19T00:17:36.2510653Z  Test Files  3 passed (3)"
+    },
+    {
+      "line": 1078,
+      "text": "2026-11-19T00:17:36.2513217Z       Tests  47 passed (47)"
+    },
+    {
+      "line": 1080,
+      "text": "2026-11-19T00:17:36.2518265Z    Duration  432ms (tests 37%, transform 34%, import 19%, worker 10%)"
+    },
+    {
+      "line": 1104,
+      "text": "2026-11-19T00:17:38.9955809Z  Test Files  5 passed (5)"
+    },
+    {
+      "line": 1105,
+      "text": "2026-11-19T00:17:38.9957948Z       Tests  160 passed (160)"
+    },
+    {
+      "line": 1107,
+      "text": "2026-11-19T00:17:38.9963387Z    Duration  2.30s (import 68%, transform 19%, tests 11%, worker 2%)"
+    },
+    {
+      "line": 1136,
+      "text": "2026-11-19T00:17:40.8321529Z  Test Files  6 passed (6)"
+    },
+    {
+      "line": 1137,
+      "text": "2026-11-19T00:17:40.8323124Z       Tests  134 passed (134)"
+    },
+    {
+      "line": 1139,
+      "text": "2026-11-19T00:17:40.8328994Z    Duration  1.38s (tests 56%, transform 20%, import 16%, worker 8%)"
+    },
+    {
+      "line": 1170,
+      "text": "2026-11-19T00:17:41.9721752Z  Test Files  5 passed (5)"
+    },
+    {
+      "line": 1171,
+      "text": "2026-11-19T00:17:41.9723289Z       Tests  91 passed (91)"
+    },
+    {
+      "line": 1173,
+      "text": "2026-11-19T00:17:41.9729354Z    Duration  684ms (transform 37%, tests 26%, import 26%, worker 11%)"
+    },
+    {
+      "line": 1205,
+      "text": "2026-11-19T00:17:43.6489956Z  Test Files  6 passed (6)"
+    },
+    {
+      "line": 1206,
+      "text": "2026-11-19T00:17:43.6491339Z       Tests  77 passed (77)"
+    },
+    {
+      "line": 1208,
+      "text": "2026-11-19T00:17:43.6496132Z    Duration  1.23s (tests 59%, transform 20%, import 13%, worker 8%)"
+    },
+    {
+      "line": 1238,
+      "text": "2026-11-19T00:17:45.8213693Z  Test Files  4 passed (4)"
+    },
+    {
+      "line": 1239,
+      "text": "2026-11-19T00:17:45.8214570Z       Tests  57 passed (57)"
+    },
+    {
+      "line": 1241,
+      "text": "2026-11-19T00:17:45.8218276Z    Duration  1.71s (tests 73%, transform 15%, import 9%, worker 4%)"
+    },
+    {
+      "line": 1264,
+      "text": "2026-11-19T00:17:46.5415243Z  Test Files  1 passed (1)"
+    },
+    {
+      "line": 1265,
+      "text": "2026-11-19T00:17:46.5416820Z       Tests  2 passed (2)"
+    },
+    {
+      "line": 1267,
+      "text": "2026-11-19T00:17:46.5424567Z    Duration  280ms (transform 72%, import 15%, worker 9%, tests 4%)"
+    },
+    {
+      "line": 3081,
+      "text": "2026-11-19T00:18:12.8143693Z # tests 249"
+    },
+    {
+      "line": 3082,
+      "text": "2026-11-19T00:18:12.8143896Z # suites 0"
+    },
+    {
+      "line": 3083,
+      "text": "2026-11-19T00:18:12.8144087Z # pass 246"
+    },
+    {
+      "line": 3084,
+      "text": "2026-11-19T00:18:12.8144281Z # fail 3"
+    },
+    {
+      "line": 3085,
+      "text": "2026-11-19T00:18:12.8144489Z # cancelled 0"
+    },
+    {
+      "line": 3086,
+      "text": "2026-11-19T00:18:12.8144691Z # skipped 0"
+    },
+    {
+      "line": 3087,
+      "text": "2026-11-19T00:18:12.8144885Z # todo 0"
+    },
+    {
+      "line": 3088,
+      "text": "2026-11-19T00:18:12.8145104Z # duration_ms 26191.568652"
+    }
+  ],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135232142944.extract.txt",
+  "extract_sha256": "61a15afd41da16a2d75a1b0e95cbf11fb7b9bd820094d22a0378bfe2ed376be8"
+}

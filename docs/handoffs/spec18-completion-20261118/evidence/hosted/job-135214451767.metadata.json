@@ -1,0 +1,179 @@
+{
+  "job": {
+    "id": 135214451767,
+    "name": "Pages artifact on anvil (browser)",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "d46b8d8253a8f9c18ff21327ef115c3c748a75ec",
+    "started_at": "2026-11-18T23:30:02Z",
+    "completed_at": "2026-11-18T23:35:32Z",
+    "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44421229286/job/135214451767",
+    "details_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44421229286/job/135214451767",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44421229286/job/135214451767"
+  },
+  "fetched_at": "2026-11-18T23:37:44.878Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135214451767/logs",
+  "decoded_log_sha256": "42a0a8847203d8b9e2fb0852756b7912d1555b0ad758bdb6cee400071854b266",
+  "decoded_log_bytes": 75402,
+  "compressed_log_bytes": 16455,
+  "compressed_log_sha256": "a5cc7aa22b58c26c2f4b9bbbf192992caff3485c960b70fc1e4fe30631c6fcf8",
+  "log_file": "job-135214451767.log.gz",
+  "checkout_shas": [
+    "c93b35b7630bd96e7686573576db8fbad49eb6d7"
+  ],
+  "selected_browser_cases": [
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:135:1",
+      "title": "Pages RPC proxy preserves upstream HTTP failure status",
+      "duration": "329ms",
+      "raw_line": "2026-11-18T23:34:14.3192314Z   \u2713   1 e2e/pages-devnet.spec.ts:135:1 \u203a Pages RPC proxy preserves upstream HTTP failure status (329ms)",
+      "line": 908
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:214:3",
+      "title": "GitHub Pages artifact on a real devnet \u203a a. the artifact loads under /GhostPay/: served bytes = SHA256SUMS, lean navigation only, enforced meta CSP, build-info commit = git HEAD",
+      "duration": "433ms",
+      "raw_line": "2026-11-18T23:34:14.8990778Z   \u2713   2 e2e/pages-devnet.spec.ts:214:3 \u203a GitHub Pages artifact on a real devnet \u203a a. the artifact loads under /GhostPay/: served bytes = SHA256SUMS, lean navigation only, enforced meta CSP, build-info commit = git HEAD (433ms)",
+      "line": 909
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:279:3",
+      "title": "GitHub Pages artifact on a real devnet \u203a b. seller: keys, encrypted keystore download, vault passphrase, signed registered invoice whose link lives under /GhostPay/ and opens on Pay",
+      "duration": "4.3s",
+      "raw_line": "2026-11-18T23:34:19.2206314Z   \u2713   3 e2e/pages-devnet.spec.ts:279:3 \u203a GitHub Pages artifact on a real devnet \u203a b. seller: keys, encrypted keystore download, vault passphrase, signed registered invoice whose link lives under /GhostPay/ and opens on Pay (4.3s)",
+      "line": 910
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:357:3",
+      "title": "GitHub Pages artifact on a real devnet \u203a c. buyer: connect the test wallet, review, explicit confirm, native ETH payment pending -> included, duplicate blocked after reload",
+      "duration": "4.3s",
+      "raw_line": "2026-11-18T23:34:23.5723680Z   \u2713   4 e2e/pages-devnet.spec.ts:357:3 \u203a GitHub Pages artifact on a real devnet \u203a c. buyer: connect the test wallet, review, explicit confirm, native ETH payment pending -> included, duplicate blocked after reload (4.3s)",
+      "line": 911
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:427:3",
+      "title": "GitHub Pages artifact on a real devnet \u203a c2. ERC-20 on this devnet: the lean build offers only the canonical Base Sepolia USDC/EURC, which DeployDevnet does not deploy, and no gas-buffer control (finding, not faked)",
+      "duration": "217ms",
+      "raw_line": "2026-11-18T23:34:23.8014923Z   \u2713   5 e2e/pages-devnet.spec.ts:427:3 \u203a GitHub Pages artifact on a real devnet \u203a c2. ERC-20 on this devnet: the lean build offers only the canonical Base Sepolia USDC/EURC, which DeployDevnet does not deploy, and no gas-buffer control (finding, not faked) (217ms)",
+      "line": 912
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:447:3",
+      "title": "GitHub Pages artifact on a real devnet \u203a d. seller: scan finds the payment (pending, then final), receipt bound to the invoice, ledger entry, direct sweep on chain, second sweep refused",
+      "duration": "3.6s",
+      "raw_line": "2026-11-18T23:34:27.3881671Z   \u2713   6 e2e/pages-devnet.spec.ts:447:3 \u203a GitHub Pages artifact on a real devnet \u203a d. seller: scan finds the payment (pending, then final), receipt bound to the invoice, ledger entry, direct sweep on chain, second sweep refused (3.6s)",
+      "line": 913
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:561:3",
+      "title": "GitHub Pages artifact on a real devnet \u203a e. restart the seller browser process: vault unlock (wrong passphrase refused first) restores keys, invoice registry, ledger and scan checkpoint from disk",
+      "duration": "3.9s",
+      "raw_line": "2026-11-18T23:34:31.3375902Z   \u2713   7 e2e/pages-devnet.spec.ts:561:3 \u203a GitHub Pages artifact on a real devnet \u203a e. restart the seller browser process: vault unlock (wrong passphrase refused first) restores keys, invoice registry, ledger and scan checkpoint from disk (3.9s)",
+      "line": 914
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:637:3",
+      "title": "GitHub Pages artifact on a real devnet \u203a f. restore in a brand-new profile: damaged and wrong-passphrase backups refused, then the downloaded backup restores the keys; rescan shows the payment once, already swept",
+      "duration": "3.8s",
+      "raw_line": "2026-11-18T23:34:35.1498318Z   \u2713   8 e2e/pages-devnet.spec.ts:637:3 \u203a GitHub Pages artifact on a real devnet \u203a f. restore in a brand-new profile: damaged and wrong-passphrase backups refused, then the downloaded backup restores the keys; rescan shows the payment once, already swept (3.8s)",
+      "line": 915
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:725:3",
+      "title": "GitHub Pages artifact on a real devnet \u203a a (whole journey). every request of every page and worker went only to the site under /GhostPay/ or the routed devnet RPC",
+      "duration": "110ms",
+      "raw_line": "2026-11-18T23:34:35.3416053Z   \u2713   9 e2e/pages-devnet.spec.ts:725:3 \u203a GitHub Pages artifact on a real devnet \u203a a (whole journey). every request of every page and worker went only to the site under /GhostPay/ or the routed devnet RPC (110ms)",
+      "line": 918
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:753:3",
+      "title": "GitHub Pages artifact: refusals \u203a a same-nonce wallet cancellation never becomes a payment confirmation or permits a duplicate retry",
+      "duration": "43.1s",
+      "raw_line": "2026-11-18T23:35:18.5011647Z   \u2713  10 e2e/pages-devnet.spec.ts:753:3 \u203a GitHub Pages artifact: refusals \u203a a same-nonce wallet cancellation never becomes a payment confirmation or permits a duplicate retry (43.1s)",
+      "line": 919
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:823:3",
+      "title": "GitHub Pages artifact: refusals \u203a the Home release check stays inside /GhostPay/ and shows the served entry script hash",
+      "duration": "272ms",
+      "raw_line": "2026-11-18T23:35:18.7860486Z   \u2713  11 e2e/pages-devnet.spec.ts:823:3 \u203a GitHub Pages artifact: refusals \u203a the Home release check stays inside /GhostPay/ and shows the served entry script hash (272ms)",
+      "line": 920
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:841:3",
+      "title": "GitHub Pages artifact: refusals \u203a g. a tampered invoice fragment (amount changed after signing) is refused on the Pay view; nothing reaches the wallet",
+      "duration": "973ms",
+      "raw_line": "2026-11-18T23:35:19.7719118Z   \u2713  12 e2e/pages-devnet.spec.ts:841:3 \u203a GitHub Pages artifact: refusals \u203a g. a tampered invoice fragment (amount changed after signing) is refused on the Pay view; nothing reaches the wallet (973ms)",
+      "line": 921
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:874:3",
+      "title": "GitHub Pages artifact: refusals \u203a g. Settings refuses invalid RPC endpoints (plain http, embedded credentials, not a URL) without changing the saved RPC or contacting them",
+      "duration": "1.2s",
+      "raw_line": "2026-11-18T23:35:20.9725171Z   \u2713  13 e2e/pages-devnet.spec.ts:874:3 \u203a GitHub Pages artifact: refusals \u203a g. Settings refuses invalid RPC endpoints (plain http, embedded credentials, not a URL) without changing the saved RPC or contacting them (1.2s)",
+      "line": 922
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:916:3",
+      "title": "GitHub Pages artifact: refusals \u203a g. RPC unavailable: payment preparation and scanning show an error, the app keeps working and nothing is marked paid or sent",
+      "duration": "2.8s",
+      "raw_line": "2026-11-18T23:35:23.7448149Z   \u2713  14 e2e/pages-devnet.spec.ts:916:3 \u203a GitHub Pages artifact: refusals \u203a g. RPC unavailable: payment preparation and scanning show an error, the app keeps working and nothing is marked paid or sent (2.8s)",
+      "line": 923
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:975:3",
+      "title": "GitHub Pages artifact: refusals \u203a g. wallet rejection: the user rejects in the wallet, the app says so and the invoice stays unpaid on chain",
+      "duration": "2.5s",
+      "raw_line": "2026-11-18T23:35:26.3087568Z   \u2713  15 e2e/pages-devnet.spec.ts:975:3 \u203a GitHub Pages artifact: refusals \u203a g. wallet rejection: the user rejects in the wallet, the app says so and the invoice stays unpaid on chain (2.5s)",
+      "line": 924
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/pages-devnet.spec.ts:1017:3",
+      "title": "GitHub Pages artifact: refusals \u203a g. an expired invoice (shortest UI expiry, 1 hour) is refused at review and at send by the browser clock, and by the router on chain",
+      "duration": "2.8s",
+      "raw_line": "2026-11-18T23:35:29.0899621Z   \u2713  16 e2e/pages-devnet.spec.ts:1017:3 \u203a GitHub Pages artifact: refusals \u203a g. an expired invoice (shortest UI expiry, 1 hour) is refused at review and at send by the browser clock, and by the router on chain (2.8s)",
+      "line": 925
+    }
+  ],
+  "summary_lines": [
+    {
+      "line": 927,
+      "text": "2026-11-18T23:35:29.1468658Z   16 passed (1.7m)"
+    }
+  ],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135214451767.extract.txt",
+  "extract_sha256": "4c848c76da094d5b4f1ed96faae39daace6d20959e7dd917ff33b5f93f46965a"
+}

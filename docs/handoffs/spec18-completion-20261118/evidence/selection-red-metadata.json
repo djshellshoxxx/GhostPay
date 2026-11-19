@@ -1,0 +1,17 @@
+{
+  "baseline_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "baseline_component_blobs": {
+    "apps/web/src/components/StealthExportPayment.tsx": "64ea814582a952a094d05ca13c146ffa7b2c425e",
+    "apps/web/src/components/StealthExportArchive.tsx": "6f7107501de01b32e4269240f7f98c937339a39b",
+    "apps/web/src/components/StealthExportCommon.tsx": "0fc9b15b00214f3274cc46c9ee0e1c12420c51e0"
+  },
+  "copied_test": "apps/web/src/components/StealthExportSelection.test.tsx",
+  "copied_test_sha256": "f2f08a15adc302eada037dac69a64128f3dae5354ed7d9695d8a16daebd60791",
+  "command": "NODE_OPTIONS=--max-old-space-size=1024 node ../../node_modules/vitest/vitest.mjs run src/components/StealthExportSelection.test.tsx --coverage=false --maxWorkers=1 -t \"changed.*closes raw|discards an in-flight|new same-chain\"",
+  "node": "22.23.5",
+  "exit_code": 1,
+  "failed": 6,
+  "name_filtered": 1,
+  "log": "/tmp/ghostpay-spec18-selection-red.log",
+  "scope": "Baseline UI sources at exact commit; copied only the current new selection test; dependencies and previously built workspace libraries reused without installation."
+}

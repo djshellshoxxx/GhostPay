@@ -1,0 +1,63 @@
+{
+  "job": {
+    "id": 135228385976,
+    "name": "Build and verify the Pages site",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+    "started_at": "2026-11-19T00:01:01Z",
+    "completed_at": "2026-11-19T00:03:45Z",
+    "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273443/job/135228385976",
+    "details_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273443/job/135228385976",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273443/job/135228385976"
+  },
+  "fetched_at": "2026-11-19T00:05:32.625Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135228385976/logs",
+  "decoded_log_sha256": "375dbe5c4590623b4565d0312c34f50f13b8bf39cb9b4fe940f7c00bc545a234",
+  "decoded_log_bytes": 78080,
+  "compressed_log_bytes": 16600,
+  "compressed_log_sha256": "497d50b536d18ac660ebdec51ffaba1a99c723c4ed1ac7d78f18a1e763ff8da5",
+  "log_file": "job-135228385976.log.gz",
+  "checkout_shas": [
+    "b53f116b825d7cf6e85681fc835aec18ef7add75"
+  ],
+  "selected_browser_cases": [],
+  "skipped_cases": [],
+  "summary_lines": [
+    {
+      "line": 1154,
+      "text": "2026-11-19T00:03:21.8425225Z # tests 95"
+    },
+    {
+      "line": 1155,
+      "text": "2026-11-19T00:03:21.8425503Z # suites 4"
+    },
+    {
+      "line": 1156,
+      "text": "2026-11-19T00:03:21.8425779Z # pass 95"
+    },
+    {
+      "line": 1157,
+      "text": "2026-11-19T00:03:21.8426111Z # fail 0"
+    },
+    {
+      "line": 1158,
+      "text": "2026-11-19T00:03:21.8426412Z # cancelled 0"
+    },
+    {
+      "line": 1159,
+      "text": "2026-11-19T00:03:21.8426720Z # skipped 0"
+    },
+    {
+      "line": 1160,
+      "text": "2026-11-19T00:03:21.8427024Z # todo 0"
+    },
+    {
+      "line": 1161,
+      "text": "2026-11-19T00:03:21.8427359Z # duration_ms 1343.768846"
+    }
+  ],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135228385976.extract.txt",
+  "extract_sha256": "62f7950a2aaef072b72f7c6cb82c8cdf652d066e03b2ce0458728c7f585ba013"
+}

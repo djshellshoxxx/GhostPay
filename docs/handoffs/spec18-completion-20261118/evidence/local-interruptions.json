@@ -1,0 +1,28 @@
+{
+  "kind": "local_execution_interruptions",
+  "current_application_runtime_local": "6cd9c2f0354f97cc7b100608cb868b47ea461b36",
+  "current_application_runtime_published": "041db448baa7fd094f8b1ad37f3f7377c98bcab1",
+  "followup_local": "02ccc5e1d341b0d1ff404f66ae6b5fc1005f71b2",
+  "followup_published": "d46b8d8253a8f9c18ff21327ef115c3c748a75ec",
+  "records": [
+    {
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=768 ../../node_modules/.bin/vitest run --coverage --maxWorkers=1 --no-file-parallelism --coverage.reportsDirectory=/tmp/ghostpay-spec18-web-coverage",
+      "runtime": "Node 22.23.5",
+      "exit_code": 137,
+      "observation": "Shell reported Killed. No completed test or coverage summary. No success claimed. Whole-web hosted execution required.",
+      "log": "/tmp/ghostpay-spec18-web-full.log",
+      "sha256": "752253cd6ac8352d7aec732780e74cf0e382ffd363944dc3cf38fec2a90deb8b"
+    },
+    {
+      "cwd": ".",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 node_modules/.bin/eslint apps/web/e2e/stealth-export.spec.ts apps/web/e2e/core-journey.spec.ts apps/web/e2e/backup-panel.spec.ts apps/web/e2e/pages-devnet.spec.ts",
+      "runtime": "Node 22.23.5",
+      "exit_code": 137,
+      "observation": "Shell reported Killed before diagnostics/completion. No success claimed. Previous hosted complete lint had only the inherited chain-adapters require-await failure; final-source hosted lint remains required.",
+      "log": "/tmp/ghostpay-spec18-e2e-followup-lint.log",
+      "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8"
+    }
+  ],
+  "note": "The external termination cause for these two commands was not independently instrumented. Separate compiler diagnostics include measured host OOM counters."
+}

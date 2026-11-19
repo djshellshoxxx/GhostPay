@@ -4,6 +4,7 @@ import { UserFacingError, type DisplayMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, MAX_KEYSTORE_BYTES, generatePassphrase, passphraseProblemMessage, passphraseStrength, type PassphraseStrength } from '../lib/keystore';
 import type { SecretExportCredential } from '../lib/keyVault';
 import { subscribeSession } from '../lib/session';
+import type { ScanMatch } from '../lib/scanClient';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
 import type { Translator } from '../i18n/translator';
@@ -116,7 +117,7 @@ const STRENGTH_KEYS: Readonly<Record<PassphraseStrength['label'], MessageKey>> =
   strong: 'stealthExport.pass.level.strong',
 };
 
-export function NewPassphraseFields(props: { readonly value: NewPassphrase; readonly onChange: (next: NewPassphrase) => void }): ReactNode {
+export function NewPassphraseFields(props: { readonly value: NewPassphrase; readonly onChange: (next: NewPassphrase) => void; readonly disabled?: boolean }): ReactNode {
   const t = useExportT();
   const { pass, pass2, suggested } = props.value;
   const showing = pass !== '' && pass === suggested;
@@ -124,12 +125,12 @@ export function NewPassphraseFields(props: { readonly value: NewPassphrase; read
   return (
     <>
       <Field label={t('stealthExport.pass.new')} {...(showing ? { hint: t('sellerKeys.suggested', { words: GENERATED_PASSPHRASE_WORDS, bits: GENERATED_PASSPHRASE_BITS }) } : {})}>
-        {(id, d) => <input id={id} aria-describedby={d} type={showing ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { props.onChange({ ...props.value, pass: e.target.value }); }} />}
+        {(id, d) => <input id={id} aria-describedby={d} disabled={props.disabled === true} type={showing ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { props.onChange({ ...props.value, pass: e.target.value }); }} />}
       </Field>
       {pass !== '' && <p className="hint" aria-live="polite">{t('stealthExport.pass.strength', { level: t(level) })}</p>}
-      <p><button type="button" className="btn" onClick={() => { const next = generatePassphrase(); props.onChange({ pass: next, pass2: '', suggested: next }); }}>{t('stealthExport.pass.suggest')}</button></p>
+      <p><button type="button" className="btn" disabled={props.disabled === true} onClick={() => { const next = generatePassphrase(); props.onChange({ pass: next, pass2: '', suggested: next }); }}>{t('stealthExport.pass.suggest')}</button></p>
       <Field label={t('stealthExport.pass.repeat')}>
-        {(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { props.onChange({ ...props.value, pass2: e.target.value }); }} />}
+        {(id) => <input id={id} type="password" disabled={props.disabled === true} autoComplete="new-password" value={pass2} onChange={(e) => { props.onChange({ ...props.value, pass2: e.target.value }); }} />}
       </Field>
     </>
   );
@@ -148,18 +149,25 @@ export interface ExportOperation {
  * panel, the idle lock and every session change (wipe, key replacement, a new session revision) abort it, and `onReset`
  * clears what was typed. The export functions check the signal after every await, so an aborted result is discarded.
  */
-export function useExportOperation(onReset: () => void): ExportOperation {
-  const operation = useRef<AbortController | null>(null);
+export function useExportOperation(onReset: () => void, scope: readonly unknown[] = []): ExportOperation {
+  const operation = useRef<{ readonly controller: AbortController; readonly scope: readonly unknown[] } | null>(null);
+  // Updated during render: an old promise cannot settle between a new input render and its cleanup effect.
+  const latestScope = useRef(scope);
+  latestScope.current = scope;
   const mounted = useRef(false);
   const reset = useRef(onReset);
   reset.current = onReset;
   const api = useRef<ExportOperation | null>(null);
   if (api.current === null) {
-    const stop = (): void => { operation.current?.abort(); operation.current = null; };
+    const stop = (): void => { operation.current?.controller.abort(); operation.current = null; };
     api.current = {
-      start: () => { stop(); const controller = new AbortController(); operation.current = controller; return controller; },
+      start: () => { stop(); const controller = new AbortController(); operation.current = { controller, scope: [...latestScope.current] }; return controller; },
       stop,
-      current: (controller) => mounted.current && operation.current === controller && !controller.signal.aborted,
+      current: (controller) => {
+        const pending = operation.current;
+        return mounted.current && pending?.controller === controller && !controller.signal.aborted &&
+          pending.scope.length === latestScope.current.length && pending.scope.every((value, index) => value === latestScope.current[index]);
+      },
     };
   }
   const ops = api.current;
@@ -173,3 +181,10 @@ export function useExportOperation(onReset: () => void): ExportOperation {
 }
 
 // i18n-use: stealthExport.pass.level.tooShort stealthExport.pass.level.weak stealthExport.pass.level.fair stealthExport.pass.level.good stealthExport.pass.level.strong stealthExport.auth.chooseKeystore
+
+/** Public input identity for export consent. Bigints are encoded explicitly; no private material is inspected. */
+export function exportSelectionIdentity(matches: readonly ScanMatch[]): string {
+  return JSON.stringify(matches.map((match) => [
+    match.chainId, match.stealthAddress, match.announcement,
+  ]), (_key: string, value: unknown) => typeof value === 'bigint' ? value.toString() : value);
+}

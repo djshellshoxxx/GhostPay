@@ -247,11 +247,14 @@ function subtle(): SubtleCrypto {
 /** The keystore KDF profile: scrypt over the NFKC passphrase, imported as a non-extractable AES-GCM key; the raw key is wiped. */
 async function derive(pass: string, salt: Uint8Array, N: number, r: number, p: number): Promise<CryptoKey> {
   const webCrypto = subtle();
-  const raw = await scryptAsync(utf8ToBytes(pass.normalize('NFKC')), salt, { N, r, p, dkLen: 32, maxmem: 2 ** 29 });
+  const passwordBytes = utf8ToBytes(pass.normalize('NFKC'));
+  let raw: Uint8Array | undefined;
   try {
+    raw = await scryptAsync(passwordBytes, salt, { N, r, p, dkLen: 32, maxmem: 2 ** 29 });
     return await webCrypto.importKey('raw', raw as Uint8Array<ArrayBuffer>, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
   } finally {
-    raw.fill(0);
+    passwordBytes.fill(0);
+    raw?.fill(0);
   }
 }
 

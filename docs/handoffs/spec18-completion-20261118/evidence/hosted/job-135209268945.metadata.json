@@ -1,0 +1,27 @@
+{
+  "job": {
+    "id": 135209268945,
+    "name": "ts-lint",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "041db448baa7fd094f8b1ad37f3f7377c98bcab1",
+    "started_at": "2026-11-18T23:22:35Z",
+    "completed_at": "2026-11-18T23:28:06Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44419497914/job/135209268945"
+  },
+  "fetched_at": "2026-11-18T23:28:56.502Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135209268945/logs",
+  "decoded_log_sha256": "bf7011574394838b69b6aa7eb45cf78384aafb274228ca60c2c2026d19964561",
+  "decoded_log_bytes": 38062,
+  "compressed_log_bytes": 8418,
+  "log_file": "job-135209268945.log.gz",
+  "checkout_shas": [
+    "ad0f03acfae81439640f74fce5562d475227197f"
+  ],
+  "compressed_log_sha256": "8e8b2b9b18796a5d3cda236bdd568677c53fb415716717f26861894db8e8b46d",
+  "selected_browser_cases": [],
+  "summary_lines": [],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135209268945.extract.txt",
+  "extract_sha256": "4ea4670d86498a0d035439607e7e1aa0699630e6eecc97f2c3425ebfe15ce66a"
+}

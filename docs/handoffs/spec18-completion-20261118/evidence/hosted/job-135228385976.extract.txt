@@ -1,0 +1,45 @@
+Job: 135228385976 (Build and verify the Pages site)
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273443/job/135228385976
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135228385976/logs
+Fetched at: 2026-11-19T00:05:32.625Z
+Job API conclusion: success
+Published head: 032c42fc3d5e52d8428a7907775835b5d1ed3704
+Checked-out commit(s): b53f116b825d7cf6e85681fc835aec18ef7add75
+Decoded raw log SHA256: 375dbe5c4590623b4565d0312c34f50f13b8bf39cb9b4fe940f7c00bc545a234
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L146: 2026-11-19T00:01:05.9882597Z ##[endgroup]
+L147: 2026-11-19T00:01:05.9942070Z [command]/usr/bin/git log -1 --format=%H
+L148: 2026-11-19T00:01:05.9972769Z b53f116b825d7cf6e85681fc835aec18ef7add75
+L149: 2026-11-19T00:01:05.9984869Z ##[group]Removing auth
+[omitted]
+L183: 2026-11-19T00:01:06.3300025Z with:
+L184: 2026-11-19T00:01:06.3300292Z   node-version: 22
+L185: 2026-11-19T00:01:06.3300567Z   cache: npm
+[omitted]
+L191: 2026-11-19T00:01:07.4146640Z ##[group]Environment details
+L192: 2026-11-19T00:01:09.0805125Z node: v22.23.4
+L193: 2026-11-19T00:01:09.0805811Z npm: 10.9.9
+[omitted]
+L205: 2026-11-19T00:01:11.1229134Z ##[group]Run npm ci --ignore-scripts
+L206: 2026-11-19T00:01:11.1229503Z npm ci --ignore-scripts
+[omitted]
+L229: 2026-11-19T00:01:24.4001346Z ##[group]Run npm ls --all --omit=dev > /dev/null
+L230: 2026-11-19T00:01:24.4001962Z npm ls --all --omit=dev > /dev/null
+[omitted]
+L550: 2026-11-19T00:03:20.4418078Z ##[group]Run node --test scripts/pages/*.test.mjs
+L551: 2026-11-19T00:03:20.4418657Z node --test scripts/pages/*.test.mjs
+L552: 2026-11-19T00:03:20.4495449Z shell: /usr/bin/bash -e {0}
+[omitted]
+L1154: 2026-11-19T00:03:21.8425225Z # tests 95
+L1155: 2026-11-19T00:03:21.8425503Z # suites 4
+L1156: 2026-11-19T00:03:21.8425779Z # pass 95
+L1157: 2026-11-19T00:03:21.8426111Z # fail 0
+L1158: 2026-11-19T00:03:21.8426412Z # cancelled 0
+L1159: 2026-11-19T00:03:21.8426720Z # skipped 0
+L1160: 2026-11-19T00:03:21.8427024Z # todo 0
+L1161: 2026-11-19T00:03:21.8427359Z # duration_ms 1343.768846
+L1162: 2026-11-19T00:03:21.8493960Z ##[group]Run bash scripts/pages/build-pages.sh "$RUNNER_TEMP/pages"
+L1163: 2026-11-19T00:03:21.8494496Z bash scripts/pages/build-pages.sh "$RUNNER_TEMP/pages"
+L1164: 2026-11-19T00:03:21.8548536Z shell: /usr/bin/bash -e {0}

@@ -1,0 +1,201 @@
+Job: 135232142934 (ts-test (web))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273430/job/135232142934
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135232142934/logs
+Fetched at: 2026-11-19T00:24:42.004Z
+Job API conclusion: success
+Published head: 032c42fc3d5e52d8428a7907775835b5d1ed3704
+Checked-out commit(s): b53f116b825d7cf6e85681fc835aec18ef7add75
+Decoded raw log SHA256: ff17b9b9ed86575a606426670aeb2d61ddddd469b027c77b69bfcd0cfdae7eed
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L129: 2026-11-19T00:14:28.4889744Z ##[endgroup]
+L130: 2026-11-19T00:14:28.4936361Z [command]/usr/bin/git log -1 --format=%H
+L131: 2026-11-19T00:14:28.4959966Z b53f116b825d7cf6e85681fc835aec18ef7add75
+L132: 2026-11-19T00:14:28.4966973Z ##[group]Removing auth
+[omitted]
+L170: 2026-11-19T00:14:28.9946679Z with:
+L171: 2026-11-19T00:14:28.9946830Z   node-version: 22
+L172: 2026-11-19T00:14:28.9946986Z   cache: npm
+[omitted]
+L178: 2026-11-19T00:14:29.1746336Z ##[group]Environment details
+L179: 2026-11-19T00:14:29.4286496Z node: v22.23.4
+L180: 2026-11-19T00:14:29.4286783Z npm: 10.9.9
+[omitted]
+L195: 2026-11-19T00:14:33.1924393Z ##[group]Run npm ci --ignore-scripts
+L196: 2026-11-19T00:14:33.1924639Z npm ci --ignore-scripts
+[omitted]
+L449: 2026-11-19T00:15:00.7457923Z > @ghostpay/web@0.1.0 test
+L450: 2026-11-19T00:15:00.7458566Z > vitest run --coverage && vitest run --config vitest.nocov.config.ts
+L451: 2026-11-19T00:15:00.7458850Z 
+L452: 2026-11-19T00:15:01.0214944Z 
+L453: 2026-11-19T00:15:01.0217219Z  RUN  v5.1.0 /home/runner/work/GhostPay/GhostPay/apps/web
+L454: 2026-11-19T00:15:01.0217877Z       Coverage enabled with v8
+L455: 2026-11-19T00:15:01.0218084Z 
+L456: 2026-11-19T00:15:04.1260586Z  ✓ src/lib/sweep.test.ts (102 tests) 1562ms
+L457: 2026-11-19T00:15:06.6863049Z  ✓ src/lib/scanClient.test.ts (92 tests) 4415ms
+[omitted]
+L601: 2026-11-19T00:16:30.0142794Z  ✓ src/components/StealthExportRecovery.test.tsx (18 tests) 27246ms
+L602: 2026-11-19T00:16:30.0144088Z    ✓ Open a stealth key export (spec 18 flow 4) (12)
+L603: 2026-11-19T00:16:30.0145224Z      ✓ lists verified payment keys in a fresh session with no keys, and downloads one raw key only after a second confirmation 1370ms
+L604: 2026-11-19T00:16:30.0146417Z      ✓ refuses a wrong passphrase and a foreign file atomically and clears the passphrase 1214ms
+L605: 2026-11-19T00:16:30.0147525Z      ✓ loads master keys through the hex-import path with a generated signing key 1090ms
+L606: 2026-11-19T00:16:30.0148760Z      ✓ asks before master keys replace loaded keys that have no backup, and says when they are loaded already 2143ms
+L607: 2026-11-19T00:16:30.0149931Z      ✓ requires fresh confirmation even when the loaded keys have a proven copy, and a key change closes the export 2027ms
+L608: 2026-11-19T00:16:30.0151351Z      ✓ does not apply a cancelled master-load request to an export opened later 2872ms
+L609: 2026-11-19T00:16:30.0152457Z      ✓ requires the sole-copy warning again when another tab deletes the vault after replacement review 1857ms
+L610: 2026-11-19T00:16:30.0153493Z      ✓ does not show a stale replacement confirmation on a later export 3167ms
+L611: 2026-11-19T00:16:30.0154422Z      ✓ the idle lock wipes opened keys and a cancelled open shows nothing 2397ms
+L612: 2026-11-19T00:16:30.0155203Z    ✓ verify an existing backup without importing (4)
+L613: 2026-11-19T00:16:30.0156316Z      ✓ verifies an archive without holding raw keys or changing the loaded wallet 1120ms
+L614: 2026-11-19T00:16:30.0157427Z      ✓ verifies master spending authority in an empty session without loading it or claiming a signing-key backup 1112ms
+L615: 2026-11-19T00:16:30.0158666Z      ✓ refuses public records and wrong passwords without marking the selected file verified 858ms
+L616: 2026-11-19T00:16:30.0159839Z      ✓ cannot apply a delayed verification to another selected file 1055ms
+L617: 2026-11-19T00:16:30.0160585Z    ✓ Master stealth key backup (spec 18 flow 3) (2)
+L618: 2026-11-19T00:16:30.0161550Z      ✓ exports the spending and viewing keys after re-authentication with a keystore file, never the signing key 3860ms
+L619: 2026-11-19T00:16:30.0162634Z      ✓ refuses without a vault, clears the passphrases, and cancels on the idle lock 757ms
+[omitted]
+L715: 2026-11-19T00:17:44.5965822Z  ✓ src/lib/paymentKeyExport.test.ts (29 tests) 72441ms
+L716: 2026-11-19T00:17:44.5979250Z    ✓ public record export (2)
+L717: 2026-11-19T00:17:44.5980045Z      ✓ reproduces the reference public record byte for byte and holds no secret 1023ms
+L718: 2026-11-19T00:17:44.5981450Z      ✓ needs loaded keys and refuses another seller, another scheme, an unknown chain or a relabelled address 1008ms
+L719: 2026-11-19T00:17:44.5982449Z    ✓ single encrypted keypair (7)
+L720: 2026-11-19T00:17:44.5983307Z      ✓ re-authenticates, checks eth_getCode at latest through the given RPC, and seals exactly the derived key 3470ms
+L721: 2026-11-19T00:17:44.5984398Z      ✓ exports a deep-scan payment whose announced view tag differs (ownership is the derived address) 2769ms
+L722: 2026-11-19T00:17:44.5985497Z      ✓ refuses an address with code, a failed or malformed code check, a missing RPC and an RPC of another chain 8532ms
+L723: 2026-11-19T00:17:44.5986471Z      ✓ checks the new passphrase and the credential before any request 1761ms
+L724: 2026-11-19T00:17:44.5987448Z      ✓ discards the result and wipes the key when the keys are wiped while the file is being sealed 2471ms
+L725: 2026-11-19T00:17:44.5988675Z      ✓ discards the result of a cancelled operation, also when the cancellation lands during the code check 2913ms
+L726: 2026-11-19T00:17:44.5989660Z      ✓ refuses keys replaced during re-authentication without contacting the RPC 1926ms
+L727: 2026-11-19T00:17:44.5990297Z    ✓ raw private key (2)
+L728: 2026-11-19T00:17:44.5991053Z      ✓ needs the explicit second confirmation, then yields exactly the section-6 text 1896ms
+L729: 2026-11-19T00:17:44.5991823Z      ✓ refuses a contract account 1624ms
+L730: 2026-11-19T00:17:44.5992342Z    ✓ payment key archive (6)
+L731: 2026-11-19T00:17:44.5993108Z      ✓ deduplicates replays to the earliest locator, sorts by address and refuses conflicts 959ms
+L732: 2026-11-19T00:17:44.5994160Z      ✓ describes the count and chain before confirming, and refuses mixed chains, no payments and too many 730ms
+L733: 2026-11-19T00:17:44.5995244Z      ✓ resolves same-locator replay metadata deterministically regardless of scan input order 979ms
+L734: 2026-11-19T00:17:44.5996286Z      ✓ exports every distinct payment once, checks each address once and never includes master keys 3865ms
+L735: 2026-11-19T00:17:44.5997281Z      ✓ refuses the whole archive when one address has code, and wipes every derived key 2798ms
+L736: 2026-11-19T00:17:44.5998096Z      ✓ keeps the single scope to exactly one payment 2225ms
+L737: 2026-11-19T00:17:44.5998783Z    ✓ master backup (2)
+L738: 2026-11-19T00:17:44.5999507Z      ✓ holds exactly the loaded spending and viewing keys and never the signing key 3615ms
+L739: 2026-11-19T00:17:44.6000496Z      ✓ refuses without a valid credential and discards a backup sealed after the keys changed 2688ms
+L740: 2026-11-19T00:17:44.6001205Z    ✓ opening an export (recovery) (6)
+L741: 2026-11-19T00:17:44.6001989Z      ✓ wipes the decrypted payment scalars after boxing while keeping each boxed key usable 1687ms
+L742: 2026-11-19T00:17:44.6002961Z      ✓ disposes partial master boxes and wipes source scalars if boxing the second key fails 1856ms
+L743: 2026-11-19T00:17:44.6003863Z      ✓ opens every reference file in a session with no keys loaded 2661ms
+L744: 2026-11-19T00:17:44.6004901Z      ✓ loads master keys through the hex-import path with a new signing key and recovers the payment omitted from the archive 2303ms
+L745: 2026-11-19T00:17:44.6006143Z      ✓ applies an explicit chain constraint to public records and rejects chain-neutral master backups before decryption 759ms
+L746: 2026-11-19T00:17:44.6011293Z      ✓ fails closed on every reference refusal, a foreign file, an oversized file and a cancelled open 9619ms
+L747: 2026-11-19T00:17:44.6011959Z    ✓ verifying an export without importing (4)
+L748: 2026-11-19T00:17:44.6012755Z      ✓ checks payment and master keys, disposes every key box, and leaves the current wallet and custody unchanged 2088ms
+L749: 2026-11-19T00:17:44.6013713Z      ✓ never verifies a public record, wrong password, corrupt file or wrong chain as a backup 1442ms
+L750: 2026-11-19T00:17:44.6014648Z      ✓ disposes keys and refuses a verification result after the wallet changes during decryption 1383ms
+L751: 2026-11-19T00:17:44.6015464Z      ✓ never reports success when cancellation arrives during decryption 1390ms
+L752: 2026-11-19T00:17:51.1148861Z  ✓ src/components/StealthExportPayment.test.tsx (12 tests) 30069ms
+L753: 2026-11-19T00:17:51.1149699Z    ✓ Payment details (spec 18 flow 1) (9)
+L754: 2026-11-19T00:17:51.1159513Z      ✓ derives, downloads and reveals nothing until asked, and labels ownership apart from payment status 955ms
+L755: 2026-11-19T00:17:51.1160496Z      ✓ downloads the public record without re-authentication or any request 761ms
+L756: 2026-11-19T00:17:51.1161560Z      ✓ exports the encrypted keypair after the vault step-up and the address check, then clears every passphrase 4026ms
+L757: 2026-11-19T00:17:51.1162664Z      ✓ refuses a mismatched new passphrase and a weak one before any work 1291ms
+L758: 2026-11-19T00:17:51.1163852Z      ✓ a wrong vault passphrase or a contract address refuses, clears the passphrases and downloads nothing 3071ms
+L759: 2026-11-19T00:17:51.1165065Z      ✓ the raw key needs the second confirmation, is downloaded only and never shown 1632ms
+L760: 2026-11-19T00:17:51.1166077Z      ✓ a blocked download reports it, re-enables the form and clears the passphrases 2863ms
+L761: 2026-11-19T00:17:51.1167165Z      ✓ the idle lock, a chain switch and closing the panel cancel a running export: nothing is downloaded 3898ms
+L762: 2026-11-19T00:17:51.1168163Z      ✓ a key change during an export cancels it and clears the fields 2335ms
+L763: 2026-11-19T00:17:51.1169008Z    ✓ Export all payment keys (spec 18 flow 2) (3)
+L764: 2026-11-19T00:17:51.1169906Z      ✓ shows the distinct count and chain before confirming and exports one encrypted archive 4247ms
+L765: 2026-11-19T00:17:51.1171053Z      ✓ shows a conflict instead of a form, closes on a chain switch and accepts a keystore file as the credential 3970ms
+L766: 2026-11-19T00:17:51.1172176Z      ✓ refuses a keystore credential without a file, and says when there is nothing to export 1018ms
+[omitted]
+L1229: 2026-11-19T00:20:14.8763224Z  ✓ src/components/StealthExportVerification.test.tsx (13 tests) 3994ms
+L1230: 2026-11-19T00:20:14.8769187Z    ✓ saved Spec 18 export verification (13)
+L1231: 2026-11-19T00:20:14.8770107Z      ✓ requires retention confirmation and a saved file, authenticates its keys, and never changes seller custody 1470ms
+L1232: 2026-11-19T00:20:14.8771108Z      ✓ a wrong password cannot mark the saved file verified 913ms
+[omitted]
+L1352: 2026-11-19T00:20:39.0761081Z  ✓ src/components/StealthExportSelection.test.tsx (7 tests) 2107ms
+L1353: 2026-11-19T00:20:39.0762217Z    ✓ export consent and results follow the selected inputs (7)
+L1354: 2026-11-19T00:20:39.0763672Z      ✓ a changed payment closes raw-key confirmation on the same chain 349ms
+L1355: 2026-11-19T00:20:39.0764573Z      ✓ discards an in-flight encrypted payment after the payment changes 387ms
+L1356: 2026-11-19T00:20:39.0765433Z      ✓ discards an in-flight encrypted payment after the rpc changes 345ms
+L1357: 2026-11-19T00:20:39.0766318Z      ✓ discards an in-flight encrypted payment after the announcement changes 326ms
+[omitted]
+L1375: 2026-11-19T00:20:44.6356828Z  ✓ src/views/SellerKeys.stealthExport.test.tsx (4 tests) 9054ms
+L1376: 2026-11-19T00:20:44.6357940Z    ✓ Seller keys: spec 18 master backup and recovery (4)
+L1377: 2026-11-19T00:20:44.6361618Z      ✓ offers recovery in a fresh session with no keys, and the master backup only once keys are loaded 1518ms
+L1378: 2026-11-19T00:20:44.6362587Z      ✓ downloads the master backup after the vault step-up 4000ms
+L1379: 2026-11-19T00:20:44.6363479Z      ✓ loading master keys over unsaved keys asks first, like unlocking a vault 1325ms
+L1380: 2026-11-19T00:20:44.6364447Z      ✓ requires fresh consent before master keys replace keys whose saved vault still holds them 2207ms
+[omitted]
+L1631: 2026-11-19T00:21:10.2402489Z  ✓ src/AppShell.beforeUnload.test.tsx (6 tests) 3028ms
+L1632: 2026-11-19T00:21:10.2445212Z    ✓ AppShell beforeunload guard (SEC-40) (6)
+L1633: 2026-11-19T00:21:10.2499820Z      ✓ protects the only key copy when another tab deletes the saved vault without notifying this tab 911ms
+L1634: 2026-11-19T00:21:10.2539905Z      ✓ uses current external-copy verification even when the cached vault backup summary does not change 1923ms
+[omitted]
+L1705: 2026-11-19T00:21:27.5374689Z  ↓ src/features/btc/regtest.e2e.test.ts (1 test | 1 skipped)
+[omitted]
+L2210: 2026-11-19T00:22:45.2789410Z  Test Files  219 passed | 1 skipped (220)
+L2211: 2026-11-19T00:22:45.2801782Z       Tests  2997 passed | 1 skipped (2998)
+L2212: 2026-11-19T00:22:45.2802356Z    Start at  00:15:01
+L2213: 2026-11-19T00:22:45.2806827Z    Duration  464.24s (tests 86%, import 8%, environment 4%, transform 1%)
+L2214: 2026-11-19T00:22:45.2817166Z 
+[omitted]
+L2217: 2026-11-19T00:22:45.2818956Z 
+L2218: 2026-11-19T00:22:45.2876248Z  % Coverage report from v8
+L2219: 2026-11-19T00:22:45.2984843Z -------------------|---------|----------|---------|---------|-------------------
+L2220: 2026-11-19T00:22:45.2985576Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+L2221: 2026-11-19T00:22:45.2986101Z -------------------|---------|----------|---------|---------|-------------------
+L2222: 2026-11-19T00:22:45.2991383Z All files          |   93.29 |     89.5 |   95.02 |   97.04 |                   
+L2223: 2026-11-19T00:22:45.2991869Z  src               |   98.22 |    94.14 |   98.43 |   99.15 |                   
+L2224: 2026-11-19T00:22:45.2992304Z   App.tsx          |     100 |      100 |     100 |     100 |                   
+L2225: 2026-11-19T00:22:45.2992722Z   AppLean.tsx      |     100 |      100 |     100 |     100 |                   
+[omitted]
+L2390: 2026-11-19T00:22:45.6592477Z (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+L2391: 2026-11-19T00:22:45.6594874Z   - import "./vite.config" without a file extension (vitest.nocov.config.ts:2:18). Add the file extension
+L2392: 2026-11-19T00:22:45.6595616Z Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+L2393: 2026-11-19T00:22:45.6840734Z 
+L2394: 2026-11-19T00:22:45.6841597Z  RUN  v5.1.0 /home/runner/work/GhostPay/GhostPay/apps/web
+L2395: 2026-11-19T00:22:45.6841986Z 
+L2396: 2026-11-19T00:22:47.8817191Z spec05-bench us/op: pointDecode=65 tagCompare=3.6 ecdh~=1844 rejectedByTag=1912 fullMatch=3294 addressDerivationSkipped~=1382
+L2397: 2026-11-19T00:22:48.8861465Z  ✓ src/lib/scannerCore.bench.nocov.test.ts (1 test) 2892ms
+L2398: 2026-11-19T00:22:48.8862239Z    ✓ spec 05 cost benchmark (ECDH vs tag compare vs address derivation) (1)
+L2399: 2026-11-19T00:22:48.8863197Z      ✓ the tag compare cannot be the first filter: the ECDH it depends on dominates, the derivation it skips is a fraction 2891ms
+L2400: 2026-11-19T00:22:51.2958836Z  ✓ src/lib/tagArchive.fuzz.nocov.test.ts (1 test) 4773ms
+L2401: 2026-11-19T00:22:51.2959597Z    ✓ archive failure modes (fuzz) (1)
+L2402: 2026-11-19T00:22:51.2960359Z      ✓ fuzz: random and mutated inputs only ever fail with a user-facing error, never crash 4771ms
+L2403: 2026-11-19T00:22:54.6300632Z  ✓ src/lib/scannerCore.spam.nocov.test.ts (1 test) 8098ms
+L2404: 2026-11-19T00:22:54.6301694Z    ✓ spec 05 acceptance: 1M spam + 10 real router payments through the lanes and the budget (1)
+L2405: 2026-11-19T00:22:54.6303083Z      ✓ finds all ten, defers spam past the budget as backlog with the cursor held, and drains it on resume without losing or duplicating a payment 8096ms
+L2406: 2026-11-19T00:22:54.6338456Z 
+L2407: 2026-11-19T00:22:54.6341245Z  Test Files  3 passed (3)
+L2408: 2026-11-19T00:22:54.6341699Z       Tests  3 passed (3)
+L2409: 2026-11-19T00:22:54.6342091Z    Start at  00:22:45
+L2410: 2026-11-19T00:22:54.6344222Z    Duration  8.95s (tests 90%, import 5%, transform 5%)
+L2411: 2026-11-19T00:22:54.6351216Z 
+L2412: 2026-11-19T00:22:54.6830986Z Post job cleanup.
+L2413: 2026-11-19T00:22:54.7583519Z Cache hit occurred on the primary key linux-foundry-chain-fork-ts-test-b53f116b825d7cf6e85681fc835aec18ef7add75, not saving cache.
+L2414: 2026-11-19T00:22:54.7682044Z Post job cleanup.
+L2415: 2026-11-19T00:22:54.7684906Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__a6e626d8-4a25-42e5-b365-a38b6be36e99.libs]
+L2416: 2026-11-19T00:22:55.2074349Z Post job cleanup.
+L2417: 2026-11-19T00:22:55.2966991Z Cache hit occurred on the primary key libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2, not saving cache.
+L2418: 2026-11-19T00:22:55.3035319Z ##[end-action id=__a6e626d8-4a25-42e5-b365-a38b6be36e99.libs;outcome=success;conclusion=success;duration_ms=534]
+L2419: 2026-11-19T00:22:55.3037342Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__a6e626d8-4a25-42e5-b365-a38b6be36e99.__actions_setup-node]
+L2420: 2026-11-19T00:22:55.3065414Z Post job cleanup.
+L2421: 2026-11-19T00:22:55.3780771Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c, not saving cache.
+L2422: 2026-11-19T00:22:55.3836625Z ##[end-action id=__a6e626d8-4a25-42e5-b365-a38b6be36e99.__actions_setup-node;outcome=success;conclusion=success;duration_ms=79]
+L2423: 2026-11-19T00:22:55.3931819Z Post job cleanup.
+L2424: 2026-11-19T00:22:55.4495152Z [command]/usr/bin/git version
+L2425: 2026-11-19T00:22:55.4529035Z git version 2.56.1
+L2426: 2026-11-19T00:22:55.4552556Z Temporarily overriding HOME='/home/runner/work/_temp/6050b817-c59f-444d-93a0-14beabeba5df' before making global git config changes
+L2427: 2026-11-19T00:22:55.4553373Z Adding repository directory to the temporary git global config as a safe directory
+L2428: 2026-11-19T00:22:55.4555454Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+L2429: 2026-11-19T00:22:55.4590437Z Removing SSH command configuration
+L2430: 2026-11-19T00:22:55.4595209Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+L2431: 2026-11-19T00:22:55.4624801Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+L2432: 2026-11-19T00:22:55.4863279Z Removing HTTP extra header
+L2433: 2026-11-19T00:22:55.4869146Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+L2434: 2026-11-19T00:22:55.4905687Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+L2435: 2026-11-19T00:22:55.5174870Z Removing includeIf entries pointing to credentials config files
+L2436: 2026-11-19T00:22:55.5180081Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+L2437: 2026-11-19T00:22:55.5207604Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+L2438: 2026-11-19T00:22:55.5551655Z Cleaning up orphan processes

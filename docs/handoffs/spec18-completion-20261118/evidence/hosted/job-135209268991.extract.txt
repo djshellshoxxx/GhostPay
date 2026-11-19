@@ -1,0 +1,180 @@
+Job: 135209268991 (e2e (full))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44419497914/job/135209268991
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135209268991/logs
+Fetched at: 2026-11-18T23:28:56.548Z
+Job API conclusion: failure
+Published head: 041db448baa7fd094f8b1ad37f3f7377c98bcab1
+Checked-out commit(s): ad0f03acfae81439640f74fce5562d475227197f
+Decoded raw log SHA256: 5ba810279460a1bc5d45e71711f4ae43542d8fc5eb636078de25fd24cb71bd0c
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L130: 2026-11-18T23:23:31.6685893Z ##[endgroup]
+L131: 2026-11-18T23:23:31.6740166Z [command]/usr/bin/git log -1 --format=%H
+L132: 2026-11-18T23:23:31.6772354Z ad0f03acfae81439640f74fce5562d475227197f
+L133: 2026-11-18T23:23:31.6781128Z ##[group]Removing auth
+[omitted]
+L171: 2026-11-18T23:23:32.3397279Z with:
+L172: 2026-11-18T23:23:32.3397489Z   node-version: 22
+L173: 2026-11-18T23:23:32.3397713Z   cache: npm
+[omitted]
+L179: 2026-11-18T23:23:32.5463617Z ##[group]Environment details
+L180: 2026-11-18T23:23:32.8856649Z node: v22.23.4
+L181: 2026-11-18T23:23:32.8857230Z npm: 10.9.9
+[omitted]
+L195: 2026-11-18T23:23:35.3783708Z ##[group]Run npm ci --ignore-scripts
+L196: 2026-11-18T23:23:35.3784100Z npm ci --ignore-scripts
+[omitted]
+L438: 2026-11-18T23:24:06.0746882Z ##[group]Run npm run test:e2e --workspace @ghostpay/web
+L439: 2026-11-18T23:24:06.0747582Z npm run test:e2e --workspace @ghostpay/web
+[omitted]
+L446: 2026-11-18T23:24:06.2279928Z > playwright test
+L447: 2026-11-18T23:24:06.2280088Z 
+[omitted]
+L481: 2026-11-18T23:25:01.2057287Z   ✘  17 [desktop] › e2e/backup-panel.spec.ts:10:3 › combined backup panel › shows honest per-item status and marks each item done only after its export (1.3s)
+L482: 2026-11-18T23:25:01.2061280Z   -  18 [desktop] › e2e/backup-panel.spec.ts:60:3 › lean profile › keeps the key backup and has no tag archive item or combined panel
+[omitted]
+L492: 2026-11-18T23:25:16.7654817Z   ✓  26 [desktop] › e2e/core-journey.spec.ts:474:1 › core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore (7.2s)
+L493: 2026-11-18T23:25:18.4006993Z   ✓  27 [desktop] › e2e/core-journey.spec.ts:601:1 › invoice expiry is refused at the final pay guard: nothing reaches the wallet (1.6s)
+L494: 2026-11-18T23:25:19.7379738Z   ✘  28 [desktop] › e2e/core-journey.spec.ts:623:1 › stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results (1.3s)
+L495: 2026-11-18T23:25:22.2411888Z   ✘  29 [desktop] › e2e/core-journey.spec.ts:667:1 › verified keystore reimports the same keys after a manual wipe without a pending sweep (1.4s)
+L496: 2026-11-18T23:25:27.5216505Z   ✓  30 [desktop] › e2e/core-journey.spec.ts:681:1 › reorg: the payment block is replaced mid-scan, the scan withdraws the match, invalidates the saved observation and offers no receipt (4.3s)
+L497: 2026-11-18T23:25:29.9810696Z   ✓  31 [desktop] › e2e/core-journey.spec.ts:722:1 › unknown and late outcomes are shown honestly: no false success, pending until final (2.4s)
+[omitted]
+L528: 2026-11-18T23:26:20.2598868Z   ✘  59 [desktop] › e2e/stealth-export.spec.ts:71:1 › payment details: public record holds no key; encrypted keypair after vault re-auth; raw key only after the second confirmation (1.6s)
+L529: 2026-11-18T23:26:25.8345226Z   ✓  60 [desktop] › e2e/stealth-export.spec.ts:160:1 › keys without a vault: secret exports are refused until the keystore backup file and its passphrase are given (4.6s)
+L530: 2026-11-18T23:26:26.7920008Z   ✓  61 [desktop] › e2e/stealth-export.spec.ts:201:1 › a fresh browser with no keys opens an encrypted keypair file and validates its address; a wrong passphrase shows nothing (949ms)
+L531: 2026-11-18T23:26:27.7324061Z   ✓  62 [desktop] › e2e/stealth-export.spec.ts:244:1 › narrow-viewport verification-only flow rejects malformed and public files, authenticates a backup, and installs no wallet (930ms)
+L532: 2026-11-18T23:26:29.3647271Z   ✓  63 [desktop] › e2e/stealth-export.spec.ts:283:1 › a fresh browser restores master spending authority and replacing a saved wallet still requires fresh consent (1.6s)
+L533: 2026-11-18T23:26:30.0134708Z   ✓  64 [desktop] › e2e/stealth-export.spec.ts:305:1 › keyboard navigation opens the saved-file chooser and verifies a backup without importing (638ms)
+L534: 2026-11-18T23:26:38.3858783Z   ✓  65 [desktop] › e2e/stealth-export.spec.ts:329:1 › secret-leak guard: no exported private key in requests, console, URL/history, storage, IndexedDB or clipboard (8.4s)
+L535: 2026-11-18T23:26:47.5896600Z   ✓  66 [desktop] › e2e/stealth-export.spec.ts:392:1 › the idle lock while the export is still deriving and encrypting discards the result: no download, keys stay loaded (9.2s)
+L536: 2026-11-18T23:27:08.9804795Z   ✓  67 [desktop] › e2e/stealth-export.spec.ts:439:1 › wiping the keys while the master backup KDF runs discards the result: no download (21.4s)
+[omitted]
+L538: 2026-11-18T23:27:14.8052443Z   ✓  68 [desktop] › e2e/sweep.spec.ts:54:3 › actual direct sweep journals before success handoff and refuses a duplicate through reload (5.8s)
+[omitted]
+L540: 2026-11-18T23:27:21.1921683Z   ✓  69 [desktop] › e2e/sweep.spec.ts:54:3 › actual direct sweep journals before unknown handoff and refuses a duplicate through reload (6.4s)
+[omitted]
+L575: 2026-11-18T23:28:23.7810904Z 
+L576: 2026-11-18T23:28:23.7811167Z     Error: page.goto: net::ERR_ABORTED at about:blank
+L577: 2026-11-18T23:28:23.7811553Z     Call log:
+L578: 2026-11-18T23:28:23.7812246Z       - navigating to "about:blank", waiting until "load"
+L579: 2026-11-18T23:28:23.7812701Z 
+L580: 2026-11-18T23:28:23.7812708Z 
+L581: 2026-11-18T23:28:23.7812835Z        at helpers.ts:56
+L582: 2026-11-18T23:28:23.7812997Z 
+L583: 2026-11-18T23:28:23.7813378Z       54 | /** A genuine fresh page load of `url` (as when following a link), not a same-document hash change. */
+L584: 2026-11-18T23:28:23.7814115Z       55 | export async function openFresh(page: Page, url: string): Promise<void> {
+L585: 2026-11-18T23:28:23.7814744Z     > 56 |   await page.goto('about:blank');
+L586: 2026-11-18T23:28:23.7815078Z          |              ^
+L587: 2026-11-18T23:28:23.7815383Z       57 |   await page.goto(url);
+L588: 2026-11-18T23:28:23.7815772Z       58 | }
+[omitted]
+L590: 2026-11-18T23:28:23.7816480Z         at openFresh (/home/runner/work/GhostPay/GhostPay/apps/web/e2e/helpers.ts:56:14)
+L591: 2026-11-18T23:28:23.7817107Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/app.spec.ts:125:9
+L592: 2026-11-18T23:28:23.7817422Z 
+L593: 2026-11-18T23:28:23.7817884Z     Error Context: test-results/app-hostile-text-in-line-items-and-memo-is-rendered-inert-desktop/error-context.md
+L594: 2026-11-18T23:28:23.7818375Z 
+L595: 2026-11-18T23:28:23.7819218Z   2) [desktop] › e2e/backup-panel.spec.ts:10:3 › combined backup panel › shows honest per-item status and marks each item done only after its export 
+L596: 2026-11-18T23:28:23.7819762Z 
+L597: 2026-11-18T23:28:23.7820218Z     Error: locator.click: Error: strict mode violation: getByRole('button', { name: 'Verify backup' }) resolved to 2 elements:
+L598: 2026-11-18T23:28:23.7821140Z         1) <button class="btn" type="submit">Verify backup</button> aka getByRole('button', { name: 'Verify backup', exact: true })
+L599: 2026-11-18T23:28:23.7822493Z         2) <button disabled class="btn" type="button" data-testid="stealth-export-verify-submit">Verify backup without importing</button> aka getByTestId('stealth-export-verify-submit')
+L600: 2026-11-18T23:28:23.7823205Z 
+L601: 2026-11-18T23:28:23.7823361Z     Call log:
+L602: 2026-11-18T23:28:23.7823907Z       - waiting for getByRole('button', { name: 'Verify backup' })
+L603: 2026-11-18T23:28:23.7824349Z 
+L604: 2026-11-18T23:28:23.7824357Z 
+L605: 2026-11-18T23:28:23.7824887Z       35 |     await page.getByLabel('Downloaded keystore file', { exact: true }).setInputFiles(file);
+L606: 2026-11-18T23:28:23.7826014Z       36 |     await page.getByLabel('Keystore passphrase', { exact: true }).fill('not the passphrase here');
+L607: 2026-11-18T23:28:23.7826961Z     > 37 |     await page.getByRole('button', { name: 'Verify backup' }).click();
+L608: 2026-11-18T23:28:23.7827650Z          |                                                               ^
+L609: 2026-11-18T23:28:23.7828177Z       38 |     await expect(page.getByRole('alert')).toBeVisible({ timeout: 60_000 });
+[omitted]
+L611: 2026-11-18T23:28:23.7829857Z       40 |     await page.getByLabel('Downloaded keystore file', { exact: true }).setInputFiles(file);
+L612: 2026-11-18T23:28:23.7830537Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/backup-panel.spec.ts:37:63
+L613: 2026-11-18T23:28:23.7830890Z 
+L614: 2026-11-18T23:28:23.7831366Z     Error Context: test-results/backup-panel-combined-back-916e8--done-only-after-its-export-desktop/error-context.md
+L615: 2026-11-18T23:28:23.7831861Z 
+L616: 2026-11-18T23:28:23.7832855Z   3) [desktop] › e2e/core-journey.spec.ts:623:1 › stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results 
+L617: 2026-11-18T23:28:23.7833423Z 
+L618: 2026-11-18T23:28:23.7834043Z     Error: locator.click: Error: strict mode violation: locator('section[aria-labelledby="keys-h"]').getByRole('button', { name: 'Verify backup' }) resolved to 2 elements:
+L619: 2026-11-18T23:28:23.7835274Z         1) <button class="btn" type="submit">Verify backup</button> aka getByRole('button', { name: 'Verify backup', exact: true })
+L620: 2026-11-18T23:28:23.7836400Z         2) <button disabled class="btn" type="button" data-testid="stealth-export-verify-submit">Verify backup without importing</button> aka getByTestId('stealth-export-verify-submit')
+L621: 2026-11-18T23:28:23.7837188Z 
+L622: 2026-11-18T23:28:23.7837302Z     Call log:
+L623: 2026-11-18T23:28:23.7837822Z       - waiting for locator('section[aria-labelledby="keys-h"]').getByRole('button', { name: 'Verify backup' })
+L624: 2026-11-18T23:28:23.7838232Z 
+L625: 2026-11-18T23:28:23.7838239Z 
+L626: 2026-11-18T23:28:23.7839128Z       337 |   await keysView(page).getByLabel('Downloaded keystore file', { exact: true }).setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') });
+L627: 2026-11-18T23:28:23.7840901Z       338 |   await keysView(page).getByLabel('Keystore passphrase', { exact: true }).fill(BACKUP_PASS);
+L628: 2026-11-18T23:28:23.7842194Z     > 339 |   await keysView(page).getByRole('button', { name: 'Verify backup' }).click();
+L629: 2026-11-18T23:28:23.7843041Z           |                                                                       ^
+L630: 2026-11-18T23:28:23.7844221Z       340 |   await kdfExpect(keysView(page).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible();
+[omitted]
+L633: 2026-11-18T23:28:23.7847018Z         at verifyBackup (/home/runner/work/GhostPay/GhostPay/apps/web/e2e/core-journey.spec.ts:339:71)
+L634: 2026-11-18T23:28:23.7848190Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/core-journey.spec.ts:629:5
+L635: 2026-11-18T23:28:23.7849290Z         at withChain (/home/runner/work/GhostPay/GhostPay/apps/web/e2e/core-journey.spec.ts:440:5)
+L636: 2026-11-18T23:28:23.7850318Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/core-journey.spec.ts:624:3
+L637: 2026-11-18T23:28:23.7850835Z 
+L638: 2026-11-18T23:28:23.7851599Z     Error Context: test-results/core-journey-stale-session-5447a-weep-and-drops-scan-results-desktop/error-context.md
+L639: 2026-11-18T23:28:23.7852575Z 
+L640: 2026-11-18T23:28:23.7853575Z   4) [desktop] › e2e/core-journey.spec.ts:667:1 › verified keystore reimports the same keys after a manual wipe without a pending sweep 
+L641: 2026-11-18T23:28:23.7854388Z 
+L642: 2026-11-18T23:28:23.7855370Z     Error: locator.click: Error: strict mode violation: locator('section[aria-labelledby="keys-h"]').getByRole('button', { name: 'Verify backup' }) resolved to 2 elements:
+L643: 2026-11-18T23:28:23.7857042Z         1) <button class="btn" type="submit">Verify backup</button> aka getByRole('button', { name: 'Verify backup', exact: true })
+L644: 2026-11-18T23:28:23.7858872Z         2) <button disabled class="btn" type="button" data-testid="stealth-export-verify-submit">Verify backup without importing</button> aka getByTestId('stealth-export-verify-submit')
+L645: 2026-11-18T23:28:23.7859953Z 
+L646: 2026-11-18T23:28:23.7860106Z     Call log:
+L647: 2026-11-18T23:28:23.7860943Z       - waiting for locator('section[aria-labelledby="keys-h"]').getByRole('button', { name: 'Verify backup' })
+L648: 2026-11-18T23:28:23.7861665Z 
+L649: 2026-11-18T23:28:23.7861686Z 
+L650: 2026-11-18T23:28:23.7863194Z       337 |   await keysView(page).getByLabel('Downloaded keystore file', { exact: true }).setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') });
+L651: 2026-11-18T23:28:23.7864856Z       338 |   await keysView(page).getByLabel('Keystore passphrase', { exact: true }).fill(BACKUP_PASS);
+L652: 2026-11-18T23:28:23.7865908Z     > 339 |   await keysView(page).getByRole('button', { name: 'Verify backup' }).click();
+L653: 2026-11-18T23:28:23.7866730Z           |                                                                       ^
+L654: 2026-11-18T23:28:23.7867944Z       340 |   await kdfExpect(keysView(page).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible();
+[omitted]
+L657: 2026-11-18T23:28:23.7871023Z         at verifyBackup (/home/runner/work/GhostPay/GhostPay/apps/web/e2e/core-journey.spec.ts:339:71)
+L658: 2026-11-18T23:28:23.7872303Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/core-journey.spec.ts:672:5
+L659: 2026-11-18T23:28:23.7873595Z         at withChain (/home/runner/work/GhostPay/GhostPay/apps/web/e2e/core-journey.spec.ts:440:5)
+L660: 2026-11-18T23:28:23.7874752Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/core-journey.spec.ts:668:3
+L661: 2026-11-18T23:28:23.7875310Z 
+L662: 2026-11-18T23:28:23.7876117Z     Error Context: test-results/core-journey-verified-keys-616d3-ipe-without-a-pending-sweep-desktop/error-context.md
+L663: 2026-11-18T23:28:23.7876990Z 
+L664: 2026-11-18T23:28:23.7878324Z   5) [desktop] › e2e/stealth-export.spec.ts:71:1 › payment details: public record holds no key; encrypted keypair after vault re-auth; raw key only after the second confirmation 
+L665: 2026-11-18T23:28:23.7879366Z 
+L666: 2026-11-18T23:28:23.7879704Z     Error: page.evaluate: Error: test-only missing anchor click
+L667: 2026-11-18T23:28:23.7880421Z         at eval (eval at evaluate (:370:30), <anonymous>:3:41)
+L668: 2026-11-18T23:28:23.7881091Z         at UtilityScript.evaluate (<anonymous>:372:16)
+L669: 2026-11-18T23:28:23.7881722Z         at UtilityScript.<anonymous> (<anonymous>:1:44)
+L670: 2026-11-18T23:28:23.7882541Z         at eval (eval at evaluate (:370:30), <anonymous>:3:41)
+L671: 2026-11-18T23:28:23.7883211Z         at UtilityScript.evaluate (<anonymous>:372:16)
+L672: 2026-11-18T23:28:23.7883841Z         at UtilityScript.<anonymous> (<anonymous>:1:44)
+L673: 2026-11-18T23:28:23.7884678Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/stealth-export.spec.ts:98:14
+L674: 2026-11-18T23:28:23.7885255Z 
+L675: 2026-11-18T23:28:23.7886036Z     Error Context: test-results/stealth-export-payment-det-54219-ter-the-second-confirmation-desktop/error-context.md
+L676: 2026-11-18T23:28:23.7886864Z 
+L677: 2026-11-18T23:28:23.7887013Z   5 failed
+L678: 2026-11-18T23:28:23.7887966Z     [desktop] › e2e/app.spec.ts:115:1 › hostile text in line items and memo is rendered inert ──────
+L679: 2026-11-18T23:28:23.7889646Z     [desktop] › e2e/backup-panel.spec.ts:10:3 › combined backup panel › shows honest per-item status and marks each item done only after its export 
+L680: 2026-11-18T23:28:23.7891688Z     [desktop] › e2e/core-journey.spec.ts:623:1 › stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results 
+L681: 2026-11-18T23:28:23.7893673Z     [desktop] › e2e/core-journey.spec.ts:667:1 › verified keystore reimports the same keys after a manual wipe without a pending sweep 
+L682: 2026-11-18T23:28:23.7895723Z     [desktop] › e2e/stealth-export.spec.ts:71:1 › payment details: public record holds no key; encrypted keypair after vault re-auth; raw key only after the second confirmation 
+L683: 2026-11-18T23:28:23.7896871Z   1 skipped
+L684: 2026-11-18T23:28:23.7897216Z   82 passed (4.3m)
+L685: 2026-11-18T23:28:23.8052265Z npm error Lifecycle script `test:e2e` failed with error:
+L686: 2026-11-18T23:28:23.8052826Z npm error code 1
+L687: 2026-11-18T23:28:23.8053409Z npm error path /home/runner/work/GhostPay/GhostPay/apps/web
+L688: 2026-11-18T23:28:23.8053935Z npm error workspace @ghostpay/web@0.1.0
+L689: 2026-11-18T23:28:23.8054584Z npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+L690: 2026-11-18T23:28:23.8055156Z npm error command failed
+L691: 2026-11-18T23:28:23.8055509Z npm error command sh -c playwright test
+L692: 2026-11-18T23:28:23.8135080Z ##[error]Process completed with exit code 1.
+L693: 2026-11-18T23:28:23.8217245Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+L694: 2026-11-18T23:28:23.8217692Z with:
+L695: 2026-11-18T23:28:23.8217944Z   name: playwright-test-results-full
+L696: 2026-11-18T23:28:23.8218280Z   path: apps/web/test-results
+L697: 2026-11-18T23:28:23.8218563Z   if-no-files-found: ignore
+L698: 2026-11-18T23:28:23.8218832Z   retention-days: 7
+L699: 2026-11-18T23:28:23.8219076Z   compression-level: 6

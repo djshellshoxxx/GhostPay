@@ -1,0 +1,48 @@
+Job: 135223398752 (ts-test (web))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44423422185/job/135223398752
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135223398752/logs
+Fetched at: 2026-11-18T23:59:59.978Z
+Job API conclusion: cancelled
+Published head: f72c198b2a6a75be889e9810a37721da116deba1
+Checked-out commit(s): 5565efdf0b8b64646949520c422c9c908182f931
+Decoded raw log SHA256: 6dbbd85b2e988d699bfa225bfe9f5e4661e2a9e05c536790532d21ae05d690a7
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L129: 2026-11-18T23:56:53.9547897Z ##[endgroup]
+L130: 2026-11-18T23:56:53.9602924Z [command]/usr/bin/git log -1 --format=%H
+L131: 2026-11-18T23:56:53.9634135Z 5565efdf0b8b64646949520c422c9c908182f931
+L132: 2026-11-18T23:56:53.9644745Z ##[group]Removing auth
+[omitted]
+L170: 2026-11-18T23:56:54.6920889Z with:
+L171: 2026-11-18T23:56:54.6921112Z   node-version: 22
+L172: 2026-11-18T23:56:54.6921339Z   cache: npm
+[omitted]
+L178: 2026-11-18T23:56:54.9193371Z ##[group]Environment details
+L179: 2026-11-18T23:56:55.2632283Z node: v22.23.4
+L180: 2026-11-18T23:56:55.2632688Z npm: 10.9.9
+[omitted]
+L194: 2026-11-18T23:56:57.8308385Z ##[group]Run npm ci --ignore-scripts
+L195: 2026-11-18T23:56:57.8308801Z npm ci --ignore-scripts
+[omitted]
+L448: 2026-11-18T23:57:39.6595370Z > @ghostpay/web@0.1.0 test
+L449: 2026-11-18T23:57:39.6596250Z > vitest run --coverage && vitest run --config vitest.nocov.config.ts
+L450: 2026-11-18T23:57:39.6596769Z 
+L451: 2026-11-18T23:57:40.0902084Z 
+L452: 2026-11-18T23:57:40.0905880Z  RUN  v5.1.0 /home/runner/work/GhostPay/GhostPay/apps/web
+L453: 2026-11-18T23:57:40.0907000Z       Coverage enabled with v8
+L454: 2026-11-18T23:57:40.0907386Z 
+L455: 2026-11-18T23:57:45.0833051Z  ✓ src/lib/sweep.test.ts (102 tests) 2578ms
+L456: 2026-11-18T23:57:49.3151677Z  ✓ src/lib/scanClient.test.ts (92 tests) 7255ms
+[omitted]
+L596: 2026-11-18T23:59:17.4960558Z      ✓ scans a block whose transaction count is a multiple of 25 483ms
+L597: 2026-11-18T23:59:17.4962528Z      ✓ says exactly what links the scanned blocks: an unanchored first block with an invented payment is accepted 1025ms
+L598: 2026-11-18T23:59:19.8223485Z  ✓ src/lib/pay.test.ts (55 tests) 1437ms
+L599: 2026-11-18T23:59:20.2482809Z ##[error]The operation was canceled.
+L600: 2026-11-18T23:59:20.3182903Z Post job cleanup.
+L601: 2026-11-18T23:59:20.3291151Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__66c12d70-c9d7-442b-a2e7-3f009b161e91.libs]
+L602: 2026-11-18T23:59:20.3357274Z ##[end-action id=__66c12d70-c9d7-442b-a2e7-3f009b161e91.libs;outcome=skipped;conclusion=skipped;duration_ms=0]
+L603: 2026-11-18T23:59:20.3479409Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__66c12d70-c9d7-442b-a2e7-3f009b161e91.__actions_setup-node]
+L604: 2026-11-18T23:59:20.3540991Z ##[end-action id=__66c12d70-c9d7-442b-a2e7-3f009b161e91.__actions_setup-node;outcome=skipped;conclusion=skipped;duration_ms=0]
+L605: 2026-11-18T23:59:20.5125762Z Post job cleanup.
+L606: 2026-11-18T23:59:20.6630261Z [command]/usr/bin/git version

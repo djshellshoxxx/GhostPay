@@ -1,0 +1,64 @@
+{
+  "job": {
+    "id": 135228385606,
+    "name": "beta acceptance (lib + cli + browser on anvil)",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+    "started_at": "2026-11-19T00:00:48Z",
+    "completed_at": "2026-11-19T00:03:15Z",
+    "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273428/job/135228385606",
+    "details_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273428/job/135228385606",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273428/job/135228385606"
+  },
+  "fetched_at": "2026-11-19T00:05:33.243Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135228385606/logs",
+  "decoded_log_sha256": "44fd38d66439aa43a3b184a172b826a8838b9245c0c7f168c11d3a2f98bb685d",
+  "decoded_log_bytes": 76347,
+  "compressed_log_bytes": 18691,
+  "compressed_log_sha256": "c54e521d4791a2229ecc7801929d8557952434b1395e1b87600b2c1c1e59bf9c",
+  "log_file": "job-135228385606.log.gz",
+  "checkout_shas": [
+    "b53f116b825d7cf6e85681fc835aec18ef7add75"
+  ],
+  "selected_browser_cases": [
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/devnet-journey.spec.ts:71:1",
+      "title": "real chain: keys -> signed invoice -> consented payment (pending, then included) -> reload keeps hash, no duplicate -> scan (pending, then final) -> bound receipt -> direct sweep -> no second sweep",
+      "duration": "5.7s",
+      "raw_line": "2026-11-19T00:03:05.3782374Z   \u2713  1 e2e/devnet-journey.spec.ts:71:1 \u203a real chain: keys -> signed invoice -> consented payment (pending, then included) -> reload keeps hash, no duplicate -> scan (pending, then final) -> bound receipt -> direct sweep -> no second sweep (5.7s)",
+      "line": 795
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/devnet-journey.spec.ts:244:1",
+      "title": "real chain: reload while the payment is still pending keeps its hash and blocks a duplicate; it is mined exactly once",
+      "duration": "2.0s",
+      "raw_line": "2026-11-19T00:03:07.3613362Z   \u2713  2 e2e/devnet-journey.spec.ts:244:1 \u203a real chain: reload while the payment is still pending keeps its hash and blocks a duplicate; it is mined exactly once (2.0s)",
+      "line": 796
+    },
+    {
+      "status": "passed",
+      "project": "not named in log",
+      "location": "e2e/devnet-journey.spec.ts:285:1",
+      "title": "real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment",
+      "duration": "1.7s",
+      "raw_line": "2026-11-19T00:03:09.1088509Z   \u2713  3 e2e/devnet-journey.spec.ts:285:1 \u203a real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment (1.7s)",
+      "line": 798
+    }
+  ],
+  "skipped_cases": [],
+  "summary_lines": [
+    {
+      "line": 800,
+      "text": "2026-11-19T00:03:09.1585471Z   3 passed (25.2s)"
+    }
+  ],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135228385606.extract.txt",
+  "extract_sha256": "51102e05bd3da045953817464a6897ec7ae01be5e5738e93bf395168e55e5cdb",
+  "skipped_browser_cases": []
+}

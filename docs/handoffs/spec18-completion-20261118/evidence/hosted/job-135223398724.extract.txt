@@ -1,0 +1,330 @@
+Job: 135223398724 (ts-lint)
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44423422185/job/135223398724
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135223398724/logs
+Fetched at: 2026-11-18T23:58:15.442Z
+Job API conclusion: failure
+Published head: f72c198b2a6a75be889e9810a37721da116deba1
+Checked-out commit(s): 5565efdf0b8b64646949520c422c9c908182f931
+Decoded raw log SHA256: 2e8dd8a9a8deee50ecb23edba239182d266fcb436016fa17cce18ec3b2312a57
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L128: 2026-11-18T23:50:26.3116448Z ##[endgroup]
+L129: 2026-11-18T23:50:26.3169990Z [command]/usr/bin/git log -1 --format=%H
+L130: 2026-11-18T23:50:26.3196839Z 5565efdf0b8b64646949520c422c9c908182f931
+L131: 2026-11-18T23:50:26.3206567Z ##[group]Removing auth
+[omitted]
+L169: 2026-11-18T23:50:27.1929487Z with:
+L170: 2026-11-18T23:50:27.1929726Z   node-version: 22
+L171: 2026-11-18T23:50:27.1929976Z   cache: npm
+[omitted]
+L177: 2026-11-18T23:50:27.4119143Z ##[group]Environment details
+L178: 2026-11-18T23:50:27.7613923Z node: v22.23.4
+L179: 2026-11-18T23:50:27.7614241Z npm: 10.9.9
+[omitted]
+L196: 2026-11-18T23:50:33.1659291Z ##[group]Run npm ci --ignore-scripts
+L197: 2026-11-18T23:50:33.1659720Z npm ci --ignore-scripts
+[omitted]
+L242: 2026-11-18T23:50:49.5565163Z ##[group]Run npm run lint
+L243: 2026-11-18T23:50:49.5565468Z npm run lint
+[omitted]
+L247: 2026-11-18T23:50:49.6642917Z > ghostpay@0.1.0 lint
+L248: 2026-11-18T23:50:49.6643353Z > npm run lint --workspaces --if-present
+L249: 2026-11-18T23:50:49.6643903Z 
+[omitted]
+L251: 2026-11-18T23:50:49.8034739Z > @ghostpay/address-safety@0.1.0 lint
+L252: 2026-11-18T23:50:49.8035580Z > eslint --config ../../eslint.config.js src
+L253: 2026-11-18T23:50:49.8036011Z 
+[omitted]
+L255: 2026-11-18T23:50:53.2838378Z > @ghostpay/amount-blur@0.1.0 lint
+L256: 2026-11-18T23:50:53.2839120Z > eslint --config ../../eslint.config.js src
+L257: 2026-11-18T23:50:53.2839498Z 
+[omitted]
+L259: 2026-11-18T23:50:56.4362310Z > @ghostpay/btc-family@0.1.0 lint
+L260: 2026-11-18T23:50:56.4362913Z > eslint --config ../../eslint.config.js src
+L261: 2026-11-18T23:50:56.4363178Z 
+[omitted]
+L263: 2026-11-18T23:51:00.0842488Z > @ghostpay/btc-payjoin@0.1.0 lint
+L264: 2026-11-18T23:51:00.0842979Z > eslint --config ../../eslint.config.js src e2e
+L265: 2026-11-18T23:51:00.0843223Z 
+[omitted]
+L267: 2026-11-18T23:51:04.6768551Z > @ghostpay/btc-silent-payments@0.1.0 lint
+L268: 2026-11-18T23:51:04.6769170Z > eslint --config ../../eslint.config.js src
+L269: 2026-11-18T23:51:04.6769464Z 
+L270: 2026-11-18T23:51:11.7163315Z 
+L271: 2026-11-18T23:51:11.7183127Z /home/runner/work/GhostPay/GhostPay/packages/btc-silent-payments/src/scan/proto/indexing_server_pb.ts
+L272: 2026-11-18T23:51:11.7184204Z   3:1  warning  Unused eslint-disable directive (no problems were reported)
+L273: 2026-11-18T23:51:11.7184719Z 
+L274: 2026-11-18T23:51:11.7185324Z ✖ 1 problem (0 errors, 1 warning)
+L275: 2026-11-18T23:51:11.7186083Z   0 errors and 1 warning potentially fixable with the `--fix` option.
+L276: 2026-11-18T23:51:11.7186584Z 
+L277: 2026-11-18T23:51:11.8164959Z 
+L278: 2026-11-18T23:51:11.8165535Z > @ghostpay/chain-adapters@0.1.0 lint
+L279: 2026-11-18T23:51:11.8166048Z > eslint --config ../../eslint.config.js src
+L280: 2026-11-18T23:51:11.8166291Z 
+L281: 2026-11-18T23:51:24.1047307Z 
+L282: 2026-11-18T23:51:24.1048609Z /home/runner/work/GhostPay/GhostPay/packages/chain-adapters/src/payments.bulkCancellation.test.ts
+L283: 2026-11-18T23:51:24.1074713Z ##[error]  21:7  error  Async method 'getLogs' has no 'await' expression  @typescript-eslint/require-await
+L284: 2026-11-18T23:51:24.1082208Z 
+L285: 2026-11-18T23:51:24.1082643Z ✖ 1 problem (1 error, 0 warnings)
+L286: 2026-11-18T23:51:24.1082869Z 
+L287: 2026-11-18T23:51:24.2233539Z npm error Lifecycle script `lint` failed with error:
+L288: 2026-11-18T23:51:24.2234214Z npm error code 1
+L289: 2026-11-18T23:51:24.2234765Z npm error path /home/runner/work/GhostPay/GhostPay/packages/chain-adapters
+L290: 2026-11-18T23:51:24.2238389Z npm error workspace @ghostpay/chain-adapters@0.1.0
+L291: 2026-11-18T23:51:24.2239655Z npm error location /home/runner/work/GhostPay/GhostPay/packages/chain-adapters
+L292: 2026-11-18T23:51:24.2240677Z npm error command failed
+L293: 2026-11-18T23:51:24.2241580Z npm error command sh -c eslint --config ../../eslint.config.js src
+L294: 2026-11-18T23:51:24.2242326Z 
+L295: 2026-11-18T23:51:24.2245552Z 
+L296: 2026-11-18T23:51:24.2245917Z > @ghostpay/chain-evm-extra@0.1.0 lint
+L297: 2026-11-18T23:51:24.2246590Z > eslint --config ../../eslint.config.js src
+L298: 2026-11-18T23:51:24.2247200Z 
+L299: 2026-11-18T23:51:27.4923347Z 
+L300: 2026-11-18T23:51:27.4923901Z > @ghostpay/chain-solana@0.1.0 lint
+L301: 2026-11-18T23:51:27.4924398Z > eslint --config ../../eslint.config.js src
+L302: 2026-11-18T23:51:27.4924629Z 
+[omitted]
+L304: 2026-11-18T23:51:30.8491924Z > @ghostpay/chain-tron@0.1.0 lint
+L305: 2026-11-18T23:51:30.8492633Z > eslint --config ../../eslint.config.js src
+L306: 2026-11-18T23:51:30.8493010Z 
+[omitted]
+L308: 2026-11-18T23:51:33.5478743Z > @ghostpay/cli@0.1.0 lint
+L309: 2026-11-18T23:51:33.5479183Z > eslint --config ../../eslint.config.js src
+L310: 2026-11-18T23:51:33.5479433Z 
+[omitted]
+L312: 2026-11-18T23:51:43.7168017Z > @ghostpay/confidential-amounts@0.1.0 lint
+L313: 2026-11-18T23:51:43.7168529Z > eslint --config ../../eslint.config.js src
+L314: 2026-11-18T23:51:43.7168778Z 
+[omitted]
+L316: 2026-11-18T23:51:50.5999109Z > @ghostpay/core-crypto@0.1.0 lint
+L317: 2026-11-18T23:51:50.5999763Z > eslint --config ../../eslint.config.js src
+L318: 2026-11-18T23:51:50.6000102Z 
+[omitted]
+L320: 2026-11-18T23:51:54.9451683Z > @ghostpay/donation@0.1.0 lint
+L321: 2026-11-18T23:51:54.9452438Z > eslint --config ../../eslint.config.js src
+L322: 2026-11-18T23:51:54.9453309Z 
+[omitted]
+L324: 2026-11-18T23:51:58.1519702Z > @ghostpay/external-pools@0.1.0 lint
+L325: 2026-11-18T23:51:58.1520190Z > eslint --config ../../eslint.config.js src
+L326: 2026-11-18T23:51:58.1520430Z 
+[omitted]
+L328: 2026-11-18T23:52:03.3613581Z > @ghostpay/external-pools-privacypools@0.1.0 lint
+L329: 2026-11-18T23:52:03.3614157Z > eslint --config ../../eslint.config.js src
+L330: 2026-11-18T23:52:03.3614421Z 
+[omitted]
+L332: 2026-11-18T23:52:09.8841551Z > @ghostpay/external-pools-railgun@0.1.0 lint
+L333: 2026-11-18T23:52:09.8842045Z > eslint --config ../../eslint.config.js src
+L334: 2026-11-18T23:52:09.8842271Z 
+[omitted]
+L336: 2026-11-18T23:52:15.1517179Z > @ghostpay/hops@0.1.0 lint
+L337: 2026-11-18T23:52:15.1517659Z > eslint --config ../../eslint.config.js src
+L338: 2026-11-18T23:52:15.1517901Z 
+[omitted]
+L340: 2026-11-18T23:52:19.0806054Z > @ghostpay/hygiene@0.1.0 lint
+L341: 2026-11-18T23:52:19.0806929Z > eslint --config ../../eslint.config.js src
+L342: 2026-11-18T23:52:19.0807370Z 
+[omitted]
+L344: 2026-11-18T23:52:22.9538145Z > @ghostpay/i18n@0.1.0 lint
+L345: 2026-11-18T23:52:22.9538797Z > eslint --config ../../eslint.config.js src
+L346: 2026-11-18T23:52:22.9539150Z 
+[omitted]
+L348: 2026-11-18T23:52:26.7530076Z > @ghostpay/invoice-schema@0.1.0 lint
+L349: 2026-11-18T23:52:26.7530606Z > eslint --config ../../eslint.config.js src
+L350: 2026-11-18T23:52:26.7530881Z 
+[omitted]
+L352: 2026-11-18T23:52:31.1644615Z > @ghostpay/merchant-billing@0.1.0 lint
+L353: 2026-11-18T23:52:31.1645147Z > eslint --config ../../eslint.config.js src
+L354: 2026-11-18T23:52:31.1645423Z 
+[omitted]
+L356: 2026-11-18T23:52:34.9549857Z > @ghostpay/merchant-hooks@0.1.0 lint
+L357: 2026-11-18T23:52:34.9550377Z > eslint --config ../../eslint.config.js src
+L358: 2026-11-18T23:52:34.9550646Z 
+[omitted]
+L360: 2026-11-18T23:52:37.7760609Z > @ghostpay/merchant-ledger@0.1.0 lint
+L361: 2026-11-18T23:52:37.7761350Z > eslint --config ../../eslint.config.js src
+L362: 2026-11-18T23:52:37.7761716Z 
+[omitted]
+L364: 2026-11-18T23:52:40.2829166Z > @ghostpay/merchant-multisig@0.1.0 lint
+L365: 2026-11-18T23:52:40.2829707Z > eslint --config ../../eslint.config.js src
+L366: 2026-11-18T23:52:40.2829979Z 
+[omitted]
+L368: 2026-11-18T23:52:43.3729296Z > @ghostpay/metadata-hardening@0.1.0 lint
+L369: 2026-11-18T23:52:43.3730067Z > eslint --config ../../eslint.config.js src
+L370: 2026-11-18T23:52:43.3730451Z 
+[omitted]
+L372: 2026-11-18T23:52:47.6582249Z > @ghostpay/net-harness@0.1.0 lint
+L373: 2026-11-18T23:52:47.6582811Z > eslint --config ../../eslint.config.js src
+L374: 2026-11-18T23:52:47.6583054Z 
+[omitted]
+L384: 2026-11-18T23:52:51.8181003Z > @ghostpay/net-transport@0.1.0 lint
+L385: 2026-11-18T23:52:51.8181742Z > eslint --config ../../eslint.config.js src
+L386: 2026-11-18T23:52:51.8182136Z 
+[omitted]
+L388: 2026-11-18T23:52:55.9901913Z > @ghostpay/ops-monitor@0.1.0 lint
+L389: 2026-11-18T23:52:55.9902472Z > eslint --config ../../eslint.config.js src
+L390: 2026-11-18T23:52:55.9902771Z 
+[omitted]
+L392: 2026-11-18T23:53:01.7693214Z > @ghostpay/payer-sponsor@0.1.0 lint
+L393: 2026-11-18T23:53:01.7693718Z > eslint --config ../../eslint.config.js src
+L394: 2026-11-18T23:53:01.7693967Z 
+[omitted]
+L396: 2026-11-18T23:53:10.1149309Z > @ghostpay/payment-uri@0.1.0 lint
+L397: 2026-11-18T23:53:10.1150547Z > eslint --config ../../eslint.config.js src
+L398: 2026-11-18T23:53:10.1150954Z 
+[omitted]
+L400: 2026-11-18T23:53:13.4275042Z > @ghostpay/pir-two-server@0.1.0 lint
+L401: 2026-11-18T23:53:13.4275576Z > eslint --config ../../eslint.config.js src
+L402: 2026-11-18T23:53:13.4275845Z 
+[omitted]
+L404: 2026-11-18T23:53:16.5919242Z > @ghostpay/plugin-api@0.1.0 lint
+L405: 2026-11-18T23:53:16.5919970Z > eslint --config ../../eslint.config.js src
+L406: 2026-11-18T23:53:16.5920256Z 
+[omitted]
+L408: 2026-11-18T23:53:19.4502250Z > @ghostpay/policy-scheme@0.1.0 lint
+L409: 2026-11-18T23:53:19.4502725Z > eslint --config ../../eslint.config.js src
+L410: 2026-11-18T23:53:19.4502952Z 
+[omitted]
+L412: 2026-11-18T23:53:26.7760876Z > @ghostpay/pool-circuits@0.1.0 lint
+L413: 2026-11-18T23:53:26.7761530Z > eslint --config ../../eslint.config.js src test
+L414: 2026-11-18T23:53:26.7761826Z 
+[omitted]
+L416: 2026-11-18T23:53:29.4587114Z > @ghostpay/pool-prover@0.1.0 lint
+L417: 2026-11-18T23:53:29.4587620Z > eslint --config ../../eslint.config.js src
+L418: 2026-11-18T23:53:29.4587859Z 
+[omitted]
+L420: 2026-11-18T23:53:31.7802646Z > @ghostpay/pool-relayer@0.1.0 lint
+L421: 2026-11-18T23:53:31.7803194Z > eslint --config ../../eslint.config.js src
+L422: 2026-11-18T23:53:31.7803442Z 
+[omitted]
+L424: 2026-11-18T23:53:39.2803004Z > @ghostpay/pool-sdk@0.1.0 lint
+L425: 2026-11-18T23:53:39.2803617Z > eslint --config ../../eslint.config.js src
+L426: 2026-11-18T23:53:39.2803859Z 
+[omitted]
+L428: 2026-11-18T23:53:43.8583195Z > @ghostpay/privacy-pipeline@0.1.0 lint
+L429: 2026-11-18T23:53:43.8583779Z > eslint --config ../../eslint.config.js src
+L430: 2026-11-18T23:53:43.8584017Z 
+[omitted]
+L432: 2026-11-18T23:53:49.2761215Z > @ghostpay/privacy-profiles@0.1.0 lint
+L433: 2026-11-18T23:53:49.2761779Z > eslint --config ../../eslint.config.js src
+L434: 2026-11-18T23:53:49.2762016Z 
+[omitted]
+L436: 2026-11-18T23:53:53.0278738Z > @ghostpay/qr-exchange@0.1.0 lint
+L437: 2026-11-18T23:53:53.0279231Z > eslint --config ../../eslint.config.js src
+L438: 2026-11-18T23:53:53.0279462Z 
+[omitted]
+L440: 2026-11-18T23:53:57.1353659Z > @ghostpay/relayer-guard@0.1.0 lint
+L441: 2026-11-18T23:53:57.1354397Z > eslint --config ../../eslint.config.js src
+L442: 2026-11-18T23:53:57.1354775Z 
+[omitted]
+L444: 2026-11-18T23:54:00.6147788Z > @ghostpay/sandbox@0.1.0 lint
+L445: 2026-11-18T23:54:00.6148446Z > eslint --config ../../eslint.config.js src
+L446: 2026-11-18T23:54:00.6148724Z 
+[omitted]
+L448: 2026-11-18T23:54:03.8372359Z > @ghostpay/scan-source@0.1.0 lint
+L449: 2026-11-18T23:54:03.8372952Z > eslint --config ../../eslint.config.js src
+L450: 2026-11-18T23:54:03.8373190Z 
+[omitted]
+L452: 2026-11-18T23:54:07.0415679Z > @ghostpay/sdk@0.1.0 lint
+L453: 2026-11-18T23:54:07.0416337Z > eslint --config ../../eslint.config.js src
+L454: 2026-11-18T23:54:07.0416885Z 
+[omitted]
+L456: 2026-11-18T23:54:10.0602075Z > @ghostpay/secret-box@0.1.0 lint
+L457: 2026-11-18T23:54:10.0602674Z > eslint --config ../../eslint.config.js src
+L458: 2026-11-18T23:54:10.0602969Z 
+[omitted]
+L460: 2026-11-18T23:54:12.7794056Z > @ghostpay/solana-stealth@0.1.0 lint
+L461: 2026-11-18T23:54:12.7794798Z > eslint --config ../../eslint.config.js src
+L462: 2026-11-18T23:54:12.7795185Z 
+[omitted]
+L464: 2026-11-18T23:54:16.6908770Z > @ghostpay/tron-adapter@0.1.0 lint
+L465: 2026-11-18T23:54:16.6909266Z > eslint --config ../../eslint.config.js src
+L466: 2026-11-18T23:54:16.6909545Z 
+[omitted]
+L468: 2026-11-18T23:54:20.0035255Z > @ghostpay/tx-review@0.1.0 lint
+L469: 2026-11-18T23:54:20.0035711Z > eslint --config ../../eslint.config.js src
+L470: 2026-11-18T23:54:20.0035948Z 
+[omitted]
+L472: 2026-11-18T23:54:23.5648359Z > @ghostpay/ux-connect@0.1.0 lint
+L473: 2026-11-18T23:54:23.5648834Z > eslint --config ../../eslint.config.js src
+L474: 2026-11-18T23:54:23.5649094Z 
+[omitted]
+L476: 2026-11-18T23:54:26.6643306Z > @ghostpay/ux-core@0.1.0 lint
+L477: 2026-11-18T23:54:26.6644032Z > eslint --config ../../eslint.config.js src
+L478: 2026-11-18T23:54:26.6644283Z 
+[omitted]
+L480: 2026-11-18T23:54:30.3625573Z > @ghostpay/ux-export@0.1.0 lint
+L481: 2026-11-18T23:54:30.3626053Z > eslint --config ../../eslint.config.js src
+L482: 2026-11-18T23:54:30.3626292Z 
+[omitted]
+L484: 2026-11-18T23:54:33.4321214Z > @ghostpay/ux-fees@0.1.0 lint
+L485: 2026-11-18T23:54:33.4321987Z > eslint --config ../../eslint.config.js src
+L486: 2026-11-18T23:54:33.4322945Z 
+[omitted]
+L488: 2026-11-18T23:54:36.4716008Z > @ghostpay/ux-fiat@0.1.0 lint
+L489: 2026-11-18T23:54:36.4716869Z > eslint --config ../../eslint.config.js src
+L490: 2026-11-18T23:54:36.4717266Z 
+[omitted]
+L492: 2026-11-18T23:54:39.0497996Z > @ghostpay/ux-flow@0.1.0 lint
+L493: 2026-11-18T23:54:39.0498513Z > eslint --config ../../eslint.config.js src
+L494: 2026-11-18T23:54:39.0498764Z 
+[omitted]
+L496: 2026-11-18T23:54:41.9572701Z > @ghostpay/ux-guide@0.1.0 lint
+L497: 2026-11-18T23:54:41.9573151Z > eslint --config ../../eslint.config.js src
+L498: 2026-11-18T23:54:41.9573387Z 
+[omitted]
+L500: 2026-11-18T23:54:44.8877516Z > @ghostpay/ux-i18n@0.1.0 lint
+L501: 2026-11-18T23:54:44.8878142Z > eslint --config ../../eslint.config.js src
+L502: 2026-11-18T23:54:44.8878389Z 
+[omitted]
+L504: 2026-11-18T23:54:46.8047348Z > @ghostpay/ux-intake@0.1.0 lint
+L505: 2026-11-18T23:54:46.8048053Z > eslint --config ../../eslint.config.js src
+L506: 2026-11-18T23:54:46.8048436Z 
+[omitted]
+L508: 2026-11-18T23:54:49.7430201Z > @ghostpay/ux-links@0.1.0 lint
+L509: 2026-11-18T23:54:49.7430655Z > eslint --config ../../eslint.config.js src
+L510: 2026-11-18T23:54:49.7430887Z 
+[omitted]
+L512: 2026-11-18T23:54:52.6263790Z > @ghostpay/ux-notify@0.1.0 lint
+L513: 2026-11-18T23:54:52.6264513Z > eslint --config ../../eslint.config.js src
+L514: 2026-11-18T23:54:52.6264901Z 
+[omitted]
+L516: 2026-11-18T23:54:55.7470136Z > @ghostpay/ux-presets@0.1.0 lint
+L517: 2026-11-18T23:54:55.7471004Z > eslint --config ../../eslint.config.js src
+L518: 2026-11-18T23:54:55.7471491Z 
+[omitted]
+L520: 2026-11-18T23:55:01.2344041Z > @ghostpay/ux-privacy@0.1.0 lint
+L521: 2026-11-18T23:55:01.2344542Z > eslint --config ../../eslint.config.js src
+L522: 2026-11-18T23:55:01.2344788Z 
+[omitted]
+L524: 2026-11-18T23:55:01.2344958Z > @ghostpay/ux-receipts@0.1.0 lint
+L525: 2026-11-18T23:55:01.2345323Z > eslint --config ../../eslint.config.js src
+L526: 2026-11-18T23:55:01.2345540Z 
+[omitted]
+L528: 2026-11-18T23:55:04.0882968Z > @ghostpay/ux-sandbox@0.1.0 lint
+L529: 2026-11-18T23:55:04.0883473Z > eslint --config ../../eslint.config.js src
+L530: 2026-11-18T23:55:04.0883704Z 
+[omitted]
+L532: 2026-11-18T23:55:05.9705694Z > @ghostpay/ux-schedule@0.1.0 lint
+L533: 2026-11-18T23:55:05.9706571Z > eslint --config ../../eslint.config.js src
+L534: 2026-11-18T23:55:05.9707593Z 
+[omitted]
+L536: 2026-11-18T23:55:08.8585268Z > @ghostpay/ux-vault@0.1.0 lint
+L537: 2026-11-18T23:55:08.8585721Z > eslint --config ../../eslint.config.js src
+L538: 2026-11-18T23:55:08.8585963Z 
+[omitted]
+L540: 2026-11-18T23:55:14.9448108Z > @ghostpay/relayer@0.1.0 lint
+L541: 2026-11-18T23:55:14.9448607Z > eslint --config ../../eslint.config.js src
+L542: 2026-11-18T23:55:14.9448918Z 
+[omitted]
+L544: 2026-11-18T23:55:25.5253927Z > @ghostpay/web@0.1.0 lint
+L545: 2026-11-18T23:55:25.5254603Z > eslint --config ../../eslint.config.js src e2e
+L546: 2026-11-18T23:55:25.5255042Z 
+L547: 2026-11-18T23:56:06.0562729Z ##[error]Process completed with exit code 1.
+L548: 2026-11-18T23:56:06.0953183Z Post job cleanup.
+L549: 2026-11-18T23:56:06.1066450Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__6533f423-447c-486f-8c44-cb122927d3bd.libs]
+L550: 2026-11-18T23:56:06.1102415Z ##[end-action id=__6533f423-447c-486f-8c44-cb122927d3bd.libs;outcome=skipped;conclusion=skipped;duration_ms=0]
+L551: 2026-11-18T23:56:06.1170283Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__6533f423-447c-486f-8c44-cb122927d3bd.__actions_setup-node]
+L552: 2026-11-18T23:56:06.1215127Z ##[end-action id=__6533f423-447c-486f-8c44-cb122927d3bd.__actions_setup-node;outcome=skipped;conclusion=skipped;duration_ms=0]
+L553: 2026-11-18T23:56:06.2137135Z Post job cleanup.
+L554: 2026-11-18T23:56:06.3111505Z [command]/usr/bin/git version

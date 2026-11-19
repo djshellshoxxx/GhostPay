@@ -1,0 +1,171 @@
+{
+  "status": "not_verified_on_final_source",
+  "finding": "Final local semantic checks ended in SIGKILL correlated with increases in the host oom_kill counter. Cgroup limits and kernel kill records are unavailable; the exact enforcing boundary is unproven.",
+  "compiler_configuration": "Original apps/web/tsconfig.json with --noEmit; --extendedDiagnostics adds reporting only. No checking options, sources, assertions or gates were weakened.",
+  "node_version_confirmed": "v22.23.5",
+  "typescript_version": "5.9.3",
+  "root_file_count": 445,
+  "loaded_file_count": 3128,
+  "completed_semantic_run": {
+    "exit_code": 2,
+    "diagnostic_count": 5,
+    "diagnostics": "TS2339 in new recovery tests accessing .disposed on Vitest mock.instances typed {}.",
+    "correction": "Explicit instanceof narrowing preserves disposal assertions and validates recovered-key class. Corrections are present; final local typecheck did not complete."
+  },
+  "attempts": [
+    {
+      "label": "list-files",
+      "command": [
+        "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/web/tsconfig.json",
+        "--noEmit",
+        "--listFilesOnly"
+      ],
+      "heap_mib": 768,
+      "exit_code": 0,
+      "seconds": 3.207,
+      "peak_rss_kib": 566260,
+      "peak_hwm_kib": 566260,
+      "stdout_lines": 3128,
+      "stderr_bytes": 0,
+      "last_sample": {
+        "seconds": 3.006,
+        "VmSize": 1571536,
+        "VmHWM": 566260,
+        "VmRSS": 566260
+      },
+      "evidence_summary_path": "/tmp/ghostpay-spec18-typecheck-diag/list-files.summary.json",
+      "evidence_summary_sha256": "4ba1709824f45f100ee264119e30856557615ee261ece492f7995467c9b4b599",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "full-1024",
+      "command": [
+        "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/web/tsconfig.json",
+        "--noEmit",
+        "--extendedDiagnostics"
+      ],
+      "heap_mib": 1024,
+      "exit_code": 2,
+      "seconds": 14.641,
+      "peak_rss_kib": 1085996,
+      "child_rusage_maxrss_kib": 1102648,
+      "stdout_bytes": 1555,
+      "stderr_bytes": 0,
+      "last_sample": {
+        "seconds": 14.44
+      },
+      "host_before": {
+        "oom_kill": 181,
+        "MemFree": 1295836,
+        "MemAvailable": 2510948
+      },
+      "host_after": {
+        "oom_kill": 181,
+        "MemFree": 1777700,
+        "MemAvailable": 2528596
+      },
+      "evidence_summary_path": "/tmp/ghostpay-spec18-typecheck-diag/full-1024.summary.json",
+      "evidence_summary_sha256": "e9f7688aca32bb2b96f34ce3cc8a31ecf58636afc84d3423a8d307d0d86906d2",
+      "stdout_sha256": "9d085d8ca4a5b393af6c2b1935296384092346cb665930849e97e0a1addeca69",
+      "typescript_diagnostics": [
+        "apps/web/src/components/StealthExportRecovery.test.tsx(280,40): error TS2339: Property 'disposed' does not exist on type '{}'.",
+        "apps/web/src/lib/paymentKeyExport.test.ts(362,46): error TS2339: Property 'disposed' does not exist on type '{}'.",
+        "apps/web/src/lib/paymentKeyExport.test.ts(367,45): error TS2339: Property 'disposed' does not exist on type '{}'.",
+        "apps/web/src/lib/paymentKeyExport.test.ts(389,39): error TS2339: Property 'disposed' does not exist on type '{}'.",
+        "apps/web/src/lib/paymentKeyExport.test.ts(403,39): error TS2339: Property 'disposed' does not exist on type '{}'."
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "full-final",
+      "command": [
+        "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/web/tsconfig.json",
+        "--noEmit",
+        "--extendedDiagnostics"
+      ],
+      "node_version": "v22.23.5",
+      "heap_mib": 1024,
+      "exit_code": -9,
+      "seconds": 15.441,
+      "peak_rss_kib": 1056028,
+      "child_rusage_maxrss_kib": 1060732,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "source_before": {
+        "sha256": "7c40174c380d83036e0d24767fd74f02ee1f3309cddd928a46ccdb45a7e66840",
+        "files": 3128
+      },
+      "source_after": {
+        "sha256": "7c40174c380d83036e0d24767fd74f02ee1f3309cddd928a46ccdb45a7e66840",
+        "files": 3128
+      },
+      "host_before": {
+        "oom_kill": 182,
+        "MemFree": 958652,
+        "MemAvailable": 2571376
+      },
+      "host_after": {
+        "oom_kill": 183,
+        "MemFree": 1468164,
+        "MemAvailable": 2257064
+      },
+      "evidence_summary_path": "/tmp/ghostpay-spec18-typecheck-diag/full-final.summary.json",
+      "evidence_summary_sha256": "f8f0a269c3b48c430e8e697400531112a16816d5751398d53164de26eba6c566",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "typescript_diagnostics": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "full-768-semi8",
+      "command": [
+        "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/web/tsconfig.json",
+        "--noEmit",
+        "--extendedDiagnostics"
+      ],
+      "node_version": "v22.23.5",
+      "NODE_OPTIONS": "--max-old-space-size=768 --max-semi-space-size=8",
+      "exit_code": -9,
+      "seconds": 6.505,
+      "peak_rss_kib": 706420,
+      "child_rusage_maxrss_kib": 709660,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "source_before": {
+        "sha256": "5300898bb51dd6378fbcbadab4b545c941ce1861d9d34885f440209d247b8832",
+        "files": 3128
+      },
+      "source_after": {
+        "sha256": "5300898bb51dd6378fbcbadab4b545c941ce1861d9d34885f440209d247b8832",
+        "files": 3128
+      },
+      "host_before": {
+        "oom_kill": 184,
+        "MemFree": 839032,
+        "MemAvailable": 1979984
+      },
+      "host_after": {
+        "oom_kill": 185,
+        "MemFree": 988652,
+        "MemAvailable": 1813504
+      },
+      "evidence_summary_path": "/tmp/ghostpay-spec18-typecheck-diag/full-768-semi8.summary.json",
+      "evidence_summary_sha256": "96852314995a263cd24007af1174e3342d0165713219bc1db22c6b6a9b6f4d67",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "typescript_diagnostics": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "remaining_gate": "A fresh whole-web semantic typecheck must complete successfully on the final source, for example in the existing hosted CI."
+}

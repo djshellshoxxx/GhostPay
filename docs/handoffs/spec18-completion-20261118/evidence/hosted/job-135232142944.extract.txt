@@ -1,0 +1,319 @@
+Job: 135232142944 (ts-test (rest-0))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273430/job/135232142944
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135232142944/logs
+Fetched at: 2026-11-19T00:24:42.642Z
+Job API conclusion: failure
+Published head: 032c42fc3d5e52d8428a7907775835b5d1ed3704
+Checked-out commit(s): b53f116b825d7cf6e85681fc835aec18ef7add75
+Decoded raw log SHA256: 114d2637da9fea2c2a6c90f091b89776b258167f7f47baa6401d89a07ca2be68
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L129: 2026-11-19T00:14:40.9673613Z ##[endgroup]
+L130: 2026-11-19T00:14:40.9736825Z [command]/usr/bin/git log -1 --format=%H
+L131: 2026-11-19T00:14:40.9767289Z b53f116b825d7cf6e85681fc835aec18ef7add75
+L132: 2026-11-19T00:14:40.9778520Z ##[group]Removing auth
+[omitted]
+L170: 2026-11-19T00:14:41.4711175Z with:
+L171: 2026-11-19T00:14:41.4711366Z   node-version: 22
+L172: 2026-11-19T00:14:41.4711568Z   cache: npm
+[omitted]
+L178: 2026-11-19T00:14:41.6907064Z ##[group]Environment details
+L179: 2026-11-19T00:14:42.0581741Z node: v22.23.4
+L180: 2026-11-19T00:14:42.0582250Z npm: 10.9.9
+[omitted]
+L194: 2026-11-19T00:14:43.9011332Z ##[group]Run npm ci --ignore-scripts
+L195: 2026-11-19T00:14:43.9011709Z npm ci --ignore-scripts
+[omitted]
+L445: 2026-11-19T00:15:23.5240186Z > @ghostpay/policy-scheme@0.1.0 test
+L446: 2026-11-19T00:15:23.5240734Z > vitest run --coverage
+L447: 2026-11-19T00:15:23.5240924Z 
+[omitted]
+L465: 2026-11-19T00:15:28.6154583Z  Test Files  6 passed (6)
+L466: 2026-11-19T00:15:28.6155945Z       Tests  95 passed (95)
+L467: 2026-11-19T00:15:28.6156850Z    Start at  00:15:23
+L468: 2026-11-19T00:15:28.6160851Z    Duration  4.70s (tests 71%, import 21%, transform 6%, worker 1%)
+L469: 2026-11-19T00:15:28.6172017Z 
+[omitted]
+L488: 2026-11-19T00:15:28.8918938Z > @ghostpay/address-safety@0.1.0 test
+L489: 2026-11-19T00:15:28.8919436Z > vitest run --coverage
+L490: 2026-11-19T00:15:28.8919640Z 
+[omitted]
+L500: 2026-11-19T00:15:30.0400075Z  Test Files  4 passed (4)
+L501: 2026-11-19T00:15:30.0401583Z       Tests  76 passed (76)
+L502: 2026-11-19T00:15:30.0402073Z    Start at  00:15:29
+L503: 2026-11-19T00:15:30.0405556Z    Duration  732ms (import 62%, transform 19%, tests 12%, worker 7%)
+L504: 2026-11-19T00:15:30.0417362Z 
+[omitted]
+L517: 2026-11-19T00:15:30.0732877Z > @ghostpay/btc-payjoin@0.1.0 test
+L518: 2026-11-19T00:15:30.0733265Z > vitest run --coverage
+L519: 2026-11-19T00:15:30.0733435Z 
+[omitted]
+L537: 2026-11-19T00:15:35.6943998Z  Test Files  10 passed (10)
+L538: 2026-11-19T00:15:35.6945879Z       Tests  158 passed (158)
+L539: 2026-11-19T00:15:35.6946813Z    Start at  00:15:30
+L540: 2026-11-19T00:15:35.6951406Z    Duration  5.22s (tests 76%, import 15%, transform 6%, worker 2%)
+L541: 2026-11-19T00:15:35.6963026Z 
+[omitted]
+L577: 2026-11-19T00:15:35.7600328Z > @ghostpay/chain-solana@0.1.0 test
+L578: 2026-11-19T00:15:35.7600729Z > vitest run --coverage
+L579: 2026-11-19T00:15:35.7600899Z 
+[omitted]
+L607: 2026-11-19T00:16:02.7967899Z  Test Files  10 passed (10)
+L608: 2026-11-19T00:16:02.7969071Z       Tests  97 passed (97)
+L609: 2026-11-19T00:16:02.7969559Z    Start at  00:15:36
+L610: 2026-11-19T00:16:02.7973473Z    Duration  26.65s (tests 96%, import 2%, transform 1%, worker 1%)
+L611: 2026-11-19T00:16:02.7984887Z 
+[omitted]
+L631: 2026-11-19T00:16:02.8600477Z > @ghostpay/confidential-amounts@0.1.0 test
+L632: 2026-11-19T00:16:02.8601164Z > vitest run --coverage
+L633: 2026-11-19T00:16:02.8601452Z 
+[omitted]
+L646: 2026-11-19T00:16:05.2784421Z  Test Files  7 passed (7)
+L647: 2026-11-19T00:16:05.2785793Z       Tests  88 passed (88)
+L648: 2026-11-19T00:16:05.2786763Z    Start at  00:16:03
+L649: 2026-11-19T00:16:05.2790930Z    Duration  2.01s (import 70%, tests 15%, transform 11%, worker 3%)
+L650: 2026-11-19T00:16:05.2802653Z 
+[omitted]
+L674: 2026-11-19T00:16:05.3428990Z > @ghostpay/external-pools-privacypools@0.1.0 test
+L675: 2026-11-19T00:16:05.3429517Z > vitest run --coverage
+L676: 2026-11-19T00:16:05.3429690Z 
+[omitted]
+L697: 2026-11-19T00:16:12.1060737Z  Test Files  7 passed | 1 skipped (8)
+L698: 2026-11-19T00:16:12.1062499Z       Tests  73 passed | 4 skipped (77)
+L699: 2026-11-19T00:16:12.1063398Z    Start at  00:16:05
+L700: 2026-11-19T00:16:12.1066741Z    Duration  6.37s (tests 66%, import 29%, transform 4%, worker 1%)
+L701: 2026-11-19T00:16:12.1078138Z 
+[omitted]
+L716: 2026-11-19T00:16:12.1738538Z > @ghostpay/hygiene@0.1.0 test
+L717: 2026-11-19T00:16:12.1739119Z > vitest run --coverage
+L718: 2026-11-19T00:16:12.1739329Z 
+[omitted]
+L732: 2026-11-19T00:16:21.1717197Z  Test Files  5 passed (5)
+L733: 2026-11-19T00:16:21.1718532Z       Tests  142 passed (142)
+L734: 2026-11-19T00:16:21.1719429Z    Start at  00:16:12
+L735: 2026-11-19T00:16:21.1723499Z    Duration  8.60s (tests 70%, import 21%, transform 8%, worker 1%)
+L736: 2026-11-19T00:16:21.1734734Z 
+[omitted]
+L755: 2026-11-19T00:16:21.2154585Z > @ghostpay/merchant-billing@0.1.0 test
+L756: 2026-11-19T00:16:21.2155060Z > vitest run --coverage
+L757: 2026-11-19T00:16:21.2155269Z 
+[omitted]
+L773: 2026-11-19T00:16:23.3075440Z  Test Files  10 passed (10)
+L774: 2026-11-19T00:16:23.3077049Z       Tests  275 passed (275)
+L775: 2026-11-19T00:16:23.3077826Z    Start at  00:16:21
+L776: 2026-11-19T00:16:23.3081984Z    Duration  1.68s (import 42%, tests 27%, transform 24%, worker 7%)
+L777: 2026-11-19T00:16:23.3093023Z 
+[omitted]
+L798: 2026-11-19T00:16:23.3547167Z > @ghostpay/merchant-multisig@0.1.0 test
+L799: 2026-11-19T00:16:23.3548012Z > vitest run --coverage
+L800: 2026-11-19T00:16:23.3548384Z 
+[omitted]
+L815: 2026-11-19T00:16:45.4330757Z  Test Files  6 passed (6)
+L816: 2026-11-19T00:16:45.4332224Z       Tests  92 passed (92)
+L817: 2026-11-19T00:16:45.4332931Z    Start at  00:16:23
+L818: 2026-11-19T00:16:45.4337482Z    Duration  21.66s (tests 97%, import 2%, transform 1%)
+L819: 2026-11-19T00:16:45.4349169Z 
+[omitted]
+L843: 2026-11-19T00:16:46.9163723Z > @ghostpay/net-transport@0.1.0 test
+L844: 2026-11-19T00:16:46.9164508Z > vitest run --coverage
+L845: 2026-11-19T00:16:46.9164883Z 
+[omitted]
+L866: 2026-11-19T00:16:51.2922209Z  Test Files  5 passed (5)
+L867: 2026-11-19T00:16:51.2923381Z       Tests  156 passed (156)
+L868: 2026-11-19T00:16:51.2924249Z    Start at  00:16:47
+L869: 2026-11-19T00:16:51.2929534Z    Duration  3.97s (tests 42%, import 39%, transform 17%, worker 1%)
+L870: 2026-11-19T00:16:51.2941546Z 
+[omitted]
+L898: 2026-11-19T00:16:51.3615948Z > @ghostpay/payment-uri@0.1.0 test
+L899: 2026-11-19T00:16:51.3616586Z > vitest run --coverage
+L900: 2026-11-19T00:16:51.3616794Z 
+[omitted]
+L909: 2026-11-19T00:16:53.1684068Z  Test Files  3 passed (3)
+L910: 2026-11-19T00:16:53.1688003Z       Tests  199 passed (199)
+L911: 2026-11-19T00:16:53.1689435Z    Start at  00:16:51
+L912: 2026-11-19T00:16:53.1693504Z    Duration  1.40s (tests 62%, transform 22%, import 13%, worker 3%)
+L913: 2026-11-19T00:16:53.1704885Z 
+[omitted]
+L934: 2026-11-19T00:16:53.2128785Z > @ghostpay/pool-relayer@0.1.0 test
+L935: 2026-11-19T00:16:53.2129373Z > vitest run --coverage
+L936: 2026-11-19T00:16:53.2129550Z 
+[omitted]
+L957: 2026-11-19T00:16:56.3871044Z  Test Files  5 passed | 2 skipped (7)
+L958: 2026-11-19T00:16:56.3872616Z       Tests  43 passed | 9 skipped (52)
+L959: 2026-11-19T00:16:56.3873650Z    Start at  00:16:53
+L960: 2026-11-19T00:16:56.3877985Z    Duration  2.76s (import 67%, transform 15%, tests 15%, worker 3%)
+L961: 2026-11-19T00:16:56.3890462Z 
+[omitted]
+L979: 2026-11-19T00:16:56.4540613Z > @ghostpay/privacy-profiles@0.1.0 test
+L980: 2026-11-19T00:16:56.4541044Z > vitest run --coverage
+L981: 2026-11-19T00:16:56.4541216Z 
+[omitted]
+L998: 2026-11-19T00:17:33.9880767Z  Test Files  5 passed (5)
+L999: 2026-11-19T00:17:33.9882358Z       Tests  176 passed (176)
+L1000: 2026-11-19T00:17:33.9883601Z    Start at  00:16:56
+L1001: 2026-11-19T00:17:33.9888084Z    Duration  37.14s (tests 98%, import 1%, transform 1%)
+L1002: 2026-11-19T00:17:33.9900686Z 
+[omitted]
+L1021: 2026-11-19T00:17:34.0441308Z > @ghostpay/sandbox@0.1.0 test
+L1022: 2026-11-19T00:17:34.0441967Z > vitest run --coverage
+L1023: 2026-11-19T00:17:34.0442287Z 
+[omitted]
+L1038: 2026-11-19T00:17:35.3924385Z  Test Files  9 passed (9)
+L1039: 2026-11-19T00:17:35.3925460Z       Tests  95 passed (95)
+L1040: 2026-11-19T00:17:35.3926628Z    Start at  00:17:34
+L1041: 2026-11-19T00:17:35.3930361Z    Duration  948ms (transform 34%, import 25%, tests 24%, worker 17%)
+L1042: 2026-11-19T00:17:35.3941593Z 
+[omitted]
+L1066: 2026-11-19T00:17:35.4346390Z > @ghostpay/secret-box@0.1.0 test
+L1067: 2026-11-19T00:17:35.4346889Z > vitest run --coverage
+L1068: 2026-11-19T00:17:35.4347085Z 
+[omitted]
+L1077: 2026-11-19T00:17:36.2510653Z  Test Files  3 passed (3)
+L1078: 2026-11-19T00:17:36.2513217Z       Tests  47 passed (47)
+L1079: 2026-11-19T00:17:36.2514358Z    Start at  00:17:35
+L1080: 2026-11-19T00:17:36.2518265Z    Duration  432ms (tests 37%, transform 34%, import 19%, worker 10%)
+L1081: 2026-11-19T00:17:36.2528462Z 
+[omitted]
+L1091: 2026-11-19T00:17:36.2824467Z > @ghostpay/tx-review@0.1.0 test
+L1092: 2026-11-19T00:17:36.2825041Z > vitest run --coverage
+L1093: 2026-11-19T00:17:36.2825322Z 
+[omitted]
+L1104: 2026-11-19T00:17:38.9955809Z  Test Files  5 passed (5)
+L1105: 2026-11-19T00:17:38.9957948Z       Tests  160 passed (160)
+L1106: 2026-11-19T00:17:38.9958834Z    Start at  00:17:36
+L1107: 2026-11-19T00:17:38.9963387Z    Duration  2.30s (import 68%, transform 19%, tests 11%, worker 2%)
+L1108: 2026-11-19T00:17:38.9976230Z 
+[omitted]
+L1120: 2026-11-19T00:17:39.0621484Z > @ghostpay/ux-export@0.1.0 test
+L1121: 2026-11-19T00:17:39.0622297Z > vitest run --coverage
+L1122: 2026-11-19T00:17:39.0622690Z 
+[omitted]
+L1136: 2026-11-19T00:17:40.8321529Z  Test Files  6 passed (6)
+L1137: 2026-11-19T00:17:40.8323124Z       Tests  134 passed (134)
+L1138: 2026-11-19T00:17:40.8324469Z    Start at  00:17:39
+L1139: 2026-11-19T00:17:40.8328994Z    Duration  1.38s (tests 56%, transform 20%, import 16%, worker 8%)
+L1140: 2026-11-19T00:17:40.8339979Z 
+[omitted]
+L1157: 2026-11-19T00:17:40.8783543Z > @ghostpay/ux-flow@0.1.0 test
+L1158: 2026-11-19T00:17:40.8783925Z > vitest run --coverage
+L1159: 2026-11-19T00:17:40.8784101Z 
+[omitted]
+L1170: 2026-11-19T00:17:41.9721752Z  Test Files  5 passed (5)
+L1171: 2026-11-19T00:17:41.9723289Z       Tests  91 passed (91)
+L1172: 2026-11-19T00:17:41.9724472Z    Start at  00:17:41
+L1173: 2026-11-19T00:17:41.9729354Z    Duration  684ms (transform 37%, tests 26%, import 26%, worker 11%)
+L1174: 2026-11-19T00:17:41.9740651Z 
+[omitted]
+L1189: 2026-11-19T00:17:42.0152850Z > @ghostpay/ux-intake@0.1.0 test
+L1190: 2026-11-19T00:17:42.0153258Z > vitest run --coverage
+L1191: 2026-11-19T00:17:42.0153428Z 
+[omitted]
+L1205: 2026-11-19T00:17:43.6489956Z  Test Files  6 passed (6)
+L1206: 2026-11-19T00:17:43.6491339Z       Tests  77 passed (77)
+L1207: 2026-11-19T00:17:43.6492289Z    Start at  00:17:42
+L1208: 2026-11-19T00:17:43.6496132Z    Duration  1.23s (tests 59%, transform 20%, import 13%, worker 8%)
+L1209: 2026-11-19T00:17:43.6507219Z 
+[omitted]
+L1224: 2026-11-19T00:17:43.6966604Z > @ghostpay/ux-presets@0.1.0 test
+L1225: 2026-11-19T00:17:43.6967137Z > vitest run --coverage
+L1226: 2026-11-19T00:17:43.6967308Z 
+[omitted]
+L1238: 2026-11-19T00:17:45.8213693Z  Test Files  4 passed (4)
+L1239: 2026-11-19T00:17:45.8214570Z       Tests  57 passed (57)
+L1240: 2026-11-19T00:17:45.8215024Z    Start at  00:17:44
+L1241: 2026-11-19T00:17:45.8218276Z    Duration  1.71s (tests 73%, transform 15%, import 9%, worker 4%)
+L1242: 2026-11-19T00:17:45.8229335Z 
+[omitted]
+L1255: 2026-11-19T00:17:45.8600852Z > @ghostpay/ux-sandbox@0.1.0 test
+L1256: 2026-11-19T00:17:45.8601266Z > vitest run --coverage
+L1257: 2026-11-19T00:17:45.8601462Z 
+[omitted]
+L1264: 2026-11-19T00:17:46.5415243Z  Test Files  1 passed (1)
+L1265: 2026-11-19T00:17:46.5416820Z       Tests  2 passed (2)
+L1266: 2026-11-19T00:17:46.5417689Z    Start at  00:17:46
+L1267: 2026-11-19T00:17:46.5424567Z    Duration  280ms (transform 72%, import 15%, worker 9%, tests 4%)
+L1268: 2026-11-19T00:17:46.5436043Z 
+[omitted]
+L1342: 2026-11-19T00:17:46.7195378Z # Subtest: real repo: graph loads, is acyclic, and the committed package map is current
+L1343: 2026-11-19T00:17:46.7197550Z not ok 12 - real repo: graph loads, is acyclic, and the committed package map is current
+L1344: 2026-11-19T00:17:46.7198802Z   ---
+L1345: 2026-11-19T00:17:46.7199374Z   duration_ms: 15.213629
+L1346: 2026-11-19T00:17:46.7199981Z   type: 'test'
+L1347: 2026-11-19T00:17:46.7200985Z   location: '/home/runner/work/GhostPay/GhostPay/scripts/agent/workspaces.test.mjs:109:1'
+L1348: 2026-11-19T00:17:46.7202116Z   failureType: 'testCodeFailure'
+L1349: 2026-11-19T00:17:46.7202766Z   error: |-
+L1350: 2026-11-19T00:17:46.7203612Z     PACKAGE_MAP.md is stale: run node scripts/agent/package-map.mjs
+L1351: 2026-11-19T00:17:46.7204529Z     + actual - expected
+L1352: 2026-11-19T00:17:46.7205136Z     ... Skipped lines
+L1353: 2026-11-19T00:17:46.7205917Z     
+L1354: 2026-11-19T00:17:46.7207001Z       '<!-- GENERATED by scripts/agent/package-map.mjs. Do not edit by hand; rerun the script. -->\n' +
+L1355: 2026-11-19T00:17:46.7208432Z         '# GhostPay workspace map\n' +
+L1356: 2026-11-19T00:17:46.7209253Z         '\n' +
+L1357: 2026-11-19T00:17:46.7210197Z         '68 npm workspaces and 3 Foundry projects. "Uses" and "Used by" list internal\n' +
+[omitted]
+L1552: 2026-11-19T00:17:46.7618763Z   stack: |-
+L1553: 2026-11-19T00:17:46.7619735Z     TestContext.<anonymous> (file:///home/runner/work/GhostPay/GhostPay/scripts/agent/workspaces.test.mjs:123:10)
+L1554: 2026-11-19T00:17:46.7620877Z     async Test.run (node:internal/test_runner/test:1054:7)
+L1555: 2026-11-19T00:17:46.7621779Z     async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+[omitted]
+L2427: 2026-11-19T00:18:04.2648462Z # Subtest: apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list
+L2428: 2026-11-19T00:18:04.2649954Z not ok 158 - apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list
+L2429: 2026-11-19T00:18:04.2650868Z   ---
+L2430: 2026-11-19T00:18:04.2651237Z   duration_ms: 8.04686
+L2431: 2026-11-19T00:18:04.2651686Z   type: 'test'
+L2432: 2026-11-19T00:18:04.2652837Z   location: '/home/runner/work/GhostPay/GhostPay/scripts/tests/lean-core-reachability.test.mjs:76:1'
+L2433: 2026-11-19T00:18:04.2653851Z   failureType: 'testCodeFailure'
+L2434: 2026-11-19T00:18:04.2654323Z   error: |-
+L2435: 2026-11-19T00:18:04.2656490Z     apps/web closure must equal REVIEWED + WEB_PENDING_OWNER_REVIEW (not owner-reviewed: @ghostpay/net-transport, @ghostpay/payment-uri, @ghostpay/pir-two-server, @ghostpay/policy-scheme, @ghostpay/scan-source, @ghostpay/ux-vault)
+L2436: 2026-11-19T00:18:04.2658395Z     + actual - expected
+L2437: 2026-11-19T00:18:04.2658822Z     
+L2438: 2026-11-19T00:18:04.2659159Z       [
+L2439: 2026-11-19T00:18:04.2659585Z         '@ghostpay/address-safety',
+L2440: 2026-11-19T00:18:04.2660171Z         '@ghostpay/btc-silent-payments',
+L2441: 2026-11-19T00:18:04.2660748Z         '@ghostpay/chain-adapters',
+L2442: 2026-11-19T00:18:04.2661297Z         '@ghostpay/core-crypto',
+[omitted]
+L2491: 2026-11-19T00:18:04.2686610Z   stack: |-
+L2492: 2026-11-19T00:18:04.2687710Z     TestContext.<anonymous> (file:///home/runner/work/GhostPay/GhostPay/scripts/tests/lean-core-reachability.test.mjs:78:10)
+L2493: 2026-11-19T00:18:04.2688969Z     Test.runInAsyncScope (node:async_hooks:214:14)
+L2494: 2026-11-19T00:18:04.2689707Z     Test.run (node:internal/test_runner/test:1047:25)
+[omitted]
+L2498: 2026-11-19T00:18:04.2692872Z # Subtest: apps/relayer workspace dependency closure is the reviewed allowlist
+L2499: 2026-11-19T00:18:04.2694345Z not ok 159 - apps/relayer workspace dependency closure is the reviewed allowlist
+L2500: 2026-11-19T00:18:04.2695139Z   ---
+L2501: 2026-11-19T00:18:04.2695517Z   duration_ms: 2.793748
+L2502: 2026-11-19T00:18:04.2696222Z   type: 'test'
+L2503: 2026-11-19T00:18:04.2697136Z   location: '/home/runner/work/GhostPay/GhostPay/scripts/tests/lean-core-reachability.test.mjs:85:1'
+L2504: 2026-11-19T00:18:04.2698155Z   failureType: 'testCodeFailure'
+L2505: 2026-11-19T00:18:04.2698620Z   error: |-
+L2506: 2026-11-19T00:18:04.2699103Z     Expected values to be strictly deep-equal:
+L2507: 2026-11-19T00:18:04.2699660Z     + actual - expected
+L2508: 2026-11-19T00:18:04.2700056Z     
+L2509: 2026-11-19T00:18:04.2700370Z       [
+L2510: 2026-11-19T00:18:04.2701029Z         '@ghostpay/chain-adapters',
+L2511: 2026-11-19T00:18:04.2701580Z         '@ghostpay/core-crypto',
+L2512: 2026-11-19T00:18:04.2702145Z         '@ghostpay/invoice-schema',
+L2513: 2026-11-19T00:18:04.2702711Z     +   '@ghostpay/metadata-hardening',
+[omitted]
+L2531: 2026-11-19T00:18:04.2715118Z   stack: |-
+L2532: 2026-11-19T00:18:04.2716504Z     TestContext.<anonymous> (file:///home/runner/work/GhostPay/GhostPay/scripts/tests/lean-core-reachability.test.mjs:86:10)
+L2533: 2026-11-19T00:18:04.2717747Z     Test.runInAsyncScope (node:async_hooks:214:14)
+L2534: 2026-11-19T00:18:04.2718446Z     Test.run (node:internal/test_runner/test:1047:25)
+[omitted]
+L3081: 2026-11-19T00:18:12.8143693Z # tests 249
+L3082: 2026-11-19T00:18:12.8143896Z # suites 0
+L3083: 2026-11-19T00:18:12.8144087Z # pass 246
+L3084: 2026-11-19T00:18:12.8144281Z # fail 3
+L3085: 2026-11-19T00:18:12.8144489Z # cancelled 0
+L3086: 2026-11-19T00:18:12.8144691Z # skipped 0
+L3087: 2026-11-19T00:18:12.8144885Z # todo 0
+L3088: 2026-11-19T00:18:12.8145104Z # duration_ms 26191.568652
+L3089: 2026-11-19T00:18:12.8158530Z ##[error]Process completed with exit code 1.
+L3090: 2026-11-19T00:18:12.8290849Z Post job cleanup.
+L3091: 2026-11-19T00:18:12.8295160Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__fd97e6a2-1f05-4aff-9ebb-7dd9b87283e6.libs]
+L3092: 2026-11-19T00:18:12.8298035Z ##[end-action id=__fd97e6a2-1f05-4aff-9ebb-7dd9b87283e6.libs;outcome=skipped;conclusion=skipped;duration_ms=0]
+L3093: 2026-11-19T00:18:12.8300381Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__fd97e6a2-1f05-4aff-9ebb-7dd9b87283e6.__actions_setup-node]
+L3094: 2026-11-19T00:18:12.8315950Z ##[end-action id=__fd97e6a2-1f05-4aff-9ebb-7dd9b87283e6.__actions_setup-node;outcome=skipped;conclusion=skipped;duration_ms=0]
+L3095: 2026-11-19T00:18:12.8383399Z Post job cleanup.
+L3096: 2026-11-19T00:18:12.9249908Z [command]/usr/bin/git version

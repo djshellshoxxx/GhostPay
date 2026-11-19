@@ -1,0 +1,118 @@
+
+ RUN  v5.1.0 /workspace/scratch/af37e06cf64c/GhostPay/apps/web
+
+Sourcemap for "/tmp/ghostpay-spec18-build/core-crypto/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/core-crypto/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/core-crypto/keys.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/core-crypto/rng.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/core-crypto/secret.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/core-crypto/stealth.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/core-crypto/hex.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/core-crypto/metadata.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/secret-box/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/secret-box/secretBox.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/secret-box/scope.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/types.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/config/chains.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/config/tokens.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/fees.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/deployments.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/router.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/abi/router.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/sweep.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/permit.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/rpc.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/logs.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/quote.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/abi/chainlinkAggregator.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/adapter.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/deepscan.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/abi/sweepRelayer.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/abi/announcer.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/abi/erc20.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/abi/erc20Metadata.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/abi/erc2612.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/deploymentsSignature.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/deploymentsVerify.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/scanVerify.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/registry.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/abi/erc6538Registry.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/registryDelegation.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/registryEns.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/verify.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/chain-adapters/payments.js" points to missing source files
+ ↓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > lists verified payment keys in a fresh session with no keys, and downloads one raw key only after a second confirmation
+ ↓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > refuses a wrong passphrase and a foreign file atomically and clears the passphrase
+ ↓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > shows a public record as unauthenticated and holding no key
+ ↓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > loads master keys through the hex-import path with a generated signing key
+ ↓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > asks before master keys replace loaded keys that have no backup, and says when they are loaded already
+ ✓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > requires fresh confirmation even when the loaded keys have a proven copy, and a key change closes the export 506ms
+ ✓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > does not apply a cancelled master-load request to an export opened later 383ms
+ ✓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > requires the sole-copy warning again when another tab deletes the vault after replacement review 208ms
+ ↓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > does not show a stale replacement confirmation on a later export
+ ↓ src/components/StealthExportRecovery.test.tsx > Open a stealth key export (spec 18 flow 4) > the idle lock wipes opened keys and a cancelled open shows nothing
+ ✓ src/components/StealthExportRecovery.test.tsx > verify an existing backup without importing > verifies an archive without holding raw keys or changing the loaded wallet 146ms
+ ✓ src/components/StealthExportRecovery.test.tsx > verify an existing backup without importing > verifies master spending authority in an empty session without loading it or claiming a signing-key backup 216ms
+ ✓ src/components/StealthExportRecovery.test.tsx > verify an existing backup without importing > refuses public records and wrong passwords without marking the selected file verified 124ms
+ ✓ src/components/StealthExportRecovery.test.tsx > verify an existing backup without importing > cannot apply a delayed verification to another selected file 142ms
+ ↓ src/components/StealthExportRecovery.test.tsx > Master stealth key backup (spec 18 flow 3) > exports the spending and viewing keys after re-authentication with a keystore file, never the signing key
+ ↓ src/components/StealthExportRecovery.test.tsx > Master stealth key backup (spec 18 flow 3) > refuses without a vault, clears the passphrases, and cancels on the idle lock
+ ↓ src/lib/paymentKeyExport.test.ts > public record export > reproduces the reference public record byte for byte and holds no secret
+ ↓ src/lib/paymentKeyExport.test.ts > public record export > needs loaded keys and refuses another seller, another scheme, an unknown chain or a relabelled address
+ ↓ src/lib/paymentKeyExport.test.ts > single encrypted keypair > re-authenticates, checks eth_getCode at latest through the given RPC, and seals exactly the derived key
+ ↓ src/lib/paymentKeyExport.test.ts > single encrypted keypair > exports a deep-scan payment whose announced view tag differs (ownership is the derived address)
+ ↓ src/lib/paymentKeyExport.test.ts > single encrypted keypair > refuses an address with code, a failed or malformed code check, a missing RPC and an RPC of another chain
+ ↓ src/lib/paymentKeyExport.test.ts > single encrypted keypair > checks the new passphrase and the credential before any request
+ ↓ src/lib/paymentKeyExport.test.ts > single encrypted keypair > discards the result and wipes the key when the keys are wiped while the file is being sealed
+ ↓ src/lib/paymentKeyExport.test.ts > single encrypted keypair > discards the result of a cancelled operation, also when the cancellation lands during the code check
+ ↓ src/lib/paymentKeyExport.test.ts > single encrypted keypair > refuses keys replaced during re-authentication without contacting the RPC
+ ↓ src/lib/paymentKeyExport.test.ts > raw private key > needs the explicit second confirmation, then yields exactly the section-6 text
+ ↓ src/lib/paymentKeyExport.test.ts > raw private key > refuses a contract account
+ ↓ src/lib/paymentKeyExport.test.ts > payment key archive > deduplicates replays to the earliest locator, sorts by address and refuses conflicts
+ ↓ src/lib/paymentKeyExport.test.ts > payment key archive > describes the count and chain before confirming, and refuses mixed chains, no payments and too many
+ ✓ src/lib/paymentKeyExport.test.ts > payment key archive > resolves same-locator replay metadata deterministically regardless of scan input order 73ms
+ ↓ src/lib/paymentKeyExport.test.ts > payment key archive > exports every distinct payment once, checks each address once and never includes master keys
+ ↓ src/lib/paymentKeyExport.test.ts > payment key archive > refuses the whole archive when one address has code, and wipes every derived key
+ ↓ src/lib/paymentKeyExport.test.ts > payment key archive > keeps the single scope to exactly one payment
+ ↓ src/lib/paymentKeyExport.test.ts > master backup > holds exactly the loaded spending and viewing keys and never the signing key
+ ↓ src/lib/paymentKeyExport.test.ts > master backup > refuses without a valid credential and discards a backup sealed after the keys changed
+ ↓ src/lib/paymentKeyExport.test.ts > opening an export (recovery) > wipes the decrypted payment scalars after boxing while keeping each boxed key usable
+ ✓ src/lib/paymentKeyExport.test.ts > opening an export (recovery) > disposes partial master boxes and wipes source scalars if boxing the second key fails 82ms
+ ↓ src/lib/paymentKeyExport.test.ts > opening an export (recovery) > opens every reference file in a session with no keys loaded
+ ↓ src/lib/paymentKeyExport.test.ts > opening an export (recovery) > loads master keys through the hex-import path with a new signing key and recovers the payment omitted from the archive
+ ✓ src/lib/paymentKeyExport.test.ts > opening an export (recovery) > applies an explicit chain constraint to public records and rejects chain-neutral master backups before decryption 45ms
+ ↓ src/lib/paymentKeyExport.test.ts > opening an export (recovery) > fails closed on every reference refusal, a foreign file, an oversized file and a cancelled open
+ ✓ src/lib/paymentKeyExport.test.ts > verifying an export without importing > checks payment and master keys, disposes every key box, and leaves the current wallet and custody unchanged 122ms
+ ✓ src/lib/paymentKeyExport.test.ts > verifying an export without importing > never verifies a public record, wrong password, corrupt file or wrong chain as a backup 80ms
+ ✓ src/lib/paymentKeyExport.test.ts > verifying an export without importing > disposes keys and refuses a verification result after the wallet changes during decryption 81ms
+ ✓ src/lib/paymentKeyExport.test.ts > verifying an export without importing > never reports success when cancellation arrives during decryption 92ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > requires retention confirmation and a saved file, authenticates its keys, and never changes seller custody 432ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > refuses a different valid archive with the same filename before decryption 126ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > a wrong password cannot mark the saved file verified 165ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > oversized saved files fail before reading or running the KDF 109ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > discards late verification after cancel changes 110ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > discards late verification after selection changes 107ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > discards late verification after lock changes 100ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > discards late verification after session changes 100ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > discards late verification after generated changes 101ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > discards late verification after retention changes 113ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > discards late verification after unmount changes 94ms
+ ✓ src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > reselecting a file clears a previous successful verification 115ms
+ ✓ src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > a changed payment closes raw-key confirmation on the same chain 241ms
+ ✓ src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > a changed rpc closes raw-key confirmation on the same chain 120ms
+ ✓ src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > discards an in-flight encrypted payment after the payment changes 283ms
+ ✓ src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > discards an in-flight encrypted payment after the rpc changes 226ms
+ ✓ src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > discards an in-flight encrypted payment after the announcement changes 216ms
+ ✓ src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > new same-chain scan results cancel the old archive before download 401ms
+ ✓ src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > an equivalent rerender preserves the export and reveals retention controls only after a download starts 250ms
+
+ Test Files  4 passed (4)
+      Tests  33 passed | 31 skipped (64)
+   Start at  14:59:52
+   Duration  9.78s (tests 61%, import 15%, environment 12%, transform 11%)
+
+    Isolate  4 workers spawned · ~383ms startup each (spawn + environment, per file)
+             at least ~1.15s faster with isolate: false — reuses workers across files instead of one per file
+

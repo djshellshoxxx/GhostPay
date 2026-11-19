@@ -1,0 +1,91 @@
+{
+  "job": {
+    "id": 135232142934,
+    "name": "ts-test (web)",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+    "started_at": "2026-11-19T00:14:24Z",
+    "completed_at": "2026-11-19T00:22:59Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273430/job/135232142934"
+  },
+  "fetched_at": "2026-11-19T00:24:42.004Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135232142934/logs",
+  "decoded_log_sha256": "ff17b9b9ed86575a606426670aeb2d61ddddd469b027c77b69bfcd0cfdae7eed",
+  "decoded_log_bytes": 268389,
+  "compressed_log_bytes": 54040,
+  "compressed_log_sha256": "b0f043257da9889e070dc65b065ea525d8c9e82ad18d69858bd8538c1a6e4adf",
+  "log_file": "job-135232142934.log.gz",
+  "checkout_shas": [
+    "b53f116b825d7cf6e85681fc835aec18ef7add75"
+  ],
+  "selected_browser_cases": [],
+  "skipped_cases": [
+    {
+      "status": "skipped",
+      "line": 1705,
+      "raw_line": "2026-11-19T00:21:27.5374689Z  \u2193 src/features/btc/regtest.e2e.test.ts (1 test | 1 skipped)"
+    }
+  ],
+  "summary_lines": [
+    {
+      "line": 450,
+      "text": "2026-11-19T00:15:00.7458566Z > vitest run --coverage && vitest run --config vitest.nocov.config.ts"
+    },
+    {
+      "line": 453,
+      "text": "2026-11-19T00:15:01.0217219Z  RUN  v5.1.0 /home/runner/work/GhostPay/GhostPay/apps/web"
+    },
+    {
+      "line": 454,
+      "text": "2026-11-19T00:15:01.0217877Z       Coverage enabled with v8"
+    },
+    {
+      "line": 2210,
+      "text": "2026-11-19T00:22:45.2789410Z  Test Files  219 passed | 1 skipped (220)"
+    },
+    {
+      "line": 2211,
+      "text": "2026-11-19T00:22:45.2801782Z       Tests  2997 passed | 1 skipped (2998)"
+    },
+    {
+      "line": 2213,
+      "text": "2026-11-19T00:22:45.2806827Z    Duration  464.24s (tests 86%, import 8%, environment 4%, transform 1%)"
+    },
+    {
+      "line": 2218,
+      "text": "2026-11-19T00:22:45.2876248Z  % Coverage report from v8"
+    },
+    {
+      "line": 2220,
+      "text": "2026-11-19T00:22:45.2985576Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s "
+    },
+    {
+      "line": 2222,
+      "text": "2026-11-19T00:22:45.2991383Z All files          |   93.29 |     89.5 |   95.02 |   97.04 |                   "
+    },
+    {
+      "line": 2391,
+      "text": "2026-11-19T00:22:45.6594874Z   - import \"./vite.config\" without a file extension (vitest.nocov.config.ts:2:18). Add the file extension"
+    },
+    {
+      "line": 2394,
+      "text": "2026-11-19T00:22:45.6841597Z  RUN  v5.1.0 /home/runner/work/GhostPay/GhostPay/apps/web"
+    },
+    {
+      "line": 2407,
+      "text": "2026-11-19T00:22:54.6341245Z  Test Files  3 passed (3)"
+    },
+    {
+      "line": 2408,
+      "text": "2026-11-19T00:22:54.6341699Z       Tests  3 passed (3)"
+    },
+    {
+      "line": 2410,
+      "text": "2026-11-19T00:22:54.6344222Z    Duration  8.95s (tests 90%, import 5%, transform 5%)"
+    }
+  ],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135232142934.extract.txt",
+  "extract_sha256": "3c18d65e39a99286ee2ce52273fdad2463322330ddbd8812b60ae56b249a5a0d"
+}

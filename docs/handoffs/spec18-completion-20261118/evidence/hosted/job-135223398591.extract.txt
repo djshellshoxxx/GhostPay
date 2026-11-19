@@ -1,0 +1,56 @@
+Job: 135223398591 (ts-check)
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44423422185/job/135223398591
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135223398591/logs
+Fetched at: 2026-11-18T23:54:36.118Z
+Job API conclusion: failure
+Published head: f72c198b2a6a75be889e9810a37721da116deba1
+Checked-out commit(s): 5565efdf0b8b64646949520c422c9c908182f931
+Decoded raw log SHA256: 54f09f6ab69ce459af3694263e9d8cba2a113e186bb433b8478acd9e65181f40
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L128: 2026-11-18T23:51:16.7268944Z ##[endgroup]
+L129: 2026-11-18T23:51:16.7311754Z [command]/usr/bin/git log -1 --format=%H
+L130: 2026-11-18T23:51:16.7335119Z 5565efdf0b8b64646949520c422c9c908182f931
+L131: 2026-11-18T23:51:16.7343350Z ##[group]Removing auth
+[omitted]
+L169: 2026-11-18T23:51:17.4603608Z with:
+L170: 2026-11-18T23:51:17.4603760Z   node-version: 22
+L171: 2026-11-18T23:51:17.4603909Z   cache: npm
+[omitted]
+L177: 2026-11-18T23:51:17.6578722Z ##[group]Environment details
+L178: 2026-11-18T23:51:17.8863995Z node: v22.23.4
+L179: 2026-11-18T23:51:17.8864369Z npm: 10.9.9
+[omitted]
+L193: 2026-11-18T23:51:20.4827926Z ##[group]Run npm ci --ignore-scripts
+L194: 2026-11-18T23:51:20.4828237Z npm ci --ignore-scripts
+[omitted]
+L239: 2026-11-18T23:51:29.7582898Z ##[group]Run npm ls --all --omit=dev > /dev/null
+L240: 2026-11-18T23:51:29.7583154Z npm ls --all --omit=dev > /dev/null
+[omitted]
+L243: 2026-11-18T23:51:30.2482364Z ##[group]Run npm run build
+L244: 2026-11-18T23:51:30.2482560Z npm run build
+[omitted]
+L584: 2026-11-18T23:52:56.1456111Z > @ghostpay/web@0.1.0 build
+L585: 2026-11-18T23:52:56.1456585Z > tsc -p tsconfig.json --noEmit && vite build
+L586: 2026-11-18T23:52:56.1456819Z 
+L587: 2026-11-18T23:53:08.1122761Z ##[error]src/views/SellerKeys.stealthExport.test.tsx(103,81): error TS2769: No overload matches this call.
+L588: 2026-11-18T23:53:08.1129426Z   Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+L589: 2026-11-18T23:53:08.1130154Z     Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+L590: 2026-11-18T23:53:08.1130850Z   Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+L591: 2026-11-18T23:53:08.1131567Z     Object literal may only specify known properties, and 'exact' does not exist in type 'ByRoleOptions'.
+L592: 2026-11-18T23:53:08.2111147Z npm error Lifecycle script `build` failed with error:
+L593: 2026-11-18T23:53:08.2111414Z npm error code 2
+L594: 2026-11-18T23:53:08.2111642Z npm error path /home/runner/work/GhostPay/GhostPay/apps/web
+L595: 2026-11-18T23:53:08.2111887Z npm error workspace @ghostpay/web@0.1.0
+L596: 2026-11-18T23:53:08.2112139Z npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+L597: 2026-11-18T23:53:08.2112394Z npm error command failed
+L598: 2026-11-18T23:53:08.2112646Z npm error command sh -c tsc -p tsconfig.json --noEmit && vite build
+L599: 2026-11-18T23:53:08.2263464Z ##[error]Process completed with exit code 2.
+L600: 2026-11-18T23:53:08.2758319Z Post job cleanup.
+L601: 2026-11-18T23:53:08.2797608Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__bf51b1f3-fee2-4ce9-9662-b571d1c256be.libs]
+L602: 2026-11-18T23:53:08.2818282Z ##[end-action id=__bf51b1f3-fee2-4ce9-9662-b571d1c256be.libs;outcome=skipped;conclusion=skipped;duration_ms=0]
+L603: 2026-11-18T23:53:08.2860679Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__bf51b1f3-fee2-4ce9-9662-b571d1c256be.__actions_setup-node]
+L604: 2026-11-18T23:53:08.2880770Z ##[end-action id=__bf51b1f3-fee2-4ce9-9662-b571d1c256be.__actions_setup-node;outcome=skipped;conclusion=skipped;duration_ms=0]
+L605: 2026-11-18T23:53:08.3440718Z Post job cleanup.
+L606: 2026-11-18T23:53:08.4065107Z [command]/usr/bin/git version

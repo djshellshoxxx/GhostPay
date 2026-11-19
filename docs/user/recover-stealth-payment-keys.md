@@ -7,13 +7,16 @@
 
 ## Status
 
-Current source and executed checks are recorded in the [recovery integration handoff](../handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md).
+Current source, executed checks and remaining acceptance limits are recorded in the
+[Spec 18 completion report](../handoffs/spec18-completion-20261118/COMPLETION_REPORT.md) and
+[hosted validation record](../handoffs/spec18-completion-20261118/HOSTED_VALIDATION.md).
 
 | Path | Status |
 |---|---|
 | Reference recovery script (`scripts/recovery/stealth-export-recover.mjs`) | Implemented; tested against the reference vectors and against files freshly written by the GhostPay codec |
-| Raw private key in an independent EVM wallet tool | Supplemental test passed with Foundry 1.5.1 `cast` on loopback Anvil (`scripts/recovery/raw-key-anvil.test.mjs`): synthetic test key, no real network or real funds. Qualification with the workflow-pinned Foundry 1.8.5 remains pending. |
-| Loading an export in a freshly opened GhostPay page | Implemented and covered by local UI regressions; actual desktop and mobile browser acceptance is **pending**. jsdom tests do not qualify a browser. |
+| Raw private key in an independent EVM wallet tool | Passed with workflow-pinned Foundry 1.8.5 `cast` and Anvil (`scripts/recovery/raw-key-anvil.test.mjs`): the synthetic key reproduced its address and signed a successful transfer on a loopback chain. No public network or real funds. |
+| Recovery outside a GhostPay checkout | Passed in fresh Node 22.23.5 processes with only the script, its two noble dependencies and test exports readable. All five file types opened; archive and master recovery reproduced the expected private keys. |
+| Loading an export in a freshly opened GhostPay page | All nine Spec 18 journeys passed in both full and lean desktop Chromium builds at published source `032c42fc`. This includes fresh recovery, saved-file byte validation, replacement consent and keyboard controls. The verification-only flow also passed at a 390-by-844 viewport; this is not a physical mobile-device test. See the [hosted record](../handoffs/spec18-completion-20261118/HOSTED_VALIDATION.md). |
 | Import into third-party wallets, hardware wallets or phones | **Pending: not exercised.** No wallet, device or browser beyond the rows above has been tested |
 
 ## Which file do I have?
@@ -66,8 +69,9 @@ that boundary. Encrypting the private-key body protects its stored key material 
 
 1. Work offline if you can: disconnect the network, or use a machine you trust that is not shared.
 2. Copy the export file to that machine. Keep the original where it was.
-3. Have the passphrase ready. Wrong passphrase and a modified file give the **same** error on purpose, so the error
-   cannot tell you which one happened.
+3. Have the passphrase ready. For an otherwise structurally valid encrypted file, a wrong passphrase and failed
+   authentication give the **same** error. Malformed, oversized or unsupported files can be refused earlier with a
+   format or size error.
 4. Decide where any revealed key will go *before* you reveal it. Do not put it in a notes app, cloud folder, chat or
    clipboard manager.
 
@@ -78,8 +82,40 @@ installation, site, host or account: GhostPay is a static page and does no serve
 profile, open a GhostPay build you trust (one you built or verified yourself is best), load the file and enter the passphrase. The
 page checks every key against its address before showing anything, and a file with any problem is refused as a whole.
 
-Status: this in-app import has not yet passed its desktop and mobile browser acceptance. Until that is recorded, use
-Option B to check a file independently.
+Choose **Open export** to review the recovered material. For a payment-key file, check the displayed chain and each
+address. Each payment has its own raw-key download, which needs a second explicit confirmation; opening the file
+does not replace your currently loaded wallet.
+
+For a master backup, choose **Load these spending and viewing keys** after reviewing its meta-address. If a different
+wallet is already loaded, choose **Replace the loaded keys** only after reviewing the replacement prompt. This fresh
+confirmation is required even when the existing wallet has a saved backup. **Cancel** keeps the original keys loaded.
+If the local vault disappears while you review the prompt, the app shows the stronger sole-copy warning and requires
+confirmation again. Restoring the master pair creates a new invoice-signing key; it does not recover the old signing
+key that this format omits.
+
+### Verify a backup without replacing your keys
+
+To check an existing encrypted file, select it under **Open a stealth key export**, enter its passphrase, and choose
+**Verify backup without importing**. A successful verification authenticates the file, checks each private key
+against its public identity, and disposes the recovered private material. It does not install keys into the current
+session. A public-only record cannot pass as a recoverable secret backup.
+
+After creating an encrypted payment, archive or master backup, use **Keep and verify this backup**:
+
+1. Keep the downloaded file and its passphrase separately. Confirm **I saved this backup file and kept its passphrase
+   separately.** A started download alone never proves the file was retained.
+2. Select the actual retained file under **Saved backup file** and enter **Passphrase of the saved backup**.
+3. Choose **Verify the saved backup**. This flow first requires the file to match the export just generated, then
+   decrypts it and checks every key. Choosing another file, cancelling or locking cancels that operation.
+
+Verification proves the selected file was recoverable at that time. Keep your copies protected and check them again
+after moving storage. Payment-key archives recover only their listed addresses. The master backup recovers the
+spending and viewing keys, but never the invoice-signing key. Keep the older full seller keystore backup if you need
+to preserve that signing key; verifying a Spec 18 file does not waive full-session backup safeguards.
+
+The in-app recovery journeys passed in desktop Chromium under both build profiles; the narrow-viewport verification
+check also passed. Physical mobile browsers, other browser engines and wallet devices remain untested. Option B
+provides the separately implemented recovery path without loading the GhostPay website.
 
 ## Option B: the reference recovery script
 
@@ -87,8 +123,19 @@ The script is a separate implementation of the formats. It uses only Node.js bui
 AES-256-GCM) and the `@noble/curves` and `@noble/hashes` libraries, and it imports no GhostPay code. It makes no network
 requests.
 
-1. Install Node.js 22 or newer. From a checkout of this repository, run `npm ci` once (only `@noble/curves` and
-   `@noble/hashes` are needed by the script). Do this step while online, then go offline.
+1. Prepare the script and dependencies while online. Install Node.js 22 or newer. From a checkout of this repository,
+   `npm ci --ignore-scripts` installs the locked dependencies. The recovery script itself needs only
+   `@noble/curves` 2.4.0 and `@noble/hashes` 2.4.0. To keep a standalone recovery folder outside the checkout, copy
+   `scripts/recovery/stealth-export-recover.mjs` into an empty folder, open a terminal in that folder, and run:
+
+   ```sh
+   npm install --ignore-scripts --save-exact @noble/curves@2.4.0 @noble/hashes@2.4.0
+   ```
+
+   Keep the script, `node_modules`, `package.json` and `package-lock.json` together with your offline recovery kit.
+   In that folder the commands below use `node stealth-export-recover.mjs` instead of the repository path. Disconnect
+   from the network before supplying the backup or passphrase. No GhostPay packages, browser storage or hosted
+   service are required at recovery time.
 2. Check a file without a passphrase (header only, nothing is decrypted):
 
    ```sh
@@ -114,7 +161,10 @@ requests.
    node scripts/recovery/stealth-export-recover.mjs ghostpay-stealth-keypair.json --reveal-private-keys
    ```
 
-5. Optional: `--expected-chain <id>` refuses a payment-key file for any other chain.
+5. Optional: `--expected-chain <id>` refuses a payment archive, public record or raw-key file labelled for another
+   chain. It also applies to `--inspect`. This checks the recorded identifier, not live chain state; public and raw
+   metadata are not authenticated. A master backup is chain-neutral and refuses this option rather than pretending
+   to verify a network.
 
 Exit status: `0` success, `1` refused (the error code is printed, for example `wrongPassphraseOrModified`,
 `keyDoesNotMatch`, `duplicate`, `tooLarge`, `unsupportedVersion`), `2` usage error.
@@ -157,10 +207,12 @@ key: `0x` and 64 lowercase hex digits. It is **not** a seed phrase or recovery p
 
 What this does **not** do:
 
-- A general wallet cannot find your other stealth payments. Each one-time address needs its own key, and only
-  scheme-compatible tooling (GhostPay or the reference script with the master pair) can find and derive them.
-- The key controls a plain EOA only. It cannot authorize funds held by a contract account, an ERC-4337 account, an
-  EIP-7702 delegation or a GhostPay policy account. GhostPay refuses to export keys for those.
+- A general wallet cannot find your other stealth payments. Each one-time address needs its own key. Use a
+  scheme-compatible scanner to find announcements; GhostPay or the reference script with the master pair can then
+  derive the corresponding keys. The reference script does not discover announcements itself.
+- This recovery workflow supports plain EOAs. ERC-4337, EIP-7702 and policy/contract-account recovery are outside its
+  supported scope. GhostPay refuses secret payment exports when the payment address has code; possession of a raw
+  key does not establish that this workflow can recover an account of those types.
 - External wallet and device acceptance is **pending: not exercised**. The only independent tool tested is Foundry
   `cast` on a local test chain.
 
@@ -195,5 +247,10 @@ node --test scripts/recovery/*.test.mjs
 The tests decrypt every file in `test-vectors/stealth-export.json` (TEST-ONLY keys and passphrase), refuse every
 `invalid` vector with its documented error code, check tampering and bounds, recover the archive-omitted `a3` payment
 from the master backup, and decrypt files freshly written by `@ghostpay/ux-vault` (run `npm run build:libs` first).
+The standalone test copies the script and only its two noble dependencies into a fresh directory and restricts
+the child process's filesystem reads to that directory. It checks all five formats, recovers the expected archive
+keys, verifies that unlisted payments are absent, and derives an archive-omitted key from the master backup without
+printing the master secrets. This is separate from browser or external wallet-device acceptance.
+
 The anvil test runs when Foundry (`anvil`, `cast`) is found through `ANVIL_BIN`/`CAST_BIN`, `PATH` or
 `~/.foundry/bin`. It skips otherwise, unless `REQUIRE_ANVIL=1`, where a missing tool fails the test.

@@ -1,0 +1,85 @@
+{
+  "published": {
+    "d": {
+      "sha": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+      "node_id": "C_kwDOVR5mTNoAKDAzMmM0MmZjM2Q1ZTUyZDg0MjhhNzkwNzc3NTgzNWI1ZDFlZDM3MDQ",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/032c42fc3d5e52d8428a7907775835b5d1ed3704",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/032c42fc3d5e52d8428a7907775835b5d1ed3704",
+      "author": {
+        "name": "sheldon",
+        "email": "127660907+djshellshoxxx@users.noreply.github.com",
+        "date": "2026-11-18T23:58:58Z"
+      },
+      "committer": {
+        "name": "sheldon",
+        "email": "127660907+djshellshoxxx@users.noreply.github.com",
+        "date": "2026-11-18T23:58:58Z"
+      },
+      "tree": {
+        "sha": "631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5"
+      },
+      "message": "fix(recovery): enforce ASCII file bytes before import and verification\n\nReject BOM normalization before authenticating portable files. Add real-byte component and browser regressions, and correct the Testing Library role option in the saved-wallet consent test.\n\nOriginal-Local-Commit: eb9e244232a6b7002e7dfc7085041cbf4177a566\nOriginal-Author: Codex <codex@openai.com> 2026-11-18T15:58:38-08:00\nOriginal-Parent: a5b3fd123a86d6f5c52b9311a1707a009d3002b7\nExact-Tree: 631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5\nPublished through the authenticated GitHub Git Data API; original source tree preserved.",
+      "parents": [
+        {
+          "sha": "f72c198b2a6a75be889e9810a37721da116deba1",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/f72c198b2a6a75be889e9810a37721da116deba1",
+          "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/f72c198b2a6a75be889e9810a37721da116deba1"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/032c42fc3d5e52d8428a7907775835b5d1ed3704",
+    "at": "2026-11-18T23:59:36.592Z"
+  },
+  "merge": {
+    "d": {
+      "sha": "b53f116b825d7cf6e85681fc835aec18ef7add75",
+      "node_id": "C_kwDOVR5mTNoAKGI1M2YxMTZiODI1ZDdjZjZlODU2ODFmYzgzNWFlYzE4ZWY3YWRkNzU",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/b53f116b825d7cf6e85681fc835aec18ef7add75",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/b53f116b825d7cf6e85681fc835aec18ef7add75",
+      "author": {
+        "name": "sheldon",
+        "email": "127660907+djshellshoxxx@users.noreply.github.com",
+        "date": "2026-11-18T23:59:04Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-11-18T23:59:04Z"
+      },
+      "tree": {
+        "sha": "631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5"
+      },
+      "message": "Merge 032c42fc3d5e52d8428a7907775835b5d1ed3704 into 198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "parents": [
+        {
+          "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/198aa5baff22272453733a0f3dcfcac0e0994eec",
+          "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/198aa5baff22272453733a0f3dcfcac0e0994eec"
+        },
+        {
+          "sha": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/032c42fc3d5e52d8428a7907775835b5d1ed3704",
+          "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/032c42fc3d5e52d8428a7907775835b5d1ed3704"
+        }
+      ],
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq/jvICRC1aQ7uu5UhlAAAhGEQAK5Reif1D7qf4ickvUmr+vdq\nbv2wbIv0JgZ10mF3J1uv1QAvFmE65pQj6gGVxF3n6tN2cGLgk7NhghRWNkBaqFUa\nmBObKtxUBSjzEahYOenS/+3G3tAhh+roycmZWMXuGQXCIE7OGNd7j3Zrm11cTHXw\nIHfzUwKcFWzbXAdXuT4mXK8xG0fy2sbxNx1Dyiqds933jfaLgtgHVRe+ovWUF7uC\nwwJuiNRP/LDRyXKx1IdnXyX72Anqjztq4nTBZkdRlThtJT4A8tabX0uMZLIVaIHl\n0l5dzlytqt0U3MKJ1anfLQ01ZE4VlAzuLb35X4mOJ4nfD7u6PK9vGD32yb26xtND\n7qGb068e/TQL6mcs30fLa3CbGD7IXMazThNALxCByELZyxUmRjLIA+ElLuT/qO3J\n9hsk4P4ruetq5welcvS3vRJkqz8bsBSa1aBMULZPZwS0VwwhuBuqQR5SJo7vQd8K\n9Lj70HwMuNSgb9JTyn//+zaTP87i54KBdLKBfm1j/j1FQL/n7eqLCT5H8g0xgCVB\np/KtNmq0tbmB9h90DvS2kuMo3c3AMUEQBSaPQWgO+AJLPz0mcO3E+/5v5y9SLGtY\nGgM7iPqjqHUiAx3PhP6bEycRWWLfBfcykOHjZn4Mvgeog7dhTs/Lcq0h9fRCCVze\nFKeiOYeOZZbiN9r0wYwE\n=r3Ht\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5\nparent 198aa5baff22272453733a0f3dcfcac0e0994eec\nparent 032c42fc3d5e52d8428a7907775835b5d1ed3704\nauthor sheldon <127660907+djshellshoxxx@users.noreply.github.com> 1795046344 +0000\ncommitter GitHub <noreply@github.com> 1795046344 +0000\n\nMerge 032c42fc3d5e52d8428a7907775835b5d1ed3704 into 198aa5baff22272453733a0f3dcfcac0e0994eec\n",
+        "verified_at": "2026-11-18T23:59:04Z"
+      }
+    },
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/b53f116b825d7cf6e85681fc835aec18ef7add75",
+    "at": "2026-11-18T23:59:59.977Z"
+  }
+}

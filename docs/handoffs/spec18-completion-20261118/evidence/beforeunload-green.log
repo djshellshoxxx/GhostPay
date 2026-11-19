@@ -1,0 +1,91 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/af37e06cf64c/GhostPay/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/address.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/bech32m.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/secret.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/adapter.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/labels.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/ecc.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/scan/scanner.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/receiver.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/inputs.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/tx.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/units.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/uri.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/bip32.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/keys.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/rng.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/scan/blindbit.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/scan/memory.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/sender.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/spend.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/header.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/hexbytes.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/headerchain.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/scan/headersync.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/scan/state.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/witness.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/merkleProof.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/policy.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/scan/blindbitGrpc.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/scan/grpcWebUnary.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/btc-silent-payments/scan/proto/indexing_server_pb.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/secret.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/ed25519.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/keys.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/meta-address.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/stealth.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/announcement.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/programs.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/instructions.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/tx.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/rpc.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/scan.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/solana-stealth/adapter.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/address.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/meta.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/tx.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/protobuf.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/fees.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/rpc.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/scan.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tron-adapter/adapter.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/types.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/policy.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/limits.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/meta.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/derive.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/eip712.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/calldata.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/abi/policyAccount.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/abi/policyAccountFactory.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/router.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/abi/policyRouter.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/window.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/policy-scheme/record.js" points to missing source files
+(node:49) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  3 passed (3)
+      Tests  21 passed | 12 skipped (33)
+   Start at  15:01:22
+   Duration  4.59s (import 33%, environment 26%, tests 22%, transform 19%)
+
+    Isolate  3 workers spawned · ~480ms startup each (spawn + environment, per file)
+             at least ~959ms faster with isolate: false — reuses workers across files instead of one per file
+

@@ -1,0 +1,41 @@
+{
+  "job": {
+    "id": 135223398752,
+    "name": "ts-test (web)",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "head_sha": "f72c198b2a6a75be889e9810a37721da116deba1",
+    "started_at": "2026-11-18T23:56:49Z",
+    "completed_at": "2026-11-18T23:59:22Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44423422185/job/135223398752"
+  },
+  "fetched_at": "2026-11-18T23:59:59.978Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135223398752/logs",
+  "decoded_log_sha256": "6dbbd85b2e988d699bfa225bfe9f5e4661e2a9e05c536790532d21ae05d690a7",
+  "decoded_log_bytes": 63228,
+  "compressed_log_bytes": 15484,
+  "compressed_log_sha256": "cd5b0474a4301863109553bcf5a7b3d432d7b97cd1cd0ca98c62793dcf01e8f5",
+  "log_file": "job-135223398752.log.gz",
+  "checkout_shas": [
+    "5565efdf0b8b64646949520c422c9c908182f931"
+  ],
+  "selected_browser_cases": [],
+  "skipped_cases": [],
+  "summary_lines": [
+    {
+      "line": 449,
+      "text": "2026-11-18T23:57:39.6596250Z > vitest run --coverage && vitest run --config vitest.nocov.config.ts"
+    },
+    {
+      "line": 452,
+      "text": "2026-11-18T23:57:40.0905880Z  RUN  v5.1.0 /home/runner/work/GhostPay/GhostPay/apps/web"
+    },
+    {
+      "line": 453,
+      "text": "2026-11-18T23:57:40.0907000Z       Coverage enabled with v8"
+    }
+  ],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135223398752.extract.txt",
+  "extract_sha256": "c71610c2d7d321ef435bf18ca385198083cdb25e97aeb629f78d198ac3fbc536"
+}

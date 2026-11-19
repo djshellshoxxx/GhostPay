@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "apps/web/tsconfig.json",
+    "--noEmit",
+    "--extendedDiagnostics"
+  ],
+  "node_version": "v22.23.5",
+  "heap_mib": 1024,
+  "exit_code": -9,
+  "seconds": 15.441,
+  "peak_rss_kib": 1056028,
+  "child_rusage_maxrss_kib": 1060732,
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "source_before": {
+    "sha256": "7c40174c380d83036e0d24767fd74f02ee1f3309cddd928a46ccdb45a7e66840",
+    "files": 3128
+  },
+  "source_after": {
+    "sha256": "7c40174c380d83036e0d24767fd74f02ee1f3309cddd928a46ccdb45a7e66840",
+    "files": 3128
+  },
+  "host_before": {
+    "oom_kill": 182,
+    "MemFree": 958652,
+    "MemAvailable": 2571376
+  },
+  "host_after": {
+    "oom_kill": 183,
+    "MemFree": 1468164,
+    "MemAvailable": 2257064
+  }
+}
