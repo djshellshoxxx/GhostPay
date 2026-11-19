@@ -642,4 +642,3 @@ Acceptance: retain every PR #239 protection and selectively preserve PR #240's e
 external-copy unload guard, fresh replacement consent and keyboard recovery regressions. No changes to the codec,
 custody model, contracts, dependencies, e2e helpers, remote source branches or security gates. Record actual test
 results separately from static review. The master coordinator owns integration and publication.
-
