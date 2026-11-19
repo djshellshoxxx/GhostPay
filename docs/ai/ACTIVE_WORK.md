@@ -491,3 +491,27 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+# Sleep-aware session security completion — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT coordinator with independent clock/lifecycle, vault/session and integration reviewers.
+Branch: `chatgpt/ghostpay-idle-lifecycle-qualified-20261119`.
+Qualified source base: PR #242, `ab4e0da2cfe2a18adac0424896fba0b40fac81a8`, subsequently merged
+by another workstream as main `e454de6abfefda70d82784fafc1d8949b277c334` with an identical source tree.
+Successor integration target: `integration/ghostpay-idle-session-completion-20261119`, from that main.
+PR #227 `613667be4eeb132c7d21ccd06c627f9a7144d85b` is already an ancestor.
+Owned paths: `apps/web/src/AppShell*`; idle-specific session/key-vault lifecycle changes and tests;
+the idle-authority token in `apps/web/src/lib/scanCursorSlot.ts` and its regression tests;
+`apps/web/e2e/idle-session.spec.ts`; directly required lock-state locale/security-key entries;
+`apps/web/DEVIATIONS.md`; session-security guidance and `docs/handoffs/idle-session-20261119/`.
+Acceptance: fail closed on expired/invalid clocks before activity; retire old timer/session generations;
+synchronously revoke protected key operations at expiry; preserve sole-copy keys for the existing encrypted
+backup/recovery path; qualify full/lean lifecycle behavior; independently review and integrate into the successor candidate.
+No wallet encryption/KDF redesign, Spec 18 feature work, contract/analyzer remediation, network-isolation
+redesign, dependency upgrade, deployment, release, force push or protection bypass. Other source branches
+remain read-only; #238 and its recovery/privacy follow-ups continue independently outside this focused port.
+Initial defects and exact acceptance evidence are tracked in the task handoff directory.
+
+Provenance: the idle-only delta is ported from local `b2fb5f20455ca2823739f7a29ed784ec94e049c2`,
+preserved remotely as `7e6089e2e40a2a7daf93961eddef17d3fe8501fd` on `chatgpt/ghostpay-idle-lifecycle-20261119`.
+The broader #238 tree and its unrelated worker claims are not imported; this combined target requires fresh qualification.
