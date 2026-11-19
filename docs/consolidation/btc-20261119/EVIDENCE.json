@@ -1,0 +1,288 @@
+{
+  "product_head": "e741aa8e8228a2099ee5abe3fd73aa14ffb011b8",
+  "base": "66e707d0676caa26e074c7e5e9f5db0285f6ca62",
+  "selected_pr254": "8c1d87a2587281c32a5f1326a4f36cfada4384bc",
+  "sibling_pr244": "2364284a2717a22b895fcb7badeb2e7ae6bb0e48",
+  "toolchain": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "typescript": "5.9.3",
+    "dependency_cache": "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules"
+  },
+  "logs": [
+    {
+      "file": "evidence/btc-header-red.log",
+      "sha256": "ac32cabcdd8372d8318062a3e9380e4ecea4211b5e7a9961fc337e877e164f02",
+      "bytes": 1756
+    },
+    {
+      "file": "evidence/btc-library-focused.log",
+      "sha256": "45a509bd8ac61a60b3bc5699b10299c6f3c4b16c1d0944a5f9d58a629ad965fd",
+      "bytes": 1121
+    },
+    {
+      "file": "evidence/btc-web-focused.log",
+      "sha256": "dacfc1dde9862c4ca90f5dd749986b7046268fa883050ccd79be586d8cbee50c",
+      "bytes": 24671
+    },
+    {
+      "file": "evidence/btc-web-integration-rerun.log",
+      "sha256": "acacc95ff658886702143f6dd3c91b0b90b996533f7e41f78dfcb5893d314e1a",
+      "bytes": 1272
+    },
+    {
+      "file": "evidence/btc-web-disclosure-rerun.log",
+      "sha256": "e75be48f6fc1e0dca36aba414fbb913ea099bdc93e13b88e798e74d3ac9af6fb",
+      "bytes": 905
+    },
+    {
+      "file": "evidence/btc-lint.log",
+      "sha256": "9ddfe6149dd132b56e90eec10aa3e2158736ba58846e89220b353e503d7a4c72",
+      "bytes": 2542
+    },
+    {
+      "file": "evidence/btc-lint-1024.log",
+      "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "bytes": 174
+    },
+    {
+      "file": "evidence/btc-build-cache-check.json",
+      "sha256": "2e2506b2e31b7aa9c7c41d07cc6ecc9449e7d3fa057c17717bc7def53bba86bd",
+      "bytes": 3884
+    }
+  ],
+  "source_files": [
+    {
+      "path": "apps/web/src/features/btc/BtcView.headerErrors.test.tsx",
+      "sha256": "f3eeabbaa8630aa9f8b959b664a48902de24f570250870a143bc47d8f90c5f05"
+    },
+    {
+      "path": "apps/web/src/features/btc/BtcView.headerOwnership.test.tsx",
+      "sha256": "e321b993a9ae191fbef706ac49c06f880962f270391a1d19bb64e9cbeae15ede"
+    },
+    {
+      "path": "apps/web/src/features/btc/BtcView.headers.test.tsx",
+      "sha256": "2f5f5efe6ea3fee128a02fa7f54a74b6a49204cf8db9e375c954212afd4d5ff5"
+    },
+    {
+      "path": "apps/web/src/features/btc/BtcView.oracle.test.tsx",
+      "sha256": "54e4bec9ad454bee6ec4247bfe2aff2e547b08cefb6871358022b0c28c2d46ad"
+    },
+    {
+      "path": "apps/web/src/features/btc/BtcView.persistence.test.tsx",
+      "sha256": "51a5c3b8e5e2769b41432242e3558487af0673aed7f3d3a2ff7535cdbf483387"
+    },
+    {
+      "path": "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+      "sha256": "55b03756ca6b88c48dd9e334dbbff683fa53482ac2e4833f5978b3751f778663"
+    },
+    {
+      "path": "apps/web/src/features/btc/BtcView.spentness.test.tsx",
+      "sha256": "9b48843aeb2364bcb02c80a528601be40ab58c409a7f9540e1a51117fabda7ff"
+    },
+    {
+      "path": "apps/web/src/features/btc/BtcView.test.tsx",
+      "sha256": "1d30151fb74225788314504d2eb465b8670dac7e76b924d23481fde7c30b832d"
+    },
+    {
+      "path": "apps/web/src/features/btc/BtcView.tsx",
+      "sha256": "e8dfbbbd60ed8185e300bbcd94254db4c472e9ab9445a81543516bbfc3dacffe"
+    },
+    {
+      "path": "apps/web/src/features/btc/esplora.isolation.test.ts",
+      "sha256": "699fe1af35671e0d0bd7d8bda1a248bd19ca34a07d8bc69066a6634dbca008b6"
+    },
+    {
+      "path": "apps/web/src/features/btc/esplora.test.ts",
+      "sha256": "40e8859a7a579e72a6808c6a8e11c887d8b0eee741b806fc6559e7d9738a69c1"
+    },
+    {
+      "path": "apps/web/src/features/btc/esplora.ts",
+      "sha256": "6d540ca80a6a12cba5bff75b70fa1e9d6404ee24653c8993d9684fe521dd22e1"
+    },
+    {
+      "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+      "sha256": "5eac9cc2135f619d26e1aa5b9a4585b04b1b86ec622d59b3b3e4ffe720d5cb0a"
+    },
+    {
+      "path": "apps/web/src/features/btc/headers.test.ts",
+      "sha256": "07c298d619c4e4bc3c8e2640eba21657186b4ba89a9c411e77834bf7842bdb7f"
+    },
+    {
+      "path": "apps/web/src/features/btc/headers.ts",
+      "sha256": "c2d967efd02c189ee5a138c167bde6fb17f2e19aed5c529971e55dd3be86e4b3"
+    },
+    {
+      "path": "apps/web/src/features/btc/inclusion.ts",
+      "sha256": "bd19f3e96e5db2e479a44fa73ae6867a93e7122b339bdac596e3a951b8397ecc"
+    },
+    {
+      "path": "apps/web/src/features/btc/network.ts",
+      "sha256": "9a6b97fe84f6ce5c7101639291fcd2b603be09baafc0cafca027e2e8ee7b1f8f"
+    },
+    {
+      "path": "apps/web/src/features/btc/oracle.testutil.ts",
+      "sha256": "86e0e90e2452b8e458ccae585198d128402b8c00d8d1f99b12ff497061f5eecf"
+    },
+    {
+      "path": "apps/web/src/features/btc/oracleBridge.test.ts",
+      "sha256": "7d2b1e67f7726ac6a48d88d089c75161802718dbc8bfefa81166c42c6b4863ce"
+    },
+    {
+      "path": "apps/web/src/features/btc/oracleBridge.ts",
+      "sha256": "2f19ece01a0d50bcf72ce16b3b2e2e3057615f8c59e6c0936267ce1bc763f2aa"
+    },
+    {
+      "path": "apps/web/src/features/btc/oracleSource.test.ts",
+      "sha256": "80cde8c3735a3481de2fa3067c77d74de6b5fe7e2305affc2004dde1c60f912d"
+    },
+    {
+      "path": "apps/web/src/features/btc/oracleSource.ts",
+      "sha256": "61eec20f11a1064288f89082fd30f775587a68413699ac6e2a45b06dd6e34465"
+    },
+    {
+      "path": "apps/web/src/features/btc/oracleWorker.test.ts",
+      "sha256": "2c0038ee977cfd3a02d3aa9bb25030b3f2ea227e720ee07ee4febe623b948488"
+    },
+    {
+      "path": "apps/web/src/features/btc/regtest.e2e.test.ts",
+      "sha256": "a7c8a8185f692810d339f027092a70e9b52f275a009640b632995d60e1a43241"
+    },
+    {
+      "path": "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+      "sha256": "fdba17faaceb002dc9683845d4c527a2a28fcca62886f3360f6e52dfbab061a5"
+    },
+    {
+      "path": "apps/web/src/features/btc/scan.localSpends.test.ts",
+      "sha256": "063a353541d6178c5655198499f04153231b95ddb82fb586cb02522925cd988d"
+    },
+    {
+      "path": "apps/web/src/features/btc/scan.resume.test.ts",
+      "sha256": "191f402ac9984b6074218d7b46df877521139b16f07314ae6223427914b477ca"
+    },
+    {
+      "path": "apps/web/src/features/btc/scan.spends.test.ts",
+      "sha256": "a1890e429b6e06a55faa44108f78a74a0eeac7ee7b72326734afbace5ddf0993"
+    },
+    {
+      "path": "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+      "sha256": "e4027b8ba8b8eb31e53af270f3c2935d32e0ae60f821c668eae7a9c9610d3d34"
+    },
+    {
+      "path": "apps/web/src/features/btc/scan.ts",
+      "sha256": "47a04e5191ee0f31c12b47cfecc7f729160ec7853e7fb5d8a0358b3ec2b7cc3d"
+    },
+    {
+      "path": "apps/web/src/features/btc/scan.worker.ts",
+      "sha256": "3ec4a5ca4912fa30c6a1580a2fd840801e5e456ce4a977d39ef6eaba3a434c51"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanStore.test.ts",
+      "sha256": "fad78d7e2c70a0c533512f746fda6d03737157bac75b2809a43b1e56ce7e1ffd"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanStore.ts",
+      "sha256": "f4b217bb9490e95d24a1eb4f719c0959cab19593b9a9f19f036aec50dff5d31c"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanWorker.test.ts",
+      "sha256": "5c9991b5c15f6b0993c21617a07cfe97f30933e1bff27a71984711447c54313a"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanWorker.testutil.ts",
+      "sha256": "f5db36baa2eb5ae061b0492b37b8a4fc9c521303a5d84e4174cc735fdc3111ac"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanWorkerClient.ts",
+      "sha256": "82ef7b0ba3e228deafbc9fbada0dea5817de4f7d4d87d78af72de8fd919a92bf"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanWorkerMessages.ts",
+      "sha256": "4c9291f6ab5bc3017e3662b7efb33427d1b7c2b43c3e2c24790ca77d826ade52"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanWorkerProtocol.ts",
+      "sha256": "82595229a20f065d3bd0f9afad5001e9a6d9ad12ec61444729ae1eeb64392d6f"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanWorkerSource.test.ts",
+      "sha256": "4e8ab3f531f45db35194ddf1bdb758e787d4f35b50c9f38e4fbbd057d4898748"
+    },
+    {
+      "path": "apps/web/src/features/btc/scanWorkerSource.ts",
+      "sha256": "1727b7c8478b10734841a53f64fb383d7585085fb3c878e1dbe06c38ac0e2a4a"
+    },
+    {
+      "path": "apps/web/src/features/btc/sweep.test.ts",
+      "sha256": "e9004f38f72f1f7e47922b9b9c6fabe72f42696075f4b0350fb598b28bec014b"
+    },
+    {
+      "path": "apps/web/src/features/btc/sweep.ts",
+      "sha256": "ff7ad10f2405cfa5d9062f432542e8250751a0bad9d839acc339ce9167dde5a1"
+    },
+    {
+      "path": "apps/web/src/features/btc/verification.i18n.test.ts",
+      "sha256": "de9d6c931821d3894a75673fd4276c2935b90487e8d8d0560d8146e734126366"
+    },
+    {
+      "path": "apps/web/src/features/btc/verification.ts",
+      "sha256": "bfe39e0dc266f7c2663a4808244f924b17d3391c32ea7134609de14df3d52e38"
+    },
+    {
+      "path": "apps/web/src/features/btc/wallet.ts",
+      "sha256": "263dc7992838cd3f6dcf1908efdb6bcd5965570145757fc9d6e99b4da99df274"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/blindbit.test.ts",
+      "sha256": "48243ceb12cf16f72517482078e34a83da4d6987b53d65b6cc27183b6f8a2ddc"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/blindbit.ts",
+      "sha256": "30f34267ee22bd00af0141556d35a25eff1728ae9cf9933aaa28ba8d85579d9c"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/blindbitGrpc.test.ts",
+      "sha256": "5251a5bba1b6697f577ac0e15f0e40853ca1ed9acd01a062a722db3336e1bd7c"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/blindbitGrpc.ts",
+      "sha256": "c44fb48545f21431ff0c1fa9ed2eebbfab10fd0f72d54f077a2c8ca361236113"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/grpcWebUnary.ts",
+      "sha256": "da6d9b2b0a382cac63047596713f54012fc0d65b2604450caa67330d641ac829"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/headersync.test.ts",
+      "sha256": "4a8b47033252d40d4743f34dfb8d4ac86aaf7d91a3678f61019d394b4b0ebdf3"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/headersync.ts",
+      "sha256": "dea264c471c1a941f1de15f8f68f886076cee5ec4acd0b9d3adcb34b2448d01b"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/memory.ts",
+      "sha256": "9edd633d02b41e06489396b364bad862423d337045ddd66c932f6ba492460a43"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/scanner.test.ts",
+      "sha256": "7a6a1250507925696cbff6512e469b453dda2d81988746598e51ef485e000b34"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/scanner.ts",
+      "sha256": "3754d05c8d27ef00f284fec67e3e4b8bd671dd0ffb9556f87ce6710475b3884e"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/state.test.ts",
+      "sha256": "5cc16dbc708d48b9b3a296d27806e4e553fadd350fddc3da44323bafa16e2266"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/state.ts",
+      "sha256": "fb10101b6329390a935109d7fdbb57573eb05599f0580b1b86777ec5f9beac49"
+    },
+    {
+      "path": "packages/btc-silent-payments/src/scan/types.ts",
+      "sha256": "143ce57355eb9e0f5ff108ec2b1e1c387b368ae5f97ad06072f935560d47c241"
+    }
+  ]
+}

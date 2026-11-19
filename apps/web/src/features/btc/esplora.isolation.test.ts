@@ -21,6 +21,12 @@ function client(fetchFn: EsploraFetch): EsploraClient {
 afterEach(() => { vi.useRealTimers(); });
 
 describe('Esplora cancellation isolation', () => {
+  it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY, 0.5, 2_147_483_648])('rejects invalid deadline %s before any request', (timeoutMs) => {
+    const fetchFn = vi.fn<EsploraFetch>();
+    expect(() => new EsploraClient({ baseUrl: BASE, fetchFn, timeoutMs })).toThrow(SilentPaymentError);
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+
   it('settles a fetch that ignores both the deadline and abort signal', async () => {
     vi.useFakeTimers();
     const fetchFn = vi.fn<EsploraFetch>(() => never<Response>());

@@ -483,8 +483,8 @@
     "btc.scan.noneFound": "No unspent payments found in this range.",
     "btc.scan.foundCount": "{count} unspent payment(s) found.",
     "btc.scan.alreadySpent": "{count} already spent.",
-    "btc.scan.singleProvider": "Found outputs were checked against the blocks downloaded from the configured Esplora provider. Where those blocks could not settle whether an output is spent, that provider was asked too, and each selected output is checked again when you sign. This is a single-provider check, not independent verification. Select and review each exact transaction output below.",
-    "btc.exposure.notice": "What the Esplora server can see: the connecting IP address, every block height you scan and each block it serves you. If the blocks you scanned cannot show whether a found output is spent, it also sees that output's transaction ID, and it sees each output you sweep when you sign. It never sees your keys. Using it is not anonymous.",
+    "btc.scan.singleProvider": "Outputs were read from the configured Esplora provider (spent status: see the line above). This is a single-provider check, not independent verification. Select and review each exact transaction output below.",
+    "btc.exposure.notice": "What the Esplora server can see: the connecting IP address, every block height you scan and each block it serves you. Optional output-status queries reveal the queried outputs. Light oracle scans also request proofs for matched transactions. Broadcasting reveals the signed transaction. The server never receives your private keys. Using it is not anonymous.",
     "btc.headers.heading": "Block headers",
     "btc.headers.update": "Update headers",
     "btc.headers.checking": "Checking block headers…",
@@ -2104,7 +2104,7 @@
     "btc.verification.check.storage": "Checked headers are saved in this browser and checked again in full when loaded; saved headers that fail any check are discarded and downloaded again. When a chain with more work replaces blocks that were already scanned, the results from those blocks are removed.",
     "btc.verification.limit.validation": "This is header-chain validation against the chain the server claims is best, with most-work selection among the headers it sent. It is not SPV and not full validation: no transaction or script is validated beyond the checks above. A server can hide a heavier chain or show you only its own (an eclipse), and proof of work on test networks is cheap, so a server can mine a heavier fork itself.",
     "btc.verification.limit.prevouts": "The scripts and amounts of the outputs being spent come from the server (they live in earlier blocks). A lying server can hide a payment, and with a fork it mined itself (cheap on test networks) it can also invent one. Confirm a payment with a source you trust before relying on it.",
-    "btc.verification.limit.spent": "Spent status comes from the server.",
+    "btc.verification.limit.spent": "Full-block scanning checks spentness locally only with continuous input coverage through the scanned chain tip. Missing historical or incomplete coverage stays unknown. Mempool spends are not covered. Optional server checks, required in light oracle mode, reveal queried outputs to the selected Esplora provider.",
     "btc.verification.limit.privacy": "The server learns your IP address, which block heights you scan and which header ranges you download. It never receives your keys.",
     "btc.verification.mode.own.mode": "A. Your own server (an Esplora instance you run)",
     "btc.verification.mode.own.keyLeaves": "No",
@@ -2499,7 +2499,15 @@
     "network.actionConsent": "Each network action authorizes only its displayed endpoint and purpose. Changing settings, locking, or cancelling revokes pending access. Offline wallet and invoice tools remain available.",
     "network.revoke": "Cancel network activity",
     "network.revoked": "Network activity cancelled. Start a new action to authorize another request.",
-    "network.reviewAction": "Review network access for this invoice"
+    "network.reviewAction": "Review network access for this invoice",
+    "btc.scan.providerCheckLabel": "Also ask the server whether each found output is unspent (this reveals the wallet's outputs to it)",
+    "btc.scan.providerCheckHint": "Off: this device checks inputs from complete downloaded blocks without per-outpoint spent-status requests. On: the selected server sees each queried output and reports its spent status, including spends it knows about in the mempool. Turning this off cancels the active scan; it cannot undo requests already sent.",
+    "btc.scan.providerCheckLight": "Light oracle mode does not download complete block inputs. Starting this mode authorizes per-output spent-status queries to the selected Esplora server, revealing the queried outputs. Use full-block scanning to turn those queries off.",
+    "btc.scan.spentStatus.local": "Spent status: checked locally through height {height}, with continuous block-input coverage for every displayed output. No optional per-output spent-status query was sent. Mempool spends and later blocks are not covered; this does not guarantee that a broadcast will succeed.",
+    "btc.scan.spentStatus.provider": "Spent status: the selected Esplora server was asked about outputs not already known locally to be spent. It sees each queried output and reports current status, including mempool spends it knows about. This is the server's report, not independent proof.",
+    "btc.scan.spentStatus.unknown": "Spent status: unknown. The scan is incomplete, historical input coverage is missing, or supporting chain evidence changed. Displayed outputs cannot be selected for sweeping until their status is refreshed.",
+    "btc.scan.foundUnknown": "{count} payment(s) found with unknown spent status; {spent} spend(s) observed. Sweep selection is unavailable.",
+    "btc.scan.unknownRefresh": "Continue a partial scan to the checked tip. For old scan history, use Forget saved scan progress and rescan from the original first block, or explicitly enable the server check. The server check reveals the queried outputs."
   },
   "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

@@ -810,6 +810,30 @@ No deployment, release, branch deletion or shared-branch rewrite.
 
 
 
+## Bitcoin spent-output privacy completion — 2026-11-18
+
+Coordinator: ChatGPT `/root`, Caveman investigate-first. Branch:
+`chatgpt/btc-spentness-private-scan-20261118`.
+Base: main `dfc75ef2087fa6463ae59e0818abec01796c578d`; preserve PR #219
+`9617e8572f9bc414410bd937b0e7718d0c5bd55c` through an explicit integration commit.
+Owned paths: Bitcoin scan source/state and focused tests under
+`packages/btc-silent-payments/src/scan/` and `apps/web/src/features/btc/`, Bitcoin
+browser acceptance, existing Bitcoin English disclosures/fallback security keys,
+Bitcoin documentation/DEVIATIONS, this claim, and a feature-specific qualification report.
+Acceptance: local input matching, conservative unknown status, explicit provider
+consent through worker dispatch/retry, encrypted resumption, reorg-safe spend
+evidence, historical migration and deterministic regression/browser coverage.
+Independent reviewer `spentness_review` reads all feature code without modifying it
+and owns `docs/handoffs/btc-spentness-20261118/INDEPENDENT_REVIEW.md`.
+Implementation worker `state_engine` owns the library's scan state/scanner source
+and tests. `ui_consent` owns Bitcoin view/worker consent and browser tests.
+The coordinator owns Esplora parsing, the web scan wrapper, header-result
+invalidation, disclosures, documentation and combined qualification. These disjoint
+paths are reviewed before integration.
+PR #235 seller checkpoints, Spec 18 recovery, EVM, general network isolation,
+contracts/Mythril, dependency upgrades and general consolidation are excluded.
+No main merge, branch deletion, force-push, deployment or release publication.
+
 ## Beta acceptance log artifact capture — 2026-11-18
 
 Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
@@ -1209,3 +1233,22 @@ Initial defects and exact acceptance evidence are tracked in the task handoff di
 Provenance: the idle-only delta is ported from local `b2fb5f20455ca2823739f7a29ed784ec94e049c2`,
 preserved remotely as `7e6089e2e40a2a7daf93961eddef17d3fe8501fd` on `chatgpt/ghostpay-idle-lifecycle-20261119`.
 The broader #238 tree and its unrelated worker claims are not imported; this combined target requires fresh qualification.
+
+# BTC spentness consolidation — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT branch_recon, assigned by the current consolidation coordinator.
+Branch: `codex/ghostpay-btc-consolidation-20261119`.
+Base: `66e707d0676caa26e074c7e5e9f5db0285f6ca62`, which retains the existing master integration.
+Selected source: PR #254 `8c1d87a2587281c32a5f1326a4f36cfada4384bc`; compare sibling
+PR #244 `2364284a2717a22b895fcb7badeb2e7ae6bb0e48` for unique header/cancellation regressions.
+Owned paths: `packages/btc-silent-payments/src/scan/`; `apps/web/src/features/btc/`;
+BTC-specific browser tests, locale/security-key entries and user/spec documentation;
+this claim and `docs/consolidation/btc-20261119/` evidence.
+Acceptance: retain #254 ancestry and complete local/provider spentness semantics, preserve current
+action-bound network authorization and cancellation, reconcile useful #244-only tests, execute
+focused library/web/type/lint/browser checks available in the exact dependency environment, and
+report remaining combined qualification explicitly. Source review by the coordinator remains required.
+Privacy/recovery workers own their current shared lanes. No remote merge/push, contract change,
+mainnet interaction, dependency upgrade or release action is included in this worker's assignment.
+
+BTC consolidation checkpoint: product head `e741aa8e8228a2099ee5abe3fd73aa14ffb011b8`; merge source and focused evidence are recorded in `docs/consolidation/btc-20261119/QUALIFICATION.md`. Coordinator final review and combined hosted qualification remain pending.
