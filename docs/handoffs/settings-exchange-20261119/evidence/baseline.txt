@@ -1,0 +1,239 @@
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+ ❯ src/views/Settings.exchange.test.tsx (11 tests | 1 failed) 5484ms
+   ❯ Settings exchange: export (3)
+     × preselects preferences only, disables empty sections and lists exactly what the QR contains 1723ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/Settings.exchange.test.tsx > Settings exchange: export > preselects preferences only, disables empty sections and lists exactly what the QR contains
+TestingLibraryElementError: Unable to find an element with the text: /they show which providers you use/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-labelledby[39m=[32m"settings-transfer-h"[39m
+  [33mclass[39m=[32m"panel"[39m
+[36m>[39m
+  [36m<h3[39m
+    [33mid[39m=[32m"settings-transfer-h"[39m
+  [36m>[39m
+    [0mMove settings to your other devices[0m
+  [36m</h3>[39m
+  [36m<p>[39m
+    [0mCopy saved settings to another device of your own. You choose what goes into the QR; only preferences are selected at first. Private keys, passphrases, backups and vault contents are never included. Every import is reviewed before anything is applied.[0m
+  [36m</p>[39m
+  [36m<fieldset>[39m
+    [36m<legend>[39m
+      [0mExport settings to another device[0m
+    [36m</legend>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"hint"[39m
+    [36m>[39m
+      [0mChoose what to include. Session-only RPC URLs and endpoint URLs that look like they contain credentials are omitted. Saved settings are unchanged; enter omitted endpoints separately on your other device.[0m
+    [36m</p>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"check"[39m
+    [36m>[39m
+      [36m<input[39m
+        [33mchecked[39m=[32m""[39m
+        [33mid[39m=[32m"_r_1g_-export-preferences"[39m
+        [33mtype[39m=[32m"checkbox"[39m
+      [36m/>[39m
+      [36m<label[39m
+        [33mfor[39m=[32m"_r_1g_-export-preferences"[39m
+      [36m>[39m
+        [0mPreferences (delay, idle lock, theme, address bar)[0m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"check"[39m
+    [36m>[39m
+      [36m<input[39m
+        [33mid[39m=[32m"_r_1g_-export-rpcUrls"[39m
+        [33mtype[39m=[32m"checkbox"[39m
+      [36m/>[39m
+      [36m<label[39m
+        [33mfor[39m=[32m"_r_1g_-export-rpcUrls"[39m
+      [36m>[39m
+        [0mRPC endpoints[0m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"check"[39m
+    [36m>[39m
+      [36m<input[39m
+        [33mid[39m=[32m"_r_1g_-export-rpcUrlsSecondary"[39m
+        [33mtype[39m=[32m"checkbox"[39m
+      [36m/>[39m
+      [36m<label[39m
+        [33mfor[39m=[32m"_r_1g_-export-rpcUrlsSecondary"[39m
+      [36m>[39m
+        [0mSecond RPC endpoints[0m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"check"[39m
+    [36m>[39m
+      [36m<input[39m
+        [33mid[39m=[32m"_r_1g_-export-relayerUrl"[39m
+        [33mtype[39m=[32m"checkbox"[39m
+      [36m/>[39m
+      [36m<label[39m
+        [33mfor[39m=[32m"_r_1g_-export-relayerUrl"[39m
+      [36m>[39m
+        [0mRelayer URL[0m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"check"[39m
+    [36m>[39m
+      [36m<input[39m
+        [33mid[39m=[32m"_r_1g_-export-pinnedSigners"[39m
+        [33mtype[39m=[32m"checkbox"[39m
+      [36m/>[39m
+      [36m<label[39m
+        [33mfor[39m=[32m"_r_1g_-export-pinnedSigners"[39m
+      [36m>[39m
+        [0mPinned signer public keys[0m
+      [36m</label>[39m
+    [36m</div>[39m
+    [36m<h4>[39m
+      [0mThe QR will contain exactly:[0m
+    [36m</h4>[39m
+    [36m<ul[39m
+      [33maria-label[39m=[32m"The QR will contain exactly:"[39m
+    [36m>[39m
+      [36m<li[39m
+        [33mdir[39m=[32m"auto"[39m
+      [36m>[39m
+        [0mRPC endpoints: Base Sepolia (chain 84532): base.example[0m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mdir[39m=[32m"auto"[39m
+      [36m>[39m
+        [0mRPC endpoints: Ethereum Sepolia (chain 11155111): sep.example[0m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mdir[39m=[32m"auto"[39m
+      [36m>[39m
+        [0mRelayer URL: none (the other device can choose to clear its relayer)[0m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mdir[39m=[32m"auto"[39m
+      [36m>[39m
+        [0mPinned signer public keys: 02abababab…abababab[0m
+      [36m</li>[39m
+      [36m<li[39m
+        [33mdir[39m=[32m"auto"[39m
+      [36m>[39m
+        [0mPinned signer public keys: 0279be667e…16f81798[0m
+      [36m</li>[39m
+    [36m</ul>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"notice notice-warn"[39m
+      [33mrole[39m=[32m"note"[39m
+    [36m>[39m
+      [36m<strong[39m
+        [33mclass[39m=[32m"notice-title"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m⚠[0m
+          [0m [0m
+        [36m</span>[39m
+        [0mWarning[0m
+        [36m<span[39m
+          [33mclass[39m=[32m"sr-only"[39m
+        [36m>[39m
+          [0m:[0m
+        [36m</span>[39m
+      [36m</strong>[39m
+      [36m<div>[39m
+        [0mThe QR contains complete exported endpoint URLs and reveals which providers you use. Session-only RPCs and detected credential-bearing endpoints are omitted, but detection can miss secrets. Review the values and show the QR only to your own device’s camera.[0m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"btn"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0mShow settings QR[0m
+    [36m</button>[39m
+  [36m</fieldset>[39m
+  [36m<section[39m
+    [33maria-label[39m=[32m"Import settings from another device"[39m
+    [33mclass[39m=[32m"panel"[39m
+  [36m>[39m
+    [36m<h3>[39m
+      [0mImport settings from another device[0m
+    [36m</h3>[39m
+    [36m<p>[39m
+      [0mCamera access starts only when you choose it. Scanned text is checked on this device.[0m
+    [36m</p>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"stack"[39m
+    [36m>[39m
+      [36m<video[39m
+        [33maria-label[39m=[32m"QR scanner camera preview"[39m
+        [33mhidden[39m=[32m""[39m
+        [33mplaysinline[39m=[32m""[39m
+        [33mstyle[39m=[32m"width: 100%; max-width: 32rem;"[39m
+      [36m/>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"btn"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0mScan with camera[0m
+      [36m</button>[39m
+      [36m<label>[39m
+        [0mOr paste QR text[0m
+        [36m<textarea[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mdir[39m=[32m"ltr"[39m
+          [33mmaxlength[39m=[32m"65536"[39m
+          [33mrows[39m=[32m"3"[39m
+          [33mspellcheck[39m=[32m"false"[39m
+        [36m/>[39m
+      [36m</label>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"btn"[39m
+        [33mdisabled[39m=[32m""[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0mUse pasted text[0m
+      [36m</button>[39m
+      [36m<label>[39m
+        [0mRead a QR from an image[0m
+        [36m<input[39m
+          [33maccept[39m=[32m"image/*"[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+      [36m</label>[39m
+      [36m<p[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33mrole[39m=[32m"status"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</section>[39m
+[36m</section>[39m
+ ❯ Object.getElementError ../../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/views/Settings.exchange.test.tsx:72:28
+     70|     // Full URL paths (which may hold an API key) are in the QR, not i…
+     71|     expect(within(panel()).queryByText(/v3\/KEY/)).toBeNull();
+     72|     expect(within(panel()).getByText(/they show which providers you us…
+       |                            ^
+     73|
+     74|     render(<Harness initial={DEFAULT_SETTINGS} />, { container: docume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  00:58:09
+   Duration  28.00s (transform 60%, tests 20%, import 14%, environment 6%)
