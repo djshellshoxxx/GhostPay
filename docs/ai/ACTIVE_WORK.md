@@ -271,6 +271,24 @@ Verify the source delta and whitespace; combined-head compilation and execution 
 coordinator gates. No runtime, dependency, threshold, workflow or release changes.
 Status: the exact eight changed lines match the upstream patch; the extra raw/payment
 export case is byte-preserved; `git diff --check` passes. No new test or lint run claimed.
+# Pages artifact verifier race repair — 2026-11-19
+
+Worker: `clock_hosting_review`, assigned by the consolidation coordinator.
+Branch: `repair/ghostpay-276-artifact-races-20261119`.
+Parent: PR #276 `f39a9dd36c09f8b02d937c5f3d19676d334976d6`.
+Owned paths: `scripts/pages/verify-pages-artifact.mjs`, its original test file,
+this additive claim, and `docs/handoffs/agents/PAGES_ARTIFACT_RACE_REPAIR_20261119.md`.
+The original PR #276 branch remains read-only. This isolated follow-up retains
+all six parent test groups and its original producer/workflow behavior.
+Acceptance: reproduce the commit-read and symlink-swap false successes before
+repair; parse commit metadata from the bytes whose hash passed; reject observed
+file/inventory changes with validated regular-file descriptors and no-follow
+opens; verify failure cleanup and the documented stable-input/platform boundary.
+Coordinator-authorized review extension: reject directory-entry and manifest
+bytes that do not round-trip through UTF-8, retaining valid Unicode filenames.
+Run only dependency-free Node tests and source checks, obtain independent review,
+and publish a draft with exact source/test pins. No real artifact, hosted CI,
+deployment, main integration, or arbitrary concurrent-filesystem immunity claim.
 
 # Historical security promotion — 2026-11-19
 
