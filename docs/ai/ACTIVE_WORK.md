@@ -2,7 +2,8 @@
 
 Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
 Branch: `codex/ghostpay-consolidation-followthrough-20261119`.
-Base: PR #262 `c40b7581b9b996f33612186bc91960c65273cb64`; observed main `14ded337a10c140d7a9f9a9238ec038587d925bb`.
+Original base: PR #262 `c40b7581b9b996f33612186bc91960c65273cb64`; observed main `14ded337a10c140d7a9f9a9238ec038587d925bb`.
+Refresh base: PR #262 `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`; all incoming claims and tests are retained.
 Owned paths: `packages/invoice-schema/src/{json,merchantProfile}{,.test}.ts`,
 `apps/web/src/lib/scannerCore{,.test}.ts`, this additive registry entry and
 `docs/consolidation/followthrough-20261119/`.
@@ -15,6 +16,29 @@ Another coordinator owns the integration lock. This branch is isolated staging o
 protected integration/main, active source branches, deployment, contracts, fees and recovery policy are unchanged.
 Independent source reviews found no blocker. Execution evidence and remaining gates are recorded in the
 scoped handoff; no feature or repository-wide acceptance is inferred from partial checks.
+
+# Canonical array repair integration — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-canonical-array-integration-20261119`.
+Base: `e74ddd26b75912d770e05d51f0b9229756adc649` (root remains frozen during coverage).
+Owned paths: `packages/invoice-schema/src/json.ts`, `json.test.ts`, this additive
+claim, upstream PR #265 provenance, and `docs/consolidation/canonical-array-20261119/`.
+Acceptance: preserve PR #265 head `c591b54078febcf24cba01b29bc173b2fac1f9cb` history
+where merge-compatible; reproduce its checked-in regression against frozen baseline;
+retain the reviewed own-key validation and every assertion, with bounded dense-array
+controls and an explicitly documented cosmetic JSDoc correction if needed. Run
+bounded original package tests and relevant package-only checks, obtain independent
+privacy-worker review, and record failures/limits without weakening checks. Scope is
+sparse/decorated inert arrays, not arbitrary hostile accessors/proxies or a demonstrated
+signature exploit. No root checkout, other PR head, dependency, threshold, workflow,
+mainnet, deployment or remote mutation. Root owns later integration and consumer gates.
+Status: original PR ancestry retained via `7b264276`; reviewed product
+`0f8dca27613fe9952cdb772cb10d05ced0f2b455`. Actual upstream Vitest baseline: 10 passed,
+1 failed. Focused JSON/schema/signing/receipt selection: 200 passed in four files.
+Package typecheck, typed lint and build passed. Privacy-worker source review found
+no introduced blocker. Full package coverage and root consumer/release gates are not
+claimed. Evidence: `docs/consolidation/canonical-array-20261119/QUALIFICATION.md`.
 
 # Hosting export timestamp precision — 2026-11-19
 
@@ -1441,3 +1465,12 @@ strict provider/genesis validation, receipt integrity and all authority/outcome
 assertions; implement the smallest correction, run focused original-config
 tests and obtain independent worker review. No root checkout mutation,
 dependency upgrade, mainnet request, deployment or remote write.
+
+## 2026-11-19T08:36Z — isolated JSON canonicalization correctness repair
+
+- Worker: ChatGPT single sequential development/audit phase, cycle `20261119T083600Z`; no concurrent subagent and no independent review claimed.
+- Branch: `automation/20261119T083600Z/bug/json-canonical-array`, exact base `14ded337a10c140d7a9f9a9238ec038587d925bb` (main observed at branch creation).
+- Owned paths: `packages/invoice-schema/src/json.ts`, `packages/invoice-schema/src/json.test.ts`, and this own-branch claim only. Other owners' heads, docs/automation ledgers, contract, CLI and deployment code remain untouched.
+- Finding: the exported `canonicalize` array code uses `Array.map` (which skips holes); a sparse array can silently canonicalize to a different array or invalid JSON. Reject unsupported sparse/extra-property array input rather than returning unrepresentative signed/serialized bytes.
+- Acceptance: failing regression against baseline for holes and non-index/symbol own properties; minimal dense-array-preserving validation; regressions green, existing tests and TypeScript/lint when feasible; exact-head hosted CI, independent reviewer and lock-aware integration required before any merge.
+- Conflicts/dependencies: PR #262/#264 touch `receipts.ts` but not the two owned `json*.ts` files at inspected heads; those large candidates remain active. PR #258/#261 CI is pending. Integration lock ref is released at observed `3ae60de55add2763aa7d7a44033d11b96df13adb`; no shared integration authorized by this task.

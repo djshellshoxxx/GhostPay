@@ -142,6 +142,16 @@ describe('canonicalize', () => {
     }
     expect(canonicalize([1, 2, { value: 3 }])).toBe('[1,2,{"value":3}]');
   });
+  it('rejects a missing array index even when an extra key balances the count', () => {
+    const value = [1] as number[] & { extra?: number };
+    value.length = 2;
+    value.extra = 2;
+    expect(() => canonicalize(value)).toThrow(JsonParseError);
+  });
+  it('preserves empty and frozen dense array bytes', () => {
+    expect(canonicalize([])).toBe('[]');
+    expect(canonicalize(Object.freeze([1, 2]))).toBe('[1,2]');
+  });
 
   it('rejects array accessors without invoking them', () => {
     const value = [1, 2];
