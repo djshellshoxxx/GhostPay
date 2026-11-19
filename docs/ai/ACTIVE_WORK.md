@@ -1,3 +1,26 @@
+## PR #210 viem dependency alignment — 2026-11-18
+
+Worker: ChatGPT security_review, Caveman workflow. Branch: `chatgpt/ghostpay-viem-alignment-20261118`.
+Base: `4d19655a2e5d93ad9378803cd4163245168aca24` (exact PR #210 head).
+Owned paths: root `package.json`, `package-lock.json`, this claim, and
+`docs/handoffs/GHOSTPAY_VIEM_ALIGNMENT_20261118.md`. Other sources and workflows are read-only.
+Acceptance: reproduce the Zama SDK/client type conflict; align the existing viem override with the
+workspace's pinned compatible version through normal lock regeneration; preserve package integrity
+and unrelated dependency choices; run the affected library build, package tests/types/lint and
+dependency-tooling checks; record exact audit outcomes and obtain independent source review.
+Follow-up: the coordinator authorized a separate local same-version coverage-provider placement fix
+after the candidate's original coverage commands failed before running tests. Preserve all coverage
+settings and package versions; distinguish the executed candidate failure from the original head's
+source-proven provider placement (resource-limited baseline reinstalls supplied no test result).
+No casts, force installs, audit suppressions, major dependency migrations, publication or merge.
+Status: completed locally in separate source commits `0597852aeede368b0b8819be0c4cd68c9b1a6081`
+and `8b98e68effa2da42dd612c7db456b63dbdf990a2`. Clean install, complete library build, affected
+coverage suites (161 passed / 4 existing artifact-dependent skips), 5 dependency-tooling checks,
+package types/lint and full web build/bundle scan passed. Independent source/lock review and 17
+independently rerun SDK tests passed. Production audit remains zero; full audit remains 30 entries
+(14 high / 16 low). Hosted CI/integration remain pending. See the dedicated handoff for exact
+source boundaries, failed baseline attempts and scope limitations.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
