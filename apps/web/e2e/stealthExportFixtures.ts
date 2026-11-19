@@ -86,11 +86,18 @@ export async function downloadKeystore(page: Page): Promise<string> {
 }
 
 /** Scans Base Sepolia from block 0 and returns the list item of the single payment found. */
-export async function scanOnePayment(page: Page, stealthAddress: string): Promise<Locator> {
+export async function scanOnePayment(page: Page, stealthAddress: string, opts: { readonly fromStart?: boolean } = {}): Promise<Locator> {
   await nav(page).getByRole('button', { name: 'Scan and receive' }).click();
   await page.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
+  const startScan = page.getByRole('button', { name: 'Start scan', exact: true });
+  if (opts.fromStart === true) {
+    // Recovery restores the encrypted checkpoint too. Wait for it before explicitly requesting a full new scan.
+    await expect(startScan).toBeEnabled();
+    const resume = page.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true });
+    if (await resume.count() > 0) await resume.uncheck();
+  }
   await page.getByLabel('Start block').fill('0');
-  await page.getByRole('button', { name: 'Start scan' }).click();
+  await startScan.click();
   await expect(page.getByText(/Finished\. 1 announcements checked, 1 payments found\./)).toBeVisible({ timeout: 60_000 });
   const match = page.locator('section[aria-labelledby="scan-h"] .matches > li');
   await expect(match).toHaveCount(1);

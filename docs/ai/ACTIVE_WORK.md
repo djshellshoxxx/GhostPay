@@ -1883,3 +1883,13 @@ Base: `a1386906c264e2353e39ff8143083b0bbf107395`, tree `a386655a87e345bd036cf2d6
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-3-completeness/` only.
 Acceptance: map the maintained Pages 1.0 feature families to actual lean routes, implementation and regression coverage; inspect export/recovery, transaction failure behavior and static-origin boundaries; record a bounded original-configuration lean/frame/manifest test run and its exact source. Report confirmed gaps separately from current owned repairs and external release requirements. Do not infer complete behavior from source existence or repeat the mechanical 299-branch census as a fresh semantic audit.
 Boundaries: no product, contract, test, dependency, workflow or release-policy changes. The coordinator, QA worker and security reviewer own the active runtime repairs and combined qualification. This worker performs no remote mutations, deployment, transactions, source-branch cleanup or release publication.
+
+# Continuous engineering generation 1 — independent browser and bug qualification
+
+Worker: `/root/qa_bug_gen1`, delegated by the continuous engineering coordinator.
+Branch: `fix/ghostpay-continuous-qa-20261119`.
+Base: PR #278 `c993bb2340942c85dbf10303b61f69a91c4944e0`.
+Owned scope: existing browser acceptance under `apps/web/e2e/`, focused payment-export and private-checkpoint tests, and source-pinned evidence under `docs/engineering-handoffs/continuous-20261119/qa-gen1/`.
+Acceptance: run the original focused payment-export/private-checkpoint runtime regressions and browser journeys with their existing gates; establish reproducible failures before any repair; preserve assertions, timeouts, privacy controls and static EVM beta scope. Coordinate any shared production module edits before writing. Use the coordinator's pinned dependency/build preparation and report observed results, not inferred passes.
+Excluded: invoice-schema, buildProfile, scanSpam, merchantSignerPin and qrKinds source owned by the consolidation lane; contracts, fees, remote branch mutation, release and deployment.
+Status: claimed; source inspection in progress; no execution result asserted.

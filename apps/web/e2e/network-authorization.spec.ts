@@ -1,4 +1,5 @@
 import { expect, test, type BrowserContext, type Page, type Request } from '@playwright/test';
+import { encodeAbiParameters } from 'viem';
 import { createInvoice, generateKeys, ORIGIN } from './helpers';
 import { installSweepNetwork, SWEEP_RPC } from './sweep-network';
 
@@ -278,14 +279,15 @@ test('a real second-tab endpoint replacement cancels stale balance delivery and 
     if (payload === undefined || !isBalanceRead(request, payment.stealthAddress)) return route.fallback();
     held = true;
     await new Promise<void>((resolve) => { release = resolve; });
-    await route.fulfill({ status: 200, headers: CORS, contentType: 'application/json', body: JSON.stringify({ jsonrpc: '2.0', id: payload.id, result: '0x4c4b40' }) });
+    await route.fulfill({ status: 200, headers: CORS, contentType: 'application/json', body: JSON.stringify({ jsonrpc: '2.0', id: payload.id, result: encodeAbiParameters([{ type: 'uint256' }], [5_000_000n]) }) });
     responseFinished = true;
   });
   await context.route(`${NEXT_RPC}/**`, async (route) => {
     if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
     const payload = rpcRequest(route.request());
     expect(payload).toBeDefined();
-    const result = payload?.method === 'eth_chainId' ? '0x14a34' : isBalanceRead(route.request(), payment.stealthAddress) ? '0x6acfc0' : undefined;
+    // balanceOf is an ABI uint256 result, unlike the short quantity returned by eth_chainId.
+    const result = payload?.method === 'eth_chainId' ? '0x14a34' : isBalanceRead(route.request(), payment.stealthAddress) ? encodeAbiParameters([{ type: 'uint256' }], [7_000_000n]) : undefined;
     expect(result).toBeDefined();
     return route.fulfill({ status: 200, headers: CORS, contentType: 'application/json', body: JSON.stringify({ jsonrpc: '2.0', id: payload?.id, result }) });
   });

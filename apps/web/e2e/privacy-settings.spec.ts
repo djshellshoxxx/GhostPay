@@ -40,6 +40,7 @@ test('TM4/TM14: credential export is omitted and invalid or pending profile choi
   await settings(page);
   const network = page.getByRole('group', { name: 'Network profiles' });
   const saveProfile = network.getByRole('button', { name: 'Save network profiles' });
+  const refused = page.getByText('Network access is not authorized for this action or the settings changed. Review the selected endpoint and try again.', { exact: true });
   await expect(network.getByText(/Network profile settings are invalid or unavailable/)).toBeVisible();
   await expect(network.getByText(/In effect now:/)).toHaveCount(0);
   const exchange = page.getByRole('group', { name: 'Export settings to another device' });
@@ -47,6 +48,7 @@ test('TM4/TM14: credential export is omitted and invalid or pending profile choi
   expect(await page.evaluate((key) => localStorage.getItem(key), SETTINGS_KEY)).toContain('fixture-value');
   await page.getByRole('button', { name: 'Test Base Sepolia', exact: true }).click();
   await expect(page.getByText(/Network profile settings are invalid or unavailable/).first()).toBeVisible();
+  await expect(refused).toBeVisible();
   expect(providerRequests).toBe(0);
 
   await saveProfile.click(); // Explicitly save the displayed Direct/single default to repair corrupt storage.
@@ -57,15 +59,18 @@ test('TM4/TM14: credential export is omitted and invalid or pending profile choi
 
   await network.getByLabel('RPC mode', { exact: true }).selectOption('own-node');
   await saveProfile.click(); // No acknowledgement: no fallback to the already configured public provider.
-  await expect(network.getByText(/unacknowledged saved profile are blocked/)).toBeVisible();
+  await expect(network.getByText('Network actions are blocked until you acknowledge the selected profile notice and save.', { exact: true })).toBeVisible();
+  expect(await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? 'null') as unknown, NETWORK_KEY)).toMatchObject({ rpcMode: 'own-node', noticeAcknowledged: false });
   await page.getByRole('button', { name: 'Test Base Sepolia', exact: true }).click();
-  await expect(page.getByText(/RPC requests are blocked until you acknowledge/)).toBeVisible();
+  await expect(refused).toBeVisible();
   expect(providerRequests).toBe(1);
 
   await network.getByLabel('I have read this notice; apply my choice', { exact: true }).check();
   await saveProfile.click();
+  expect(await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? 'null') as unknown, NETWORK_KEY)).toMatchObject({ rpcMode: 'own-node', noticeAcknowledged: true });
   await page.getByRole('button', { name: 'Test Base Sepolia', exact: true }).click();
-  await expect(page.getByText(/Own-node mode needs an RPC URL on this computer/)).toBeVisible();
+  // The action authority refuses this public endpoint before the RPC adapter can dispatch a request.
+  await expect(refused).toBeVisible();
   expect(providerRequests).toBe(1);
 
   await network.getByLabel('RPC mode', { exact: true }).selectOption('single');
