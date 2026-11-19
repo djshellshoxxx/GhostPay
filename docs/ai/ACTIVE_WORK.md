@@ -521,3 +521,23 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+## Consolidation checkpoint completion and documentation recovery — 2026-11-19
+
+Owner: ChatGPT root integration coordinator, after explicit branch handoff from branch_scout.
+Branch: `codex/ghostpay-consolidation-records-20261119`; prior head `b60be096fb32ab63f51ea3868892db21728fbdb1`.
+Current main: `8f56376427c96881f49590920ff0bf8543ec81b4`, after independently reviewed and fully qualified PR #257.
+Expanded owned scope: reconcile current main and the complete documentation-only PR #259
+(`4ff80733a3b36019e2f12fc21a8448e7666b6049`) while retaining both histories and every ownership
+claim; its changed `docs/design`, `docs/wiki`, and `docs/handoffs/docs-recovery-20261119` paths
+and the two dated continuation ledgers are included. Correct the demonstrably stale inventory
+statements in `packages/chain-adapters/TODO-VERIFY.md` from the existing token/feed source and
+saved primary-source evidence. Complete the seven already claimed consolidation records.
+Acceptance: historical material stays dated; current status is pinned to actual main and candidate
+heads; archive provenance and all source text are retained; insertion-only ownership conflicts
+preserve every parent section; new main runtime blobs stay unchanged. Verify Markdown links,
+JSON/count consistency, source identities, exact current checks and the resulting publication tree.
+No application, dependency, workflow, contract, security threshold, deployment or release change.
+Original #259 and other workers' source branches remain read-only. Root holds verified cooperative
+lease generation 3 for shared integration actions; that metadata-only control history is never merged.
+This scope expansion is recorded before the recovery and corrective documentation edits.
