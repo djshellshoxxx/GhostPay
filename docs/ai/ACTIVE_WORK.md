@@ -1030,3 +1030,17 @@ Initial defects and exact acceptance evidence are tracked in the task handoff di
 Provenance: the idle-only delta is ported from local `b2fb5f20455ca2823739f7a29ed784ec94e049c2`,
 preserved remotely as `7e6089e2e40a2a7daf93961eddef17d3fe8501fd` on `chatgpt/ghostpay-idle-lifecycle-20261119`.
 The broader #238 tree and its unrelated worker claims are not imported; this combined target requires fresh qualification.
+# CI/release reviewer — network selection composition repair (2026-11-19)
+
+Branch: `integration/ghostpay-network-selection-reconciled-20261119`; base: `521194c0`.
+Owner: independent CI/release reviewer, now implementing the defect found during combined-source review.
+Owned paths: `apps/web/src/lib/networkAuthorization.ts`, its paired `.test.ts`, this claim, and a source-pinned
+reconciliation receipt. The master worktree remains owned by the integration coordinator.
+Acceptance: the common action authorization boundary must apply the retained strict browser selection schema:
+an absent record keeps fresh-install defaults; a present record must contain all four exact valid fields; a
+deleted previously observed record remains revoked. Reproduce actual EVM and non-EVM dispatch on truncated/empty
+records before the runtime correction, then prove zero dispatch after it with one worker and borrowed exact
+dependencies. Preserve same-origin release hashing, scan legacy-field compatibility, current action/session/
+endpoint checks, all gates and dependency versions. No deployment, remote mutation, scanner suppression or
+policy exception. The implementation needs independent review from the integration coordinator.
+
