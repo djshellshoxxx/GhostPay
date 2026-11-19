@@ -41,3 +41,9 @@ To independently reconstruct the source, restore only the eight paths listed in 
 ## Remaining qualification
 
 The coordinator owns independent review, preservation/publication, semantic integration and fresh checks on the resulting candidate. Native Mythril/Echidna, full CI, browser acceptance, external review and all hosting/signing/owner gates remain separate. The GhostPay demonstration and testnet beta are **BLOCKED** until their actual mandatory requirements pass. No deployment, tag, release or promotion to main is claimed.
+
+## Hosted CI observation for the earlier published candidate
+
+The read-only snapshot at **2026-11-19 12:51:09 UTC** concerns PR #278 head **`7b4c1554382b05ac3fab48527aadf596d6b1ff7b`**, not this recovered analyzer implementation or later integrations. Main remained `c977b5d6723f6822c3b5d86cd6b231712c53c395`. Nine Actions runs were queued/pending; sixteen jobs had no runner or executed steps and the Pages release-gates job was skipped by its deployment-only condition. No Actions success/failure was recorded. The successful legacy combined status reflected only the external Snyk status and does not establish complete CI qualification. The cause of the queue is unknown from this observation.
+
+The preserved [live CI receipt](evidence/live-ci-7b4c1554.json) includes exact run/job URLs, source heads, dispositions and the limited critical-PR refresh. Its SHA-256 is `cb0acfb0ec5bd3bb4ac4fd6f5b82377f1189dcb19b53bb20583187b97cae652d` and is indexed in the main qualification receipt. No newer source qualification is inferred.

@@ -86,6 +86,22 @@
       "path": "evidence/green.json",
       "sha256": "6c510a8985569ee6347689114e2805f0f71c0e99d595d8427420576f0e2fa8b0",
       "bytes": 847
+    },
+    {
+      "path": "evidence/live-ci-7b4c1554.json",
+      "sha256": "cb0acfb0ec5bd3bb4ac4fd6f5b82377f1189dcb19b53bb20583187b97cae652d",
+      "bytes": 17430,
+      "scope": "Read-only hosted CI observation for the earlier published PR278 source only, not this recovered implementation or subsequent integrations.",
+      "observed_at_utc": "2026-11-19 12:51:09 UTC",
+      "observed_source_commit": "7b4c1554382b05ac3fab48527aadf596d6b1ff7b"
     }
-  ]
+  ],
+  "hosted_ci_observation": {
+    "path": "evidence/live-ci-7b4c1554.json",
+    "sha256": "cb0acfb0ec5bd3bb4ac4fd6f5b82377f1189dcb19b53bb20583187b97cae652d",
+    "bytes": 17430,
+    "scope": "Read-only hosted CI observation for the earlier published PR278 source only, not this recovered implementation or subsequent integrations.",
+    "observed_at_utc": "2026-11-19 12:51:09 UTC",
+    "observed_source_commit": "7b4c1554382b05ac3fab48527aadf596d6b1ff7b"
+  }
 }
