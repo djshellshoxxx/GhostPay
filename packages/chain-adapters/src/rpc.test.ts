@@ -96,7 +96,10 @@ describe('createClient', () => {
     await expect(createClient(SEPOLIA, URL_OK, { transport: t, retries: 99, ...opts })).rejects.toThrow(ChainAdapterError);
     expect(n).toBe(6); // clamped to 5 retries
     n = 0;
-    await expect(createClient(SEPOLIA, URL_OK, { transport: t, retries: Number.NaN, ...opts })).rejects.toThrow(ChainAdapterError);
+    // Runaway guard: after 50 sends the transport answers 400 (not retried), so an unbounded loop fails the assertion below
+    // instead of hanging the suite.
+    const capped: RpcTransport = { send: () => { n++; return Promise.reject(new RpcHttpError(n > 50 ? 400 : 500)); } };
+    await expect(createClient(SEPOLIA, URL_OK, { transport: capped, retries: Number.NaN, ...opts })).rejects.toThrow(ChainAdapterError);
     expect(n).toBe(1); // NaN must not mean "retry forever"
     n = 0;
     await expect(createClient(SEPOLIA, URL_OK, { transport: t, retries: -3, ...opts })).rejects.toThrow(ChainAdapterError);
