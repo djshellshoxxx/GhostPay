@@ -10,7 +10,8 @@ import { clearSession, generateSession } from '../lib/session';
 import { ServicesContext, type Services } from '../lib/services';
 import { DEFAULT_SETTINGS } from '../lib/settings';
 import * as sweepLib from '../lib/sweep';
-import { AppContext, getSweepAttempt, resetSweepAttemptsForTests, type AppState } from '../state';
+import { SWEEP_JOURNAL_KEY } from '../lib/sweepAttemptJournal';
+import { AppContext, beginSweepAttempt, getSweepAttempt, resetSweepAttemptsForTests, type AppState } from '../state';
 import { FAKE_FEE_RECIPIENT, FAKE_SWEEP_RELAYER } from '../test/fakeManifest';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { makeServices } from '../test/render';
@@ -24,7 +25,13 @@ const OTHER_DESTINATION = '0x7777777777777777777777777777777777777777';
 const READ = 'Read balance from the Settings RPC';
 const QUOTE = 'Get relayer quote';
 const SIGN = 'Sign and submit to relayer';
+const DIRECT = 'Sign and broadcast directly';
+const RESIGN = 'Sign a replacement with the same nonce';
 const HASH = '0x' + '34'.repeat(32);
+const ORIGINAL_DIRECT_LOCK: sweepLib.SweepLock = {
+  chainId: CHAIN, owner: OWNER, nonce: 7, expectedHash: `0x${'12'.repeat(32)}`,
+  otherHashes: [`0x${'56'.repeat(32)}`], status: 'unknown-after-handoff',
+};
 const ORDER: sweepLib.RelayedOrderRef = { relayer: FAKE_SWEEP_RELAYER, nonce: 1n, deadline: 1_800_001_200 };
 
 function deferred<T>() {
@@ -202,15 +209,16 @@ describe('Sweep quote lifecycle', () => {
   });
 });
 
-type ReviewChange = 'recipient' | 'balance' | 'provider' | 'mode';
-async function changeReview(m: ReturnType<typeof mount>, change: ReviewChange): Promise<void> {
+type ReviewChange = 'recipient' | 'balance' | 'provider' | 'mode' | 'selection';
+async function changeReview(m: ReturnType<typeof mount>, change: ReviewChange, currentMode: 'relayer' | 'direct' = 'relayer'): Promise<void> {
   if (change === 'recipient') changeDestination(OTHER_DESTINATION);
   if (change === 'balance') {
     m.setAmount(10_000_000n);
     fireEvent.click(screen.getByRole('button', { name: READ }));
   }
   if (change === 'provider') m.update({ settings: { ...m.app().settings, rpcUrls: { [String(CHAIN)]: 'https://other-rpc.test/' } } });
-  if (change === 'mode') fireEvent.click(screen.getByLabelText(/^Directly/));
+  if (change === 'mode') fireEvent.click(screen.getByLabelText(currentMode === 'relayer' ? /^Directly/ : /^Through the relayer/));
+  if (change === 'selection') m.update({ sweepTarget: { chainId: CHAIN, match: { ...m.app().sweepTarget!.match, stealthAddress: OTHER_DESTINATION } } });
   await settle();
 }
 
@@ -283,5 +291,124 @@ describe('Sweep relayed signing context', () => {
     await settle();
     expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ chainId: CHAIN, owner: OWNER, order: ORDER, status: outcome });
     expect(getSweepAttempt(CHAIN, OWNER)?.expectedHash).toBe(outcome === 'submitted' ? HASH : undefined);
+  });
+});
+
+function directAttempt(input: sweepLib.DirectSweepInput): sweepLib.DirectSweepAttempt {
+  return {
+    chainId: input.target.chainId, owner: input.target.owner, nonce: input.replaceNonce ?? 7,
+    destination: input.destination, asset: input.target.token, amount: input.amount,
+    expectedHash: HASH as `0x${string}`, status: 'unknown-after-handoff',
+  };
+}
+
+function directResult(input: sweepLib.DirectSweepInput): sweepLib.DirectSweepResult {
+  return {
+    hash: HASH as `0x${string}`, sent: input.amount, maxGasCost: 1n,
+    attempt: { ...directAttempt(input), status: 'submitted' }, simulation: 'ok',
+  };
+}
+
+async function reviewedDirect(m: ReturnType<typeof mount>, resign: boolean): Promise<void> {
+  await ready(m);
+  fireEvent.click(screen.getByLabelText(/^Directly/));
+  if (resign) act(() => { beginSweepAttempt(ORIGINAL_DIRECT_LOCK); });
+  await settle();
+  expect(screen.getByRole<HTMLButtonElement>('button', { name: resign ? RESIGN : DIRECT }).disabled).toBe(false);
+}
+
+describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing context', (flow) => {
+  const resign = flow === 'same-nonce replacement';
+  const action = resign ? RESIGN : DIRECT;
+
+  it('submits an unchanged review and retains the original replacement hash', async () => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
+      input.onBeforeHandoff?.(directAttempt(input));
+      return Promise.resolve(directResult(input));
+    });
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    await waitFor(() => { expect(getSweepAttempt(CHAIN, OWNER)?.status).toBe('submitted'); });
+    expect(submitted).toHaveBeenCalledTimes(1);
+    expect(submitted.mock.calls[0]![0]).toMatchObject({ destination: DESTINATION, amount: 5_000_000n });
+    expect(submitted.mock.calls[0]![0].replaceNonce).toBe(resign ? 7 : undefined);
+    expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ nonce: 7, expectedHash: HASH, status: 'submitted' });
+    expect(getSweepAttempt(CHAIN, OWNER)?.otherHashes).toEqual(resign ? [...ORIGINAL_DIRECT_LOCK.otherHashes!, ORIGINAL_DIRECT_LOCK.expectedHash] : undefined);
+    expect(m.requests).toEqual([]);
+  });
+
+  it.each([
+    ['vault', 'recipient'], ['vault', 'balance'], ['vault', 'provider'], ['vault', 'mode'], ['vault', 'selection'],
+    ['RPC', 'recipient'], ['RPC', 'balance'], ['RPC', 'provider'], ['RPC', 'mode'], ['RPC', 'selection'],
+  ] as const)('does not enter signing after %s work if %s changed', async (stage, change) => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const original = getSweepAttempt(CHAIN, OWNER);
+    const originalJournal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    const vaultGate = deferred<Awaited<ReturnType<typeof keyVault.authorizeEncryptedVault>>>();
+    const rpcGate = deferred<void>();
+    if (stage === 'vault') vi.spyOn(keyVault, 'authorizeEncryptedVault').mockReturnValue(vaultGate.promise);
+    else m.holdRpc(rpcGate.promise);
+    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => Promise.resolve(directResult(input)));
+    const priorCalls = m.rpcCalls();
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    if (stage === 'vault') await waitFor(() => { expect(keyVault.authorizeEncryptedVault).toHaveBeenCalledTimes(1); });
+    else await waitFor(() => { expect(m.rpcCalls()).toBe(priorCalls + 1); });
+    await changeReview(m, change, 'direct');
+    await act(async () => { vaultGate.resolve(undefined); rpcGate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(submitted).not.toHaveBeenCalled();
+    expect(getSweepAttempt(CHAIN, OWNER)).toEqual(original);
+    expect(getSweepAttempt(CHAIN, OTHER_DESTINATION)).toBeUndefined();
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(originalJournal);
+  });
+
+  it.each(['recipient', 'balance', 'provider', 'mode', 'selection'] as const)('refuses handoff and preserves the original journal if %s changes inside the helper', async (change) => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const original = getSweepAttempt(CHAIN, OWNER);
+    const originalJournal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    const gate = deferred<void>();
+    const dispatched = vi.fn();
+    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation(async (input) => {
+      await gate.promise;
+      input.onBeforeHandoff?.(directAttempt(input));
+      dispatched();
+      return directResult(input);
+    });
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    await waitFor(() => { expect(submitted).toHaveBeenCalledTimes(1); });
+    await changeReview(m, change, 'direct');
+    await act(async () => { gate.resolve(undefined); await Promise.resolve(); });
+    await settle();
+    expect(dispatched).not.toHaveBeenCalled();
+    expect(getSweepAttempt(CHAIN, OWNER)).toEqual(original);
+    expect(getSweepAttempt(CHAIN, OTHER_DESTINATION)).toBeUndefined();
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(originalJournal);
+  });
+
+  it.each(['submitted', 'unknown-after-handoff'] as const)('retains %s evidence and prior hashes after a post-handoff edit', async (outcome) => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const response = deferred<sweepLib.DirectSweepResult>();
+    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
+      input.onBeforeHandoff?.(directAttempt(input));
+      return response.promise;
+    });
+    fireEvent.click(screen.getByRole('button', { name: action }));
+    await waitFor(() => { expect(getSweepAttempt(CHAIN, OWNER)?.expectedHash).toBe(HASH); });
+    expect(getSweepAttempt(CHAIN, OWNER)?.status).toBe('unknown-after-handoff');
+    changeDestination(OTHER_DESTINATION);
+    const input = submitted.mock.calls[0]![0];
+    await act(async () => {
+      if (outcome === 'submitted') response.resolve(directResult(input));
+      else response.reject(new sweepLib.DirectSweepOutcomeUnknownError('synthetic interrupted response', directAttempt(input), 'unavailable'));
+      await Promise.resolve();
+    });
+    await settle();
+    expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ chainId: CHAIN, owner: OWNER, nonce: 7, expectedHash: HASH, status: outcome });
+    expect(getSweepAttempt(CHAIN, OWNER)?.otherHashes).toEqual(resign ? [...ORIGINAL_DIRECT_LOCK.otherHashes!, ORIGINAL_DIRECT_LOCK.expectedHash] : undefined);
+    if (outcome === 'unknown-after-handoff') expect(screen.getByText(/could not dry.run/i)).toBeTruthy();
   });
 });

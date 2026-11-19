@@ -289,12 +289,21 @@ export function Sweep(): ReactNode {
 
   /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
   const sweepDirectly = (resign: boolean): void => {
+    const balanceId = balanceOperation.current;
+    const quoteId = quoteOperation.current;
     void guard(async (assertCurrent) => {
+      const assertReviewCurrent = (): void => {
+        assertCurrent();
+        if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
+          throw new UserFacingError({ key: 'sweep.vaultCancelled' });
+        }
+      };
+      assertReviewCurrent();
       setDryRunSkipped(false);
       const rpc = await app.getRpc(chainId);
-      assertCurrent();
+      assertReviewCurrent();
       await verified(rpc);
-      assertCurrent();
+      assertReviewCurrent();
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
       let replaces: (SweepLock & { readonly nonce: number }) | undefined;
@@ -309,7 +318,10 @@ export function Sweep(): ReactNode {
         res = await directSweep({
           target, manifest: loaded, destination: dest, amount: balance, rpc,
           ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
-          onBeforeHandoff: (a) => { handoff.lock = beginSweepAttempt(a, replaces); },
+          onBeforeHandoff: (a) => {
+            assertReviewCurrent();
+            handoff.lock = beginSweepAttempt(a, replaces);
+          },
         });
       } catch (e) {
         // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).

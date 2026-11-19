@@ -527,21 +527,31 @@ sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
 
-## Sweep quote and relayed signing lifecycle correction — 2026-11-19
+## Sweep quote and signing lifecycle correction — 2026-11-19
 
 Worker: independent ChatGPT review agent, coordinated by the main consolidation agent.
-Branch: `review/ghostpay-sweep-quote-lifecycle-20261119`.
+Branch: `review/ghostpay-sweep-quote-lifecycle-20261119`; draft PR #272.
 Base: `4085622463411d3ba27f4efb7b73a70575170535` (PR #252).
 Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.quoteLifecycle.test.tsx`,
 and `docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md`.
-Acceptance: prevent stale quotes and stale relayed submissions after a balance,
-recipient, payment, provider, session, mode, manifest or transport change; retain
-submitted and uncertain-outcome evidence after irreversible handoff; preserve
-explicit balance consent and existing vault, session, fee and journal guards.
-The original stale quote was reproduced against exact source. The full component
-regressions, typecheck, lint and hosted checks remain qualification gates.
-The execution environment became unavailable during dependency setup. The
-reconstructed candidate is an unqualified draft, not a completed acceptance claim.
-Existing #231/#252 and broad #262/#264 remain unchanged. Main integration belongs
-to the root coordinator. No deployment, release or real transaction is authorized
-by this worker claim.
+Acceptance: prevent stale quotes and stale relayed, direct and same-nonce
+replacement handoffs after balance, recipient, payment, provider, session, mode,
+manifest or transport changes; retain submitted and uncertain-outcome evidence,
+prior replacement hashes and journal compare-and-swap; preserve explicit balance
+consent and existing vault, session and fee guards.
+
+Initial quote/relayed head: `9e4ec2da024ef9a706e9d6cefa988d0a5dd9f7ac`.
+Root coordinator approved the direct/replacement extension after reviewing that
+head. This scope extension was recorded before source edits. Original #231/#252
+and broad #262/#264 remain unchanged; main integration belongs to the coordinator.
+
+Final source/test blobs: `2b832d371229385a2a1228e16320aceb9a64ee59` /
+`41baa63e14fad5ea0dcf54c202b2ef3b0faa5476`.
+Evidence: initial parent RED 28 failed/6 controls; quote/relayed GREEN 106/106;
+extension RED 30 failed/40 controls at the initial head; final GREEN 142/142,
+zero skipped; scoped type-aware lint, secret scan and diff check pass. Independent
+source review approves both final blobs and unchanged post-handoff handling.
+Prior full web build attempts were environment-limited (heap OOM 134, killed137);
+final full typecheck/build, browser acceptance and exact-head hosted gates remain.
+See the source-pinned handoff for commands and limits. Candidate remains draft.
+No deployment, release or real transaction is authorized by this worker claim.
