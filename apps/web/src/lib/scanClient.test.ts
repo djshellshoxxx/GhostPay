@@ -6,8 +6,16 @@ import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest'
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
-import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+import { checkpointKeyId, localCheckpointStore as secretKeyedStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+
+/** These scanner fixtures use a fixed private key instead of the loaded seller session. */
+const localCheckpointStore = (storage: Parameters<typeof secretKeyedStore>[0]) => secretKeyedStore(storage, (_keyId, use) => {
+  const key = new Uint8Array(32).fill(7);
+  try { return use(key); } finally { key.fill(0); }
+});
 import { ReconciliationVault } from './reconciliationVault';
+import { clearSession, generateSession, importSession, subscribeSession } from './session';
+import { checkpointSlot } from './scanCursorSlot';
 import type { ToWorker } from './scannerCore';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!;
@@ -78,6 +86,125 @@ function setup() {
   const other = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 130, index: 1, caller: FAKE_ROUTER });
   return { keys, mine, mine2, other, logs: [mine.log, other.log, mine2.log] };
 }
+
+describe('durable private scan discovery', () => {
+  const scan = (s: ReturnType<typeof setup>, extra: object = {}) => runScan({
+    chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n },
+    spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+    viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(),
+    signal: new AbortController().signal, ...extra,
+  });
+
+  it('awaits the atomic discovery journal before reporting a completed page', async () => {
+    const s = setup();
+    let release!: () => void;
+    const commit = new Promise<void>((resolve) => { release = resolve; });
+    const onCheckpoint = vi.fn(async (_cursor: ScanCursor, matches: readonly { stealthAddress: string }[]) => {
+      expect(matches.map((m) => m.stealthAddress)).toContain(s.mine.stealthAddress);
+      await commit;
+    });
+    const progress = vi.fn();
+    const task = scan(s, { onCheckpoint, onProgress: progress });
+    try {
+      await vi.waitFor(() => expect(onCheckpoint).toHaveBeenCalled());
+      expect(progress).not.toHaveBeenCalled();
+    } finally { release(); await task; }
+    expect(progress).toHaveBeenCalled();
+  });
+
+  it('does not report successful progress when the journal transaction fails', async () => {
+    const s = setup();
+    const onProgress = vi.fn();
+    const task = scan(s, { onProgress, onCheckpoint: () => Promise.reject(new Error('durable-write-refused')) });
+    await expect(task).rejects.toThrow('durable-write-refused');
+    expect(onProgress).not.toHaveBeenCalled();
+  });
+
+  it('revalidates saved match blocks before advancing and deduplicates overlap', async () => {
+    const s = setup();
+    const client = chainWith(2500, s.logs);
+    const committed: { cursor: ScanCursor; count: number }[] = [];
+    const result = await scan(s, {
+      client, cursor: { nextBlock: 2000n, last: { number: 1999n, hash: blockHash(1999) } },
+      replayBlocks: [120n, 2100n, 120n],
+      onCheckpoint: async (cursor: ScanCursor, matches: readonly unknown[]) => { committed.push({ cursor, count: matches.length }); },
+    });
+    expect(result.matches.map((m) => m.stealthAddress)).toEqual([s.mine.stealthAddress, s.mine2.stealthAddress]);
+    expect(result.matches[0]?.receipt).toBe('verified');
+    expect(new Set(result.matches.map((m) => m.announcement.id)).size).toBe(result.matches.length);
+    const windows = client.calls.filter((c) => c.method === 'eth_getLogs' && (c.params[0] as { address?: string }).address === manifest.announcer)
+      .map((c) => c.params[0] as { fromBlock: bigint; toBlock: bigint });
+    expect(windows.some((f) => f.fromBlock === 120n && f.toBlock === 120n)).toBe(true);
+    expect(windows.some((f) => f.fromBlock < 120n)).toBe(false);
+    expect(committed.length).toBeGreaterThan(0);
+    expect(committed.every((c) => c.count === 2)).toBe(true);
+  });
+
+  it('keeps the old durable position when cancellation interrupts history revalidation', async () => {
+    const s = setup();
+    const ctl = new AbortController();
+    const onCheckpoint = vi.fn();
+    const result = await scan(s, {
+      cursor: { nextBlock: 2000n, last: { number: 1999n, hash: blockHash(1999) } },
+      replayBlocks: [120n], signal: ctl.signal, onCheckpoint,
+      onMatch: () => { ctl.abort(); },
+    });
+    expect(result.cursor.nextBlock).toBe(2000n);
+    expect(onCheckpoint).not.toHaveBeenCalled();
+  });
+
+  it('rechecks finality-tail observations only in the incremental pass, avoiding stale replay overlap', async () => {
+    const s = setup(); const progress: ScanProgress[] = [];
+    const result = await scan(s, {
+      cursor: { nextBlock: 2000n, last: { number: 1999n, hash: blockHash(1999) } },
+      replayBlocks: [2100n], onProgress: (p: ScanProgress) => { progress.push(p); },
+      onCheckpoint: () => Promise.resolve(),
+    });
+    expect(result.matches.map((m) => m.stealthAddress)).toEqual([s.mine2.stealthAddress]);
+    expect(progress.some((p) => p.revalidating)).toBe(false);
+  });
+
+  it('gives incremental pages a fresh open-lane budget after bounded history replay', async () => {
+    const s = setup(); const metaAddress = encodeMetaAddress(s.keys);
+    const logs = [100, 200, 60_000].map((block) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress, block, index: 0,
+      caller: '0x9999999999999999999999999999999999999999' }).log);
+    const onCheckpoint = vi.fn(() => Promise.resolve());
+    const result = await scan(s, {
+      client: chainWith(100_000, logs),
+      cursor: { nextBlock: 50_000n, last: { number: 49_999n, hash: blockHash(49_999) } },
+      replayBlocks: [100n, 200n], openLaneBudget: 2, onCheckpoint,
+    });
+    expect(result.cursor.nextBlock).toBeGreaterThan(50_000n);
+    expect(onCheckpoint).toHaveBeenCalled();
+    expect(result.matches).toHaveLength(3);
+  });
+
+  it('rejects unbounded or invalid replay plans before dispatching RPC', async () => {
+    const s = setup();
+    for (const replayBlocks of [[-1n], [10_000_000_001n], Array<bigint>(10_001).fill(1n)]) {
+      const client = chainWith(2500, s.logs);
+      await expect(scan(s, { client, replayBlocks })).rejects.toThrow();
+      expect(client.calls).toEqual([]);
+    }
+  });
+
+  it('settles cancellation during a stalled RPC and prevents subsequent page requests', async () => {
+    const s = setup(); const ctl = new AbortController();
+    const base = chainWith(2500, s.logs);
+    let release!: (head: bigint) => void;
+    const stalled = new Promise<bigint>((resolve) => { release = resolve; });
+    const blockNumber = vi.fn(() => stalled);
+    let settled = false;
+    const task = scan(s, { client: { ...base, blockNumber }, signal: ctl.signal }).finally(() => { settled = true; });
+    try {
+      await vi.waitFor(() => expect(blockNumber).toHaveBeenCalled());
+      ctl.abort();
+      await vi.waitFor(() => expect(settled).toBe(true));
+      expect(base.calls).toEqual([]);
+    } finally { release(2500n); await task; }
+    expect(base.calls).toEqual([]);
+  });
+});
 
 describe('runScan', () => {
   it('fetches public logs in the main thread and finds only my payments through the worker', async () => {
@@ -712,6 +839,34 @@ describe('announcement spam and a second RPC (L4-01, L3-F2)', () => {
     createWorker: () => new InlineWorker(), signal: new AbortController().signal, ...extra,
   });
 
+  it('does not replace saved non-router discovery with a narrowed historical replay', async () => {
+    const s = setup();
+    const onCheckpoint = vi.fn();
+    await expect(scan(s, {
+      client: capped(chainWith(2500, s.logs), 2100n), replayBlocks: [2100n],
+      cursor: { nextBlock: 2400n, last: { number: 2399n, hash: blockHash(2399) as Hex } }, onCheckpoint,
+    })).rejects.toThrow('saved scan history could not be revalidated');
+    expect(onCheckpoint).not.toHaveBeenCalled();
+  });
+
+  it('stops before committing a page that would silently drop the 1001st coverage warning', async () => {
+    const s = setup();
+    const base = chainWith(1001, []);
+    const committed: { cursor: ScanCursor; blocks: readonly bigint[] }[] = [];
+    const client = { ...base, getLogs: (f: LogFilter) => f.topics.length === 2
+      ? Promise.reject(tooBig()) : base.getLogs(f) };
+    await expect(scan(s, {
+      client, maxPages: 200,
+      onCheckpoint: (cursor, _matches, blocks) => {
+        committed.push({ cursor, blocks });
+        return Promise.resolve();
+      },
+    })).rejects.toMatchObject({ translation: { key: 'scan.checkpoint.limit' } });
+    expect(committed.length).toBeGreaterThan(0);
+    expect(committed.every((entry) => entry.blocks.length <= 1000)).toBe(true);
+    expect(committed.at(-1)?.cursor.nextBlock).toBeLessThanOrEqual(1000n);
+  });
+
   it('scans the router lane of a block too large for one response, reports it, and compares it the same way', async () => {
     const s = setup();
     const stranger = encodeMetaAddress(generateKeySet());
@@ -979,9 +1134,9 @@ describe('localCheckpointStore', () => {
   });
   it('ignores corrupt data and tolerates missing or failing storage', () => {
     const st = mem();
-    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, 'not json');
-    st.setItem(`ghostpay.scan.checkpoint.v2.2.${KEY}`, JSON.stringify({ nextBlock: 'abc' }));
-    st.setItem(`ghostpay.scan.checkpoint.v2.3.${KEY}`, JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 1, KEY), 'not json');
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 2, KEY), JSON.stringify({ nextBlock: 'abc' }));
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 3, KEY), JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
     const cp = localCheckpointStore(st);
     expect(cp.load(1, KEY)).toBeUndefined();
     expect(cp.load(2, KEY)).toBeUndefined();
@@ -1670,6 +1825,45 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     await vi.waitFor(() => expect(waiting).toBe(true)); ctl.abort();
     expect(key.every((b) => b === 0)).toBe(true); release(); await task;
     expect(cp.saves).toEqual([]);
+  });
+
+  it.each(['silent lock', 'different seller', 'same seller restored'] as const)('cannot persist an old scan after %s while corroboration is pending', async (change) => {
+    const s = setup();
+    const keys = {
+      spendingKeyHex: hexOf(unsafeRevealSecret(s.keys.spendingSecret)),
+      viewingKeyHex: hexOf(unsafeRevealSecret(s.keys.viewingSecret)),
+      signingKeyHex: '33'.repeat(32),
+    };
+    const pub = importSession(keys);
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    const map = new Map<string, string>();
+    const cp = secretKeyedStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => { map.set(k, v); }, removeItem: (k) => { map.delete(k); } });
+    const secondary = chainWith(2500, [s.mine.log]);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    const ctl = new AbortController();
+    // Scan.tsx aborts on session emissions, even if a clear-and-restore installs identical public keys.
+    const unsubscribe = change === 'same seller restored' ? subscribeSession(() => { ctl.abort(); }) : () => undefined;
+    const task = scan(s, keyId, {
+      client: chainWith(2500, [s.mine.log]), checkpoints: cp, signal: ctl.signal,
+      secondaryClient: { ...secondary, getBlock: async (n) => { if (n === TAIL) { waiting = true; await gate; } return secondary.getBlock(n); } },
+    });
+    try {
+      await vi.waitFor(() => expect(waiting).toBe(true));
+      if (change === 'silent lock') clearSession(false);
+      else if (change === 'different seller') generateSession();
+      else { clearSession(false); importSession(keys); }
+      expect(ctl.signal.aborted).toBe(change === 'same seller restored');
+      // The first two cases have no AbortSignal shortcut: the store must reject the no-longer-loaded identity.
+      release();
+      await task;
+      expect(map.size).toBe(0);
+      expect(cp.load(chain.chainId, keyId)).toBeUndefined();
+    } finally {
+      release();
+      await task;
+      unsubscribe();
+      clearSession(false);
+    }
   });
 
   it('after a genuine two-provider reorg invalidates only records whose block both providers replaced (L3-F1, L1-03)', async () => {

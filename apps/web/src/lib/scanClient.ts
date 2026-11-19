@@ -17,6 +17,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
+import { checkpointSlotNamer, isLegacyCheckpointSlot, legacyCheckpointSlot, sessionViewingKey, type ViewingKeyLender } from './scanCursorSlot';
 import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
@@ -61,6 +62,8 @@ export interface ScanProgress {
    * scanned; other announcements there were skipped. Reported with every page, so a later failure cannot hide them.
    */
   readonly routerOnlyBlocks?: readonly bigint[];
+  /** Saved observations are being fetched and verified again; no new durable range is claimed. */
+  readonly revalidating?: boolean;
 }
 
 /** The second RPC reported a head more than `finalityDepth` blocks below the scan RPC's: scans stop at its head. */
@@ -101,6 +104,12 @@ export interface ScanParams {
   readonly createWorker: () => ScanWorkerLike;
   readonly signal: AbortSignal;
   readonly checkpoints?: CheckpointStore;
+  /** Atomically commits the safe cursor with ALL discovered observations, including replayed history. */
+  readonly onCheckpoint?: (cursor: ScanCursor, matches: readonly ScanMatch[], routerOnlyBlocks: readonly bigint[]) => Promise<void>;
+  /** Previously discovered blocks to re-fetch under the current RPC policy; stored receipt flags are never trusted. */
+  readonly replayBlocks?: readonly bigint[];
+  /** Rechecks the captured seller, network and selected-endpoint policy immediately before each RPC dispatch. */
+  readonly assertCurrent?: () => void;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
   /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
@@ -163,6 +172,32 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let progressed: ((scanned: number) => void) | undefined;
   const timeoutMs = p.replyTimeoutMs ?? 60_000;
   const ABORTED = new Error('scan cancelled');
+  const active = <T>(operation: () => Promise<T>): Promise<T> => new Promise<T>((resolve, reject) => {
+    const onAbort = (): void => { reject(ABORTED); };
+    if (p.signal.aborted) { reject(ABORTED); return; }
+    p.signal.addEventListener('abort', onAbort, { once: true });
+    const finish = (): void => { p.signal.removeEventListener('abort', onAbort); };
+    try {
+      p.assertCurrent?.();
+      operation().then((value) => {
+        finish();
+        if (p.signal.aborted) reject(ABORTED);
+        else {
+          try { p.assertCurrent?.(); resolve(value); } catch (error) { reject(error); }
+        }
+      }, (error: unknown) => { finish(); reject(p.signal.aborted ? ABORTED : error); });
+    } catch (error) { finish(); reject(error); }
+  });
+  const scopedClient = (client: RpcClient): RpcClient => ({
+    chainId: client.chainId,
+    request: (method, params) => active(() => client.request(method, params)),
+    blockNumber: () => active(() => client.blockNumber()),
+    getBlock: (number) => active(() => client.getBlock(number)),
+    getLogs: (filter) => active(() => client.getLogs(filter)),
+  });
+  // The adapter may issue many requests inside one page. Cancel settles the current await and prevents later dispatches;
+  // transport-specific deadlines and retry policies remain in the selected client. Already dispatched bytes cannot be recalled.
+  p = { ...p, client: scopedClient(p.client), ...(p.secondaryClient === undefined ? {} : { secondaryClient: scopedClient(p.secondaryClient) }) };
   // Settles on a reply, a worker error, the reply timeout, or Cancel: a hung worker can never block the caller.
   const wait = (register: (resolve: (m: FromWorker) => void) => void): Promise<FromWorker> =>
     new Promise<FromWorker>((resolve, reject) => {
@@ -199,19 +234,33 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let backlog = 0;
   let trustedSeen = 0;
   let openSeen = 0;
+  let replayScanned = 0;
+  let incrementalScanned = 0;
+  let incrementalOpen = 0;
   let suspected = 0;
   const routerBlocks: bigint[] = [];
   const laneOptions: ScanLaneOptions = { ...(p.floodPerBlock === undefined ? {} : { floodPerBlock: p.floodPerBlock }), ...(p.spamScoring === undefined ? {} : { spamScoring: p.spamScoring }) };
   // Blocks too large to fetch whole: only their router-posted announcements were scanned (bounded list).
   const routerOnlyBlocks = new Set<bigint>();
+  const retainCoverage = (blocks: readonly bigint[]): void => {
+    for (const block of blocks) {
+      if (routerOnlyBlocks.has(block)) continue;
+      if (routerOnlyBlocks.size >= 1000) {
+        // Durable history must not silently lose knowledge that a completed range was only partially scanned.
+        if (p.onCheckpoint !== undefined) throw new UserFacingError({ key: 'scan.checkpoint.limit' });
+        continue;
+      }
+      routerOnlyBlocks.add(block);
+    }
+  };
   const narrowed = (): { readonly routerOnlyBlocks?: readonly bigint[] } => (routerOnlyBlocks.size === 0 ? {} : { routerOnlyBlocks: [...routerOnlyBlocks] });
   let secondaryLag: SecondaryLag | undefined;
   // The latest head this run could scan to (the lower of the two heads): the privacy-set window ends here.
   let reachableHead: bigint | undefined;
   // Index in `all` of the first record kept for a one-time address and ephemeral key. That pair recognises a free
   // replay posted at the announcer in another block; it does not identify a payment, because anyone can send a second
-  // router payment to the same pair. Keep this ledger per scan only: checkpoints never persist claimed payment data
-  // or RPC evidence.
+  // router payment to the same pair. Keep this evidence ledger per run: the encrypted journal retains public
+  // discoveries, while every receipt/evidence classification is established again by fresh scanning.
   const claimLedger = new Map<string, number>();
   const evidenceLedger = new Map<string, bigint>();
   const discrepancies: ProviderDiscrepancy[] = [];
@@ -221,6 +270,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let batchId = 0;
   try {
     if (p.signal.aborted) throw ABORTED;
+    if ((p.replayBlocks?.length ?? 0) > 10_000 || p.replayBlocks?.some((block) => typeof block !== 'bigint' || block < 0n || block > 10_000_000_000n)) {
+      throw new ChainAdapterError('RPC_FAILURE', 'invalid saved scan replay plan');
+    }
+    // The ordinary incremental pass revalidates the saved finality tail. Replaying it first could retain an orphan
+    // if that tail reorganizes between the replay and the ordinary fetch while the older saved anchor stays valid.
+    const replayBlocks = [...new Set(p.replayBlocks ?? [])].filter((block) => block < p.cursor.nextBlock).sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
     const w = p.createWorker();
     worker = w;
@@ -241,12 +296,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       w.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
     });
     if (started.type !== 'ready') throw new UserFacingError({ key: 'error.scanClient.theScannerRejectedTheKeys' });
-    const maxPages = p.maxPages ?? 10_000;
+    const maxPages = Math.max(1, Math.min(10_000, Number.isSafeInteger(p.maxPages) ? p.maxPages! : 10_000));
     const maxAnnouncements = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.maxAnnouncementsPerScan) ? p.maxAnnouncementsPerScan! : 100_000));
     const maxMatches = Math.max(1, Math.min(10_000, Number.isSafeInteger(p.maxMatchesPerScan) ? p.maxMatchesPerScan! : 10_000));
     const openBudget = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.openLaneBudget) ? p.openLaneBudget! : 20_000));
-    for (let page = 0; page < maxPages; page++) {
+    for (let page = 0; page < maxPages + replayBlocks.length; page++) {
       if (p.signal.aborted) break;
+      const replayBlock = replayBlocks[page];
+      const replaying = replayBlock !== undefined;
+      const fetchCursor = replaying ? { nextBlock: replayBlock } : cursor;
       // With a second provider, end the page at the lower of the two heads: a second RPC a few blocks behind the
       // primary can then corroborate the page instead of withholding it on every run.
       let secondaryHead: bigint | undefined;
@@ -264,19 +322,23 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         if (p.signal.aborted) break;
       }
       const res = await fetchAnnouncements({
-        chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
-        ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
+        chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor: fetchCursor,
+        ...(replaying ? { toBlock: replayBlock } : secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
       });
       if (p.signal.aborted) break;
       // A page that reached the second RPC's head while the scan RPC is far ahead: say so, the scan stops there.
       secondaryLag = secondaryHead !== undefined && !res.truncated && res.head > secondaryHead + BigInt(p.chain.finalityDepth) ? { secondaryHead, head: res.head } : undefined;
       const pageRouterOnly = res.routerOnlyBlocks ?? [];
       const pageHead = secondaryHead !== undefined && secondaryHead < res.head ? secondaryHead : res.head;
+      // An absent/unreachable historical block is not proof its saved observations vanished. Keep the old journal.
+      if (replaying && (res.reorg !== undefined || pageHead < replayBlock || res.truncated || res.cursor.nextBlock !== replayBlock + 1n || pageRouterOnly.length > 0)) {
+        throw new ChainAdapterError('RPC_FAILURE', 'saved scan history could not be revalidated');
+      }
       reachableHead = pageHead;
       skipped += res.skipped;
       // A reorg can be reported at a block ABOVE this page's start (a later window's end changed hash after the logs
       // below it were read). The page still starts at the cursor; only a rollback below it moves the start back.
-      const pageFrom = res.reorg !== undefined && res.reorg.rolledBackTo < cursor.nextBlock ? res.reorg.rolledBackTo : cursor.nextBlock;
+      const pageFrom = res.reorg !== undefined && res.reorg.rolledBackTo < fetchCursor.nextBlock ? res.reorg.rolledBackTo : fetchCursor.nextBlock;
       if (res.reorg !== undefined) {
         // The floor only ever moves back. Raising it to a rollback point above the page start would save the
         // checkpoint past the finality tail and past pending matches, which the next session would never list.
@@ -322,7 +384,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
         if (p.signal.aborted) break;
       }
-      if (scanned + res.announcements.length > maxAnnouncements) {
+      if ((replaying ? replayScanned : incrementalScanned) + res.announcements.length > maxAnnouncements) {
         limitReached = true;
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
@@ -337,7 +399,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       suspected += lanes.suspected;
       // The first page of a run is never deferred: with a budget below one page's open lane the cursor would
       // otherwise stay before that page on every run. Per-run work is then at most the budget plus one page.
-      const deferred = openSeen > 0 && openSeen + lanes.open.length > openBudget ? lanes.open.length : 0;
+      // History is bounded by its own announcement cap. It must not consume the new-range open-lane budget on every
+      // resume, or a handful of old matches in dense blocks can prevent the cursor from ever advancing again.
+      const deferred = !replaying && incrementalOpen > 0 && incrementalOpen + lanes.open.length > openBudget ? lanes.open.length : 0;
       const toScan = deferred > 0 ? lanes.trusted : [...lanes.trusted, ...lanes.open];
       const position = new Map(res.announcements.map((a, i) => [a.id, i] as const));
       for (const a of res.announcements) byId.set(a.id, a);
@@ -350,8 +414,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (p.signal.aborted) break;
       if (reply.type !== 'matches') throw new UserFacingError({ key: 'error.scanClient.theScannerReturnedAnUnexpectedReply' });
       scanned += toScan.length;
+      if (replaying) replayScanned += toScan.length;
+      else incrementalScanned += toScan.length;
       trustedSeen += lanes.trusted.length;
-      if (deferred === 0) openSeen += lanes.open.length;
+      if (deferred === 0) {
+        openSeen += lanes.open.length;
+        if (!replaying) incrementalOpen += lanes.open.length;
+      }
       for (const a of lanes.trusted) if (routerBlocks.length < 200_000) routerBlocks.push(a.blockNumber);
       const claims: { readonly stealthAddress: Address; readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }[] = [];
       // Back to chain order, so lane ordering never changes which duplicate or match comes first.
@@ -485,9 +554,16 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, backlog });
         break;
       }
+      if (p.signal.aborted) break;
+      if (replaying) {
+        retainCoverage(pageRouterOnly);
+        // Revalidation has no independent checkpoint: cancellation/failure retains the complete previous journal.
+        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, revalidating: true, ...narrowed() });
+        continue;
+      }
       cursor = res.cursor;
-      for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
-      if (!disagree && p.checkpoints !== undefined) {
+      retainCoverage(pageRouterOnly);
+      if (!disagree && (p.checkpoints !== undefined || p.onCheckpoint !== undefined)) {
         const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches);
         if (p.signal.aborted) break;
         if (Array.isArray(saved)) {
@@ -495,11 +571,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           const conflicts = saved as readonly ProviderDiscrepancy[];
           discrepancies.push(...conflicts);
           p.onDiscrepancy?.(conflicts);
-          if (res.reorg !== undefined) p.checkpoints.clear(p.chain.chainId, p.keyId);
+          if (res.reorg !== undefined) p.checkpoints?.clear(p.chain.chainId, p.keyId);
           p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
           break;
         }
-        if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor);
+        if (saved !== undefined) {
+          await p.onCheckpoint?.(saved as ScanCursor, all, [...routerOnlyBlocks]);
+          if (p.signal.aborted) break;
+          p.checkpoints?.save(p.chain.chainId, p.keyId, saved as ScanCursor);
+        }
       }
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length, ...narrowed() });
       if (!res.truncated) break;
@@ -580,7 +660,8 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
 
 /**
  * The cursor that is safe to persist: `finalityDepth` blocks behind the fetched position. Matches seen in that tail were only
- * `pending` and live in memory alone, so the next session re-scans (and re-verifies) the tail instead of skipping it.
+ * `pending`; the encrypted journal retains only non-authoritative observations, so the next session re-scans and
+ * re-verifies the tail instead of accepting a historical receipt classification.
  * Blocks already `finalityDepth` deep below `head` need no such tail, so when the scan is behind the head the checkpoint
  * moves up to the cursor itself: otherwise a run held by a budget a few pages in, each page narrower than `finalityDepth`,
  * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
@@ -629,6 +710,10 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
     return typeof conflicts === 'string' ? { nextBlock: next, last: { number: height, hash: conflicts as `0x${string}` } } : conflicts;
   }
   const ref = await p.client.getBlock(height);
+  if (p.signal.aborted) return undefined;
+  if (p.onCheckpoint !== undefined && (ref === null || ref.number !== height || !/^0x[0-9a-f]{64}$/i.test(ref.hash))) {
+    throw new ChainAdapterError('RPC_FAILURE', 'checkpoint anchor unavailable');
+  }
   return ref === null ? { nextBlock: next } : { nextBlock: next, last: { number: height, hash: ref.hash } };
 }
 
@@ -658,50 +743,88 @@ function zeroizeBytes(b: Uint8Array): void {
   b.fill(0);
 }
 
-// v2: bound to the key set. v1 entries (chain only) are ignored: they cannot be attributed to a key.
-const CP_PREFIX = 'ghostpay.scan.checkpoint.v2.';
 const KEY_ID = /^[0-9a-f]{64}$/;
-const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_PREFIX}${String(chainId)}.${keyId}` : undefined);
+const validScope = (chainId: number, keyId: string): boolean => Number.isSafeInteger(chainId) && KEY_ID.test(keyId);
 
 interface StorageLike {
   getItem(k: string): string | null;
   setItem(k: string, v: string): void;
   removeItem(k: string): void;
+  /** Web Storage enumeration, used only to purge legacy slots; adapters without it cannot purge unknown names. */
+  readonly length?: number;
+  key?(index: number): string | null;
 }
 
-/** Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures. */
-export function localCheckpointStore(storage: StorageLike | undefined): CheckpointStore {
+/** Snapshot names before removing them: Web Storage indexes shift after each removal. Never read legacy values. */
+function sweepLegacySlots(storage: StorageLike | undefined): void {
+  const stale: string[] = [];
+  try {
+    const count = storage?.length;
+    if (storage === undefined || typeof storage.key !== 'function' || count === undefined || !Number.isSafeInteger(count)) return;
+    for (let i = 0; i < count; i++) {
+      const name = storage.key(i);
+      if (name !== null && isLegacyCheckpointSlot(name)) stale.push(name);
+    }
+  } catch {
+    /* still remove any names already found */
+  }
+  for (const name of stale) {
+    try { storage?.removeItem(name); } catch { /* best effort */ }
+  }
+}
+
+function parseCursor(text: string): ScanCursor | undefined {
+  const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
+  if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
+  const last = o.last;
+  if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
+    return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
+  }
+  return { nextBlock: BigInt(o.nextBlock) };
+}
+
+const encodeCursor = (cursor: ScanCursor): string =>
+  JSON.stringify({ nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) });
+
+/**
+ * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
+ *
+ * v4 names use #211's HKDF and session-bound key lending, with a distinct version from both incompatible v3 formats.
+ * Without the matching loaded seller keys nothing is read or written. Legacy v1/v2/v3 cursors are never read: the scan
+ * restarts from the user's chosen block. Creating the store purges all old slots if storage supports enumeration. For
+ * non-enumerable adapters, save/clear still remove the known v2 slot, while unknown old names remain unread and unused.
+ */
+export function localCheckpointStore(storage: StorageLike | undefined, viewingKey: ViewingKeyLender = sessionViewingKey): CheckpointStore {
+  sweepLegacySlots(storage);
+  const named = checkpointSlotNamer(viewingKey);
+  const slot = (chainId: number, keyId: string): string | undefined => (validScope(chainId, keyId) ? named(chainId, keyId) : undefined);
   return {
     load(chainId, keyId) {
       try {
-        const k = slot(chainId, keyId);
-        const text = k === undefined ? undefined : storage?.getItem(k);
-        if (text === null || text === undefined) return undefined;
-        const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
-        if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
-        const last = o.last;
-        if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
-          return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
-        }
-        return { nextBlock: BigInt(o.nextBlock) };
+        const name = slot(chainId, keyId);
+        const text = name === undefined ? undefined : storage?.getItem(name);
+        return text === null || text === undefined ? undefined : parseCursor(text);
       } catch {
         return undefined;
       }
     },
     save(chainId, keyId, cursor) {
       try {
-        const k = slot(chainId, keyId);
-        if (k === undefined) return;
-        const body = { nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) };
-        storage?.setItem(k, JSON.stringify(body));
+        const name = slot(chainId, keyId);
+        if (name === undefined) return;
+        storage?.setItem(name, encodeCursor(cursor));
+        storage?.removeItem(legacyCheckpointSlot(chainId, keyId));
       } catch {
         /* checkpoints are an optimisation */
       }
     },
     clear(chainId, keyId) {
+      if (!validScope(chainId, keyId)) return;
+      // A v2 name is public and can be removed even without the seller keys.
+      try { storage?.removeItem(legacyCheckpointSlot(chainId, keyId)); } catch { /* best effort */ }
       try {
-        const k = slot(chainId, keyId);
-        if (k !== undefined) storage?.removeItem(k);
+        const name = slot(chainId, keyId);
+        if (name !== undefined) storage?.removeItem(name);
       } catch {
         /* ignore */
       }

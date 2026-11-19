@@ -15,6 +15,7 @@ import {
 import { decryptKeystore, validateKeystoreEnvelope, type KeystoreOptions } from './keystore';
 import { UserFacingError } from './errors';
 import { isClosedConnection, isQuotaError } from './reconciliationVault';
+import { invalidatePrivateScanHistory } from './privateScanLifecycle';
 
 /** Store interface kept deliberately small so the browser adapter can be replaced in tests. */
 export interface KeyVaultStore {
@@ -374,7 +375,11 @@ export async function deleteEncryptedVault(expected: string, store: KeyVaultStor
   unchanged();
   await store.delete(expected);
   forgetSessionVaultCopy(expected);
+  try { await invalidatePrivateScanHistory(); }
+  catch { throw new UserFacingError({ key: 'scan.checkpoint.deleteIncomplete' }); }
 }
+
+// i18n-use: scan.checkpoint.deleteIncomplete
 
 // i18n-use: error.keyVault.theSavedEncryptedVaultChangedSinceYouAskedToDelete error.keyVault.encryptedBrowserStorageIsUnavailable error.keyVault.couldNotOpenEncryptedBrowserStorage error.keyVault.encryptedBrowserStorageIsBlockedByAnotherTab error.keyVault.couldNotReadEncryptedBrowserStorage error.keyVault.theSavedEncryptedVaultRecordIsInvalid error.keyVault.sellerKeysChangedDuringThisActionTryAgain error.keyVault.couldNotDeleteEncryptedBrowserStorage error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving error.keyVault.theEncryptedVaultWasSavedForTheSellerKeysThat error.keyVault.theseSellerKeysAreTiedToAnEncryptedVaultIn error.keyVault.theKeystoreImportWasClosed error.keyVault.theSellerKeysLoadedNowHaveNoBackupAndUnlocking error.keyVault.noEncryptedSellerVaultIsSavedInThisBrowser error.keyVault.thisVaultHoldsTheSellerKeysLoadedNowEnterIts
 

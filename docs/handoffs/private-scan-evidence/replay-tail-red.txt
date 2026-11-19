@@ -1,0 +1,33 @@
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+
+ ❯ src/lib/scanClient.test.ts (98 tests | 1 failed | 97 skipped) 380ms
+   ❯ durable private scan discovery (7)
+     × rechecks finality-tail observations only in the incremental pass, avoiding stale replay overlap 365ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scanClient.test.ts > durable private scan discovery > rechecks finality-tail observations only in the incremental pass, avoiding stale replay overlap
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/lib/scanClient.test.ts:164:50
+    162|     });
+    163|     expect(result.matches.map((m) => m.stealthAddress)).toEqual([s.min…
+    164|     expect(progress.some((p) => p.revalidating)).toBe(false);
+       |                                                  ^
+    165|   });
+    166|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 97 skipped (98)
+   Start at  22:05:34
+   Duration  5.96s (import 50%, transform 42%, tests 7%)

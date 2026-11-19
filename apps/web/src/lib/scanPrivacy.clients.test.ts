@@ -1,8 +1,8 @@
-import { CHAINS } from '@ghostpay/chain-adapters';
-import { describe, expect, it } from 'vitest';
+import { ANNOUNCEMENT_TOPIC, CHAINS } from '@ghostpay/chain-adapters';
+import { describe, expect, it, vi } from 'vitest';
 import { FAKE_ANNOUNCER } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
-import { openScanClients, type ScanPlan } from './scanPrivacy';
+import { createWindowedScanClient, openScanClients, type ScanPlan } from './scanPrivacy';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!;
 type Ready = Extract<ScanPlan, { kind: 'ready' }>;
@@ -11,6 +11,30 @@ const noFetch = (): Promise<Response> => Promise.reject(new Error('no network in
 const sleep = (): Promise<void> => Promise.resolve();
 
 describe('openScanClients', () => {
+  it('rechecks context after window jitter before another RPC dispatch', async () => {
+    let current = true;
+    const app = mockRpc(chain.chainId, (method) => {
+      if (method === 'eth_blockNumber') return '0x1000';
+      if (method === 'eth_getLogs') return [];
+      throw new Error('unexpected');
+    });
+    const options = { chain, announcer: FAKE_ANNOUNCER, policy: { windowBlocks: 100, jitterMs: [1, 1] as const },
+      sleep: () => { current = false; return Promise.resolve(); },
+      assertCurrent: () => { if (!current) throw new Error('scope revoked'); },
+    };
+    const client = createWindowedScanClient(app, options);
+    await expect(client.getLogs({ address: FAKE_ANNOUNCER, fromBlock: 0n, toBlock: 199n,
+      topics: [ANNOUNCEMENT_TOPIC, `0x${'1'.padStart(64, '0')}`] })).rejects.toThrow('scope revoked');
+    expect(app.calls.filter((call) => call.method === 'eth_getLogs')).toHaveLength(1);
+  });
+
+  it('rejects a stale private-endpoint opening without contacting any provider', async () => {
+    const fetchImpl = vi.fn(noFetch); const appRpc = vi.fn(() => Promise.resolve(undefined));
+    const options = { plan: ready({ endpoint: 'https://selected.invalid/' }), chain, announcer: FAKE_ANNOUNCER,
+      appRpc, fetchImpl, sleep, assertCurrent: () => { throw new Error('scope revoked'); } };
+    await expect(openScanClients(options)).rejects.toThrow('scope revoked');
+    expect(fetchImpl).not.toHaveBeenCalled(); expect(appRpc).not.toHaveBeenCalled();
+  });
   it('uses the Settings RPC when no endpoint is set, and makes no request while opening', async () => {
     const app = mockRpc(84532, () => { throw new Error('unexpected'); });
     const r = await openScanClients({ plan: ready(), chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(app), fetchImpl: noFetch, sleep });
