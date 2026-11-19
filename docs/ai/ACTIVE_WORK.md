@@ -1,3 +1,21 @@
+# Private scan lint and rejection boundaries — 2026-11-19
+
+Worker: `branches`, delegated by the continuation coordinator.
+Branch: `codex/ghostpay-private-scan-lint-20261119`.
+Base: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).
+Owned paths: `apps/web/src/lib/privateScanLifecycle.test.ts`,
+`apps/web/src/lib/scanClient.ts`, `apps/web/src/lib/scanClient.test.ts`,
+`apps/web/src/views/Scan.privateCheckpoint.test.tsx`, this additive claim,
+and a scoped qualification handoff. The feature worker owns `views/Scan.tsx`.
+Acceptance: repair the inherited diagnostics identified by PR #248 lint job
+`135425979082` without suppression or rule changes; retain mock assertions,
+checkpoint promises and scan behavior; preserve Error identity and cancellation
+precedence while replacing non-Error rejection causes with a fixed safe Error.
+Add focused boundary regressions, obtain independent review, and run the bounded
+original-config checks only after the coordinator grants the execution slot.
+Other feature branches remain unchanged. No dependency, configuration, threshold,
+remote publication, merge, deployment or release changes.
+
 # Hosting export timestamp precision — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
