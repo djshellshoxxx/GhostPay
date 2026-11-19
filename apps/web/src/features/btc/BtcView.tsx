@@ -11,6 +11,7 @@ import { BtcScanVault } from './scanStore';
 import { UserFacingError, displayMessage, type MessageDescriptor } from '../../lib/errors';
 import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS, type TransactionOutcome } from '../../lib/transactionOutcome';
 import { useServices } from '../../lib/services';
+import { authorizedOperationFetch } from '../../lib/networkOperation';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import {
@@ -125,6 +126,8 @@ export function BtcView(
     setBusy(false);
   };
 
+  useEffect(() => services.network?.subscribe(invalidate), [services]);
+
   const begin = (): { readonly signal: AbortSignal; readonly live: () => boolean } => {
     abort.current?.abort();
     const ac = new AbortController();
@@ -185,9 +188,10 @@ export function BtcView(
     }
   };
 
-  const client = (): EsploraClient => {
-    normalizeEsploraUrl(url);
-    return new EsploraClient({ baseUrl: url, fetchFn: services.fetchFn });
+  const client = (signal: AbortSignal, action: 'btc-scan' | 'btc-sweep' = 'btc-scan'): EsploraClient => {
+    const endpoint = normalizeEsploraUrl(url);
+    const fetchFn = authorizedOperationFetch(services, [{ action, category: 'rpc', endpoint, network: { kind: 'btc', network: net.id }, match: 'prefix', signal }]);
+    return new EsploraClient({ baseUrl: url, fetchFn });
   };
 
   const useSeed = (hex: string, offerBackup: boolean): void => {
@@ -372,7 +376,7 @@ export function BtcView(
     setBusy(true);
     void (async () => {
       try {
-        const c = client();
+        const c = client(signal);
         await c.checkNetwork(net, signal);
         await checkHeaders(c, signal, live);
       } catch (e) {
@@ -424,7 +428,7 @@ export function BtcView(
             if (resumeState !== undefined) { from = resumeState.birthHeight; setFromHeight(String(from)); setSavedScan(resumeState); }
           } catch (e) { storageFailed = true; throw e; }
         }
-        const c = client();
+        const c = client(signal);
         await c.checkNetwork(net, signal);
         if ((resumeState === undefined && fromHeight.trim() === '') || !Number.isInteger(from) || from < 0) throw new UserFacingError({ key: 'btc.scan.firstHeightRequired' });
         const headers = await checkHeaders(c, signal, live);
@@ -446,7 +450,10 @@ export function BtcView(
             },
           }),
           onBlock: (h) => { if (live()) setScanNote({ key: 'btc.scan.foundBlock', values: { height: String(h) } }); },
-        }, props.scanWorkerFactory, services.fetchFn);
+        }, props.scanWorkerFactory, authorizedOperationFetch(services, [
+          { action: 'btc-scan', category: 'rpc', endpoint: normalizeEsploraUrl(url), network: { kind: 'btc', network: net.id }, match: 'prefix', signal },
+          ...(oracle === undefined ? [] : [oracle, ...(oracle.second === undefined ? [] : [oracle.second])].map((source) => ({ action: 'btc-scan' as const, category: 'indexer' as const, endpoint: source.url, network: { kind: 'btc' as const, network: net.id }, match: 'prefix' as const, signal }))),
+        ]));
         if (!live()) {
           wipeFound(res.found);
           return;
@@ -503,7 +510,7 @@ export function BtcView(
     void (async () => {
       try {
         // Scans read spends from the downloaded blocks, which cannot see the mempool: ask once, now, about the outputs being spent.
-        const c = client();
+        const c = client(signal, 'btc-sweep');
         for (const f of selected) {
           if (!(await c.isUnspent(f.txid, f.vout, signal))) throw new UserFacingError({ key: 'btc.sweep.spentSinceScan' });
         }
@@ -519,14 +526,14 @@ export function BtcView(
   const doBroadcast = (): void => {
     if (signed === undefined || !approved || !reviewChecked(review) || currentBroadcast?.phase === 'broadcast-attempted' || currentBroadcast?.phase === 'pending-confirmation') return;
     setError(undefined);
-    const { live } = begin();
+    const { live, signal } = begin();
     void (async () => {
       let requested = false;
       try {
-        const c = client();
+        const c = client(signal, 'btc-sweep');
         requested = true;
         setBroadcastOutcome(referencedBroadcastOutcome('broadcast-attempted', signed.txid));
-        const id = await c.broadcast(signed.rawHex);
+        const id = await c.broadcast(signed.rawHex, signal);
         if (live()) setBroadcastOutcome(referencedBroadcastOutcome(id === signed.txid ? 'pending-confirmation' : 'verification-incomplete', signed.txid));
       } catch (e) {
         if (!live()) return;

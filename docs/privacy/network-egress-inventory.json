@@ -1,0 +1,2542 @@
+{
+  "schemaVersion": 2,
+  "source": {
+    "repository": "djshellshoxxx/GhostPay",
+    "baseCommit": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "reviewDate": "2026-11-19",
+    "branchContext": "Isolated network-isolation candidate combines pinned #238 policy/recovery integration and #241 transport repairs. This inventory describes current source; final source SHA and execution receipts belong to the qualification handoff.",
+    "dependencyCommits": {
+      "pagesIntegration": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "transportIsolation": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+      "combinedBaseline": "2503d7ce9ab519783dca3f0a4d6fade6459609b8"
+    }
+  },
+  "scope": "Application-controlled browser networking for full and lean Pages builds; backend/node-only/unshipped research transports are not represented as shipped behavior.",
+  "evidenceKind": "Source-reviewed inventory with referenced regression suites. Final combined-head browser, security and CI outcomes are recorded separately; static catalog coverage is not proof of all runtime traffic or whole-feature completion.",
+  "applicationEnforceable": [
+    "Validate endpoint scheme/host/path before dispatch",
+    "Reject redirects and unapproved endpoint switching",
+    "Omit application cookies/referrer and prevent response caching where APIs permit",
+    "Apply selected policy at each app-controlled dispatch and retry",
+    "Bound deadlines and response bytes",
+    "Minimize payloads and avoid keys/secret identifiers in network data",
+    "Require action-specific authorization",
+    "Keep network-free workers behind constrained main-thread bridges",
+    "Use same-origin active assets and detect new egress in tests"
+  ],
+  "unavoidableOrExternal": [
+    "Browser-selected DNS, source IP, TLS/SNI, timing, HTTP Origin/CORS, browser/extension traffic and endpoint logging cannot be fully hidden or governed by a static application.",
+    "Public-chain payer, amount, asset, timing and transaction relationships remain visible.",
+    "A selected RPC, relayer, oracle or merchant can observe requests it receives.",
+    "Host compromise can change JavaScript; an in-app hash is not independent source attestation.",
+    "Already-dispatched requests and broadcasts cannot be made unsent by a later policy change or page reload."
+  ],
+  "activeWorkBoundary": "This isolated candidate integrates the network portions of #222/#228/#231/#233/#238 and retains #241. Source PR branches are read-only. Recovery/key-export implementation, contracts, Mythril findings, deployment and release qualification remain separate.",
+  "surfaces": [
+    {
+      "id": "static-assets",
+      "flows": [
+        "startup",
+        "navigation",
+        "lazy-loaded-modules"
+      ],
+      "sourcePaths": [
+        "apps/web/index.html",
+        "apps/web/src/main.tsx",
+        "apps/web/src/styles/app.css",
+        "apps/web/vite.config.ts",
+        "apps/web/public/_headers"
+      ],
+      "symbols": [
+        "HTML resource loader",
+        "localBuildProfilePlugins"
+      ],
+      "trigger": "Loading or navigating the application loads HTML, modules, CSS, favicon and local resources.",
+      "destination": "Current hosting origin and subpath.",
+      "transport": "browser-resource-loader",
+      "sensitiveData": [
+        "IP address",
+        "user agent",
+        "request timing",
+        "URL path and query"
+      ],
+      "automatic": true,
+      "authorization": "The user's navigation initiates ordinary app resource loading; no separate network consent is requested.",
+      "privatePath": "Same-origin CSP restricts active assets. Ambient browser/network routing is external; same-origin resource loading is not routed through Services.fetchFn.",
+      "failureBehavior": "Ordinary browser load failures; no fallback CDN or mandatory third-party assets were found.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Source review only; hosting/CSP changes may overlap active Pages work.",
+      "status": "baseline-source-reviewed",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "external-browser-or-wallet",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "Same-origin hosting origin/subpath and bundled assets under the existing CSP. No mandatory remote CDN/font/analytics destination.",
+      "redirectBehavior": "Browser/extension navigation or resource handling applies, outside the app fetch redirect setting. Same-origin/CSP and existing exact-origin checks constrain only the documented application boundary.",
+      "credentialAndReferrerBehavior": "Document no-referrer and existing component origin rules apply where supported; ambient browser/extension credential handling is not controlled by a fetch capability.",
+      "cancellationSupport": "Browser resource loader controls its own fetches; application action cancellation does not govern loading the app itself.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Existing component/browser error handling; no claim that third-party wallet or navigation errors are controlled by application transports.",
+      "privacyImplications": "This boundary is outside application fetch authorization. The browser, wallet extension or recipient can make its own network requests and observe disclosed data; do not infer these requests inherit the app RPC route or deadlines."
+    },
+    {
+      "id": "release-hash",
+      "flows": [
+        "startup",
+        "release-identification"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/release.ts",
+        "apps/web/src/views/Home.tsx",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "computeReleaseHash",
+        "entryScriptUrl",
+        "Home"
+      ],
+      "trigger": "Home mounts and recomputes the entry-script hash.",
+      "destination": "The current entry script, validated against the page origin.",
+      "transport": "fetch",
+      "sensitiveData": [
+        "connection metadata",
+        "asset identity"
+      ],
+      "automatic": true,
+      "authorization": "Navigation to Home authorizes rereading the same-origin entry script only through a release-hash resource capability; no RPC/indexer/relayer permission is issued.",
+      "privatePath": "Exact current entry-script URL and same origin; mode:same-origin and redirect:error. This resource-only capability does not require wallet/network preference storage.",
+      "failureBehavior": "Fixed unavailable result; late bodies discarded and unmount disposes the capability.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/release.test.ts",
+        "apps/web/e2e/network-isolation.spec.ts",
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "release-hash"
+        ],
+        "category": "resource",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "Exact normalized entry script URL, validated against the current page origin. No secondary script or CDN destination.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "15-second independent deadline and 8 MiB streamed cap in computeReleaseHash, plus the production authority bounds.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "bundled-manifest",
+      "flows": [
+        "startup",
+        "manifest-loading"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/manifest.ts",
+        "apps/web/src/lib/bundledManifests.ts"
+      ],
+      "symbols": [
+        "loadDefaultManifest",
+        "loadBundledManifest",
+        "BUNDLED_MANIFESTS"
+      ],
+      "trigger": "A flow asks the default services for a deployment manifest.",
+      "destination": "None; manifest text is compiled into the application.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "No remote action or data transfer.",
+      "privatePath": "Local-only operation; no transport alternative is needed.",
+      "failureBehavior": "Absent, unsigned or invalid compiled manifest keeps affected payments disabled.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Bundled manifest behavior preserved; no remote replacement.",
+      "status": "zero-egress",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/lib/manifest.test.ts",
+        "apps/web/src/lib/defaultServices.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "local-only",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "No application-controlled remote destination is selected by this operation.",
+      "redirectBehavior": "Not applicable: this operation performs no application fetch.",
+      "credentialAndReferrerBehavior": "Not applicable: no application HTTP request.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Local validation errors only; no provider error body is involved.",
+      "privacyImplications": "No application network payload for this operation; local browser, file and extension handling remains outside this claim."
+    },
+    {
+      "id": "manual-manifest-helper",
+      "flows": [
+        "manual-manifest-readback",
+        "test-fixture"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/manifest.ts"
+      ],
+      "symbols": [
+        "loadBundledManifest",
+        "verifyManifestForFlow"
+      ],
+      "trigger": "The legacy fetched-manifest helper was removed in the #238 input; this retained historical inventory ID records that removal.",
+      "destination": "None; manifests are compiled into the app.",
+      "transport": "none",
+      "sensitiveData": [
+        "chain selection",
+        "connection metadata"
+      ],
+      "automatic": false,
+      "authorization": "No callable runtime-fetch manifest helper remains. Production manifest loading is local only.",
+      "privatePath": "No replacement network path. An absent or invalid bundled manifest fails closed.",
+      "failureBehavior": "Absent/invalid bundled manifests cannot enable payments.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Read-only helper inventory.",
+      "status": "retired-helper; zero-egress",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/lib/manifest.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "local-only",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "No application-controlled remote destination is selected by this operation.",
+      "redirectBehavior": "Not applicable: this operation performs no application fetch.",
+      "credentialAndReferrerBehavior": "Not applicable: no application HTTP request.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Local validation errors only; no provider error body is involved.",
+      "privacyImplications": "No application network payload for this operation; local browser, file and extension handling remains outside this claim."
+    },
+    {
+      "id": "evm-rpc-health",
+      "flows": [
+        "rpc-configuration",
+        "chain-validation"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Settings.tsx",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/AppShell.tsx",
+        "packages/chain-adapters/src/rpc.ts",
+        "apps/web/src/lib/networkAuthorization.ts"
+      ],
+      "symbols": [
+        "createDefaultServices",
+        "createClient",
+        "rpcFor"
+      ],
+      "trigger": "Explicit Settings connection check; another action may independently perform its own client chain check under that action grant.",
+      "destination": "User-configured EVM RPC URL.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "chain selection",
+        "connection metadata"
+      ],
+      "automatic": false,
+      "authorization": "Explicit Settings connection check grants settings-check for the selected chain and exact entered URL. Only eth_chainId is accepted by this action; configuration storage alone does not authorize dispatch.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Invalid chain/URL/transport fails; RPC retries must not change destination or weaken policy.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "settings-check"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "EVM adapter defaults to 10 seconds and 2 MiB per exchange; central authority also bounds fetch/body and checks revocation. Same-endpoint retry behavior remains bounded.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-deployment-readback",
+      "flows": [
+        "pay",
+        "scan",
+        "sweep",
+        "deployment-verification"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/manifest.ts",
+        "packages/chain-adapters/src/deploymentsVerify.ts",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "verifyManifestForFlow",
+        "verifyManifestState",
+        "verifyManifestOnChain"
+      ],
+      "trigger": "A configured flow verifies compiled contract addresses and runtime state.",
+      "destination": "Selected EVM RPC; public deployment contract addresses in eth_call/eth_getCode.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "chain and public-contract selection",
+        "connection metadata"
+      ],
+      "automatic": true,
+      "authorization": "Readback shares the initiating payment, scan, Sweep or policy action and exact selected RPC. It grants no external wallet signing or transaction-send authority by itself.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Any unavailable or mismatching readback blocks use of the manifest; no silent manifest substitution.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "payment-preflight",
+          "scan",
+          "sweep-quote",
+          "sweep-submit",
+          "policy"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-scan-bulk",
+      "flows": [
+        "evm-scan"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/lib/scanClient.ts",
+        "packages/chain-adapters/src/logs.ts",
+        "packages/net-transport/src/fetchTransport.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "planScan",
+        "openScanClients",
+        "createWindowedScanClient",
+        "createFetchTransport"
+      ],
+      "trigger": "User starts a scan; the operation issues bounded block/log requests.",
+      "destination": "Settings RPC or explicitly configured per-chain scan endpoint/local proxy.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "block ranges",
+        "scan timing",
+        "chain choice"
+      ],
+      "automatic": true,
+      "authorization": "User starts Scan; the scan capability binds the chosen RPC, chain, session/settings revision and abort scope. Window/jitter retries reuse the same bound action.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Failed custom/private endpoint does not fall back to Settings RPC. Cancelled windows and stale results are rejected before later dispatch or result acceptance.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "transportHardening": "Existing #241 bounded transport behavior is preserved underneath action-scoped authorization.",
+      "testPaths": [
+        "packages/net-transport/src/fetchIsolation.test.ts",
+        "apps/web/src/lib/scanPrivacy.transport.test.ts",
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/lib/scanPrivacy.authorization.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "scan"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. The scan caller signal reaches custom RPC setup, indexer source/transport and queued-window/jitter checks. UI guards capture chain/key/signer/network revision and stop autorescan on revocation before new work is queued.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-scan-indexer",
+      "flows": [
+        "evm-scan",
+        "indexer"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/scanPrivacy.ts",
+        "packages/scan-source/src/indexer.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/boundedRequest.ts"
+      ],
+      "symbols": [
+        "checkIndexerUrl",
+        "fetchHttpTransport",
+        "createIndexerScanClient"
+      ],
+      "trigger": "An explicitly configured indexer scan requests announcement windows.",
+      "destination": "User-configured indexer URL; selected RPC witnesses canonical blocks.",
+      "transport": "http-get",
+      "sensitiveData": [
+        "chain choice",
+        "block ranges",
+        "activity timing"
+      ],
+      "automatic": true,
+      "authorization": "A user-started scan creates a separate indexer capability for the explicitly configured source prefix; source configuration alone is insufficient.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Cancelled/oversized/malformed/timed-out responses fail closed; non-resolving reader/cancel cleanup cannot hold rejection; no alternate indexer.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/lib/transportCancellation.test.ts",
+        "apps/web/src/lib/transportNative.test.ts",
+        "apps/web/src/lib/boundedRequest.test.ts",
+        "apps/web/src/lib/scanPrivacy.transport.test.ts",
+        "apps/web/src/lib/scanPrivacy.authorization.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "scan"
+        ],
+        "category": "indexer",
+        "endpointMatch": "prefix",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only the same origin and selected path prefix are accepted; prefix matching is segment-bounded. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. The scan caller signal reaches custom RPC setup, indexer source/transport and queued-window/jitter checks. UI guards capture chain/key/signer/network revision and stop autorescan on revocation before new work is queued.",
+      "deadlineBehavior": "Indexer defaults: independent 30-second fetch/body deadline and 16 MiB streamed response cap; invalid limits rejected. Same caller signal reaches source operations and transport.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-scan-verification",
+      "flows": [
+        "evm-scan",
+        "payment-evidence"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/scanClient.ts",
+        "packages/chain-adapters/src/payments.ts",
+        "packages/chain-adapters/src/verify.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "verifyPayment",
+        "createClient.request"
+      ],
+      "trigger": "Local matching triggers payment/receipt/header verification.",
+      "destination": "The scan RPC and, when enabled, an independent secondary RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "matched transaction hashes",
+        "matched stealth-address relationships",
+        "receipt and timing interest"
+      ],
+      "automatic": true,
+      "authorization": "Verification reads remain within the user-started scan capability. They can disclose match-specific interest; bulk evidence settings reduce some query-selection leakage without implying unlinkability.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Malformed or inconsistent evidence stays unverified; no payment success is inferred from a matching announcement alone.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "scan"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. The scan caller signal reaches custom RPC setup, indexer source/transport and queued-window/jitter checks. UI guards capture chain/key/signer/network revision and stop autorescan on revocation before new work is queued.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-secondary-verification",
+      "flows": [
+        "evm-scan",
+        "independent-provider-check"
+      ],
+      "sourcePaths": [
+        "apps/web/src/AppShell.tsx",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/views/Scan.tsx",
+        "packages/chain-adapters/src/rpc.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "getSecondaryRpc",
+        "planScan.useSecondary",
+        "requestWithFallbackCheck"
+      ],
+      "trigger": "User-configured second RPC compares scan evidence.",
+      "destination": "Secondary Settings RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "same block/log/transaction interests disclosed to another provider"
+      ],
+      "automatic": true,
+      "authorization": "The initiated scan explicitly includes the selected secondary RPC only when the scan plan permits it; each endpoint has its own capability. Required local-proxy scanning excludes the direct secondary route.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Disagreement/refusal does not silently transform failed private routing into direct scanning.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/lib/scanPrivacy.authorization.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "scan"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. The scan caller signal reaches custom RPC setup, indexer source/transport and queued-window/jitter checks. UI guards capture chain/key/signer/network revision and stop autorescan on revocation before new work is queued.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-payment-preflight",
+      "flows": [
+        "invoice-payment",
+        "fee-estimation",
+        "permit"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/payExec.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "refreshContext",
+        "createPayContext",
+        "readAllowance",
+        "simulateCall"
+      ],
+      "trigger": "Invoice context refresh, wallet-connected preparation, fee/permit/allowance and simulation checks.",
+      "destination": "Selected EVM RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "payer account",
+        "recipient and stealth destination",
+        "token and amount",
+        "permit nonce",
+        "transaction calldata",
+        "fee/timing interest"
+      ],
+      "automatic": true,
+      "authorization": "payment-preflight scopes invoice-context/readback and connected-wallet preparation reads to the selected RPC. Automatic refresh within the invoice workflow must retain the original user-approved revision; revocation must not silently mint a replacement action. UI/browser acceptance is recorded separately.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Invalid manifest or unavailable/revoked policy blocks preparation and cannot choose another RPC; transaction signing remains governed by existing wallet/review guards.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "payment-preflight"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. Pay binds these reads to the current invoice-fragment signal and captured revision; replacement, unmount or authority revocation aborts that operation without automatically granting a replacement.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "external-wallet-provider",
+      "flows": [
+        "wallet-discovery",
+        "connect",
+        "switch-chain",
+        "sign",
+        "send",
+        "registry",
+        "policy-account"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/features/registry/RegistryView.tsx",
+        "apps/web/src/features/policy/PolicyReceive.tsx"
+      ],
+      "symbols": [
+        "discoverWallets",
+        "connectWallet",
+        "signTypedDataViaWallet",
+        "sendViaWallet"
+      ],
+      "trigger": "Explicit wallet discovery/connection, chain switch, signature or send; consistency probes surround authority-sensitive operations.",
+      "destination": "Injected EIP-1193 provider and the wallet's independently selected services.",
+      "transport": "external-wallet-provider",
+      "sensitiveData": [
+        "wallet accounts",
+        "chain",
+        "typed data",
+        "signature request",
+        "complete transaction",
+        "origin identity"
+      ],
+      "automatic": true,
+      "authorization": "Wallet connect/sign/send is explicit; consistency probes are automatic within that operation.",
+      "privatePath": "The app can refuse to invoke a provider and can explain exposure. It cannot force the extension/wallet RPC through the app's proxy, inspect wallet internals, or stop independent extension requests.",
+      "failureBehavior": "Wallet refusal/changed account/chain aborts the app flow; do not infer that an ambiguous send did not occur.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "External-wallet boundary; preserve existing wallet correctness safeguards.",
+      "status": "external-boundary",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/lib/wallet.test.ts",
+        "apps/web/src/views/Pay.test.tsx"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "external-browser-or-wallet",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "Injected wallet provider and its independently configured services. The app cannot force the wallet RPC through its own selected endpoint.",
+      "redirectBehavior": "Browser/extension navigation or resource handling applies, outside the app fetch redirect setting. Same-origin/CSP and existing exact-origin checks constrain only the documented application boundary.",
+      "credentialAndReferrerBehavior": "Document no-referrer and existing component origin rules apply where supported; ambient browser/extension credential handling is not controlled by a fetch capability.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "Existing application operation guards can stop waiting/accepting stale results; independent wallet activity and transaction propagation are not bounded by the app transport deadline.",
+      "errorSanitization": "Existing component/browser error handling; no claim that third-party wallet or navigation errors are controlled by application transports.",
+      "privacyImplications": "This boundary is outside application fetch authorization. The browser, wallet extension or recipient can make its own network requests and observe disclosed data; do not infer these requests inherit the app RPC route or deadlines."
+    },
+    {
+      "id": "evm-payment-status",
+      "flows": [
+        "payment-followup",
+        "receipt-polling"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/lib/payExec.ts",
+        "apps/web/src/lib/transactionOutcome.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "verifySubmission",
+        "pollReceipt"
+      ],
+      "trigger": "After a user-approved send, poll transaction and receipt status.",
+      "destination": "Selected EVM RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "transaction hash",
+        "sender/recipient contract relationship",
+        "poll timing"
+      ],
+      "automatic": true,
+      "authorization": "Payment status currently shares the payment-preflight RPC capability created for the active payment workflow. Status reads stay on that selected endpoint and do not authorize another broadcast; payment-status exists as a policy action but is not the current Pay runtime caller.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Unavailable/mismatching receipts remain unknown or failed as appropriate; no automatic duplicate send.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "payment-preflight"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. Pay binds these reads to the current invoice-fragment signal and captured revision; replacement, unmount or authority revocation aborts that operation without automatically granting a replacement.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-sweep-balance",
+      "flows": [
+        "sweep",
+        "balance-read"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "readBalance",
+        "privatePathForbidsDirect",
+        "balanceAllowed"
+      ],
+      "trigger": "User explicitly presses the balance action for the selected payment and visible Settings RPC; opening Sweep alone does not fetch the balance.",
+      "destination": "Settings EVM RPC via eth_getBalance or token balanceOf.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "exact stealth owner",
+        "token",
+        "balance interest",
+        "network identity"
+      ],
+      "automatic": false,
+      "authorization": "Pressing the balance action grants only the reviewed chain, owner and token on the visible Settings RPC. eth_chainId and that exact native balance or ERC-20 balanceOf request are allowed; unrelated reads and sends are refused.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "A new result, token, endpoint, seller session or permission revision invalidates the balance scope. No automatic balance request on opening Sweep and no fallback to a different RPC.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/views/Sweep.privacy.test.tsx",
+        "apps/web/src/views/Sweep.test.tsx"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "sweep-balance"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-direct-sweep",
+      "flows": [
+        "direct-sweep",
+        "replacement-sweep",
+        "fee-estimation",
+        "broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "directSweep",
+        "readBalance",
+        "eth_sendRawTransaction"
+      ],
+      "trigger": "Explicit preparation, signature and direct sweep/broadcast; replacement preparation uses the existing attempt state.",
+      "destination": "Settings EVM RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "owner",
+        "destination",
+        "token",
+        "amount",
+        "nonce",
+        "native balance",
+        "gas estimate",
+        "signed raw transaction"
+      ],
+      "automatic": true,
+      "authorization": "The explicit review/sign/send action creates its own Sweep capability for the selected RPC. A visible one-action direct-path exception does not carry over from balance consent and cannot override own-node. Existing signing, nonce and attempt-journal gates remain separate.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Keep exact nonce/fee/attempt guards. Failed reads or ambiguous broadcast must not trigger endpoint downgrade or duplicate send.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "sweep-submit"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-relayer-quote",
+      "flows": [
+        "relayed-sweep",
+        "quote"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/boundedRequest.ts"
+      ],
+      "symbols": [
+        "requestQuote",
+        "getSweepQuote"
+      ],
+      "trigger": "User requests a relayer quote.",
+      "destination": "User-configured relayer base plus /v1/quote.",
+      "transport": "http-post-json",
+      "sensitiveData": [
+        "chain",
+        "token",
+        "stealth owner",
+        "destination",
+        "amount",
+        "IP and timing"
+      ],
+      "automatic": false,
+      "authorization": "The user requests a quote for the reviewed action; a sweep-quote capability permits only POST to the exact /v1/quote URL. It does not authorize /v1/sweep or unrelated future actions.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Pre-cancelled/revoked operations do not dispatch; ignored aborts and stalled bodies settle; late bodies are disposed without awaiting cleanup. An ambiguous submission is not classified as pre-broadcast refusal and is not automatically resent.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerContract.test.ts",
+        "apps/web/src/lib/transportCancellation.test.ts",
+        "apps/web/src/lib/transportNative.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "sweep-quote"
+        ],
+        "category": "relayer",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "Relayer HTTP exchange has an independent 15-second default deadline and 16 KiB cap. The existing old-relayer padding compatibility retry occurs at most once at the same endpoint with the same action signal; all other failures stop.",
+      "errorSanitization": "Known protocol error classes are explicitly allowlisted; unknown provider-controlled codes retain only the HTTP status and remain uncertain. Foreign exception objects/causes and abort reasons are reminted as fixed localized transport errors.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-relayer-submit",
+      "flows": [
+        "relayed-sweep",
+        "broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/boundedRequest.ts"
+      ],
+      "symbols": [
+        "submitSweep",
+        "relayedSweep"
+      ],
+      "trigger": "User confirms the reviewed relayed sweep.",
+      "destination": "User-configured relayer base plus /v1/sweep.",
+      "transport": "http-post-json",
+      "sensitiveData": [
+        "signed order",
+        "owner and destination",
+        "token and amount",
+        "fee",
+        "nonce/deadline",
+        "permit",
+        "quote token"
+      ],
+      "automatic": false,
+      "authorization": "The user confirms the reviewed relayed sweep; a separate sweep-submit capability permits only the exact /v1/sweep URL. Existing signature, step-up and attempt-state rules apply; quote consent alone is insufficient.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Pre-cancelled/revoked operations do not dispatch; ignored aborts and stalled bodies settle; late bodies are disposed without awaiting cleanup. An ambiguous submission is not classified as pre-broadcast refusal and is not automatically resent.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerContract.test.ts",
+        "apps/web/src/lib/transportCancellation.test.ts",
+        "apps/web/src/lib/transportNative.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "sweep-submit"
+        ],
+        "category": "relayer",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "Relayer HTTP exchange has an independent 15-second default deadline and 16 KiB cap. The existing old-relayer padding compatibility retry occurs at most once at the same endpoint with the same action signal; all other failures stop.",
+      "errorSanitization": "Known protocol error classes are explicitly allowlisted; unknown provider-controlled codes retain only the HTTP status and remain uncertain. Foreign exception objects/causes and abort reasons are reminted as fixed localized transport errors.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "evm-sweep-status",
+      "flows": [
+        "sweep-followup",
+        "replacement",
+        "attempt-recovery"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "reconcileSweepLock",
+        "eth_getTransactionReceipt",
+        "eth_getTransactionCount"
+      ],
+      "trigger": "User checks an existing attempt or prepares a replacement/re-sign action.",
+      "destination": "Selected EVM RPC.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "transaction hash",
+        "owner nonce",
+        "relayer order state",
+        "destination relationship"
+      ],
+      "automatic": true,
+      "authorization": "An explicit status/replacement action creates a fresh sweep-status capability for that attempt and selected RPC. It does not authorize a new broadcast; unknown-after-handoff remains uncertain.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Unknown-after-handoff remains uncertain; a forgotten/missing receipt is not proof no transaction was sent.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "sweep-status"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "registry-lookup",
+      "flows": [
+        "registry",
+        "ens"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/registry/RegistryView.tsx",
+        "packages/chain-adapters/src/registry.ts",
+        "packages/chain-adapters/src/registryEns.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "lookupMetaAddress",
+        "buildLookupCall"
+      ],
+      "trigger": "Explicit registrant address or ENS lookup.",
+      "destination": "Selected EVM RPC; ERC-6538 or universal resolver contracts.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "registrant address",
+        "ENS name",
+        "intended-payee relationship"
+      ],
+      "automatic": false,
+      "authorization": "Explicit lookup uses a registry-read RPC capability on the selected chain/endpoint; offchain ENS gateway continuation remains refused.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Unavailable/invalid lookup fails without alternative gateway or chain fallback.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "registry-read"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "Registry operation signal, captured network revision, session/settings revocation and idle expiry"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. Registry RPCs now receive the view operation signal, aborted on unmount, chain/session/settings/consent or lookup-input changes and authority invalidation. Lookup and publication continuations also capture the network revision; lookup input edits invalidate their result version.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "registry-publication",
+      "flows": [
+        "registry",
+        "public-identity-link"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/registry/RegistryView.tsx",
+        "apps/web/src/lib/registry.ts",
+        "packages/chain-adapters/src/registryDelegation.ts",
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "buildRegisterKeys",
+        "signTypedDataViaWallet"
+      ],
+      "trigger": "User reviews and confirms publication/clearing/delegated registry operation.",
+      "destination": "Selected EVM RPC plus external wallet provider; eventual public chain.",
+      "transport": "json-rpc-and-external-wallet",
+      "sensitiveData": [
+        "wallet/meta-address association",
+        "public viewing/spending keys",
+        "signed registry authorization"
+      ],
+      "automatic": true,
+      "authorization": "App RPC preparation and publication readback currently use registry-read capabilities. Publication requires the existing explicit review and external-wallet authority; wallet internals and their destination choice remain outside application fetch enforcement. registry-publish exists in the policy union but is not the current RegistryView caller.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Changed authority/failed readback/signature blocks operation; preserve stale-state guards.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "registry-read"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "Registry operation signal, captured network revision, session/settings revocation and idle expiry"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. Registry RPCs now receive the view operation signal, aborted on unmount, chain/session/settings/consent or lookup-input changes and authority invalidation. Lookup and publication continuations also capture the network revision; lookup input edits invalidate their result version.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "policy-account",
+      "flows": [
+        "policy-payment",
+        "deploy",
+        "withdraw",
+        "policy-recovery"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/policy/PolicyReceive.tsx",
+        "apps/web/src/features/policy/PolicyPay.tsx",
+        "apps/web/src/features/policy/chain.ts",
+        "apps/web/src/features/policy/withdrawalState.ts",
+        "apps/web/src/features/policy/paymentEvidence.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/features/policy/PolicyView.tsx"
+      ],
+      "symbols": [
+        "PolicyReceive",
+        "PolicyPay",
+        "getBalance"
+      ],
+      "trigger": "Full-profile policy account workflows and associated evidence/status checks.",
+      "destination": "Selected EVM RPC plus external wallet provider.",
+      "transport": "json-rpc-and-external-wallet",
+      "sensitiveData": [
+        "policy account",
+        "destination",
+        "balance",
+        "withdrawal/transaction history",
+        "calldata and signatures"
+      ],
+      "automatic": true,
+      "authorization": "Existing policy preparation/status actions use policy RPC capabilities. Wallet signatures and sends retain their distinct account/chain/review guards and do not become authorized merely through RPC access.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Malformed/stale evidence or changed authority blocks signing. Preserve withdrawal/attempt journal and do not broaden policy-recovery scope.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "policy"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "verified deployment revision and operation signal, captured network revision, session/settings revocation and idle expiry"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes. PolicyCtx carries the deployment operation signal to verification, payment and receipt/withdrawal RPCs. Deployment edits, re-verification, unmount or authority invalidation abort that signal; captured deployment and network revisions prevent stale continuation.",
+      "deadlineBehavior": "EVM adapter defaults: 10-second per-exchange deadline and 2 MiB response cap. Action authority remains current through initialization, reads and retries; no endpoint substitution.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "merchant-profile-fetch",
+      "flows": [
+        "merchant-checkout",
+        "profile-load"
+      ],
+      "sourcePaths": [
+        "apps/web/src/components/MerchantProfilePanel.tsx",
+        "apps/web/src/lib/embedHost.ts",
+        "apps/web/src/lib/merchantIdentity.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "fetchMerchantProfile",
+        "merchantProfileUrl"
+      ],
+      "trigger": "User presses Load for a merchant URL; merely opening checkout does not fetch it.",
+      "destination": "User-entered HTTPS profile URL, including any explicitly supplied query.",
+      "transport": "http-get",
+      "sensitiveData": [
+        "merchant relationship",
+        "URL/query",
+        "IP and timing"
+      ],
+      "automatic": false,
+      "authorization": "Pressing Load creates an exact-URL merchant-profile resource capability with its cancel scope and visible one-action direct-path exception. Merely opening checkout does not fetch a profile, and pin confirmation is a separate local decision.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Returns undefined/visible load failure, discards stale responses and never substitutes another source.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/components/MerchantProfilePanel.test.tsx",
+        "apps/web/src/lib/embedHost.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "merchant-profile"
+        ],
+        "category": "resource",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "Profile helper: 10-second deadline and 8 KiB response cap; central authority additionally guards lifetime and endpoint. Malformed/late/stale responses do not become active merchant state.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "merchant-embed",
+      "flows": [
+        "merchant-checkout",
+        "completion-notification"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/embedHost.ts",
+        "apps/web/src/lib/embedProtocol.ts",
+        "apps/web/public/ghostpay-embed-v2.js",
+        "apps/web/public/ghostpay-embed-v1.js"
+      ],
+      "symbols": [
+        "startEmbedHost",
+        "notifyEmbedDone",
+        "readProfileFromSearch"
+      ],
+      "trigger": "Configured merchant checkout handshake and final status notification; SDK may open a popup.",
+      "destination": "Verified exact parent origin via postMessage; application navigation for popup/frame.",
+      "transport": "cross-origin-window-message-and-navigation",
+      "sensitiveData": [
+        "status",
+        "chainId",
+        "optional transaction hash",
+        "public signed merchant profile/query"
+      ],
+      "automatic": true,
+      "authorization": "User checkout interaction; one accepted handshake per load; completion payload is an allowlist.",
+      "privatePath": "Not a proxy fetch. Default GitHub Pages does not enable the iframe host; messages use exact verified origin and source.",
+      "failureBehavior": "Handshake deadline/refusal follows existing SDK behavior. Parent site can independently transmit information it receives.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Merchant integration, external recipient boundary.",
+      "status": "external-boundary",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/lib/embedProtocol.test.ts",
+        "apps/web/src/embedV2.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "external-browser-or-wallet",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "Exact verified source/parent origin for postMessage; popup/frame navigation uses the explicit embed configuration.",
+      "redirectBehavior": "Browser/extension navigation or resource handling applies, outside the app fetch redirect setting. Same-origin/CSP and existing exact-origin checks constrain only the documented application boundary.",
+      "credentialAndReferrerBehavior": "Document no-referrer and existing component origin rules apply where supported; ambient browser/extension credential handling is not controlled by a fetch capability.",
+      "cancellationSupport": "Handshake has existing lifecycle/deadline guards; local postMessage is distinct from remote HTTP and recipient behavior is external.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Existing component/browser error handling; no claim that third-party wallet or navigation errors are controlled by application transports.",
+      "privacyImplications": "This boundary is outside application fetch authorization. The browser, wallet extension or recipient can make its own network requests and observe disclosed data; do not infer these requests inherit the app RPC route or deadlines."
+    },
+    {
+      "id": "btc-esplora-bulk",
+      "flows": [
+        "bitcoin-scan",
+        "header-validation"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/headers.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/networkOperation.ts",
+        "apps/web/src/lib/boundedRequest.ts"
+      ],
+      "symbols": [
+        "EsploraClient",
+        "blockTxs",
+        "blockHash",
+        "headersBelow",
+        "checkNetwork"
+      ],
+      "trigger": "User starts scan/header validation against their selected source.",
+      "destination": "User-configured Esplora origin/prefix.",
+      "transport": "http-get",
+      "sensitiveData": [
+        "network choice",
+        "heights and block hashes",
+        "block range",
+        "activity timing"
+      ],
+      "automatic": true,
+      "authorization": "User-started header checking/scan creates a btc-scan capability for the selected network and Esplora prefix; only read methods are accepted in the RPC scan category.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Fixed SilentPaymentError classifications; nonblocking cleanup and late response disposal; selected node remains authoritative. Already transmitted BTC broadcasts stay uncertain on lost responses and are not automatically resent.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/scanWorker.test.ts",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/esplora.isolation.test.ts",
+        "apps/web/src/lib/boundedRequest.browser.test.ts",
+        "apps/web/src/lib/transportCancellation.test.ts",
+        "apps/web/src/lib/transportNative.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "btc-scan"
+        ],
+        "category": "rpc",
+        "endpointMatch": "prefix",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "Each selected Esplora or oracle source gets its own origin/path-prefix capability. Main-thread dispatch selects only an explicitly granted source; no public node or alternative provider is discovered on failure.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "Esplora requests: independent 30-second default deadline, up to 16 MiB per body, lower raw-transaction/proof limits and 64 MiB aggregate transaction-page budget per block. Pre-aborted operations never dispatch; ignored abort/read/cancel promises do not prevent settlement.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "btc-match-proof",
+      "flows": [
+        "bitcoin-scan",
+        "matched-output-validation",
+        "sweep-preflight"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/scan.ts",
+        "apps/web/src/features/btc/oracleSource.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/networkOperation.ts",
+        "apps/web/src/lib/boundedRequest.ts"
+      ],
+      "symbols": [
+        "rawTransaction",
+        "merkleProof",
+        "isUnspent"
+      ],
+      "trigger": "A matched output is validated or refreshed.",
+      "destination": "Esplora /tx/<txid>/hex, /merkle-proof and /outspend/<vout>.",
+      "transport": "http-get",
+      "sensitiveData": [
+        "exact matched transaction IDs",
+        "outpoints",
+        "ownership interest"
+      ],
+      "automatic": true,
+      "authorization": "Matched output proof/spentness checks belong to the current btc-scan or explicit btc-sweep action and its selected Esplora capability; they reveal exact matching transaction/outpoint interest.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Fixed SilentPaymentError classifications; nonblocking cleanup and late response disposal; selected node remains authoritative. Already transmitted BTC broadcasts stay uncertain on lost responses and are not automatically resent.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/scanWorker.test.ts",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/esplora.isolation.test.ts",
+        "apps/web/src/lib/boundedRequest.browser.test.ts",
+        "apps/web/src/lib/transportCancellation.test.ts",
+        "apps/web/src/lib/transportNative.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "btc-scan",
+          "btc-sweep"
+        ],
+        "category": "rpc",
+        "endpointMatch": "prefix",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "Each selected Esplora or oracle source gets its own origin/path-prefix capability. Main-thread dispatch selects only an explicitly granted source; no public node or alternative provider is discovered on failure.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "Esplora requests: independent 30-second default deadline, up to 16 MiB per body, lower raw-transaction/proof limits and 64 MiB aggregate transaction-page budget per block. Pre-aborted operations never dispatch; ignored abort/read/cancel promises do not prevent settlement.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "btc-worker-bridge",
+      "flows": [
+        "bitcoin-scan",
+        "worker-source-access"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/scanWorkerClient.ts",
+        "apps/web/src/features/btc/scanWorkerSource.ts",
+        "apps/web/src/features/btc/scanWorkerMessages.ts",
+        "apps/web/src/features/btc/scan.worker.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/networkOperation.ts"
+      ],
+      "symbols": [
+        "BtcScanSourceBridge",
+        "isScanSourcePath",
+        "scanForPaymentsInWorker"
+      ],
+      "trigger": "Scanner worker requests public source data from the main thread.",
+      "destination": "Fixed selected Esplora base plus a finite GET path allowlist.",
+      "transport": "worker-message-to-main-thread-http",
+      "sensitiveData": [
+        "public heights",
+        "block hashes",
+        "selected proof transaction IDs and outpoints"
+      ],
+      "automatic": true,
+      "authorization": "A user-started BTC scan issues source capabilities only to main-thread bridges. Worker messages select allowed public paths or source indices, never arbitrary origins or secret-bearing requests.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Cancel/deadline terminates bridge requests and discards late replies; source errors are fixed codes.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/scanWorker.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "btc-scan"
+        ],
+        "category": "rpc",
+        "endpointMatch": "prefix",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "Each selected Esplora or oracle source gets its own origin/path-prefix capability. Main-thread dispatch selects only an explicitly granted source; no public node or alternative provider is discovered on failure.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "Bridge requests have a 30-second lifetime, bounded pending request count and response size, under the production capability deadline/cap. Workers cannot create independent transport authority.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "btc-oracle-bridge",
+      "flows": [
+        "bitcoin-scan",
+        "optional-oracle",
+        "independent-source-check"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/oracleBridge.ts",
+        "apps/web/src/features/btc/oracleSource.ts",
+        "packages/btc-silent-payments/src/scan/blindbit.ts",
+        "packages/btc-silent-payments/src/scan/grpcWebUnary.ts",
+        "packages/btc-silent-payments/src/scan/blindbitGrpc.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/networkOperation.ts"
+      ],
+      "symbols": [
+        "BtcOracleBridge",
+        "normalizeOracleConfig",
+        "BlindBitClient",
+        "BlindBitGrpcClient"
+      ],
+      "trigger": "User explicitly selects BlindBit HTTP or gRPC-Web source and optionally another source.",
+      "destination": "Selected oracle endpoint(s); no endpoint is chosen automatically.",
+      "transport": "http-and-grpc-web",
+      "sensitiveData": [
+        "public network and height",
+        "capability queries",
+        "scan timing"
+      ],
+      "automatic": true,
+      "authorization": "User explicitly selects optional source(s) and starts BTC scan. Each oracle gets a separate btc-scan/indexer capability on its selected prefix; only public height/source data crosses the worker bridge.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Unavailable, incomplete or disagreeing oracle fails; bounded pending requests/deadline/body cap and no secret-bearing hosted scan mode.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/scanWorker.test.ts",
+        "apps/web/src/features/btc/oracleBridge.test.ts",
+        "apps/web/src/features/btc/oracleSource.test.ts",
+        "apps/web/src/features/btc/oracleWorker.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "btc-scan"
+        ],
+        "category": "indexer",
+        "endpointMatch": "prefix",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "Each selected Esplora or oracle source gets its own origin/path-prefix capability. Main-thread dispatch selects only an explicitly granted source; no public node or alternative provider is discovered on failure.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "Bridge-level 30-second operation deadline and MAX_SOURCE_BYTES cap apply in addition to the source adapter and central capability bounds.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "btc-sweep",
+      "flows": [
+        "bitcoin-fees",
+        "bitcoin-sweep",
+        "bitcoin-broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/sweep.ts",
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts",
+        "apps/web/src/lib/networkOperation.ts",
+        "apps/web/src/lib/boundedRequest.ts"
+      ],
+      "symbols": [
+        "feeRate",
+        "isUnspent",
+        "broadcast",
+        "signSweep"
+      ],
+      "trigger": "User requests review/sign/broadcast of selected outputs.",
+      "destination": "Selected Esplora /fee-estimates, outspend/proof paths and POST /tx.",
+      "transport": "http-get-and-post",
+      "sensitiveData": [
+        "chosen inputs",
+        "signed raw transaction",
+        "destination",
+        "amount",
+        "network timing"
+      ],
+      "automatic": true,
+      "authorization": "An explicit BTC review/sign/broadcast operation creates btc-sweep authority for the selected network and Esplora prefix; scan-only authority does not permit broadcasting. Input selection, fresh proof and signing checks are preserved.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Fixed SilentPaymentError classifications; nonblocking cleanup and late response disposal; selected node remains authoritative. Already transmitted BTC broadcasts stay uncertain on lost responses and are not automatically resent.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/scanWorker.test.ts",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/esplora.isolation.test.ts",
+        "apps/web/src/lib/boundedRequest.browser.test.ts",
+        "apps/web/src/lib/transportCancellation.test.ts",
+        "apps/web/src/lib/transportNative.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "btc-sweep"
+        ],
+        "category": "rpc",
+        "endpointMatch": "prefix",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "Each selected Esplora or oracle source gets its own origin/path-prefix capability. Main-thread dispatch selects only an explicitly granted source; no public node or alternative provider is discovered on failure.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "credentials:omit, referrer:\"\", referrerPolicy:no-referrer, cache:no-store and keepalive:false at the production authority boundary. Request headers are allowlisted; Origin/CORS remains browser-controlled.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "Esplora requests: independent 30-second default deadline, up to 16 MiB per body, lower raw-transaction/proof limits and 64 MiB aggregate transaction-page budget per block. Pre-aborted operations never dispatch; ignored abort/read/cancel promises do not prevent settlement.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "solana-rpc",
+      "flows": [
+        "solana-scan",
+        "balance",
+        "fee-and-rent",
+        "solana-sweep",
+        "solana-broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/solana/SolanaView.tsx",
+        "apps/web/src/features/solana/rpc.ts",
+        "apps/web/src/features/solana/scan.ts",
+        "apps/web/src/features/solana/sweep.ts",
+        "packages/solana-stealth/src/rpc.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "createHttpRpc",
+        "getSignaturesForAddress",
+        "getTransaction",
+        "getBalance",
+        "sendTransaction"
+      ],
+      "trigger": "User starts scan/sign/send; matching automatically reads each detected address balance.",
+      "destination": "User-configured Solana node; JSON-RPC POST.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "memo-program signatures",
+        "matched transactions",
+        "stealth balances",
+        "destination",
+        "signed wire transaction",
+        "IP and timing"
+      ],
+      "automatic": true,
+      "authorization": "User-started Solana scan or review/sign/send creates a solana-scan or solana-sweep capability for the exact selected RPC URL and supported network. Scan capability refuses sendTransaction.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Bounded timeout/abort through fetch and stream reads, capped 8 MiB body, no endpoint retry/fallback, late body cleanup and fixed failure codes. Cancellation cannot retract already-sent bytes.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "packages/solana-stealth/src/rpc.isolation.test.ts",
+        "packages/solana-stealth/src/rpc.test.ts",
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/features/solana/SolanaView.lock.test.tsx",
+        "apps/web/src/features/chainViews.i18n.test.tsx"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "solana-scan",
+          "solana-sweep"
+        ],
+        "category": "rpc",
+        "endpointMatch": "exact",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only that normalized URL is accepted. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "Credentials omitted, empty/no referrer, no-store, no redirects. Deliberately user-selected query-based RPC provider keys remain part of the exact endpoint; no ambient Authorization/Cookie header is accepted.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "SDK default: 20-second independent fetch/body deadline and 8 MiB cap, pre-dispatch cancellation and nonblocking late-body cleanup. Central action boundary adds revocation and idle expiry.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "tron-rpc",
+      "flows": [
+        "tron-scan",
+        "balance",
+        "destination-activation",
+        "tron-sweep",
+        "tron-broadcast"
+      ],
+      "sourcePaths": [
+        "apps/web/src/features/tron/TronView.tsx",
+        "apps/web/src/features/tron/rpc.ts",
+        "apps/web/src/features/tron/scan.ts",
+        "apps/web/src/features/tron/sweep.ts",
+        "packages/tron-adapter/src/rpc.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/defaultServices.ts"
+      ],
+      "symbols": [
+        "createHttpRpc",
+        "getBlockRange",
+        "getTransactionInfo",
+        "getBalanceSun",
+        "isActivated",
+        "broadcastHex"
+      ],
+      "trigger": "User starts scan/review/sign/send; matched-address balance reads and destination activation checks follow.",
+      "destination": "User-configured TRON node, /wallet/* POST routes.",
+      "transport": "http-post-json",
+      "sensitiveData": [
+        "block ranges",
+        "matched transaction IDs",
+        "stealth owner",
+        "destination activation",
+        "balances",
+        "signed transaction",
+        "IP and timing"
+      ],
+      "automatic": true,
+      "authorization": "User-started TRON scan or review/sign/send creates a tron-scan or tron-sweep capability for the selected /wallet path prefix and supported network. Scan capability refuses broadcast routes.",
+      "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
+      "failureBehavior": "Bounded timeout/abort through fetch and stream reads, capped 8 MiB body, no endpoint retry/fallback, late body cleanup and fixed failure codes. Cancellation cannot retract already-sent bytes.",
+      "profile": [
+        "full"
+      ],
+      "ownership": "Network-isolation integration on an isolated branch; original source PRs preserved.",
+      "status": "action-policy-integrated; combined-head qualification pending",
+      "testPaths": [
+        "packages/tron-adapter/src/rpc.isolation.test.ts",
+        "packages/tron-adapter/src/rpc.test.ts",
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/defaultServices.authorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/src/features/tron/TronView.lock.test.tsx",
+        "apps/web/src/features/chainViews.i18n.test.tsx"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "application-action",
+        "actions": [
+          "tron-scan",
+          "tron-sweep"
+        ],
+        "category": "rpc",
+        "endpointMatch": "prefix",
+        "lifetime": "in-memory action bound to session, settings revision and idle expiry; caller cancellation where wired"
+      },
+      "endpointSelection": "The action supplies its user-selected endpoint; only the same origin and selected path prefix are accepted; prefix matching is segment-bounded. Endpoint replacement invalidates existing grants; no public-provider discovery or fallback is added.",
+      "redirectBehavior": "redirect:error is forced. A reported redirected response or out-of-scope final URL is refused; a custom transport that already followed a redirect cannot make the prior disclosure unsent.",
+      "credentialAndReferrerBehavior": "Credentials omitted, empty/no referrer, no-store, no redirects. Only the existing explicit TRON-PRO-API-KEY credential header is additionally allowed for TRON; URL query/userinfo/fragment bases remain rejected.",
+      "cancellationSupport": "Session/app-lock changes or relevant settings invalidation revoke the in-memory capability and active reads. Dispatch and body reads recheck authority; caller AbortSignal or explicit disposal also revokes where supplied by the flow. Grants are not persisted across reload. Cancellation cannot retract transmitted bytes.",
+      "deadlineBehavior": "SDK default: 15-second independent fetch/body deadline and 8 MiB cap, pre-dispatch cancellation and nonblocking late-body cleanup. Central action boundary adds revocation and idle expiry.",
+      "errorSanitization": "Policy/transport failures are reminted as fixed local errors without URL, request body, abort reason or foreign cause. Adapter protocol classifications remain bounded and do not authorize fallback.",
+      "privacyImplications": "The selected provider sees the listed request data, source IP and timing, plus browser-required Origin/CORS metadata. These controls prevent unintended app destinations and stale authorization; they do not establish anonymity or hide public-chain relationships."
+    },
+    {
+      "id": "local-invoice-and-qr",
+      "flows": [
+        "invoice-create",
+        "invoice-import",
+        "invoice-export",
+        "qr",
+        "camera"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/invoiceCreate.ts",
+        "apps/web/src/lib/qr.ts",
+        "apps/web/src/lib/qrClassify.ts",
+        "apps/web/src/lib/qrPayload.ts",
+        "apps/web/src/lib/qrMultipart.ts",
+        "apps/web/src/lib/fragment.ts"
+      ],
+      "symbols": [
+        "createInvoice",
+        "readInvoiceFragment",
+        "clearFragment"
+      ],
+      "trigger": "User creates/imports/exports a signed invoice or encodes/decodes QR/camera data.",
+      "destination": "None for local payload processing; opening an invoice link separately loads the host.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": false,
+      "authorization": "Explicit local actions.",
+      "privatePath": "Local-only operation; no transport alternative is needed.",
+      "failureBehavior": "Malformed input rejected locally. URL fragments are not in normal HTTP requests, but holders, clipboard and browser history may retain them.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Invoice/default privacy and recovery owners; preserve formats and encrypted behavior.",
+      "status": "zero-egress",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "local-only",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "No application-controlled remote destination is selected by this operation.",
+      "redirectBehavior": "Not applicable: this operation performs no application fetch.",
+      "credentialAndReferrerBehavior": "Not applicable: no application HTTP request.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Local validation errors only; no provider error body is involved.",
+      "privacyImplications": "No application network payload for this operation; local browser, file and extension handling remains outside this claim."
+    },
+    {
+      "id": "local-key-and-recovery",
+      "flows": [
+        "key-generation",
+        "key-import",
+        "key-backup",
+        "encrypted-local-recovery"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/keyVault.ts",
+        "apps/web/src/lib/session.ts",
+        "apps/web/src/lib/appLock.ts",
+        "apps/web/src/views/SellerKeys.tsx"
+      ],
+      "symbols": [
+        "authorizeKeyExport",
+        "clearSession",
+        "notifyAppLock"
+      ],
+      "trigger": "User generates/imports/unlocks/exports local key material or idle lock fires.",
+      "destination": "None; local memory/files/encrypted persistence.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "Explicit unlock/export; automatic idle locking is local.",
+      "privatePath": "Local-only operation; no transport alternative is needed. This work does not change or qualify the actively owned spec-18 recovery feature.",
+      "failureBehavior": "Preserve essential encrypted storage, recoverability and session guards. OS/download/extension leakage and best-effort JavaScript zeroization are outside network isolation.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Recovery/keypair export ownership excluded from implementation.",
+      "status": "zero-egress",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "local-only",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "No application-controlled remote destination is selected by this operation.",
+      "redirectBehavior": "Not applicable: this operation performs no application fetch.",
+      "credentialAndReferrerBehavior": "Not applicable: no application HTTP request.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Local validation errors only; no provider error body is involved.",
+      "privacyImplications": "No application network payload for this operation; local browser, file and extension handling remains outside this claim."
+    },
+    {
+      "id": "local-preferences-and-pins",
+      "flows": [
+        "rpc-settings",
+        "scan-policy-settings",
+        "merchant-pinning"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/settings.ts",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "apps/web/src/lib/merchantIdentity.ts"
+      ],
+      "symbols": [
+        "loadSettings",
+        "saveSettings",
+        "loadScanPrivacy",
+        "saveScanPrivacy",
+        "rememberMerchantKey"
+      ],
+      "trigger": "Preferences load on app/view startup or are explicitly changed.",
+      "destination": "Browser localStorage only.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "User saves selected public endpoints/preferences or explicitly confirms a merchant signer.",
+      "privatePath": "Preference persistence is local and grants no network authority. Strict authority snapshots reject malformed/unavailable policy storage and unacknowledged private selections; current and cross-tab changes revoke grants.",
+      "failureBehavior": "Storage failure cannot silently select a direct provider. No grant, private key or wallet-specific authorization payload is stored or synchronized.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Network-isolation integration; existing pin/recovery semantics retained.",
+      "status": "zero-egress; preferences revoke scoped network authority",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/lib/settings.test.ts",
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/AppShell.network.test.tsx"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "local-only",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "No application-controlled remote destination is selected by this operation.",
+      "redirectBehavior": "Not applicable: this operation performs no application fetch.",
+      "credentialAndReferrerBehavior": "Not applicable: no application HTTP request.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Local validation errors only; no provider error body is involved.",
+      "privacyImplications": "No application network payload for this operation; local browser, file and extension handling remains outside this claim."
+    },
+    {
+      "id": "external-navigation",
+      "flows": [
+        "help",
+        "source",
+        "standards",
+        "explorer",
+        "wallet-links"
+      ],
+      "sourcePaths": [
+        "apps/web/help.html",
+        "apps/web/privacy.html",
+        "apps/web/src/views/About.tsx",
+        "apps/web/src/views/Sweep.tsx"
+      ],
+      "symbols": [
+        "HTML anchor navigation"
+      ],
+      "trigger": "User activates an external link.",
+      "destination": "The explicitly linked source/standards/explorer/wallet destination.",
+      "transport": "browser-navigation",
+      "sensitiveData": [
+        "destination URL",
+        "possibly public transaction hash",
+        "network metadata"
+      ],
+      "automatic": false,
+      "authorization": "Explicit navigation, distinct from implicit RPC fallback.",
+      "privatePath": "Document no-referrer mitigates the referrer; browser and destination handling are external. Do not silently open links as a fallback.",
+      "failureBehavior": "Ordinary navigation failure; no app-controlled alternate endpoint.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Read-only external-navigation inventory.",
+      "status": "external-boundary",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "external-browser-or-wallet",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "The destination of the user-activated help/source/explorer/wallet link. No automatic link opening as failed-RPC fallback.",
+      "redirectBehavior": "Browser/extension navigation or resource handling applies, outside the app fetch redirect setting. Same-origin/CSP and existing exact-origin checks constrain only the documented application boundary.",
+      "credentialAndReferrerBehavior": "Document no-referrer and existing component origin rules apply where supported; ambient browser/extension credential handling is not controlled by a fetch capability.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Existing component/browser error handling; no claim that third-party wallet or navigation errors are controlled by application transports.",
+      "privacyImplications": "This boundary is outside application fetch authorization. The browser, wallet extension or recipient can make its own network requests and observe disclosed data; do not infer these requests inherit the app RPC route or deadlines."
+    },
+    {
+      "id": "wallet-icons",
+      "flows": [
+        "wallet-discovery",
+        "wallet-picker"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/views/Pay.tsx"
+      ],
+      "symbols": [
+        "discoverWallets",
+        "ICON_RE",
+        "MAX_ICON"
+      ],
+      "trigger": "Wallet discovery returns icon metadata; picker displays it.",
+      "destination": "None for accepted data:image base64 URI.",
+      "transport": "data-uri-image",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "Wallet discovery action; icon display is automatic.",
+      "privatePath": "Short bounded data URIs only; remote image URLs are omitted, preventing a wallet-supplied icon endpoint.",
+      "failureBehavior": "Invalid/oversized icon is not displayed; no remote fallback.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Wallet source reviewed; preserve whitelist.",
+      "status": "zero-egress",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "local-only",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "No application-controlled remote destination is selected by this operation.",
+      "redirectBehavior": "Not applicable: this operation performs no application fetch.",
+      "credentialAndReferrerBehavior": "Not applicable: no application HTTP request.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Local validation errors only; no provider error body is involved.",
+      "privacyImplications": "No application network payload for this operation; local browser, file and extension handling remains outside this claim."
+    },
+    {
+      "id": "workers-without-direct-network",
+      "flows": [
+        "evm-local-matching",
+        "bitcoin-local-matching"
+      ],
+      "sourcePaths": [
+        "apps/web/src/lib/scanner.worker.ts",
+        "apps/web/src/lib/scannerCore.ts",
+        "apps/web/src/lib/workerFactory.ts",
+        "apps/web/src/features/btc/scan.worker.ts",
+        "apps/web/src/features/btc/scanWorkerClient.ts",
+        "apps/web/scripts/scan-bundle.mjs"
+      ],
+      "symbols": [
+        "createBrowserScanWorker",
+        "createBtcScanWorker",
+        "WORKER_FORBIDDEN"
+      ],
+      "trigger": "App loads same-origin worker code for a user-started scan; secrets enter only documented local worker channels.",
+      "destination": "Same-origin worker script load; no direct worker network calls.",
+      "transport": "worker-loader-and-local-postmessage",
+      "sensitiveData": [],
+      "automatic": true,
+      "authorization": "Part of user-started scanning.",
+      "privatePath": "Bundle/source guards prohibit worker network primitives. BTC network needs pass through the separately inventoried main-thread bridges.",
+      "failureBehavior": "Worker termination/cancellation stops computation and bridge ownership; do not claim worker isolation controls the browser or extensions.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Worker/source owners; no implementation in this work.",
+      "status": "zero-direct-egress",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/features/btc/scanWorker.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "external-browser-or-wallet",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "Same-origin worker script loading; all BTC network requests are delegated through the separately inventoried scoped main-thread bridges.",
+      "redirectBehavior": "Browser/extension navigation or resource handling applies, outside the app fetch redirect setting. Same-origin/CSP and existing exact-origin checks constrain only the documented application boundary.",
+      "credentialAndReferrerBehavior": "Browser worker script loading follows document policy; worker-local computation sends no HTTP credentials/referrer.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Existing component/browser error handling; no claim that third-party wallet or navigation errors are controlled by application transports.",
+      "privacyImplications": "Workers carry documented local scan material and can be terminated; no direct network API is allowed in shipped worker bundles. Main-thread endpoint visibility is inventoried separately."
+    },
+    {
+      "id": "absent-network-apis-and-updates",
+      "flows": [
+        "telemetry",
+        "xhr",
+        "websocket",
+        "eventsource",
+        "beacon",
+        "service-worker",
+        "automatic-updater"
+      ],
+      "sourcePaths": [
+        "apps/web/src/privacyInvariants.test.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/vite.config.ts",
+        "apps/web/scripts/scan-bundle.mjs",
+        "apps/web/public/_headers"
+      ],
+      "symbols": [
+        "privacy invariants",
+        "bundle scan"
+      ],
+      "trigger": "No production invocation of these network APIs or registration of an automatic updater/service worker is intended; maintenance and bundle tests reject newly detected references until reviewed.",
+      "destination": "None; no mandatory telemetry/error-reporting/update endpoint found.",
+      "transport": "none",
+      "sensitiveData": [],
+      "automatic": false,
+      "authorization": "No production app-owned telemetry/beacon/WebSocket/EventSource/service-worker/updater capability exists in this candidate.",
+      "privatePath": "CSP connect-src allows https: and wss: for runtime endpoint selection; permission is not evidence of a WebSocket implementation. No service worker means there is no app service-worker cache/proxy to enforce policy.",
+      "failureBehavior": "Source/bundle tests should fail on new unapproved egress. Runtime-generated URLs and independent extensions still require distinct review.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Review-only negative inventory; future source changes require re-inventory.",
+      "status": "absent-at-source-pin",
+      "testPaths": [
+        "apps/web/src/privacyInvariants.test.ts"
+      ],
+      "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
+      "authority": {
+        "boundary": "local-only",
+        "actions": [],
+        "category": "none",
+        "endpointMatch": "not-applicable",
+        "lifetime": "Not an application fetch capability."
+      },
+      "endpointSelection": "No application-controlled remote destination is selected by this operation.",
+      "redirectBehavior": "Not applicable: this operation performs no application fetch.",
+      "credentialAndReferrerBehavior": "Not applicable: no application HTTP request.",
+      "cancellationSupport": "Local operation or browser-owned boundary; no application HTTP request to cancel.",
+      "deadlineBehavior": "No application transport deadline applies.",
+      "errorSanitization": "Local validation errors only; no provider error body is involved.",
+      "privacyImplications": "No application network payload for this operation; local browser, file and extension handling remains outside this claim."
+    }
+  ],
+  "policyScopeStatement": "Production Services requires an in-memory action capability for application-controlled fetch/RPC. Capabilities bind the selected endpoint, action, network, session and settings revision, and enforce privacy policy on dispatch and response reads. Listed browser-loader, navigation and wallet-provider boundaries are external to this fetch policy. Final combined-head acceptance and independent review are pending; static inventory alone is not proof of runtime isolation.",
+  "nonShippedAdapters": [
+    {
+      "path": "packages/net-transport/src/fetchAdapter.ts",
+      "status": "library-only; no current apps/web importer",
+      "change": "Honor Request method and cancellation before dispatch; cancellation after dispatch cannot retract bytes."
+    }
+  ],
+  "authorityModel": {
+    "module": "apps/web/src/lib/networkAuthorization.ts",
+    "ordinaryFetch": "Default Services.fetchFn rejects unscoped requests; configured endpoint presence alone grants no authority.",
+    "lifetime": "Grants are in memory only, become stale on session/app-lock/relevant-settings changes, and are never restored after reload. Each dispatch and body read rechecks the grant; active streams are cancelled on invalidation.",
+    "crossTab": "Storage events for settings, scan privacy, scan lanes and network profiles invalidate grants. Only non-secret preferences are synchronized, not keys or wallet identities. Current stored values are also checked at dispatch and read time.",
+    "ownNode": "RPC/indexer grants require loopback or valid v3 onion endpoints in own-node mode; approved one-action direct exceptions cannot override own-node. Exact URL or explicit same-origin path-prefix binding prevents changing providers.",
+    "exceptions": "Only documented Sweep and merchant-profile actions can request one-action direct-path exceptions. They do not authorize other actions or override own-node RPC/indexer constraints.",
+    "limits": "Authority defaults: 30-second per-dispatch deadline including body; 16 MiB body cap; 10-minute idle grant lifetime. More restrictive adapter limits still apply. Checks reject results queued after browser sleep or a backwards clock change.",
+    "limitations": [
+      "Already-transmitted requests and broadcasts cannot be withdrawn.",
+      "Ambient Tor transport, DNS, IP, TLS/SNI, browser extensions and endpoint logs are outside application enforcement.",
+      "Source-level grants do not by themselves prove the UI obtained the intended action consent; browser and independent review must check the call sites."
+    ]
+  },
+  "networkReferenceCounts": {
+    "apps/web/src/AppShell.tsx": {
+      "call:authorize": 1,
+      "call:createRpc": 2,
+      "reference:authorize": 1,
+      "reference:createRpc": 2,
+      "reference:getRpc": 2,
+      "reference:getSecondaryRpc": 2
+    },
+    "apps/web/src/components/MerchantProfilePanel.tsx": {
+      "call:authorize": 1,
+      "reference:authorize": 1,
+      "reference:fetchFn": 2
+    },
+    "apps/web/src/features/btc/BtcView.tsx": {
+      "call:authorizedOperationFetch": 2,
+      "reference:authorizedOperationFetch": 3,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/features/btc/esplora.ts": {
+      "call:boundedRequest": 1,
+      "reference:boundedRequest": 2,
+      "reference:fetchFn": 3
+    },
+    "apps/web/src/features/btc/oracleBridge.ts": {
+      "call:fetchFn": 1,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/features/btc/scanWorkerClient.ts": {
+      "call:Worker": 1,
+      "reference:fetchFn": 3,
+      "reference:Worker": 1
+    },
+    "apps/web/src/features/btc/scanWorkerSource.ts": {
+      "call:fetchFn": 1,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/features/policy/PolicyPay.tsx": {
+      "call:getRpc": 1,
+      "reference:getRpc": 1
+    },
+    "apps/web/src/features/policy/PolicyReceive.tsx": {
+      "call:getRpc": 2,
+      "reference:getRpc": 2
+    },
+    "apps/web/src/features/policy/PolicyView.tsx": {
+      "call:getRpc": 1,
+      "reference:getRpc": 1
+    },
+    "apps/web/src/features/registry/RegistryView.tsx": {
+      "call:getRpc": 1,
+      "reference:getRpc": 1
+    },
+    "apps/web/src/features/solana/SolanaView.tsx": {
+      "call:authorize": 1,
+      "call:createRpc": 1,
+      "reference:authorize": 1,
+      "reference:createRpc": 2,
+      "reference:fetchFn": 2
+    },
+    "apps/web/src/features/solana/rpc.ts": {
+      "call:createHttpRpc": 1,
+      "call:fetchFn": 1,
+      "reference:createHttpRpc": 2,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/features/tron/TronView.tsx": {
+      "call:authorize": 1,
+      "call:createRpc": 1,
+      "reference:authorize": 1,
+      "reference:createRpc": 2,
+      "reference:fetchFn": 2
+    },
+    "apps/web/src/features/tron/rpc.ts": {
+      "call:createHttpRpc": 1,
+      "call:fetchFn": 1,
+      "reference:createHttpRpc": 2,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/lib/boundedRequest.ts": {
+      "call:fetchFn": 1,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/lib/defaultServices.ts": {
+      "call:createClient": 2,
+      "call:createFetchTransport": 1,
+      "call:createNetworkAuthority": 1,
+      "reference:createClient": 3,
+      "reference:createFetchTransport": 2,
+      "reference:createNetworkAuthority": 2,
+      "reference:fetchFn": 1,
+      "reference:fetchTransport": 2
+    },
+    "apps/web/src/lib/embedHost.ts": {
+      "call:fetchFn": 1,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/lib/networkAuthorization.ts": {
+      "call:fetch": 1,
+      "call:fetcher": 1,
+      "reference:fetch": 1,
+      "reference:fetcher": 1,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/lib/networkOperation.ts": {
+      "call:authorize": 1,
+      "call:fetchFn": 1,
+      "reference:authorize": 1,
+      "reference:fetchFn": 2
+    },
+    "apps/web/src/lib/relayerClient.ts": {
+      "call:boundedRequest": 1,
+      "call:fetch": 2,
+      "reference:boundedRequest": 2,
+      "reference:fetch": 2,
+      "reference:fetchFn": 6
+    },
+    "apps/web/src/lib/release.ts": {
+      "call:fetchFn": 1,
+      "reference:fetchFn": 1
+    },
+    "apps/web/src/lib/scanPrivacy.ts": {
+      "call:authorize": 2,
+      "call:boundedRequest": 1,
+      "call:createClient": 1,
+      "call:createFetchTransport": 1,
+      "call:createIndexerSource": 1,
+      "call:fetch": 1,
+      "call:fetchHttpTransport": 1,
+      "call:fetchImpl": 1,
+      "reference:authorize": 2,
+      "reference:boundedRequest": 2,
+      "reference:createClient": 2,
+      "reference:createFetchTransport": 2,
+      "reference:createIndexerSource": 2,
+      "reference:fetch": 1,
+      "reference:fetchFn": 2,
+      "reference:fetchHttpTransport": 1,
+      "reference:fetchImpl": 5
+    },
+    "apps/web/src/lib/sweep.ts": {
+      "reference:fetchFn": 2
+    },
+    "apps/web/src/lib/workerFactory.ts": {
+      "call:Worker": 1,
+      "reference:Worker": 1
+    },
+    "apps/web/src/views/Home.tsx": {
+      "call:authorize": 1,
+      "reference:authorize": 1,
+      "reference:fetchFn": 2
+    },
+    "apps/web/src/views/Pay.tsx": {
+      "call:getRpc": 3,
+      "reference:getRpc": 6
+    },
+    "apps/web/src/views/Scan.tsx": {
+      "call:getRpc": 1,
+      "call:getSecondaryRpc": 1,
+      "reference:authorize": 1,
+      "reference:fetchFn": 1,
+      "reference:getRpc": 1,
+      "reference:getSecondaryRpc": 1
+    },
+    "apps/web/src/views/Settings.tsx": {
+      "call:authorize": 1,
+      "call:createRpc": 1,
+      "reference:authorize": 1,
+      "reference:createRpc": 1
+    },
+    "apps/web/src/views/Sweep.tsx": {
+      "call:authorize": 2,
+      "call:getRpc": 5,
+      "reference:authorize": 2,
+      "reference:fetchFn": 4,
+      "reference:getRpc": 7
+    },
+    "packages/btc-silent-payments/src/scan/blindbit.ts": {
+      "reference:fetch": 1
+    },
+    "packages/btc-silent-payments/src/scan/blindbitGrpc.ts": {
+      "reference:fetch": 1
+    },
+    "packages/btc-silent-payments/src/scan/grpcWebUnary.ts": {
+      "call:fetch": 1,
+      "reference:fetch": 1
+    },
+    "packages/chain-adapters/src/rpc.ts": {
+      "call:fetch": 1,
+      "reference:fetch": 1,
+      "reference:fetchTransport": 1
+    },
+    "packages/net-transport/src/fetchTransport.ts": {
+      "call:fetchImpl": 1,
+      "reference:fetch": 2,
+      "reference:fetchImpl": 1
+    },
+    "packages/solana-stealth/src/rpc.ts": {
+      "call:fetch": 1,
+      "reference:fetch": 2
+    },
+    "packages/tron-adapter/src/rpc.ts": {
+      "call:fetch": 1,
+      "reference:fetch": 2
+    }
+  }
+}

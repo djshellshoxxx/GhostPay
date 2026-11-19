@@ -30,10 +30,10 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
 
 export const SETTINGS_KEY = 'ghostpay.settings.v1';
 
-/** Validates a user-entered RPC URL (https/wss only, no credentials, no fragment). Returns the normalized URL. */
+/** Validates a user-entered RPC URL (TLS, or explicitly selected loopback HTTP; no userinfo or fragment). */
 export function checkRpcUrl(raw: string): string {
   try {
-    return validateRpcUrl(raw.trim());
+    return validateRpcUrl(raw.trim(), { allowInsecureLocalhost: true });
   } catch {
     throw new UserFacingError({ key: 'error.settings.rPCURLRejectedUseHttpsOrWssWithNoUsername' });
   }

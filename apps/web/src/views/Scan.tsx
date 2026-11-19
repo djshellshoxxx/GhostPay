@@ -99,6 +99,8 @@ export function Scan(): ReactNode {
   // through it and through nothing else.
   const [scanRpc, setScanRpc] = useState<{ readonly scope: NonNullable<typeof scanOwner>; readonly rpc: RpcClient } | undefined>(undefined);
   const [autoRescan, setAutoRescan] = useState(false);
+  // A queued timer must not mint fresh authority after revocation, even before React commits the stopped state.
+  const autoNetworkRevision = useRef<number | undefined>(undefined);
   // Bumped to re-arm the timer after a tick that was skipped because the tab was hidden.
   const [autoWake, setAutoWake] = useState(0);
   const autoTick = useRef<() => void>(() => undefined);
@@ -108,6 +110,8 @@ export function Scan(): ReactNode {
   const scanPrivacy = loadScanPrivacy(browserStorage());
   const scanLanes = loadScanLanes(browserStorage());
   const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
+  const currentScope = useRef({ chainId, keyId, signer: app.session?.signerPublicKey });
+  currentScope.current = { chainId, keyId, signer: app.session?.signerPublicKey };
   const checkpoint = keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
   const ownsCurrentScope = scanOwner !== undefined && keyId !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session?.signerPublicKey;
   const autoArmed = autoRescan && !running && error === undefined && done !== undefined && ownsCurrentScope && checkpoint !== undefined;
@@ -126,6 +130,7 @@ export function Scan(): ReactNode {
 
   useEffect(
     () => () => {
+      autoNetworkRevision.current = undefined;
       abort.current?.abort();
     },
     [],
@@ -134,12 +139,22 @@ export function Scan(): ReactNode {
   useEffect(() => subscribeSession(() => {
     // A revision change invalidates even a clear-and-restore of identical public keys.
     abort.current?.abort();
+    autoNetworkRevision.current = undefined;
+    setAutoRescan(false);
     app.setMatches([]);
     setScanOwner(undefined);
     setScanRpc(undefined);
     setProgress(undefined);
     setDone(undefined);
   }), [app.setMatches]);
+
+  useEffect(() => services.network?.subscribe(() => {
+    autoNetworkRevision.current = undefined;
+    abort.current?.abort();
+    setAutoRescan(false);
+    setScanRpc(undefined);
+    setDone(undefined);
+  }), [services]);
 
   useEffect(() => {
     const scope = startingScope.current;
@@ -178,10 +193,11 @@ export function Scan(): ReactNode {
     if (sessionAtStart === undefined) return;
     // An automatic re-check only continues a clean scan of this exact scope from its checkpoint, and keeps its results.
     const append = opts?.append === true;
-    if (append && (!scanMatchesCurrentScope || checkpoint === undefined)) return;
+    if (append && (!scanMatchesCurrentScope || checkpoint === undefined || autoNetworkRevision.current !== (services.network?.getRevision() ?? 0))) return;
     const seed: readonly ScanMatch[] = append ? scopedMatches : [];
     const guardSession = captureSessionGuard();
     const scope = { chainId, keyId, signerPublicKey: sessionAtStart.signerPublicKey };
+    const networkRevision = services.network?.getRevision() ?? 0;
     const ctl = new AbortController();
     abort.current = ctl;
     startingScope.current = scope;
@@ -199,7 +215,9 @@ export function Scan(): ReactNode {
     const scopeKeysAreCurrent = (): boolean => {
       try { guardSession(); return true; } catch { return false; }
     };
-    const scopeIsCurrent = (): boolean => !ctl.signal.aborted && scopeKeysAreCurrent();
+    const scopeStillSelected = (): boolean => scopeKeysAreCurrent() && (services.network?.getRevision() ?? 0) === networkRevision
+      && currentScope.current.chainId === scope.chainId && currentScope.current.keyId === scope.keyId && currentScope.current.signer === scope.signerPublicKey;
+    const scopeIsCurrent = (): boolean => !ctl.signal.aborted && scopeStillSelected();
     const assertScopeCurrent = (): void => {
       if (ctl.signal.aborted) throw new Error('scan-aborted');
       if (!scopeIsCurrent()) throw new Error('scan-session-changed');
@@ -213,7 +231,7 @@ export function Scan(): ReactNode {
         const lanes = loadScanLanes(browserStorage());
         const plan = planScan(privacy, chain);
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
-        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
+        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId, { action: 'scan', signal: ctl.signal }), fetchImpl: services.fetchFn, sleep: services.sleep, signal: ctl.signal, ...(services.network === undefined ? {} : { authorize: services.network.authorize }) });
         assertScopeCurrent();
         if (clients === undefined) {
           setError(msg('scan.error.noRpc'));
@@ -225,7 +243,7 @@ export function Scan(): ReactNode {
         // Behind a required local proxy it is not contacted at all (it would be reached directly).
         let rpc2: RpcClient | undefined;
         try {
-          rpc2 = plan.useSecondary ? await app.getSecondaryRpc(chainId) : undefined;
+          rpc2 = plan.useSecondary ? await app.getSecondaryRpc(chainId, { action: 'scan', signal: ctl.signal }) : undefined;
         } catch {
           assertScopeCurrent();
           setError(msg('scan.error.secondRpc'));
@@ -247,7 +265,7 @@ export function Scan(): ReactNode {
           return;
         }
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.
-        const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep });
+        const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep, signal: ctl.signal });
         assertScopeCurrent();
         setScanOwner(scope);
         setScanRpc({ scope, rpc });
@@ -321,6 +339,7 @@ export function Scan(): ReactNode {
             app.setMatches([...found]);
           },
         });
+        if (!scopeStillSelected()) return;
         if (!ctl.signal.aborted) assertScopeCurrent();
         if (res.discrepancies.length > 0) setError(msg('scan.error.discrepancy', { count: String(res.discrepancies.length) }));
         if ((res.backlog ?? 0) > 0) setError(msg('scan.error.backlog', { count: String(res.backlog), block: res.cursor.nextBlock.toString() }));
@@ -335,7 +354,7 @@ export function Scan(): ReactNode {
         if (ctl.signal.aborted) setAutoRescan(false);
         app.announce(latestT.current(res.limitReached ? 'scan.announce.limit' : 'scan.announce.finished'));
       } catch (e) {
-        if (!scopeKeysAreCurrent()) return;
+        if (!scopeStillSelected()) return;
         if (e instanceof Error && (e.message === 'scan-aborted' || e.message === 'scan-session-changed')) {
           if (e.message === 'scan-session-changed') setError(msg('scan.error.keysChanged'));
           else if (scopeKeysAreCurrent()) setDone([msg('scan.done.cancelledEarly')]);
@@ -343,9 +362,10 @@ export function Scan(): ReactNode {
         }
         setError(e instanceof Error && e.message === 'manifest' ? msg('scan.error.noManifest') : { error: captureUserMessage(e) });
       } finally {
+        const ownsRun = abort.current === ctl;
         if (abort.current === ctl) abort.current = undefined;
         if (startingScope.current === scope) startingScope.current = undefined;
-        setRunning(false);
+        if (ownsRun) setRunning(false);
       }
     })();
   };
@@ -399,7 +419,7 @@ export function Scan(): ReactNode {
         </div>
         {deepScan && <Notice kind="warn">{t('scan.deepScan.warn')}</Notice>}
         <div className="check">
-          <input id="auto-rescan" type="checkbox" checked={autoRescan} onChange={(e) => { setAutoRescan(e.target.checked); }} aria-describedby="auto-rescan-hint" />
+          <input id="auto-rescan" type="checkbox" checked={autoRescan} onChange={(e) => { autoNetworkRevision.current = e.target.checked ? (services.network?.getRevision() ?? 0) : undefined; setAutoRescan(e.target.checked); }} aria-describedby="auto-rescan-hint" />
           <label htmlFor="auto-rescan">{t('scan.autoRescan')}</label>
         </div>
         <p id="auto-rescan-hint" className="hint">{t('scan.autoRescan.hint')}</p>

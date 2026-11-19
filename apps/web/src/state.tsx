@@ -7,6 +7,16 @@ import { browserSweepStorage, MAX_OTHER_HASHES, readSweepAttempts, SWEEP_JOURNAL
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
 import type { MessageKey } from './i18n/sourceCatalog';
+import type { NetworkAction } from './lib/networkAuthorization';
+
+/** One operation's network authority; selecting a configured endpoint is not consent by itself. */
+export interface RpcAuthorizationOptions {
+  readonly action: NetworkAction;
+  readonly signal?: AbortSignal;
+  readonly allowDirectOnce?: true;
+  readonly scope?: string;
+  readonly balance?: { readonly owner: string; readonly token: string };
+}
 
 export type ViewId = 'home' | 'seller' | 'create' | 'pay' | 'scan' | 'sweep' | 'btc' | 'solana' | 'tron' | 'registry' | 'policy' | 'settings' | 'about';
 
@@ -30,6 +40,7 @@ export interface AppState {
   readonly view: ViewId;
   readonly setView: (v: ViewId) => void;
   readonly settings: Settings;
+  readonly networkRevision?: number;
   /** Persists settings; returns false if browser storage refused (settings still apply for this tab). */
   readonly updateSettings: (s: Settings) => boolean;
   readonly session: SessionPublic | undefined;
@@ -41,9 +52,9 @@ export interface AppState {
   readonly sweepTarget: { readonly match: ScanMatch; readonly chainId: number } | undefined;
   readonly selectForSweep: (m: { readonly match: ScanMatch; readonly chainId: number } | undefined) => void;
   /** Verified RPC for a chain from the user's settings, or undefined when none is configured. */
-  readonly getRpc: (chainId: number) => Promise<RpcClient | undefined>;
+  readonly getRpc: (chainId: number, authorization?: RpcAuthorizationOptions) => Promise<RpcClient | undefined>;
   /** Independent second RPC for a chain (Settings), or undefined when none is configured. Used to cross-check scans. */
-  readonly getSecondaryRpc: (chainId: number) => Promise<RpcClient | undefined>;
+  readonly getSecondaryRpc: (chainId: number, authorization?: RpcAuthorizationOptions) => Promise<RpcClient | undefined>;
   /** Announces a short status message to the polite live region. */
   readonly announce: (message: string) => void;
 }

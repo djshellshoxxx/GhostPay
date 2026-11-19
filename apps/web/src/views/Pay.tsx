@@ -197,6 +197,20 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const flowRevision = useRef(0);
 
   const fragment = app.fragment;
+  const networkOperation = useRef(new AbortController());
+  useEffect(() => {
+    const controller = new AbortController();
+    networkOperation.current = controller;
+    setNetworkPaused(false);
+    return () => { networkOperation.current.abort(); };
+  }, [fragment]);
+  const renderedNetworkRevision = services.network?.getRevision() ?? 0;
+  const [networkPaused, setNetworkPaused] = useState(false);
+  // The initial invoice opening authorizes its preflight. Revocation/settings changes do not reopen that grant.
+  const preflightAuthorization = useRef({ fragment, revision: services.network?.getRevision() ?? 0 });
+  if (preflightAuthorization.current.fragment !== fragment) {
+    preflightAuthorization.current = { fragment, revision: services.network?.getRevision() ?? 0 };
+  }
   const pinned = app.settings.pinnedSigners;
   const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset, supportedOnly }), [fragment, pinned, app.session, invoiceQrReset, supportedOnly]);
   const currentInvoiceQrScope = useRef(invoiceQrScope); currentInvoiceQrScope.current = invoiceQrScope;
@@ -358,10 +372,17 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // preparation, but must not clear the context that the submitted state, hash, receipt and proof are shown from.
   const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
   const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, getRpc: app.getRpc, networkRevision: app.networkRevision });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, getRpc: app.getRpc, networkRevision: app.networkRevision };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
-  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
+  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly && latest.current.networkRevision === app.networkRevision;
+  const currentNetworkSignal = useCallback((): AbortSignal => {
+    if (latest.current.fragment !== fragment || preflightAuthorization.current.fragment !== fragment ||
+        preflightAuthorization.current.revision !== renderedNetworkRevision || (services.network?.getRevision() ?? 0) !== renderedNetworkRevision || networkOperation.current.signal.aborted) {
+      throw new UserFacingError({ key: 'error.network.authorizationRefused' });
+    }
+    return networkOperation.current.signal;
+  }, [fragment, renderedNetworkRevision, services]);
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
     flowRevision.current += 1;
@@ -380,13 +401,29 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       throw new Error('The invoice changed. Review it again before continuing.');
     }
   };
-  const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
-    const { parsed: p, manifest: m } = latest.current;
+  useEffect(() => services.network?.subscribe(() => {
+    networkOperation.current.abort();
+    flowRevision.current += 1;
+    scheduler.current?.cancel();
+    setNetworkPaused(true);
+    if (!latest.current.keepContext) setCtx(undefined);
+    setCtxError({ key: 'error.network.authorizationRefused' });
+  }), [services]);
+  const refreshContext = useCallback(async (explicit = false): Promise<PayContext | undefined> => {
+    const revision = services.network?.getRevision() ?? 0;
+    if (explicit) {
+      networkOperation.current.abort();
+      networkOperation.current = new AbortController();
+      preflightAuthorization.current = { fragment: latest.current.fragment, revision };
+      setNetworkPaused(false);
+    } else if (preflightAuthorization.current.revision !== revision) return undefined;
+    const { parsed: p, manifest: m, settings: selectedSettings, getRpc, fragment: fragmentAtStart } = latest.current;
+    const signal = networkOperation.current.signal;
     if (p === undefined || m === undefined || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
       setCtx(undefined);
       return undefined;
     }
-    const current = (): boolean => latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
+    const current = (): boolean => !signal.aborted && latest.current.fragment === fragmentAtStart && latest.current.parsed === p && latest.current.manifest === m && latest.current.settings === selectedSettings && (services.network?.getRevision() ?? 0) === revision && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -396,7 +433,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       return undefined;
     }
     try {
-      const rpc = await app.getRpc(p.invoice.chainId);
+      if (!current()) return undefined;
+      const rpc = await getRpc(p.invoice.chainId, { action: 'payment-preflight', signal });
       if (!current()) return undefined;
       // WEB-APP-01: read the manifest back from the chain before any payment is built from it.
       const checked = await verifyManifestForFlow(m, rpc);
@@ -417,7 +455,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setCtxError(captureUserMessage(e));
       return undefined;
     }
-  }, [app, services]);
+  }, [services]);
   const refreshRef = useRef(refreshContext);
   refreshRef.current = refreshContext;
   const reviewKey = review === undefined ? '' : review.blockers.join('|');
@@ -464,13 +502,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     if (chainId === undefined) return undefined;
     const revision = flowRevision.current;
     const invoice = latest.current.parsed?.invoice;
-    const rpc = await app.getRpc(chainId);
-    if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
-    if (rpc === undefined) {
-      setError({ key: 'error.pay.aGasBufferNeedsAnRPCForThisChainTo' });
-      return undefined;
-    }
     try {
+      const rpc = await app.getRpc(chainId, { action: 'payment-preflight', signal: currentNetworkSignal() });
+      if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
+      if (rpc === undefined) {
+        setError({ key: 'error.pay.aGasBufferNeedsAnRPCForThisChainTo' });
+        return undefined;
+      }
       if (invoice === undefined) return undefined;
       // ADR-0023: a v2 invoice's seller policy bounds (or declines) the buffer before it is shown or built.
       const q = applyBufferPolicy(await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep), invoice);
@@ -482,7 +520,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setError(captureUserMessage(e));
       return undefined;
     }
-  }, [chainId, app, services]);
+  }, [chainId, app, services, currentNetworkSignal]);
 
   const onPasteSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
@@ -690,9 +728,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }, [phase]);
 
   const runtime = useCallback(async (): Promise<Runtime> => {
-    const rpc = chainId === undefined ? undefined : await app.getRpc(chainId);
+    const rpc = chainId === undefined ? undefined : await app.getRpc(chainId, { action: 'payment-preflight', signal: currentNetworkSignal() });
     return { rpc, nowSeconds: () => Math.floor(services.nowMs() / 1000), sleep: services.sleep };
-  }, [app, chainId, services]);
+  }, [app, chainId, services, currentNetworkSignal]);
 
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined) return;
@@ -1032,6 +1070,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         </Notice>
       )}
       {ctxError !== undefined && <Notice kind="error">{displayMessage(ctxError, t)}</Notice>}
+      {networkPaused && <button type="button" className="btn" onClick={() => { void refreshContext(true); }}>{t('network.reviewAction')}</button>}
       {review.warnings.length > 0 && (
         <Notice kind="warn" title={t('pay.checkAmount')}>
           {review.warningMessages.map((w) => <p key={w.key}>{displayMessage(w, t)}</p>)}
