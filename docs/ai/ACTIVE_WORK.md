@@ -14,6 +14,11 @@ export checks. Run the focused regression before and after the minimal fix, obta
 independent recovery-worker review, and coordinate any larger kit/nginx replay with
 the root worker's resource-bound gates. No web source, dependency, configuration,
 assertion weakening, deployment, publication, or remote mutation.
+Status: product `38fe7fdaf151ef433be9721af8fea7cbcdea89c4`; focused red 9/2 and
+green 11/11; original full kit 285 passed, 0 failed, 14 skipped; kit typecheck and
+lint passed. Recovery-worker review found no introduced blocker. Real nginx is
+absent locally and its differential remains a hosted gate. Evidence:
+`docs/consolidation/hosting-timestamp-20261119/QUALIFICATION.md`.
 
 # Settings exchange disclosure assertion reconciliation — 2026-11-19
 
