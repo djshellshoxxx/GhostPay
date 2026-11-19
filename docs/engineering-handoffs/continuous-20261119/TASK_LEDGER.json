@@ -1,0 +1,39 @@
+{
+  "schema": "ghostpay-continuous-engineering/1",
+  "generation": 1,
+  "baseline": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "observed_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "branch": "integration/ghostpay-continuous-20261119",
+  "tasks": [
+    {
+      "id": "CE-001",
+      "worker": "archaeology_gen1",
+      "scope": "complete refs inventory and semantic uniqueness",
+      "status": "in_progress"
+    },
+    {
+      "id": "CE-002",
+      "worker": "root",
+      "scope": "individually reproduce, integrate, and qualify newer unique small fixes",
+      "status": "in_progress"
+    },
+    {
+      "id": "CE-003",
+      "worker": "qa_bug_gen1",
+      "scope": "browser/payment export/private checkpoint qualification and defect repair",
+      "status": "in_progress"
+    },
+    {
+      "id": "CE-004",
+      "worker": "security_gen1",
+      "scope": "independent security review and confirmed defect repair",
+      "status": "in_progress"
+    },
+    {
+      "id": "CE-005",
+      "worker": "root",
+      "scope": "original build/type/lint/coverage and static artifact qualification",
+      "status": "in_progress"
+    }
+  ]
+}

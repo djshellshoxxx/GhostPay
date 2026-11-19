@@ -1831,3 +1831,13 @@ Acceptance: install pinned official Slither 0.11.6 / solc-select 1.2.0 without g
 Also record read-only independent review of the coordinator-authorized six-file lint repair `e8e2edecd0b989a90f5afb65622df4efefeebf93`; no tests are independently rerun for that small review. Native analyzer results, test results and source review remain separate evidence.
 
 Coordinator follow-up: after the fresh Slither pass, authorize the complete unchanged Echidna 2.2.7 runner in an isolated `/dev/shm` source/corpus directory: all three harnesses, original 300,000-call budget and four workers. Own the resulting scoped campaign evidence only. Preserve exact source inputs, full output and strict canary/property/completeness checks; do not infer a pass from partial output or installation. Heavy runtime is coordinated with the release coordinator; no contract, configuration, gate or other checkout mutations.
+
+# Continuous engineering generation 1 — 2026-11-19
+
+Worker: ChatGPT root coordinator (workspace 0a7bc3583588), with independent archaeology, bug/QA, and security workers.
+Branch: `integration/ghostpay-continuous-20261119`.
+Base: PR #278 `c993bb2340942c85dbf10303b61f69a91c4944e0`; observed main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Scope: continue the existing Pages beta candidate, prove semantic/behavioral uniqueness before extracting newer fixes, complete actual qualification, and repair confirmed failures. Preserve prior source ancestry and source-pinned evidence.
+Owned source during generation 1: latest small-PR integration in `packages/invoice-schema/src/base64url*`, `apps/web/src/lib/buildProfile*`, `apps/web/src/lib/scanSpam*`, `apps/web/src/lib/merchantSignerPin*`, and `apps/web/src/lib/qrKinds*`; exact paths are verified from each PR before integration. Root owns `docs/engineering-handoffs/continuous-20261119/` and the central evidence ledger. Worker changes use isolated worktrees and additive claims.
+Acceptance: original-config regression failures on the unmodified candidate and passes on integrated fixes, independently reviewed product deltas, exact source/command/test receipts, refreshed upstream heads, normal CI-gated publication. Never infer full acceptance from focused checks or counts.
+Release scope: static client-side, noncustodial EVM Pages beta. Future modules remain isolated; no fees, fund transactions, deployment, release publication, source-branch deletion, or protection bypass.
