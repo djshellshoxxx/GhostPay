@@ -1,5 +1,5 @@
 import type { Address } from '@ghostpay/chain-adapters';
-import { padBody } from '@ghostpay/metadata-hardening';
+import { MetadataHardeningError, padBody } from '@ghostpay/metadata-hardening';
 import { getAddress, isAddress } from 'viem/utils';
 import { UserFacingError } from './errors';
 
@@ -131,8 +131,10 @@ function encodeBody(body: unknown, pad: boolean): string {
   if (!pad) return plain;
   try {
     return padBody(JSON.parse(plain) as Record<string, unknown>);
-  } catch {
-    return plain;
+  } catch (error) {
+    if (error instanceof MetadataHardeningError && error.code === 'LIMIT_EXCEEDED') return plain;
+    // A failed or unavailable CSPRNG must not silently downgrade a padded request or leak its error text.
+    throw new UserFacingError({ key: 'error.relayerClient.paddingFailed' });
   }
 }
 

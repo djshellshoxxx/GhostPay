@@ -31,6 +31,7 @@ export interface RangeSourceOptions {
  * @security Does NOT hide: your IP, the scanned range and timing, that you scan GhostPay announcements.
  * Sends no view tag, key, address or meta-address (the backend interface cannot carry them). Integrity is
  * `unverified`: a lying RPC can hide payments (compose with a quorum or light source).
+ * Cancellation stops later windows and discards late results; an already dispatched backend request must still settle.
  * @throws ScanSourceError `TESTNET_ONLY` at creation and on every fetch.
  */
 export function createRangeSource(o: RangeSourceOptions): PublicLogSource {
@@ -51,10 +52,13 @@ export function createRangeSource(o: RangeSourceOptions): PublicLogSource {
     kind: 'range',
     integrity: 'unverified',
     async fetch(req: FetchRequest, signal?: AbortSignal): Promise<FetchResult> {
+      const assertActive = (): void => { if (signal?.aborted === true) throw new ScanSourceError('TRANSPORT', 'scan cancelled'); };
+      assertActive();
       assertTestnetChainId(req.chainId);
       if (req.chainId !== o.chainId) throw new ScanSourceError('INVALID_ARGUMENT', 'chain id mismatch');
       const padded = padRange(req.fromBlock, req.toBlock, { align, minSpan, maxSpan: Number.MAX_SAFE_INTEGER, ...(o.padBlocks === undefined ? {} : { padBlocks: o.padBlocks }) });
       const head = await o.backend.getHead(signal);
+      assertActive();
       if (padded.from > head.number) throw new ScanSourceError('OUT_OF_RANGE', 'window starts beyond the head');
       const to = padded.to < head.number ? padded.to : head.number;
       const calls = Number((to - padded.from) / W) + 1;
@@ -62,8 +66,10 @@ export function createRangeSource(o: RangeSourceOptions): PublicLogSource {
       const all = [];
       let skipped = 0;
       for (let start = padded.from; start <= to; start += W) {
+        assertActive();
         const end = start + W - 1n < to ? start + W - 1n : to;
         const raw = await o.backend.getAnnouncements({ chainId: o.chainId, fromBlock: start, toBlock: end }, signal);
+        assertActive();
         for (const r of raw) {
           const a = parseAnnouncement(r, scheme);
           if (a === undefined || a.blockNumber < start || a.blockNumber > end) skipped++;
@@ -72,6 +78,7 @@ export function createRangeSource(o: RangeSourceOptions): PublicLogSource {
         if (all.length > maxLogs) throw new ScanSourceError('TRUNCATED', 'log budget exceeded');
       }
       const norm = normalizeSet(all, padded.from, to);
+      assertActive();
       return {
         announcements: norm.announcements,
         head,

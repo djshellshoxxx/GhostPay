@@ -46,6 +46,15 @@ function supportsInvoice(invoice: Invoice, supportedOnly: boolean): boolean {
 }
 
 export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
+  const { session } = useApp();
+  const [owner, setOwner] = useState({ session, generation: 0 });
+  // TM10: plaintext opt-out, passphrases, invoice contents and async work belong to one loaded seller session.
+  // Reset the form before rendering children after replacement, including a reinstall of the same public keys.
+  if (owner.session !== session) setOwner({ session, generation: owner.generation + 1 });
+  return <InvoiceForm key={owner.generation} supportedOnly={supportedOnly} />;
+}
+
+function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;

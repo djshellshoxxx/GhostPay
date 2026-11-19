@@ -51,12 +51,15 @@ export interface ScanPrivacySettings {
   /**
    * TM15: extra blocks added on both sides of each announcement query before it is rounded to the window grid, so the
    * provider does not see where a scan range starts or ends inside a window. 0 (default) keeps the plain grid. Only
-   * used while fixed windows are on (`windowBlocks` > 0). Costs up to two extra window requests per query.
+   * used while fixed windows are on (`windowBlocks` > 0). Adds up to `2 * ceil(padBlocks / windowBlocks)` grid windows
+   * per query before provider-limit splitting; chain boundaries can reduce that count.
    */
   readonly padBlocks: number;
   /**
-   * Bulk receipt evidence: fetch the receipt of every router transaction on a page (up to this many per page), matched or
-   * not, so the RPC cannot tell which ones matched. 0 (default) keeps per-match reads. Costs extra requests per scan.
+   * Bulk receipt evidence target: keep every matched router transaction and add other page transactions up to this
+   * target count. All matches are retained even above the target, so it is not a hard request cap. Reading an entire
+   * page obscures which transactions matched; repeated capped selections can narrow them down. 0 (default) keeps
+   * per-match reads. Costs extra requests per scan.
    */
   readonly bulkEvidence: number;
 }
@@ -90,12 +93,12 @@ export const MAX_BULK_EVIDENCE = 500;
 
 /** Clamps `bulkEvidence` to 0..{@link MAX_BULK_EVIDENCE}; non-numbers and non-positive values give 0 (off). */
 export function clampBulkEvidence(v: unknown): number {
-  if (typeof v !== 'number' || Number.isNaN(v) || v <= 0) return 0;
+  if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0) return 0;
   return Math.min(Math.trunc(v), MAX_BULK_EVIDENCE);
 }
 
 export function clampPadBlocks(v: unknown): number {
-  if (typeof v !== 'number' || Number.isNaN(v) || v <= 0) return 0;
+  if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0) return 0;
   return Math.min(Math.trunc(v), MAX_PAD_BLOCKS);
 }
 const LOOPBACK = new Set(['127.0.0.1', 'localhost', '[::1]']);
@@ -344,6 +347,13 @@ export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly has
 // Windowed client
 
 const SCHEME_TOPIC = /^0x[0-9a-f]{64}$/;
+/** Per announcement `getLogs` call: initial grid windows and uncached dispatches, including provider-limit splits. */
+export const MAX_SCAN_WINDOW_REQUESTS = 4096;
+
+function assertScanActive(signal: AbortSignal | undefined): void {
+  // Use the existing Scan cancellation sentinel, never the caller's arbitrary abort reason.
+  if (signal?.aborted === true) throw new Error('scan-aborted');
+}
 
 function isAnnouncerQuery(f: LogFilter, announcer: Address): boolean {
   return f.address.toLowerCase() === announcer.toLowerCase() && typeof f.topics[0] === 'string' && f.topics[0].toLowerCase() === ANNOUNCEMENT_TOPIC;
@@ -377,17 +387,22 @@ export interface WindowedOptions {
   readonly policy: WindowPolicy;
   readonly sleep: (ms: number) => Promise<void>;
   readonly cryptoApi?: CryptoLike;
+  /** Stops later scheduling and rejects late results; an already dispatched RPC must still settle. */
+  readonly signal?: AbortSignal;
 }
 
 /**
  * Announcement `eth_getLogs` calls become whole, grid-aligned windows (so different users send identical queries), fetched
  * in CSPRNG order with CSPRNG jitter between network requests; logs outside the caller's range are dropped locally after
- * provider-fault checks. Final windows are cached for this client's lifetime. All other calls pass through unchanged.
+ * provider-fault checks. Final windows are cached for this client's lifetime. The scan signal guards head and log calls;
+ * `request` and `getBlock` pass through unchanged.
  *
  * A window the provider refuses as too large (announcer spam, or a provider range or result limit) is split into
  * halves, the same way for every user, and retried; only that window is fetched in smaller pieces for the rest of the
  * run, so one spam block does not shrink the whole grid. A refusal reaches the scanner only for a single block, which
  * the scanner then re-reads for router-posted announcements (`router`, the one allowed caller filter).
+ * Each call refuses an initial grid above {@link MAX_SCAN_WINDOW_REQUESTS} before allocating it and stops after that
+ * many uncached window dispatches, including splits. This excludes head/block reads and the inner transport's retries.
  */
 export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): RpcClient {
   const cryptoApi = o.cryptoApi ?? crypto;
@@ -407,13 +422,32 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
   const SPLIT_MAX = 4096;
   const nodeKey = (f: LogFilter, start: bigint, end: bigint): string => `${String(f.topics[1])}|${String(f.topics[3] ?? '')}:${start.toString()}:${end.toString()}`;
 
-  async function fetchWindow(f: LogFilter, start: bigint, end: bigint): Promise<readonly RpcLog[]> {
+  async function readHead(): Promise<bigint> {
+    assertScanActive(o.signal);
+    let h: bigint;
+    try { h = await inner.blockNumber(); }
+    finally { assertScanActive(o.signal); }
+    head = h;
+    return h;
+  }
+
+  async function readUnwindowed(f: LogFilter): Promise<readonly RpcLog[]> {
+    try { return await inner.getLogs(f); }
+    finally { assertScanActive(o.signal); }
+  }
+
+  async function fetchWindow(f: LogFilter, start: bigint, end: bigint, budget: { requests: number }): Promise<readonly RpcLog[]> {
+    assertScanActive(o.signal);
     const key = nodeKey(f, start, end);
     const hit = cache.get(key);
     if (hit !== undefined) return hit;
+    if (budget.requests >= MAX_SCAN_WINDOW_REQUESTS) throw new ChainAdapterError('INVALID_INPUT', 'scan request budget exceeded');
     if (networkRequests > 0 && jMax > 0) await o.sleep(randomDelayMs(jMin, jMax, cryptoApi));
+    assertScanActive(o.signal);
+    budget.requests++;
     networkRequests++;
     const logs = await inner.getLogs({ address: f.address, topics: f.topics, fromBlock: start, toBlock: end });
+    assertScanActive(o.signal);
     const list: unknown = logs;
     if (!Array.isArray(list)) throw new ChainAdapterError('RPC_FAILURE', 'logs not an array');
     const caller = f.topics[3];
@@ -440,7 +474,8 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
    * outside `[lo, hi]` are not requested: the caller's range without padding, the padded range with it (so padding
    * windows are really requested, also when split).
    */
-  async function fetchNode(f: LogFilter, start: bigint, end: bigint, out: RpcLog[], lo: bigint, hi: bigint): Promise<void> {
+  async function fetchNode(f: LogFilter, start: bigint, end: bigint, out: RpcLog[], lo: bigint, hi: bigint, budget: { requests: number }): Promise<void> {
+    assertScanActive(o.signal);
     if (end < lo || start > hi) return;
     const key = nodeKey(f, start, end);
     if (end > start && split.has(key)) {
@@ -448,20 +483,22 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
       const halves: [bigint, bigint][] = [[start, mid], [mid + 1n, end]];
       // CSPRNG order inside a split window as well.
       if (randomDelayMs(0, 1, cryptoApi) === 1) halves.reverse();
-      for (const [s, e] of halves) await fetchNode(f, s, e, out, lo, hi);
+      for (const [s, e] of halves) await fetchNode(f, s, e, out, lo, hi, budget);
       return;
     }
     let logs: readonly RpcLog[];
     try {
-      logs = await fetchWindow(f, start, end);
+      logs = await fetchWindow(f, start, end, budget);
     } catch (e) {
+      assertScanActive(o.signal);
       // Too large: split this window and retry it. Only a single block too large to return is left to the scanner.
       if (!isLogLimitError(e) || end === start) throw e;
       if (split.size >= SPLIT_MAX) split.delete(split.values().next().value as string);
       split.add(key);
-      await fetchNode(f, start, end, out, lo, hi);
+      await fetchNode(f, start, end, out, lo, hi, budget);
       return;
     }
+    assertScanActive(o.signal);
     for (const l of logs) {
       const n = BigInt(l.blockNumber);
       if (n >= f.fromBlock && n <= f.toBlock) out.push(l);
@@ -472,27 +509,27 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
     chainId: inner.chainId,
     request: (m, p) => inner.request(m, p),
     getBlock: (n) => inner.getBlock(n),
-    async blockNumber() {
-      const h = await inner.blockNumber();
-      head = h;
-      return h;
-    },
+    blockNumber: readHead,
     async getLogs(f) {
-      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f);
+      assertScanActive(o.signal);
+      if (!isAnnouncerQuery(f, o.announcer)) return readUnwindowed(f);
       assertScanFilter(f, o.router);
-      if (W === 0) return inner.getLogs(f);
+      if (W === 0) return readUnwindowed(f);
       if (f.fromBlock < 0n || f.toBlock < f.fromBlock) throw new ChainAdapterError('INVALID_INPUT', 'invalid scan range');
-      head ??= await inner.blockNumber();
+      const currentHead = head ?? await readHead();
+      assertScanActive(o.signal);
       // The window containing the head is clamped to it (inherent: it shows roughly where the head is, which is public).
-      const limit = head > f.toBlock ? head : f.toBlock;
+      const limit = currentHead > f.toBlock ? currentHead : f.toBlock;
       // TM15 (scan-source padRange): widen by `pad` on both sides, round out to the W grid, clamp to the head. With
-      // pad 0 this is the plain grid. No extra span cap here: the scanner's page size bounds a query.
+      // pad 0 this is the plain grid. Check the window count arithmetically before allocating or shuffling it.
       let grid: { from: bigint; to: bigint };
       try {
         grid = padRange(f.fromBlock, f.toBlock, { align: W, minSpan: W, padBlocks: pad, maxSpan: Number.MAX_SAFE_INTEGER }, limit);
       } catch {
         throw new ChainAdapterError('INVALID_INPUT', 'invalid scan range');
       }
+      const windowCount = (grid.to - grid.from) / BigInt(W) + 1n;
+      if (windowCount > BigInt(MAX_SCAN_WINDOW_REQUESTS)) throw new ChainAdapterError('INVALID_INPUT', 'scan request budget exceeded');
       const windows: [bigint, bigint][] = [];
       for (let s = grid.from; s <= grid.to; s += BigInt(W)) {
         const e = s + BigInt(W) - 1n;
@@ -505,7 +542,9 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
         [windows[i], windows[j]] = [windows[j] as [bigint, bigint], windows[i] as [bigint, bigint]];
       }
       const out: RpcLog[] = [];
-      for (const [s, e] of windows) await fetchNode(f, s, e, out, lo, hi);
+      const budget = { requests: 0 };
+      for (const [s, e] of windows) await fetchNode(f, s, e, out, lo, hi, budget);
+      assertScanActive(o.signal);
       const pos = (l: RpcLog): bigint => (BigInt(l.blockNumber) << 32n) + (parseHexNumber(l.logIndex) ?? 0n);
       out.sort((a, b) => (pos(a) < pos(b) ? -1 : pos(a) > pos(b) ? 1 : 0));
       return out;
@@ -667,6 +706,7 @@ export interface OpenScanOptions {
   readonly appRpc: () => Promise<RpcClient | undefined>;
   readonly fetchImpl: (url: string, init: RequestInit) => Promise<Response>;
   readonly sleep: (ms: number) => Promise<void>;
+  readonly signal?: AbortSignal;
 }
 
 export interface ScanClients {
@@ -682,6 +722,7 @@ export interface ScanClients {
  * fail-closed handling stays in one place.
  */
 export async function openScanClients(o: OpenScanOptions): Promise<ScanClients | undefined> {
+  assertScanActive(o.signal);
   const { plan } = o;
   let base: RpcClient | undefined;
   if (plan.endpoint !== undefined) {
@@ -689,17 +730,20 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
     try {
       base = await createClient(o.chain, plan.endpoint, { allowInsecureLocalhost: plan.allowLoopbackHttp, transport });
     } catch (e) {
+      assertScanActive(o.signal);
       const blocked = new UserFacingError({ key: 'error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed' });
       blocked.cause = e;
       throw blocked;
     }
   } else {
-    base = await o.appRpc();
+    try { base = await o.appRpc(); }
+    finally { assertScanActive(o.signal); }
   }
+  assertScanActive(o.signal);
   if (base === undefined) return undefined;
   const router = o.router === undefined ? {} : { router: o.router };
   const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl: o.fetchImpl, windowBlocks: plan.window.windowBlocks });
-  const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep });
+  const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep, ...(o.signal === undefined ? {} : { signal: o.signal }) });
   return { base, scan };
 }
 

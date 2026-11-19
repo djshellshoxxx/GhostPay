@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import {
-  FIRST_USE_NOTICE, PROFILE_VERIFICATION, TOR_BROWSER_NOTICE, UNVERIFIED_NOTICE, WEB_NETWORK_SELECTION_KEY, WEB_RPC_MODES, WEB_SELECTABLE_PROFILES,
-  effectiveSelection, firstUseNotices, isNonDefaultSelection, parseWebNetworkSelection,
+  DEFAULT_WEB_NETWORK_SELECTION, FIRST_USE_NOTICE, PROFILE_VERIFICATION, TOR_BROWSER_NOTICE, UNVERIFIED_NOTICE, WEB_NETWORK_SELECTION_KEY, WEB_RPC_MODES, WEB_SELECTABLE_PROFILES,
+  firstUseNotices, isNonDefaultSelection, parseWebNetworkSelection,
   type ProfileVerification, type WebNetworkSelection, type WebProfileId, type WebRpcMode,
 } from '@ghostpay/net-transport/browser';
 import { CameraImporter } from '../components/CameraImporter';
@@ -22,6 +22,7 @@ import { useServices } from '../lib/services';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import { readNetworkSelection } from '../lib/networkSelection';
 
 export function Settings(): ReactNode {
   const app = useApp();
@@ -73,10 +74,6 @@ export function Settings(): ReactNode {
       for (const [k, v] of Object.entries(rpc)) if (v.trim() !== '') rpcUrls[k] = checkRpcUrl(v);
       const rpcUrlsSecondary: Record<string, string> = {};
       for (const [k, v] of Object.entries(rpc2)) if (v.trim() !== '') rpcUrlsSecondary[k] = checkRpcUrl(v);
-      for (const [slot, map] of [['primary', rpcUrls], ['secondary', rpcUrlsSecondary]] as const) {
-        const known = slot === 'primary' ? rpc : rpc2;
-        for (const k of Object.keys(known)) setRpcSessionOnly(slot, k, sessionOnly[`${slot}:${k}`] === true ? map[k] : undefined);
-      }
       checkDelayRange(minSec, maxSec);
       if (!Number.isInteger(lock) || lock < 1 || lock > 240) throw new Error('lock');
       const pinnedSigners = pins
@@ -88,6 +85,12 @@ export function Settings(): ReactNode {
         return;
       }
       const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
+      // Commit retention choices only after the entire form validates. A rejected form must not clear an earlier
+      // session-only decision that a later, unrelated preference save still needs to honor.
+      for (const [slot, map] of [['primary', rpcUrls], ['secondary', rpcUrlsSecondary]] as const) {
+        const known = slot === 'primary' ? rpc : rpc2;
+        for (const k of Object.keys(known)) setRpcSessionOnly(slot, k, sessionOnly[`${slot}:${k}`] === true ? map[k] : undefined);
+      }
       const saved = app.updateSettings(next);
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
       app.announce(t('settings.announce'));
@@ -115,12 +118,12 @@ export function Settings(): ReactNode {
   };
 
   const sessionToggle = (slot: RpcSlot, chainId: string, value: string, saved: string | undefined): ReactNode => {
-    if (!rpcUrlLooksSecret(value)) return null;
+    if (value.trim() === '') return null;
     const key = `${slot}:${chainId}`;
     const stored = saved !== undefined && saved === value && !isRpcSessionOnly(slot, chainId, value);
     return (
       <div className="stack">
-        <Notice kind="warn">{t(stored ? 'settings.rpc.secretStored' : 'settings.rpc.secretWarning')}</Notice>
+        {rpcUrlLooksSecret(value) && <Notice kind="warn">{t(stored ? 'settings.rpc.secretStored' : 'settings.rpc.secretWarning')}</Notice>}
         <div className="check">
           <input id={`${uid}-so-${slot}-${chainId}`} type="checkbox" checked={sessionOnly[key] === true} onChange={(e) => { setSessionOnly({ ...sessionOnly, [key]: e.target.checked }); }} />
           <label htmlFor={`${uid}-so-${slot}-${chainId}`}>{t('settings.rpc.sessionOnly')}</label>
@@ -436,16 +439,6 @@ const NOTICE_KEY: ReadonlyMap<string, MessageKey> = new Map<string, MessageKey>(
   [UNVERIFIED_NOTICE, 'settings.network.notice.unverified'],
 ]);
 
-/** Stored selection as the user left it (possibly not acknowledged yet); malformed or unreadable storage gives the default. */
-function loadStoredNetworkSelection(): WebNetworkSelection {
-  try {
-    const text = browserStorage()?.getItem(WEB_NETWORK_SELECTION_KEY);
-    return parseWebNetworkSelection(text === null || text === undefined ? undefined : JSON.parse(text));
-  } catch {
-    return parseWebNetworkSelection(undefined);
-  }
-}
-
 /** Returns false when the browser refused to store the selection. */
 function saveNetworkSelection(sel: WebNetworkSelection): boolean {
   try {
@@ -460,27 +453,40 @@ function saveNetworkSelection(sel: WebNetworkSelection): boolean {
 
 /**
  * TM14: network profile per purpose and RPC mode. Defaults (Direct, single RPC) are unchanged; a non-default choice is
- * stored but applies (via `effectiveSelection`, read by `createDefaultServices`) only after the first-use notice is
- * acknowledged. Changing any choice clears an earlier acknowledgement. Tor Browser and own node are unverified here.
+ * stored but requests are blocked until the first-use notice is acknowledged. Invalid/unreadable settings also block
+ * RPC; only an absent preference uses the default. Changing any draft choice clears its acknowledgement, without
+ * changing the saved choice until Save. Tor Browser and own node are unverified here.
  */
 function NetworkProfilesSection(): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const uid = useId();
-  const [draft, setDraft] = useState<WebNetworkSelection>(loadStoredNetworkSelection);
-  const [saved, setSaved] = useState<WebNetworkSelection>(loadStoredNetworkSelection);
+  const [draft, setDraft] = useState<WebNetworkSelection>(() => {
+    const stored = readNetworkSelection();
+    return stored.status === 'invalid' ? DEFAULT_WEB_NETWORK_SELECTION : stored.selection;
+  });
+  const [saved, setSaved] = useState(readNetworkSelection);
   const [message, setMessage] = useState<{ kind: 'ok' | 'warn'; text: DisplayMessage } | undefined>(undefined);
+  useEffect(() => {
+    const changed = (event: StorageEvent): void => {
+      if (event.key === WEB_NETWORK_SELECTION_KEY || event.key === null) {
+        setSaved(readNetworkSelection());
+        setMessage(undefined);
+      }
+    };
+    window.addEventListener('storage', changed);
+    return () => { window.removeEventListener('storage', changed); };
+  }, []);
   const choose = (patch: Partial<Omit<WebNetworkSelection, 'noticeAcknowledged'>>): void => {
     setDraft((d) => ({ ...d, ...patch, noticeAcknowledged: false }));
     setMessage(undefined);
   };
   const nonDefault = isNonDefaultSelection(draft);
-  const effective = effectiveSelection(saved);
+  const effective = saved.status === 'ready' ? saved.selection : undefined;
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
     const ok = saveNetworkSelection(draft);
-    const now = ok ? draft : loadStoredNetworkSelection();
-    setSaved(now);
+    setSaved(readNetworkSelection());
     setMessage(ok ? { kind: 'ok', text: { key: 'settings.network.saved' } } : { kind: 'warn', text: { key: 'settings.network.refused' } });
   };
   const profileSelect = (field: 'rpcProfile' | 'relayerProfile', label: MessageKey): ReactNode => (
@@ -520,8 +526,9 @@ function NetworkProfilesSection(): ReactNode {
             <label htmlFor={`${uid}-net-ack`}>{t('settings.network.notice.ack')}</label>
           </div>
         </Notice>}
-        {isNonDefaultSelection(saved) && !saved.noticeAcknowledged && <p role="status" className="hint">{t('settings.network.pending')}</p>}
-        <p className="hint">{t('settings.network.active', { rpc: t(PROFILE_OPTION[effective.rpcProfile]), relayer: t(PROFILE_OPTION[effective.relayerProfile]), mode: t(RPC_MODE_OPTION[effective.rpcMode]) })}</p>
+        {saved.status === 'invalid' && <Notice kind="warn">{t('error.network.profileInvalid')}</Notice>}
+        {saved.status === 'pending' && <p role="status" className="hint">{t('settings.network.pending')}</p>}
+        {effective !== undefined && <p className="hint">{t('settings.network.active', { rpc: t(PROFILE_OPTION[effective.rpcProfile]), relayer: t(PROFILE_OPTION[effective.relayerProfile]), mode: t(RPC_MODE_OPTION[effective.rpcMode]) })}</p>}
         <button type="submit" className="btn btn-primary">{t('settings.network.save')}</button>
         {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       </fieldset>

@@ -51,14 +51,14 @@ describe('TM14 network selection (default unchanged)', () => {
   const store = (v: string | null): Storage => ({ getItem: () => v } as unknown as Storage);
   const own = JSON.stringify({ rpcProfile: 'direct', relayerProfile: 'tor-browser', rpcMode: 'own-node', noticeAcknowledged: true });
 
-  it('falls back to the default for missing, broken, invalid or unacknowledged selections', () => {
+  it('defaults only for missing selection and blocks malformed, unreadable or unacknowledged stored choices', () => {
     const def = { rpcProfile: 'direct', relayerProfile: 'direct', rpcMode: 'single', noticeAcknowledged: false };
     expect(loadNetworkSelection(undefined)).toEqual(def);
     expect(loadNetworkSelection(store(null))).toEqual(def);
-    expect(loadNetworkSelection(store('{not json'))).toEqual(def);
-    expect(loadNetworkSelection(store(JSON.stringify({ rpcProfile: 'tor-socks' })))).toEqual(def);
-    expect(loadNetworkSelection(store(JSON.stringify({ rpcMode: 'own-node' })))).toEqual(def);
-    expect(loadNetworkSelection({ getItem: () => { throw new Error('blocked'); } } as unknown as Storage)).toEqual(def);
+    expect(() => loadNetworkSelection(store('{not json'))).toThrow(/network profile/i);
+    expect(() => loadNetworkSelection(store(JSON.stringify({ rpcProfile: 'tor-socks' })))).toThrow(/network profile/i);
+    expect(() => loadNetworkSelection(store(JSON.stringify({ rpcMode: 'own-node' })))).toThrow(/invalid or unavailable/i);
+    expect(() => loadNetworkSelection({ getItem: () => { throw new Error('blocked'); } } as unknown as Storage)).toThrow(/network profile/i);
     expect(loadNetworkSelection(store(own)).rpcMode).toBe('own-node');
   });
 

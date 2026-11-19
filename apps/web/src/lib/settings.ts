@@ -41,6 +41,7 @@ export function checkRpcUrl(raw: string): string {
 
 const SECRET_QUERY_NAME = /^(?:key|apikey|api[-_]?key|token|access[-_]?token|auth|authorization|secret|password|passwd|jwt|sig|signature|project[-_]?id)$/i;
 const SECRET_PATH_CONTEXT = /^(?:v[0-9]+|key|keys|token|apikey|api[-_]?key|auth|rpc|api)$/i;
+const SECRET_PATH_LABEL = /^(?:key|keys|token|access[-_]?token|apikey|api[-_]?key|auth|authorization|secret|password|passwd|jwt)$/i;
 
 function tokenLike(v: string, min: number): boolean {
   return v.length >= min && /^[A-Za-z0-9_+/=-]+$/.test(v) && /[0-9]/.test(v) && /[A-Za-z]/.test(v);
@@ -61,14 +62,14 @@ export function rpcUrlLooksSecret(raw: string): boolean {
   for (const [name, value] of u.searchParams) {
     if (value !== '' && (SECRET_QUERY_NAME.test(name) || tokenLike(value, 20))) return true;
   }
-  const segments = u.pathname.split('/').filter((x) => x !== '');
+  const segments = u.pathname.split('/').filter((x) => x !== '').map((segment) => {
+    try { return decodeURIComponent(segment); } catch { return segment; }
+  });
   return segments.some((seg, i) => {
-    let d = seg;
-    try { d = decodeURIComponent(seg); } catch { /* keep raw */ }
-    if (/^(?:0x)?[0-9a-f]{32,}$/i.test(d)) return true;
-    if (tokenLike(d, 24)) return true;
+    if (/^(?:0x)?[0-9a-f]{32,}$/i.test(seg)) return true;
+    if (tokenLike(seg, 24)) return true;
     const prev = i > 0 ? segments[i - 1] : undefined;
-    return prev !== undefined && SECRET_PATH_CONTEXT.test(prev) && tokenLike(d, 12);
+    return prev !== undefined && (SECRET_PATH_LABEL.test(prev) || (SECRET_PATH_CONTEXT.test(prev) && tokenLike(seg, 12)));
   });
 }
 
@@ -81,12 +82,14 @@ const sessionOnly = new Map<string, string>();
 const sessionKey = (slot: RpcSlot, chainId: string): string => `${slot}:${chainId}`;
 
 export function setRpcSessionOnly(slot: RpcSlot, chainId: string, url: string | undefined): void {
-  if (url === undefined || url === '') sessionOnly.delete(sessionKey(slot, chainId));
-  else sessionOnly.set(sessionKey(slot, chainId), url);
+  if (url === undefined || url.trim() === '') sessionOnly.delete(sessionKey(slot, chainId));
+  else sessionOnly.set(sessionKey(slot, chainId), checkRpcUrl(url));
 }
 
 export function isRpcSessionOnly(slot: RpcSlot, chainId: string, url: string): boolean {
-  return sessionOnly.get(sessionKey(slot, chainId)) === url;
+  const saved = sessionOnly.get(sessionKey(slot, chainId));
+  if (saved === undefined) return false;
+  try { return saved === checkRpcUrl(url); } catch { return false; }
 }
 
 export function clearRpcSessionOnly(): void {

@@ -105,4 +105,38 @@ describe('range source', () => {
     const plain = await createRangeSource({ chainId: 31337, backend: fakeBackend() }).fetch({ chainId: 31337, fromBlock: 1990n, toBlock: 1995n });
     expect(plain.coverage).toEqual({ fromBlock: 1000n, toBlock: 1999n });
   });
+
+  it('does not read the head or padded windows after pre-dispatch cancellation', async () => {
+    const ac = new AbortController();
+    ac.abort(new Error('private caller context'));
+    const calls: string[] = [];
+    const source = createRangeSource({ chainId: 31337, backend: {
+      getHead: () => { calls.push('head'); return Promise.resolve(headOf()); },
+      getAnnouncements: () => { calls.push('logs'); return Promise.resolve([]); },
+    }, padBlocks: 20 });
+    await expect(source.fetch({ chainId: 31337, fromBlock: 1990n, toBlock: 1995n }, ac.signal)).rejects.toMatchObject({ code: 'TRANSPORT', message: 'scan cancelled' });
+    expect(calls).toEqual([]);
+  });
+
+  it('discards a head returned after cancellation without requesting any windows', async () => {
+    const ac = new AbortController();
+    const calls: string[] = [];
+    const source = createRangeSource({ chainId: 31337, backend: {
+      getHead: () => { calls.push('head'); ac.abort(); return Promise.resolve(headOf()); },
+      getAnnouncements: () => { calls.push('logs'); return Promise.resolve([]); },
+    }, padBlocks: 20 });
+    await expect(source.fetch({ chainId: 31337, fromBlock: 1990n, toBlock: 1995n }, ac.signal)).rejects.toMatchObject({ code: 'TRANSPORT', message: 'scan cancelled' });
+    expect(calls).toEqual(['head']);
+  });
+
+  it.each([0, 20])('discards a late window after cancellation and starts no more windows (padding %s)', async (padBlocks) => {
+    const ac = new AbortController();
+    const calls: bigint[] = [];
+    const source = createRangeSource({ chainId: 31337, backend: {
+      getHead: () => Promise.resolve(headOf()),
+      getAnnouncements: (req) => { calls.push(req.fromBlock); ac.abort(); return Promise.resolve([rawAnn(Number(req.fromBlock) + 1, 0)]); },
+    }, padBlocks });
+    await expect(source.fetch({ chainId: 31337, fromBlock: 1990n, toBlock: 1995n }, ac.signal)).rejects.toMatchObject({ code: 'TRANSPORT', message: 'scan cancelled' });
+    expect(calls).toEqual([1000n]);
+  });
 });
