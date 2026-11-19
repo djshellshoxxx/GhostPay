@@ -1,3 +1,15 @@
+# Automation cycle 20261119T095600Z — merchant profile clock validation
+
+Worker: single ChatGPT implementation phase (no parallel independent verifier).
+Branch: `automation/20261119T095600Z/bug/merchant-profile-clock`.
+Base main SHA: `14ded337a10c140d7a9f9a9238ec038587d925bb`.
+Owned source: `packages/invoice-schema/src/merchantProfile.ts`, `packages/invoice-schema/src/merchantProfile.test.ts`; cycle-specific handoff only.
+Finding: GP-AUD-208-01 in draft PR #266; signed profile may bypass expiry when caller provides NaN/undefined.
+Acceptance: valid signed profile rejects invalid clocks deterministically; finite valid clocks preserve existing expiry boundaries; test is committed before implementation; run available checks and report unexecuted checks. Do not alter cryptographic signature or invoice formats.
+Dependencies: audit #266; PR #265 owns separate json canonicalization. No shared integration lock acquired or merges authorized from this worker.
+
+---
+
 # Merchant profile invalid-clock integration — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator; independent source review by `privacy_completion`.
