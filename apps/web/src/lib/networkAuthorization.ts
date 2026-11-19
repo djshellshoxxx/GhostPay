@@ -2,6 +2,7 @@ import { CHAINS, ChainAdapterError } from '@ghostpay/chain-adapters';
 import { isValidV3OnionHost, WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { subscribeAppLock } from './appLock';
 import { UserFacingError } from './errors';
+import { readNetworkSelection } from './networkSelection';
 import type { ScanPrivacySettings } from './scanPrivacy';
 import type { ScanLaneSettings } from './scanSpam';
 import { captureSessionVersionGuard, subscribeSession } from './session';
@@ -159,16 +160,11 @@ function snapshot(read: () => StorageReader | undefined, observed: Set<number>):
   if (privacy['source'] !== undefined && privacy['source'] !== 'rpc' && privacy['source'] !== 'indexer') refuse();
   scanEndpointMap(privacy['endpoints'], transport);
   scanEndpointMap(privacy['indexerUrls'], transport, true);
-  const selection = decode(raw[2] ?? null);
-  const keys = ['rpcProfile', 'relayerProfile', 'rpcMode', 'noticeAcknowledged'];
-  if (Object.keys(selection).some((key) => !keys.includes(key))) refuse();
-  const rpcProfile = selection['rpcProfile'] === undefined ? 'direct' : selection['rpcProfile'];
-  const relayerProfile = selection['relayerProfile'] === undefined ? 'direct' : selection['relayerProfile'];
-  const rpcMode = selection['rpcMode'] === undefined ? 'single' : selection['rpcMode'];
-  const notice = selection['noticeAcknowledged'] === undefined ? false : selection['noticeAcknowledged'];
-  if ((rpcProfile !== 'direct' && rpcProfile !== 'tor-browser') || (relayerProfile !== 'direct' && relayerProfile !== 'tor-browser') ||
-      (rpcMode !== 'single' && rpcMode !== 'own-node') || typeof notice !== 'boolean') refuse();
-  if ((rpcProfile !== 'direct' || relayerProfile !== 'direct' || rpcMode !== 'single') && !notice) refuse();
+  // Use the same strict stored-profile boundary as Settings and standalone RPC creation. A present truncated
+  // record cannot authorize a weaker default; only a genuinely absent preference selects the install default.
+  const selection = readNetworkSelection({ getItem: () => raw[2] ?? null });
+  if (selection.status !== 'ready') return refuse();
+  const { rpcMode } = selection.selection;
   return { raw, policy: { ownNode: rpcMode === 'own-node', requireProxy, transport }, settings, scan: privacy };
 }
 function endpoint(raw: string, allowPlainHttp = false): URL {

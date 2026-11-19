@@ -506,10 +506,20 @@ function NetworkProfilesSection(): ReactNode {
     storedRevision.current = preferenceRevision(WEB_NETWORK_SELECTION_KEY);
     const value = readNetworkSelection();
     setDraft(value.status === 'invalid' ? DEFAULT_WEB_NETWORK_SELECTION : value.selection);
-    setSaved(value); setMessage(undefined);
+    setSaved(value);
+    services.network?.invalidate();
+    setMessage(undefined);
   };
   useEffect(() => {
-    const changed = (event: StorageEvent): void => { if (event.key === null || event.key === WEB_NETWORK_SELECTION_KEY) refreshStored(); };
+    const changed = (event: StorageEvent): void => {
+      if (event.key === null || event.key === WEB_NETWORK_SELECTION_KEY) {
+        // Keep the user's draft and its original revision. A subsequent stale save must fail the comparison below
+        // rather than overwrite a newer profile simply because its storage event already arrived.
+        setSaved(readNetworkSelection());
+        services.network?.invalidate();
+        setMessage(undefined);
+      }
+    };
     window.addEventListener('storage', changed);
     return () => { window.removeEventListener('storage', changed); };
   }, []);

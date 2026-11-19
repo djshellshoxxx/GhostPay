@@ -1,9 +1,12 @@
 // @vitest-environment jsdom
-import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DEFAULT_WEB_NETWORK_SELECTION, WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as scanClient from '../lib/scanClient';
-import { clearSession, importSession } from '../lib/session';
+import { clearSession, generateSession, getSessionBackup, getSessionPublic, importSession } from '../lib/session';
+import { notifyAppLock } from '../lib/appLock';
+import { PrivateScanVault } from '../lib/privateScanStore';
 import type { ReconciliationVaultStore } from '../lib/reconciliationVault';
 import type { Services } from '../lib/services';
 import { SETTINGS_KEY } from '../lib/settings';
@@ -13,6 +16,7 @@ import { InlineWorker } from '../test/inlineWorker';
 import { makeLog } from '../test/announcements';
 import { chainWithLogs } from '../test/mockChain';
 import { makeServices, renderApp } from '../test/render';
+import { AUTO_RESCAN_MAX_MS } from './Scan';
 
 const scalar = (value: number): string => value.toString(16).padStart(64, '0');
 const KEYS = { spendingKeyHex: scalar(11), viewingKeyHex: scalar(12), signingKeyHex: scalar(13) };
@@ -38,8 +42,8 @@ function memoryStore() {
   return { store, data, setGate: (value: Promise<void> | undefined) => { gate = value; }, waiting: () => waiting, fail: () => { reject = true; } };
 }
 
-function setup() {
-  const pub = importSession(KEYS);
+function setup(custody: 'imported' | 'sole-copy' = 'imported') {
+  const pub = custody === 'sole-copy' ? generateSession() : importSession(KEYS);
   const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: `0x${'8'.repeat(40)}`, amount: 2_500_000n });
   const rpc = chainWithLogs(84532, 500, [mine.log]);
   const saved = memoryStore();
@@ -202,6 +206,37 @@ describe('private seller checkpoint UI', () => {
     } finally { release(); }
   });
 
+  it('rejects a pending encrypted journal write after a profile changes before its storage event', async () => {
+    const s = setup();
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    let waiting = false;
+    const store: ReconciliationVaultStore = {
+      read: s.saved.store.read,
+      compareAndSwap: async (key, expected, next, guard) => {
+        // Gate the encrypted page commit, not the initial reservation before RPC creation.
+        if (next.includes('"ciphertext"')) { waiting = true; await gate; }
+        return s.saved.store.compareAndSwap(key, expected, next, guard);
+      },
+    };
+    const { user } = await open({ ...s.services, privateScanStore: store });
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    try {
+      await waitFor(() => expect(waiting).toBe(true));
+      const before = [...s.saved.data.entries()];
+      act(() => {
+        window.localStorage.setItem(WEB_NETWORK_SELECTION_KEY, JSON.stringify({
+          ...DEFAULT_WEB_NETWORK_SELECTION, rpcMode: 'own-node', noticeAcknowledged: true,
+        }));
+        // Cross-tab storage events can arrive after promise callbacks. The synchronous policy guard must suffice.
+        release();
+      });
+      await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Start scan' }).disabled).toBe(false));
+      expect([...s.saved.data.entries()]).toEqual(before);
+      expect(screen.queryByText(/Finished\./)).toBeNull();
+    } finally { release(); }
+  });
+
   it('pauses before a pending checkpoint commits and retains the last complete position', async () => {
     const s = setup();
     const { user } = await open(s.services);
@@ -217,6 +252,80 @@ describe('private seller checkpoint UI', () => {
       expect([...s.saved.data.values()].filter((text) => text.includes('ciphertext'))).toHaveLength(0);
       expect(screen.queryByText(/Finished\./)).toBeNull();
     } finally { release(); }
+  });
+
+  it.each(['RPC setup', 'checkpoint commit'] as const)('pauses on app idle lock during %s while retaining the sole seller-key copy', async (stage) => {
+    const s = setup('sole-copy');
+    const runner = vi.spyOn(scanClient, 'runScan');
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    let opening = false;
+    let firstRpc = true;
+    const createRpc: Services['createRpc'] = async (chain, endpoint) => {
+      const client = await s.services.createRpc(chain, endpoint);
+      if (stage === 'RPC setup' && firstRpc) {
+        firstRpc = false;
+        opening = true;
+        await gate;
+      }
+      return client;
+    };
+    const { user } = await open({ ...s.services, createRpc });
+    const lock = vi.spyOn(PrivateScanVault.prototype, 'lock');
+    const retainedSession = getSessionPublic();
+    expect(getSessionBackup()?.backedUp).toBe(false);
+    const automatic = screen.getByLabelText<HTMLInputElement>('Keep checking for new payments while this page is open');
+    await user.click(automatic);
+    if (stage === 'checkpoint commit') s.saved.setGate(gate);
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    try {
+      await waitFor(() => expect(stage === 'RPC setup' ? opening : s.saved.waiting()).toBe(true));
+      const before = [...s.saved.data.entries()];
+      expect(lock).not.toHaveBeenCalled();
+      act(() => { notifyAppLock('idle'); });
+      expect(lock).toHaveBeenCalled();
+      expect(getSessionPublic()).toBe(retainedSession);
+      expect(automatic.checked).toBe(false);
+      await screen.findByText(/Paused\. Resume from the last durably saved checkpoint/);
+      await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Start scan' }).disabled).toBe(false));
+      await act(async () => {
+        release();
+        await gate;
+        if (stage === 'checkpoint commit') await Promise.allSettled(runner.mock.results.map((result) => result.value as Promise<unknown>));
+      });
+      expect([...s.saved.data.entries()]).toEqual(before);
+      expect(screen.queryByText(/Finished\./)).toBeNull();
+      expect(getSessionPublic()).toBe(retainedSession);
+      s.saved.setGate(undefined);
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await screen.findByText(/Finished\./);
+      expect(screen.getByText(s.mine.stealthAddress)).toBeTruthy();
+      expect(automatic.checked).toBe(false);
+    } finally { release(); }
+  });
+
+  it('disarms an already scheduled automatic scan synchronously on app idle lock', async () => {
+    const s = setup('sole-copy');
+    const runner = vi.spyOn(scanClient, 'runScan');
+    const { user } = await open(s.services);
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await screen.findByText(/Finished\./);
+    const retainedSession = getSessionPublic();
+    const automatic = screen.getByLabelText<HTMLInputElement>('Keep checking for new payments while this page is open');
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      fireEvent.click(automatic);
+      expect(automatic.checked).toBe(true);
+      act(() => {
+        notifyAppLock('idle');
+        // Run the due callback before React can flush the checkbox state or clean up the timer effect.
+        vi.advanceTimersByTime(AUTO_RESCAN_MAX_MS);
+      });
+      expect(automatic.checked).toBe(false);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Start scan' }).disabled).toBe(false);
+      expect(runner).toHaveBeenCalledTimes(1);
+      expect(getSessionPublic()).toBe(retainedSession);
+    } finally { vi.useRealTimers(); }
   });
 
   it.each(['RPC opening', 'manifest readback'] as const)('cancels noncooperative %s promptly and allows a fresh scan', async (stage) => {

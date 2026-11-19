@@ -1,0 +1,26 @@
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+ ❯ src/buildScripts.test.ts (21 tests | 1 failed) 1916ms
+   ❯ release boundary: preserved scan-source code stays out of apps/web (audit L8-04) (2)
+     × every restricted name is a real export of @ghostpay/scan-source 31ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/buildScripts.test.ts > release boundary: preserved scan-source code stays out of apps/web (audit L8-04) > every restricted name is a real export of @ghostpay/scan-source
+Error: Failed to resolve entry for package "@ghostpay/scan-source". The package may have incorrect main/module/exports specified in its package.json.
+ ❯ src/buildScripts.test.ts:211:18
+    209|
+    210|   it('every restricted name is a real export of @ghostpay/scan-source'…
+    211|     const mod = (await import('@ghostpay/scan-source')) as Record<stri…
+       |                  ^
+    212|     for (const name of RESTRICTED) expect(mod[name], name).toBeDefined…
+    213|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 20 passed (21)
+   Start at  00:13:52
+   Duration  5.14s (import 40%, tests 39%, transform 20%)

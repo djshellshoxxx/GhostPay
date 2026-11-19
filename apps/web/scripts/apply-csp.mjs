@@ -29,11 +29,28 @@ export function applyCspToDist(distDir, origins) {
   return changed;
 }
 
-/** Parse generated HTML inertly using the existing web dev dependency, with no scripts or resources enabled. */
-function metaPolicies(text) {
+/** A source range is usable only when parsed attributes account for the whole tag without duplicate-attribute gaps. */
+function contentValueRange(text, location, policy) {
+  const content = location?.attrs?.content;
+  if (content === undefined || location.startTag === undefined) return undefined;
+  const attrs = Object.values(location.attrs).sort((a, b) => a.startOffset - b.startOffset);
+  if (!/^<meta[\t\n\f\r ]+$/i.test(text.slice(location.startTag.startOffset, attrs[0].startOffset))) return undefined;
+  for (let i = 1; i < attrs.length; i++) {
+    if (!/^[\t\n\f\r ]+$/.test(text.slice(attrs[i - 1].endOffset, attrs[i].startOffset))) return undefined;
+  }
+  if (!/^[\t\n\f\r ]*\/?>$/.test(text.slice(attrs.at(-1).endOffset, location.startTag.endOffset))) return undefined;
+  const raw = text.slice(content.startOffset, content.endOffset);
+  const match = /^content[\t\n\f\r ]*=[\t\n\f\r ]*(["'])([\s\S]*)\1$/i.exec(raw);
+  // Generated artifacts use literal quoted policy values. Entity-decoding or malformed syntax must not hide bytes.
+  if (match === null || match[2] !== policy) return undefined;
+  return { start: content.endOffset - policy.length - 1, end: content.endOffset - 1 };
+}
+
+/** Parse generated HTML inertly, retaining source ranges without running scripts or loading resources. */
+export function readMetaPolicies(text) {
   // HTML parsing semantics matter: first duplicate attributes win and malformed head content can move a meta
   // to the body. A text match cannot prove that a browser will enforce the claimed policy.
-  const dom = new JSDOM(text, { virtualConsole: new VirtualConsole() });
+  const dom = new JSDOM(text, { virtualConsole: new VirtualConsole(), includeNodeLocations: true });
   try {
     const policies = [];
     const head = dom.window.document.head;
@@ -47,8 +64,8 @@ function metaPolicies(text) {
         if (earlier.tagName !== 'META') { beforeResources = false; break; }
         earlier = earlier.previousElementSibling;
       }
-      const policy = meta.getAttribute('content');
-      if (beforeResources && policy !== null) policies.push(policy);
+      const policy = meta.getAttribute('content') ?? '';
+      policies.push({ policy, beforeResources, content: contentValueRange(text, dom.nodeLocation(meta), policy) });
     }
     return policies;
   } finally {
@@ -68,9 +85,9 @@ export function checkCspDist(distDir, origins, { requireTight = false, metaOnly 
       continue;
     }
     const text = readFileSync(path, 'utf8');
-    const policies = name === 'index.html' ? metaPolicies(text)
-      : [...text.matchAll(/^\s+Content-Security-Policy\s*:\s*(.+)$/gmi)].map((m) => m[1]);
-    if (policies.length !== 1) problems.push(`${name}: expected exactly one enforced ${name === 'index.html' ? 'head meta' : 'HTTP header'} CSP`);
+    const policies = name === 'index.html' ? readMetaPolicies(text)
+      : [...text.matchAll(/^\s+Content-Security-Policy\s*:\s*(.+)$/gmi)].map((m) => ({ policy: m[1], beforeResources: true }));
+    if (policies.length !== 1 || policies.some((entry) => !entry.beforeResources)) problems.push(`${name}: expected exactly one enforced ${name === 'index.html' ? 'head meta' : 'HTTP header'} CSP`);
     if (name === '_headers') {
       let scope = '';
       let globalPolicy = false;
@@ -81,7 +98,7 @@ export function checkCspDist(distDir, origins, { requireTight = false, metaOnly 
       }
       if (!globalPolicy) problems.push('_headers: missing globally enforced CSP rule');
     }
-    for (const policy of policies) problems.push(...checkConnectSrc(policy, origins).map((problem) => `${name}: ${problem}`));
+    for (const { policy } of policies) problems.push(...checkConnectSrc(policy, origins).map((problem) => `${name}: ${problem}`));
   }
   return problems;
 }

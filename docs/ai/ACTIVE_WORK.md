@@ -48,6 +48,27 @@ Owned paths: `apps/web/src/lib/paymentKeyExport.ts`, focused recovered-key expir
 Acceptance: reproduce and close any resumed-async/recovered-key loan that bypasses synchronous idle authority checks; preserve empty-session recovery, exact saved-byte verification, safe replacement, and boxed-key disposal. Retain independent recovery permission isolation on supported Node versions. No duplicate feature import, dependency, custody, contract, or release changes.
 Status: implemented at `bdf6589f0dd07d9ab1935489c72160e1d99f2c82`; baseline five failures reproduced, 39 related tests pass on Node 24, six expiry cases plus independent recovery isolation pass on Node 22. Independent review and combined-head CI remain coordinator gates. Evidence: `docs/handoffs/recovered-key-authority-20261119/REVIEW.md`.
 
+# Unified privacy follow-up — 2026-11-19
+
+Worker: privacy_completion, coordinated by root.
+Branch: `codex/ghostpay-profile-consistency-20261119`.
+Base: existing master consolidation `b529a720cfbfa3c1056cc71085b4f163078e7591`.
+Owned paths: `apps/web/src/lib/networkAuthorization.ts`, its profile-consistency and existing
+authority tests, `apps/web/src/views/Settings.tsx`, `Settings.test.tsx`, this registry and scoped handoff.
+Acceptance: refuse truncated saved profiles at both production authority and standalone RPC
+boundaries; preserve stale-form revision checks across storage events without erasing drafts;
+retain saved-secret UI persistence fixture from the existing master. Run red/green regressions.
+Existing master already contains #248, #249, #251 and #256; do not duplicate their integration.
+Follow-up source comparison identified missing final tails: #249 `c17e5c38` configured-CSP
+scanner handling (five source/test files), #248 `18b36745` app-lock Scan pause and its tests,
+and #251 `5ec15534` blocked-profile test assertions. Integrate these exact deltas while
+preserving master AST/all-HTML scanning and the existing saved-endpoint UI fixture.
+Additional acceptance: a changed network-profile record before its storage event must prevent
+a pending private journal write; owned `Scan.tsx` and its private-checkpoint regression.
+Status: three source-pinned follow-ups committed and 323 focused tests passed; evidence and
+compiled-build limitations are in `docs/handoffs/privacy-master-followup-20261119/REVIEW.md`.
+Combined-source CI and coordinator integration remain required.
+
 # Spec 18 independent completion review — 2026-11-18
 
 Coordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.

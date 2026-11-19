@@ -9,6 +9,8 @@ import ts from 'typescript';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkCspDist, readMetaPolicies } from './apply-csp.mjs';
+import { checkConnectSrc, connectSrc, parseOrigins } from './csp.mjs';
 import { parseReleaseKeys, validateDeployments } from './validate-deployments.mjs';
 import { leanModuleProblem } from '../../../scripts/pages/lean-exclusions.mjs';
 
@@ -114,8 +116,26 @@ function ownOriginOf(raw) {
   }
 }
 
+/** Exempt only configured connect-src URL tokens in the actual, unambiguous enforcing content attribute. */
+function maskConnectOrigins(html, label, problems, origins) {
+  const policies = readMetaPolicies(html);
+  if (policies.length !== 1 || !policies[0].beforeResources || checkConnectSrc(policies[0].policy, origins).length !== 0) return html;
+  const { policy, content } = policies[0];
+  const directive = /(?:^|;)[\t\n\f\r ]*connect-src[\t\n\f\r ]+'self'([\t\n\f\r ]+[^;]*)/.exec(policy);
+  // Only ASCII source separators qualify; JavaScript's broader \s normalization cannot authorize masking.
+  const sourceOrigins = directive?.[1].split(/[\t\n\f\r ]+/).filter(Boolean).join(' ');
+  if (content === undefined || directive === null || sourceOrigins !== connectSrc(origins).slice("connect-src 'self' ".length)) {
+    problems.push(`${label}: configured CSP content has ambiguous source syntax`);
+    return html;
+  }
+  const start = content.start + directive.index + directive[0].length - directive[1].length;
+  const end = start + directive[1].length;
+  // Every other original byte remains visible: another directive, attribute or element gains no exemption.
+  return html.slice(0, start) + directive[1].replace(/\S/g, ' ') + html.slice(end);
+}
+
 /** Inline-code, remote-resource and CSP/referrer checks for one HTML document of the output. */
-function scanHtmlDocument(html, label, problems) {
+function scanHtmlDocument(html, label, problems, origins) {
   // Visit every script start tag. An HTML parser ends a script element at `</script` followed by whitespace, `/`
   // or `>` (any case), so the end tag may carry whitespace or junk attributes; an element with no end tag runs to
   // the end of the document. Neither form may escape the inline-code checks.
@@ -141,9 +161,12 @@ function scanHtmlDocument(html, label, problems) {
   if (!/name="referrer"\s+content="no-referrer"/.test(html)) problems.push(`${label}: meta referrer no-referrer missing`);
   if (/script-src[^;"]*'unsafe-(?:inline|eval)'/.test(html)) problems.push(`${label}: CSP allows unsafe-inline/eval scripts`);
   if (/style-src[^;"]*'unsafe-inline'/.test(html)) problems.push(`${label}: CSP allows unsafe-inline styles`);
-  // The app entry carries no external URL at all. Other pages (help, privacy) may link out with plain https <a href>
-  // navigation, never load an external resource; the href value is masked before the host scan.
-  scanHosts(label === 'index.html' ? html : html.replace(/(<a\b[^>]*?\bhref\s*=\s*)(["'])https:\/\/[^"'<>\s]*\2/gi, '$1$2#$2'), label, problems);
+  // The app entry permits configured origins only in its enforcing connect-src. Other pages (help, privacy) may
+  // link out with plain https <a href> navigation, never load an external resource.
+  const hostText = label === 'index.html'
+    ? origins.length === 0 ? html : maskConnectOrigins(html, label, problems, origins)
+    : html.replace(/(<a\b[^>]*?\bhref\s*=\s*)(["'])https:\/\/[^"'<>\s]*\2/gi, '$1$2#$2');
+  scanHosts(hostText, label, problems);
 }
 
 /**
@@ -180,11 +203,25 @@ export function scanSourceSinks(text, fileName) {
 /**
  * Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems.
  * `options.ownOrigin` defaults to the build's VITE_GHOSTPAY_PAGES_ORIGIN (see ownOriginOf).
+ * `options.connectOrigins` and `options.requireTight` default to the validated build-time CSP environment.
  */
-export function scanBundle(distDir, srcDir, viteConfigPath, { ownOrigin = process.env['VITE_GHOSTPAY_PAGES_ORIGIN'] } = {}) {
+export function scanBundle(distDir, srcDir, viteConfigPath, { ownOrigin = process.env['VITE_GHOSTPAY_PAGES_ORIGIN'], connectOrigins, requireTight } = {}) {
   const problems = [];
   const own = ownOriginOf(ownOrigin);
   if (!existsSync(distDir)) return [`dist directory not found: ${distDir}`];
+  const setting = process.env['GHOSTPAY_REQUIRE_TIGHT_CSP'] ?? '0';
+  if (requireTight === undefined && setting !== '0' && setting !== '1'
+      || requireTight !== undefined && typeof requireTight !== 'boolean') return ['GHOSTPAY_REQUIRE_TIGHT_CSP must be 0 or 1; requireTight must be a boolean'];
+  const tight = requireTight ?? setting === '1';
+  let origins;
+  try {
+    origins = connectOrigins === undefined ? parseOrigins(process.env['GHOSTPAY_CONNECT_ORIGINS']) : connectOrigins;
+    if (!Array.isArray(origins)) throw new Error('invalid origins');
+    connectSrc(origins); // Direct callers must meet the same origin-only validation as the build environment.
+  } catch {
+    return ['GHOSTPAY_CONNECT_ORIGINS: use a list of bare HTTPS/WSS origins without credentials, wildcards or policy syntax'];
+  }
+  if (origins.length !== 0 || tight) problems.push(...checkCspDist(distDir, origins, { requireTight: tight }));
   const files = walk(distDir);
   const rel = (f) => relative(distDir, f).split(sep).join('/');
 
@@ -222,7 +259,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath, { ownOrigin = proces
   if (!existsSync(join(distDir, 'index.html'))) problems.push('index.html missing');
   for (const f of files) {
     const r = rel(f);
-    if (/\.html?$/i.test(r)) scanHtmlDocument(readFileSync(f, 'utf8'), r, problems);
+    if (/\.html?$/i.test(r)) scanHtmlDocument(readFileSync(f, 'utf8'), r, problems, origins);
   }
 
   // The lean module report (lean profile only) against the exclusion list shared with the Pages verifier (SEC-24).
