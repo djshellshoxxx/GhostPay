@@ -1,3 +1,15 @@
+# Unified privacy follow-up — 2026-11-19
+
+Worker: privacy_completion, coordinated by root.
+Branch: `codex/ghostpay-profile-consistency-20261119`.
+Base: existing master consolidation `b529a720cfbfa3c1056cc71085b4f163078e7591`.
+Owned paths: `apps/web/src/lib/networkAuthorization.ts`, its profile-consistency and existing
+authority tests, `apps/web/src/views/Settings.tsx`, `Settings.test.tsx`, this registry and scoped handoff.
+Acceptance: refuse truncated saved profiles at both production authority and standalone RPC
+boundaries; preserve stale-form revision checks across storage events without erasing drafts;
+retain saved-secret UI persistence fixture from the existing master. Run red/green regressions.
+Existing master already contains #248, #249, #251 and #256; do not duplicate their integration.
+
 # Spec 18 independent completion review — 2026-11-18
 
 Coordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.
