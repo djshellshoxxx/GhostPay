@@ -506,3 +506,27 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+# Historical pool input guard recovery — 2026-11-18
+
+Worker: history_review, coordinated by the pre-merge repair lead.
+Branch: `repair/ghostpay-history-pool-values-20261118-local`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
+Owned paths: `packages/pool-circuits/src/inputs.ts`, `src/helpers.test.ts`, `test/witness.test.ts`,
+the package `DEVIATIONS.md`, this claim and a scoped merge-readiness handoff.
+Acceptance: recover the existing historical nonzero-input guards from
+`ea1f0b244f0adf4794e55cda6dc7dbd1e5f4039c` and property regression from
+`768b1f4cc86638e747cb1553297d012973c4cbb0`; reproduce the present helper/contract
+mismatch, preserve valid positive values and full withdrawals, and qualify the
+minimal repair independently. All 44 open PR file lists were checked; none
+changes the two owned source/test paths. The existing pool circuit constraints,
+proof artifacts, contracts, crypto, dependencies, deployment and security gates
+remain outside this scope. The coordinator owns publication and integration.
+
+Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
+regressions (4 failed / 15 passed before correction; 19/19 after), package
+typecheck/lint/build, secret scan and action pins passing. Available full package
+coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existing
+artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
+also passes all 19 helper tests. See the source-pinned handoff under
+`docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
