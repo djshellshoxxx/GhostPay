@@ -1,3 +1,27 @@
+# PR 87 SOCKS socket ingress compatibility — 2026-11-19 (active)
+
+Worker: ChatGPT `ci_inventory`, assigned by the pre-merge reconciliation coordinator.
+Branch: `repair/ghostpay-pr-87-20261119-local`; starting PR #87 source
+`bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa`; current main observed at
+`58d89b39b27a66454ebf392bcd35d5c68b57b2f8`. Both source histories will be retained.
+Owned paths: `packages/net-harness/src/socks5Server.ts`, focused net-harness tests,
+this additive claim and a source-pinned repair handoff. The current open-PR filename
+inventory has no competing edits to net-harness source; dependency manifests remain
+coordinator-owned and unchanged by this repair.
+Acceptance: reproduce the socket data `string | NonSharedBuffer` compile failure with
+the PR-pinned compiler/types, repair the binary ingress safely without assertions or
+dependency changes, and run affected typecheck/build/tests plus scoped lint when the
+exact toolchain is available. Preserve loopback-only behavior and all existing tests
+and security gates. Record any unsupported tooling peers and remaining broad upgrade
+gates explicitly. Root owns publication; no push, merge, deployment or paid automation.
+
+Status: scoped source/test repair completed at `3d7889af94c398517e10c09100de3aa305d11206`
+and independently reviewed at that exact head. Package build, typecheck, lint and all 28
+tests with unchanged coverage thresholds pass. The full major-dependency candidate is
+not qualified: web compiler-API compatibility and dependent/full CI remain outstanding.
+Evidence and the precise TypeScript 7 compatibility probe are recorded in
+`docs/handoffs/PR87_SOCKS_COMPATIBILITY_20261119.md`.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
