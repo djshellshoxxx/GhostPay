@@ -26,6 +26,20 @@ Sweep, catalogs, consolidation ledgers and release gates are not owned by this t
 five lower-level transport files were compared against these heads and are unchanged; this
 lane extends existing adapters without a second policy engine. Recheck all heads before PR.
 
+# Historical safeguard recovery — 2026-11-18
+
+Worker: history_census (Caveman investigate-first), coordinated by master consolidation.
+Branch: `integration/ghostpay-historical-fixes-20261118`.
+Base: `5a33a435ffbb4711d0a5fa69ade9d32ad4f8b929` (reviewed PR #241 merged).
+Owned paths: `packages/chain-adapters/src/{deployments,quote,rpc}.ts` and focused tests;
+`packages/tron-adapter/src/rpc.ts` block-range validation only and `scan.test.ts`; this claim and scoped handoff.
+Source provenance: `e2fef011ca1195d6c5edaf4e1ea1055692462004`,
+`b098b73a3a93bde331b7f49123e99d3406b6cb6f`, `c37604d1b1cf561573270d6cc002418003f80b69`.
+Acceptance: reject impossible manifest calendar dates; bounded retries for non-finite inputs; bounded price
+decimals; refuse incomplete/noncontiguous TRON block ranges; preserve PR #241 transport isolation.
+Apply only those previously implemented safeguards and regressions, run focused failing/passing evidence and
+affected package checks, then hand off for independent review. No new feature, dependency, policy, deployment or release.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
