@@ -92,7 +92,7 @@ describe('encrypted private seller scan journal', () => {
     { chainId: 1 }, { sellerKeyId: '90'.repeat(32) }, { deep: true }, { finalityDepth: 30 },
     { announcer: `0x${'a1'.repeat(20)}` }, { router: `0x${'b2'.repeat(20)}` },
     { configuration: 'different-selected-rpc' },
-  ])('isolates every security-relevant scanning dimension: %j', async (change) => {
+  ] satisfies readonly Partial<PrivateScanScope>[])('isolates every security-relevant scanning dimension: %j', async (change) => {
     const store = new Store(); const one = await open(store);
     await one.load(); await one.save(sample());
     const changed = await open(store, { ...SCOPE, ...change });

@@ -76,7 +76,9 @@ Local environmental failures are not passing evidence:
 - The first full-profile Playwright attempt stopped in its configured web-server typecheck with exit 137 before browser launch.
 - The combined repository tooling invocation passed 13 tests and failed two unchanged dependency-tooling subprocess tests on `spawnSync` timeouts. The exact failures are retained; they are not attributed to the feature without a clean rerun.
 
-Final view, full-web coverage, chain-adapter, full/lean Chromium, Pages artifact, whole-web typecheck/lint and hosted qualification results are updated in the evidence manifest and PR before merge readiness is claimed. Performance figures must come from executed deterministic fixtures; aggregate test durations are not mobile-browser performance promises.
+The final private Scan and automatic-rescan view selection passed 21/21 after main integration (16 new private cases and five existing auto-rescan cases). Updated-main transport libraries rebuilt successfully. Node 22 whole-web typecheck and both standard Chromium profile attempts were killed in typecheck with exit 137; neither browser launched. The first clean hosted build at `797f75ac8d91ae8e5872218028365496e67fc7d3` then reported one real test-source TS2345 inference error: a fixture address widened to `string`. A precise `satisfies readonly Partial<PrivateScanScope>[]` annotation corrects it without changing runtime bytes or any assertion. Its diagnostic is retained alongside the local failures.
+
+Full-web coverage, chain-adapter, full/lean Chromium, Pages artifact, whole-web typecheck/lint and hosted qualification results are updated in the evidence manifest and PR before merge readiness is claimed. Performance figures must come from executed deterministic fixtures; aggregate test durations are not mobile-browser performance promises.
 
 ## Remaining limitations and integration notes
 
