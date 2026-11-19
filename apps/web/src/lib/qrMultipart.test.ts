@@ -34,6 +34,16 @@ describe('multipart QR helpers', () => {
     expect(decode(forced ?? [])).toBe('y'.repeat(1004));
   });
 
+  it('rejects unpaired UTF-16 surrogates rather than silently replacing them with U+FFFD', () => {
+    for (const text of ['\uD800', '\uDC00', 'prefix-\uD800-tail', 'prefix-\uDC00']) {
+      expect(() => toMultipart(text)).toThrow();
+      expect(() => multipartIfNeeded(text)).toThrow();
+    }
+    // A valid surrogate pair remains a valid, lossless UTF-8 transfer.
+    const paired = '🚀';
+    expect(decode(toMultipart(paired))).toBe(paired);
+  });
+
   it('refuses empty and oversized input instead of producing a partial transfer', () => {
     expect(() => toMultipart('')).toThrow();
     expect(() => toMultipart('z'.repeat(33 * 1024))).toThrow();
