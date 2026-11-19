@@ -1,3 +1,16 @@
+# Historical pool repair main reconciliation — 2026-11-19
+
+Worker: actions_repair, assigned by the pre-merge reconciliation coordinator.
+Branch: `repair/ghostpay-history-pool-values-20261118-local`.
+Starting local head: `a85896ab6bb1b60eee9c9ad4ddc0e43d9ede9645`; reviewed tree:
+`7f85edb78d56c9c981ba1bc3745c3f3ccbeb07d8`. Merge target: main
+`e454de6abfefda70d82784fafc1d8949b277c334`, independently observed after PR #242 merged.
+Owned scope: this additive claim, preservation of the existing pool repair while
+merging current main, and scoped validation evidence. Preserve both source histories,
+all ownership sections, and the reviewed pool implementation/test blobs. Run the
+19 helper tests on Node 22 and obtain independent integration-diff review. Source
+conflicts require inspection; publication and hosted qualification remain coordinator-owned.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
