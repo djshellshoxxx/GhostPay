@@ -1733,3 +1733,12 @@ Worker: `/root/provenance`, delegated read-only release qualification by the coo
 Owned writes: this additive entry and `docs/handoffs/branch-census-delta-20261119/` only. The established `docs/release/branch-disposition-ledger.json` remains unchanged.
 Scope: paginate all live branches, preserve historical dispositions only for unchanged exact heads, mark every new/advanced head needs_review, record source-specific main/candidate/lease/CI observations and fresh candidate ancestry separately. No heavy fetch, product changes, test execution, source-branch writes, PR closures or workflow dispatch.
 Acceptance: complete unique census with pagination evidence; pinned baseline hash; honest mixed observation timestamps; manual semantic review distinguished from ancestry; new recovery refs remain unqualified despite preserved history.
+
+
+## Recovered contract analyzer environment and scoped review — 2026-11-19
+
+Worker: `/root/provenance`, delegated by the final Pages integration coordinator.
+Branch: `repair/ghostpay-analyzer-recovered-20261119`; prior preserved tail `422fe16e991035cccf1862f0b2f7c929242de33d`.
+Owned writes: this additive claim and `docs/handoffs/recovered-contract-analyzers-20261119/` only; temporary official-tool environment/artifacts under `/dev/shm/ghostpay-slither-246ff268d20d`. Product, contract, workflow and root-owned release documents are unchanged.
+Acceptance: install pinned official Slither 0.11.6 / solc-select 1.2.0 without global dependency changes or compatibility patches; execute the preserved one-thread production analysis with unchanged flags when coordinated resources allow; compare all 36 compilation inputs with the preserved record; retain fresh commands, exit statuses, output and limitations. Assess official pinned Mythril/Echidna feasibility and preserve the historical 11-record dispositions without declaring them closed or running a reduced campaign as a pass.
+Also record read-only independent review of the coordinator-authorized six-file lint repair `e8e2edecd0b989a90f5afb65622df4efefeebf93`; no tests are independently rerun for that small review. Native analyzer results, test results and source review remain separate evidence.
