@@ -1,0 +1,264 @@
+{
+  "base": "af9355ae2c1a37969304a89a58d57d76f2132493",
+  "source_pr211": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+  "patch_sources": [
+    {
+      "source_commit": "46ab81d2bc1060982867787d824ea2880d4899fa",
+      "paths": [
+        "packages/policy-scheme/src/record.ts",
+        "packages/policy-scheme/src/index.ts",
+        "packages/policy-scheme/src/client.test.ts"
+      ],
+      "returncode": 0,
+      "output": "Applied patch to 'packages/policy-scheme/src/client.test.ts' cleanly.\nApplied patch to 'packages/policy-scheme/src/index.ts' cleanly.\nApplied patch to 'packages/policy-scheme/src/record.ts' cleanly.\n"
+    },
+    {
+      "source_commit": "5f683cb833164d205f3d02cbc0c282af783ddeb5",
+      "paths": [
+        "apps/web/locales/en.json"
+      ],
+      "returncode": 0,
+      "output": "Applied patch to 'apps/web/locales/en.json' cleanly.\n"
+    },
+    {
+      "source_commit": "00f9134b88e213a4a11c6e06e4abf64ddabdfe68",
+      "paths": [
+        "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx",
+        "apps/web/src/features/policy/PolicyCreate.tsx",
+        "apps/web/src/features/policy/PolicyPay.tsx",
+        "apps/web/src/features/policy/create.ts",
+        "apps/web/src/features/policy/pay.ts",
+        "apps/web/src/features/policy/policy.logic.test.ts"
+      ],
+      "returncode": 0,
+      "output": "Falling back to direct application...\nApplied patch to 'apps/web/src/features/policy/PolicyCreate.tsx' cleanly.\nApplied patch to 'apps/web/src/features/policy/PolicyPay.tsx' cleanly.\nApplied patch to 'apps/web/src/features/policy/create.ts' cleanly.\nApplied patch to 'apps/web/src/features/policy/pay.ts' cleanly.\nApplied patch to 'apps/web/src/features/policy/policy.logic.test.ts' cleanly.\n"
+    },
+    {
+      "source_commit": "b542c839841f552686fd10f6e85273c170fc89b8",
+      "paths": [
+        "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx",
+        "apps/web/src/features/policy/PolicyCreate.tsx"
+      ],
+      "returncode": 0,
+      "output": "Applied patch to 'apps/web/src/features/policy/PolicyAssetCoverage.test.tsx' cleanly.\nApplied patch to 'apps/web/src/features/policy/PolicyCreate.tsx' cleanly.\n"
+    },
+    {
+      "source_commit": "001162ac6069cff3e3636ee131edabfe54ec8c5a",
+      "paths": [
+        "apps/web/locales/ar.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/i18n/securityKeys.ts"
+      ],
+      "returncode": 0,
+      "output": "Applied patch to 'apps/web/locales/ar.json' cleanly.\nApplied patch to 'apps/web/locales/es.json' cleanly.\nApplied patch to 'apps/web/locales/ja.json' cleanly.\nApplied patch to 'apps/web/src/i18n/securityKeys.ts' cleanly.\n"
+    },
+    {
+      "source_commit": "0f0063ed00c2a3d501b289ad3785b188d92f2e7a",
+      "paths": [
+        "docs/developer/api/policy-scheme.md"
+      ],
+      "returncode": 0,
+      "output": "Applied patch to 'docs/developer/api/policy-scheme.md' cleanly.\n"
+    },
+    {
+      "source_commit": "a08f47bb33ef59d9cffcdd348edfcc001ee5ba4e",
+      "paths": [
+        "docs/developer/api/policy-scheme.md"
+      ],
+      "returncode": 0,
+      "output": "Applied patch to 'docs/developer/api/policy-scheme.md' cleanly.\n"
+    },
+    {
+      "source_commit": "1f5c2d73df398ee866c9f80635ba7a9bb7967872",
+      "paths": [
+        "docs/developer/api/policy-scheme.md",
+        "packages/policy-scheme/src/client.test.ts",
+        "packages/policy-scheme/src/record.ts"
+      ],
+      "returncode": 0,
+      "output": "Applied patch to 'docs/developer/api/policy-scheme.md' cleanly.\nApplied patch to 'packages/policy-scheme/src/client.test.ts' cleanly.\nApplied patch to 'packages/policy-scheme/src/record.ts' cleanly.\n"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/web/locales/ar.json",
+      "candidate_blob": "b66c7ca965de0beb6fb161e0efdaf15bb0b5bdb4",
+      "source_blob": "6a66739aaf55ff216609df20b68284c2d51d755f",
+      "exact_source_blob": false
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "candidate_blob": "44495f106eef1ad023ab031130a78c46b0fa9c61",
+      "source_blob": "c0a602f25ecbd8749b064acad6fabedca79d084c",
+      "exact_source_blob": false
+    },
+    {
+      "path": "apps/web/locales/es.json",
+      "candidate_blob": "c7021288db5ac519f27bd044d0c3e10f822a9a24",
+      "source_blob": "73c3d1ac5bea3b363be40955d2ef4e6d6b93abed",
+      "exact_source_blob": false
+    },
+    {
+      "path": "apps/web/locales/ja.json",
+      "candidate_blob": "3db60ce6b6c00e1fa6228ae5fd42b49ec9b4a3f8",
+      "source_blob": "66d65cdd1e9d31255ad4e82e039151192eb2ceb8",
+      "exact_source_blob": false
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx",
+      "candidate_blob": "e4a5a5b2f3795409a02f115271ca0fc1ae77fc16",
+      "source_blob": "e4a5a5b2f3795409a02f115271ca0fc1ae77fc16",
+      "exact_source_blob": true
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyCreate.tsx",
+      "candidate_blob": "818a9b2fc069104687c5fb0002513b6bbdd5636d",
+      "source_blob": "818a9b2fc069104687c5fb0002513b6bbdd5636d",
+      "exact_source_blob": true
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyPay.tsx",
+      "candidate_blob": "3c67a58ff419f1cfa495073a24be3e174a8c9988",
+      "source_blob": "3c67a58ff419f1cfa495073a24be3e174a8c9988",
+      "exact_source_blob": true
+    },
+    {
+      "path": "apps/web/src/features/policy/create.ts",
+      "candidate_blob": "dbd983aba11c68803608a595600de8f4be871785",
+      "source_blob": "dbd983aba11c68803608a595600de8f4be871785",
+      "exact_source_blob": true
+    },
+    {
+      "path": "apps/web/src/features/policy/pay.ts",
+      "candidate_blob": "204debaa8a9081b2cc1c5821956a06fa5d2c3e57",
+      "source_blob": "204debaa8a9081b2cc1c5821956a06fa5d2c3e57",
+      "exact_source_blob": true
+    },
+    {
+      "path": "apps/web/src/features/policy/policy.logic.test.ts",
+      "candidate_blob": "c7c0ed047d1ab7b5256bca9f67991cda437ec0c6",
+      "source_blob": "c7c0ed047d1ab7b5256bca9f67991cda437ec0c6",
+      "exact_source_blob": true
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "candidate_blob": "eeab35a566a26adf6fae2adeead1ec8f2c23f3f1",
+      "source_blob": "02caa383d7ca6bbe976fdad917ce276d7d8e8e1a",
+      "exact_source_blob": false
+    },
+    {
+      "path": "docs/developer/api/policy-scheme.md",
+      "candidate_blob": "73e3ed599df9ef59c217bbfaafc404aa3e17f566",
+      "source_blob": "73e3ed599df9ef59c217bbfaafc404aa3e17f566",
+      "exact_source_blob": true
+    },
+    {
+      "path": "packages/policy-scheme/src/client.test.ts",
+      "candidate_blob": "27f06fcb52f8e62efda04c209acd4ea027184a85",
+      "source_blob": "27f06fcb52f8e62efda04c209acd4ea027184a85",
+      "exact_source_blob": true
+    },
+    {
+      "path": "packages/policy-scheme/src/index.ts",
+      "candidate_blob": "05fff2e3eb55ecc137b290044e2ef39025d121c5",
+      "source_blob": "05fff2e3eb55ecc137b290044e2ef39025d121c5",
+      "exact_source_blob": true
+    },
+    {
+      "path": "packages/policy-scheme/src/record.ts",
+      "candidate_blob": "60ebac0dbb8ab11c154e5e3c99e3c3bcbf164dba",
+      "source_blob": "60ebac0dbb8ab11c154e5e3c99e3c3bcbf164dba",
+      "exact_source_blob": true
+    }
+  ],
+  "catalogs": [
+    {
+      "path": "apps/web/locales/en.json",
+      "prior_message_changes": [],
+      "added_keys": [
+        "policy.create.delayHint",
+        "policy.create.withdrawableAny",
+        "policy.create.withdrawableOnly",
+        "policy.pay.coverageChecked",
+        "policy.pay.coverageUnknown",
+        "policy.pay.coverageUnknownTitle",
+        "policy.pay.tokenNotWithdrawable"
+      ]
+    },
+    {
+      "path": "apps/web/locales/es.json",
+      "prior_message_changes": [],
+      "added_keys": [
+        "policy.create.delayHint",
+        "policy.create.withdrawableAny",
+        "policy.create.withdrawableOnly",
+        "policy.pay.coverageChecked",
+        "policy.pay.coverageUnknown",
+        "policy.pay.coverageUnknownTitle",
+        "policy.pay.tokenNotWithdrawable"
+      ]
+    },
+    {
+      "path": "apps/web/locales/ar.json",
+      "prior_message_changes": [],
+      "added_keys": [
+        "policy.create.delayHint",
+        "policy.create.withdrawableAny",
+        "policy.create.withdrawableOnly",
+        "policy.pay.coverageChecked",
+        "policy.pay.coverageUnknown",
+        "policy.pay.coverageUnknownTitle",
+        "policy.pay.tokenNotWithdrawable"
+      ]
+    },
+    {
+      "path": "apps/web/locales/ja.json",
+      "prior_message_changes": [],
+      "added_keys": [
+        "policy.create.delayHint",
+        "policy.create.withdrawableAny",
+        "policy.create.withdrawableOnly",
+        "policy.pay.coverageChecked",
+        "policy.pay.coverageUnknown",
+        "policy.pay.coverageUnknownTitle",
+        "policy.pay.tokenNotWithdrawable"
+      ]
+    }
+  ],
+  "retained_boundary_files": [
+    "apps/web/src/features/policy/send.ts",
+    "apps/web/src/features/policy/send.test.ts",
+    "apps/web/src/features/policy/pay.selfcheck.test.ts",
+    "packages/policy-scheme/src/eip712.ts",
+    "packages/policy-scheme/src/limits.ts",
+    "packages/policy-scheme/src/router.ts",
+    "apps/web/src/AppShell.tsx",
+    "apps/web/src/views/Pay.tsx",
+    "apps/web/src/lib/session.ts"
+  ],
+  "paysDerivedPayment_helper_preserved": true,
+  "runtime_tests": "pending; no new runtime run due coordinator resource restriction",
+  "asset_source_commit": "f58bb5d8c9dad86163d31af9c16cc1a0824c9da0",
+  "focus_source_commit": "64ebf9f05c2a293c0e54be4c9e24c6e06037c861",
+  "focus_original_commit": "407868a1f3c5753786cad612636c079064d693ca",
+  "focus_blob": "36a3719bd750bc0d412948a9858ee16a67907c59",
+  "focus_commit_message_correction": "The blob string in the focus commit message was mistyped; focus_blob in this receipt and git rev-parse are authoritative. Product source is exactly original407868a1.",
+  "local_validation": {
+    "policy-assets-i18n-check.log": {
+      "result": "exit0; 4catalogs,0errors,701warnings",
+      "bytes": 59888,
+      "sha256": "58c0f840fa56db9f7cdd7e324c3eb5ace10a208eabc0454cb79c48f8ee3e214e"
+    },
+    "policy-assets-i18n-extract.log": {
+      "result": "exit0;2328used,0missing,139unused",
+      "bytes": 4934,
+      "sha256": "93ca1894227373410f13f3e2851dcbe62fd0a8710f8d124d0394b9c1c32bce67"
+    },
+    "policy-assets-secrets.log": {
+      "result": "exit0; no committed env files or key material",
+      "bytes": 50,
+      "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+    }
+  }
+}
