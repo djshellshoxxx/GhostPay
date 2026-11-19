@@ -1831,3 +1831,13 @@ Acceptance: install pinned official Slither 0.11.6 / solc-select 1.2.0 without g
 Also record read-only independent review of the coordinator-authorized six-file lint repair `e8e2edecd0b989a90f5afb65622df4efefeebf93`; no tests are independently rerun for that small review. Native analyzer results, test results and source review remain separate evidence.
 
 Coordinator follow-up: after the fresh Slither pass, authorize the complete unchanged Echidna 2.2.7 runner in an isolated `/dev/shm` source/corpus directory: all three harnesses, original 300,000-call budget and four workers. Own the resulting scoped campaign evidence only. Preserve exact source inputs, full output and strict canary/property/completeness checks; do not infer a pass from partial output or installation. Heavy runtime is coordinated with the release coordinator; no contract, configuration, gate or other checkout mutations.
+
+# Continuous engineering generation 1 — independent browser and bug qualification
+
+Worker: `/root/qa_bug_gen1`, delegated by the continuous engineering coordinator.
+Branch: `fix/ghostpay-continuous-qa-20261119`.
+Base: PR #278 `c993bb2340942c85dbf10303b61f69a91c4944e0`.
+Owned scope: existing browser acceptance under `apps/web/e2e/`, focused payment-export and private-checkpoint tests, and source-pinned evidence under `docs/engineering-handoffs/continuous-20261119/qa-gen1/`.
+Acceptance: run the original focused payment-export/private-checkpoint runtime regressions and browser journeys with their existing gates; establish reproducible failures before any repair; preserve assertions, timeouts, privacy controls and static EVM beta scope. Coordinate any shared production module edits before writing. Use the coordinator's pinned dependency/build preparation and report observed results, not inferred passes.
+Excluded: invoice-schema, buildProfile, scanSpam, merchantSignerPin and qrKinds source owned by the consolidation lane; contracts, fees, remote branch mutation, release and deployment.
+Status: claimed; source inspection in progress; no execution result asserted.
