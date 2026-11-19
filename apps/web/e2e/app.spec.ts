@@ -115,6 +115,12 @@ test('egress: parsing and reviewing an invoice makes no request except same-orig
 test('hostile text in line items and memo is rendered inert', async ({ page }) => {
   const dialogs: string[] = [];
   page.on('dialog', (d) => {
+    // openFresh deliberately leaves synthetic, unbacked seller keys behind. The
+    // application's key-loss guard is expected; script-created dialogs are not.
+    if (d.type() === 'beforeunload') {
+      void d.accept();
+      return;
+    }
     dialogs.push(d.message());
     void d.dismiss();
   });

@@ -1,0 +1,13 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/cli@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+Killed
+npm error Lifecycle script `lint` failed with error:
+npm error code 137
+npm error path /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli
+npm error workspace @ghostpay/cli@0.1.0
+npm error location /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli
+npm error command failed
+npm error command sh -c eslint --config ../../eslint.config.js src

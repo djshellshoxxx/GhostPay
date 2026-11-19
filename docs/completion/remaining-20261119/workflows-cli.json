@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T06:22:04.589939+00:00",
+  "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "historical_source_sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+  "historical_source_pr": 218,
+  "regression_sha": "cb0e2c220290f8c240ddfcc37f24814be597f75d",
+  "implementation_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+  "environment": {
+    "node": "24.22.3",
+    "npm": "11.9.0",
+    "vitest": "5.1.0",
+    "node_options": "--max-old-space-size=768",
+    "lock_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2",
+    "setup": "Offline npm ci exited137 before completion. Copied independent dependency trees from a completed local install with byte-identical package-lock; workspace links resolve within this worktree. Rebuilt CLI dependency closure successfully."
+  },
+  "tasks": [
+    {
+      "id": "R11-1",
+      "requirement": "Global help/version switches are recognized only in flag positions; option values cannot make a failed verification report ok:true.",
+      "status": "REVIEWED"
+    },
+    {
+      "id": "R11-2",
+      "requirement": "Only records freshly verified in the current run may be marked current or exported as a confirmable verified proposal.",
+      "status": "REVIEWED"
+    },
+    {
+      "id": "R11-3",
+      "requirement": "Malformed local payment observations fail as invalid input before RPC; they are not reported as network/internal failures.",
+      "status": "REVIEWED"
+    },
+    {
+      "id": "R11-4",
+      "requirement": "Untrusted links, sensitive path contents and control-bearing catalog keys are not printed raw in CLI errors or human output.",
+      "status": "REVIEWED"
+    }
+  ],
+  "checks": [
+    {
+      "name": "CLI regression baseline",
+      "source_sha": "cb0e2c220290f8c240ddfcc37f24814be597f75d",
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/global-switches.test.ts src/reconcile-stored-only.test.ts src/observation-input.test.ts src/untrusted-echo.test.ts --coverage=false --maxWorkers=1",
+      "cwd": "packages/cli",
+      "exit_code": 1,
+      "passed": 12,
+      "failed": 428,
+      "seconds": 77.89,
+      "log": "cli-red.log"
+    },
+    {
+      "name": "CLI regression corrected",
+      "source_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/global-switches.test.ts src/reconcile-stored-only.test.ts src/observation-input.test.ts src/untrusted-echo.test.ts --coverage=false --maxWorkers=1",
+      "cwd": "packages/cli",
+      "exit_code": 0,
+      "passed": 440,
+      "failed": 0,
+      "seconds": 56.58,
+      "log": "cli-green-focused.log"
+    },
+    {
+      "name": "CLI typecheck",
+      "source_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "command": "npm run typecheck -w @ghostpay/cli",
+      "exit_code": 0,
+      "seconds": 28.48,
+      "log": "cli-typecheck.log"
+    },
+    {
+      "name": "CLI dependency closure baseline build",
+      "source_sha": "cb0e2c220290f8c240ddfcc37f24814be597f75d",
+      "command": "npm run build:cli",
+      "exit_code": 0,
+      "log": "cli-base-build.log"
+    },
+    {
+      "name": "CLI initial lint",
+      "source_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "command": "npm run lint -w @ghostpay/cli",
+      "exit_code": 137,
+      "seconds": 22.572,
+      "log": "cli-lint.log",
+      "result": "Process killed; no ESLint source diagnostic. Serialized retry pending."
+    },
+    {
+      "name": "Full CLI coverage",
+      "source_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "command": "npm test -w @ghostpay/cli -- --maxWorkers=1",
+      "result": "IN PROGRESS; separate gate, no pass claimed."
+    },
+    {
+      "name": "CLI corrected build and compiled acceptance",
+      "source_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "result": "Queued after serialized lint retry; no pass claimed."
+    }
+  ],
+  "review": {
+    "reviewer": "root coordinator (separate agent from implementing workflow_fixes)",
+    "scope": "cb0e2c22..8ab2ca33 source diff",
+    "result": "No blocking source issue; flag-position parsing, current-verification per record and error redaction preserved. Focused GREEN considered sufficient for guarded integration; full/hosted qualification remains separate."
+  },
+  "preserved": [
+    "PR238 exact dependency alignment",
+    "PR238 receipt-parity optional stealth-address tests",
+    "all seven excluded feature workstreams",
+    "original coverage thresholds and CI commands"
+  ],
+  "integration": {
+    "destination": "remaining-work candidate based on PR238",
+    "status": "READY FOR COORDINATOR INTEGRATION",
+    "main_merge_sha": null
+  },
+  "artifacts": [
+    {
+      "path": "cli-red.log",
+      "sha256": "4adc0969c2ee96c9cac1d53f5605386902a80caf199c12e9bc02b855e8e44f3f",
+      "bytes": 133265
+    },
+    {
+      "path": "cli-green-focused.log",
+      "sha256": "54a7f3641bb2f84de09d62ef088e38fc1f66d2f22cd05f66d85c12238bcf4373",
+      "bytes": 514
+    },
+    {
+      "path": "cli-typecheck.log",
+      "sha256": "64bf0290c1e72438ab152b2dfb07f510caf149c6d166f8b3f2b6c79f058bd19e",
+      "bytes": 165
+    },
+    {
+      "path": "cli-base-build.log",
+      "sha256": "9ad9dbf00dbf7798cdf6910ce1b61d906c980ce3e2c489fb4d0badf0b0815424",
+      "bytes": 3487
+    },
+    {
+      "path": "cli-lint.log",
+      "sha256": "a5f2b998e07c7ff7c3f583cf8a27a673ba43f633fa2931790860bc3d3800f16b",
+      "bytes": 546
+    }
+  ]
+}

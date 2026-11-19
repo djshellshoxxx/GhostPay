@@ -1,0 +1,1343 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli
+
+ ❯ src/global-switches.test.ts (400 tests | 389 failed) 5482ms
+   ❯ global switches are not honoured in option-value positions (R11-1) (386)
+     × webhook verify --header --help on a forged body never succeeds 76ms
+     × webhook verify --header -h on a forged body never succeeds 26ms
+     × webhook verify --header --version on a forged body never succeeds 1ms
+     × a switch in the header value position prints no help, also without --json 12ms
+     × invoice verify --pin --help fails instead of printing help 85ms
+     × receipt verify --pin --help and --expected-tx --help fail instead of printing help 1607ms
+     × payment verify --in --help fails instead of printing help 7ms
+     × invoice verify --pin -h fails instead of printing help 38ms
+     × receipt verify --pin -h and --expected-tx -h fail instead of printing help 1557ms
+     × payment verify --in -h fails instead of printing help 1ms
+     × invoice verify --pin --version fails instead of printing help 20ms
+     × receipt verify --pin --version and --expected-tx --version fail instead of printing help 1378ms
+     × payment verify --in --version fails instead of printing help 1ms
+     × invoice inspect --in <global switch> is never honoured as a switch 8ms
+     × invoice inspect --passphrase-file <global switch> is never honoured as a switch 1ms
+     × invoice inspect --passphrase-env <global switch> is never honoured as a switch 0ms
+     × invoice inspect --expected-chain <global switch> is never honoured as a switch 0ms
+     × invoice inspect --expected-asset <global switch> is never honoured as a switch 0ms
+     × invoice inspect --expected-recipient <global switch> is never honoured as a switch 0ms
+     × invoice inspect --expected-amount <global switch> is never honoured as a switch 5ms
+     × invoice create --in <global switch> is never honoured as a switch 1ms
+     × invoice create --key-file <global switch> is never honoured as a switch 1ms
+     × invoice create --key-env <global switch> is never honoured as a switch 0ms
+     × invoice create --out <global switch> is never honoured as a switch 0ms
+     × invoice sign --in <global switch> is never honoured as a switch 0ms
+     × invoice sign --key-file <global switch> is never honoured as a switch 0ms
+     × invoice sign --key-env <global switch> is never honoured as a switch 12ms
+     × invoice sign --out <global switch> is never honoured as a switch 1ms
+     × invoice verify --in <global switch> is never honoured as a switch 1ms
+     × invoice verify --pin <global switch> is never honoured as a switch 0ms
+     × invoice verify --passphrase-file <global switch> is never honoured as a switch 1ms
+     × invoice verify --passphrase-env <global switch> is never honoured as a switch 0ms
+     × invoice verify --expected-chain <global switch> is never honoured as a switch 0ms
+     × invoice verify --expected-asset <global switch> is never honoured as a switch 0ms
+     × invoice verify --expected-recipient <global switch> is never honoured as a switch 0ms
+     × invoice verify --expected-amount <global switch> is never honoured as a switch 0ms
+     × invoice link --in <global switch> is never honoured as a switch 4ms
+     × invoice link --base <global switch> is never honoured as a switch 1ms
+     × invoice link --passphrase-file <global switch> is never honoured as a switch 0ms
+     × invoice link --passphrase-env <global switch> is never honoured as a switch 1ms
+     × invoice link --out <global switch> is never honoured as a switch 0ms
+     × receipt create --invoice <global switch> is never honoured as a switch 0ms
+     × receipt create --manual-invoice-digest <global switch> is never honoured as a switch 0ms
+     × receipt create --observation <global switch> is never honoured as a switch 0ms
+     × receipt create --keystore <global switch> is never honoured as a switch 0ms
+     × receipt create --out <global switch> is never honoured as a switch 0ms
+     × receipt create --passphrase-file <global switch> is never honoured as a switch 7ms
+     × receipt create --passphrase-env <global switch> is never honoured as a switch 1ms
+     × receipt create --invoice-passphrase-file <global switch> is never honoured as a switch 1ms
+     × receipt create --invoice-passphrase-env <global switch> is never honoured as a switch 0ms
+     × receipt create --manifest <global switch> is never honoured as a switch 0ms
+     × receipt create --manifest-digest <global switch> is never honoured as a switch 0ms
+     × receipt create --release-key <global switch> is never honoured as a switch 0ms
+     × receipt create --rpc-file <global switch> is never honoured as a switch 5ms
+     × receipt create --rpc-env <global switch> is never honoured as a switch 1ms
+     × receipt create --secondary-rpc-file <global switch> is never honoured as a switch 0ms
+     × receipt create --secondary-rpc-env <global switch> is never honoured as a switch 0ms
+     × receipt inspect --in <global switch> is never honoured as a switch 1ms
+     × receipt verify --in <global switch> is never honoured as a switch 0ms
+     × receipt verify --invoice <global switch> is never honoured as a switch 1ms
+     × receipt verify --pin <global switch> is never honoured as a switch 0ms
+     × receipt verify --expected-chain <global switch> is never honoured as a switch 0ms
+     × receipt verify --expected-asset <global switch> is never honoured as a switch 6ms
+     × receipt verify --expected-amount <global switch> is never honoured as a switch 1ms
+     × receipt verify --expected-recipient <global switch> is never honoured as a switch 0ms
+     × receipt verify --expected-tx <global switch> is never honoured as a switch 0ms
+     × receipt verify --passphrase-file <global switch> is never honoured as a switch 0ms
+     × receipt verify --passphrase-env <global switch> is never honoured as a switch 0ms
+     × receipt export --in <global switch> is never honoured as a switch 0ms
+     × receipt export --out <global switch> is never honoured as a switch 3ms
+     × payment inspect --in <global switch> is never honoured as a switch 2ms
+     × payment verify --in <global switch> is never honoured as a switch 0ms
+     × payment verify --manifest <global switch> is never honoured as a switch 0ms
+     × payment verify --manifest-digest <global switch> is never honoured as a switch 0ms
+     × payment verify --release-key <global switch> is never honoured as a switch 0ms
+     × payment verify --rpc-file <global switch> is never honoured as a switch 0ms
+     × payment verify --rpc-env <global switch> is never honoured as a switch 0ms
+     × payment verify --secondary-rpc-file <global switch> is never honoured as a switch 13ms
+     × payment verify --secondary-rpc-env <global switch> is never honoured as a switch 1ms
+     × payment verify --out <global switch> is never honoured as a switch 0ms
+     × payment status --in <global switch> is never honoured as a switch 1ms
+     × payment status --manifest <global switch> is never honoured as a switch 6ms
+     × payment status --manifest-digest <global switch> is never honoured as a switch 2ms
+     × payment status --release-key <global switch> is never honoured as a switch 0ms
+     × payment status --rpc-file <global switch> is never honoured as a switch 1ms
+     × payment status --rpc-env <global switch> is never honoured as a switch 0ms
+     × payment status --secondary-rpc-file <global switch> is never honoured as a switch 1ms
+     × payment status --secondary-rpc-env <global switch> is never honoured as a switch 0ms
+     × payment status --out <global switch> is never honoured as a switch 4ms
+     × merchant installments plan --in <global switch> is never honoured as a switch 1ms
+     × merchant installments plan --out <global switch> is never honoured as a switch 0ms
+     × merchant installments inspect --in <global switch> is never honoured as a switch 1ms
+     × merchant installments inspect --out <global switch> is never honoured as a switch 0ms
+     × merchant webhooks inspect --in <global switch> is never honoured as a switch 0ms
+     × merchant subscriptions validate --in <global switch> is never honoured as a switch 0ms
+     × merchant subscriptions inspect --in <global switch> is never honoured as a switch 4ms
+     × merchant refunds inspect --in <global switch> is never honoured as a switch 0ms
+     × merchant refunds inspect --state <global switch> is never honoured as a switch 0ms
+     × merchant refunds inspect --out <global switch> is never honoured as a switch 0ms
+     × merchant refunds status --in <global switch> is never honoured as a switch 0ms
+     × merchant refunds status --state <global switch> is never honoured as a switch 0ms
+     × merchant refunds status --out <global switch> is never honoured as a switch 0ms
+     × diagnostics --out <global switch> is never honoured as a switch 0ms
+     × config validate --kind <global switch> is never honoured as a switch 0ms
+     × config validate --in <global switch> is never honoured as a switch 19ms
+     × config validate --chain <global switch> is never honoured as a switch 1ms
+     × backup generate --out <global switch> is never honoured as a switch 0ms
+     × backup generate --passphrase-file <global switch> is never honoured as a switch 1ms
+     × backup generate --passphrase-env <global switch> is never honoured as a switch 0ms
+     × backup inspect --in <global switch> is never honoured as a switch 0ms
+     × backup verify --in <global switch> is never honoured as a switch 0ms
+     × backup verify --passphrase-file <global switch> is never honoured as a switch 0ms
+     × backup verify --passphrase-env <global switch> is never honoured as a switch 0ms
+     × backup verify --viewing-key-file <global switch> is never honoured as a switch 0ms
+     × backup verify --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × backup restore --in <global switch> is never honoured as a switch 0ms
+     × backup restore --passphrase-file <global switch> is never honoured as a switch 11ms
+     × backup restore --passphrase-env <global switch> is never honoured as a switch 1ms
+     × backup restore --viewing-key-file <global switch> is never honoured as a switch 0ms
+     × backup restore --viewing-key-env <global switch> is never honoured as a switch 0ms
+     × backup restore --out <global switch> is never honoured as a switch 0ms
+     × backup rekey --in <global switch> is never honoured as a switch 1ms
+     × backup rekey --out <global switch> is never honoured as a switch 0ms
+     × backup rekey --passphrase-file <global switch> is never honoured as a switch 0ms
+     × backup rekey --passphrase-env <global switch> is never honoured as a switch 0ms
+     × backup rekey --new-passphrase-file <global switch> is never honoured as a switch 0ms
+     × backup rekey --new-passphrase-env <global switch> is never honoured as a switch 0ms
+     × backup create --out <global switch> is never honoured as a switch 9ms
+     × backup create --spending-key-file <global switch> is never honoured as a switch 1ms
+     × backup create --spending-key-env <global switch> is never honoured as a switch 0ms
+     × backup create --viewing-key-file <global switch> is never honoured as a switch 1ms
+     × backup create --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × backup create --signing-key-file <global switch> is never honoured as a switch 0ms
+     × backup create --signing-key-env <global switch> is never honoured as a switch 0ms
+     × backup create --passphrase-file <global switch> is never honoured as a switch 1ms
+     × backup create --passphrase-env <global switch> is never honoured as a switch 0ms
+     × chain assets --chain <global switch> is never honoured as a switch 0ms
+     × chain recipient inspect --family <global switch> is never honoured as a switch 0ms
+     × chain recipient inspect --in <global switch> is never honoured as a switch 0ms
+     × chain recipient inspect --network <global switch> is never honoured as a switch 0ms
+     × chain solana announcement inspect --in <global switch> is never honoured as a switch 0ms
+     × chain bitcoin headers verify --in <global switch> is never honoured as a switch 0ms
+     × chain bitcoin headers verify --checkpoint <global switch> is never honoured as a switch 0ms
+     × chain bitcoin headers verify --network <global switch> is never honoured as a switch 0ms
+     × chain deployment inspect --chain <global switch> is never honoured as a switch 0ms
+     × chain deployment inspect --in <global switch> is never honoured as a switch 0ms
+     × chain deployment inspect --manifest-digest <global switch> is never honoured as a switch 1ms
+     × chain deployment inspect --release-key <global switch> is never honoured as a switch 0ms
+     × chain deployment verify --chain <global switch> is never honoured as a switch 0ms
+     × chain deployment verify --manifest <global switch> is never honoured as a switch 0ms
+     × chain deployment verify --manifest-digest <global switch> is never honoured as a switch 0ms
+     × chain deployment verify --release-key <global switch> is never honoured as a switch 1ms
+     × chain deployment verify --rpc-file <global switch> is never honoured as a switch 1ms
+     × chain deployment verify --rpc-env <global switch> is never honoured as a switch 1ms
+     × chain deployment verify --secondary-rpc-file <global switch> is never honoured as a switch 0ms
+     × chain deployment verify --secondary-rpc-env <global switch> is never honoured as a switch 6ms
+     × diagnostics rpc --chain <global switch> is never honoured as a switch 1ms
+     × diagnostics rpc --rpc-file <global switch> is never honoured as a switch 0ms
+     × diagnostics rpc --rpc-env <global switch> is never honoured as a switch 0ms
+     × diagnostics rpc --secondary-rpc-file <global switch> is never honoured as a switch 0ms
+     × diagnostics rpc --secondary-rpc-env <global switch> is never honoured as a switch 0ms
+     × diagnostics rpc --out <global switch> is never honoured as a switch 0ms
+     × history list --in <global switch> is never honoured as a switch 4ms
+     × history list --viewing-key-file <global switch> is never honoured as a switch 1ms
+     × history list --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × history list --query <global switch> is never honoured as a switch 0ms
+     × history list --limit <global switch> is never honoured as a switch 1ms
+     × history list --offset <global switch> is never honoured as a switch 1ms
+     × history list --out <global switch> is never honoured as a switch 0ms
+     × history inspect --in <global switch> is never honoured as a switch 0ms
+     × history inspect --viewing-key-file <global switch> is never honoured as a switch 0ms
+     × history inspect --viewing-key-env <global switch> is never honoured as a switch 0ms
+     × history inspect --record <global switch> is never honoured as a switch 6ms
+     × qr encode --in <global switch> is never honoured as a switch 5ms
+     × qr encode --kind <global switch> is never honoured as a switch 1ms
+     × qr encode --passphrase-file <global switch> is never honoured as a switch 0ms
+     × qr encode --passphrase-env <global switch> is never honoured as a switch 0ms
+     × qr encode --out <global switch> is never honoured as a switch 0ms
+     × qr encode --format <global switch> is never honoured as a switch 0ms
+     × qr encode --chunk-chars <global switch> is never honoured as a switch 0ms
+     × qr encode --frame <global switch> is never honoured as a switch 1ms
+     × qr decode --in <global switch> is never honoured as a switch 1ms
+     × qr decode --kind <global switch> is never honoured as a switch 21ms
+     × qr decode --passphrase-file <global switch> is never honoured as a switch 1ms
+     × qr decode --passphrase-env <global switch> is never honoured as a switch 1ms
+     × qr decode --out <global switch> is never honoured as a switch 1ms
+     × qr decode --frame-file <global switch> is never honoured as a switch 0ms
+     × seller export-public --in <global switch> is never honoured as a switch 3ms
+     × seller export-public --out <global switch> is never honoured as a switch 1ms
+     × seller import-public --in <global switch> is never honoured as a switch 7ms
+     × seller import-public --current <global switch> is never honoured as a switch 1ms
+     × seller import-public --out <global switch> is never honoured as a switch 1ms
+     × scan plan --chain <global switch> is never honoured as a switch 5ms
+     × scan plan --from-block <global switch> is never honoured as a switch 1ms
+     × scan plan --to-block <global switch> is never honoured as a switch 0ms
+     × scan plan --max-logs <global switch> is never honoured as a switch 0ms
+     × scan run --chain <global switch> is never honoured as a switch 0ms
+     × scan run --from-block <global switch> is never honoured as a switch 0ms
+     × scan run --to-block <global switch> is never honoured as a switch 0ms
+     × scan run --max-logs <global switch> is never honoured as a switch 9ms
+     × scan run --manifest <global switch> is never honoured as a switch 1ms
+     × scan run --manifest-digest <global switch> is never honoured as a switch 1ms
+     × scan run --release-key <global switch> is never honoured as a switch 0ms
+     × scan run --rpc-file <global switch> is never honoured as a switch 1ms
+     × scan run --rpc-env <global switch> is never honoured as a switch 1ms
+     × scan run --secondary-rpc-file <global switch> is never honoured as a switch 1ms
+     × scan run --secondary-rpc-env <global switch> is never honoured as a switch 1ms
+     × scan run --view-key-file <global switch> is never honoured as a switch 1ms
+     × scan run --view-key-env <global switch> is never honoured as a switch 0ms
+     × scan run --spend-public-file <global switch> is never honoured as a switch 0ms
+     × scan run --out <global switch> is never honoured as a switch 0ms
+     × scan run --resume <global switch> is never honoured as a switch 1ms
+     × scan inspect --in <global switch> is never honoured as a switch 0ms
+     × scan inspect --view-key-file <global switch> is never honoured as a switch 5ms
+     × scan inspect --view-key-env <global switch> is never honoured as a switch 1ms
+     × reconcile inspect --in <global switch> is never honoured as a switch 1ms
+     × reconcile inspect --viewing-key-file <global switch> is never honoured as a switch 0ms
+     × reconcile inspect --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × reconcile create --chain <global switch> is never honoured as a switch 4ms
+     × reconcile create --keystore <global switch> is never honoured as a switch 1ms
+     × reconcile create --passphrase-file <global switch> is never honoured as a switch 1ms
+     × reconcile create --passphrase-env <global switch> is never honoured as a switch 1ms
+     × reconcile create --viewing-key-file <global switch> is never honoured as a switch 1ms
+     × reconcile create --viewing-key-env <global switch> is never honoured as a switch 0ms
+     × reconcile create --out <global switch> is never honoured as a switch 5ms
+     × reconcile register --in <global switch> is never honoured as a switch 1ms
+     × reconcile register --invoice <global switch> is never honoured as a switch 0ms
+     × reconcile register --keystore <global switch> is never honoured as a switch 0ms
+     × reconcile register --passphrase-file <global switch> is never honoured as a switch 0ms
+     × reconcile register --passphrase-env <global switch> is never honoured as a switch 0ms
+     × reconcile register --viewing-key-file <global switch> is never honoured as a switch 0ms
+     × reconcile register --viewing-key-env <global switch> is never honoured as a switch 0ms
+     × reconcile register --out <global switch> is never honoured as a switch 5ms
+     × reconcile propose --in <global switch> is never honoured as a switch 1ms
+     × reconcile propose --record <global switch> is never honoured as a switch 1ms
+     × reconcile propose --keystore <global switch> is never honoured as a switch 1ms
+     × reconcile propose --passphrase-file <global switch> is never honoured as a switch 0ms
+     × reconcile propose --passphrase-env <global switch> is never honoured as a switch 4ms
+     × reconcile propose --viewing-key-file <global switch> is never honoured as a switch 1ms
+     × reconcile propose --viewing-key-env <global switch> is never honoured as a switch 4ms
+     × reconcile propose --observations <global switch> is never honoured as a switch 1ms
+     × reconcile propose --manifest <global switch> is never honoured as a switch 1ms
+     × reconcile propose --manifest-digest <global switch> is never honoured as a switch 1ms
+     × reconcile propose --release-key <global switch> is never honoured as a switch 1ms
+     × reconcile propose --rpc-file <global switch> is never honoured as a switch 1ms
+     × reconcile propose --rpc-env <global switch> is never honoured as a switch 0ms
+     × reconcile propose --secondary-rpc-file <global switch> is never honoured as a switch 17ms
+     × reconcile propose --secondary-rpc-env <global switch> is never honoured as a switch 1ms
+     × reconcile propose --out <global switch> is never honoured as a switch 1ms
+     × reconcile confirm --in <global switch> is never honoured as a switch 0ms
+     × reconcile confirm --proposal <global switch> is never honoured as a switch 1ms
+     × reconcile confirm --keystore <global switch> is never honoured as a switch 5ms
+     × reconcile confirm --passphrase-file <global switch> is never honoured as a switch 8ms
+     × reconcile confirm --passphrase-env <global switch> is never honoured as a switch 1ms
+     × reconcile confirm --viewing-key-file <global switch> is never honoured as a switch 1ms
+     × reconcile confirm --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × reconcile confirm --observations <global switch> is never honoured as a switch 0ms
+     × reconcile confirm --manifest <global switch> is never honoured as a switch 5ms
+     × reconcile confirm --manifest-digest <global switch> is never honoured as a switch 1ms
+     × reconcile confirm --release-key <global switch> is never honoured as a switch 0ms
+     × reconcile confirm --rpc-file <global switch> is never honoured as a switch 0ms
+     × reconcile confirm --rpc-env <global switch> is never honoured as a switch 1ms
+     × reconcile confirm --secondary-rpc-file <global switch> is never honoured as a switch 0ms
+     × reconcile confirm --secondary-rpc-env <global switch> is never honoured as a switch 0ms
+     × reconcile confirm --out <global switch> is never honoured as a switch 0ms
+     × reconcile record --in <global switch> is never honoured as a switch 7ms
+     × reconcile record --record <global switch> is never honoured as a switch 1ms
+     × reconcile record --manual-invoice-digest <global switch> is never honoured as a switch 1ms
+     × reconcile record --keystore <global switch> is never honoured as a switch 0ms
+     × reconcile record --passphrase-file <global switch> is never honoured as a switch 0ms
+     × reconcile record --passphrase-env <global switch> is never honoured as a switch 1ms
+     × reconcile record --viewing-key-file <global switch> is never honoured as a switch 1ms
+     × reconcile record --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × reconcile record --observations <global switch> is never honoured as a switch 5ms
+     × reconcile record --manifest <global switch> is never honoured as a switch 0ms
+     × reconcile record --manifest-digest <global switch> is never honoured as a switch 0ms
+     × reconcile record --release-key <global switch> is never honoured as a switch 0ms
+     × reconcile record --rpc-file <global switch> is never honoured as a switch 1ms
+     × reconcile record --rpc-env <global switch> is never honoured as a switch 1ms
+     × reconcile record --secondary-rpc-file <global switch> is never honoured as a switch 0ms
+     × reconcile record --secondary-rpc-env <global switch> is never honoured as a switch 0ms
+     × reconcile record --out <global switch> is never honoured as a switch 0ms
+     × reconcile clear-records --in <global switch> is never honoured as a switch 0ms
+     × reconcile clear-records --keystore <global switch> is never honoured as a switch 4ms
+     × reconcile clear-records --passphrase-file <global switch> is never honoured as a switch 0ms
+     × reconcile clear-records --passphrase-env <global switch> is never honoured as a switch 0ms
+     × reconcile clear-records --viewing-key-file <global switch> is never honoured as a switch 0ms
+     × reconcile clear-records --viewing-key-env <global switch> is never honoured as a switch 0ms
+     × reconcile clear-records --out <global switch> is never honoured as a switch 0ms
+     × reconcile remove-invoice --in <global switch> is never honoured as a switch 0ms
+     × reconcile remove-invoice --invoice-digest <global switch> is never honoured as a switch 1ms
+     × reconcile remove-invoice --keystore <global switch> is never honoured as a switch 0ms
+     × reconcile remove-invoice --passphrase-file <global switch> is never honoured as a switch 1ms
+     × reconcile remove-invoice --passphrase-env <global switch> is never honoured as a switch 0ms
+     × reconcile remove-invoice --viewing-key-file <global switch> is never honoured as a switch 5ms
+     × reconcile remove-invoice --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × reconcile remove-invoice --out <global switch> is never honoured as a switch 1ms
+     × reconcile remove-receipt --in <global switch> is never honoured as a switch 1ms
+     × reconcile remove-receipt --receipt-signature <global switch> is never honoured as a switch 1ms
+     × reconcile remove-receipt --keystore <global switch> is never honoured as a switch 0ms
+     × reconcile remove-receipt --passphrase-file <global switch> is never honoured as a switch 12ms
+     × reconcile remove-receipt --passphrase-env <global switch> is never honoured as a switch 3ms
+     × reconcile remove-receipt --viewing-key-file <global switch> is never honoured as a switch 1ms
+     × reconcile remove-receipt --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × reconcile remove-receipt --out <global switch> is never honoured as a switch 0ms
+     × reconcile import --in <global switch> is never honoured as a switch 0ms
+     × reconcile import --backup <global switch> is never honoured as a switch 16ms
+     × reconcile import --keystore <global switch> is never honoured as a switch 1ms
+     × reconcile import --passphrase-file <global switch> is never honoured as a switch 1ms
+     × reconcile import --passphrase-env <global switch> is never honoured as a switch 1ms
+     × reconcile import --viewing-key-file <global switch> is never honoured as a switch 0ms
+     × reconcile import --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × reconcile import --out <global switch> is never honoured as a switch 5ms
+     × reconcile archive-receipt --in <global switch> is never honoured as a switch 1ms
+     × reconcile archive-receipt --receipt <global switch> is never honoured as a switch 1ms
+     × reconcile archive-receipt --keystore <global switch> is never honoured as a switch 1ms
+     × reconcile archive-receipt --passphrase-file <global switch> is never honoured as a switch 6ms
+     × reconcile archive-receipt --passphrase-env <global switch> is never honoured as a switch 2ms
+     × reconcile archive-receipt --viewing-key-file <global switch> is never honoured as a switch 1ms
+     × reconcile archive-receipt --viewing-key-env <global switch> is never honoured as a switch 1ms
+     × reconcile archive-receipt --out <global switch> is never honoured as a switch 1ms
+     × reconcile export-receipts --in <global switch> is never honoured as a switch 1ms
+     × reconcile export-receipts --keystore <global switch> is never honoured as a switch 6ms
+     × reconcile export-receipts --passphrase-file <global switch> is never honoured as a switch 1ms
+     × reconcile export-receipts --passphrase-env <global switch> is never honoured as a switch 1ms
+     × reconcile export-receipts --viewing-key-file <global switch> is never honoured as a switch 0ms
+     × reconcile export-receipts --viewing-key-env <global switch> is never honoured as a switch 0ms
+     × reconcile export-receipts --out <global switch> is never honoured as a switch 0ms
+     × registry lookup --chain <global switch> is never honoured as a switch 0ms
+     × registry lookup --registrant <global switch> is never honoured as a switch 0ms
+     × registry lookup --rpc-file <global switch> is never honoured as a switch 0ms
+     × registry lookup --rpc-env <global switch> is never honoured as a switch 0ms
+     × registry lookup --secondary-rpc-file <global switch> is never honoured as a switch 6ms
+     × registry lookup --secondary-rpc-env <global switch> is never honoured as a switch 1ms
+     × registry lookup --out <global switch> is never honoured as a switch 0ms
+     × webhook sign --body-file <global switch> is never honoured as a switch 0ms
+     × webhook sign --nonce <global switch> is never honoured as a switch 6ms
+     × webhook sign --secret-file <global switch> is never honoured as a switch 1ms
+     × webhook sign --secret-env <global switch> is never honoured as a switch 0ms
+     × webhook verify --body-file <global switch> is never honoured as a switch 0ms
+     × webhook verify --header <global switch> is never honoured as a switch 0ms
+     × webhook verify --header-file <global switch> is never honoured as a switch 1ms
+     × webhook verify --tolerance <global switch> is never honoured as a switch 0ms
+     × webhook verify --secret-file <global switch> is never honoured as a switch 0ms
+     × webhook verify --secret-env <global switch> is never honoured as a switch 9ms
+     × sub schedule --anchor <global switch> is never honoured as a switch 0ms
+     × sub schedule --cadence <global switch> is never honoured as a switch 0ms
+     × sub schedule --from <global switch> is never honoured as a switch 0ms
+     × sub schedule --count <global switch> is never honoured as a switch 0ms
+     × split compute --total <global switch> is never honoured as a switch 0ms
+     × split compute --amount <global switch> is never honoured as a switch 0ms
+     × split compute --decimals <global switch> is never honoured as a switch 8ms
+     × split compute --share <global switch> is never honoured as a switch 1ms
+     × batch preview --csv <global switch> is never honoured as a switch 0ms
+     × batch preview --chain-id <global switch> is never honoured as a switch 0ms
+     × batch preview --asset <global switch> is never honoured as a switch 0ms
+     × batch preview --decimals <global switch> is never honoured as a switch 10ms
+     × batch preview --min <global switch> is never honoured as a switch 1ms
+     × batch preview --per-recipient-max <global switch> is never honoured as a switch 0ms
+     × batch preview --max-recipients <global switch> is never honoured as a switch 0ms
+     × batch preview --max-total <global switch> is never honoured as a switch 0ms
+     × batch preview --duplicates <global switch> is never honoured as a switch 22ms
+     × batch confirm --csv <global switch> is never honoured as a switch 1ms
+     × batch confirm --chain-id <global switch> is never honoured as a switch 1ms
+     × batch confirm --asset <global switch> is never honoured as a switch 1ms
+     × batch confirm --decimals <global switch> is never honoured as a switch 1ms
+     × batch confirm --min <global switch> is never honoured as a switch 9ms
+     × batch confirm --per-recipient-max <global switch> is never honoured as a switch 1ms
+     × batch confirm --max-recipients <global switch> is never honoured as a switch 0ms
+     × batch confirm --max-total <global switch> is never honoured as a switch 1ms
+     × batch confirm --duplicates <global switch> is never honoured as a switch 1ms
+     × batch confirm --hash <global switch> is never honoured as a switch 0ms
+     × export --in <global switch> is never honoured as a switch 0ms
+     × export --format <global switch> is never honoured as a switch 0ms
+     × export --rounding <global switch> is never honoured as a switch 17ms
+     × export --sales-account <global switch> is never honoured as a switch 1ms
+     × export --tax-account <global switch> is never honoured as a switch 1ms
+     × export --receivable-account <global switch> is never honoured as a switch 1ms
+     × export --out <global switch> is never honoured as a switch 1ms
+     × sandbox chain demo --seed <global switch> is never honoured as a switch 1ms
+     × i18n check --base <global switch> is never honoured as a switch 1ms
+     × i18n check --catalog <global switch> is never honoured as a switch 1ms
+   ❯ no command matched: a switch behind an option is still not honoured (R11-1) (10)
+     × webhok verify --header --version --json is a usage error 1ms
+     × webhook verifyy --header --help is a usage error 3ms
+     × webhook verifyy --body-file b --header -h --json is a usage error 12ms
+     × split --total 10 --share --version is a usage error 1ms
+     × chain deployment --in --version is a usage error 1ms
+     × merchant refunds statuss --in -h is a usage error 1ms
+     × sandbox chain --seed --help is a usage error 20ms
+ ❯ src/reconcile-stored-only.test.ts (5 tests | 5 failed) 6518ms
+   × propose --out refuses a stored record that was not freshly verified in this run (R11-2) 1330ms
+   × propose listing reports a stored-only exact proposal as not currently verified (R11-2) 1600ms
+   × propose listing still reports a freshly verified record as currently verified (R11-2) 1430ms
+   × offline propose listing never marks a stored proposal as currently verified (R11-2) 679ms
+   × propose listing with nothing to list does not claim current verification (R11-2) 1476ms
+ ❯ src/untrusted-echo.test.ts (9 tests | 8 failed) 214ms
+   ❯ error and human output do not echo raw untrusted text (R11-4) (9)
+     × READ_FAILED does not echo a mis-pasted bearer payment link, with or without --json 55ms
+     × READ_FAILED does not echo a fragment, a query or a bare #gpi document passed as a path 13ms
+     × READ_FAILED keeps the basename of a plain missing local path 1ms
+     × WRITE_FAILED does not echo a raw --out value with control characters 42ms
+     × displayPath keeps plain basenames and withholds links, documents, control text and long names 1ms
+     × displayPath withholds key=value text and network paths (a link fragment pasted without its #) 1ms
+     × i18n check human output does not emit terminal escape characters from catalog keys 51ms
+     × escapeDisplay escapes control, bidi and separator characters but keeps ordinary text 1ms
+ ❯ src/observation-input.test.ts (26 tests | 26 failed) 14766ms
+   ❯ malformed observation fields are invalid input, not network failures (R11-3) (26)
+     × payment inspect rejects blockNumber "100" as INVALID_INPUT, exit 1, no RPC 108ms
+     × payment inspect rejects blockNumber "0x00" as INVALID_INPUT, exit 1, no RPC 23ms
+     × payment inspect rejects blockNumber "0x" as INVALID_INPUT, exit 1, no RPC 1ms
+     × payment inspect rejects blockNumber "0X1" as INVALID_INPUT, exit 1, no RPC 19ms
+     × payment inspect rejects blockNumber 100 as INVALID_INPUT, exit 1, no RPC 7ms
+     × payment inspect rejects blockNumber null as INVALID_INPUT, exit 1, no RPC 2ms
+     × payment verify rejects blockNumber "100" as INVALID_INPUT, exit 1, no RPC 11ms
+     × payment verify rejects blockNumber "0x00" as INVALID_INPUT, exit 1, no RPC 2ms
+     × payment verify rejects blockNumber "0x" as INVALID_INPUT, exit 1, no RPC 17ms
+     × payment verify rejects blockNumber "0X1" as INVALID_INPUT, exit 1, no RPC 2ms
+     × payment verify rejects blockNumber 100 as INVALID_INPUT, exit 1, no RPC 13ms
+     × payment verify rejects blockNumber null as INVALID_INPUT, exit 1, no RPC 2ms
+     × reconcile propose rejects a current blockNumber "100" as INVALID_INPUT, exit 1, no RPC 1480ms
+     × reconcile propose rejects a current blockNumber "0x00" as INVALID_INPUT, exit 1, no RPC 1197ms
+     × reconcile propose rejects a current blockNumber "0x" as INVALID_INPUT, exit 1, no RPC 1243ms
+     × reconcile propose rejects a current blockNumber "0X1" as INVALID_INPUT, exit 1, no RPC 1172ms
+     × reconcile propose rejects a current blockNumber 100 as INVALID_INPUT, exit 1, no RPC 1196ms
+     × reconcile propose rejects a current blockNumber null as INVALID_INPUT, exit 1, no RPC 884ms
+     × reconcile propose reports a wrong emitter as INVALID_LOG, not INTERNAL 944ms
+     × reconcile record rejects a current blockNumber "100" as INVALID_INPUT, exit 1, no RPC 901ms
+     × reconcile record rejects a current blockNumber "0x00" as INVALID_INPUT, exit 1, no RPC 791ms
+     × reconcile record rejects a current blockNumber "0x" as INVALID_INPUT, exit 1, no RPC 704ms
+     × reconcile record rejects a current blockNumber "0X1" as INVALID_INPUT, exit 1, no RPC 1256ms
+     × reconcile record rejects a current blockNumber 100 as INVALID_INPUT, exit 1, no RPC 843ms
+     × reconcile record rejects a current blockNumber null as INVALID_INPUT, exit 1, no RPC 727ms
+     × reconcile record reports a wrong emitter as INVALID_LOG, not INTERNAL 1219ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 428 ⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --header --help on a forged body never succeeds
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --header -h on a forged body never succeeds
+AssertionError: expected '{"ok":true,"usage":"ghostpay webhook …' not to match /"ok":true/
+
+- Expected:
+/"ok":true/
+
++ Received:
+"{\"ok\":true,\"usage\":\"ghostpay webhook verify --body-file F|- (--header V | --header-file F) (--secret-file P | --secret-env NAME | --secret-stdin) [--tolerance SECONDS]\\n  Exit 1 with reason malformed|stale|bad-signature|replay.\"}
+"
+
+ ❯ src/global-switches.test.ts:34:35
+     32|       const io = makeIo({ 'body.json': body, 'sec.txt': SECRET_HEX });
+     33|       const code = await run(['webhook', 'verify', '--body-file', 'bod…
+     34|       expect(io.out.join('')).not.toMatch(/"ok":true/);
+       |                                   ^
+     35|       if (isDoubleDash(forged)) {
+     36|         // A `--` token is never an option value: usage error, nothing…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/428]⎯
+
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --header --version on a forged body never succeeds
+AssertionError: expected '{"ok":true,"version":"0.1.0"}\n' not to match /"ok":true/
+
+- Expected:
+/"ok":true/
+
++ Received:
+"{\"ok\":true,\"version\":\"0.1.0\"}
+"
+
+ ❯ src/global-switches.test.ts:34:35
+     32|       const io = makeIo({ 'body.json': body, 'sec.txt': SECRET_HEX });
+     33|       const code = await run(['webhook', 'verify', '--body-file', 'bod…
+     34|       expect(io.out.join('')).not.toMatch(/"ok":true/);
+       |                                   ^
+     35|       if (isDoubleDash(forged)) {
+     36|         // A `--` token is never an option value: usage error, nothing…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/428]⎯
+
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > a switch in the header value position prints no help, also without --json
+AssertionError: expected +0 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ src/global-switches.test.ts:56:128
+     54|   it('a switch in the header value position prints no help, also witho…
+     55|     const io = makeIo({ 'body.json': body, 'sec.txt': SECRET_HEX });
+     56|     expect(await run(['webhook', 'verify', '--body-file', 'body.json',…
+       |                                                                                                                                ^
+     57|     expect(io.out.join('')).toBe('');
+     58|     expect(io.err.join('')).toContain('--header needs a value');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/428]⎯
+
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --pin --help fails instead of printing help
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ src/global-switches.test.ts:67:24
+     65|       io.out.length = 0;
+     66|       const code = await run(['invoice', 'verify', '--in', 'signed.jso…
+     67|       expect(code).not.toBe(0);
+       |                        ^
+     68|       expect(io.out.join('')).not.toMatch(/"ok":true/);
+     69|       expect(io.err.join('')).toContain(isDoubleDash(forged) ? 'MISSIN…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/428]⎯
+
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --pin --help and --expected-tx --help fail instead of printing help
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --pin -h and --expected-tx -h fail instead of printing help
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --pin --version and --expected-tx --version fail instead of printing help
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ src/global-switches.test.ts:85:43
+     83|         w.io.out.length = 0;
+     84|         w.io.err.length = 0;
+     85|         expect(await run(argv, w.io)).not.toBe(0);
+       |                                           ^
+     86|         expect(w.io.out.join('')).not.toMatch(/"ok":true/);
+     87|         expect(w.io.err.join('') + w.io.out.join('')).toMatch(/"ok":fa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/428]⎯
+
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --in --help fails instead of printing help
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --in -h fails instead of printing help
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --in --version fails instead of printing help
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ src/global-switches.test.ts:94:24
+     92|       const io = makeIo();
+     93|       const code = await run(['payment', 'verify', '--in', forged, '--…
+     94|       expect(code).not.toBe(0);
+       |                        ^
+     95|       expect(io.out.join('')).not.toMatch(/"ok":true/);
+     96|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/428]⎯
+
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --pin -h fails instead of printing help
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --pin --version fails instead of printing help
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ src/global-switches.test.ts:67:24
+     65|       io.out.length = 0;
+     66|       const code = await run(['invoice', 'verify', '--in', 'signed.jso…
+     67|       expect(code).not.toBe(0);
+       |                        ^
+     68|       expect(io.out.join('')).not.toMatch(/"ok":true/);
+     69|       expect(io.err.join('')).toContain(isDoubleDash(forged) ? 'MISSIN…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/428]⎯
+
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice inspect --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice inspect --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice inspect --expected-chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice inspect --expected-asset <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice inspect --expected-recipient <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice inspect --expected-amount <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice create --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice create --key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice create --key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice create --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice sign --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice sign --key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice sign --key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice sign --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --pin <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --expected-chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --expected-asset <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --expected-recipient <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice verify --expected-amount <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice link --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice link --base <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice link --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice link --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > invoice link --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --invoice <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --manual-invoice-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --observation <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --invoice-passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --invoice-passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --manifest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt create --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --invoice <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --pin <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --expected-chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --expected-asset <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --expected-amount <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --expected-recipient <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --expected-tx <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt verify --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt export --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > receipt export --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --manifest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment verify --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --manifest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > payment status --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant installments plan --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant installments plan --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant installments inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant installments inspect --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant webhooks inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant subscriptions validate --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant subscriptions inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant refunds inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant refunds inspect --state <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant refunds inspect --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant refunds status --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant refunds status --state <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > merchant refunds status --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > diagnostics --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > config validate --kind <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > config validate --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > config validate --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup generate --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup generate --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup generate --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup verify --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup verify --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup verify --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup verify --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup verify --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup restore --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup restore --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup restore --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup restore --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup restore --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup restore --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup rekey --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup rekey --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup rekey --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup rekey --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup rekey --new-passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup rekey --new-passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --spending-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --spending-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --signing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --signing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > backup create --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain assets --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain recipient inspect --family <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain recipient inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain recipient inspect --network <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain solana announcement inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain bitcoin headers verify --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain bitcoin headers verify --checkpoint <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain bitcoin headers verify --network <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment inspect --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment inspect --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment inspect --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment verify --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment verify --manifest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment verify --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment verify --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment verify --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment verify --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment verify --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > chain deployment verify --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > diagnostics rpc --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > diagnostics rpc --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > diagnostics rpc --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > diagnostics rpc --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > diagnostics rpc --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > diagnostics rpc --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history list --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history list --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history list --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history list --query <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history list --limit <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history list --offset <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history list --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history inspect --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history inspect --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > history inspect --record <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr encode --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr encode --kind <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr encode --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr encode --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr encode --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr encode --format <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr encode --chunk-chars <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr encode --frame <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr decode --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr decode --kind <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr decode --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr decode --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr decode --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > qr decode --frame-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > seller export-public --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > seller export-public --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > seller import-public --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > seller import-public --current <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > seller import-public --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan plan --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan plan --from-block <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan plan --to-block <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan plan --max-logs <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --from-block <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --to-block <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --max-logs <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --manifest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --view-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --view-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --spend-public-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan run --resume <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan inspect --view-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > scan inspect --view-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile inspect --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile inspect --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile inspect --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile create --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile create --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile create --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile create --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile create --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile create --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile create --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile register --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile register --invoice <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile register --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile register --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile register --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile register --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile register --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile register --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --record <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --observations <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --manifest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile propose --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --proposal <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --observations <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --manifest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile confirm --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --record <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --manual-invoice-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --observations <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --manifest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --manifest-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --release-key <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile record --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile clear-records --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile clear-records --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile clear-records --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile clear-records --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile clear-records --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile clear-records --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile clear-records --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-invoice --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-invoice --invoice-digest <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-invoice --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-invoice --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-invoice --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-invoice --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-invoice --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-invoice --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-receipt --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-receipt --receipt-signature <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-receipt --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-receipt --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-receipt --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-receipt --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-receipt --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile remove-receipt --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile import --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile import --backup <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile import --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile import --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile import --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile import --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile import --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile import --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile archive-receipt --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile archive-receipt --receipt <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile archive-receipt --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile archive-receipt --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile archive-receipt --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile archive-receipt --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile archive-receipt --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile archive-receipt --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile export-receipts --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile export-receipts --keystore <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile export-receipts --passphrase-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile export-receipts --passphrase-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile export-receipts --viewing-key-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile export-receipts --viewing-key-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > reconcile export-receipts --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > registry lookup --chain <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > registry lookup --registrant <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > registry lookup --rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > registry lookup --rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > registry lookup --secondary-rpc-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > registry lookup --secondary-rpc-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > registry lookup --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook sign --body-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook sign --nonce <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook sign --secret-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook sign --secret-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --body-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --header <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --header-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --tolerance <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --secret-file <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > webhook verify --secret-env <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > sub schedule --anchor <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > sub schedule --cadence <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > sub schedule --from <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > sub schedule --count <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > split compute --total <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > split compute --amount <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > split compute --decimals <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > split compute --share <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --csv <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --chain-id <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --asset <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --decimals <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --min <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --per-recipient-max <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --max-recipients <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --max-total <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch preview --duplicates <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --csv <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --chain-id <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --asset <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --decimals <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --min <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --per-recipient-max <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --max-recipients <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --max-total <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --duplicates <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > batch confirm --hash <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > export --in <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > export --format <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > export --rounding <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > export --sales-account <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > export --tax-account <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > export --receivable-account <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > export --out <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > sandbox chain demo --seed <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > i18n check --base <global switch> is never honoured as a switch
+ FAIL  src/global-switches.test.ts > global switches are not honoured in option-value positions (R11-1) > i18n check --catalog <global switch> is never honoured as a switch
+AssertionError: --help json=true: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/global-switches.test.ts:115:60
+    113|           const before = [...io.files.keys()].sort();
+    114|           const code = await run([...c.path, `--${name}`, forged, ...(…
+    115|           expect(printedHelpOrVersion(io, c.usage), label).toBe(false);
+       |                                                            ^
+    116|           if (isDoubleDash(forged)) {
+    117|             // Refused before the command runs: usage error, nothing o…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/428]⎯
+
+ FAIL  src/global-switches.test.ts > no command matched: a switch behind an option is still not honoured (R11-1) > webhok verify --header --version --json is a usage error
+ FAIL  src/global-switches.test.ts > no command matched: a switch behind an option is still not honoured (R11-1) > webhook verifyy --header --help is a usage error
+ FAIL  src/global-switches.test.ts > no command matched: a switch behind an option is still not honoured (R11-1) > webhook verifyy --body-file b --header -h --json is a usage error
+ FAIL  src/global-switches.test.ts > no command matched: a switch behind an option is still not honoured (R11-1) > split --total 10 --share --version is a usage error
+ FAIL  src/global-switches.test.ts > no command matched: a switch behind an option is still not honoured (R11-1) > chain deployment --in --version is a usage error
+ FAIL  src/global-switches.test.ts > no command matched: a switch behind an option is still not honoured (R11-1) > merchant refunds statuss --in -h is a usage error
+ FAIL  src/global-switches.test.ts > no command matched: a switch behind an option is still not honoured (R11-1) > sandbox chain --seed --help is a usage error
+AssertionError: expected +0 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ src/global-switches.test.ts:157:35
+    155|     it(`${argv.join(' ')} is a usage error`, async () => {
+    156|       const io = makeIo();
+    157|       expect(await run(argv, io)).toBe(2);
+       |                                   ^
+    158|       expect(io.out.join('')).toBe('');
+    159|       expect(io.err.join('')).not.toMatch(/"ok":true/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/428]⎯
+
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment inspect rejects blockNumber "100" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment inspect rejects blockNumber "0x00" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment inspect rejects blockNumber "0x" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment inspect rejects blockNumber "0X1" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment inspect rejects blockNumber 100 as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment inspect rejects blockNumber null as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment verify rejects blockNumber "100" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment verify rejects blockNumber "0x00" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment verify rejects blockNumber "0x" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment verify rejects blockNumber "0X1" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment verify rejects blockNumber 100 as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > payment verify rejects blockNumber null as INVALID_INPUT, exit 1, no RPC
+AssertionError: expected 4 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 4
+
+ ❯ src/observation-input.test.ts:20:70
+     18|       io.files.set('claim.json', JSON.stringify(v));
+     19|       const args = command === 'inspect' ? ['--in', 'claim.json'] : VE…
+     20|       expect(await run(['payment', command, ...args, '--json'], io)).t…
+       |                                                                      ^
+     21|       expect(errorOf(io.err)).toMatchObject({ code: 'INVALID_INPUT' });
+     22|       expect(calls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/428]⎯
+
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile propose rejects a current blockNumber "100" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile propose rejects a current blockNumber "0x00" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile propose rejects a current blockNumber "0x" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile propose rejects a current blockNumber "0X1" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile propose rejects a current blockNumber 100 as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile propose rejects a current blockNumber null as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile record rejects a current blockNumber "100" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile record rejects a current blockNumber "0x00" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile record rejects a current blockNumber "0x" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile record rejects a current blockNumber "0X1" as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile record rejects a current blockNumber 100 as INVALID_INPUT, exit 1, no RPC
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile record rejects a current blockNumber null as INVALID_INPUT, exit 1, no RPC
+AssertionError: expected { code: 'INTERNAL', …(2) } to match object { code: 'INVALID_INPUT' }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "code": "INVALID_INPUT",
++   "code": "INTERNAL",
+  }
+
+ ❯ src/observation-input.test.ts:32:33
+     30|       const extra = sub === 'record' ? ['--approve', '--out', 'next.js…
+     31|       const code = await run(['reconcile', sub, '--in', 'history.json'…
+     32|       expect(errorOf(w.io.err)).toMatchObject({ code: 'INVALID_INPUT' …
+       |                                 ^
+     33|       expect(code).toBe(1);
+     34|       expect(w.calls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/428]⎯
+
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile propose reports a wrong emitter as INVALID_LOG, not INTERNAL
+ FAIL  src/observation-input.test.ts > malformed observation fields are invalid input, not network failures (R11-3) > reconcile record reports a wrong emitter as INVALID_LOG, not INTERNAL
+AssertionError: expected { code: 'INTERNAL', …(2) } to match object { code: 'INVALID_LOG' }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "code": "INVALID_LOG",
++   "code": "INTERNAL",
+  }
+
+ ❯ src/observation-input.test.ts:42:33
+     40|       const extra = sub === 'record' ? ['--approve', '--out', 'next.js…
+     41|       const code = await run(['reconcile', sub, '--in', 'history.json'…
+     42|       expect(errorOf(w.io.err)).toMatchObject({ code: 'INVALID_LOG' });
+       |                                 ^
+     43|       expect(code).toBe(1);
+     44|       expect(w.calls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/428]⎯
+
+ FAIL  src/reconcile-stored-only.test.ts > propose --out refuses a stored record that was not freshly verified in this run (R11-2)
+AssertionError: expected { code: +0, wrote: true, …(1) } to deeply equal { code: 1, wrote: false, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "claimsVerified": false,
+-   "code": 1,
+-   "wrote": false,
++   "claimsVerified": true,
++   "code": 0,
++   "wrote": true,
+  }
+
+ ❯ src/reconcile-stored-only.test.ts:33:6
+     31|   const code = await run(['reconcile', 'propose', '--in', 'history.jso…
+     32|   expect({ code, wrote: w.io.files.has('proposal.json'), claimsVerifie…
+     33|     .toEqual({ code: 1, wrote: false, claimsVerified: false });
+       |      ^
+     34|   expect(JSON.parse(w.io.err.join(''))).toMatchObject({ ok: false, err…
+     35| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/428]⎯
+
+ FAIL  src/reconcile-stored-only.test.ts > propose listing reports a stored-only exact proposal as not currently verified (R11-2)
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/reconcile-stored-only.test.ts:41:39
+     39|   expect(await run(['reconcile', 'propose', '--in', 'history.json', ..…
+     40|   const report = stdoutJson(w.io) as { currentChainVerified: boolean; …
+     41|   expect(report.currentChainVerified).toBe(false);
+       |                                       ^
+     42|   expect(report.proposals).toEqual([expect.objectContaining({ recordId…
+     43|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/428]⎯
+
+ FAIL  src/reconcile-stored-only.test.ts > propose listing still reports a freshly verified record as currently verified (R11-2)
+AssertionError: expected { ok: true, confirmed: false, …(2) } to match object { currentChainVerified: true, …(1) }
+(14 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "currentChainVerified": true,
+    "proposals": [
+      {
+-       "currentChainVerified": true,
++       "invoice": {
++         "asset": "native",
++         "chainId": 11155111,
++         "createdAt": 1800000000,
++         "expectedNetMinorUnits": "100",
++         "expiresAt": 1800003600,
++         "invoiceDigest": "0x34e3e5287b7894ff9fdfd08e82827b9c8dabb6bd16d69dbd9cc0e845e660e958",
++         "nonce": "255585b5e5154575a5d505356595c5f5",
++         "registeredAt": 1800000000000,
++         "version": 1,
++       },
+        "kind": "exact",
+        "recordId": "3fca02c4d8f6916e4519e46c0b9119f6fd657ff1213e2e22e897943b65dd1cd6:11155111:0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd:0xd1a24110fe923f0c53f80b4fc0ec8e59c0800861:0xabababababababababababababababababababababababababababababababab:4",
+      },
+    ],
+  }
+
+ ❯ src/reconcile-stored-only.test.ts:56:28
+     54|   const w = await reconciliationWorld();
+     55|   expect(await run(['reconcile', 'propose', '--in', 'history.json', ..…
+     56|   expect(stdoutJson(w.io)).toMatchObject({ currentChainVerified: true,…
+       |                            ^
+     57| });
+     58|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/428]⎯
+
+ FAIL  src/reconcile-stored-only.test.ts > offline propose listing never marks a stored proposal as currently verified (R11-2)
+AssertionError: expected { ok: true, confirmed: false, …(2) } to match object { currentChainVerified: false, …(1) }
+(14 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "currentChainVerified": false,
+    "proposals": [
+      {
+-       "currentChainVerified": false,
++       "invoice": {
++         "asset": "native",
++         "chainId": 11155111,
++         "createdAt": 1800000000,
++         "expectedNetMinorUnits": "300",
++         "expiresAt": 1800003600,
++         "invoiceDigest": "0x88a7c659967add9f629b5d717291a4bac1a8e0c4c614bffffa0d9e9f55f8ca4b",
++         "nonce": "255585b5e5154575a5d505356595c5f5",
++         "registeredAt": 1800000000000,
++         "version": 1,
++       },
+        "kind": "exact",
+        "recordId": "3fca02c4d8f6916e4519e46c0b9119f6fd657ff1213e2e22e897943b65dd1cd6:11155111:0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:0xd1a24110fe923f0c53f80b4fc0ec8e59c0800861:0xabababababababababababababababababababababababababababababababab:9",
+      },
+    ],
+  }
+
+ ❯ src/reconcile-stored-only.test.ts:62:28
+     60|   const { w, staleId } = await worldWithStoredOnlyRecord();
+     61|   expect(await run(['reconcile', 'propose', '--in', 'history.json', '-…
+     62|   expect(stdoutJson(w.io)).toMatchObject({ currentChainVerified: false…
+       |                            ^
+     63| });
+     64|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/428]⎯
+
+ FAIL  src/reconcile-stored-only.test.ts > propose listing with nothing to list does not claim current verification (R11-2)
+AssertionError: expected { ok: true, confirmed: false, …(2) } to match object { ok: true, confirmed: false, …(2) }
+
+- Expected
++ Received
+
+  {
+    "confirmed": false,
+-   "currentChainVerified": false,
++   "currentChainVerified": true,
+    "ok": true,
+    "proposals": [],
+  }
+
+ ❯ src/reconcile-stored-only.test.ts:68:28
+     66|   const w = await reconciliationWorld();
+     67|   expect(await run(['reconcile', 'propose', '--in', 'history.json', ..…
+     68|   expect(stdoutJson(w.io)).toMatchObject({ ok: true, confirmed: false,…
+       |                            ^
+     69| });
+     70|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/428]⎯
+
+ FAIL  src/untrusted-echo.test.ts > error and human output do not echo raw untrusted text (R11-4) > READ_FAILED does not echo a mis-pasted bearer payment link, with or without --json
+AssertionError: expected '{"ok":false,"error":{"code":"READ_FAI…' not to contain 'SECRETSECRETSECRET'
+
+- Expected
++ Received
+
+- SECRETSECRETSECRET
++ {"ok":false,"error":{"code":"READ_FAILED","message":"cannot read file \"https://pay.example/#gpi=v1.SECRETSECRETSECRETSECRETSECRET\".","hint":"Check the path and permissions."}}
++
+
+ ❯ src/untrusted-echo.test.ts:13:33
+     11|       const io = makeIo();
+     12|       expect(await run(['invoice', 'verify', '--in', LINK, ...(json ? …
+     13|       expect(allOutput(io)).not.toContain('SECRETSECRETSECRET');
+       |                                 ^
+     14|       expect(allOutput(io)).not.toContain('pay.example');
+     15|       expect(allOutput(io)).toContain(json ? 'READ_FAILED' : 'cannot r…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/428]⎯
+
+ FAIL  src/untrusted-echo.test.ts > error and human output do not echo raw untrusted text (R11-4) > READ_FAILED does not echo a fragment, a query or a bare #gpi document passed as a path
+AssertionError: expected '{"ok":false,"error":{"code":"READ_FAI…' not to contain 'SECRETSECRETSECRET'
+
+- Expected
++ Received
+
+- SECRETSECRETSECRET
++ {"ok":false,"error":{"code":"READ_FAILED","message":"cannot read file \"invoice.json#gpi=v1.SECRETSECRETSECRET\".","hint":"Check the path and permissions."}}
++
+
+ ❯ src/untrusted-echo.test.ts:23:33
+     21|       const io = makeIo();
+     22|       expect(await run(['invoice', 'verify', '--in', path, '--json'], …
+     23|       expect(allOutput(io)).not.toContain('SECRETSECRETSECRET');
+       |                                 ^
+     24|     }
+     25|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/428]⎯
+
+ FAIL  src/untrusted-echo.test.ts > error and human output do not echo raw untrusted text (R11-4) > READ_FAILED keeps the basename of a plain missing local path
+AssertionError: expected '{"ok":false,"error":{"code":"READ_FAI…' not to contain 'private/dir'
+
+- Expected
++ Received
+
+- private/dir
++ {"ok":false,"error":{"code":"READ_FAILED","message":"cannot read file \"private/dir/missing-invoice.json\".","hint":"Check the path and permissions."}}
++
+
+ ❯ src/untrusted-echo.test.ts:32:21
+     30|     const err = io.err.join('');
+     31|     expect(err).toContain('missing-invoice.json');
+     32|     expect(err).not.toContain('private/dir');
+       |                     ^
+     33|   });
+     34|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/428]⎯
+
+ FAIL  src/untrusted-echo.test.ts > error and human output do not echo raw untrusted text (R11-4) > WRITE_FAILED does not echo a raw --out value with control characters
+AssertionError: expected 'ghostpay: error: cannot write "SECRET…' not to contain 'SECRETSECRETSECRET'
+
+- Expected
++ Received
+
+- SECRETSECRETSECRET
++ ghostpay: error: cannot write "SECRETSECRETSECRET\u001b[2K.json".
++   hint: It may already exist (use --force) or the directory is not writable.
++
+
+ ❯ src/untrusted-echo.test.ts:40:31
+     38|     const code = await run(['invoice', 'create', '--in', 'spec.json', …
+     39|     expect(code).toBe(3);
+     40|     expect(allOutput(io)).not.toContain('SECRETSECRETSECRET');
+       |                               ^
+     41|     expect(allOutput(io)).not.toContain('\u001b');
+     42|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/428]⎯
+
+ FAIL  src/untrusted-echo.test.ts > error and human output do not echo raw untrusted text (R11-4) > displayPath keeps plain basenames and withholds links, documents, control text and long names
+TypeError: displayPath is not a function
+ ❯ src/untrusted-echo.test.ts:52:12
+     50|
+     51|   it('displayPath keeps plain basenames and withholds links, documents…
+     52|     expect(displayPath('a/b/invoice 1.json')).toBe('"invoice 1.json"');
+       |            ^
+     53|     expect(displayPath('C:\\Users\\me\\invoice.json')).toBe('"invoice.…
+     54|     for (const p of [LINK, 'x#y', 'x?y', 'mailto:x', 'a\u0007b', 'a\u2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/428]⎯
+
+ FAIL  src/untrusted-echo.test.ts > error and human output do not echo raw untrusted text (R11-4) > displayPath withholds key=value text and network paths (a link fragment pasted without its #)
+TypeError: displayPath is not a function
+ ❯ src/untrusted-echo.test.ts:60:14
+     58|   it('displayPath withholds key=value text and network paths (a link f…
+     59|     for (const p of ['gpi=v1.SECRETSECRETSECRETSECRET', 'dir/gpi=v1.SE…
+     60|       expect(displayPath(p), p).toBeUndefined();
+       |              ^
+     61|     expect(displayPath('reports/2026-11 (final) [v2].json')).toBe('"20…
+     62|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/428]⎯
+
+ FAIL  src/untrusted-echo.test.ts > error and human output do not echo raw untrusted text (R11-4) > i18n check human output does not emit terminal escape characters from catalog keys
+AssertionError: expected 'ok   en       1/1\nFAIL es       1/1;…' not to contain '\u001b'
+
+- Expected
++ Received
+
+- 
++ ok   en       1/1
++ FAIL es       1/1; extra x[1A[2Kok   es       10/10
++
+
+ ❯ src/untrusted-echo.test.ts:70:21
+     68|     expect(await run(['i18n', 'check', '--catalog', 'en=en.json', '--c…
+     69|     const out = io.out.join('');
+     70|     expect(out).not.toContain('\u001b');
+       |                     ^
+     71|     expect(out).toContain('\\u001b[1A');
+     72|     expect(out.split('\n').filter((l) => l.length > 0)).toHaveLength(2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/428]⎯
+
+ FAIL  src/untrusted-echo.test.ts > error and human output do not echo raw untrusted text (R11-4) > escapeDisplay escapes control, bidi and separator characters but keeps ordinary text
+TypeError: escapeDisplay is not a function
+ ❯ src/untrusted-echo.test.ts:76:12
+     74|
+     75|   it('escapeDisplay escapes control, bidi and separator characters but…
+     76|     expect(escapeDisplay('plain.key name')).toBe('plain.key name');
+       |            ^
+     77|     expect(escapeDisplay('a\u001bb\nc"d')).toBe('a\\u001bb\\nc\\"d');
+     78|     expect(escapeDisplay('x\u202ey\u2028z\u0085')).toBe('x\\u202ey\\u2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/428]⎯
+
+
+ Test Files  4 failed (4)
+      Tests  428 failed | 12 passed (440)
+   Start at  22:11:08
+   Duration  77.89s (import 38%, tests 37%, transform 25%)
+

@@ -1,3 +1,117 @@
+# Browser network isolation: unowned transport gaps — 2026-11-18
+
+Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
+Branch: `codex/ghostpay-browser-isolation-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (live `main`).
+Owned paths: `packages/net-transport/src/fetchTransport.ts`, `fetchAdapter.ts` and new focused
+transport isolation tests; `packages/solana-stealth/src/rpc.ts`, `packages/tron-adapter/src/rpc.ts`
+and new `rpc.isolation.test.ts` tests (chain adapter worker); `apps/web/src/lib/release.ts`, its
+focused tests, a new browser network isolation spec; new machine-readable egress inventory
+and scoped isolation documentation; new `scripts/tests/network-egress-inventory.test.mjs` and
+independently authored `scripts/tests/network-isolation-native.test.mjs` QA. Both chain RPC files were checked against all 39 open
+PRs, including new recovery #239 (`d2c64522`); no current PR changes either file.
+Acceptance: reproduce and fix unintended redirect egress, cancelled/stale request dispatch,
+unbounded transport failure and untrusted error disclosure in these paths; prove no fallback,
+bounded failure and fixed error messages with controlled fixtures and browser requests. Record
+source-pinned findings, exact checks and unresolved integration dependencies.
+Status: implemented and independently re-reviewed in draft PR #241. Hosted first-head typecheck,
+unit/integration suites and lean browser acceptance passed; 11 lint errors were corrected with their
+adversarial assertions preserved. Final-head checks and the separately owned policy integration are
+tracked in `docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md` and the PR.
+
+Active inputs remain read-only: privacy #222 (`2bc20982`), own-node #228 (`685fe1a3`), Sweep
+consent #231 (`d9ff3868`), browser fixtures #233 (`67cf835d`), integration #238 (`198aa5ba`),
+recovery/keypair exports and Mythril remediation. Their UI, service policy, settings, scan,
+Sweep, catalogs, consolidation ledgers and release gates are not owned by this task. The
+five lower-level transport files were compared against these heads and are unchanged; this
+lane extends existing adapters without a second policy engine. Recheck all heads before PR.
+
+# Repository consolidation — 2026-11-18 (active)
+
+# Remaining-work browser qualification — 2026-11-18
+
+Worker: ChatGPT root, branch `chatgpt/ghostpay-remaining-work-20261119`, source
+`264cf86b`. Owned path: `apps/web/e2e/app.spec.ts` hostile-text test only.
+The live #233 file list does not claim this test. Its global dialog handler
+dismisses the legitimate SEC-40 beforeunload prompt, aborting `openFresh()`.
+Acceptance: accept only beforeunload in this synthetic-key test; continue to
+record/dismiss every script dialog and preserve every inert-DOM assertion.
+No application, privacy, recovery, timeout, or assertion relaxation.
+
+# Remaining unassigned work — 2026-11-18 (client date)
+
+Coordinator: ChatGPT root; branch `chatgpt/ghostpay-remaining-work-20261119`.
+Base main: `dfc75ef2087fa6463ae59e0818abec01796c578d`; integration source:
+`198aa5baff22272453733a0f3dcfcac0e0994eec` (#238).
+Owned paths: `docs/completion/remaining-work-20261118/`, integration of the isolated
+policy, historical CLI/relayer, and CI qualification lanes, and this registry.
+Acceptance: source-pin every task and source PR; recover only existing requirements
+or confirmed defects; obtain failing/passing regression evidence and independent
+review; consolidate verified commits; use actual GitHub merge confirmations.
+The seven separately assigned feature streams remain read-only inputs. Their
+defects are referred to their owners. Strict Mythril policy remains unchanged.
+No deployment, production release, branch deletion, force-push, or paid-agent
+workflow activation. Existing branch heads are rechecked before integration.
+
+# Fee-charging Factory deployment safeguards — 2026-11-19
+
+Worker: contract_security, Caveman investigate-first, remaining-work coordinator.
+Branch: `chatgpt/ghostpay-policy-guard-20261119`; base:
+`198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238).
+Owned paths: the seven deployment-policy paths from PR #217 (`DeployPolicy.s.sol`,
+`pre-deploy-check.sh`, `DeployPolicy.t.sol`, `DeployChecksum.t.sol`, contract gas
+snapshot and README, deployment runbook), `scripts/tests/policy-predeploy.test.mjs`,
+this registry entry, and the scoped handoff. Original PR #217 is a read-only input.
+Acceptance: recover #217's token-specific nonzero-fee acknowledgement, prove missing
+and wrong-token rejection and zero-fee compatibility with deterministic offline
+shell cases, run pinned Foundry checks, preserve contract runtime bytecode and the
+unchanged strict Mythril policy. No deploy, source-PR mutation, release or main merge.
+Coordinator owns integration and all other completion records; independent review
+is required before consolidation.
+Status: selective recovery and exact-address preflight fix committed at
+`c0d718578fb4aa855ffcd4a87241a5efabf9732f`. Independent coordinator source review
+found no security blocker; its misleading-zero-fee diagnostic correction is
+included in the follow-up commit. Policy shell 22/22, scoped Node checks 68/68,
+deployment/checksum 5/5 and native gas snapshot 445/445 passed. Full Forge compilation
+was killed by SIGKILL, so full fuzz/invariant qualification remains unclaimed.
+
+# Remaining workflow fix recovery — 2026-11-19
+
+Worker: workflow_fixes, coordinated by remaining-work integration.
+Branch: `chatgpt/ghostpay-workflow-recovery-20261119`.
+Base: `198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238).
+Owned scope: selective integration and independent requalification of completed PR #218
+CLI argument, reconciliation evidence, malformed observation and display-safety fixes;
+then the optional relayer/limiter lane if it does not conflict with current privacy owners.
+Source: #218 `b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`; historical branches read-only.
+Owned paths: `packages/cli/src/**`, `packages/cli/README.md`; later relayer/limiter
+paths only after source-boundary review; `docs/completion/remaining-20261119/workflows*`.
+Acceptance: demonstrate recovered regressions fail on the base; preserve dependency
+alignment and all newer behavior; complete focused and full CLI tests/typecheck/lint,
+independent source review, and coordinator consolidation. No merge/push/deployment.
+Excluded seven feature streams remain read-only. Current user directive explicitly
+authorizes CLI/optional-relayer fixes beyond the previous Pages-only milestone.
+
+# Confidential-router return-data defense recovery — 2026-11-19
+
+Worker: contract_security, Caveman investigate-first, remaining-work coordinator.
+Branch: `chatgpt/ghostpay-confidential-forward-20261119`; base
+`198aa5baff22272453733a0f3dcfcac0e0994eec`. Owned paths:
+`packages/confidential-contracts/contracts/GhostPayConfidentialRouter.sol`,
+`contracts/mocks/ReturnBombStealth.sol`, and `test/router.test.ts` within that
+package; this registry and the scoped handoff. Recover only A-3 from PR #220,
+source `cd54452991b9f4e193d98c1365b9dbc4eb838f3b`; no A-1/A-2/D-1 protocol changes.
+Acceptance: reproduce the excessive caller-side memory cost, recover the no-copy
+native-buffer call, run the complete package's original checks/budgets and an
+independent review, then give the coordinator the verified commit for integration.
+No deployment, source-PR update, main merge, analyzer-policy change or real funds.
+Status: original A-3 regression reproduced (116,145 extra gas) and passes after
+the exact historical three-file recovery. Typecheck, formatting, secret scan and
+independent coordinator source review pass. Full default and 768-MiB-capped runs
+both exit 137, as does a mutex-protected seven-case selection after two passes;
+whole-package qualification is explicitly blocked locally, not claimed passing.
+See `docs/handoffs/agents/CONFIDENTIAL_FORWARD_20261119.md`.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:
@@ -559,3 +673,25 @@ Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
 Owned paths: root/workspace package manifests, package-lock.json, dependency tooling regressions if a defect is reproduced, and a source-pinned dependency handoff. No application source, workflows, coverage configuration, contracts or deployment changes.
 Acceptance: integrate the exact paired #210 and #236 dependency revisions; clean installation; library and web builds; relevant original coverage-enabled suites, typechecks and lints; full and production dependency audits; preserve pending browser and hosted qualification honestly. No forced peers, casts, blanket overrides or weakened gates.
 Source candidates: #210 `4d19655a2e5d93ad9378803cd4163245168aca24`; #236 `defdaa308a2d05ab407af7e42f8dc457cf52d103`.
+
+## Remaining-work CI metadata qualification — 2026-11-19
+
+Worker: backlog_ci, Caveman investigate-first. Branch: `chatgpt/ghostpay-remaining-ci-20261119`.
+Base: `198aa5baff22272453733a0f3dcfcac0e0994eec` (#238).
+Owned paths: `.claude/skills/ghostpay-package-map/PACKAGE_MAP.md`,
+`scripts/tests/lean-core-reachability.test.mjs`,
+`packages/chain-adapters/src/payments.bulkCancellation.test.ts` (only the confirmed async-without-await fixture),
+this claim and a source-pinned completion handoff.
+Acceptance: reproduce the three hosted rest-0 metadata failures; regenerate the package map;
+retain the unchanged owner-reviewed allowlists and explicitly record the integrated hygiene/metadata-hardening
+dependencies as pending owner review; preserve exact closure, deferred-route exclusion and privacy assertions.
+Fix the one hosted fixture lint error without changing runtime cancellation behavior or lint rules.
+No feature, runtime, workflow, dependency, coverage, recovery, browser-fixture or approval-policy changes.
+Root owns independent review, integration, final CI and any publication.
+
+Status: three metadata failures reproduced and repaired (13/16 baseline to 16/16 green);
+fixture lint failure reproduced from baseline, corrected scoped lint/typecheck and all six
+cancellation tests pass. Secret scan/action pins/diff checks pass. Fresh high-threshold npm audit
+passes after upstream picomatch withdrawal; 17 development-only low entries remain explicit.
+Source pins and qualification evidence: `docs/handoffs/agents/REMAINING_CI_20261119.md`.
+Await coordinator independent review and combined-source integration/qualification.

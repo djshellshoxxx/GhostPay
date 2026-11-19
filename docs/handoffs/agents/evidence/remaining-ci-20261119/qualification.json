@@ -1,0 +1,111 @@
+{
+  "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "branch": "chatgpt/ghostpay-remaining-ci-20261119",
+  "fileSha256": {
+    ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md": "63a25143d28394bbadb4df47df24730b04fac5f00441dacf52d5c3b94ae2c14f",
+    "scripts/tests/lean-core-reachability.test.mjs": "c026194e889a670654cd1ea149eca84fa0b43740bffec9186e6b932be57af8e2",
+    "packages/chain-adapters/src/payments.bulkCancellation.test.ts": "3e0d15f1d2a91ce87b6e7e74ce74d99d1462aa7bf4a8eaafd1669d274113afc9"
+  },
+  "auditSource": {
+    "packageJsonGitBlob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+    "packageLockGitBlob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+    "node": "24.22.3",
+    "npm": "11.9.0",
+    "packageLockUnchanged": true
+  },
+  "checks": [
+    {
+      "command": "node --test scripts/agent/workspaces.test.mjs scripts/tests/lean-core-reachability.test.mjs",
+      "phase": "baseline",
+      "exitCode": 1,
+      "passed": 13,
+      "failed": 3,
+      "skipped": 0,
+      "node": "24.22.3"
+    },
+    {
+      "command": "node --test scripts/agent/workspaces.test.mjs scripts/tests/lean-core-reachability.test.mjs",
+      "phase": "corrected",
+      "exitCode": 0,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "node": "24.22.3"
+    },
+    {
+      "command": "node scripts/agent/package-map.mjs --check",
+      "exitCode": 0
+    },
+    {
+      "command": "node node_modules/eslint/bin/eslint.js --config eslint.config.js --stdin --stdin-filename packages/chain-adapters/src/payments.bulkCancellation.test.ts",
+      "phase": "baseline via git show HEAD:path",
+      "exitCode": 1,
+      "errors": 1,
+      "node": "22.23.4"
+    },
+    {
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/payments.bulkCancellation.test.ts --coverage=false --maxWorkers=1",
+      "cwd": "packages/chain-adapters",
+      "exitCode": 0,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "node": "22.23.4",
+      "vitest": "5.1.0"
+    },
+    {
+      "command": "bash scripts/scan-secrets.sh",
+      "exitCode": 0
+    },
+    {
+      "command": "bash scripts/check-actions-pinned.sh",
+      "exitCode": 0,
+      "references": 113
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    },
+    {
+      "command": "npm audit --package-lock-only --json --fetch-timeout=15000 --fetch-retries=0",
+      "exitCode": 1,
+      "low": 17,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    {
+      "command": "npm audit --package-lock-only --audit-level=high --json --fetch-timeout=15000 --fetch-retries=0",
+      "exitCode": 0,
+      "low": 17,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    {
+      "command": "npm audit --package-lock-only --omit=dev --audit-level=high --json --fetch-timeout=15000 --fetch-retries=0",
+      "exitCode": 0,
+      "total": 0
+    },
+    {
+      "command": "node node_modules/eslint/bin/eslint.js --config eslint.config.js packages/chain-adapters/src/payments.bulkCancellation.test.ts",
+      "phase": "corrected",
+      "exitCode": 0,
+      "node": "22.23.4",
+      "eslint": "10.15.0"
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --project packages/chain-adapters/tsconfig.json --noEmit",
+      "exitCode": 0,
+      "node": "22.23.4",
+      "typescript": "5.9.3"
+    }
+  ],
+  "limits": [
+    "No source addition is promoted to REVIEWED; eight web dependencies and one relayer dependency retain pending-owner-review status.",
+    "No application runtime, manifest, lockfile, workflow, coverage rule or threshold changed.",
+    "No final combined-source hosted CI or release qualification is claimed.",
+    "Dependency copy from identical-lock source supplied setup only; it is not a new clean install.",
+    "Initial lint and Vitest launch attempts made before dependency copy finished failed MODULE_NOT_FOUND and are not source test failures."
+  ]
+}

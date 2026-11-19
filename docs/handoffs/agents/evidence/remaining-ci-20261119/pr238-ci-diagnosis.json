@@ -1,0 +1,205 @@
+{
+  "observedAtUtc": "2026-11-19T06:10:50.205Z",
+  "source": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "run": 44342340615,
+  "jobs": [
+    {
+      "id": 135015095207,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135015095703,
+      "name": "secrets-and-egress",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045140780,
+      "name": "ts-test (confidential-contracts)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045140797,
+      "name": "ts-test (btc-silent-payments)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045140851,
+      "name": "ts-test (rest-0)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135045140861,
+      "name": "ts-test (core-crypto)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045140882,
+      "name": "ts-check",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045140900,
+      "name": "ts-typecheck",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045140902,
+      "name": "ts-test (web)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135045140908,
+      "name": "ts-test (rest-2)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045140930,
+      "name": "ts-test (rest-1)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045140950,
+      "name": "contracts-test",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045141007,
+      "name": "e2e (full)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135045141025,
+      "name": "ts-lint",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135045141034,
+      "name": "ts-test-relayer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045141089,
+      "name": "contracts-coverage",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045141106,
+      "name": "contracts-slither",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045141154,
+      "name": "lean-candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045141208,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045141302,
+      "name": "contracts-static",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045141390,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135045141456,
+      "name": "e2e (lean)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135077876251,
+      "name": "typescript",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135077942256,
+      "name": "contracts",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "confirmedFailures": [
+    {
+      "job": 135045140851,
+      "scope": "metadata",
+      "tests": 3,
+      "cause": "Generated workspace map predates #222 hygiene and metadata-hardening dependencies; reachability expected lists do not classify these known additions.",
+      "files": [
+        ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+        "scripts/tests/lean-core-reachability.test.mjs"
+      ],
+      "owner": "backlog_ci"
+    },
+    {
+      "job": 135045141025,
+      "scope": "fixture lint",
+      "errors": 1,
+      "cause": "getLogs mock is async but has no await; lint require-await rejects it.",
+      "files": [
+        "packages/chain-adapters/src/payments.bulkCancellation.test.ts"
+      ],
+      "owner": "backlog_ci"
+    },
+    {
+      "job": 135045140902,
+      "scope": "excluded recovery workstream",
+      "failedTests": 1,
+      "passedTests": 2958,
+      "skippedTests": 1,
+      "unhandledErrors": 1,
+      "cause": "paymentKeyExport wipe/cancellation fixture fails expect undefined to be defined at line 114 and later unhandled Seller keys changed rejection.",
+      "files": [
+        "apps/web/src/lib/paymentKeyExport.test.ts"
+      ],
+      "owner": "Spec18 recovery workstream"
+    },
+    {
+      "jobs": [
+        135045141007,
+        135045141456
+      ],
+      "scope": "browser fixture",
+      "cause": "hostile text in line items and memo test uses unconditional dialog.dismiss, which dismisses beforeunload dialog and aborts about:blank navigation after fresh keys; full83pass/1skip/1fail, lean71pass/3skip/1fail.",
+      "files": [
+        "apps/web/e2e/app.spec.ts"
+      ],
+      "owner": "coordinator allocation"
+    }
+  ],
+  "notes": [
+    "CI is a source-pinned observation, not a final-candidate pass.",
+    "Exact scripts metadata failures reproduced locally before edits.",
+    "Mythril strict gate remains failed in separate run44342340082; Echidna succeeded.",
+    "Other success jobs do not clear the aggregate typescript failure."
+  ]
+}
