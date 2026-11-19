@@ -6,6 +6,9 @@ import { parseMetadata } from '@ghostpay/core-crypto';
 import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { CliError, failError } from './io.js';
 
+/** Canonical JSON-RPC quantity: 0x, no leading zeros, at most 256 bits. */
+const CANONICAL_QUANTITY = /^0x(?:0|[1-9a-f][0-9a-f]{0,63})$/;
+
 export interface ExpectedPayment {
   readonly recipient: Address;
   readonly asset: Address | 'native';
@@ -55,10 +58,20 @@ export function parsePaymentObservation(text: string, router?: Address): Payment
   const log = record(r['log'], ['address', 'topics', 'data', 'blockNumber', 'blockHash', 'transactionHash', 'logIndex', 'removed'],
     ['address', 'topics', 'data', 'blockNumber', 'blockHash', 'transactionHash', 'logIndex']);
   if (log['removed'] !== undefined && typeof log['removed'] !== 'boolean') throw failError('INVALID_INPUT', 'removed must be a boolean when supplied.');
+  // Locally supplied data: reject a non-canonical position here, before the RPC-response parser could
+  // classify it as a provider failure.
+  if (typeof log['blockNumber'] !== 'string' || !CANONICAL_QUANTITY.test(log['blockNumber']))
+    throw failError('INVALID_INPUT', 'observation blockNumber must be a canonical 0x quantity.');
   const block = parseQuantity(log['blockNumber']);
   if (block > MAX_PLAUSIBLE_HEAD || typeof log['transactionHash'] !== 'string' || !/^0x[0-9a-f]{64}$/.test(log['transactionHash']))
     throw failError('INVALID_INPUT', 'invalid observation position.');
-  const announcement = validateAnnouncementLog(log as unknown as RpcLog, CANONICAL_ANNOUNCER, 1n, block, block);
+  let announcement: ReturnType<typeof validateAnnouncementLog>;
+  try {
+    announcement = validateAnnouncementLog(log as unknown as RpcLog, CANONICAL_ANNOUNCER, 1n, block, block);
+  } catch {
+    // Translate here so every caller, inside a chain boundary or not, reports invalid local input as such.
+    throw failError('INVALID_LOG', 'announcement log is malformed or unsupported.');
+  }
   if (announcement === undefined) throw failError('INVALID_LOG', 'announcement content is malformed or unsupported.');
   let metadata: ClaimedPayment['metadata'];
   try { metadata = parseMetadata(announcement.metadata); } catch { metadata = undefined; }

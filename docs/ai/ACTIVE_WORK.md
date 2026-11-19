@@ -720,3 +720,32 @@ test setup while preserving persisted-provider-warning and session-only assertio
 No CodeQL suppression, scanner exclusion, gate, dependency, crypto, network-policy or
 release change. Record actual tests and source identities; hosted CodeQL must rerun
 on the combined candidate before the alerts can be claimed closed.
+# Existing runtime correctness recovery — 2026-11-18
+
+Worker: feature/custody reviewer continuing the authorized all-repository consolidation.
+Branch: `integration/ghostpay-runtime-recovery-20261118`; base
+`c5f9b190935251c5274a434341f40db3c9175ef1`.
+Owned paths: `packages/cli/**`, `apps/relayer/**`, `packages/relayer-guard/**`,
+`apps/web/src/lib/relayerClient.ts` and its focused test; this claim and the scoped runtime recovery handoff.
+Scope addition approved by the coordinator: `scripts/devnet/e2e.mjs`, only the PR #218 companion that aligns
+the relayer fee recipient with the signed manifest while preserving the existing balance assertions.
+Further test-only scope: `packages/invoice-schema/src/pinnedSigner.test.ts`, preserving four unique #218
+regressions alongside the existing #234 tests. Invoice runtime and public behavior remain at the current base.
+Acceptance: recover useful CLI input/redaction and relayer admission/fee/logging/limiter fixes from PR #218
+`b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, preserving PR #222 request padding and privacy controls.
+Do not reapply invoice-schema #234, alter contract/policy/multichain behavior, change dependencies or weaken checks.
+Inspect #211 for remaining unique work and report excluded architectural scope. Original branches are read-only;
+coordinator owns integration/publication and exact combined-source validation.
+
+# Existing policy validation recovery — 2026-11-18
+
+Worker: feature/custody reviewer, after the independently reviewable #218 runtime group at `d80aa890`.
+Branch: `integration/ghostpay-runtime-recovery-20261118`.
+Owned paths: `packages/policy-scheme/src/{router.ts,router.test.ts,eip712.ts,limits.ts,derive.ts,negative.test.ts}`,
+`packages/policy-scheme/README.md`, `apps/web/src/features/policy/{pay.ts,pay.selfcheck.test.ts,send.ts,send.test.ts}`,
+this claim and focused source/provenance handoff.
+Acceptance: recover the existing #211 decoder, policy-only signing, leaf recomputation and secret-copy lifetime
+checks with paired prepare/send regressions. Retain current experimental/disabled exposure, L2 delay values,
+contract runtime, dependency versions and v4 checkpoints. Separate asset-coverage UI and multichain format changes
+remain outside this group. No local test/install workload during coordinator's resource limit; hosted combined
+qualification and independent crypto/custody review remain required before promotion.

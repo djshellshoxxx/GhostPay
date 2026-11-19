@@ -2,7 +2,7 @@ import { checkCatalogs, sampleCatalogs, I18nError, type Catalog, type LocaleRepo
 import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { noPositionals } from '../args.js';
 import type { Ctx } from '../ctx.js';
-import { failError, usageError } from '../io.js';
+import { escapeDisplay, failError, usageError } from '../io.js';
 import type { Command } from './types.js';
 
 async function loadCatalog(ctx: Ctx, path: string): Promise<Catalog> {
@@ -12,17 +12,20 @@ async function loadCatalog(ctx: Ctx, path: string): Promise<Catalog> {
   return v as Catalog;
 }
 
+/** Catalog keys are untrusted text: print them escaped so they cannot drive the terminal. */
+const keys = (list: readonly string[]): string => list.map(escapeDisplay).join(',');
+
 function line(r: LocaleReport): string {
   const bits = [
     `${r.translated}/${r.total}`,
-    ...(r.missing.length > 0 ? [`missing ${r.missing.join(',')}`] : []),
-    ...(r.extra.length > 0 ? [`extra ${r.extra.join(',')}`] : []),
-    ...(r.placeholderMismatches.length > 0 ? [`placeholders ${r.placeholderMismatches.map((m) => m.key).join(',')}`] : []),
-    ...(r.syntaxErrors.length > 0 ? [`syntax ${r.syntaxErrors.map((m) => m.key).join(',')}`] : []),
-    ...(r.htmlLike.length > 0 ? [`html-like ${r.htmlLike.join(',')}`] : []),
-    ...(r.missingPluralCategories.length > 0 ? [`plural ${r.missingPluralCategories.map((m) => m.key).join(',')}`] : []),
+    ...(r.missing.length > 0 ? [`missing ${keys(r.missing)}`] : []),
+    ...(r.extra.length > 0 ? [`extra ${keys(r.extra)}`] : []),
+    ...(r.placeholderMismatches.length > 0 ? [`placeholders ${keys(r.placeholderMismatches.map((m) => m.key))}`] : []),
+    ...(r.syntaxErrors.length > 0 ? [`syntax ${keys(r.syntaxErrors.map((m) => m.key))}`] : []),
+    ...(r.htmlLike.length > 0 ? [`html-like ${keys(r.htmlLike)}`] : []),
+    ...(r.missingPluralCategories.length > 0 ? [`plural ${keys(r.missingPluralCategories.map((m) => m.key))}`] : []),
   ];
-  return `${r.ok ? 'ok  ' : 'FAIL'} ${r.locale.padEnd(8)} ${bits.join('; ')}`;
+  return `${r.ok ? 'ok  ' : 'FAIL'} ${escapeDisplay(r.locale).padEnd(8)} ${bits.join('; ')}`;
 }
 
 export const i18nCommands: readonly Command[] = [
