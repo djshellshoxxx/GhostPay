@@ -1690,3 +1690,17 @@ Follow-up assigned by the release coordinator: validate every network-authority 
 Sweep follow-up: the coordinator additionally assigned native-balance consent binding. Preserve early target-ownership validation, reject an on-chain balance that differs from the reviewed amount before fee work/signing, wipe derived material on refusal, and retain same-balance/replacement/post-handoff controls. Scope remains the same helper and its tests.
 
 Final typecheck follow-up: the coordinator's complete web build reported TS2322 in the two actual-transaction sender-recovery assertions. Narrow captured RPC bytes to the EIP-1559 envelope actually emitted by the helper using a runtime test assertion; preserve all existing assertions and production source. Re-run the focused helper tests, typed lint and web TypeScript check; coordinator re-runs the combined build after integration.
+
+
+## Final Pages dependency-tree qualification — 2026-11-19
+
+Worker: `key_exports`, reassigned by the release coordinator. Branch `repair/ghostpay-dependency-qualification-20261119`, base `acdebc5a281d41bf0250e93bf217c04624fdd9d9`.
+Scope: diagnose clean-install `npm ls --all --omit=dev` failures for existing viem/underscore/ws overrides; distinguish npm/environment behavior from actual lock drift. Own only dependency qualification evidence and a minimal manifest/lock/tooling fix if a genuine repository defect is reproduced. Preserve existing dependency versions, overrides, security checks and other workers' root installations.
+Acceptance: exact-cause evidence, original dependency-tree/audit gate under the supported toolchain, no suppressed invalid edges, and no root node_modules mutation while tests run.
+
+
+## Independent Pages artifact verifier review — 2026-11-19
+
+Worker: `key_exports`, reassigned by the release coordinator. Branch `review/ghostpay-pages-artifact-20261119`; implementation baseline `acdebc5a281d41bf0250e93bf217c04624fdd9d9` plus isolated dependency evidence.
+Scope: independently inspect and qualify PR #276 `f39a9dd36c09f8b02d937c5f3d19676d334976d6`; preserve its ancestry if compatible. Own only the new artifact verifier/test and scoped review evidence. Compare it with the existing site-safety verifier without replacing that verifier or loosening any gate.
+Acceptance: run the original checksum/adversarial/CLI tests; check exact published blobs and parser/filesystem/trust boundaries; record limitations and merge risk. No dependency, workflow, application, deployment, remote-ref or shared-lock mutation.
