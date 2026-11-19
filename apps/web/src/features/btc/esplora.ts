@@ -268,13 +268,16 @@ export class EsploraClient {
   /** Requests `path` and reads the body through `max` bytes; returns the text and the bytes read. */
   private async request(path: string, init: RequestInit, signal: AbortSignal | undefined, max: number): Promise<{ readonly text: string; readonly bytes: number }> {
     // Revocation is checked before even an injected transport can dispatch.
-    if (signal?.aborted === true) throw new SilentPaymentError('ABORTED');
+    const assertNotAborted = (): void => {
+      if (signal?.aborted === true) throw new SilentPaymentError('ABORTED');
+    };
+    assertNotAborted();
     try {
       const response = await boundedRequest(this.fetchFn, `${this.baseUrl}${path}`, init, { timeoutMs: this.timeoutMs, maxBytes: max, signal });
       if (!response.ok) throw new EsploraHttpError(response.status);
       return { text: new TextDecoder().decode(response.body), bytes: response.body.byteLength };
     } catch (e) {
-      if (signal?.aborted === true) throw new SilentPaymentError('ABORTED');
+      assertNotAborted();
       if (e instanceof EsploraHttpError) throw e;
       if (e instanceof BoundedRequestError && e.code === 'TOO_LARGE') throw new SilentPaymentError('INVALID_RESPONSE');
       throw new SilentPaymentError('TRANSPORT_FAILURE');
