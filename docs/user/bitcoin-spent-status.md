@@ -36,8 +36,10 @@ full-block mode restores the optional setting; an old light-mode selection canno
 silently keep provider queries enabled.
 
 These controls cover optional spent-status lookups during scanning. Full-block
-providers still observe the requested blocks, connection timing and network
-metadata. Broadcasting a transaction necessarily sends that transaction to its
+providers still observe the requested blocks, including historical payment blocks
+reread during recovery, connection timing and network metadata. Selected historical
+block requests can narrow wallet activity even without revealing an exact outpoint.
+Broadcasting a transaction necessarily sends that transaction to its
 selected broadcast provider. No Tor service, new endpoint, or telemetry is added.
 
 ## Saving, resuming and refreshing old history

@@ -1,12 +1,12 @@
 {
   "scenario": "resume",
   "outcome": "completed",
-  "commit": "019de9cb9c9b65b6ceddec1225274504c98bcf2b",
+  "commit": "d646e6db035f008b643d5a5278bbbae8b838f488",
   "sourceSha256": {
-    "packages/btc-silent-payments/src/scan/state.ts": "9458cc201f88b515a286f681b69d3ec3be4e58fd31b72772b0adb7e28578f4a9",
-    "packages/btc-silent-payments/src/scan/scanner.ts": "87b92d889781e75c302bb0c7df90667bc6bdfd214f8de745c00fd298dea33282",
-    "packages/btc-silent-payments/dist/scan/state.js": "8d2652f22dc6039f3c89413d3409f57505863876c54169007f16e6d85b9ab5f9",
-    "packages/btc-silent-payments/dist/scan/scanner.js": "c4ff32c652ca50daf2e363c7377e7850b291012c03cc194847f361165d9bcb28"
+    "packages/btc-silent-payments/src/scan/state.ts": "fb10101b6329390a935109d7fdbb57573eb05599f0580b1b86777ec5f9beac49",
+    "packages/btc-silent-payments/src/scan/scanner.ts": "3754d05c8d27ef00f284fec67e3e4b8bd671dd0ffb9556f87ce6710475b3884e",
+    "packages/btc-silent-payments/dist/scan/state.js": "71519b343b2e83ff859cc31753bc7032655fffb2030164c3e1aa7d6f4bbc49a4",
+    "packages/btc-silent-payments/dist/scan/scanner.js": "93645733999992ae83228713f62fe394f0cb7b5bb0718c7c9157b73b4df9c76a"
   },
   "node": "v24.22.3",
   "platform": "linux",
@@ -29,11 +29,11 @@
   "checkpointBytesTotal": 209056679,
   "maxCheckpointBytes": 469351,
   "workerStateByteCap": 524288,
-  "wallTimeMs": 23718.77,
-  "maxRssKiB": 82228,
-  "heapBeforeBytes": 14793104,
-  "heapAfterBytes": 14887064,
-  "retainedHeapDeltaBytes": 93960,
+  "wallTimeMs": 11172.91,
+  "maxRssKiB": 83512,
+  "heapBeforeBytes": 14802568,
+  "heapAfterBytes": 14899848,
+  "retainedHeapDeltaBytes": 97280,
   "gcBeforeAndAfter": true,
   "scope": "Node library input indexing, local matching, state updates and JSON checkpoint serialization only. Excludes BIP-352 receiver cryptography (no tweaks), raw block/header validation, browser/worker messaging, encryption, storage I/O and network latency. RSS includes runtime and fixture setup. Timing is one deterministic local run, not a browser benchmark or universal performance guarantee."
 }
