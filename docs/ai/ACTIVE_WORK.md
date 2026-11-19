@@ -1849,3 +1849,19 @@ Continuous coordinator also owns the two intentional array-deletion fixtures in 
 Worker: current root coordinator; source PR #261 `61f2b3729fa4b78c90d43a1ecd8c351e9c22f577`.
 Owned paths: `scripts/automation/integration-lock.mjs` and `scripts/tests/integration-lock.test.mjs`, both absent from the c993 candidate. Recover these two files byte-for-byte, retain current application source and ledgers, and never merge the metadata-only control ref into application history.
 Acceptance: unchanged real-Git concurrency/ownership/tag-isolation/expiry tests pass; independent review; source pin and full applicable qualification recorded. Extraction introduces no schedule, service, deployment, fee, or production configuration change.
+
+
+# Generation 1 independent export-boundary security review — 2026-11-19
+
+Worker: `security_gen1`, independent of the consolidation coordinator.
+Branch: `review/ghostpay-continuous-security-20261119`.
+Base: PR #278 `c993bb2340942c85dbf10303b61f69a91c4944e0`.
+Owned paths: `apps/web/src/components/StealthExportCommon.tsx`, new
+`apps/web/src/components/StealthExportCommon.expiry.test.tsx`, this additive claim,
+and `docs/engineering-handoffs/generation1-security/`.
+Scope: verify the final export UI handoff samples the synchronous session-expiry
+boundary before accepting a result while browser lock events are delayed.
+Acceptance: reproduce the failure on original source; preserve fresh empty-session
+recovery and valid exports; cancel stale operations before download; retain existing
+assertions, cryptographic work and limits; obtain separate review after repair.
+No remote publication, contract, fee, deployment, dependency or gate changes.

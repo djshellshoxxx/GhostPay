@@ -3,7 +3,7 @@ import { subscribeAppLock } from '../lib/appLock';
 import { UserFacingError, type DisplayMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, MAX_KEYSTORE_BYTES, generatePassphrase, passphraseProblemMessage, passphraseStrength, type PassphraseStrength } from '../lib/keystore';
 import type { SecretExportCredential } from '../lib/keyVault';
-import { subscribeSession } from '../lib/session';
+import { captureSessionVersionGuard, subscribeSession } from '../lib/session';
 import type { ScanMatch } from '../lib/scanClient';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
@@ -147,10 +147,11 @@ export interface ExportOperation {
 /**
  * Operation token of one export panel (the SellerKeys onExport convention). Starting another operation, unmounting the
  * panel, the idle lock and every session change (wipe, key replacement, a new session revision) abort it, and `onReset`
- * clears what was typed. The export functions check the signal after every await, so an aborted result is discarded.
+ * clears what was typed. Result acceptance also checks the session deadline synchronously: a delayed browser lock event
+ * cannot let a result cross the final UI handoff after expiry. Aborted or obsolete results are discarded.
  */
 export function useExportOperation(onReset: () => void, scope: readonly unknown[] = []): ExportOperation {
-  const operation = useRef<{ readonly controller: AbortController; readonly scope: readonly unknown[] } | null>(null);
+  const operation = useRef<{ readonly controller: AbortController; readonly scope: readonly unknown[]; readonly unchanged: () => void } | null>(null);
   // Updated during render: an old promise cannot settle between a new input render and its cleanup effect.
   const latestScope = useRef(scope);
   latestScope.current = scope;
@@ -161,11 +162,24 @@ export function useExportOperation(onReset: () => void, scope: readonly unknown[
   if (api.current === null) {
     const stop = (): void => { operation.current?.controller.abort(); operation.current = null; };
     api.current = {
-      start: () => { stop(); const controller = new AbortController(); operation.current = { controller, scope: [...latestScope.current] }; return controller; },
+      start: () => {
+        stop();
+        const unchanged = captureSessionVersionGuard();
+        const controller = new AbortController();
+        operation.current = { controller, scope: [...latestScope.current], unchanged };
+        return controller;
+      },
       stop,
       current: (controller) => {
         const pending = operation.current;
-        return mounted.current && pending?.controller === controller && !controller.signal.aborted &&
+        if (!mounted.current || pending?.controller !== controller || controller.signal.aborted) return false;
+        try { pending.unchanged(); }
+        catch {
+          // A session notification may already have cancelled and reset this operation.
+          if (operation.current === pending) { stop(); reset.current(); }
+          return false;
+        }
+        return mounted.current && operation.current === pending && !controller.signal.aborted &&
           pending.scope.length === latestScope.current.length && pending.scope.every((value, index) => value === latestScope.current[index]);
       },
     };

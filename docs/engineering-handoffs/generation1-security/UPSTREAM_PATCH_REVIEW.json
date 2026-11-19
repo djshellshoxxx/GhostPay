@@ -1,0 +1,103 @@
+{
+  "reviewed_integration_head": "a080c2db54d79a280def1f1ed365637d16180e44",
+  "baseline": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "independent_reviewer": "security_gen1",
+  "entries": [
+    {
+      "pr": 280,
+      "upstream_head": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+      "comparisons": [
+        {
+          "path": "apps/web/src/lib/buildProfile.ts",
+          "upstream_blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+          "integrated_blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+          "same": true
+        },
+        {
+          "path": "apps/web/src/lib/buildProfile.test.ts",
+          "upstream_blob": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477",
+          "integrated_blob": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477",
+          "same": true
+        }
+      ],
+      "source_review": "No introduced blocker in reviewed delta. Runtime qualification is coordinator-owned."
+    },
+    {
+      "pr": 281,
+      "upstream_head": "0041514a630398c89693498d9b5e44ef562d9c61",
+      "comparisons": [
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "upstream_blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "integrated_blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "same": true
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+          "upstream_blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+          "integrated_blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+          "same": true
+        }
+      ],
+      "source_review": "No introduced blocker in reviewed delta. Runtime qualification is coordinator-owned."
+    },
+    {
+      "pr": 282,
+      "upstream_head": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+      "comparisons": [
+        {
+          "path": "apps/web/src/lib/merchantIdentity.ts",
+          "upstream_blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+          "integrated_blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+          "same": true
+        },
+        {
+          "path": "apps/web/src/lib/merchantIdentity.test.ts",
+          "upstream_blob": "957027808890f366f337c375e52b5c081206dae7",
+          "integrated_blob": "957027808890f366f337c375e52b5c081206dae7",
+          "same": true
+        }
+      ],
+      "source_review": "No introduced blocker in reviewed delta. Runtime qualification is coordinator-owned."
+    },
+    {
+      "pr": 285,
+      "upstream_head": "89942105c48df03b9351f777278b6a992e35a95e",
+      "comparisons": [
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "upstream_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+          "integrated_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+          "same": true
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "upstream_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+          "integrated_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+          "same": true
+        }
+      ],
+      "source_review": "No introduced blocker in reviewed delta. Runtime qualification is coordinator-owned."
+    },
+    {
+      "pr": 289,
+      "upstream_head": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "comparisons": [
+        {
+          "path": "packages/invoice-schema/src/base64url.ts",
+          "upstream_blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+          "integrated_blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+          "same": true
+        },
+        {
+          "path": "packages/invoice-schema/src/base64url.test.ts",
+          "upstream_blob": "8d32596d0fa34f6ebc40f3ccae11f1d9d620e8e5",
+          "integrated_blob": "8d32596d0fa34f6ebc40f3ccae11f1d9d620e8e5",
+          "same": true
+        }
+      ],
+      "source_review": "No introduced blocker in reviewed delta. Runtime qualification is coordinator-owned."
+    }
+  ],
+  "limits": "Bounded source review and exact-blob reconciliation, not full feature or release qualification."
+}
