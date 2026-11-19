@@ -1704,3 +1704,12 @@ Acceptance: exact-cause evidence, original dependency-tree/audit gate under the 
 Worker: `key_exports`, reassigned by the release coordinator. Branch `review/ghostpay-pages-artifact-20261119`; implementation baseline `acdebc5a281d41bf0250e93bf217c04624fdd9d9` plus isolated dependency evidence.
 Scope: independently inspect and qualify PR #276 `f39a9dd36c09f8b02d937c5f3d19676d334976d6`; preserve its ancestry if compatible. Own only the new artifact verifier/test and scoped review evidence. Compare it with the existing site-safety verifier without replacing that verifier or loosening any gate.
 Acceptance: run the original checksum/adversarial/CLI tests; check exact published blobs and parser/filesystem/trust boundaries; record limitations and merge risk. No dependency, workflow, application, deployment, remote-ref or shared-lock mutation.
+
+## 2026-11-19 — Native fee review recovery after executor replacement
+
+- Worker: security reviewer, delegated recovery by the final Pages coordinator.
+- Branch: `repair/ghostpay-native-fee-recovered-20261119`; base `7b4c1554382b05ac3fab48527aadf596d6b1ff7b`.
+- Owned paths: native sweep helper/component and their focused tests; the 17 native-review locale/security-label keys; native browser journey steps; the direct-sweep egress inventory entry/counts; this claim and scoped recovery evidence.
+- Recovery target: the previously reviewed runtime `02760fb4f609615c6bf31592afc261d78c3dc82f`, with known helper blob `3710a28fe7e90c618d0b57da1aeed9f2a9adf599`, component blob `6da18522b825c99b4073fd238174f63a8a2b7b38`, helper-test blob `ead0a287483a65add77eb8ce1722cc05b235ec63` and component-test blob `e8d5fcb22def002ca90add99e344b4a132835c10`.
+- Acceptance: reconstruct from retained source/patch context, compare recovered blobs with those exact identities, obtain fresh focused/type/lint/build results and independent review. The previous 342-case result is historical and does not qualify the recovered candidate. Lost raw diagnostics must not be invented or described as present.
+- Boundaries: no contract, dependency, authority-module, mainnet, relayer-server or deployment changes. Coordinator owns publication of incremental commits and supplies the execution slot. Other workers' paths and histories remain untouched.
