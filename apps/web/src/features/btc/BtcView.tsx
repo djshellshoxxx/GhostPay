@@ -75,6 +75,8 @@ export function BtcView(
   const [hasBackup, setHasBackup] = useState(false);
   const [amount, setAmount] = useState('');
   const [fromHeight, setFromHeight] = useState('');
+  // Spec 12 local spend tracking: the server is asked per outpoint only on request (light oracle scans have no block spends).
+  const [providerCheck, setProviderCheck] = useState(false);
   const [saveScan, setSaveScan] = useState(false);
   const [savedScan, setSavedScan] = useState<ScanState | undefined>();
   const [forgetScan, setForgetScan] = useState(false);
@@ -437,6 +439,7 @@ export function BtcView(
           headers,
           signal,
           ...(oracle === undefined ? {} : { oracle }),
+          providerSpentCheck: lightScan || providerCheck,
           ...(vault === undefined ? {} : {
             resumeState: resumeState ?? createScanState(net.id, from),
             recoveryOffset,
@@ -710,6 +713,13 @@ export function BtcView(
               <input id={id} aria-describedby={d} inputMode="numeric" disabled={scanning || (saveScan && savedScan !== undefined)} value={fromHeight} onChange={(e) => { setFromHeight(e.target.value); }} />
             )}
           </Field>
+          <div className="field">
+            <label>
+              <input type="checkbox" checked={lightScan || providerCheck} disabled={scanning || lightScan} onChange={(e) => { setProviderCheck(e.target.checked); }} />{' '}
+              {t('btc.scan.providerCheckLabel')}
+            </label>
+            <p className="hint">{t(lightScan ? 'btc.scan.providerCheckLight' : 'btc.scan.providerCheckHint')}</p>
+          </div>
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={() => { runScan(); }}>
             {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
@@ -772,6 +782,7 @@ export function BtcView(
                   : t('btc.scan.foundCount', { count: String(scan.found.length) })}
                 {scan.spentCount > 0 && ` ${t('btc.scan.alreadySpent', { count: String(scan.spentCount) })}`}
               </p>
+              <p role="note">{t(scan.spentStatus === 'local' ? 'btc.scan.spentStatus.local' : scan.spentStatus === 'provider' ? 'btc.scan.spentStatus.provider' : 'btc.scan.spentStatus.unknown', { height: String(scan.toHeight) })}</p>
               {scan.found.length > 0 && (
                 <div className="table-wrap">
                   <p role="note">
@@ -921,4 +932,5 @@ export function BtcView(
   );
 }
 
+// i18n-use: btc.scan.providerCheckLabel btc.scan.providerCheckHint btc.scan.providerCheckLight btc.scan.spentStatus.local btc.scan.spentStatus.provider btc.scan.spentStatus.unknown
 // i18n-use: btc.headers.scanDiscarded btc.headers.resultsDropped btc.headers.loading btc.headers.restored btc.headers.discarded btc.headers.checking btc.headers.progress btc.headers.reorg btc.headers.lessWork btc.headers.conflictHint btc.headers.forkTooDeep btc.headers.forkUnresolved btc.headers.tooMany btc.headers.claimRejected btc.headers.failed btc.headers.otherTab btc.headers.notSaved btc.headers.verified btc.headers.more btc.headers.forgotten btc.headers.forgetFailed btc.scan.firstHeightRequired btc.headers.behind btc.scan.foundBlock btc.scan.scanned btc.sweep.invalidQr

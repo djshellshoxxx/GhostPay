@@ -58,7 +58,20 @@ export interface ScanParams {
   /** Worker-only typed bridge. Every full-block result must agree before it is offered or checkpointed. */
   readonly readOracle?: ReadOracleBlock;
   readonly readSecondOracle?: ReadOracleBlock;
+  /**
+   * Also ask the Esplora server, per outpoint, whether each payment is unspent (default false). PRIVACY: this tells the
+   * server exactly which outputs are this wallet's; in exchange it also knows spends still waiting in the mempool, which
+   * the local tracking (spends read from the scanned blocks themselves) cannot see.
+   */
+  readonly providerSpentCheck?: boolean;
 }
+
+/**
+ * How the spent status of the returned payments was established: `local` from the inputs of the scanned blocks (a
+ * spend still in the mempool is not visible; the server learned no outpoint), `provider` by asking the server per
+ * outpoint, `unknown` when the source serves no block spends (light oracle mode) and the server was not asked.
+ */
+export type SpentStatus = 'local' | 'provider' | 'unknown';
 
 export interface ScanResult {
   readonly fromHeight: number;
@@ -72,6 +85,8 @@ export interface ScanResult {
   readonly headerAnchored: boolean;
   /** The prior matched block page revalidated in this result. Other historical matches remain unspendable. */
   readonly recoveredHistory?: { readonly offset: number; readonly end: number; readonly total: number };
+  /** How `found` was filtered for spent outputs (see {@link SpentStatus}). */
+  readonly spentStatus: SpentStatus;
 }
 
 /** Best-effort wipe of the spend tweaks held by scan results (used on lock, a new scan and unmount). */
@@ -79,9 +94,15 @@ export function wipeFound(found: readonly FoundPayment[]): void {
   for (const f of found) zeroize(f.spendTweak);
 }
 
+const outpointId = (txid: string, vout: number): string => `${txid}:${String(vout)}`;
+
 /**
  * Scans a block range for silent payments to the wallet and drops outputs that are already spent.
- * The scan secret stays in this process; the server sees block heights and outpoints only.
+ * Spent outputs are recognised locally: the source lists the outpoints each scanned block consumes (Esplora blocks
+ * carry their inputs), the scanner matches them against the outputs it found and against the persisted unspent
+ * matches, and the state records them, so the server learns no outpoint. A spend still in the mempool, or a spend in
+ * a block scanned before spend tracking existed, is not visible; `providerSpentCheck` asks the server per outpoint
+ * instead (and reveals the outpoints). The scan secret stays in this process; the server sees block heights.
  * Every spend tweak the scanner produced that is not in the returned `found` (spent, skipped, or all of them when
  * the scan fails) is wiped before this returns; the caller owns, and must wipe, the returned ones ({@link wipeFound}).
  */
@@ -114,7 +135,9 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const resumeHeight = reconciled?.resumeHeight ?? fromHeight;
   // Persistent scans advance in bounded pages; the next run resumes from the last committed block.
   const toHeight = Math.min(p.toHeight ?? tip, tip, restored === undefined ? tip : resumeHeight + MAX_SCAN_BLOCKS - 1);
-  if (toHeight < fromHeight) return { fromHeight, toHeight, found: [], spentCount: 0, blocks: [], headerAnchored };
+  const providerCheck = p.providerSpentCheck === true;
+  const spentStatus: SpentStatus = providerCheck ? 'provider' : source.getSpends === undefined ? 'unknown' : 'local';
+  if (toHeight < fromHeight) return { fromHeight, toHeight, found: [], spentCount: 0, blocks: [], headerAnchored, spentStatus };
   if (toHeight - resumeHeight + 1 > MAX_SCAN_BLOCKS) throw new SilentPaymentError('INVALID_INPUT');
 
   const blocks: { height: number; hash: string }[] = [];
@@ -124,6 +147,13 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const found: FoundPayment[] = [];
   let returned = false;
   let recoveredHistory: ScanResult['recoveredHistory'];
+  // Outpoints a scanned block consumed: the spends reported for this call's own matches, plus the spends the state
+  // already remembers (a persisted match re-derived below may have been spent in a block an earlier call scanned).
+  const localSpent = new Set<string>();
+  const noteSpend = (e: { readonly txid: string; readonly vout: number }): void => { localSpent.add(outpointId(e.txid, e.vout)); };
+  const noteStateSpends = (state: ScanState): void => {
+    for (const m of state.matches) if (m.spent !== undefined && m.txid !== undefined && m.vout !== undefined) noteSpend({ txid: m.txid, vout: m.vout });
+  };
   try {
     const keys = { scanSecret: wallet.keys.scanSecret, spendPublicKey: wallet.keys.spendPublicKey };
     const trackTweak = (r: ReceivedOutput): void => {
@@ -149,10 +179,11 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       } }),
     };
     if (reconciled === undefined) {
-      for await (const r of scanBlocks({ ...common, fromHeight,
+      for await (const r of scanBlocks({ ...common, fromHeight, onSpend: noteSpend,
         onBlock: ({ height, blockHash }) => { blocks.push({ height, hash: blockHash }); },
       })) accept(r);
     } else {
+      noteStateSpends(reconciled.state);
       // Restored metadata contains no spend tweak. Re-read only prior matched blocks against current headers,
       // re-derive each output locally and check current outspend status before returning anything spendable.
       const recoveryHeights = [...new Set(reconciled.state.matches.filter((m) => m.status === 'confirmed' && m.spent === undefined && m.height <= toHeight).map((m) => m.height))].sort((a, b) => a - b);
@@ -161,13 +192,15 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       recoveredHistory = { offset, end, total: recoveryHeights.length };
       for (const height of recoveryHeights.slice(offset, end)) {
         checkAbort();
-        for await (const r of scanBlocks({ ...common, fromHeight: height, toHeight: height,
+        for await (const r of scanBlocks({ ...common, fromHeight: height, toHeight: height, onSpend: noteSpend,
           onBlock: ({ blockHash }) => { blocks.push({ height, hash: blockHash }); },
         })) accept(r);
       }
+      // resumeScan watches the state's unspent matches itself and records their spends in each state it reports.
       for await (const r of resumeScan({ ...common, state: reconciled.state, hashAt: (h) => p.headers?.hashAt(h),
         onState: async (state) => {
           checkAbort();
+          noteStateSpends(state);
           if (state.lastHash !== null) blocks.push({ height: state.lastHeight, hash: state.lastHash });
           await p.onState?.(state);
         },
@@ -181,16 +214,17 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
     }
     let spentCount = 0;
     for (const c of candidates) {
-      if (await client.isUnspent(c.txid, c.vout, signal)) {
-        const duplicateKey = c.duplicateKey || (keyCounts.get(Array.from(c.xOnlyPublicKey).join(',')) ?? 0) > 1;
-        found.push(duplicateKey === c.duplicateKey ? c : { ...c, duplicateKey });
+      if (localSpent.has(outpointId(c.txid, c.vout)) || (providerCheck && !(await client.isUnspent(c.txid, c.vout, signal)))) {
+        spentCount++;
+        continue;
       }
-      else spentCount++;
+      const duplicateKey = c.duplicateKey || (keyCounts.get(Array.from(c.xOnlyPublicKey).join(',')) ?? 0) > 1;
+      found.push(duplicateKey === c.duplicateKey ? c : { ...c, duplicateKey });
     }
     checkAbort();
     returned = true;
     blocks.sort((a, b) => a.height - b.height);
-    return { fromHeight, toHeight, found, spentCount, blocks, headerAnchored, ...(recoveredHistory === undefined ? {} : { recoveredHistory }) };
+    return { fromHeight, toHeight, found, spentCount, blocks, headerAnchored, spentStatus, ...(recoveredHistory === undefined ? {} : { recoveredHistory }) };
   } finally {
     // Outputs paying the same key share one tweak buffer: keep every buffer a returned output still uses.
     const kept = new Set<Uint8Array>(returned ? found.map((f) => f.spendTweak) : []);

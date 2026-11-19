@@ -237,6 +237,20 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     nocov pass with the 120 s deadline already used there; the real fetch is covered by the smaller "(A5)" floods. Not done: the Pay-view amount-hygiene hint
     (another stream's file) and a published endpoint list.
 
+25. **Spec 12 local spend tracking (Bitcoin view, 2026-11-18).** The scan no longer asks the Esplora server per outpoint
+    whether each found output is unspent by default. `EsploraTweakSource.getSpends` lists the outpoints each scanned
+    block consumes, read from the block transactions already downloaded for its tweaks (no extra request, coinbase
+    excluded); the header-anchored and oracle cross-checked wrappers forward it bound to the agreed block hash, and the
+    scanner matches those spends against the outputs it found and the persisted unspent matches (the package records
+    them as `match.spent`, cleared again on a reorg rollback). `ScanResult.spentStatus` says how `found` was filtered:
+    `local`, `provider` (the "Also ask the server" box, forced on for light oracle scans, which read no block inputs) or
+    `unknown`. **Limits, disclosed on the page:** a spend still in the mempool is invisible locally (sweeping such an
+    output fails at broadcast; nothing is lost); a persisted match spent in a block that an earlier scan read before
+    spend tracking existed is not recognised either (the server check once, or a fresh scan from the birth height,
+    refreshes it); the provider check reveals every found outpoint to the configured server. The source sentence
+    `btc.verification.limit.spent` and `btc.scan.singleProvider` changed meaning, so their Spanish, Japanese and Arabic
+    drafts were reset to English pending native review (same rule as the other security keys).
+
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the
 150-case tag-archive fuzz (`src/lib/tagArchive.fuzz.nocov.test.ts`) does: v8 block coverage deoptimises scrypt ~10x (measured 13.9 s

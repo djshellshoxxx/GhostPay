@@ -349,3 +349,22 @@ Owned paths: `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md` and this claim
 Acceptance: independently review new delegated registry signing, isolated escrow supporting harness, corrected worker fetch injection/CI setup, browser regression repairs, and oracle critical-message integration. Preserve prior reviewed-source evidence and separate execution, external acceptance, and final-candidate gates. Record findings at exact source pins and execute bounded focused regressions when available.
 
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
+
+## Bitcoin spent-output privacy completion — 2026-11-18
+
+Coordinator: ChatGPT `/root`, Caveman investigate-first. Branch:
+`chatgpt/btc-spentness-private-scan-20261118`.
+Base: main `dfc75ef2087fa6463ae59e0818abec01796c578d`; preserve PR #219
+`9617e8572f9bc414410bd937b0e7718d0c5bd55c` through an explicit integration commit.
+Owned paths: Bitcoin scan source/state and focused tests under
+`packages/btc-silent-payments/src/scan/` and `apps/web/src/features/btc/`, Bitcoin
+browser acceptance, existing Bitcoin English disclosures/fallback security keys,
+Bitcoin documentation/DEVIATIONS, this claim, and a feature-specific qualification report.
+Acceptance: local input matching, conservative unknown status, explicit provider
+consent through worker dispatch/retry, encrypted resumption, reorg-safe spend
+evidence, historical migration and deterministic regression/browser coverage.
+Independent reviewer `spentness_review` reads all feature code without modifying it.
+Implementation lanes are assigned disjoint paths and reviewed before integration.
+PR #235 seller checkpoints, Spec 18 recovery, EVM, general network isolation,
+contracts/Mythril, dependency upgrades and general consolidation are excluded.
+No main merge, branch deletion, force-push, deployment or release publication.
