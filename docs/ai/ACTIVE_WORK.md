@@ -1,3 +1,15 @@
+# QR kind handling fail-closed — 2026-11-19 cycle 20261119T204728Z
+
+- Worker: one ChatGPT coordinator, sequential implementation and read-only audit phases (no independent subagent; not independently approved).
+- Task branch: `automation/20261119T204728Z/bug/qr-kind-failclosed`; exact base main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrKinds.ts`, `apps/web/src/lib/qrKinds.test.ts`, `docs/handoffs/QR_KIND_FAILCLOSED_20261119.md`, and this additive ownership claim only.
+- Evidence: `kindForPayload` looks up a runtime key in a regular JavaScript object; for unknown keys it can return `undefined` or inherited properties such as `constructor`, while `unverified: true` can classify an unknown payload as caution. `qrKindClass` constructs arbitrary classes for unknown kinds.
+- Acceptance: reject unrecognized runtime payload types and frame kinds before returning handling policies or CSS; preserve all valid QR kind/rule behaviors and print policy; commit a failing regression first, then fix; execute bounded Node proof and report exact CI and independent review gaps.
+- Ownership: core active PRs #238/#243/#246/#251/#252/#255/#258/#261/#262/#264/#265/#268/#270/#274/#278/#279/#280/#281/#282 were inspected for these files; no direct overlap observed. Recheck at merge. No other branch or shared integration updates.
+- Status: claimed; no merge, deployment, release, or production change authorized from this isolated worker.
+
+---
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
