@@ -70,5 +70,483 @@
       "bytes": 50,
       "content": "OK: no committed env files or key material found.\n"
     }
-  ]
+  ],
+  "wholeWebTronAttribution": {
+    "baseline": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+    "testedSource": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+    "identicalFileBlobs": {
+      "apps/web/src/features/tron/TronView.test.tsx": "0f9b4e156179dcca4ffde9b28d47a92d4cb6acbd",
+      "apps/web/src/features/tron/TronView.tsx": "90872e1a235eaac9355405d1cdc37bfb5b24a752",
+      "apps/web/src/features/tron/fixtures.testutil.ts": "b90d124cd2c5543fa09304eabcd948e70a4e2659",
+      "apps/web/src/features/tron/network.ts": "80d9e33e0f70a34e93a41d8b1e3f940b61717595",
+      "apps/web/src/features/tron/rpc.ts": "d7c04cbad5e1f2815aa6c5094806c0a50753ff23",
+      "apps/web/src/features/tron/scan.ts": "5168b896d295e19e12df3b2e3984b40666b164e1",
+      "apps/web/src/features/tron/sweep.ts": "5589e68b7bf7b6399937fe783fd6ddb888dbe65c",
+      "apps/web/src/features/tron/wallet.ts": "3b7646ca11818d5743dfc3f169d29237d6e26412",
+      "apps/web/src/components/CameraImporter.tsx": "f592f573581511d7287608c3da068aae432f5738",
+      "apps/web/src/test/render.tsx": "dbd0a6a491b6284a39a7e185847713184a97be88",
+      "apps/web/src/lib/services.ts": "283d87dbbd410235d2e5cbbdcd58d941b774e27d",
+      "apps/web/src/i18n/context.tsx": "c8709538e3b04aa8c5ef333ce6f57d393a9be362",
+      "apps/web/src/i18n/source.ts": "9dce3c11a7c17d30a197e521965b5e5056bc80e8",
+      "apps/web/src/i18n/sourceCatalog.ts": "6927de4a82487d7a3dcf801d707b478e1628c155",
+      "apps/web/src/i18n/translator.ts": "837ddfa467ca45bd8b5becffa35e0824f84367be",
+      "apps/web/vite.config.ts": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "apps/web/vitest.nocov.config.ts": "294c480e9bb915656cd8f525110d9f18b60727e0",
+      "apps/web/package.json": "087747cbd56412fe67551b10d874805d01e7f2a4",
+      "package.json": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+      "package-lock.json": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+      "apps/web/src/components/Common.tsx": "71b607b3e92f583b6bc784c7ec929567dd6f75da",
+      "apps/web/src/components/PaymentRequestQr.tsx": "3fbf35a0bc17650ae04f574fe74a00f1825c0a67",
+      "apps/web/src/components/QrFrame.tsx": "9554db0ddd1cf4e3fcd780a99ca5598907e77249",
+      "apps/web/src/components/RichText.tsx": "844aded5b4b601d98fb41f100f3e0e0a7b62e0de",
+      "apps/web/src/components/SecretBackup.tsx": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "apps/web/src/lib/errors.ts": "c3be00ac752cebd8f0234dbfb6f275e9741bb527",
+      "apps/web/src/lib/transactionOutcome.ts": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+      "apps/web/src/lib/appLock.ts": "918ea520b4867d69dbb575c0c9a14a8e336c5a2e"
+    },
+    "identicalPackageTrees": {
+      "packages/tron-adapter": "7022c305cb40e90858b4a05f34ae77b684fbefd8",
+      "packages/chain-adapters": "c2e01a4f42a040c8bdf9e873edcd7f74ebbb7a35",
+      "packages/core-crypto": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+      "packages/qr-exchange": "6726cab810cdeb0c60c23cb7bf5a91167631247b",
+      "packages/payment-uri": "58570d86db57121318a0179aa161092150ca2343",
+      "packages/ux-vault": "d6bbcfcc025d256b3b4ff96c73b10f6ee96b7122",
+      "packages/invoice-schema": "90ed8af6762d7ef66cc22a0ba8998cf908483229",
+      "packages/address-safety": "efb891f8e2443c0d362b25af5b87381256ed6b99",
+      "packages/net-transport": "a953b2d8ec6eacca2ae5752de690373e5d8e8c1a"
+    },
+    "review": "Independent read-only review, with exact blob/tree equality independently rechecked by the coordinator. No tests rerun or source edits.",
+    "observedFailures": [
+      {
+        "name": "warns that a never-used destination costs an activation fee",
+        "reportedDurationMs": 67764
+      },
+      {
+        "name": "validates scanned destinations before filling them",
+        "reportedDurationMs": 12739
+      }
+    ],
+    "directBehavior": "No feature change found in the activation-review or destination-decoding paths; relevant labels are unchanged.",
+    "importGraphCaveat": "The test rendering helper statically imports App and BtcView. The broader graph includes changed Bitcoin modules plus en.json and securityKeys.ts; the entire import graph is not unchanged. Tests render TronView directly through ServicesContext.",
+    "localeReview": "The four locale diffs change 14 Bitcoin spentness/verification keys and securityKeys adds a Bitcoin group. None changes the activation/destination assertions or shared labels used by these tests.",
+    "limits": "This establishes source attribution, not a baseline failure or an environmental cause. Detailed final-suite exceptions must be recorded separately; duration alone does not establish the thrown error."
+  },
+  "wholeWebLocalPhasesD593": {
+    "testedSource": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+    "subsequentWorkerConsentStatusGuard": "1977a50010e2d72476e0de67168b4f46715aab9c",
+    "limits": "These local phases tested d593fde4 and precede the later symmetric worker consent/status guard. They do not qualify that later source or establish hosted REQUIRE_ANVIL=1 acceptance.",
+    "tools": {
+      "node": "v22.23.5",
+      "typescript": "5.9.3",
+      "vitest": "5.0.5",
+      "maxOldSpaceSizeMiB": 1024
+    },
+    "sourceVerification": {
+      "before": {
+        "baseline": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+        "head": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+        "trees": {
+          "apps/web": {
+            "baseline": "0d8a7653a724d02119dc1c14df5bf9171d2a57a6",
+            "current": "0d8a7653a724d02119dc1c14df5bf9171d2a57a6"
+          },
+          "packages": {
+            "baseline": "f3436c7e06f818aa6c4d97780389d84cf0947682",
+            "current": "f3436c7e06f818aa6c4d97780389d84cf0947682"
+          }
+        },
+        "configHashes": [
+          {
+            "path": "apps/web/vite.config.ts",
+            "baseline": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+            "current": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+          },
+          {
+            "path": "apps/web/vitest.nocov.config.ts",
+            "baseline": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07",
+            "current": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07"
+          },
+          {
+            "path": "apps/web/tsconfig.json",
+            "baseline": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325",
+            "current": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325"
+          },
+          {
+            "path": "tsconfig.base.json",
+            "baseline": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f",
+            "current": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+          },
+          {
+            "path": "package-lock.json",
+            "baseline": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+            "current": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+          }
+        ],
+        "differences": "",
+        "unchanged": true
+      },
+      "afterCoverage": {
+        "baseline": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+        "head": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+        "trees": {
+          "apps/web": {
+            "baseline": "0d8a7653a724d02119dc1c14df5bf9171d2a57a6",
+            "current": "0d8a7653a724d02119dc1c14df5bf9171d2a57a6"
+          },
+          "packages": {
+            "baseline": "f3436c7e06f818aa6c4d97780389d84cf0947682",
+            "current": "f3436c7e06f818aa6c4d97780389d84cf0947682"
+          }
+        },
+        "configHashes": [
+          {
+            "path": "apps/web/vite.config.ts",
+            "baseline": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+            "current": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+          },
+          {
+            "path": "apps/web/vitest.nocov.config.ts",
+            "baseline": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07",
+            "current": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07"
+          },
+          {
+            "path": "apps/web/tsconfig.json",
+            "baseline": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325",
+            "current": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325"
+          },
+          {
+            "path": "tsconfig.base.json",
+            "baseline": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f",
+            "current": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+          },
+          {
+            "path": "package-lock.json",
+            "baseline": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+            "current": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+          }
+        ],
+        "differences": "",
+        "unchanged": true
+      },
+      "afterNocov": {
+        "baseline": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+        "head": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+        "trees": {
+          "apps/web": {
+            "baseline": "0d8a7653a724d02119dc1c14df5bf9171d2a57a6",
+            "current": "0d8a7653a724d02119dc1c14df5bf9171d2a57a6"
+          },
+          "packages": {
+            "baseline": "f3436c7e06f818aa6c4d97780389d84cf0947682",
+            "current": "f3436c7e06f818aa6c4d97780389d84cf0947682"
+          }
+        },
+        "configHashes": [
+          {
+            "path": "apps/web/vite.config.ts",
+            "baseline": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+            "current": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+          },
+          {
+            "path": "apps/web/vitest.nocov.config.ts",
+            "baseline": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07",
+            "current": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07"
+          },
+          {
+            "path": "apps/web/tsconfig.json",
+            "baseline": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325",
+            "current": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325"
+          },
+          {
+            "path": "tsconfig.base.json",
+            "baseline": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f",
+            "current": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+          },
+          {
+            "path": "package-lock.json",
+            "baseline": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+            "current": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+          }
+        ],
+        "differences": "",
+        "unchanged": true
+      }
+    },
+    "dependencies": {
+      "requiredWorkspaceSpecifiers": 18,
+      "missingAtPhaseStart": [],
+      "buildCommand": {
+        "cwd": "/workspace/scratch/c20ffc46347e/GhostPay-integration",
+        "executable": "npm",
+        "args": [
+          "run",
+          "build",
+          "--workspace",
+          "@ghostpay/relayer-guard"
+        ],
+        "environment": {
+          "PATHPrefix": "/workspace/scratch/c20ffc46347e/toolchain/bin",
+          "NODE_OPTIONS": "--max-old-space-size=1024"
+        },
+        "exitCode": 0
+      },
+      "buildLog": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-relayer-guard-build.log",
+        "sha256": "21aadaaa7c6eb0c4dcee94763b3dff5d467a2f1eb425b50c3318cb388bfd911a",
+        "bytes": 342
+      },
+      "scope": "Only the missing relayer-guard output was built from current checkout source. Required type/runtime exports resolved in this checkout; no copied dists or external-tool installs."
+    },
+    "nativeAvailability": {
+      "anvil": {
+        "executable": "anvil",
+        "exitCode": null,
+        "error": "ENOENT",
+        "version": ""
+      },
+      "forge": {
+        "executable": "forge",
+        "exitCode": null,
+        "error": "ENOENT",
+        "version": ""
+      },
+      "solc": {
+        "executable": "/home/user/tools/solc",
+        "exitCode": null,
+        "error": "ENOENT",
+        "version": ""
+      },
+      "inheritedRequireAnvil": null,
+      "policyArtifacts": {
+        "PolicyAccount": false,
+        "PolicyAccountFactory": false,
+        "GhostPayPolicyRouter": false,
+        "ERC5564Announcer": false,
+        "MockERC20": false
+      }
+    },
+    "coverage": {
+      "invocation": {
+        "cwd": "/workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web",
+        "executable": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "args": [
+          "--max-old-space-size=1024",
+          "../../node_modules/vitest/vitest.mjs",
+          "run",
+          "--coverage",
+          "--maxWorkers=1",
+          "--no-file-parallelism",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile=/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-coverage-final-vitest.json"
+        ],
+        "environment": {
+          "PATHPrefix": "/workspace/scratch/c20ffc46347e/toolchain/bin",
+          "NODE_OPTIONS": "--max-old-space-size=1024",
+          "REQUIRE_ANVIL": null
+        },
+        "maxWorkers": 1,
+        "fileParallelism": false,
+        "testNameFilters": [],
+        "configurationChanged": false,
+        "thresholdsChanged": false,
+        "deadlinesChanged": false
+      },
+      "startUtc": "2026-11-19T07:28:53.974Z",
+      "endUtc": "2026-11-19T08:06:42.643Z",
+      "durationMs": 2268667,
+      "outcome": "Incomplete: Vitest child terminated by SIGKILL; wrapper exited 1. Cause of SIGKILL is unverified.",
+      "childExitCode": null,
+      "childSignal": "SIGKILL",
+      "wrapperExitCode": 1,
+      "expectedFiles": 201,
+      "completedFileRecords": 29,
+      "filesWithoutCompletionRecord": 172,
+      "observedCountsFromCompletedFileLines": {
+        "total": 968,
+        "passed": 929,
+        "failed": 2,
+        "skipped": 37
+      },
+      "declaredNativeSkips": [
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "skipped": 8,
+          "rawLine": " ✓ src/features/registry/registry.anvil.test.ts (9 tests | 8 skipped) 7ms"
+        },
+        {
+          "file": "src/features/policy/paymentEvidence.anvil.test.ts",
+          "skipped": 4,
+          "rawLine": " ↓ src/features/policy/paymentEvidence.anvil.test.ts (4 tests | 4 skipped)"
+        }
+      ],
+      "failedAssertions": [
+        {
+          "file": "src/features/tron/TronView.test.tsx",
+          "name": "warns that a never-used destination costs an activation fee",
+          "reportedDurationMs": 67764
+        },
+        {
+          "file": "src/features/tron/TronView.test.tsx",
+          "name": "validates scanned destinations before filling them",
+          "reportedDurationMs": 12739
+        }
+      ],
+      "failedSuiteWithUnexecutedTests": [
+        {
+          "file": "src/lib/qrClassify.test.ts",
+          "rawSkippedCount": 25,
+          "classification": "Unexecuted following a failed-suite marker; not an intentional native-availability skip.",
+          "rawLine": " ❯ src/lib/qrClassify.test.ts (25 tests | 25 skipped) 10114ms"
+        }
+      ],
+      "finalVitestJsonProduced": false,
+      "finalCoverageReportProduced": false,
+      "coverageThresholdResultAvailable": false,
+      "failureDetailLimit": "SIGKILL occurred before Vitest emitted final failure messages/hooks or its JSON report. The qrClassify failure cause and TRON assertion error details are not established by the partial file summaries.",
+      "log": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-coverage-final.log",
+        "sha256": "006d1025280fef067d5678747343aba44bd50238e2ec996185bdebecc65dfc50",
+        "bytes": 51531,
+        "extract": [
+          " RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web",
+          "      Coverage enabled with v8",
+          " ✓ src/lib/scanClient.test.ts (87 tests) 12597ms",
+          " ✓ src/views/Pay.test.tsx (66 tests) 117933ms",
+          " ✓ src/lib/sweep.test.ts (99 tests) 3932ms",
+          " ✓ src/views/Sweep.test.tsx (55 tests) 90309ms",
+          " ✓ src/lib/payExec.test.ts (61 tests) 4882ms",
+          " ✓ src/views/SellerKeys.test.tsx (39 tests) 211733ms",
+          " ✓ src/views/Scan.test.tsx (31 tests) 19836ms",
+          " ✓ src/features/btc/BtcView.headers.test.tsx (35 tests) 129418ms",
+          " ✓ src/features/policy/policy.logic.test.ts (28 tests) 1012ms",
+          " ✓ src/features/btc/BtcView.secrets.test.tsx (8 tests) 18443ms",
+          " ✓ src/features/btc/headers.test.ts (32 tests) 94117ms",
+          " ✓ src/features/policy/PolicyView.guard.test.tsx (12 tests) 20283ms",
+          " ✓ src/features/policy/send.test.ts (37 tests) 2325ms",
+          " ✓ src/features/registry/RegistryView.test.tsx (15 tests) 10787ms",
+          " ✓ src/features/policy/PolicyView.test.tsx (11 tests) 10032ms",
+          " ✓ src/features/registry/registry.anvil.test.ts (9 tests | 8 skipped) 7ms",
+          " ✓ src/features/btc/BtcView.test.tsx (13 tests) 26703ms",
+          " ↓ src/features/policy/paymentEvidence.anvil.test.ts (4 tests | 4 skipped)",
+          " ✓ src/features/policy/withdrawalState.test.ts (33 tests) 10521ms",
+          " ✓ src/features/policy/paymentEvidence.test.ts (59 tests) 10644ms",
+          " ❯ src/features/tron/TronView.test.tsx (15 tests | 2 failed) 231493ms",
+          "     × warns that a never-used destination costs an activation fee 67764ms",
+          "     × validates scanned destinations before filling them 12739ms",
+          " ✓ src/features/policy/PolicyReceive.regression.test.tsx (3 tests) 22902ms",
+          " ✓ src/features/btc/oracleWorker.test.ts (14 tests) 55331ms",
+          " ✓ src/features/btc/esplora.test.ts (38 tests) 86264ms",
+          " ✓ src/lib/pay.test.ts (55 tests) 4937ms",
+          " ✓ src/lib/scanPrivacy.test.ts (32 tests) 5409ms",
+          " ✓ src/lib/reconciliationVault.invoices.test.ts (24 tests) 25699ms",
+          " ✓ src/lib/reconciliationVault.test.ts (28 tests) 53998ms",
+          " ❯ src/lib/qrClassify.test.ts (25 tests | 25 skipped) 10114ms",
+          "{\"phase\":\"coverage\",\"end\":\"2026-11-19T08:06:42.643Z\",\"durationMs\":2268667,\"exitCode\":null,\"signal\":\"SIGKILL\",\"results\":null,\"sourceUnchanged\":true}"
+        ]
+      },
+      "result": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-coverage-final-result.json",
+        "sha256": "2d5b3c5bcf9a2be644c3333a37efa00d0fc37b7f0b03b0d5fd966ff882954c3e",
+        "bytes": 11727
+      },
+      "partialSummary": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-coverage-partial-summary.json",
+        "sha256": "e2700fbcbd6d548aa25e5d59d974cdf843ab501fd45fc43d7427f0a760e65268",
+        "bytes": 13948
+      },
+      "startRecord": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-coverage-final-start.json",
+        "sha256": "1b1d62f84527989169e5cbe19ee7065b58ddd6ab935aa04fc0a8817908dda3be",
+        "bytes": 9671
+      },
+      "processObservation": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-coverage-process-observation.json",
+        "sha256": "064644cc1ad89545c701ae06c653cb420f8d1a34d357b090abd4b518be1fc407",
+        "bytes": 286,
+        "observedAt": "2026-11-19T08:06:43.756Z",
+        "childTerminatedAt": "2026-11-19T08:06:42.643Z",
+        "meaning": "The observation followed SIGKILL by about 1.1 seconds and cannot establish the worker’s prior CPU/RSS activity or the reason it disappeared.",
+        "limits": "The observation followed termination and does not establish prior CPU/RSS activity, namespace isolation, or the cause of SIGKILL."
+      }
+    },
+    "nocov": {
+      "invocation": {
+        "cwd": "/workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web",
+        "executable": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "args": [
+          "--max-old-space-size=1024",
+          "../../node_modules/vitest/vitest.mjs",
+          "run",
+          "--config",
+          "vitest.nocov.config.ts",
+          "--maxWorkers=1",
+          "--no-file-parallelism",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile=/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-nocov-final-vitest.json"
+        ],
+        "environment": {
+          "PATHPrefix": "/workspace/scratch/c20ffc46347e/toolchain/bin",
+          "NODE_OPTIONS": "--max-old-space-size=1024",
+          "REQUIRE_ANVIL": null
+        },
+        "maxWorkers": 1,
+        "fileParallelism": false,
+        "testNameFilters": [],
+        "configurationChanged": false,
+        "thresholdsChanged": false,
+        "deadlinesChanged": false
+      },
+      "startUtc": "2026-11-19T08:09:57.723Z",
+      "endUtc": "2026-11-19T08:10:54.425Z",
+      "durationMs": 56695,
+      "vitestDurationSeconds": 55.89,
+      "exitCode": 0,
+      "signal": null,
+      "results": {
+        "files": 3,
+        "total": 3,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "todo": 0,
+        "success": true,
+        "failures": [],
+        "skippedTests": []
+      },
+      "qualification": "The existing three-file nocov phase completed successfully. This does not complete the interrupted coverage phase or establish native Anvil qualification.",
+      "log": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-nocov-final.log",
+        "sha256": "4a011ce650b2be04c2d67cfc8e783e097318a5b1000e308fbe09a14a5ddef2a3",
+        "bytes": 5377,
+        "extract": [
+          " RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web",
+          " ✓ src/lib/scannerCore.spam.nocov.test.ts (1 test) 27731ms",
+          " ✓ src/lib/scannerCore.bench.nocov.test.ts (1 test) 8092ms",
+          " ✓ src/lib/tagArchive.fuzz.nocov.test.ts (1 test) 12792ms",
+          " Test Files  3 passed (3)",
+          "      Tests  3 passed (3)",
+          "   Start at  00:09:58",
+          "   Duration  55.89s (tests 89%, import 6%, transform 5%)",
+          "{\"phase\":\"nocov\",\"end\":\"2026-11-19T08:10:54.425Z\",\"durationMs\":56695,\"exitCode\":0,\"signal\":null,\"results\":{\"files\":3,\"total\":3,\"passed\":3,\"failed\":0,\"skipped\":0,\"todo\":0,\"success\":true,\"failures\":[],\"skippedTests\":[]},\"sourceUnchanged\":true}"
+        ]
+      },
+      "result": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-nocov-final-result.json",
+        "sha256": "e95d2a92e77ab1b00fcb07bcc5bd5f7ab67d2b3d4e577476081adaf7d6bb4979",
+        "bytes": 11897
+      },
+      "vitestReport": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-nocov-final-vitest.json",
+        "sha256": "7f188507daab522183e90a3cb46fe01b408f1ff1136a473c2184f590204edfc2",
+        "bytes": 2630
+      },
+      "startRecord": {
+        "localPath": "/workspace/scratch/c20ffc46347e/integration-evidence/whole-web-nocov-final-start.json",
+        "sha256": "11bb8350c8ed8898649803458c757639eac25f9946ba21952ad2a3837d67bf32",
+        "bytes": 9693
+      }
+    }
+  }
 }

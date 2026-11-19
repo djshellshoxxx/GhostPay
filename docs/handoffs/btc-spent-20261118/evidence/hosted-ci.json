@@ -39,7 +39,7 @@
         "2026-11-19T06:52:54.8428416Z ##[error]  42:86  error  Unsafe member access .blockHash on an `any` value                       @typescript-eslint/no-unsafe-member-access",
         "2026-11-19T06:52:54.8430002Z ##[error]  43:39  error  Unsafe member access .txid on an `any` value                            @typescript-eslint/no-unsafe-member-access",
         "2026-11-19T06:52:54.8431940Z ##[error]  43:56  error  Unsafe member access .vout on an `any` value                            @typescript-eslint/no-unsafe-member-access",
-        "2026-11-19T06:52:54.8433656Z ✖ 10 problems (10 errors, 0 warnings)",
+        "2026-11-19T06:52:54.8433656Z \u2716 10 problems (10 errors, 0 warnings)",
         "2026-11-19T06:52:55.1443152Z ##[error]Process completed with exit code 1."
       ]
     },
@@ -52,10 +52,10 @@
       "excerpts": [
         "2026-11-19T06:48:36.4716194Z node: v22.23.4",
         "2026-11-19T06:48:36.4716431Z npm: 10.9.9",
-        "2026-11-19T06:52:28.4491866Z   -  19 [desktop] › e2e/btc-spent-consent.spec.ts:19:1 › local Bitcoin scans disclose no outpoints; explicit provider checks are revocable during a native-worker scan",
-        "2026-11-19T06:52:28.4894632Z   -  20 [desktop] › e2e/btc-spent-consent.spec.ts:50:1 › legacy encrypted Bitcoin matches remain unknown until explicit provider refresh or a fresh local scan",
-        "2026-11-19T06:52:28.6806454Z   ✓  21 [desktop] › e2e/btc-spent-consent.spec.ts:113:1 › lean profile exposes no Bitcoin controls, worker, or provider requests (183ms)",
-        "2026-11-19T06:52:28.7272670Z   -  22 [desktop] › e2e/btc-worker.spec.ts:6:1 › Bitcoin native worker cancels, resumes encrypted checkpoints, and never selects restored matches",
+        "2026-11-19T06:52:28.4491866Z   -  19 [desktop] \u203a e2e/btc-spent-consent.spec.ts:19:1 \u203a local Bitcoin scans disclose no outpoints; explicit provider checks are revocable during a native-worker scan",
+        "2026-11-19T06:52:28.4894632Z   -  20 [desktop] \u203a e2e/btc-spent-consent.spec.ts:50:1 \u203a legacy encrypted Bitcoin matches remain unknown until explicit provider refresh or a fresh local scan",
+        "2026-11-19T06:52:28.6806454Z   \u2713  21 [desktop] \u203a e2e/btc-spent-consent.spec.ts:113:1 \u203a lean profile exposes no Bitcoin controls, worker, or provider requests (183ms)",
+        "2026-11-19T06:52:28.7272670Z   -  22 [desktop] \u203a e2e/btc-worker.spec.ts:6:1 \u203a Bitcoin native worker cancels, resumes encrypted checkpoints, and never selects restored matches",
         "2026-11-19T06:54:24.2135044Z   5 skipped",
         "2026-11-19T06:54:24.2136581Z   71 passed (2.6m)",
         "2026-11-19T06:54:26.2328998Z SHA256 digest of uploaded artifact is 5d1e7bc5be80b1d9cc3d35ba37fa784af7ffdf5999dae1a0f35478047aca09bf",
@@ -198,5 +198,919 @@
       "conclusion": null
     }
   ],
-  "note": "Snapshot of the earlier integration run before corrected-candidate publication; queued jobs are not passes. The ten worker callback typing errors were corrected and verified locally; fresh CI is required for the corrected head."
+  "note": "Snapshot of the earlier integration run before corrected-candidate publication; queued jobs are not passes. The ten worker callback typing errors were corrected and verified locally; fresh CI is required for the corrected head.",
+  "supersededRunSnapshot": {
+    "observedAtUTC": "2026-11-19T07:15:56Z",
+    "runId": 44472294271,
+    "head": "ef08170a83d86d194b8ce4186299e791027e461e",
+    "jobs": [
+      {
+        "id": 135384438542,
+        "name": "secrets-and-egress",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 135384438923,
+        "name": "changes",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 135386936856,
+        "name": "ts-lint",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 135386936867,
+        "name": "ts-test-relayer",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 135386936883,
+        "name": "ts-typecheck",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 135386936906,
+        "name": "ts-check",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386936908,
+        "name": "e2e (lean)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 135386936913,
+        "name": "contracts-coverage",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386936931,
+        "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 135386936938,
+        "name": "lean-candidate",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386936942,
+        "name": "ts-test (rest-0)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 135386936944,
+        "name": "contracts-static",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386936975,
+        "name": "contracts-test",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386936981,
+        "name": "ts-test (rest-1)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386936990,
+        "name": "contracts-slither",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386936993,
+        "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386937025,
+        "name": "ts-test (web)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386937029,
+        "name": "ts-test (btc-silent-payments)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386937030,
+        "name": "e2e (full)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386937063,
+        "name": "ts-test (core-crypto)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135386937065,
+        "name": "ts-test (rest-2)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 135386937303,
+        "name": "ts-test (confidential-contracts)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 135398970200,
+        "name": "contracts",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 135398970234,
+        "name": "typescript",
+        "status": "queued",
+        "conclusion": null
+      }
+    ],
+    "note": "GitHub automatically cancelled the superseded pending jobs because a higher-priority request for ci-CI-refs/pull/244/merge exists. Full Chromium, whole Bitcoin and whole web did not execute in this run. Two aggregator jobs remained queued at this observation."
+  },
+  "correctedAuxiliaryChecks": {
+    "head": "2364284a2717a22b895fcb7badeb2e7ae6bb0e48",
+    "checkout": "d169af429f2c3be6536118b280f849016292c85d",
+    "checkoutEvidence": [
+      {
+        "jobId": 135398966787,
+        "isError": false,
+        "checkoutConfirmed": true,
+        "evidence": [
+          "2026-11-19T07:22:16.1662670Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d169af429f2c3be6536118b280f849016292c85d:refs/remotes/pull/244/merge",
+          "2026-11-19T07:22:17.6782900Z  * [new ref]         d169af429f2c3be6536118b280f849016292c85d -> pull/244/merge",
+          "2026-11-19T07:22:18.4682060Z d169af429f2c3be6536118b280f849016292c85d",
+          "2026-11-19T07:22:20.3189810Z node: v22.23.5",
+          "2026-11-19T07:22:20.3303570Z npm: 10.9.9",
+          "2026-11-19T07:22:50.0704600Z # pass 1",
+          "2026-11-19T07:22:50.0705640Z # fail 0",
+          "2026-11-19T07:22:50.0706910Z # skipped 0",
+          "2026-11-19T07:26:41.5903200Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m37 passed\u001b[39m\u001b[22m\u001b[90m (37)\u001b[39m",
+          "2026-11-19T07:26:41.5904020Z \u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m570 passed\u001b[39m\u001b[22m\u001b[90m (570)\u001b[39m",
+          "2026-11-19T07:27:35.7372620Z # pass 21",
+          "2026-11-19T07:27:35.7472130Z # fail 0",
+          "2026-11-19T07:27:35.7673230Z # skipped 0"
+        ]
+      },
+      {
+        "jobId": 135398967270,
+        "isError": false,
+        "checkoutConfirmed": true,
+        "evidence": [
+          "2026-11-19T07:24:35.1511107Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d169af429f2c3be6536118b280f849016292c85d:refs/remotes/pull/244/merge",
+          "2026-11-19T07:24:36.1883767Z  * [new ref]         d169af429f2c3be6536118b280f849016292c85d -> pull/244/merge",
+          "2026-11-19T07:24:36.3847455Z d169af429f2c3be6536118b280f849016292c85d",
+          "2026-11-19T07:24:41.3758785Z node: v22.23.4",
+          "2026-11-19T07:24:41.3759132Z npm: 10.9.9",
+          "2026-11-19T07:24:53.5754182Z # pass 1",
+          "2026-11-19T07:24:53.5754961Z # fail 0",
+          "2026-11-19T07:24:53.5756341Z # skipped 0",
+          "2026-11-19T07:27:13.9271328Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m37 passed\u001b[39m\u001b[22m\u001b[90m (37)\u001b[39m",
+          "2026-11-19T07:27:13.9272056Z \u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m570 passed\u001b[39m\u001b[22m\u001b[90m (570)\u001b[39m",
+          "2026-11-19T07:27:54.6923289Z # pass 21",
+          "2026-11-19T07:27:54.6923504Z # fail 0",
+          "2026-11-19T07:27:54.6924008Z # skipped 0"
+        ]
+      },
+      {
+        "jobId": 135398967305,
+        "isError": false,
+        "checkoutConfirmed": true,
+        "evidence": [
+          "2026-11-19T07:34:13.9707266Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d169af429f2c3be6536118b280f849016292c85d:refs/remotes/pull/244/merge\r",
+          "2026-11-19T07:34:15.9014170Z  * [new ref]         d169af429f2c3be6536118b280f849016292c85d -> pull/244/merge\r",
+          "2026-11-19T07:34:17.4876526Z d169af429f2c3be6536118b280f849016292c85d\r",
+          "2026-11-19T07:34:26.7858315Z node: v22.23.4\r",
+          "2026-11-19T07:34:26.7858638Z npm: 10.9.9\r",
+          "2026-11-19T07:35:13.4197617Z # pass 1\r",
+          "2026-11-19T07:35:13.4199870Z # fail 0\r",
+          "2026-11-19T07:35:13.4202841Z # skipped 0\r",
+          "2026-11-19T07:42:07.0997228Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m37 passed\u001b[39m\u001b[22m\u001b[90m (37)\u001b[39m\r",
+          "2026-11-19T07:42:07.1000753Z \u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m568 passed\u001b[39m\u001b[22m\u001b[2m | \u001b[22m\u001b[33m2 skipped\u001b[39m\u001b[90m (570)\u001b[39m\r",
+          "2026-11-19T07:44:09.5820792Z # pass 21\r",
+          "2026-11-19T07:44:09.5821060Z # fail 0\r",
+          "2026-11-19T07:44:09.5822852Z # skipped 0\r"
+        ]
+      },
+      {
+        "jobId": 135398967088,
+        "isError": false,
+        "checkoutConfirmed": true,
+        "evidence": [
+          "2026-11-19T07:39:57.6773650Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d169af429f2c3be6536118b280f849016292c85d:refs/remotes/pull/244/merge",
+          "2026-11-19T07:39:58.7764103Z  * [new ref]         d169af429f2c3be6536118b280f849016292c85d -> pull/244/merge",
+          "2026-11-19T07:39:59.1384054Z d169af429f2c3be6536118b280f849016292c85d",
+          "2026-11-19T07:40:01.9945136Z node: v22.23.4",
+          "2026-11-19T07:40:01.9945458Z npm: 10.9.9",
+          "2026-11-19T07:40:56.2828357Z # pass 290",
+          "2026-11-19T07:40:56.2828506Z # fail 0",
+          "2026-11-19T07:40:56.2828832Z # skipped 6"
+        ]
+      },
+      {
+        "jobId": 135398967448,
+        "isError": false,
+        "checkoutConfirmed": true,
+        "evidence": [
+          "2026-11-19T07:40:47.2619364Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d169af429f2c3be6536118b280f849016292c85d:refs/remotes/pull/244/merge",
+          "2026-11-19T07:40:48.6498350Z  * [new ref]         d169af429f2c3be6536118b280f849016292c85d -> pull/244/merge",
+          "2026-11-19T07:40:48.8959157Z d169af429f2c3be6536118b280f849016292c85d",
+          "2026-11-19T07:40:52.2289268Z node: v22.23.4",
+          "2026-11-19T07:40:52.2289576Z npm: 10.9.9",
+          "2026-11-19T07:43:22.9879246Z # pass 1",
+          "2026-11-19T07:43:22.9880426Z # fail 0",
+          "2026-11-19T07:43:22.9881431Z # skipped 0"
+        ]
+      }
+    ],
+    "skipEvidence": [
+      {
+        "jobId": 135398967305,
+        "skipExcerpts": [
+          "2026-11-19T07:35:13.4202841Z # skipped 0\r",
+          "2026-11-19T07:39:58.1999764Z  \u001b[32m\u2713\u001b[39m src/node-io-faults.test.ts \u001b[2m(\u001b[22m\u001b[2m12 tests\u001b[22m\u001b[2m | \u001b[22m\u001b[33m1 skipped\u001b[39m\u001b[2m)\u001b[22m\u001b[32m 137\u001b[2mms\u001b[22m\u001b[39m\r",
+          "2026-11-19T07:41:37.4056150Z  \u001b[32m\u2713\u001b[39m src/operator-io.test.ts \u001b[2m(\u001b[22m\u001b[2m2 tests\u001b[22m\u001b[2m | \u001b[22m\u001b[33m1 skipped\u001b[39m\u001b[2m)\u001b[22m\u001b[32m 14\u001b[2mms\u001b[22m\u001b[39m\r",
+          "2026-11-19T07:42:07.1000753Z \u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m568 passed\u001b[39m\u001b[22m\u001b[2m | \u001b[22m\u001b[33m2 skipped\u001b[39m\u001b[90m (570)\u001b[39m\r",
+          "2026-11-19T07:44:09.5822852Z # skipped 0\r"
+        ]
+      },
+      {
+        "jobId": 135398967088,
+        "skipExcerpts": [
+          "2026-11-19T07:40:45.2000206Z ok 17 - i2pd parses the generated tunnel file (no-network namespace, temp datadir, killed immediately) # SKIP cannot create a network namespace (unshare -n); refusing to start i2pd with network access",
+          "2026-11-19T07:40:45.2009280Z ok 19 - Java I2P runtime validation # SKIP Java I2P is not installed in this environment and has no non-activating config check; the i2ptunnel.config.d format is validated against the official spec and i2p.i2p source only (see i2p.test.mjs)",
+          "2026-11-19T07:40:45.2253953Z ok 35 - demo and GhostPay render in Chromium under their CSP (preview, root and subpath) # SKIP set HK_BROWSER_TESTS=1 (needs a Playwright Chromium build)",
+          "2026-11-19T07:40:45.2289817Z ok 45 - kit onion validation agrees with @ghostpay/net-transport # SKIP packages/net-transport/dist not built (npm run build -w @ghostpay/net-transport)",
+          "2026-11-19T07:40:51.8867871Z ok 228 - real GhostPay apps/web/dist: validate, package, verify, preview # SKIP apps/web/dist not built",
+          "2026-11-19T07:40:56.2715086Z ok 251 - runs fully unprivileged (as nobody) from a writable runtime directory # SKIP needs root to switch to an unprivileged user",
+          "2026-11-19T07:40:56.2828832Z # skipped 6"
+        ]
+      }
+    ],
+    "cli": {
+      "run": 44476728311,
+      "conclusion": "success",
+      "macOS": {
+        "job": 135398966787,
+        "passed": 570,
+        "skipped": 0,
+        "files": 37,
+        "node": "v22.23.5",
+        "npm": "10.9.9"
+      },
+      "ubuntu": {
+        "job": 135398967270,
+        "passed": 570,
+        "skipped": 0,
+        "files": 37,
+        "node": "v22.23.4",
+        "npm": "10.9.9"
+      },
+      "windows": {
+        "job": 135398967305,
+        "passed": 568,
+        "skipped": 2,
+        "files": 37,
+        "node": "v22.23.4",
+        "npm": "10.9.9",
+        "skipFiles": [
+          "src/node-io-faults.test.ts",
+          "src/operator-io.test.ts"
+        ]
+      },
+      "otherPerPlatformChecks": "Separate node test summaries report 1 passed and 21 passed, each with 0 failures/skips. Counts are kept separate and are not unique-case totals across platforms."
+    },
+    "hostingKit": {
+      "run": 44476728385,
+      "conclusion": "success",
+      "kitJob": 135398967088,
+      "testsPassed": 290,
+      "testsFailed": 0,
+      "testsSkipped": 6,
+      "webQualificationJob": 135398967448,
+      "webQualificationConcluded": "success",
+      "webQualificationNodeTestsPassed": 1,
+      "webQualificationNodeTestsSkipped": 0
+    },
+    "limits": "Supplementary existing workflow compatibility. These results do not substitute for the main CI Bitcoin/web coverage or full/lean browser gates; skips are retained explicitly.",
+    "beta": {
+      "run": 44476728388,
+      "job": 135398967224,
+      "conclusion": "success",
+      "testsPassed": 3,
+      "testsFailed": 0,
+      "testsSkipped": 0,
+      "checkout": "d169af429f2c3be6536118b280f849016292c85d",
+      "rawLog": {
+        "sha256": "de1e5bec2c6e9dfb3cbf9e26872462f4f82ed7524c048b89d00cfda008ce892e",
+        "content": "\ufeff2026-11-19T07:44:53.6039724Z Current runner version: '2.338.2'\n2026-11-19T07:44:53.6067045Z ##[group]Runner Image Provisioner\n2026-11-19T07:44:53.6068004Z Hosted Compute Agent\n2026-11-19T07:44:53.6068632Z Version: 20261103.629\n2026-11-19T07:44:53.6069311Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc\n2026-11-19T07:44:53.6070103Z Build Date: 2026-11-03T17:26:59Z\n2026-11-19T07:44:53.6070788Z Worker ID: {b75c40ef-25cf-477a-a7df-455224a2dee2}\n2026-11-19T07:44:53.6071569Z Region: westcentralus\n2026-11-19T07:44:53.6072151Z Cloud: Azure\n2026-11-19T07:44:53.6072707Z ##[endgroup]\n2026-11-19T07:44:53.6075057Z ##[group]Operating System\n2026-11-19T07:44:53.6075743Z Ubuntu\n2026-11-19T07:44:53.6076255Z 26.04.1\n2026-11-19T07:44:53.6076845Z LTS\n2026-11-19T07:44:53.6077400Z ##[endgroup]\n2026-11-19T07:44:53.6077988Z ##[group]Runner Image\n2026-11-19T07:44:53.6078657Z Image: ubuntu-26.04\n2026-11-19T07:44:53.6079246Z Version: 20261111.196.1\n2026-11-19T07:44:53.6080580Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md\n2026-11-19T07:44:53.6082268Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196\n2026-11-19T07:44:53.6083274Z ##[endgroup]\n2026-11-19T07:44:53.6084757Z ##[group]GITHUB_TOKEN Permissions\n2026-11-19T07:44:53.6086850Z Contents: read\n2026-11-19T07:44:53.6087452Z Metadata: read\n2026-11-19T07:44:53.6088114Z ##[endgroup]\n2026-11-19T07:44:53.6090308Z Secret source: Actions\n2026-11-19T07:44:53.6091556Z Cache mode: write\n2026-11-19T07:44:53.6092368Z Prepare workflow directory\n2026-11-19T07:44:53.6457888Z Prepare all required actions\n2026-11-19T07:44:53.6509173Z Getting action download info\n2026-11-19T07:44:53.9262997Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)\n2026-11-19T07:44:54.0543831Z Download action repository 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9' (SHA:55cc8345863c7cc4c66a329aec7e433d2d1c52a9)\n2026-11-19T07:44:54.1525343Z Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)\n2026-11-19T07:44:54.3138326Z Complete job name: beta acceptance (lib + cli + browser on anvil)\n2026-11-19T07:44:54.4158037Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1\n2026-11-19T07:44:54.4159708Z with:\n2026-11-19T07:44:54.4160172Z   persist-credentials: false\n2026-11-19T07:44:54.4160693Z   fetch-depth: 1\n2026-11-19T07:44:54.4161158Z   repository: djshellshoxxx/GhostPay\n2026-11-19T07:44:54.4165255Z   token: ***\n2026-11-19T07:44:54.4165709Z   ssh-strict: true\n2026-11-19T07:44:54.4166157Z   ssh-user: git\n2026-11-19T07:44:54.4166582Z   clean: true\n2026-11-19T07:44:54.4167037Z   sparse-checkout-cone-mode: true\n2026-11-19T07:44:54.4167577Z   fetch-tags: false\n2026-11-19T07:44:54.4168026Z   show-progress: true\n2026-11-19T07:44:54.4168477Z   lfs: false\n2026-11-19T07:44:54.4168902Z   submodules: false\n2026-11-19T07:44:54.4169361Z   set-safe-directory: true\n2026-11-19T07:44:54.4169906Z   allow-unsafe-pr-checkout: false\n2026-11-19T07:44:54.4170710Z ##[endgroup]\n2026-11-19T07:44:54.7831016Z Syncing repository: djshellshoxxx/GhostPay\n2026-11-19T07:44:54.7833257Z ##[group]Getting Git version info\n2026-11-19T07:44:54.7834086Z Working directory is '/home/runner/work/GhostPay/GhostPay'\n2026-11-19T07:44:54.7835590Z [command]/usr/bin/git version\n2026-11-19T07:44:54.7863015Z git version 2.56.1\n2026-11-19T07:44:54.7885598Z ##[endgroup]\n2026-11-19T07:44:54.7898023Z Temporarily overriding HOME='/home/runner/work/_temp/4a460d45-15e9-4e43-bd00-c19bd3e83172' before making global git config changes\n2026-11-19T07:44:54.7900168Z Adding repository directory to the temporary git global config as a safe directory\n2026-11-19T07:44:54.7902660Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay\n2026-11-19T07:44:54.8046678Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'\n2026-11-19T07:44:54.8048332Z ##[group]Determining repository object format\n2026-11-19T07:44:54.8049785Z ##[endgroup]\n2026-11-19T07:44:54.8050665Z ##[group]Initializing the repository\n2026-11-19T07:44:54.8051563Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay\n2026-11-19T07:44:54.8176911Z hint: Using 'master' as the name for the initial branch. This default branch name\n2026-11-19T07:44:54.8178443Z hint: will change to \"main\" in Git 3.0. To configure the initial branch name\n2026-11-19T07:44:54.8179506Z hint: to use in all of your new repositories, which will suppress this warning,\n2026-11-19T07:44:54.8180340Z hint: call:\n2026-11-19T07:44:54.8180841Z hint:\n2026-11-19T07:44:54.8181547Z hint: \tgit config --global init.defaultBranch <name>\n2026-11-19T07:44:54.8182419Z hint:\n2026-11-19T07:44:54.8183091Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\n2026-11-19T07:44:54.8184182Z hint: 'development'. The just-created branch can be renamed via this command:\n2026-11-19T07:44:54.8185354Z hint:\n2026-11-19T07:44:54.8185887Z hint: \tgit branch -m <name>\n2026-11-19T07:44:54.8186484Z hint:\n2026-11-19T07:44:54.8187304Z hint: Disable this message with \"git config set advice.defaultBranchName false\"\n2026-11-19T07:44:54.8190588Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/\n2026-11-19T07:44:54.8204259Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay\n2026-11-19T07:44:54.8268242Z ##[endgroup]\n2026-11-19T07:44:54.8269143Z ##[group]Disabling automatic garbage collection\n2026-11-19T07:44:54.8271676Z [command]/usr/bin/git config --local gc.auto 0\n2026-11-19T07:44:54.8311262Z ##[endgroup]\n2026-11-19T07:44:54.8312633Z ##[group]Setting up auth\n2026-11-19T07:44:54.8313356Z Removing SSH command configuration\n2026-11-19T07:44:54.8319990Z [command]/usr/bin/git config --local --name-only --get-regexp core\\.sshCommand\n2026-11-19T07:44:54.8361432Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git config --local --name-only --get-regexp 'core\\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\"\n2026-11-19T07:44:54.8909015Z Removing HTTP extra header\n2026-11-19T07:44:54.8915149Z [command]/usr/bin/git config --local --name-only --get-regexp http\\.https\\:\\/\\/github\\.com\\/\\.extraheader\n2026-11-19T07:44:54.8951175Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git config --local --name-only --get-regexp 'http\\.https\\:\\/\\/github\\.com\\/\\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\"\n2026-11-19T07:44:54.9254893Z Removing includeIf entries pointing to credentials config files\n2026-11-19T07:44:54.9261637Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\\.gitdir:\n2026-11-19T07:44:54.9298263Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url\n2026-11-19T07:44:54.9590012Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config http.https://github.com/.extraheader AUTHORIZATION: basic ***\n2026-11-19T07:44:54.9649196Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config\n2026-11-19T07:44:54.9685258Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config\n2026-11-19T07:44:54.9722838Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config\n2026-11-19T07:44:54.9756254Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config\n2026-11-19T07:44:54.9787626Z ##[endgroup]\n2026-11-19T07:44:54.9788454Z ##[group]Fetching the repository\n2026-11-19T07:44:54.9794944Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d169af429f2c3be6536118b280f849016292c85d:refs/remotes/pull/244/merge\n2026-11-19T07:44:56.2497779Z From https://github.com/djshellshoxxx/GhostPay\n2026-11-19T07:44:56.2499760Z  * [new ref]         d169af429f2c3be6536118b280f849016292c85d -> pull/244/merge\n2026-11-19T07:44:56.2504604Z ##[endgroup]\n2026-11-19T07:44:56.2506603Z ##[group]Determining the checkout info\n2026-11-19T07:44:56.2508748Z ##[endgroup]\n2026-11-19T07:44:56.2511518Z [command]/usr/bin/git sparse-checkout disable\n2026-11-19T07:44:56.2572860Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig\n2026-11-19T07:44:56.2613438Z ##[group]Checking out the ref\n2026-11-19T07:44:56.2617340Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/244/merge\n2026-11-19T07:44:56.5546697Z Note: switching to 'refs/remotes/pull/244/merge'.\n2026-11-19T07:44:56.5548078Z \n2026-11-19T07:44:56.5549191Z You are in 'detached HEAD' state. You can look around, make experimental\n2026-11-19T07:44:56.5551122Z changes and commit them, and you can discard any commits you make in this\n2026-11-19T07:44:56.5552944Z state without impacting any branches by switching back to a branch.\n2026-11-19T07:44:56.5554147Z \n2026-11-19T07:44:56.5555277Z If you want to create a new branch to retain commits you create, you may\n2026-11-19T07:44:56.5557050Z do so (now or later) by using -c with the switch command. Example:\n2026-11-19T07:44:56.5558118Z \n2026-11-19T07:44:56.5558774Z   git switch -c <new-branch-name>\n2026-11-19T07:44:56.5559720Z \n2026-11-19T07:44:56.5641316Z Or undo this operation with:\n2026-11-19T07:44:56.5646386Z \n2026-11-19T07:44:56.5646857Z   git switch -\n2026-11-19T07:44:56.5647230Z \n2026-11-19T07:44:56.5648016Z Turn off this advice by setting config variable advice.detachedHead to false\n2026-11-19T07:44:56.5655272Z \n2026-11-19T07:44:56.5656213Z HEAD is now at d169af4 Merge 2364284a2717a22b895fcb7badeb2e7ae6bb0e48 into e454de6abfefda70d82784fafc1d8949b277c334\n2026-11-19T07:44:56.5658561Z ##[endgroup]\n2026-11-19T07:44:56.5659812Z [command]/usr/bin/git log -1 --format=%H\n2026-11-19T07:44:56.5661193Z d169af429f2c3be6536118b280f849016292c85d\n2026-11-19T07:44:56.5674867Z ##[group]Removing auth\n2026-11-19T07:44:56.5676128Z Removing SSH command configuration\n2026-11-19T07:44:56.5680082Z [command]/usr/bin/git config --local --name-only --get-regexp core\\.sshCommand\n2026-11-19T07:44:56.5718218Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git config --local --name-only --get-regexp 'core\\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\"\n2026-11-19T07:44:56.6021825Z Removing HTTP extra header\n2026-11-19T07:44:56.6025770Z [command]/usr/bin/git config --local --name-only --get-regexp http\\.https\\:\\/\\/github\\.com\\/\\.extraheader\n2026-11-19T07:44:56.6060821Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git config --local --name-only --get-regexp 'http\\.https\\:\\/\\/github\\.com\\/\\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\"\n2026-11-19T07:44:56.6350625Z Removing includeIf entries pointing to credentials config files\n2026-11-19T07:44:56.6353423Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\\.gitdir:\n2026-11-19T07:44:56.6381590Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path\n2026-11-19T07:44:56.6382714Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path\n2026-11-19T07:44:56.6383560Z includeif.gitdir:/github/workspace/.git.path\n2026-11-19T07:44:56.6384530Z includeif.gitdir:/github/workspace/.git/worktrees/*.path\n2026-11-19T07:44:56.6390633Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path\n2026-11-19T07:44:56.6416193Z /home/runner/work/_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config\n2026-11-19T07:44:56.6430046Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \\/home\\/runner\\/work\\/_temp\\/git\\-credentials\\-90218ec8\\-4c3a\\-42a3\\-8814\\-2c9acb925c62\\.config\n2026-11-19T07:44:56.6470730Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path\n2026-11-19T07:44:56.6496142Z /home/runner/work/_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config\n2026-11-19T07:44:56.6506175Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \\/home\\/runner\\/work\\/_temp\\/git\\-credentials\\-90218ec8\\-4c3a\\-42a3\\-8814\\-2c9acb925c62\\.config\n2026-11-19T07:44:56.6548720Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path\n2026-11-19T07:44:56.6573566Z /github/runner_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config\n2026-11-19T07:44:56.6584556Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \\/github\\/runner_temp\\/git\\-credentials\\-90218ec8\\-4c3a\\-42a3\\-8814\\-2c9acb925c62\\.config\n2026-11-19T07:44:56.6625661Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path\n2026-11-19T07:44:56.6652127Z /github/runner_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config\n2026-11-19T07:44:56.6662623Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \\/github\\/runner_temp\\/git\\-credentials\\-90218ec8\\-4c3a\\-42a3\\-8814\\-2c9acb925c62\\.config\n2026-11-19T07:44:56.6699856Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url\n2026-11-19T07:44:56.6989985Z Removing credentials config '/home/runner/work/_temp/git-credentials-90218ec8-4c3a-42a3-8814-2c9acb925c62.config'\n2026-11-19T07:44:56.6998777Z ##[endgroup]\n2026-11-19T07:44:56.7339170Z Prepare all required actions\n2026-11-19T07:44:56.7340210Z Getting action download info\n2026-11-19T07:44:56.8436785Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)\n2026-11-19T07:44:56.9141645Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)\n2026-11-19T07:44:57.0707383Z ##[group]Run ./.github/actions/setup-node-libs\n2026-11-19T07:44:57.0707826Z with:\n2026-11-19T07:44:57.0708071Z   save-cache: true\n2026-11-19T07:44:57.0708328Z ##[endgroup]\n2026-11-19T07:44:57.0770457Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__self.__actions_setup-node]\n2026-11-19T07:44:57.0871477Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1\n2026-11-19T07:44:57.0871935Z with:\n2026-11-19T07:44:57.0872184Z   node-version: 22\n2026-11-19T07:44:57.0872446Z   cache: npm\n2026-11-19T07:44:57.0872762Z   package-manager-cache: true\n2026-11-19T07:44:57.0873066Z   check-latest: false\n2026-11-19T07:44:57.0875702Z   token: ***\n2026-11-19T07:44:57.0875962Z ##[endgroup]\n2026-11-19T07:44:57.2275503Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64\n2026-11-19T07:44:57.3387232Z ##[group]Environment details\n2026-11-19T07:44:57.7136579Z node: v22.23.4\n2026-11-19T07:44:57.7137145Z npm: 10.9.9\n2026-11-19T07:44:57.7137585Z yarn: 1.22.22\n2026-11-19T07:44:57.7139447Z ##[endgroup]\n2026-11-19T07:44:57.7162658Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache\n2026-11-19T07:44:57.8346298Z /home/runner/.npm\n2026-11-19T07:44:58.0527877Z Cache hit for: node-cache-Linux-x64-npm-95eb62cdd1d29437652a4569eecfa4fc44cb6559b827fdc6f11a2f44ed1d6ba0\n2026-11-19T07:44:59.2795634Z Received 62914560 of 265011921 (23.7%), 60.0 MBs/sec\n2026-11-19T07:45:00.2784499Z Received 234881024 of 265011921 (88.6%), 111.9 MBs/sec\n2026-11-19T07:45:00.4731436Z Received 265011921 of 265011921 (100.0%), 115.1 MBs/sec\n2026-11-19T07:45:00.4737543Z Cache Size: ~253 MB (265011921 B)\n2026-11-19T07:45:00.4882472Z [command]/usr/bin/tar -xf /home/runner/work/_temp/f37a8ee2-7931-43e0-a5e4-721228e745ee/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd\n2026-11-19T07:45:01.1261864Z Cache restored successfully\n2026-11-19T07:45:01.1377955Z Cache restored from key: node-cache-Linux-x64-npm-95eb62cdd1d29437652a4569eecfa4fc44cb6559b827fdc6f11a2f44ed1d6ba0\n2026-11-19T07:45:01.1563589Z ##[end-action id=__self.__actions_setup-node;outcome=success;conclusion=success;duration_ms=4079]\n2026-11-19T07:45:01.1567686Z ##[start-action display=Run npm ci --ignore-scripts;id=__self.__run]\n2026-11-19T07:45:01.1612803Z ##[group]Run npm ci --ignore-scripts\n2026-11-19T07:45:01.1613213Z \u001b[36;1mnpm ci --ignore-scripts\u001b[0m\n2026-11-19T07:45:01.1678276Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}\n2026-11-19T07:45:01.1678676Z ##[endgroup]\n2026-11-19T07:45:06.3539592Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.\n2026-11-19T07:45:09.8317750Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead\n2026-11-19T07:45:14.8035594Z \n2026-11-19T07:45:14.8036760Z added 722 packages, and audited 791 packages in 14s\n2026-11-19T07:45:14.8037262Z \n2026-11-19T07:45:14.8037487Z 157 packages are looking for funding\n2026-11-19T07:45:14.8037858Z   run `npm fund` for details\n2026-11-19T07:45:14.8230613Z \n2026-11-19T07:45:14.8231986Z 17 low severity vulnerabilities\n2026-11-19T07:45:14.8232895Z \n2026-11-19T07:45:14.8255716Z To address issues that do not require attention, run:\n2026-11-19T07:45:14.8256392Z   npm audit fix\n2026-11-19T07:45:14.8256628Z \n2026-11-19T07:45:14.8257129Z To address all issues possible (including breaking changes), run:\n2026-11-19T07:45:14.8257840Z   npm audit fix --force\n2026-11-19T07:45:14.8258173Z \n2026-11-19T07:45:14.8258549Z Some issues need review, and may require choosing\n2026-11-19T07:45:14.8259481Z a different dependency.\n2026-11-19T07:45:14.8259781Z \n2026-11-19T07:45:14.8260007Z Run `npm audit` for details.\n2026-11-19T07:45:14.9619555Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=13805]\n2026-11-19T07:45:14.9623083Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs]\n2026-11-19T07:45:15.8136332Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae\n2026-11-19T07:45:15.8136777Z with:\n2026-11-19T07:45:15.8137018Z   path: packages/*/dist\n2026-11-19T07:45:15.8137552Z   key: libs-Linux-node22-1a8d6f76a4ac65151554deb4603c7f0f54662c3babb2cf1ef5978d96eb54a00d\n2026-11-19T07:45:15.8138161Z   enableCrossOsArchive: false\n2026-11-19T07:45:15.8138480Z   fail-on-cache-miss: false\n2026-11-19T07:45:15.8138768Z   lookup-only: false\n2026-11-19T07:45:15.8139031Z   save-always: false\n2026-11-19T07:45:15.8139278Z ##[endgroup]\n2026-11-19T07:45:16.1254173Z Cache hit for: libs-Linux-node22-1a8d6f76a4ac65151554deb4603c7f0f54662c3babb2cf1ef5978d96eb54a00d\n2026-11-19T07:45:16.9229902Z Received 2004060 of 2004060 (100.0%), 3.3 MBs/sec\n2026-11-19T07:45:16.9230368Z Cache Size: ~2 MB (2004060 B)\n2026-11-19T07:45:16.9256200Z [command]/usr/bin/tar -xf /home/runner/work/_temp/c31afcd3-b6f3-43e2-8e93-5a26a7bb99b1/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd\n2026-11-19T07:45:17.0193293Z Cache restored successfully\n2026-11-19T07:45:17.0385598Z Cache restored from key: libs-Linux-node22-1a8d6f76a4ac65151554deb4603c7f0f54662c3babb2cf1ef5978d96eb54a00d\n2026-11-19T07:45:17.0482562Z ##[end-action id=__self.libs;outcome=success;conclusion=success;duration_ms=2085]\n2026-11-19T07:45:17.0488127Z ##[start-action display=Run actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs-restore]\n2026-11-19T07:45:17.0498097Z ##[end-action id=__self.libs-restore;outcome=skipped;conclusion=skipped;duration_ms=0]\n2026-11-19T07:45:17.0500194Z ##[start-action display=Run npm run build:libs;id=__self.__run_2]\n2026-11-19T07:45:17.0506477Z ##[end-action id=__self.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]\n2026-11-19T07:45:17.0555740Z Prepare all required actions\n2026-11-19T07:45:17.0556258Z Getting action download info\n2026-11-19T07:45:17.1835749Z Download action repository 'foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf' (SHA:dba66c27052e63476d886f22216e119ba7e615bf)\n2026-11-19T07:45:17.7638283Z ##[group]Run ./.github/actions/setup-forge\n2026-11-19T07:45:17.7638588Z with:\n2026-11-19T07:45:17.7638809Z   cache-name: beta-acceptance\n2026-11-19T07:45:17.7639068Z ##[endgroup]\n2026-11-19T07:45:17.7643518Z ##[start-action display=Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf;id=__self_2.__foundry-rs_foundry-toolchain]\n2026-11-19T07:45:17.7679170Z ##[group]Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf\n2026-11-19T07:45:17.7679583Z with:\n2026-11-19T07:45:17.7679771Z   version: v1.8.5\n2026-11-19T07:45:17.7679995Z   network: ethereum\n2026-11-19T07:45:17.7680198Z   cache: true\n2026-11-19T07:45:17.7680522Z   cache-key: acceptance-d169af429f2c3be6536118b280f849016292c85d\n2026-11-19T07:45:17.7680901Z   cache-restore-keys: acceptance-\n2026-11-19T07:45:17.7681168Z ##[endgroup]\n2026-11-19T07:45:17.8994782Z Installing Foundry (version: v1.8.5)\n2026-11-19T07:45:17.9026287Z Downloading foundryup installer from foundry-rs/foundryup@a27902ef04dcb43061fabf343365cb5afc95fc48...\n2026-11-19T07:45:17.9852197Z Running foundryup installer...\n2026-11-19T07:45:19.3941475Z Running: foundryup --install 1.8.5\n2026-11-19T07:45:22.2255988Z Added /home/runner/.foundry/bin to PATH\n2026-11-19T07:45:22.2257645Z Primary key: linux-foundry-chain-fork-acceptance-d169af429f2c3be6536118b280f849016292c85d\n2026-11-19T07:45:22.2263783Z Restore keys: linux-foundry-chain-fork-acceptance-\n2026-11-19T07:45:22.3980300Z Cache hit for restore-key: linux-foundry-chain-fork-acceptance-278b1d5afcbc5056fd096ea52e34feaaeedfdb4e\n2026-11-19T07:45:22.8803707Z Received 26207 of 26207 (100.0%), 0.1 MBs/sec\n2026-11-19T07:45:22.8804702Z Cache Size: ~0 MB (26207 B)\n2026-11-19T07:45:22.8835587Z [command]/usr/bin/tar -xf /home/runner/work/_temp/d97ad3cb-4e1c-4f57-ae57-a697d931a7c8/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd\n2026-11-19T07:45:22.8902975Z Cache restored successfully\n2026-11-19T07:45:22.8908242Z Cache restored from key: linux-foundry-chain-fork-acceptance-278b1d5afcbc5056fd096ea52e34feaaeedfdb4e\n2026-11-19T07:45:22.8909761Z Running: forge --version\n2026-11-19T07:45:22.8985686Z forge Version: 1.8.5\n2026-11-19T07:45:22.8986571Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f\n2026-11-19T07:45:22.8987315Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)\n2026-11-19T07:45:22.8987913Z Build Profile: dist\n2026-11-19T07:45:22.8992723Z Running: cast --version\n2026-11-19T07:45:22.9105903Z cast Version: 1.8.5\n2026-11-19T07:45:22.9106726Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f\n2026-11-19T07:45:22.9126856Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)\n2026-11-19T07:45:22.9127699Z Build Profile: dist\n2026-11-19T07:45:22.9128265Z Running: anvil --version\n2026-11-19T07:45:22.9168453Z anvil Version: 1.8.5\n2026-11-19T07:45:22.9169121Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f\n2026-11-19T07:45:22.9169978Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)\n2026-11-19T07:45:22.9170605Z Build Profile: dist\n2026-11-19T07:45:22.9173908Z Running: chisel --version\n2026-11-19T07:45:22.9218907Z chisel Version: 1.8.5\n2026-11-19T07:45:22.9219589Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f\n2026-11-19T07:45:22.9220416Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)\n2026-11-19T07:45:22.9221061Z Build Profile: dist\n2026-11-19T07:45:22.9342430Z ##[end-action id=__self_2.__foundry-rs_foundry-toolchain;outcome=success;conclusion=success;duration_ms=5169]\n2026-11-19T07:45:22.9345686Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self_2.__actions_cache]\n2026-11-19T07:45:22.9389415Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae\n2026-11-19T07:45:22.9390010Z with:\n2026-11-19T07:45:22.9390237Z   path: ~/.svm\n2026-11-19T07:45:22.9390465Z   key: svm-Linux-0.8.28\n2026-11-19T07:45:22.9390728Z   enableCrossOsArchive: false\n2026-11-19T07:45:22.9391148Z   fail-on-cache-miss: false\n2026-11-19T07:45:22.9391414Z   lookup-only: false\n2026-11-19T07:45:22.9391652Z   save-always: false\n2026-11-19T07:45:22.9391882Z ##[endgroup]\n2026-11-19T07:45:23.2707001Z Cache hit for: svm-Linux-0.8.28\n2026-11-19T07:45:24.2360118Z Received 5503463 of 5503463 (100.0%), 7.0 MBs/sec\n2026-11-19T07:45:24.2360717Z Cache Size: ~5 MB (5503463 B)\n2026-11-19T07:45:24.2393886Z [command]/usr/bin/tar -xf /home/runner/work/_temp/131eda91-508e-45bd-b99f-2e116c5c7570/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd\n2026-11-19T07:45:24.2732873Z Cache restored successfully\n2026-11-19T07:45:24.2813931Z Cache restored from key: svm-Linux-0.8.28\n2026-11-19T07:45:24.2899758Z ##[end-action id=__self_2.__actions_cache;outcome=success;conclusion=success;duration_ms=1355]\n2026-11-19T07:45:24.2902796Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self_2.__actions_cache_2]\n2026-11-19T07:45:24.5775748Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae\n2026-11-19T07:45:24.5776138Z with:\n2026-11-19T07:45:24.5776425Z   path: packages/contracts/out\npackages/contracts/cache\n\n2026-11-19T07:45:24.5777036Z   key: forge-beta-acceptance-Linux-95cbb56779fe2e473d03a3f67af5797bea6be3d9eb69477cc587aa5308537132\n2026-11-19T07:45:24.5777626Z   restore-keys: forge-beta-acceptance-Linux-\n\n2026-11-19T07:45:24.5777975Z   enableCrossOsArchive: false\n2026-11-19T07:45:24.5778262Z   fail-on-cache-miss: false\n2026-11-19T07:45:24.5778522Z   lookup-only: false\n2026-11-19T07:45:24.5778751Z   save-always: false\n2026-11-19T07:45:24.5778982Z ##[endgroup]\n2026-11-19T07:45:24.9118580Z Cache hit for: forge-beta-acceptance-Linux-95cbb56779fe2e473d03a3f67af5797bea6be3d9eb69477cc587aa5308537132\n2026-11-19T07:45:25.7044571Z Received 1254163 of 1254163 (100.0%), 2.1 MBs/sec\n2026-11-19T07:45:25.7045477Z Cache Size: ~1 MB (1254163 B)\n2026-11-19T07:45:25.7073412Z [command]/usr/bin/tar -xf /home/runner/work/_temp/229efeb2-45d7-4152-9001-58bf566adc90/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd\n2026-11-19T07:45:25.7554201Z Cache restored successfully\n2026-11-19T07:45:25.7634499Z Cache restored from key: forge-beta-acceptance-Linux-95cbb56779fe2e473d03a3f67af5797bea6be3d9eb69477cc587aa5308537132\n2026-11-19T07:45:25.7713166Z ##[end-action id=__self_2.__actions_cache_2;outcome=success;conclusion=success;duration_ms=1480]\n2026-11-19T07:45:25.7745328Z ##[group]Run forge build\n2026-11-19T07:45:25.7745771Z \u001b[36;1mforge build\u001b[0m\n2026-11-19T07:45:25.7798533Z shell: /usr/bin/bash -e {0}\n2026-11-19T07:45:25.7798832Z ##[endgroup]\n2026-11-19T07:45:25.9012801Z No files changed, compilation skipped\n2026-11-19T07:45:26.1347730Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`\n2026-11-19T07:45:26.1348959Z     \u256d\u25b8 test/audit/Policy.audit.t.sol:112:17\n2026-11-19T07:45:26.1349390Z     \u2502\n2026-11-19T07:45:26.1349851Z 112 \u2502         vm.warp(block.timestamp + 1 days);\n2026-11-19T07:45:26.1350585Z     \u2502         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 `vm.warp` changes this environment here\n2026-11-19T07:45:26.1351073Z     \u2502\n2026-11-19T07:45:26.1351538Z     \u251c help: capture it with `vm.getBlockTimestamp()` instead\n2026-11-19T07:45:26.1352413Z     \u2570 help: https://getfoundry.sh/forge/linting/environment-read-across-mutation\n2026-11-19T07:45:26.1353170Z \n2026-11-19T07:45:26.1354049Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`\n2026-11-19T07:45:26.1355408Z     \u256d\u25b8 test/audit/Policy.audit.t.sol:257:17\n2026-11-19T07:45:26.1356026Z     \u2502\n2026-11-19T07:45:26.1356698Z 257 \u2502         vm.warp(block.timestamp + DELAY);\n2026-11-19T07:45:26.1357386Z     \u2502         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 `vm.warp` changes this environment here\n2026-11-19T07:45:26.1357789Z     \u2502\n2026-11-19T07:45:26.1358170Z     \u251c help: capture it with `vm.getBlockTimestamp()` instead\n2026-11-19T07:45:26.1358788Z     \u2570 help: https://getfoundry.sh/forge/linting/environment-read-across-mutation\n2026-11-19T07:45:26.1359559Z \n2026-11-19T07:45:26.1359988Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`\n2026-11-19T07:45:26.1360594Z     \u256d\u25b8 test/audit/Policy.audit.t.sol:277:17\n2026-11-19T07:45:26.1360909Z     \u2502\n2026-11-19T07:45:26.1361485Z 277 \u2502         vm.warp(block.timestamp + 2 * DELAY); // both mature; destination change executes first\n2026-11-19T07:45:26.1362189Z     \u2502         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 `vm.warp` changes this environment here\n2026-11-19T07:45:26.1362587Z     \u2502\n2026-11-19T07:45:26.1362955Z     \u251c help: capture it with `vm.getBlockTimestamp()` instead\n2026-11-19T07:45:26.1363554Z     \u2570 help: https://getfoundry.sh/forge/linting/environment-read-across-mutation\n2026-11-19T07:45:26.1363895Z \n2026-11-19T07:45:26.1364580Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`\n2026-11-19T07:45:26.1365650Z     \u256d\u25b8 test/audit/Policy.audit.t.sol:302:34\n2026-11-19T07:45:26.1366060Z     \u2502\n2026-11-19T07:45:26.1366566Z 302 \u2502         uint256 endOfBucket = (((block.timestamp + DELAY) / W) + 1) * W - 1;\n2026-11-19T07:45:26.1367095Z     \u2502                                  \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n2026-11-19T07:45:26.1367410Z     \u2021\n2026-11-19T07:45:26.1367710Z 306 \u2502         vm.warp(endOfBucket);\n2026-11-19T07:45:26.1368177Z     \u2502         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 `vm.warp` changes this environment here\n2026-11-19T07:45:26.1368536Z     \u2502\n2026-11-19T07:45:26.1368918Z     \u251c help: capture it with `vm.getBlockTimestamp()` instead\n2026-11-19T07:45:26.1369522Z     \u2570 help: https://getfoundry.sh/forge/linting/environment-read-across-mutation\n2026-11-19T07:45:26.1369882Z \n2026-11-19T07:45:26.1370288Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`\n2026-11-19T07:45:26.1370890Z     \u256d\u25b8 test/audit/Policy.audit.t.sol:361:17\n2026-11-19T07:45:26.1371203Z     \u2502\n2026-11-19T07:45:26.1371551Z 361 \u2502         vm.warp(block.timestamp + 1 days);\n2026-11-19T07:45:26.1372086Z     \u2502         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 `vm.warp` changes this environment here\n2026-11-19T07:45:26.1372473Z     \u2502\n2026-11-19T07:45:26.1372838Z     \u251c help: capture it with `vm.getBlockTimestamp()` instead\n2026-11-19T07:45:26.1373442Z     \u2570 help: https://getfoundry.sh/forge/linting/environment-read-across-mutation\n2026-11-19T07:45:26.1373780Z \n2026-11-19T07:45:26.1391217Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`\n2026-11-19T07:45:26.1392438Z     \u256d\u25b8 test/echidna/EchidnaPolicyReachability.t.sol:107:17\n2026-11-19T07:45:26.1392936Z     \u2502\n2026-11-19T07:45:26.1393310Z 107 \u2502         vm.warp(block.timestamp + DELAY - 1);\n2026-11-19T07:45:26.1393869Z     \u2502         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 `vm.warp` changes this environment here\n2026-11-19T07:45:26.1394253Z     \u2502\n2026-11-19T07:45:26.1394895Z     \u251c help: capture it with `vm.getBlockTimestamp()` instead\n2026-11-19T07:45:26.1395502Z     \u2570 help: https://getfoundry.sh/forge/linting/environment-read-across-mutation\n2026-11-19T07:45:26.1395867Z \n2026-11-19T07:45:26.1396290Z warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`\n2026-11-19T07:45:26.1396935Z    \u256d\u25b8 test/echidna/EchidnaPolicyReachability.t.sol:43:17\n2026-11-19T07:45:26.1397288Z    \u2502\n2026-11-19T07:45:26.1397637Z 43 \u2502         vm.warp(block.timestamp + timeDelay);\n2026-11-19T07:45:26.1398193Z    \u2502         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 `vm.warp` changes this environment here\n2026-11-19T07:45:26.1398576Z    \u2502\n2026-11-19T07:45:26.1398928Z    \u251c help: capture it with `vm.getBlockTimestamp()` instead\n2026-11-19T07:45:26.1399524Z    \u2570 help: https://getfoundry.sh/forge/linting/environment-read-across-mutation\n2026-11-19T07:45:26.1399862Z \n2026-11-19T07:45:26.1400238Z warning[environment-read-across-mutation]: `block.number` may be reused across `vm.roll`\n2026-11-19T07:45:26.1400857Z    \u256d\u25b8 test/echidna/EchidnaPolicyReachability.t.sol:44:17\n2026-11-19T07:45:26.1401195Z    \u2502\n2026-11-19T07:45:26.1401527Z 44 \u2502         vm.roll(block.number + blockDelay);\n2026-11-19T07:45:26.1402261Z    \u2502         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 `vm.roll` changes this environment here\n2026-11-19T07:45:26.1402635Z    \u2502\n2026-11-19T07:45:26.1403076Z    \u251c help: capture it with `vm.getBlockNumber()` instead\n2026-11-19T07:45:26.1403692Z    \u2570 help: https://getfoundry.sh/forge/linting/environment-read-across-mutation\n2026-11-19T07:45:26.1404036Z \n2026-11-19T07:45:26.1615802Z ##[group]Run echo \"version=$(node -p \"require('./apps/web/package.json').devDependencies['@playwright/test']\")\" >> \"$GITHUB_OUTPUT\"\n2026-11-19T07:45:26.1617482Z \u001b[36;1mecho \"version=$(node -p \"require('./apps/web/package.json').devDependencies['@playwright/test']\")\" >> \"$GITHUB_OUTPUT\"\u001b[0m\n2026-11-19T07:45:26.1681653Z shell: /usr/bin/bash -e {0}\n2026-11-19T07:45:26.1682104Z ##[endgroup]\n2026-11-19T07:45:26.2150072Z ##[group]Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9\n2026-11-19T07:45:26.2150496Z with:\n2026-11-19T07:45:26.2150729Z   path: ~/.cache/ms-playwright\n2026-11-19T07:45:26.2151040Z   key: playwright-Linux-1.64.1\n2026-11-19T07:45:26.2151331Z   enableCrossOsArchive: false\n2026-11-19T07:45:26.2151604Z   fail-on-cache-miss: false\n2026-11-19T07:45:26.2151892Z   lookup-only: false\n2026-11-19T07:45:26.2152133Z   save-always: false\n2026-11-19T07:45:26.2152362Z ##[endgroup]\n2026-11-19T07:45:26.5244059Z Cache hit for: playwright-Linux-1.64.1\n2026-11-19T07:45:27.7480158Z Received 50331648 of 293246084 (17.2%), 48.0 MBs/sec\n2026-11-19T07:45:28.7491754Z Received 130023424 of 293246084 (44.3%), 62.0 MBs/sec\n2026-11-19T07:45:29.7496942Z Received 234881024 of 293246084 (80.1%), 74.6 MBs/sec\n2026-11-19T07:45:30.7505130Z Received 289051780 of 293246084 (98.6%), 68.9 MBs/sec\n2026-11-19T07:45:31.2140075Z Received 293246084 of 293246084 (100.0%), 62.7 MBs/sec\n2026-11-19T07:45:31.2142254Z Cache Size: ~280 MB (293246084 B)\n2026-11-19T07:45:31.2203577Z [command]/usr/bin/tar -xf /home/runner/work/_temp/2604634a-010f-4b95-9cd1-7becfd9c0884/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd\n2026-11-19T07:45:32.4304575Z Cache restored successfully\n2026-11-19T07:45:32.4507577Z Cache restored from key: playwright-Linux-1.64.1\n2026-11-19T07:45:32.4706121Z ##[group]Run ./node_modules/.bin/playwright install --with-deps chromium\n2026-11-19T07:45:32.4706733Z \u001b[36;1m./node_modules/.bin/playwright install --with-deps chromium\u001b[0m\n2026-11-19T07:45:32.4756910Z shell: /usr/bin/bash -e {0}\n2026-11-19T07:45:32.4757210Z ##[endgroup]\n2026-11-19T07:45:33.0092456Z Installing dependencies...\n2026-11-19T07:45:33.0215049Z Switching to root user to install dependencies...\n2026-11-19T07:45:33.1286287Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]\n2026-11-19T07:45:33.1502789Z Get:6 https://packages.microsoft.com/ubuntu/26.04/prod resolute InRelease [3964 B]\n2026-11-19T07:45:33.1625017Z Hit:2 http://azure.archive.ubuntu.com/ubuntu resolute InRelease\n2026-11-19T07:45:33.1712104Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute-updates InRelease [137 kB]\n2026-11-19T07:45:33.1741990Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute-backports InRelease [137 kB]\n2026-11-19T07:45:33.1777833Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute-security InRelease [137 kB]\n2026-11-19T07:45:33.1865847Z Get:7 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main amd64 Packages [165 kB]\n2026-11-19T07:45:33.2063389Z Get:8 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main arm64 Packages [151 kB]\n2026-11-19T07:45:33.2248536Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 Packages [875 kB]\n2026-11-19T07:45:33.2286747Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main Translation-en [196 kB]\n2026-11-19T07:45:33.2339540Z Get:11 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe amd64v3 Packages [394 kB]\n2026-11-19T07:45:33.2416562Z Get:12 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe Translation-en [124 kB]\n2026-11-19T07:45:33.2636863Z Get:13 http://azure.archive.ubuntu.com/ubuntu resolute-security/main amd64v3 Packages [721 kB]\n2026-11-19T07:45:33.2670476Z Get:14 http://azure.archive.ubuntu.com/ubuntu resolute-security/main Translation-en [158 kB]\n2026-11-19T07:45:33.2686082Z Get:15 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe amd64v3 Packages [222 kB]\n2026-11-19T07:45:33.2705262Z Get:16 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe Translation-en [72.7 kB]\n2026-11-19T07:45:33.2719542Z Get:17 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted amd64v3 Packages [590 kB]\n2026-11-19T07:45:33.2753876Z Get:18 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted Translation-en [122 kB]\n2026-11-19T07:45:35.7653868Z Fetched 4207 kB in 0s (11.2 MB/s)\n2026-11-19T07:45:36.5008153Z Reading package lists...\n2026-11-19T07:45:36.5284621Z Reading package lists...\n2026-11-19T07:45:36.7339204Z Building dependency tree...\n2026-11-19T07:45:36.7346687Z Reading state information...\n2026-11-19T07:45:36.7800816Z libasound2t64 is already the newest version (1.2.15.3-1ubuntu1.1).\n2026-11-19T07:45:36.7801916Z libasound2t64 set to manually installed.\n2026-11-19T07:45:36.7803025Z libatk-bridge2.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).\n2026-11-19T07:45:36.7804101Z libatk-bridge2.0-0t64 set to manually installed.\n2026-11-19T07:45:36.7805072Z libatk1.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).\n2026-11-19T07:45:36.7805625Z libatk1.0-0t64 set to manually installed.\n2026-11-19T07:45:36.7806212Z libatspi2.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).\n2026-11-19T07:45:36.7806776Z libatspi2.0-0t64 set to manually installed.\n2026-11-19T07:45:36.7807284Z libcairo2 is already the newest version (1.18.4-3).\n2026-11-19T07:45:36.7807762Z libcairo2 set to manually installed.\n2026-11-19T07:45:36.7808312Z libcups2t64 is already the newest version (2.4.16-1ubuntu1.3).\n2026-11-19T07:45:36.7808851Z libcups2t64 set to manually installed.\n2026-11-19T07:45:36.7809387Z libdbus-1-3 is already the newest version (1.16.2-2ubuntu4).\n2026-11-19T07:45:36.7809911Z libdbus-1-3 set to manually installed.\n2026-11-19T07:45:36.7810384Z libdrm2 is already the newest version (2.4.131-1).\n2026-11-19T07:45:36.7811288Z libdrm2 set to manually installed.\n2026-11-19T07:45:36.7811825Z libgbm1 is already the newest version (26.0.8-1ubuntu0.3).\n2026-11-19T07:45:36.7812325Z libgbm1 set to manually installed.\n2026-11-19T07:45:36.7812878Z libglib2.0-0t64 is already the newest version (2.88.0-1ubuntu0.1).\n2026-11-19T07:45:36.7813441Z libglib2.0-0t64 set to manually installed.\n2026-11-19T07:45:36.7814013Z libnspr4 is already the newest version (2:4.38.2-1ubuntu1).\n2026-11-19T07:45:36.7814813Z libnspr4 set to manually installed.\n2026-11-19T07:45:36.7815272Z libnss3 is already the newest version (2:3.120-1ubuntu2.2).\n2026-11-19T07:45:36.7815693Z libnss3 set to manually installed.\n2026-11-19T07:45:36.7816120Z libpango-1.0-0 is already the newest version (1.57.0-1).\n2026-11-19T07:45:36.7816551Z libpango-1.0-0 set to manually installed.\n2026-11-19T07:45:36.7817010Z libx11-6 is already the newest version (2:1.8.13-1ubuntu0.1).\n2026-11-19T07:45:36.7817453Z libx11-6 set to manually installed.\n2026-11-19T07:45:36.7817899Z libxcb1 is already the newest version (1.17.0-2ubuntu1).\n2026-11-19T07:45:36.7818293Z libxcb1 set to manually installed.\n2026-11-19T07:45:36.7818735Z libxcomposite1 is already the newest version (1:0.4.6-1build1).\n2026-11-19T07:45:36.7819180Z libxcomposite1 set to manually installed.\n2026-11-19T07:45:36.7819603Z libxdamage1 is already the newest version (1:1.1.7-1).\n2026-11-19T07:45:36.7820002Z libxdamage1 set to manually installed.\n2026-11-19T07:45:36.7820419Z libxext6 is already the newest version (2:1.3.4-1build3).\n2026-11-19T07:45:36.7820827Z libxext6 set to manually installed.\n2026-11-19T07:45:36.7821250Z libxfixes3 is already the newest version (1:6.0.0-2build2).\n2026-11-19T07:45:36.7821663Z libxfixes3 set to manually installed.\n2026-11-19T07:45:36.7822082Z libxkbcommon0 is already the newest version (1.13.1-1).\n2026-11-19T07:45:36.7822486Z libxkbcommon0 set to manually installed.\n2026-11-19T07:45:36.7823151Z libxrandr2 is already the newest version (2:1.5.4-1build1).\n2026-11-19T07:45:36.7823569Z libxrandr2 set to manually installed.\n2026-11-19T07:45:36.7823997Z xvfb is already the newest version (2:21.1.22-1ubuntu1.3).\n2026-11-19T07:45:36.7824940Z fonts-noto-color-emoji is already the newest version (2.051-1build1).\n2026-11-19T07:45:36.7825522Z libfontconfig1 is already the newest version (2.17.1-3ubuntu1).\n2026-11-19T07:45:36.7825967Z libfontconfig1 set to manually installed.\n2026-11-19T07:45:36.7826468Z libfreetype6 is already the newest version (2.14.2+dfsg-1ubuntu0.2).\n2026-11-19T07:45:36.7826971Z libfreetype6 set to manually installed.\n2026-11-19T07:45:36.7827451Z fonts-liberation is already the newest version (1:2.1.5-3build1).\n2026-11-19T07:45:36.7827922Z fonts-liberation set to manually installed.\n2026-11-19T07:45:36.8507355Z Solving dependencies...\n2026-11-19T07:45:36.9881285Z The following additional packages will be installed:\n2026-11-19T07:45:36.9882030Z   xfonts-encodings xfonts-utils\n2026-11-19T07:45:36.9890903Z Recommended packages:\n2026-11-19T07:45:36.9891502Z   fonts-ipafont-mincho fonts-tlwg-loma\n2026-11-19T07:45:37.0146003Z The following NEW packages will be installed:\n2026-11-19T07:45:37.0147176Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont\n2026-11-19T07:45:37.0155698Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable\n2026-11-19T07:45:37.0156394Z   xfonts-utils\n2026-11-19T07:45:37.0408325Z 0 upgraded, 9 newly installed, 0 to remove and 32 not upgraded.\n2026-11-19T07:45:37.0409295Z Need to get 21.9 MB of archives.\n2026-11-19T07:45:37.0410130Z After this operation, 80.2 MB of additional disk space will be used.\n2026-11-19T07:45:37.0411099Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]\n2026-11-19T07:45:37.1089882Z Get:2 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-ipafont-gothic all 00303-23ubuntu1 [3703 kB]\n2026-11-19T07:45:37.5795723Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 fonts-freefont-ttf all 20211204+svn4273-4build1 [5656 kB]\n2026-11-19T07:45:38.3594952Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-tlwg-loma-otf all 1:0.7.3-1build1 [106 kB]\n2026-11-19T07:45:38.4111420Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-unifont all 1:16.0.04-1build1 [3169 kB]\n2026-11-19T07:45:38.7946205Z Get:6 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-wqy-zenhei all 0.9.45-8build1 [7863 kB]\n2026-11-19T07:45:39.6992536Z Get:7 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 xfonts-encodings all 1:1.0.5-0ubuntu3 [576 kB]\n2026-11-19T07:45:39.7982819Z Get:8 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 xfonts-utils amd64 1:7.7+7build1 [97.3 kB]\n2026-11-19T07:45:39.8473326Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 xfonts-cyrillic all 1:1.0.5+nmu1build1 [384 kB]\n2026-11-19T07:45:39.9404086Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 xfonts-scalable all 1:1.0.3-1.3build1 [304 kB]\n2026-11-19T07:45:40.3088343Z Fetched 21.9 MB in 3s (7475 kB/s)\n2026-11-19T07:45:40.3343379Z Selecting previously unselected package fonts-ipafont-gothic.\n2026-11-19T07:45:40.3701472Z (Reading database ... \n2026-11-19T07:45:40.3702049Z (Reading database ... 5%\n2026-11-19T07:45:40.3702455Z (Reading database ... 10%\n2026-11-19T07:45:40.3702828Z (Reading database ... 15%\n2026-11-19T07:45:40.3703186Z (Reading database ... 20%\n2026-11-19T07:45:40.3703540Z (Reading database ... 25%\n2026-11-19T07:45:40.3703887Z (Reading database ... 30%\n2026-11-19T07:45:40.3704238Z (Reading database ... 35%\n2026-11-19T07:45:40.3704998Z (Reading database ... 40%\n2026-11-19T07:45:40.3705356Z (Reading database ... 45%\n2026-11-19T07:45:40.3705708Z (Reading database ... 50%\n2026-11-19T07:45:40.4540295Z (Reading database ... 55%\n2026-11-19T07:45:40.6488302Z (Reading database ... 60%\n2026-11-19T07:45:40.7908429Z (Reading database ... 65%\n2026-11-19T07:45:40.9505501Z (Reading database ... 70%\n2026-11-19T07:45:41.0986266Z (Reading database ... 75%\n2026-11-19T07:45:41.2971796Z (Reading database ... 80%\n2026-11-19T07:45:41.4855348Z (Reading database ... 85%\n2026-11-19T07:45:41.6890065Z (Reading database ... 90%\n2026-11-19T07:45:41.8053108Z (Reading database ... 95%\n2026-11-19T07:45:41.8053705Z (Reading database ... 100%\n2026-11-19T07:45:41.8054821Z (Reading database ... 213946 files and directories currently installed.)\n2026-11-19T07:45:41.8097864Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-23ubuntu1_all.deb ...\n2026-11-19T07:45:41.8203788Z Unpacking fonts-ipafont-gothic (00303-23ubuntu1) ...\n2026-11-19T07:45:41.8920236Z Selecting previously unselected package fonts-freefont-ttf.\n2026-11-19T07:45:41.9064168Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-4build1_all.deb ...\n2026-11-19T07:45:41.9071415Z Unpacking fonts-freefont-ttf (20211204+svn4273-4build1) ...\n2026-11-19T07:45:41.9968165Z Selecting previously unselected package fonts-tlwg-loma-otf.\n2026-11-19T07:45:42.0110718Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1build1_all.deb ...\n2026-11-19T07:45:42.0117104Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1build1) ...\n2026-11-19T07:45:42.0366813Z Selecting previously unselected package fonts-unifont.\n2026-11-19T07:45:42.0508936Z Preparing to unpack .../3-fonts-unifont_1%3a16.0.04-1build1_all.deb ...\n2026-11-19T07:45:42.0516699Z Unpacking fonts-unifont (1:16.0.04-1build1) ...\n2026-11-19T07:45:42.1714246Z Selecting previously unselected package fonts-wqy-zenhei.\n2026-11-19T07:45:42.1860252Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8build1_all.deb ...\n2026-11-19T07:45:42.2014143Z Unpacking fonts-wqy-zenhei (0.9.45-8build1) ...\n2026-11-19T07:45:42.2921541Z Selecting previously unselected package xfonts-encodings.\n2026-11-19T07:45:42.3061980Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu3_all.deb ...\n2026-11-19T07:45:42.3068824Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu3) ...\n2026-11-19T07:45:42.3382066Z Selecting previously unselected package xfonts-utils.\n2026-11-19T07:45:42.3524819Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+7build1_amd64v3.deb ...\n2026-11-19T07:45:42.3532608Z Unpacking xfonts-utils (1:7.7+7build1) ...\n2026-11-19T07:45:42.3922303Z Selecting previously unselected package xfonts-cyrillic.\n2026-11-19T07:45:42.4065529Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1build1_all.deb ...\n2026-11-19T07:45:42.4074237Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1build1) ...\n2026-11-19T07:45:42.4462691Z Selecting previously unselected package xfonts-scalable.\n2026-11-19T07:45:42.4606116Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3build1_all.deb ...\n2026-11-19T07:45:42.4615271Z Unpacking xfonts-scalable (1:1.0.3-1.3build1) ...\n2026-11-19T07:45:42.5079262Z Setting up fonts-wqy-zenhei (0.9.45-8build1) ...\n2026-11-19T07:45:42.5236207Z Setting up fonts-freefont-ttf (20211204+svn4273-4build1) ...\n2026-11-19T07:45:42.5319903Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1build1) ...\n2026-11-19T07:45:42.5337884Z Setting up xfonts-encodings (1:1.0.5-0ubuntu3) ...\n2026-11-19T07:45:42.5354989Z Setting up fonts-ipafont-gothic (00303-23ubuntu1) ...\n2026-11-19T07:45:42.5418777Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode\n2026-11-19T07:45:42.5433181Z Setting up fonts-unifont (1:16.0.04-1build1) ...\n2026-11-19T07:45:42.5450034Z Setting up xfonts-utils (1:7.7+7build1) ...\n2026-11-19T07:45:42.5504828Z Setting up xfonts-cyrillic (1:1.0.5+nmu1build1) ...\n2026-11-19T07:45:42.5978003Z Setting up xfonts-scalable (1:1.0.3-1.3build1) ...\n2026-11-19T07:45:42.6399887Z Processing triggers for man-db (2.13.1-1build1) ...\n2026-11-19T07:45:42.6424490Z Not building database; man-db/auto-update is not 'true'.\n2026-11-19T07:45:42.6439130Z Processing triggers for fontconfig (2.17.1-3ubuntu1) ...\n2026-11-19T07:45:43.4186398Z \n2026-11-19T07:45:43.4187210Z Running kernel seems to be up-to-date.\n2026-11-19T07:45:43.4188671Z \n2026-11-19T07:45:43.4188958Z Restarting services...\n2026-11-19T07:45:43.4293624Z \n2026-11-19T07:45:43.4294245Z Service restarts being deferred:\n2026-11-19T07:45:43.4299069Z  systemctl restart hosted-compute-agent.service\n2026-11-19T07:45:43.4299542Z \n2026-11-19T07:45:43.4300398Z No containers need to be restarted.\n2026-11-19T07:45:43.4300759Z \n2026-11-19T07:45:43.4301097Z No user sessions are running outdated binaries.\n2026-11-19T07:45:43.4301489Z \n2026-11-19T07:45:43.4301839Z No VM guests are running outdated hypervisor (qemu) binaries on this host.\n2026-11-19T07:45:44.4956541Z ##[group]Run bash scripts/beta/acceptance.sh --skip-build\n2026-11-19T07:45:44.4957096Z \u001b[36;1mbash scripts/beta/acceptance.sh --skip-build\u001b[0m\n2026-11-19T07:45:44.5006845Z shell: /usr/bin/bash -e {0}\n2026-11-19T07:45:44.5007150Z ##[endgroup]\n2026-11-19T07:45:44.6843811Z GhostPay core beta acceptance 20261119T074544Z\n2026-11-19T07:45:44.6844668Z commit d169af429f2c3be6536118b280f849016292c85d\n2026-11-19T07:45:44.6960171Z node v22.23.4; anvil Version: 1.8.5; forge Version: 1.8.5\n2026-11-19T07:45:44.6960980Z stages lib,cli,browser\n2026-11-19T07:46:31.6015431Z == stage lib\n2026-11-19T07:46:32.2873564Z PASS preflight | router=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 relayer=0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 announcer=0x5FbDB2315678afecb367f032d93F642f64180aa3\n2026-11-19T07:46:32.3769719Z PASS seller keygen + invoices | meta=st:eth:0x02ed0e8df09... invoices=4 (signed, signature verified)\n2026-11-19T07:46:32.8051764Z PASS pay | ETH:gross=1000000000000000000 fee=2500000000000000 net=997500000000000000; USDC:gross=1000000000 fee=2500000 net=997500000; USDT:gross=500000000 fee=1250000 net=498750000; DAI:gross=200000000000000000000 fee=500000000000000000 net=199500000000000000000\n2026-11-19T07:46:32.8054575Z PASS router fee parity | on-chain deltas equal chain-adapters routerSplit() for all 4 payments\n2026-11-19T07:46:32.8510564Z PASS scan | announcements=4 matched=4 skipped=0\n2026-11-19T07:46:32.8614256Z PASS receipt | 1 native payment(s) traced on-chain as received, inflated claim refused; 3 unregistered-token claims stay unverified (fail closed)\n2026-11-19T07:46:32.8977944Z PASS direct sweep ETH | swept 0.997476011800821 ETH to 0x976EA74026E726554dB657fA54763abd0C3a0aa9\n2026-11-19T07:46:32.9682984Z PASS direct sweep USDT (gas topped up) | swept 498750000 base units\n2026-11-19T07:46:33.6074731Z PASS relayer started | port=18787 sweepRelayer=0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0\n2026-11-19T07:46:33.6937531Z PASS relayer sweep USDC | amount=997500000 fee=4987500 dest=0x976EA74026E726554dB657fA54763abd0C3a0aa9; stealth never held ETH\n2026-11-19T07:46:33.7051055Z PASS relayer replay USDC refused | 409 nonce_used\n2026-11-19T07:46:33.7885357Z PASS relayer sweep DAI | amount=199500000000000000000 fee=997500000000000000 dest=0x14dC79964da2C08b23698B3D3cc7Ca32193d9955; stealth never held ETH\n2026-11-19T07:46:34.7653972Z PASS relayer replay DAI refused | 409 nonce_used\n2026-11-19T07:46:36.3217215Z PASS script-side scrypt/AES-GCM backup mirroring keystore.ts params + restore rescan | N=131072; wrong passphrase and swapped identifiers refused; restored keys rediscovered 4/4 payments via a fresh client, native receipt verified; source retained\n2026-11-19T07:46:36.3310244Z E2E OK: 14 steps, 14 transactions\n2026-11-19T07:46:36.3549072Z == stage cli\n2026-11-19T07:46:36.7996747Z == Part A: CLI on the shared devnet (chain 31337)\n2026-11-19T07:46:36.9589415Z PASS A preflight devnet | rpc=http://127.0.0.1:8545\n2026-11-19T07:46:37.6516210Z PASS A doctor | exit=0\n2026-11-19T07:46:38.8854827Z PASS A backup generate (env passphrase) | exit=0\n2026-11-19T07:46:38.8858009Z PASS A backup generate reports public keys only\n2026-11-19T07:46:40.1215634Z PASS A backup generate (stdin passphrase) | exit=0\n2026-11-19T07:46:41.3428671Z PASS A backup generate refuses existing output | exit=3 WRITE_FAILED (expected 3)\n2026-11-19T07:46:41.9485942Z PASS A backup inspect | exit=0\n2026-11-19T07:46:41.9486680Z PASS A backup inspect unauthenticated\n2026-11-19T07:46:43.1862570Z PASS A backup verify | exit=0\n2026-11-19T07:46:43.1863253Z PASS A backup verify authenticated\n2026-11-19T07:46:44.3744660Z PASS A backup verify wrong passphrase | exit=1 BACKUP_AUTHENTICATION_FAILED (expected 1)\n2026-11-19T07:46:45.6441959Z PASS A backup create | exit=0\n2026-11-19T07:46:46.2578584Z PASS A invoice create (unsigned, explicit signer) | exit=0\n2026-11-19T07:46:46.8996631Z PASS A invoice sign | exit=0\n2026-11-19T07:46:47.5445536Z PASS A invoice create --key-file (signed) | exit=0\n2026-11-19T07:46:47.5447309Z PASS A invoice signer derived from key\n2026-11-19T07:46:48.1633543Z PASS A invoice inspect | exit=0\n2026-11-19T07:46:48.1634707Z PASS A invoice inspect fields | {\"paymentVerified\":false}\n2026-11-19T07:46:48.7784927Z PASS A invoice verify (pin + expectations) | exit=0\n2026-11-19T07:46:48.7786458Z PASS A invoice verify reports 31337 unsupported for payment | chainKnown=false: chain-adapters has no 31337 entry\n2026-11-19T07:46:49.3969281Z PASS A invoice verify 2-step signed | exit=0\n2026-11-19T07:46:50.0085113Z PASS A NEG invoice verify tampered | exit=1 (expected 1)\n2026-11-19T07:46:50.6189061Z PASS A NEG invoice verify wrong pin | exit=1 (expected 1)\n2026-11-19T07:46:51.2396040Z PASS A NEG invoice verify wrong expected amount | exit=1 INVOICE_EXPECTATION_MISMATCH (expected 1 INVOICE_EXPECTATION_MISMATCH)\n2026-11-19T07:46:52.4453972Z PASS A invoice link (passphrase) | exit=0\n2026-11-19T07:46:53.6509236Z PASS A invoice verify link | exit=0\n2026-11-19T07:46:53.7016310Z PASS A devnet payment (router, native) | tx=0x4de841297ab1b539de34016f932c1c088ec562eee15376aacdf99a50a507c818 block=21 net=19950000000000000\n2026-11-19T07:46:54.3077149Z PASS A GAP chain deployment inspect 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:54.9200442Z PASS A GAP chain deployment verify 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:55.5303445Z PASS A GAP diagnostics rpc 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:56.1389554Z PASS A GAP chain assets 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:56.7373155Z PASS A GAP scan plan 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:57.3319388Z PASS A GAP scan run 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:57.9318138Z PASS A GAP payment inspect 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:58.5526039Z PASS A GAP payment verify 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:59.1561577Z PASS A GAP payment status 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:46:59.7670092Z PASS A GAP receipt create 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:47:00.4313900Z PASS A GAP reconcile create 31337 | exit=5 UNSUPPORTED_CHAIN (expected 5 UNSUPPORTED_CHAIN)\n2026-11-19T07:47:01.1136914Z PASS A NEG diagnostics rpc wrong chain (84532 id -> 31337 node) | exit=6 CHAIN_MISMATCH (expected 6 CHAIN_MISMATCH)\n2026-11-19T07:47:01.7562228Z PASS A receipt verify (invoice-bound, expected tx) | exit=0\n2026-11-19T07:47:01.7562891Z PASS A receipt verify keeps payment unverified\n2026-11-19T07:47:02.3681779Z PASS A receipt inspect | exit=0\n2026-11-19T07:47:02.9934171Z PASS A receipt export | exit=0\n2026-11-19T07:47:03.6085107Z PASS A NEG receipt verify tampered amount | exit=1 INVALID_RECEIPT (expected 1)\n2026-11-19T07:47:04.3151511Z PASS A NEG receipt verify unrelated tx hash | exit=1 RECEIPT_EXPECTATION_MISMATCH (expected 1)\n2026-11-19T07:47:04.9342877Z PASS A NEG receipt verify wrong amount claim | exit=1 RECEIPT_EXPECTATION_MISMATCH (expected 1)\n2026-11-19T07:47:04.9379255Z \n2026-11-19T07:47:04.9380334Z == Part B: unmodified CLI live lifecycle on a private anvil reporting chain 84532 (alias; see cli-devnet/alias-chain.mjs)\n2026-11-19T07:47:05.2330219Z PASS B alias chain up | rpc=http://127.0.0.1:35231 router=0x5FbDB2315678afecb367f032d93F642f64180aa3 announcer=canonical\n2026-11-19T07:47:05.8517901Z PASS B chain deployment inspect | exit=0\n2026-11-19T07:47:05.8518840Z PASS B deployment inspect digest = independently computed digest\n2026-11-19T07:47:06.5942192Z PASS B chain deployment verify | exit=0\n2026-11-19T07:47:06.5942872Z PASS B deployment verify ok\n2026-11-19T07:47:07.2051948Z PASS B NEG deployment verify wrong digest | exit=6 MANIFEST_PIN_MISMATCH (expected 6 MANIFEST_PIN_MISMATCH)\n2026-11-19T07:47:07.8266364Z PASS B NEG deployment verify no trust pin | exit=6 MANIFEST_TRUST_REQUIRED (expected 6 MANIFEST_TRUST_REQUIRED)\n2026-11-19T07:47:08.4498331Z PASS B NEG deployment verify without --online | exit=2 ONLINE_REQUIRED (expected 2 ONLINE_REQUIRED)\n2026-11-19T07:47:09.0609140Z PASS B NEG http RPC without --allow-insecure-localhost | exit=6 RPC_URL_REJECTED (expected 6 RPC_URL_REJECTED)\n2026-11-19T07:47:09.7185979Z PASS B diagnostics rpc | exit=0\n2026-11-19T07:47:09.7186788Z PASS B diagnostics rpc keeps provider untrusted\n2026-11-19T07:47:10.3785447Z PASS B NEG diagnostics rpc wrong chain (11155111 id -> 84532 node) | exit=6 CHAIN_MISMATCH (expected 6 CHAIN_MISMATCH)\n2026-11-19T07:47:11.0175502Z PASS B NEG diagnostics rpc unreachable | exit=4 RPC_FAILURE (expected 4)\n2026-11-19T07:47:12.2477258Z PASS B backup create | exit=0\n2026-11-19T07:47:12.8984981Z PASS B invoice create (signed) | exit=0\n2026-11-19T07:47:13.5242762Z PASS B invoice verify | exit=0\n2026-11-19T07:47:13.5243691Z PASS B invoice supported for payment on enabled testnet\n2026-11-19T07:47:14.1411519Z PASS B NEG invoice verify tampered recipient | exit=1 (expected 1)\n2026-11-19T07:47:14.2397497Z PASS B alias payment (router, native) | tx=0xe34d85aa62d408e91f794996dd95b07c9682b4620fbc14beafc51e30b28165e1 block=3\n2026-11-19T07:47:14.8493934Z PASS B scan plan | exit=0\n2026-11-19T07:47:14.8494813Z PASS B scan plan offline\n2026-11-19T07:47:15.6428714Z PASS B scan run | exit=0\n2026-11-19T07:47:15.6429562Z PASS B scan run finds exactly this payment\n2026-11-19T07:47:16.2557889Z PASS B scan inspect (authenticated) | exit=0\n2026-11-19T07:47:16.2570284Z PASS B scan inspect\n2026-11-19T07:47:16.9096715Z PASS B NEG scan run resume of complete range | exit=2 SCAN_COMPLETE (expected 2 SCAN_COMPLETE)\n2026-11-19T07:47:17.6812572Z PASS B scan run with another seller key finds nothing | exit=0\n2026-11-19T07:47:17.6846520Z PASS B scan other seller 0 matches\n2026-11-19T07:47:17.6847297Z PASS B scan observation = on-chain announcement\n2026-11-19T07:47:18.2909833Z PASS B payment inspect | exit=0\n2026-11-19T07:47:18.2910544Z PASS B payment inspect untrusted\n2026-11-19T07:47:19.0305880Z PASS B NEG payment verify before finality | exit=1 (expected 1)\n2026-11-19T07:47:19.0306757Z PASS B pending-finality | confirmations=1\n2026-11-19T07:47:19.7710615Z PASS B payment verify | exit=0\n2026-11-19T07:47:19.7711793Z PASS B payment verified + final | confirmations=101 depth=100\n2026-11-19T07:47:20.5189248Z PASS B payment status | exit=0\n2026-11-19T07:47:20.5190059Z PASS B payment status verified\n2026-11-19T07:47:21.1348766Z PASS B NEG payment verify wrong amount claim | exit=1 AMOUNT_MISMATCH (expected 1 AMOUNT_MISMATCH)\n2026-11-19T07:47:21.7765041Z PASS B NEG payment verify wrong recipient claim | exit=1 RECIPIENT_MISMATCH (expected 1 RECIPIENT_MISMATCH)\n2026-11-19T07:47:22.5883555Z PASS B NEG payment verify unrelated tx hash | exit=1 (expected 1)\n2026-11-19T07:47:22.5884700Z PASS B unrelated tx not verified | status=unknown\n2026-11-19T07:47:23.3587383Z PASS B NEG payment verify unrelated tx at its real position | exit=1 (expected 1)\n2026-11-19T07:47:23.3588451Z PASS B unrelated position not verified | status=observed\n2026-11-19T07:47:23.9725443Z PASS B NEG payment verify wrong digest | exit=6 MANIFEST_PIN_MISMATCH (expected 6 MANIFEST_PIN_MISMATCH)\n2026-11-19T07:47:24.6262884Z PASS B NEG payment verify 31337 devnet RPC as 84532 | exit=6 CHAIN_MISMATCH (expected 6 CHAIN_MISMATCH)\n2026-11-19T07:47:26.0229172Z PASS B receipt create (invoice-bound) | exit=0\n2026-11-19T07:47:26.0229747Z PASS B receipt create report\n2026-11-19T07:47:27.4158606Z PASS B NEG receipt create refuses existing output | exit=3 WRITE_FAILED (expected 3)\n2026-11-19T07:47:28.0174563Z PASS B NEG receipt create without --approve | exit=2 APPROVAL_REQUIRED (expected 2 APPROVAL_REQUIRED)\n2026-11-19T07:47:28.6387715Z PASS B NEG receipt create wrong amount claim | exit=1 AMOUNT_MISMATCH (expected 1 AMOUNT_MISMATCH)\n2026-11-19T07:47:30.0178664Z PASS B receipt create (manual digest) | exit=0\n2026-11-19T07:47:30.0179482Z PASS B manual receipt unbound\n2026-11-19T07:47:30.6514919Z PASS B receipt verify (invoice-bound) | exit=0\n2026-11-19T07:47:30.6516032Z PASS B receipt verify\n2026-11-19T07:47:31.2629933Z PASS B NEG receipt verify tampered tx | exit=1 INVALID_RECEIPT (expected 1)\n2026-11-19T07:47:31.8700590Z PASS B NEG receipt verify unrelated expected tx | exit=1 RECEIPT_EXPECTATION_MISMATCH (expected 1)\n2026-11-19T07:47:32.4999754Z PASS B NEG receipt verify manual receipt against invoice | exit=1 RECEIPT_OTHER_INVOICE (expected 1)\n2026-11-19T07:47:33.7510424Z PASS B reconcile create | exit=0\n2026-11-19T07:47:34.9879584Z PASS B reconcile register | exit=0\n2026-11-19T07:47:34.9907347Z PASS B reconcile register digest\n2026-11-19T07:47:36.2161366Z PASS B NEG reconcile register foreign invoice | exit=1 INVOICE_SIGNATURE_INVALID (expected 1)\n2026-11-19T07:47:36.8409430Z PASS B reconcile inspect | exit=0\n2026-11-19T07:47:36.8410309Z PASS B reconcile inspect not chain-verified\n2026-11-19T07:47:37.4495034Z PASS B reconcile propose (local list) | exit=0\n2026-11-19T07:47:38.7972055Z PASS B reconcile propose (live candidates) | exit=0\n2026-11-19T07:47:38.7978252Z PASS B reconcile propose candidate | record=c1433440e2be8c7d7062a9376ba2289951bc8f89a799e331a42239dedda9227b:84532:0xe34d85aa62d408e91f794996dd95b07c9682b4620fbc14beafc51e30b28165e1:0xf5b6ae1290259bb7a1867e5dd1659cf2ae799217:0xadec83cf96387a9782c51bd1771b845f39e4f468f5321ff5909f3fb9c70b7192:1\n2026-11-19T07:47:40.1966113Z PASS B reconcile propose --record --out | exit=0\n2026-11-19T07:47:41.5978487Z PASS B reconcile confirm | exit=0\n2026-11-19T07:47:41.5979422Z PASS B reconcile confirm association\n2026-11-19T07:47:42.9791672Z PASS B NEG reconcile record wrong amount | exit=1 AMOUNT_MISMATCH (expected 1 AMOUNT_MISMATCH)\n2026-11-19T07:47:44.3578767Z PASS B reconcile record | exit=0\n2026-11-19T07:47:44.3579446Z PASS B reconcile record\n2026-11-19T07:47:44.9665842Z PASS B history list (confirmed) | exit=0\n2026-11-19T07:47:44.9666608Z PASS B history list contains the payment\n2026-11-19T07:47:45.5935837Z PASS B history list (recorded) | exit=0\n2026-11-19T07:47:45.5937918Z PASS B history query finds the payment\n2026-11-19T07:47:46.2271851Z PASS B history inspect | exit=0\n2026-11-19T07:47:46.8600420Z PASS B NEG history list wrong viewing key | exit=1 BACKUP_AUTHENTICATION_FAILED (expected 1)\n2026-11-19T07:47:46.8627516Z \n2026-11-19T07:47:46.8628144Z == CLI devnet e2e: 124/124 checks passed\n2026-11-19T07:47:46.8629768Z gap assertions (fail-closed on 31337): 11\n2026-11-19T07:47:46.8630558Z CLI DEVNET E2E OK\n2026-11-19T07:47:46.8812582Z == stage browser\n2026-11-19T07:47:46.9007062Z == anvil on http://127.0.0.1:8546\n2026-11-19T07:47:47.1277997Z == deploy (script/devnet/DeployDevnet.s.sol, isolated forge out/cache/broadcast)\n2026-11-19T07:47:50.5463101Z == switch the local chain to Base Sepolia id (84532) and stub the OP fee oracle\n2026-11-19T07:47:50.5669827Z == sign the devnet manifest with the public Playwright test key\n2026-11-19T07:47:51.0893416Z devnet manifest signed for chain 84532: /tmp/ghostpay-browser-devnet.VB1s9H/deployments (router 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512)\n2026-11-19T07:47:51.1046232Z == playwright (built app on http://localhost:4174 against http://127.0.0.1:8546)\n2026-11-19T07:48:13.1895637Z [WebServer] \n2026-11-19T07:48:13.1896985Z [WebServer] ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime\n2026-11-19T07:48:13.5901996Z [WebServer] [plugin rolldown:vite-resolve] Module \"node:http\" has been externalized for browser compatibility, imported by \"/home/runner/work/GhostPay/GhostPay/packages/pir-two-server/dist/http.js\". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.\n2026-11-19T07:48:13.9868923Z [WebServer] [INEFFECTIVE_DYNAMIC_IMPORT] ../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.\n2026-11-19T07:48:13.9871174Z [WebServer] \n2026-11-19T07:48:13.9871745Z [WebServer] [plugin builtin:vite-reporter] \n2026-11-19T07:48:13.9873322Z [WebServer] (!) Some chunks are larger than 1200 kB after minification. Consider:\n2026-11-19T07:48:13.9874799Z [WebServer] - Using dynamic import() to code-split the application\n2026-11-19T07:48:13.9876606Z [WebServer] - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n2026-11-19T07:48:13.9878215Z [WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n2026-11-19T07:48:16.7544943Z \n2026-11-19T07:48:16.7546028Z Running 3 tests using 1 worker\n2026-11-19T07:48:16.7574773Z \n2026-11-19T07:48:24.9407968Z   \u2713  1 e2e/devnet-journey.spec.ts:71:1 \u203a real chain: keys -> signed invoice -> consented payment (pending, then included) -> reload keeps hash, no duplicate -> scan (pending, then final) -> bound receipt -> direct sweep -> no second sweep (7.0s)\n2026-11-19T07:48:27.6268971Z   \u2713  2 e2e/devnet-journey.spec.ts:239:1 \u203a real chain: reload while the payment is still pending keeps its hash and blocks a duplicate; it is mined exactly once (2.7s)\n2026-11-19T07:48:29.7418259Z devnet journey: 3 real anvil transactions asserted on chain: 0xcbf47c59a935319eac4e366c1a6a1b2f7c689572e6dfc9e46be6dcf84cd20b34, 0xc0dfd0679ccef48dd6b14ef6bcdc92ef3fd1a1eaa4fe935c95f5e69431c8aed2, 0x3fad2d48a576984b21acd3215c5671f1ec7f012b80dfb74903487a59842d2565\n2026-11-19T07:48:29.7475750Z   \u2713  3 e2e/devnet-journey.spec.ts:280:1 \u203a real chain: a wallet on the wrong chain cannot connect, and a network change before send blocks the payment (2.1s)\n2026-11-19T07:48:29.8104647Z \n2026-11-19T07:48:29.8110433Z   3 passed (37.7s)\n2026-11-19T07:48:29.8512721Z browser-devnet: PASS\n2026-11-19T07:48:29.8735678Z == summary (commit d169af429f2c3be6536118b280f849016292c85d)\n2026-11-19T07:48:29.8736146Z PASS lib (5s)\n2026-11-19T07:48:29.8736402Z PASS cli (70s)\n2026-11-19T07:48:29.8736675Z PASS browser (43s)\n2026-11-19T07:48:29.8736949Z ACCEPTANCE OK\n2026-11-19T07:48:29.8737560Z log: /home/runner/work/GhostPay/GhostPay/scripts/beta/.state/acceptance-20261119T074544Z.log\n2026-11-19T07:48:29.9173175Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n2026-11-19T07:48:29.9173656Z with:\n2026-11-19T07:48:29.9173887Z   name: beta-acceptance-log\n2026-11-19T07:48:29.9174175Z   path: scripts/beta/.state/*.log\n2026-11-19T07:48:29.9174808Z   include-hidden-files: true\n2026-11-19T07:48:29.9175107Z   if-no-files-found: warn\n2026-11-19T07:48:29.9175392Z   retention-days: 7\n2026-11-19T07:48:29.9175652Z   compression-level: 6\n2026-11-19T07:48:29.9175900Z   overwrite: false\n2026-11-19T07:48:29.9176128Z   archive: true\n2026-11-19T07:48:29.9176349Z ##[endgroup]\n2026-11-19T07:48:30.0769680Z With the provided path, there will be 2 files uploaded\n2026-11-19T07:48:30.0774476Z Artifact name is valid!\n2026-11-19T07:48:30.0775047Z Root directory input is valid!\n2026-11-19T07:48:30.3948972Z Uploading artifact: beta-acceptance-log.zip\n2026-11-19T07:48:30.3993036Z Beginning upload of artifact content to blob storage\n2026-11-19T07:48:30.6359619Z Uploaded bytes 5431\n2026-11-19T07:48:30.6916579Z Finished uploading artifact content to blob storage!\n2026-11-19T07:48:30.6918065Z SHA256 digest of uploaded artifact is e13ef66201b2683a84c502c831e4bca037a95a7bc0cb62acae2b042e3093a6be\n2026-11-19T07:48:30.6919235Z Finalizing artifact upload\n2026-11-19T07:48:31.1766865Z Artifact beta-acceptance-log successfully finalized. Artifact ID 14509396476\n2026-11-19T07:48:31.1767918Z Artifact beta-acceptance-log has been successfully uploaded! Final size is 5431 bytes. Artifact ID is 14509396476\n2026-11-19T07:48:31.1770884Z Artifact download URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44476728388/artifacts/14509396476\n2026-11-19T07:48:31.1959915Z Post job cleanup.\n2026-11-19T07:48:31.3247629Z Cache hit occurred on the primary key playwright-Linux-1.64.1, not saving cache.\n2026-11-19T07:48:31.3409843Z Post job cleanup.\n2026-11-19T07:48:31.3417760Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__4f15a5dc-e94d-4a1e-87c6-d88602035c47.__actions_cache_2]\n2026-11-19T07:48:31.6205559Z Post job cleanup.\n2026-11-19T07:48:31.7609566Z Cache hit occurred on the primary key forge-beta-acceptance-Linux-95cbb56779fe2e473d03a3f67af5797bea6be3d9eb69477cc587aa5308537132, not saving cache.\n2026-11-19T07:48:31.7685942Z ##[end-action id=__4f15a5dc-e94d-4a1e-87c6-d88602035c47.__actions_cache_2;outcome=success;conclusion=success;duration_ms=426]\n2026-11-19T07:48:31.7690961Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__4f15a5dc-e94d-4a1e-87c6-d88602035c47.__actions_cache]\n2026-11-19T07:48:31.7745365Z Post job cleanup.\n2026-11-19T07:48:31.9091351Z Cache hit occurred on the primary key svm-Linux-0.8.28, not saving cache.\n2026-11-19T07:48:31.9162134Z ##[end-action id=__4f15a5dc-e94d-4a1e-87c6-d88602035c47.__actions_cache;outcome=success;conclusion=success;duration_ms=146]\n2026-11-19T07:48:31.9166370Z ##[start-action display=Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf;id=__4f15a5dc-e94d-4a1e-87c6-d88602035c47.__foundry-rs_foundry-toolchain]\n2026-11-19T07:48:31.9203892Z Post job cleanup.\n2026-11-19T07:48:32.0726280Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --files-from manifest.txt --use-compress-program zstdmt\n2026-11-19T07:48:32.5221382Z Sent 26194 of 26194 (100.0%), 0.1 MBs/sec\n2026-11-19T07:48:32.7269533Z Cache saved with the key: linux-foundry-chain-fork-acceptance-d169af429f2c3be6536118b280f849016292c85d\n2026-11-19T07:48:32.7342108Z ##[end-action id=__4f15a5dc-e94d-4a1e-87c6-d88602035c47.__foundry-rs_foundry-toolchain;outcome=success;conclusion=success;duration_ms=817]\n2026-11-19T07:48:32.7413930Z Post job cleanup.\n2026-11-19T07:48:32.7436782Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__ed2331ae-7c04-4ca6-b698-26117627b3b3.libs]\n2026-11-19T07:48:33.5628786Z Post job cleanup.\n2026-11-19T07:48:33.6979742Z Cache hit occurred on the primary key libs-Linux-node22-1a8d6f76a4ac65151554deb4603c7f0f54662c3babb2cf1ef5978d96eb54a00d, not saving cache.\n2026-11-19T07:48:33.7057843Z ##[end-action id=__ed2331ae-7c04-4ca6-b698-26117627b3b3.libs;outcome=success;conclusion=success;duration_ms=961]\n2026-11-19T07:48:33.7063130Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__ed2331ae-7c04-4ca6-b698-26117627b3b3.__actions_setup-node]\n2026-11-19T07:48:33.7139858Z Post job cleanup.\n2026-11-19T07:48:33.8328689Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-95eb62cdd1d29437652a4569eecfa4fc44cb6559b827fdc6f11a2f44ed1d6ba0, not saving cache.\n2026-11-19T07:48:33.8397581Z ##[end-action id=__ed2331ae-7c04-4ca6-b698-26117627b3b3.__actions_setup-node;outcome=success;conclusion=success;duration_ms=133]\n2026-11-19T07:48:33.8468322Z Post job cleanup.\n2026-11-19T07:48:33.9389705Z [command]/usr/bin/git version\n2026-11-19T07:48:33.9441438Z git version 2.56.1\n2026-11-19T07:48:33.9482216Z Temporarily overriding HOME='/home/runner/work/_temp/5d333e31-c0dd-42fa-bd25-d9ba74a88e20' before making global git config changes\n2026-11-19T07:48:33.9483780Z Adding repository directory to the temporary git global config as a safe directory\n2026-11-19T07:48:33.9488199Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay\n2026-11-19T07:48:33.9535212Z Removing SSH command configuration\n2026-11-19T07:48:33.9541791Z [command]/usr/bin/git config --local --name-only --get-regexp core\\.sshCommand\n2026-11-19T07:48:33.9597030Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git config --local --name-only --get-regexp 'core\\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\"\n2026-11-19T07:48:33.9927026Z Removing HTTP extra header\n2026-11-19T07:48:33.9934673Z [command]/usr/bin/git config --local --name-only --get-regexp http\\.https\\:\\/\\/github\\.com\\/\\.extraheader\n2026-11-19T07:48:34.0002456Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git config --local --name-only --get-regexp 'http\\.https\\:\\/\\/github\\.com\\/\\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\"\n2026-11-19T07:48:34.0328730Z Removing includeIf entries pointing to credentials config files\n2026-11-19T07:48:34.0336794Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\\.gitdir:\n2026-11-19T07:48:34.0374259Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url\n2026-11-19T07:48:34.0816983Z Cleaning up orphan processes\n\n"
+      }
+    }
+  },
+  "latestConsentFix": {
+    "implementationHead": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+    "verifiedCheckout": "d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+    "checkoutTree": "82d54202a4d1b71c88fc05d04ebb40ad720c26f3",
+    "coreRunId": 44486593963,
+    "coreRunUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486593963",
+    "coreStatusLastObserved": "pending with no jobs",
+    "coreObservedAt": "2026-11-19T08:36:49Z",
+    "scope": "CLI compatibility evidence on the actual current merge; not a substitute for Bitcoin/web coverage or full/lean Chromium.",
+    "cliPlatforms": [
+      {
+        "observed_utc": "2026-11-19T08:46:45.930Z",
+        "source_head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+        "run_id": 44486594006,
+        "job_id": 135431489175,
+        "job_name": "CLI (macos-latest)",
+        "conclusion": "success",
+        "checkout_sha": "d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+        "checkout_log_timestamp": "2026-11-19T08:36:07.0015960Z",
+        "versions": {
+          "node": "v22.23.4",
+          "npm": "10.9.9",
+          "chromium": null,
+          "chromium_note": "No browser command or version in this CLI job."
+        },
+        "commands": [
+          {
+            "command": "npm run test:cli-build",
+            "counts": {
+              "passed": 1,
+              "failed": 0,
+              "skipped": 0,
+              "cancelled": 0,
+              "todo": 0
+            }
+          },
+          {
+            "command": "npm run build:cli",
+            "result": "passed"
+          },
+          {
+            "command": "npm run typecheck -w @ghostpay/cli",
+            "result": "passed"
+          },
+          {
+            "command": "npm test -w @ghostpay/cli -- --maxWorkers=2",
+            "counts": {
+              "passed": 570,
+              "failed": 0,
+              "skipped": 0
+            },
+            "test_files": {
+              "passed": 37,
+              "failed": 0
+            },
+            "coverage_percent": {
+              "statements": 98.61,
+              "branches": 97.33,
+              "functions": 99.07,
+              "lines": 99.49
+            },
+            "coverage_threshold_result": "passed; successful test step, no threshold error"
+          },
+          {
+            "command": "npm run test:compiled -w @ghostpay/cli",
+            "counts": {
+              "passed": 21,
+              "failed": 0,
+              "skipped": 0,
+              "cancelled": 0,
+              "todo": 0
+            }
+          }
+        ],
+        "raw_log": "job-135431489175-current981-cli-macos.log",
+        "coverage_log_lines": [
+          "2026-11-19T08:41:41.7324650Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s ",
+          "2026-11-19T08:41:41.7328380Z All files          |   98.61 |    97.33 |   99.07 |   99.49 |                   "
+        ],
+        "artifacts_snapshot": "run-44486594006-current981-artifacts-final.json",
+        "artifact_count": 0,
+        "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594006/job/135431489175",
+        "rawLogSha256": "afeb169dd2751b67938b24ac9424021daca09bfa242d296d56dd96d2acd7a35c",
+        "rawLogBytes": 66524,
+        "verificationExcerpt": [
+          "2026-11-19T08:36:03.4205600Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac:refs/remotes/pull/244/merge",
+          "2026-11-19T08:36:05.2517910Z  * [new ref]         d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac -> pull/244/merge",
+          "2026-11-19T08:36:06.9758150Z [command]/opt/homebrew/bin/git log -1 --format=%H",
+          "2026-11-19T08:36:07.0015960Z d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+          "2026-11-19T08:36:10.1132990Z node: v22.23.4",
+          "2026-11-19T08:36:10.1234490Z npm: 10.9.9",
+          "2026-11-19T08:36:19.3028330Z ##[group]Run npm ci --ignore-scripts --no-audit --no-fund",
+          "2026-11-19T08:36:47.5370750Z ##[group]Run npm run test:cli-build",
+          "2026-11-19T08:36:50.1045910Z # pass 1",
+          "2026-11-19T08:36:50.1048010Z # fail 0",
+          "2026-11-19T08:36:50.1077500Z # skipped 0",
+          "2026-11-19T08:36:50.1160100Z ##[group]Run npm run build:cli",
+          "2026-11-19T08:37:27.6235910Z ##[group]Run npm run typecheck -w @ghostpay/cli",
+          "2026-11-19T08:37:36.3332860Z ##[group]Run npm test -w @ghostpay/cli -- --maxWorkers=2",
+          "2026-11-19T08:41:41.7145280Z  Test Files  37 passed (37)",
+          "2026-11-19T08:41:41.7147820Z       Tests  570 passed (570)",
+          "2026-11-19T08:41:41.7328380Z All files          |   98.61 |    97.33 |   99.07 |   99.49 |                   ",
+          "2026-11-19T08:41:42.0301190Z ##[group]Run npm run test:compiled -w @ghostpay/cli",
+          "2026-11-19T08:42:57.7401260Z # pass 21",
+          "2026-11-19T08:42:57.7404920Z # fail 0",
+          "2026-11-19T08:42:57.7405700Z # skipped 0"
+        ]
+      },
+      {
+        "observed_utc": "2026-11-19T08:34:24.005Z",
+        "source_head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+        "run_id": 44486594006,
+        "job_id": 135431489686,
+        "job_name": "CLI (ubuntu-24.04)",
+        "conclusion": "success",
+        "checkout_sha": "d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+        "checkout_log_timestamp": "2026-11-19T08:27:58.8916300Z",
+        "versions": {
+          "node": "v22.23.4",
+          "npm": "10.9.9",
+          "chromium": null,
+          "chromium_note": "No browser command or version in this CLI job."
+        },
+        "commands": [
+          {
+            "command": "npm run test:cli-build",
+            "counts": {
+              "passed": 1,
+              "failed": 0,
+              "skipped": 0,
+              "cancelled": 0,
+              "todo": 0
+            }
+          },
+          {
+            "command": "npm run build:cli",
+            "result": "passed"
+          },
+          {
+            "command": "npm run typecheck -w @ghostpay/cli",
+            "result": "passed"
+          },
+          {
+            "command": "npm test -w @ghostpay/cli -- --maxWorkers=2",
+            "counts": {
+              "passed": 570,
+              "failed": 0,
+              "skipped": 0
+            },
+            "test_files": {
+              "passed": 37,
+              "failed": 0
+            },
+            "coverage_percent": {
+              "statements": 98.61,
+              "branches": 97.33,
+              "functions": 99.07,
+              "lines": 99.49
+            },
+            "coverage_threshold_result": "passed; successful test step, no threshold error"
+          },
+          {
+            "command": "npm run test:compiled -w @ghostpay/cli",
+            "counts": {
+              "passed": 21,
+              "failed": 0,
+              "skipped": 0,
+              "cancelled": 0,
+              "todo": 0
+            }
+          }
+        ],
+        "raw_log": "job-135431489686-current981-cli-ubuntu.log",
+        "coverage_log_lines": [
+          "2026-11-19T08:30:40.3061547Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s ",
+          "2026-11-19T08:30:40.3065273Z All files          |   98.61 |    97.33 |   99.07 |   99.49 |                   "
+        ],
+        "artifacts_snapshot": "run-44486594006-current981-artifacts-56.json",
+        "artifact_count_observed": 0,
+        "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594006/job/135431489686",
+        "rawLogSha256": "45714f1dee648d190a2bc03473b5570b02b390e1ad850aa7498eaebf537936cf",
+        "rawLogBytes": 63626,
+        "verificationExcerpt": [
+          "2026-11-19T08:27:57.3572173Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac:refs/remotes/pull/244/merge",
+          "2026-11-19T08:27:58.7004602Z  * [new ref]         d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac -> pull/244/merge",
+          "2026-11-19T08:27:58.8894491Z [command]/usr/bin/git log -1 --format=%H",
+          "2026-11-19T08:27:58.8916300Z d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+          "2026-11-19T08:28:04.6038463Z node: v22.23.4",
+          "2026-11-19T08:28:04.6038770Z npm: 10.9.9",
+          "2026-11-19T08:28:10.0777274Z ##[group]Run npm ci --ignore-scripts --no-audit --no-fund",
+          "2026-11-19T08:28:19.7550643Z ##[group]Run npm run test:cli-build",
+          "2026-11-19T08:28:20.2103681Z # pass 1",
+          "2026-11-19T08:28:20.2104389Z # fail 0",
+          "2026-11-19T08:28:20.2105319Z # skipped 0",
+          "2026-11-19T08:28:20.2196994Z ##[group]Run npm run build:cli",
+          "2026-11-19T08:28:38.8581328Z ##[group]Run npm run typecheck -w @ghostpay/cli",
+          "2026-11-19T08:28:42.7780140Z ##[group]Run npm test -w @ghostpay/cli -- --maxWorkers=2",
+          "2026-11-19T08:30:40.2991813Z  Test Files  37 passed (37)",
+          "2026-11-19T08:30:40.2994025Z       Tests  570 passed (570)",
+          "2026-11-19T08:30:40.3065273Z All files          |   98.61 |    97.33 |   99.07 |   99.49 |                   ",
+          "2026-11-19T08:30:40.3687175Z ##[group]Run npm run test:compiled -w @ghostpay/cli",
+          "2026-11-19T08:31:20.5178032Z # pass 21",
+          "2026-11-19T08:31:20.5178308Z # fail 0",
+          "2026-11-19T08:31:20.5178959Z # skipped 0"
+        ]
+      },
+      {
+        "observed_utc": "2026-11-19T08:40:10.228Z",
+        "source_head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+        "run_id": 44486594006,
+        "job_id": 135431489733,
+        "job_name": "CLI (windows-latest)",
+        "conclusion": "success",
+        "checkout_sha": "d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+        "checkout_log_line": "2026-11-19T08:27:58.7017508Z d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+        "versions": {
+          "node": "v22.23.4",
+          "npm": "10.9.9",
+          "chromium": null,
+          "chromium_note": "No browser command or version in this CLI job."
+        },
+        "commands": [
+          {
+            "command": "npm run test:cli-build",
+            "counts": {
+              "passed": 1,
+              "failed": 0,
+              "skipped": 0,
+              "cancelled": 0,
+              "todo": 0
+            }
+          },
+          {
+            "command": "npm run build:cli",
+            "result": "passed"
+          },
+          {
+            "command": "npm run typecheck -w @ghostpay/cli",
+            "result": "passed"
+          },
+          {
+            "command": "npm test -w @ghostpay/cli -- --maxWorkers=2",
+            "counts": {
+              "passed": 568,
+              "failed": 0,
+              "skipped": 2
+            },
+            "test_files": {
+              "passed": 37,
+              "failed": 0
+            },
+            "skipped_files": [
+              {
+                "file": "src/node-io-faults.test.ts",
+                "skipped": 1
+              },
+              {
+                "file": "src/operator-io.test.ts",
+                "skipped": 1
+              }
+            ],
+            "coverage_percent": {
+              "statements": 98.4,
+              "branches": 97.28,
+              "functions": 99.07,
+              "lines": 99.33
+            },
+            "coverage_threshold_result": "passed; successful test step, no threshold error"
+          },
+          {
+            "command": "npm run test:compiled -w @ghostpay/cli",
+            "counts": {
+              "passed": 21,
+              "failed": 0,
+              "skipped": 0,
+              "cancelled": 0,
+              "todo": 0
+            }
+          }
+        ],
+        "raw_log": "job-135431489733-current981-cli-windows.log",
+        "coverage_log_lines": [
+          "2026-11-19T08:35:32.6206704Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s ",
+          "2026-11-19T08:35:32.6214940Z All files          |    98.4 |    97.28 |   99.07 |   99.33 |                   "
+        ],
+        "jobUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594006/job/135431489733",
+        "rawLogSha256": "d3693d2bfada9a7b154c9918435d1e056065c2f32ae1a42dd243019b6a25ab60",
+        "rawLogBytes": 64420,
+        "verificationExcerpt": [
+          "2026-11-19T08:27:54.5696215Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac:refs/remotes/pull/244/merge",
+          "2026-11-19T08:27:57.3137484Z  * [new ref]         d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac -> pull/244/merge",
+          "2026-11-19T08:27:58.7017508Z d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac",
+          "2026-11-19T08:28:05.5902257Z node: v22.23.4",
+          "2026-11-19T08:28:05.5902645Z npm: 10.9.9",
+          "2026-11-19T08:28:11.0410231Z ##[group]Run npm ci --ignore-scripts --no-audit --no-fund",
+          "2026-11-19T08:28:49.3813259Z ##[group]Run npm run test:cli-build",
+          "2026-11-19T08:28:51.0153618Z # pass 1",
+          "2026-11-19T08:28:51.0156402Z # fail 0",
+          "2026-11-19T08:28:51.0159995Z # skipped 0",
+          "2026-11-19T08:28:51.1092987Z ##[group]Run npm run build:cli",
+          "2026-11-19T08:29:28.8337096Z ##[group]Run npm run typecheck -w @ghostpay/cli",
+          "2026-11-19T08:29:36.6341635Z ##[group]Run npm test -w @ghostpay/cli -- --maxWorkers=2",
+          "2026-11-19T08:33:40.4384053Z  \u2713 src/node-io-faults.test.ts (12 tests | 1 skipped) 114ms",
+          "2026-11-19T08:35:07.1332899Z  \u2713 src/operator-io.test.ts (2 tests | 1 skipped) 14ms",
+          "2026-11-19T08:35:32.6080939Z  Test Files  37 passed (37)",
+          "2026-11-19T08:35:32.6083949Z       Tests  568 passed | 2 skipped (570)",
+          "2026-11-19T08:35:32.6214940Z All files          |    98.4 |    97.28 |   99.07 |   99.33 |                   ",
+          "2026-11-19T08:35:32.7956591Z ##[group]Run npm run test:compiled -w @ghostpay/cli",
+          "2026-11-19T08:37:33.9470924Z # pass 21",
+          "2026-11-19T08:37:33.9471738Z # fail 0",
+          "2026-11-19T08:37:33.9473692Z # skipped 0"
+        ],
+        "skipConditions": [
+          {
+            "path": "packages/cli/src/node-io-faults.test.ts",
+            "sourceLine": "it.skipIf(process.platform === 'win32')('refuses a FIFO without blocking for a writer', async () => {",
+            "sha256": "fac2fa65ab57286a4284ea80a6a7cb88335808af729fce8125557b15d521d821",
+            "sameAtRecordedMerge": true
+          },
+          {
+            "path": "packages/cli/src/operator-io.test.ts",
+            "sourceLine": "it.skipIf(process.platform === 'win32')('refuses a group-readable signing key before signing and never prints it', async () => {",
+            "sha256": "884af1193697ecfa2a4e28c21843825e2dcf9803068a531ad45af2063240b833",
+            "sameAtRecordedMerge": true
+          }
+        ]
+      }
+    ],
+    "cliRunConclusion": "success",
+    "cliFinalArtifactCount": 0,
+    "cliConclusionObservedAt": "2026-11-19T08:46:17Z"
+  },
+  "superseded236FullJobSnapshot": {
+    "observedAt": "2026-11-19 08:49:03 UTC",
+    "runId": 44476728502,
+    "head": "2364284a2717a22b895fcb7badeb2e7ae6bb0e48",
+    "totalReported": 24,
+    "totalReceived": 24,
+    "query": "GET /repos/djshellshoxxx/GhostPay/actions/runs/44476728502/jobs?per_page=100&filter=latest",
+    "jobs": [
+      {
+        "id": 135417789225,
+        "name": "secrets-and-egress",
+        "status": "completed",
+        "conclusion": "success",
+        "runner": "GitHub Actions 1000064891",
+        "stepCount": 10,
+        "startedAtField": "2026-11-19T08:10:44Z",
+        "completedAt": "2026-11-19T08:10:58Z"
+      },
+      {
+        "id": 135417789675,
+        "name": "changes",
+        "status": "completed",
+        "conclusion": "success",
+        "runner": "GitHub Actions 1000064895",
+        "stepCount": 3,
+        "startedAtField": "2026-11-19T08:11:01Z",
+        "completedAt": "2026-11-19T08:11:07Z"
+      },
+      {
+        "id": 135427717160,
+        "name": "lean-candidate",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717166,
+        "name": "contracts-coverage",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717182,
+        "name": "e2e (full)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717203,
+        "name": "contracts-test",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717211,
+        "name": "ts-test-relayer",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717221,
+        "name": "contracts-static",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717230,
+        "name": "ts-lint",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717242,
+        "name": "ts-typecheck",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717268,
+        "name": "ts-check",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717303,
+        "name": "e2e (lean)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717304,
+        "name": "contracts-slither",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717336,
+        "name": "ts-test (core-crypto)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717348,
+        "name": "ts-test (confidential-contracts)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717352,
+        "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717361,
+        "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717362,
+        "name": "ts-test (rest-0)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717382,
+        "name": "ts-test (rest-2)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717467,
+        "name": "ts-test (web)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717473,
+        "name": "ts-test (btc-silent-payments)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135427717668,
+        "name": "ts-test (rest-1)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:11:07Z",
+        "completedAt": "2026-11-19T08:19:15Z"
+      },
+      {
+        "id": 135431496619,
+        "name": "contracts",
+        "status": "queued",
+        "conclusion": null,
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:19:16Z",
+        "completedAt": null
+      },
+      {
+        "id": 135431497187,
+        "name": "typescript",
+        "status": "queued",
+        "conclusion": null,
+        "runner": "",
+        "stepCount": 0,
+        "startedAtField": "2026-11-19T08:19:16Z",
+        "completedAt": null
+      }
+    ],
+    "note": "The queued/cancelled jobs' started_at field does not prove execution: the cancelled matrix jobs have no runner and no steps. Both always-run aggregators remain queued; the overall run is not recorded as finished."
+  }
 }

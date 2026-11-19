@@ -26,10 +26,88 @@ metadata differ; the implementation trees above are identical.
 
 The only conflict while integrating current main was the shared ownership registry. Both claims were retained.
 Independent review confirmed that incoming release-hash and shared-transport changes do not replace Bitcoin's
-own fetch/worker boundaries. Later packet edits are documentation/evidence only and must retain an empty
-implementation diff against the qualified source.
+own fetch/worker boundaries. The separately identified typing and provider-label corrections below follow
+that integration. Packet edits after the latest correction are documentation/evidence only and must retain
+an empty implementation diff against that source.
 
-## Corrected candidate and final qualification
+## Latest provider-label correction and qualification
+
+Local commit `1977a50010e2d72476e0de67168b4f46715aab9c` and published commit
+`981cc2f4395d2d76c499a5cd46387daaaa3a6b1f` have identical tree
+`af61e24cb588fbf082915deac110c10cca008e70`. They change only the worker result guard and its regression file.
+The old guard rejected `provider` without consent but accepted `local` or `unknown` with consent, even after
+an authorized outspend request. A symmetric predicate now rejects either mismatch. Existing default-off
+local/unknown results, mandatory light consent, error handling and teardown remain intact.
+
+GitHub's latest advertised merge is `d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac`, tree
+`82d54202a4d1b71c88fc05d04ebb40ad720c26f3`, with parents main
+`a36f48da526b818a5940a7a0ed2ae7303ef17056` and published fix `981cc2f4`. All 38 feature-file hashes match
+the reviewed local and published fix. The newest main advance from `e454de6a` changes only two existing documentation files; complete `apps` and `packages` trees are unchanged. Independent compatibility review found no blocker.
+This object comparison is separate from observing the checkout and outcome of each workflow execution.
+
+- Failing-before run: two new cases failed because the promise resolved instead of rejecting; 20 tests were
+  filtered by the targeted name. The committed test bytes match the reproduced red run.
+- Passing-after run: **45 passed, 0 failed, 0 skipped**, three files, 19.73 seconds with Node 22.23.5 and
+  Vitest 5.0.5. Both cases make an actual authorized bridge request before forging the completion label,
+  then require `INVALID_RESPONSE`, tweak wiping, worker termination and handler detachment.
+- Focused ESLint for the two changed files exited 0. Independent review of the committed source, test contract,
+  hashes and red/green reports found no blocker; that reviewer did not claim an additional test execution.
+- Existing main CI run **44486593963** is pending for the new head. No earlier execution is assigned to it.
+
+The complete Bitcoin web directory was then executed on this latest source with the existing configuration:
+
+```sh
+node --max-old-space-size=1024 ../../node_modules/vitest/vitest.mjs run src/features/btc --maxWorkers=1 --no-file-parallelism --reporter=default --reporter=json --outputFile=/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-vitest.json
+```
+
+From `apps/web`, this passed **244 tests, 0 failed, 1 existing live-bitcoind skip**, 245 total, across all
+22 files (21 passed, one skipped). The missing regtest URL, seed and destination account for the existing skip;
+none was added. UTC start `2026-11-19T08:23:01.156Z`, end `2026-11-19T08:27:06.874Z`; reported wrapper
+duration 245.897 seconds, Vitest 244.92 seconds, exit 0. No coverage was collected or test-name filter applied.
+All 118 source/configuration records and required workspace outputs stayed current and unchanged. The
+canonical source-array SHA-256 is `7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341`;
+both raw manifest files hash to `e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e`.
+The evidence below embeds the complete result, manifest and log. This new-source feature pass does not
+substitute for whole-web coverage or full/lean Chromium.
+
+The documented `npm run typecheck -w @ghostpay/web` then passed, exit 0, with no TypeScript diagnostics.
+It used Node 22.23.5, npm 11.9.0, TypeScript 5.9.3, the existing configuration and a 1 GiB Node heap cap.
+UTC `2026-11-19T08:31:27.400Z`–`2026-11-19T08:32:18.485Z`, 51.085 seconds. All 18 required workspace
+imports were available and the source/configuration records remained unchanged. This is fresh web typecheck
+evidence; the earlier terminated attempts remain unsuccessful, and the whole-workspace hosted gate is separate.
+
+The single documented whole-workspace `npm run lint` invocation then exited **137**, from
+`2026-11-19T08:39:27.013Z` to `2026-11-19T08:50:12.705Z` (645.692 seconds). Its unchanged root script
+started all 67 workspace lint scripts. CLI, confidential-amounts, external-pools-privacypools, hygiene and web
+each recorded a lifecycle code-137 failure with `Killed` output. No ESLint rule errors were recorded; one unused
+`eslint-disable` warning occurred in the unchanged generated `indexing_server_pb.ts`. The terminated workspaces
+remain unqualified; absence of diagnostics before termination is not a pass. The cause is unverified.
+
+Tooling was Node 22.23.5, npm 11.9.0, ESLint 10.15.0 and typescript-eslint 8.73.0, with a 1 GiB heap cap.
+Before that single invocation, existing builds of `external-pools`, `pool-sdk` and `pool-prover` resolved 26
+missing import uses; no missing prerequisite remained. No rule/configuration change or retry was made.
+App/package/configuration comparisons and the 118-record manifest stayed unchanged. Exact commands, complete
+log, prerequisite build log and result hashes are retained in the latest correction evidence below.
+
+Fresh hosted CLI Ubuntu job [135431489686](https://github.com/djshellshoxxx/GhostPay/actions/runs/44486594006/job/135431489686)
+confirms checkout `d46949b99709b5dae2b4edc3d8c4bb2d2ed50cac` and passed CLI build/typecheck, 570 unit
+tests in 37 files, one build check and 21 compiled checks, all with zero skips. Its CLI coverage gate passed:
+statements 98.61%, branches 97.33%, functions 99.07%, lines 99.49%. Observed Node 22.23.4 and npm 10.9.9.
+This is current-merge CLI compatibility; Bitcoin/web coverage and browser acceptance remain distinct gates.
+The full CLI workflow subsequently completed successfully: macOS also passed 570 tests without skips;
+Windows passed 568 with its two platform skips. Each platform passed the one build check and 21 compiled
+checks. All three log the same `d46949b9` checkout, Node 22.23.4 and npm 10.9.9. Windows coverage is
+98.40% / 97.28% / 99.07% / 99.33% (statements/branches/functions/lines); macOS matches Ubuntu above.
+These repeated platform executions are not added into a count of unique feature tests. No workflow artifacts
+were produced. Per-platform commands, skip evidence and log hashes are under `latestConsentFix` in
+[hosted-ci.json](evidence/hosted-ci.json).
+
+Exact commands, source hashes, logs and review boundaries are retained in
+[worker-consent-label-fix.json](evidence/worker-consent-label-fix.json). This fixes a false disclosure label
+on a malformed worker result; the demonstrated provider request was authorized. The existing UI passes a
+fresh readonly-parameter object and aborts on revocation; no unrelated caller-mutation architecture was added.
+
+## Earlier typing correction and qualification
 
 Hosted whole-workspace lint failed at the reviewed integration with ten diagnostics in
 `apps/web/src/features/btc/scanWorkerClient.ts`. Three explicit callback parameter types restore the intended
@@ -49,6 +127,118 @@ Earlier CI results below remain attributed to their original merge commit. They 
 at the corrected head. Fresh required checks will run on the corrected candidate plus its documentation packet;
 the PR records the current head and final check status. No rules, coverage thresholds, test inputs or timeouts changed.
 
+The corrected packet was published at `2364284a2717a22b895fcb7badeb2e7ae6bb0e48`, identical to local
+`d593fde4bf49b28a99112579ea6c6c8d36270324` at tree `bd740c1913057a42b5b0a6cabb46a4cddef3dc9f`.
+Main subsequently reached `e454de6abfefda70d82784fafc1d8949b277c334`; the advertised PR merge
+`d169af429f2c3be6536118b280f849016292c85d` has tree `143c2be8d3a75ed1f68ed0b3d47bd8becee49d30` and
+parents `e454de6abfefda70d82784fafc1d8949b277c334` and `2364284a2717a22b895fcb7badeb2e7ae6bb0e48`.
+Git objects and all 38 feature-file hashes were checked independently. The incoming 22-file delta received
+bounded compatibility review of the relevant shared runtime patches. This is not the branch's earlier identical tree, and no test result is
+assigned to it until the actual executing workflow checkout is observed.
+
+## Complete Bitcoin web selection before the provider-label correction
+
+Local commit `d593fde4bf49b28a99112579ea6c6c8d36270324` and published commit
+`2364284a2717a22b895fcb7badeb2e7ae6bb0e48` have identical tree
+`bd740c1913057a42b5b0a6cabb46a4cddef3dc9f`. From `apps/web`, the full Bitcoin feature directory was tested
+with Node 22.23.5 using:
+
+```sh
+node --max-old-space-size=1024 ../../node_modules/vitest/vitest.mjs run src/features/btc --maxWorkers=1 --no-file-parallelism
+```
+
+The recorded invocation also enabled default/JSON reporters and supplied an output-file path. It used the
+existing Vite/Vitest configuration, without a test-name filter, assertion change or timeout change.
+
+- **242 passed, 0 failed, 1 skipped, 0 todo**, across 22 files: 21 passed and one skipped.
+- The existing skipped case is `regtest end to end (live bitcoind) detects the silent payment, sweeps it, and
+  sees it spent afterwards`. Its required regtest URL, seed and destination were absent; no new skip was added.
+- Started `2026-11-19T07:17:16.278Z`, finished `2026-11-19T07:24:00.063Z`; wrapper duration 403.771 seconds,
+  Vitest duration 402.49 seconds; exit 0.
+- All 118 recorded source/configuration records were unchanged during and after the run. The 16 required
+  workspace output entry points were present and resolved from this checkout. Package sources were unchanged
+  since their current-source builds; no stale outputs were copied from another checkout.
+- No coverage was collected. This selection establishes the Bitcoin web feature regression result on the
+  recorded source, not whole-web, browser, live-regtest or later worker-label qualification.
+
+[The evidence](evidence/worker-typing-fix.json) embeds the result, complete source manifest and exact raw log.
+The canonical manifest digest is SHA-256 `29cbc90221261f304a74c7a54285f2e232fbfab0e8431d2e7d7f67ac73444f12`,
+over compact UTF-8 `JSON.stringify(sources)` with no trailing newline. The saved manifest wrapper has a
+different, separately recorded file digest. Raw log SHA-256:
+`dd94834e3aa5959ea5d4358c114db11070477363a93ebcdd4a4f5bca398991c3`.
+
+## Hosted qualification before the provider-label correction
+
+The successful Pages build log confirms actual checkout
+`d169af429f2c3be6536118b280f849016292c85d` (tree `143c2be8d3a75ed1f68ed0b3d47bd8becee49d30`), combining
+feature head `2364284a2717a22b895fcb7badeb2e7ae6bb0e48` with main
+`e454de6abfefda70d82784fafc1d8949b277c334`. This is fresh execution evidence, separate from the earlier
+`278b1d5a` merge. Each other workflow still requires its own observed checkout and result.
+
+| Required check | Current recorded result |
+| --- | --- |
+| Clean workspace library build, Pages web typecheck/build/bundle scan and site verification | Passed in [Pages build job 135398966591](https://github.com/djshellshoxxx/GhostPay/actions/runs/44476728338/job/135398966591). Node 22.23.5, npm 10.9.9. Verified 16-file DEMO site. |
+| Pages tooling | 72 passed, 0 failed, 0 skipped in that build job. |
+| Dependency tree, action pins and source secret scan | Passed in that build job. |
+| Pages Chromium | [Job 135398966895](https://github.com/djshellshoxxx/GhostPay/actions/runs/44476728338/job/135398966895): 16 passed, 0 failed/skipped; actual checkout `d169af42` confirmed. Lean Pages compatibility, not Bitcoin runtime acceptance. |
+| Bitcoin regtest integration | [Job 135398967425](https://github.com/djshellshoxxx/GhostPay/actions/runs/44476728321/job/135398967425): all 9 Bitcoin steps passed; actual checkout `d169af42` confirmed. Existing EVM/Solana suites also passed. |
+| Whole-workspace lint/typecheck/build, Bitcoin/web coverage and full/lean Chromium | Main CI run 44476728502 was superseded after initial secrets/changes passed; the required matrix jobs were cancelled before execution. Fresh run 44486593963 belongs to the later provider-label correction. |
+
+The fresh [Pages archive](https://github.com/djshellshoxxx/GhostPay/actions/runs/44476728338/artifacts/14508312194)
+is 717,418 bytes, SHA-256 `50075053f9f49a9c5a51dd99cf7e7e0c3fbfdf7c40e2ff8840fa37734a30c225`.
+It is a lean DEMO site with payments disabled on every chain. Build and verification success does not establish
+Bitcoin runtime behavior in a profile that deliberately excludes Bitcoin. The exact build log, commands and
+artifact metadata are retained under `correctedCandidate` in [hosted-pages.json](evidence/hosted-pages.json).
+The Pages workflow's release, deployment and post-deployment jobs were skipped for the PR. No site was published.
+
+Fresh browser and integration logs are retained in [hosted-pages-browser.json](evidence/hosted-pages-browser.json)
+and [hosted-integration.json](evidence/hosted-integration.json). The integration suite uses local containerized
+nodes and verifies sending, scanning, block proofs, sweeping and the destination's confirmed receipt. Its nine
+steps do not replace the new deterministic spentness, consent, resumption or full-profile browser cases.
+
+The same `d169af42` checkout was independently confirmed in the successful supplementary workflow logs.
+Beta acceptance passed three browser tests. CLI passed 570 tests on each of Ubuntu and macOS; Windows passed
+568 with two explicit platform skips. These are repeated platform executions, not distinct feature-test totals.
+The hosting kit reported 290 passed and six environment/optional-execution skips; its separate web qualification
+job passed. Exact commands, toolchains and skip reasons are in `correctedAuxiliaryChecks` in
+[hosted-ci.json](evidence/hosted-ci.json). They remain prior-source compatibility evidence.
+
+## Whole-web local attempt and separate no-coverage phase
+
+These executions used local `d593fde4bf49b28a99112579ea6c6c8d36270324`, published equivalent
+`2364284a2717a22b895fcb7badeb2e7ae6bb0e48`, before the provider-label correction. Application, package and
+configuration hashes remained unchanged. All required workspace outputs resolved from this checkout; the
+existing `relayer-guard` build supplied the one missing output. Node 22.23.5 and Vitest 5.0.5 were used.
+
+From `apps/web`, the existing coverage phase was invoked with a 1 GiB heap cap, one worker and JSON/default
+reporters: `vitest run --coverage --maxWorkers=1 --no-file-parallelism`. There was no test-name filter or
+configuration/deadline/coverage change. Started `2026-11-19T07:28:53.974Z`, it ended with child **SIGKILL** at
+`2026-11-19T08:06:42.643Z`, after **2,268.667 seconds**; the wrapper returned exit 1. No final Vitest JSON,
+LCOV report or coverage-threshold outcome was produced. The cause of the signal is unverified.
+
+The partial log has completion records for 29 of 201 files; 172 have no completion record. Those completed
+lines account for 929 passing assertions, two failed TRON assertions, 12 intentional native-integration skips,
+and 25 unexecuted QR-classification tests following a failed-suite marker. The two named failures were
+“warns that a never-used destination costs an activation fee” and “validates scanned destinations before filling
+them.” Detailed TRON errors and QR suite failure details were not emitted before termination. Durations alone do not
+establish their causes. A process observation 1.113 seconds after SIGKILL supplies no earlier CPU/memory evidence.
+
+Read-only attribution found 28 directly relevant TRON/shared/configuration blobs and nine package trees
+unchanged from integrated main. The broader static import graph does include changed BTC imports and 14
+security-copy keys; those keys are not queried by the directly relevant TRON rendering path. No direct change
+to the tested TRON behavior was found. This does not prove a baseline failure or environmental cause; no
+TRON implementation, assertion or deadline was changed.
+
+The separately executed existing `vitest.nocov.config.ts` phase passed **3 tests in 3 files, 0 failed/skipped**,
+exit 0, from `2026-11-19T08:09:57.723Z` to `2026-11-19T08:10:54.425Z`; Vitest 55.89 seconds, wrapper 56.695
+seconds. It covers scanner spam acceptance, scanner cost and archive fuzzing. This separate pass does not
+make the composite `npm test` command a pass.
+
+Anvil, Forge and Solc and the five policy contract artifacts were unavailable locally. `REQUIRE_ANVIL` stayed
+unset, retaining the existing availability guards; these local runs do not establish hosted required-Anvil
+qualification. Exact invocations, source checks, partial inventory and logs are in
+[local-check-logs.json](evidence/local-check-logs.json).
+
 ## Toolchains
 
 - Final local checks: Node `v22.23.5`, npm `11.9.0`, TypeScript `5.9.3`, Vitest and V8 coverage `5.0.5`,
@@ -56,6 +246,10 @@ the PR records the current head and final check status. No rules, coverage thres
 - Hosted Pages build: Node `v22.23.4`, npm `10.9.9`. The Pages browser job used Node `v22.23.5`, npm `10.9.9`,
   Chromium Headless Shell `156.0.8078.4`, Playwright build `1248`. Hosted browser tools are installed by the
   existing workflow; these observed patch versions are recorded separately.
+- Fresh corrected-merge Pages build: Node `v22.23.5`, npm `10.9.9`; its actual checkout is `d169af42` as recorded above.
+- Fresh corrected-merge Pages browser: Node `v22.23.4`, npm `10.9.9`; installed Chromium `156.0.8078.4`,
+  Playwright build `1248`. Fresh integration: Node `v22.23.4`, npm `10.9.9`, Bitcoin image `bitcoin/bitcoin:31.1`
+  pinned by digest in the integration evidence. These are separate observed toolchains, not normalized patch versions.
 - Earlier implementation/review checks: Node `v24.22.3`, npm `11.9.0`, Vitest `5.0.5`. These are recorded
   separately, not relabelled as final Node22 qualification.
 - Local heavy commands use `NODE_OPTIONS=--max-old-space-size=1024` and one Vitest worker. No test deadline,
@@ -77,9 +271,9 @@ the PR records the current head and final check status. No rules, coverage thres
 | Bitcoin package lint and typecheck | `npm run lint -w @ghostpay/btc-silent-payments`; `npm run typecheck -w @ghostpay/btc-silent-payments` | Both passed on Node22. All 89 tracked package hashes remained unchanged during the sequence. |
 | Whole workspace typecheck | CI `npm run typecheck`, job 135386936883 | Passed. |
 | Whole workspace ESLint | CI `npm run lint`, job 135386936856 | Failed: 10 unsafe-access/argument diagnostics in worker-result callback typing. Corrective narrowing and fresh qualification required. |
-| Whole web suites and build | Existing CI commands | Hosted jobs queued/running. |
+| Whole web suites and build | Existing CI commands | The earlier whole-web and build jobs were cancelled before execution when the corrected run superseded them. Fresh qualification is pending. |
 | Lean Chromium | CI `e2e (lean)`, job 135386936908 | 71 passed, 5 intentional profile skips; the new no-Bitcoin surface/worker/traffic case passed. |
-| Full Chromium | CI `e2e (full)` | Hosted job queued/running. |
+| Full Chromium | CI `e2e (full)` | The earlier full-profile job was cancelled before execution when the corrected run superseded it. Fresh qualification is pending. |
 
 The verified Pages archive is [pages-site-278b1d5a](https://github.com/djshellshoxxx/GhostPay/actions/runs/44472294261/artifacts/14505310987),
 716,253 bytes, SHA-256 `73d56d8324fde6a51cdeedd2bf04ea986e0d7b26e3d9af19771baa9d81b61208`.
@@ -104,6 +298,10 @@ anvil; it does not publish it.
   reported for the test body): 566 passed, 1 failed, 0 skipped; 406.316 seconds for the coverage command.
   [The report](evidence/btc-node22-final-report.json) and [embedded raw log](evidence/local-check-logs.json) retain
   that failure separately from hosted qualification. The package lint and typecheck commands exited 0.
+- Independent read-only attribution found identical source blobs for the header stress test's complete six-file
+  repository import path and seven dependency/configuration files across original #219, initial main, corrected
+  source and the latest advertised merge. Its duration includes mining, initial validation, serialization and
+  reload validation. This supplies no baseline timing or proven environmental cause; the failed local gate remains.
 - The repeated local Node22 `build:libs` was stopped with exit 130 after the exact-tree hosted clean library
   build, web typecheck and Pages verification passed. It is not counted as a local build pass; this avoided
   continuing a redundant rebuild alongside the remaining local package tests.

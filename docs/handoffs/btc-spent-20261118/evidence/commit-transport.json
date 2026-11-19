@@ -92,6 +92,18 @@
       "remote": "4a878e302beac5cca52d20e17cdd756f3fbebb0d",
       "tree": "6506216897d158f8fa31813dd1e69cf6739df920",
       "subject": "fix(btc): retain validated worker result element types"
+    },
+    {
+      "local": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+      "remote": "2364284a2717a22b895fcb7badeb2e7ae6bb0e48",
+      "tree": "bd740c1913057a42b5b0a6cabb46a4cddef3dc9f",
+      "subject": "docs(btc): retain source-pinned qualification and independent review evidence"
+    },
+    {
+      "local": "1977a50010e2d72476e0de67168b4f46715aab9c",
+      "remote": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "tree": "af61e24cb588fbf082915deac110c10cca008e70",
+      "subject": "fix(btc): bind provider result labels to scan consent"
     }
   ]
 }

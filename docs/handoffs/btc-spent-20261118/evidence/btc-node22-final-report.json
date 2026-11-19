@@ -206,5 +206,52 @@
     },
     "output_sha256": "fec0b62b620e91f9940069e5b3e5798cef00996fb35f42b000764f1553b0d0ec"
   },
-  "package_unchanged_after_benchmark": true
+  "package_unchanged_after_benchmark": true,
+  "independentStressTimeoutAttribution": {
+    "method": "Read-only transitive import review and exact Git blob comparisons; no baseline rerun or test/config change.",
+    "revisions": {
+      "originalPR219": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "initialMain": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "finalLocalRuntime": "10c3993d4d7a215c57b936ee2b1967741d247675",
+      "publishedRuntime": "4a878e302beac5cca52d20e17cdd756f3fbebb0d",
+      "advertisedPRMerge": "d169af429f2c3be6536118b280f849016292c85d"
+    },
+    "identicalBlobsAtAllRevisions": {
+      "packages/btc-silent-payments/src/headerchain.test.ts": "cba7fd67b081d9da8291ba19c152c824104791c3",
+      "packages/btc-silent-payments/src/headers.testutil.ts": "d1ecab8f8ab35c782b69d0b25c79735db216154b",
+      "packages/btc-silent-payments/src/headerchain.ts": "e577f406fb3834d67001c97bb976a8f950c556ee",
+      "packages/btc-silent-payments/src/header.ts": "863f38ff91fd6805ff1343ea1e2ae00cc2365aba",
+      "packages/btc-silent-payments/src/hexbytes.ts": "8e50a66e6bcd59e1498e67d6a0087e1bcd712149",
+      "packages/btc-silent-payments/src/errors.ts": "77ac1437a99c4dde6166e7ec4cc1e476e45a188b",
+      "packages/btc-silent-payments/vitest.config.ts": "76df911a0163192e77b911e78df3b7eac90f4c7a",
+      "packages/btc-silent-payments/package.json": "c3b7f972cf52f2b6c58ecea5dd834c9ef70325a1",
+      "package.json": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+      "package-lock.json": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+      "packages/btc-silent-payments/tsconfig.json": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "packages/btc-silent-payments/tsconfig.build.json": "7cd92421109e2b1988a7e547ec0860610aa5460a",
+      "tsconfig.base.json": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797"
+    },
+    "identicalFinalBitcoinPackageTree": "20b27c654a87587f7a38bd1dc6a3ccc3f1ae2d7e",
+    "timedWorkload": [
+      "Mine 100005 deterministic regtest headers.",
+      "Connect and validate in batches of 50,000, 50,000, 5.",
+      "Serialize the full chain with toJSON.",
+      "Rebuild and revalidate with fromJSON in batches of 100,000, 5.",
+      "Compare restored tip hash and cumulative work."
+    ],
+    "directRepositoryImportClosure": [
+      "packages/btc-silent-payments/src/headerchain.test.ts",
+      "packages/btc-silent-payments/src/headers.testutil.ts",
+      "packages/btc-silent-payments/src/headerchain.ts",
+      "packages/btc-silent-payments/src/header.ts",
+      "packages/btc-silent-payments/src/hexbytes.ts",
+      "packages/btc-silent-payments/src/errors.ts"
+    ],
+    "externalImports": [
+      "vitest",
+      "@noble/hashes/sha2.js"
+    ],
+    "finding": "No spentness-feature change occurs in the exercised import path, dependencies or test configuration. The recorded 163.402-second callback duration includes mining and initial validation; it is not isolated fromJSON timing.",
+    "qualificationLimit": "The local timeout remains a failed gate. Source equality does not establish a historical baseline runtime or prove an environmental cause."
+  }
 }

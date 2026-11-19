@@ -14,6 +14,13 @@ transport and merge ancestry, not different tested source. A subsequent lint cor
 `10c3993d4d7a215c57b936ee2b1967741d247675` / published `4a878e302beac5cca52d20e17cdd756f3fbebb0d` adds three callback type
 annotations only; emitted JavaScript is byte-identical. Its new qualification is recorded separately.
 
+The latest behavioral correction is local `1977a50010e2d72476e0de67168b4f46715aab9c`, published
+`981cc2f4395d2d76c499a5cd46387daaaa3a6b1f`: worker result labels must agree with the provider-consent
+mode in both directions. Two reproduced malformed-result regressions and all 45 related worker/oracle tests
+pass. Broader preceding results remain tied to their original source; fresh final qualification is separate.
+The complete Bitcoin directory subsequently passed 244 tests with zero failures and one existing live-node
+skip at that same source. Full-web coverage and full/lean browser acceptance remain separate gates.
+
 | ID | Acceptance criterion | Initial classification | Source/evidence and required completion |
 | --- | --- | --- | --- |
 | B01 | Consume block inputs locally without per-outpoint traffic | Completed with adversarial gap | Preserve Esplora `getSpends`, header and oracle wrappers; do not add a parallel scanner. |
@@ -38,7 +45,7 @@ annotations only; emitted JavaScript is byte-identical. Its new qualification is
 | Criteria | Current disposition | Qualification boundary |
 | --- | --- | --- |
 | B01–B04 | Local extraction, coinbase binding, canonical identity/deduplication and incomplete/historical unknown semantics implemented. | Existing focused regressions and the final local package results are recorded with their own source pins; whole-web/coverage gates remain separate. |
-| B05–B07 | Default-off local modes, explicit and revocable consent, default-deny worker dispatch and mandatory light disclosure implemented. | API/worker/UI regressions are retained; full-profile browser execution is required for final acceptance. |
+| B05–B07 | Default-off local modes, explicit and revocable consent, default-deny worker dispatch, symmetric result-label validation and mandatory light disclosure implemented. | API/worker/UI regressions are retained; full-profile browser execution is required for final acceptance. |
 | B08–B10 | Compatible encrypted spent metadata, continuous coverage, canonical rollback, legacy refresh and mempool limitations implemented/documented. | Native-worker persistence/reload cases are authored; their actual browser result belongs in the validation report. |
 | B11 | Existing Bitcoin interface retained with native checkbox controls, evidence-specific counts/selection and English security fallback. | Catalog/key checks pass; browser/device-emulation outcomes must be reported separately from native-device acceptance. |
 | B12 | Deterministic unit/integration and full/lean browser cases supplied. | Final matrix remains pending; authored or intentionally skipped cases are not counted as passed. |

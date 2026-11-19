@@ -1,9 +1,9 @@
 # Changed-file acceptance mapping
 
 Compared the complete feature and qualification packet with main `58d89b39b27a66454ebf392bcd35d5c68b57b2f8`.
-All **63 changed files** are listed below. The corrected source is local
-`10c3993d4d7a215c57b936ee2b1967741d247675`, published as
-`4a878e302beac5cca52d20e17cdd756f3fbebb0d`; packet edits afterward change documentation/evidence only.
+All **64 changed files** are listed below. The latest corrected source is local
+`1977a50010e2d72476e0de67168b4f46715aab9c`, published as
+`981cc2f4395d2d76c499a5cd46387daaaa3a6b1f`; packet edits afterward change documentation/evidence only.
 
 Section references refer directly to the user attachment, **GhostPay — Complete Bitcoin Spent-Output Detection
 and Private Scanning**. This mapping identifies each change's purpose; an authored test is not a claim that it
@@ -36,7 +36,7 @@ executed successfully. Actual outcomes and source identities are in [VALIDATION.
 | `apps/web/src/features/btc/scan-secrets.hardening.test.ts` | §3 filtering spent outputs; §5 cancellation; §9 regression tests | Tests wiping of locally spent outputs while preserving authorized provider-path cleanup tests. |
 | `apps/web/src/features/btc/scan.spends.test.ts` | §3 matching/unknown; §4 consent; §5 restoration; §6 reorg; §7 legacy refresh; §11 bounds | Covers partial and historical gaps, mixed spent siblings, coverage anchors, local/provider paths and the real output cap. |
 | `apps/web/src/features/btc/scan.ts` | §3 local semantics; §4 preflight; §5 resume; §6 evidence; §7 historical refresh; §11 bounds | Combines local spent matching with continuous coverage, historical identity checks, explicit provider authorization and bounded results. |
-| `apps/web/src/features/btc/scanWorker.test.ts` | §4 consent enforcement; §9 invalid/stale worker tests; §10 privacy review concerns | Tests unauthorized requests/results, malformed starts, canonical-result validation and transferred-tweak cleanup. |
+| `apps/web/src/features/btc/scanWorker.test.ts` | §4 consent enforcement; §9 invalid/stale worker tests; §10 privacy review concerns | Tests unauthorized requests/results, false local/unknown labels after authorized disclosure, malformed starts, canonical-result validation and transferred-tweak cleanup. |
 | `apps/web/src/features/btc/scanWorkerClient.ts` | §4 consent/stale results; §8 active-session correctness; §11 message limits | Passes consent explicitly and validates returned status, identities, bounds and hashes against the active request. |
 | `apps/web/src/features/btc/scanWorkerMessages.ts` | §4 worker consent propagation; §12 protocol compatibility | Adds the optional, default-off provider-check flag to the typed start message. |
 | `apps/web/src/features/btc/scanWorkerProtocol.ts` | §4 producer-side consent; §9 invalid messages; §10 unauthorized requests | Rejects malformed/light-without-consent starts and gates sensitive source requests inside the worker. |
@@ -66,6 +66,7 @@ executed successfully. Actual outcomes and source identities are in [VALIDATION.
 | `docs/handoffs/btc-spent-20261118/evidence/small-checks.json` | §13 source-pinned validation; §16 deliverables | Retains exact source-pinned qualification commands, outcomes or raw evidence; distinguishes failures and earlier attempts from final-source passes. |
 | `docs/handoffs/btc-spent-20261118/evidence/source-pins.json` | §13 source-pinned validation; §16 deliverables | Retains exact source-pinned qualification commands, outcomes or raw evidence; distinguishes failures and earlier attempts from final-source passes. |
 | `docs/handoffs/btc-spent-20261118/evidence/worker-typing-fix.json` | §9 regression verification; §13 source-pinned validation; §16 deliverables | Retains actual commands, source/compiled-output identity and executed outcomes, distinguishing failed and prior checks from final qualification. |
+| `docs/handoffs/btc-spent-20261118/evidence/worker-consent-label-fix.json` | §4 accurate provider disclosure; §9 failing-before/passing-after regression; §10 independent review; §13 source-pinned validation | Retains the symmetric status/consent defect reproduction, smallest fix, related tests, lint and independent review. |
 | `docs/specs/12-bip352-light-client-scanning.md` | §3 semantics; §4 disclosure; §5 persistence; §6 reorg; §14 specification | Updates Spec 12 to match implemented local coverage and explicit provider checks. |
 | `docs/user/bitcoin-silent-payments.md` | §7 limitations/refresh; §8 usable explanations; §14 user documentation | Explains mode choice, consent, unknown history, fresh rescan, persistence and reorganization effects. |
 | `packages/btc-silent-payments/src/scan/headersync.test.ts` | §6 anchoring preservation; §9 source tests; §12 compatibility | Tests optional spend forwarding and rejection when spend data disagrees with checked headers. |

@@ -1,0 +1,1080 @@
+{
+  "finding": "BTC-R08",
+  "title": "Provider-authorized worker results must retain the provider disclosure label",
+  "recordedAt": "2026-11-19T08:19:37.233778+00:00",
+  "localCommit": "1977a50010e2d72476e0de67168b4f46715aab9c",
+  "publishedCommit": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+  "identicalTree": "af61e24cb588fbf082915deac110c10cca008e70",
+  "sourceFiles": {
+    "apps/web/src/features/btc/scanWorkerClient.ts": "7b7cdb4bb5b380d7b3d0aa800355f654fc781deccf3afb2262a2ece1d7c21b18",
+    "apps/web/src/features/btc/scanWorker.test.ts": "232c4994bf5eaf91ea5d8f65f28c3cbfb8eadb5b8fba831b6cb145780bbe3d42"
+  },
+  "mechanism": "The previous one-way check rejected provider-labelled results without consent but accepted local/unknown labels after an authorized provider request. The UI local disclosure could therefore falsely deny a query. This is malformed-worker-result validation; the demonstrated request was authorized, and the test does not show that Esplora alone can forge a worker completion.",
+  "fix": "Reject when (spentStatus === provider) differs from the request consent boolean. Default-off results may remain local or unknown; opted-in successful results must be provider. Existing worker termination and tweak wiping handle invalid completions.",
+  "red": {
+    "phase": "red",
+    "recordedAt": "2026-11-19T08:17:21.192950+00:00",
+    "baseCommit": "d593fde4bf49b28a99112579ea6c6c8d36270324",
+    "sourceFiles": {
+      "apps/web/src/features/btc/scanWorkerClient.ts": "79354de827abcef8057aa6b14de6b3be88edbd03e4866ccdee07dfbd0811d989",
+      "apps/web/src/features/btc/scanWorker.test.ts": "232c4994bf5eaf91ea5d8f65f28c3cbfb8eadb5b8fba831b6cb145780bbe3d42"
+    },
+    "nodeVersion": "v22.23.5",
+    "vitestVersion": "5.0.5",
+    "command": "node --max-old-space-size=1024 ../../node_modules/vitest/vitest.mjs run src/features/btc/scanWorker.test.ts --maxWorkers=1 --no-file-parallelism --testNamePattern='after an authorized provider query' --reporter=default --reporter=json --outputFile=/workspace/scratch/c20ffc46347e/integration-evidence/worker-consent-label-red-vitest.json",
+    "workingDirectory": "apps/web",
+    "exitCode": 1,
+    "counts": {
+      "numTotalTests": 22,
+      "numPassedTests": 0,
+      "numFailedTests": 2,
+      "numPendingTests": 20,
+      "success": false
+    },
+    "logSha256": "903797489002d605edcdfc84df84bd88fd8acf75161b1bf716b399b3c8fd1965",
+    "assertions": [
+      {
+        "name": "BTC worker stale and untrusted boundary rejects a local-labelled result after an authorized provider query",
+        "status": "failed",
+        "failureFirstLine": "Error: promise resolved \"{ fromHeight: 1, toHeight: 4, \u2026(5) }\" instead of rejecting"
+      },
+      {
+        "name": "BTC worker stale and untrusted boundary rejects a unknown-labelled result after an authorized provider query",
+        "status": "failed",
+        "failureFirstLine": "Error: promise resolved \"{ fromHeight: 1, toHeight: 4, \u2026(5) }\" instead of rejecting"
+      }
+    ],
+    "filteredTests": 20
+  },
+  "green": {
+    "command": "node --max-old-space-size=1024 ../../node_modules/vitest/vitest.mjs run src/features/btc/scanWorker.test.ts src/features/btc/scanWorkerSource.test.ts src/features/btc/oracleWorker.test.ts --maxWorkers=1 --no-file-parallelism --reporter=default --reporter=json --outputFile=/workspace/scratch/c20ffc46347e/integration-evidence/worker-consent-label-green-vitest.json",
+    "workingDirectory": "apps/web",
+    "nodeVersion": "22.23.5",
+    "vitestVersion": "5.0.5",
+    "exitCode": 0,
+    "counts": {
+      "numTotalTests": 45,
+      "numPassedTests": 45,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "files": [
+      {
+        "path": "apps/web/src/features/btc/oracleWorker.test.ts",
+        "status": "passed",
+        "assertions": 14
+      },
+      {
+        "path": "apps/web/src/features/btc/scanWorker.test.ts",
+        "status": "passed",
+        "assertions": 22
+      },
+      {
+        "path": "apps/web/src/features/btc/scanWorkerSource.test.ts",
+        "status": "passed",
+        "assertions": 9
+      }
+    ],
+    "vitestDurationSeconds": 19.73,
+    "rawLog": "(node:3) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web\n\n(node:39) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scanWorker.test.ts (22 tests) 7916ms\n   \u2713 BTC dedicated worker message integration (7)\n     \u2713 requires an injected transport before creating a worker 311ms\n     \u2713 carries the provider spent-check opt-in into the worker and the spent status back out 960ms\n     \u2713 matches direct scanning through cloned messages without sending spend secrets and wipes worker copies 716ms\n     \u2713 awaits each checkpoint commit, resumes from committed state and freshly validates old matches 477ms\n   \u2713 BTC worker stale and untrusted boundary (15)\n     \u2713 rejects a provider-labelled result without consent and wipes its transferred tweak 430ms\n     \u2713 rejects a local-labelled result after an authorized provider query 460ms\n     \u2713 rejects a unknown-labelled result after an authorized provider query 481ms\n     \u2713 binds a same-session worker result to the requested range evidence 462ms\n     \u2713 binds a same-session worker result to the requested chain evidence 500ms\n     \u2713 binds a same-session worker result to the requested duplicate evidence 512ms\n     \u2713 binds a same-session worker result to the requested local-gap evidence 382ms\n     \u2713 binds a same-session worker result to the requested history-page evidence 486ms\n     \u2713 ignores another request and wipes a late result after cancellation 417ms\n(node:47) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/oracleWorker.test.ts (14 tests) 7987ms\n   \u2713 selected oracle through the production worker bridge (14)\n     \u2713 refuses light-mode provider disclosure without explicit consent (false) before starting a worker 492ms\n     \u2713 refuses light-mode provider disclosure without explicit consent (undefined) before starting a worker 354ms\n     \u2713 checks every full block through http without sending wallet secrets 696ms\n     \u2713 checks every full block through grpc without sending wallet secrets 759ms\n     \u2713 light http verifies exact matched outputs without downloading full blocks 483ms\n     \u2713 light grpc verifies exact matched outputs without downloading full blocks 480ms\n     \u2713 light mode refuses forged amount evidence before the matching block checkpoint 468ms\n     \u2713 light mode refuses forged proof evidence before the matching block checkpoint 1324ms\n     \u2713 light mode refuses forged raw evidence before the matching block checkpoint 687ms\n     \u2713 revalidates restored light matches and cannot use a saved match as spend authority 491ms\n     \u2713 rejects incompatible network before oracle block reads 312ms\n     \u2713 rejects incompatible capability before oracle block reads 589ms\n     \u2713 cancels a stalled oracle immediately and disposes a late response 595ms\n(node:55) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scanWorkerSource.test.ts (9 tests) 240ms\n\n Test Files  3 passed (3)\n      Tests  45 passed (45)\n   Start at  00:17:29\n   Duration  19.73s (tests 85%, import 12%, transform 3%)\n\nJSON report written to /workspace/scratch/c20ffc46347e/integration-evidence/worker-consent-label-green-vitest.json\n",
+    "logSha256": "0de05ec4b1424f4cbfb856f153342acc116b6d9244850d22a9a7c52f3e0e7341"
+  },
+  "lint": {
+    "command": "node node_modules/eslint/bin/eslint.js --config eslint.config.js apps/web/src/features/btc/scanWorkerClient.ts apps/web/src/features/btc/scanWorker.test.ts",
+    "workingDirectory": ".",
+    "exitCode": 0,
+    "rawLog": "(node:3) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+  },
+  "independentReview": {
+    "reviewer": "btc_review",
+    "source": "1977a50010e2d72476e0de67168b4f46715aab9c",
+    "verdict": "No blocker",
+    "method": "Independent source/test inspection and verification of red/green JSON and commit/worktree hashes; no independent rerun claimed.",
+    "casesChecked": [
+      "true-consent empty result remains provider",
+      "partial/resumed true-consent success remains provider",
+      "light true-consent success remains provider",
+      "provider error rejects rather than returning local/unknown",
+      "existing false/omitted-consent provider result still rejected",
+      "authorized bridge request occurs before both forged labels",
+      "invalid transferred tweaks wiped; worker terminated and handler detached"
+    ],
+    "scopeDecision": "The existing readonly params and fresh BtcView scan object preserve consent identity; UI revocation aborts/invalidate rather than mutating that object. No unrelated mutable-caller architecture was added."
+  },
+  "packetChecks": {
+    "recordedAt": "2026-11-19T08:53:25.362106+00:00",
+    "sourceCommit": "1977a50010e2d72476e0de67168b4f46715aab9c",
+    "documentationStatus": "Staged documentation/evidence packet included in the tracked-file secret scan",
+    "secretScan": {
+      "command": "bash scripts/scan-secrets.sh",
+      "exitCode": 0,
+      "rawLog": "OK: no committed env files or key material found.\n"
+    },
+    "changedFileMapping": {
+      "comparedMain": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "changedFiles": 64,
+      "mappedFiles": 64,
+      "unmapped": []
+    },
+    "jsonParse": "Every evidence JSON parsed successfully",
+    "diffCheck": "git diff --check exited 0"
+  },
+  "completeBitcoinWebSelection": {
+    "result": {
+      "sourcePin": "1977a50010e2d72476e0de67168b4f46715aab9c",
+      "sourceTree": "af61e24cb588fbf082915deac110c10cca008e70",
+      "checkoutHeadBefore": "1977a50010e2d72476e0de67168b4f46715aab9c",
+      "sourceBefore": {
+        "path": "/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-sources-before.json",
+        "records": 118,
+        "canonicalSourcesSha256": "7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341",
+        "rawFileSha256": "e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e"
+      },
+      "start": "2026-11-19T08:23:01.156Z",
+      "node": "v22.23.5",
+      "typescript": "5.9.3",
+      "vitest": "5.0.5",
+      "cwd": "/workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web",
+      "executable": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+      "args": [
+        "--max-old-space-size=1024",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/features/btc",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-vitest.json"
+      ],
+      "coverage": false,
+      "maxWorkers": 1,
+      "fileParallelism": false,
+      "testNameFilters": [],
+      "expectedTestCountHint": 245,
+      "selectedTestFiles": [
+        "apps/web/src/features/btc/BtcView.headerErrors.test.tsx",
+        "apps/web/src/features/btc/BtcView.headerOwnership.test.tsx",
+        "apps/web/src/features/btc/BtcView.headers.test.tsx",
+        "apps/web/src/features/btc/BtcView.oracle.test.tsx",
+        "apps/web/src/features/btc/BtcView.persistence.test.tsx",
+        "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+        "apps/web/src/features/btc/BtcView.spentConsent.test.tsx",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/headers.test.ts",
+        "apps/web/src/features/btc/oracleBridge.test.ts",
+        "apps/web/src/features/btc/oracleSource.test.ts",
+        "apps/web/src/features/btc/oracleWorker.test.ts",
+        "apps/web/src/features/btc/regtest.e2e.test.ts",
+        "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+        "apps/web/src/features/btc/scan.resume.test.ts",
+        "apps/web/src/features/btc/scan.spends.test.ts",
+        "apps/web/src/features/btc/scanStore.test.ts",
+        "apps/web/src/features/btc/scanWorker.test.ts",
+        "apps/web/src/features/btc/scanWorkerSource.test.ts",
+        "apps/web/src/features/btc/sweep.test.ts",
+        "apps/web/src/features/btc/verification.i18n.test.ts"
+      ],
+      "requiredWorkspaceOutputs": [
+        {
+          "specifier": "@ghostpay/btc-silent-payments",
+          "types": "packages/btc-silent-payments/dist/index.d.ts",
+          "runtime": "packages/btc-silent-payments/dist/index.js",
+          "typesSha256": "0889b89f7f2a55db76df13d50d858ca46ce27bcddfe3bef75e3f95c4b9118d63",
+          "runtimeSha256": "f510d878bd461798d8d2de067de3e33bf8f4f7d0fe997d50f90ddaf45de27a43"
+        },
+        {
+          "specifier": "@ghostpay/chain-adapters",
+          "types": "packages/chain-adapters/dist/index.d.ts",
+          "runtime": "packages/chain-adapters/dist/index.js",
+          "typesSha256": "3e02bfb229e0bbd31d116e3cca7b7015380f0e6f6d04e8b161549433a5320ee0",
+          "runtimeSha256": "029c7f8c1aefdacba0566fd6168e2129a4a58eb2815d21afb12ac5d66f55c55a"
+        },
+        {
+          "specifier": "@ghostpay/ux-vault/portable",
+          "types": "packages/ux-vault/dist/portable.d.ts",
+          "runtime": "packages/ux-vault/dist/portable.js",
+          "typesSha256": "dea3b74e8412349a830c422365e9fd0dc1359fe83fab29d512b14c6de3afe432",
+          "runtimeSha256": "ef1b8754c8292cdbeb991bbf987a2b1f62dad6c50aa592b56b7232654f642904"
+        },
+        {
+          "specifier": "@ghostpay/qr-exchange",
+          "types": "packages/qr-exchange/dist/index.d.ts",
+          "runtime": "packages/qr-exchange/dist/index.js",
+          "typesSha256": "825523e521c66ce2d67118926bd61cf6e281f2d74330c65a3aac918a4bbeacfa",
+          "runtimeSha256": "388ee0dd9ea5faa3462ad7790ca3b4165ede02f722f755417eefcae9f8f4ddef"
+        },
+        {
+          "specifier": "@ghostpay/core-crypto",
+          "types": "packages/core-crypto/dist/index.d.ts",
+          "runtime": "packages/core-crypto/dist/index.js",
+          "typesSha256": "cbd89a752fbc1edc8adc498cb19586d636a4ec9ffc038416b1611d580172a9bc",
+          "runtimeSha256": "e6a7ed0e0601f6745e9d19b59f6d13ba143911eac9307b2406bf34bc083bb8e3"
+        },
+        {
+          "specifier": "@ghostpay/invoice-schema",
+          "types": "packages/invoice-schema/dist/index.d.ts",
+          "runtime": "packages/invoice-schema/dist/index.js",
+          "typesSha256": "87c711a2122f1f8c4036e2d78ff357d4486cd32edc58d56fa982694615c4e1d6",
+          "runtimeSha256": "5d383d0db49b28f311e3118136b4adc44b32d6b8d41f98dc63f10a7448d9c725"
+        },
+        {
+          "specifier": "@ghostpay/secret-box",
+          "types": "packages/secret-box/dist/index.d.ts",
+          "runtime": "packages/secret-box/dist/index.js",
+          "typesSha256": "aa995f9d389c8dda08727483b14cfedee843e0ba67dff297355997a2d1497422",
+          "runtimeSha256": "5ed2acca891266271cc1f5a89597ae4eded78bb15806d42535a12dcc292a3746"
+        },
+        {
+          "specifier": "@ghostpay/solana-stealth",
+          "types": "packages/solana-stealth/dist/index.d.ts",
+          "runtime": "packages/solana-stealth/dist/index.js",
+          "typesSha256": "6b9911daf687420028a03bc8f093fabfc9af552d5faee0d7d35fa7a9399dc870",
+          "runtimeSha256": "c4659cf71aa20fd47db71d951237fbc5b21cac8c0b79793345fefe75ee8cce31"
+        },
+        {
+          "specifier": "@ghostpay/tron-adapter",
+          "types": "packages/tron-adapter/dist/index.d.ts",
+          "runtime": "packages/tron-adapter/dist/index.js",
+          "typesSha256": "5e1170f25a6aed5b0ee7374bbcf3ba7e25f2672b6e6d0d07a66a54ca67d6ab91",
+          "runtimeSha256": "09c6d32adf69a0f3fb765dc52489b505e906b65f4ff593c88356c74b88d49198"
+        },
+        {
+          "specifier": "@ghostpay/policy-scheme",
+          "types": "packages/policy-scheme/dist/index.d.ts",
+          "runtime": "packages/policy-scheme/dist/index.js",
+          "typesSha256": "f152bcfce4d466e2b3df66547a0137e4be6ba1423702ec8ee66574a96aa54380",
+          "runtimeSha256": "d098019e1293a77205b943a8d7bf21a1bfa9451722e20a07cca8a0567f1ac5f9"
+        },
+        {
+          "specifier": "@ghostpay/address-safety",
+          "types": "packages/address-safety/dist/index.d.ts",
+          "runtime": "packages/address-safety/dist/index.js",
+          "typesSha256": "3362b28eb220dabe7dffffb9a12f210916adbe248e668088cec2f3971a819736",
+          "runtimeSha256": "131d04d124e459eb64b5227b2e0b19dd68180be00ff3952e2e4f801b456d4e4c"
+        },
+        {
+          "specifier": "@ghostpay/tx-review",
+          "types": "packages/tx-review/dist/index.d.ts",
+          "runtime": "packages/tx-review/dist/index.js",
+          "typesSha256": "5ae3eb8c7981ffba78f92812cd249740788ec7892b68df428a344ae7dfb80d2f",
+          "runtimeSha256": "04e131df203b188a9dbf0a97828a846f93681fcdc6e0b8d5c135a199a0153ef3"
+        },
+        {
+          "specifier": "@ghostpay/payment-uri",
+          "types": "packages/payment-uri/dist/index.d.ts",
+          "runtime": "packages/payment-uri/dist/index.js",
+          "typesSha256": "7b38694050d7a98de837ab24338b949a5dd06c896e2ea83bec9626933e466483",
+          "runtimeSha256": "ea0e08671bdeb8ef515c4f64b4a49c806f4c373e69df64a7494eebed91ef2218"
+        },
+        {
+          "specifier": "@ghostpay/net-transport/browser",
+          "types": "packages/net-transport/dist/browser.d.ts",
+          "runtime": "packages/net-transport/dist/browser.js",
+          "typesSha256": "218e1bca81d81fcf9a47a174d9b3eda12e9914808c27bb810b2432a4fcaabb16",
+          "runtimeSha256": "fab21267b75c536bf090ed62d8510683f80f40dffc73398c4368fddc3f4ae677"
+        },
+        {
+          "specifier": "@ghostpay/scan-source",
+          "types": "packages/scan-source/dist/index.d.ts",
+          "runtime": "packages/scan-source/dist/index.js",
+          "typesSha256": "5f40c16c6d637408a9b5a7c04cf127749b891b4d4951f639dbc3b51812561b17",
+          "runtimeSha256": "8ae7fd7797675e07bf850b96d079e03b04311888b90d2d762448c06f22d9e516"
+        },
+        {
+          "specifier": "@ghostpay/pir-two-server",
+          "types": "packages/pir-two-server/dist/index.d.ts",
+          "runtime": "packages/pir-two-server/dist/index.js",
+          "typesSha256": "c113bf9e676e53694bfe85c52d22b1b1b13d15c2b483ccaa3d1228c613ea29e5",
+          "runtimeSha256": "3de9b84fd5f316aa0f38d135b72b4b021903bb0c41db7e36df909aabec381fec"
+        }
+      ],
+      "missingRequiredOutputs": [],
+      "packageSourcesUnchangedSinceBuildAt": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+      "regtestEnvironmentPresent": {
+        "GHOSTPAY_REGTEST_URL": false,
+        "GHOSTPAY_REGTEST_SEED": false,
+        "GHOSTPAY_REGTEST_DEST": false
+      },
+      "end": "2026-11-19T08:27:06.874Z",
+      "durationMs": 245897,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "checkoutHeadAfter": "1977a50010e2d72476e0de67168b4f46715aab9c",
+      "sourceAfter": {
+        "path": "/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-sources-after.json",
+        "records": 118,
+        "canonicalSourcesSha256": "7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341",
+        "rawFileSha256": "e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e"
+      },
+      "sourceUnchanged": true,
+      "sourceDifferencesAfter": "",
+      "results": {
+        "files": 22,
+        "total": 245,
+        "passed": 244,
+        "failed": 0,
+        "skipped": 1,
+        "todo": 0,
+        "success": true,
+        "failedSuites": [],
+        "failures": [],
+        "skippedTests": [
+          {
+            "file": "/workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web/src/features/btc/regtest.e2e.test.ts",
+            "name": "regtest end to end (live bitcoind) detects the silent payment, sweeps it, and sees it spent afterwards",
+            "status": "skipped"
+          }
+        ]
+      },
+      "log": "/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final.log",
+      "report": "/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-vitest.json"
+    },
+    "sourceManifest": {
+      "sourcePin": "1977a50010e2d72476e0de67168b4f46715aab9c",
+      "sourceTree": "af61e24cb588fbf082915deac110c10cca008e70",
+      "canonicalSourcesSha256": "7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341",
+      "canonicalDigestPreimage": "UTF-8 JSON.stringify(sources), preserving array order; no indentation, wrapper fields, or trailing newline.",
+      "sources": [
+        {
+          "path": "apps/web/src/features/btc/BtcView.headerErrors.test.tsx",
+          "sha256": "f3eeabbaa8630aa9f8b959b664a48902de24f570250870a143bc47d8f90c5f05"
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.headerOwnership.test.tsx",
+          "sha256": "e321b993a9ae191fbef706ac49c06f880962f270391a1d19bb64e9cbeae15ede"
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.headers.test.tsx",
+          "sha256": "2f5f5efe6ea3fee128a02fa7f54a74b6a49204cf8db9e375c954212afd4d5ff5"
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.oracle.test.tsx",
+          "sha256": "fe0134851c01a7c7d34fb086980e8d8399d338a288252a3154be8049a56c7fed"
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.persistence.test.tsx",
+          "sha256": "51a5c3b8e5e2769b41432242e3558487af0673aed7f3d3a2ff7535cdbf483387"
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+          "sha256": "6eb58647202bb0bcce14ddecd6f5d0fe31ef29bbc0be2575b52f13e65c15dfcb"
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.spentConsent.test.tsx",
+          "sha256": "b2a65868f3a4bd2afec5338436829b98adff1d7567d0db04f93cafa8d9cb3a38"
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "sha256": "4927c275870c259691b3f77c30bf2b4050a779edc9d2affab72ee7f3628c41f6"
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "sha256": "45256a49f24a6d8342e6c990f10de435265c76aaea214c8cf7d7460334a9f487"
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "sha256": "5029632847651c1b1614fac9c988d0c218a4f3decf7b1b4fd27880a214058c27"
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "sha256": "6dabe0de2f5fcbde23a177f84e7ec77e50ebfc48f6a108b1ed276cf6d358e806"
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "sha256": "afbd5f1dc4426129b1ac46918727a872ecb721a18fba8efe9b2594f5c5c29eb4"
+        },
+        {
+          "path": "apps/web/src/features/btc/headers.test.ts",
+          "sha256": "26cb79bb74183ba7674351db844053e7c209652e9f565e10df1cf093aca98bd1"
+        },
+        {
+          "path": "apps/web/src/features/btc/headers.ts",
+          "sha256": "34880d0630ed8a793372e4560c95132ef8551bf745d4520292feb899a51848ad"
+        },
+        {
+          "path": "apps/web/src/features/btc/inclusion.ts",
+          "sha256": "bd19f3e96e5db2e479a44fa73ae6867a93e7122b339bdac596e3a951b8397ecc"
+        },
+        {
+          "path": "apps/web/src/features/btc/network.ts",
+          "sha256": "9a6b97fe84f6ce5c7101639291fcd2b603be09baafc0cafca027e2e8ee7b1f8f"
+        },
+        {
+          "path": "apps/web/src/features/btc/oracle.testutil.ts",
+          "sha256": "86e0e90e2452b8e458ccae585198d128402b8c00d8d1f99b12ff497061f5eecf"
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleBridge.test.ts",
+          "sha256": "7d2b1e67f7726ac6a48d88d089c75161802718dbc8bfefa81166c42c6b4863ce"
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleBridge.ts",
+          "sha256": "2f19ece01a0d50bcf72ce16b3b2e2e3057615f8c59e6c0936267ce1bc763f2aa"
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleSource.test.ts",
+          "sha256": "80cde8c3735a3481de2fa3067c77d74de6b5fe7e2305affc2004dde1c60f912d"
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleSource.ts",
+          "sha256": "61eec20f11a1064288f89082fd30f775587a68413699ac6e2a45b06dd6e34465"
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleWorker.test.ts",
+          "sha256": "52b0aeb4fe1e35a697ead4732499042e05baf66b985013bb9fafddc494c573e5"
+        },
+        {
+          "path": "apps/web/src/features/btc/regtest.e2e.test.ts",
+          "sha256": "a7c8a8185f692810d339f027092a70e9b52f275a009640b632995d60e1a43241"
+        },
+        {
+          "path": "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+          "sha256": "04a6ec1cdd2f9823f7cc2ab52534bc2db6af1e5a38873bdadf1d56efb6a0431b"
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.resume.test.ts",
+          "sha256": "191f402ac9984b6074218d7b46df877521139b16f07314ae6223427914b477ca"
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.spends.test.ts",
+          "sha256": "ab9239ca863118c531bb38c1df9cef0ee7eb6f60f479981bdaf6ea9688c61129"
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.ts",
+          "sha256": "3cb911f3596e5c450497361ba8c531f58582b2494648e434fe4b06052a17ec1e"
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.worker.ts",
+          "sha256": "3ec4a5ca4912fa30c6a1580a2fd840801e5e456ce4a977d39ef6eaba3a434c51"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanStore.test.ts",
+          "sha256": "fad78d7e2c70a0c533512f746fda6d03737157bac75b2809a43b1e56ce7e1ffd"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanStore.ts",
+          "sha256": "f4b217bb9490e95d24a1eb4f719c0959cab19593b9a9f19f036aec50dff5d31c"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorker.test.ts",
+          "sha256": "232c4994bf5eaf91ea5d8f65f28c3cbfb8eadb5b8fba831b6cb145780bbe3d42"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorker.testutil.ts",
+          "sha256": "f5db36baa2eb5ae061b0492b37b8a4fc9c521303a5d84e4174cc735fdc3111ac"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerClient.ts",
+          "sha256": "7b7cdb4bb5b380d7b3d0aa800355f654fc781deccf3afb2262a2ece1d7c21b18"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerMessages.ts",
+          "sha256": "add0d25d0e8cd1749c5d1d2a863870dbb370f3e13ff75e9844309eb602a53be7"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerProtocol.ts",
+          "sha256": "2f164a54eeb3ff75b5d831a93c52c79a1983908de0053cf014ef1b344b7094bd"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerSource.test.ts",
+          "sha256": "df3a2a2a631bc4ce9c5814904a8f72bd16c4f435aeb1467b9efd67b30b821e85"
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerSource.ts",
+          "sha256": "70a17211e11f9654dbfd9bf00856f675e5deb34318f3f4d4320891035ab2bfb4"
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.test.ts",
+          "sha256": "e9004f38f72f1f7e47922b9b9c6fabe72f42696075f4b0350fb598b28bec014b"
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.ts",
+          "sha256": "ff7ad10f2405cfa5d9062f432542e8250751a0bad9d839acc339ce9167dde5a1"
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.i18n.test.ts",
+          "sha256": "de9d6c931821d3894a75673fd4276c2935b90487e8d8d0560d8146e734126366"
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "sha256": "dd54476b5c1a386e49259565c590003589ab94cd5d36a0a49820e100f9036404"
+        },
+        {
+          "path": "apps/web/src/features/btc/wallet.ts",
+          "sha256": "263dc7992838cd3f6dcf1908efdb6bcd5965570145757fc9d6e99b4da99df274"
+        },
+        {
+          "path": "apps/web/tsconfig.json",
+          "sha256": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325"
+        },
+        {
+          "path": "apps/web/vite.config.ts",
+          "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+        },
+        {
+          "path": "eslint.config.js",
+          "sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476"
+        },
+        {
+          "path": "package-lock.json",
+          "sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/adapter-types.test.ts",
+          "sha256": "ad4f32bbcff98c104e616700e6f0a9f2aa5744d0db822f242870d64ab5c20615"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/adapter-types.ts",
+          "sha256": "7e9597ce0059d0da5801cd8979b12e854bbed3a394d8aaf3c7192a7591a46bc5"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/adapter.test.ts",
+          "sha256": "9cdb1cb3e26725c28636996ee18de342dbd8130ca32a51d8fa83991ec2a2c89f"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/adapter.ts",
+          "sha256": "a59c439e25cca0f201f38be9d224d5b415cae9ac07ac757dd43ed32d755a15d2"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/address.test.ts",
+          "sha256": "324bff61a85e5d4e3cf98aa1ad670c952d8f22bbdf71209c2063090149e06495"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/address.ts",
+          "sha256": "7f3849a569e0218a08b2bbf0b4ec6d87c1bed789413660ccecb5f84cf3a934b6"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/audit-fixes-r4b.test.ts",
+          "sha256": "d948769d24a3536986b3a208c18f4278601b8af2445aa2558f15ec7ca092b48b"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/audit-fixes.test.ts",
+          "sha256": "cd411f628cdcad818aa91e412dc8e8f735d6b2dba89a86944c3b52534a154c6e"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/bech32m.test.ts",
+          "sha256": "aafd05449e8f2f12a50e5f424490f0663b2a92a916591ef20779e852f92bd562"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/bech32m.ts",
+          "sha256": "09258f601b9f9c40b75db1ca0c0c319bc6fb0438da619639826351a0955658bb"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/bip32.test.ts",
+          "sha256": "88ac0c9729b1bbcce3af670f824ae3efcf2801a64aa46ff01337986c0b9f277b"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/bip32.ts",
+          "sha256": "f30efc407c9f531a87cf80815188119466d8547034acfd3e6930cda0f9a642f6"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/ecc.ts",
+          "sha256": "7896b5ed9cf69f5724e8110b17463f252342342cfa9fa1c26e2a413825aff08a"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/errors.ts",
+          "sha256": "8bb6a736b8acb5c9e1cb53ca9c726394180e830a1a74a6c48eff407981869714"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/fixtures.testutil.ts",
+          "sha256": "88b626699683c5990432a91210c3845251a4ad6a1dadd34c0f910539acc92b88"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/hash-edge.test.ts",
+          "sha256": "92e2eb410f61a7f8476b325d2ebd245590f7e5a1c1119a2a357e21fa5e5fa8b1"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/header.test.ts",
+          "sha256": "8ca28af7e55d5fc6b4987f6b5304c6e4e19c8d41ede00ebc5f421f247ac7972d"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/header.ts",
+          "sha256": "6cb34c610e077936b9d5ad872e20a70b5136915e82d970118cb3dff2f99bbc5e"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.memory.test.ts",
+          "sha256": "214accedbcf8f0d6f6e42f3f97ade03ad6bfab5b1f40977bb0d558a2d406ae79"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.test.ts",
+          "sha256": "212de467a337c1e6d7b23207cd1965e36c0eea738e3b7238f8184dcacd9044ce"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.ts",
+          "sha256": "515082d1a3e18abe7eb6c63b22a6756a90f1898e77ac5c4598df15533a96930d"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headers.testutil.ts",
+          "sha256": "0ebeb3302d09258762913dadb12191b8f1df0522ffc7916cc3a19d0312cc438f"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/hexbytes.ts",
+          "sha256": "4bdde2bd28da3af590145f5892951f804174dc604ed4effe04b463d278b20d2f"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/index.ts",
+          "sha256": "3b9aef47c0044be31a46c58134d1fe8aafd70ebb9e636f0af13a67846ff9dfc2"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/inputs.test.ts",
+          "sha256": "35be4d3e68360b218fbddd9a39cdccacb2896fd98a9b80b45990af827012a69e"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/inputs.ts",
+          "sha256": "0b071ba2499cfd1d167041d9e598b7a6f1c3d1945735057680deb70d7bed7323"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/keys.test.ts",
+          "sha256": "5f863a6b3d8a9af1c5f7009424df06367de73af7f62b4821bb35dfaebd4d5869"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/keys.ts",
+          "sha256": "9dd66ceac6207671156e137e0429b7277d18bb2424183af58106bfdbb061bc96"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/labels.test.ts",
+          "sha256": "9e58fad09ac7c33a33a60abd0e02d452cbac64dad3a1cf9f8f43921ff6e3507e"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/labels.ts",
+          "sha256": "186530e4ceb0b09c39115869261fb86c25afb58326cda62a24e08a1f6f798216"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/merkleProof.test.ts",
+          "sha256": "8ddf9d25e60ac0f19684611a3c9806982b030de1e94bd4108a9b7104d273ab1b"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/merkleProof.ts",
+          "sha256": "e99c28b55f58a8c259410f13e5cd584b7df87358eb5cdc219a5406223beeefb9"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/policy.test.ts",
+          "sha256": "bb1606cdbc5a3274020923e07e0297d5fae86e2e5193312115071a571be93449"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/policy.ts",
+          "sha256": "65e3d2a3e8568b0ee26b611cfc1589e7d940bd4e11d054e2a7190a19eb572537"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/receiver.ts",
+          "sha256": "c280a0168997a0a945b27f803821bacddf2b5a372fc2e7a78c436f9b09062542"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/rng.testutil.ts",
+          "sha256": "cc3361306a406e2c362e0bfa94304f085032a6e3dd1de34e35969ebec035a0bd"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/rng.ts",
+          "sha256": "d4f25129ec5d772f3e68e5127f95852f12d76276f60702d00fcc2b35e0ccca0a"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/roundtrip.test.ts",
+          "sha256": "b2e3662840c86d32228c4d53926fa6ef253de623b482f7a2c6468a2de5dccf4c"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/blindbit.test.ts",
+          "sha256": "48243ceb12cf16f72517482078e34a83da4d6987b53d65b6cc27183b6f8a2ddc"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/blindbit.ts",
+          "sha256": "30f34267ee22bd00af0141556d35a25eff1728ae9cf9933aaa28ba8d85579d9c"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/blindbitGrpc.test.ts",
+          "sha256": "5251a5bba1b6697f577ac0e15f0e40853ca1ed9acd01a062a722db3336e1bd7c"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/blindbitGrpc.ts",
+          "sha256": "c44fb48545f21431ff0c1fa9ed2eebbfab10fd0f72d54f077a2c8ca361236113"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/grpcWebUnary.ts",
+          "sha256": "da6d9b2b0a382cac63047596713f54012fc0d65b2604450caa67330d641ac829"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.test.ts",
+          "sha256": "4a8b47033252d40d4743f34dfb8d4ac86aaf7d91a3678f61019d394b4b0ebdf3"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.ts",
+          "sha256": "dea264c471c1a941f1de15f8f68f886076cee5ec4acd0b9d3adcb34b2448d01b"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/memory.ts",
+          "sha256": "9edd633d02b41e06489396b364bad862423d337045ddd66c932f6ba492460a43"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/proto/indexing_server_pb.ts",
+          "sha256": "eab98ec8e9ae87cfcca434f8b581f7c3065195eb238398c776573423122e787f"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/scanner.test.ts",
+          "sha256": "298c622c1be60c0e52521590d433ce99fdc6b1692accdef2a546d9d677ba643c"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/scanner.ts",
+          "sha256": "d37fd43cf701884ce79c10d5c9a42cd3419a527186fa74fc2e2169481059f85e"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.test.ts",
+          "sha256": "b321966dbefdb83110aa40115f819d2c4914220e4cd96cdb85993debb2112c70"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.ts",
+          "sha256": "17e60e7150eef247162b1fcd7712ab48a1826ac1bfe1bd9e95307a2a6946e4a2"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/types.ts",
+          "sha256": "143ce57355eb9e0f5ff108ec2b1e1c387b368ae5f97ad06072f935560d47c241"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/secret.ts",
+          "sha256": "aed7ea7f5868d5f687b980b109578cc3c8a6012a41aa98017c7acfcb6e3aa534"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/sender.ts",
+          "sha256": "335775a2b614f59e796d3a17be56f276062cc94b8453815cd3c9b7ad7a5969c3"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/signer.test.ts",
+          "sha256": "08840b88951820dd841ddfce214e919b19f80a0327537e321d67c62c8960a1c7"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend-policy.test.ts",
+          "sha256": "0919ab178b71787c0eb4d922fcbf449b879839f12d770347681e17948bda4fee"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend-regtest.test.ts",
+          "sha256": "dacd4e9872d1b3e7563c6a528419ca1c53ab7e728feb9c1f64cc155692f38ab7"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend-vectors.test.ts",
+          "sha256": "3b045832a2458f8900adee3202fd666602a63f863a6f9143a9560da7c8666f74"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend.test.ts",
+          "sha256": "f142c80ba8f97329e6b783acedb9852bef01a97dde214bd35dedcc7a71e50e63"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend.testutil.ts",
+          "sha256": "35e8df1d2c1128928c9bab2a451bfd4e1c2aa37caa763740abcead355191c61f"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend.ts",
+          "sha256": "8487200eec6ba6811b873a1f4f6625818a649f503745d2a581b957a25605651a"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/tx.test.ts",
+          "sha256": "b4ccedc9673edbc989fc559a2a8627941511d60c4e497604dd89a9a166f910a2"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/tx.ts",
+          "sha256": "4121c5ef70c331fdfbea12f39f93e996c55896f19e7f4e9693704b9cd2fd90b0"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/units.test.ts",
+          "sha256": "60476aefa01ddf93ae065d67335e18cfbc95bdd3eba576b5f5072af08ac6f407"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/units.ts",
+          "sha256": "66b6c11cf123a8764c0705e4dd3aaee6a23af3c9b97268f4ab06f5c994e11613"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/uri.test.ts",
+          "sha256": "fec2024470b7e581918293448ddf6973e1703f565e22e7fcaa8b87154d670156"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/uri.ts",
+          "sha256": "4b3e52ad8df9e18112dbf1a1ccbb33cc33f39739c9c2fe6d65a237dbe76da60d"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/vectors.test.ts",
+          "sha256": "950d07ef414bb6fbf97ccb6875923638d36c6af2ec587bbe2d18e34218279cb3"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/vectors.testutil.ts",
+          "sha256": "000dd22dcbf59a55a070ea1405756f0d76d09edb9b3c103fd0facc40dd44e63c"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.test.ts",
+          "sha256": "0d6275ef770ea603f3bf59bb11e99bb26be3919e9a8242c82a0e8aad6a657e4d"
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.ts",
+          "sha256": "e99287648f5e2bb15917f7537506218eb2cee3dd24d43d0fb992ade88eea5dd4"
+        },
+        {
+          "path": "tsconfig.base.json",
+          "sha256": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+        }
+      ]
+    },
+    "rawArtifacts": {
+      "btc-directory-consent-final-result.json": {
+        "sha256": "a8307f195236dc2848b5b92927d48db3b4bb37902779570fdb870d2b87485085",
+        "bytes": 9732
+      },
+      "btc-directory-consent-final-vitest.json": {
+        "sha256": "aea13537167533cc77b3e8d9b84a522028229190c32cfcd6da2ce1ba1aaf726a",
+        "bytes": 95496
+      },
+      "btc-directory-consent-final.log": {
+        "sha256": "7b17989b7099583aa927e383274aca785ad1f4bf07ae617bc68f8f79b32c8883",
+        "bytes": 23637
+      },
+      "btc-directory-consent-final-sources-before.json": {
+        "sha256": "e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e",
+        "bytes": 19156
+      },
+      "btc-directory-consent-final-sources-after.json": {
+        "sha256": "e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e",
+        "bytes": 19156
+      },
+      "btc-directory-consent-final-preflight.json": {
+        "sha256": "34638f2413dca61492aa88d7d0577c3ecb2028b6e3a5a93e1bbbc2a1a2a347a3",
+        "bytes": 8436
+      }
+    },
+    "rawLog": "(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n{\"sourcePin\":\"1977a50010e2d72476e0de67168b4f46715aab9c\",\"sourceTree\":\"af61e24cb588fbf082915deac110c10cca008e70\",\"checkoutHeadBefore\":\"1977a50010e2d72476e0de67168b4f46715aab9c\",\"sourceBefore\":{\"path\":\"/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-sources-before.json\",\"records\":118,\"canonicalSourcesSha256\":\"7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341\",\"rawFileSha256\":\"e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e\"},\"start\":\"2026-11-19T08:23:01.156Z\",\"node\":\"v22.23.5\",\"typescript\":\"5.9.3\",\"vitest\":\"5.0.5\",\"cwd\":\"/workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web\",\"executable\":\"/workspace/scratch/c20ffc46347e/toolchain/bin/node\",\"args\":[\"--max-old-space-size=1024\",\"../../node_modules/vitest/vitest.mjs\",\"run\",\"src/features/btc\",\"--maxWorkers=1\",\"--no-file-parallelism\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-vitest.json\"],\"coverage\":false,\"maxWorkers\":1,\"fileParallelism\":false,\"testNameFilters\":[],\"expectedTestCountHint\":245,\"selectedTestFiles\":22,\"requiredWorkspaceOutputs\":16,\"missingRequiredOutputs\":[],\"packageSourcesUnchangedSinceBuildAt\":\"3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a\",\"regtestEnvironmentPresent\":{\"GHOSTPAY_REGTEST_URL\":false,\"GHOSTPAY_REGTEST_SEED\":false,\"GHOSTPAY_REGTEST_DEST\":false}}\n(node:27) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web\n\n(node:63) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/BtcView.headers.test.tsx (35 tests) 63127ms\n   \u2713 BtcView header chain: busy state after a check (4)\n     \u2713 M-new/L1: Sign is disabled only while a check runs (chain unchanged), and enabled again right after it 2815ms\n     \u2713 M-new/L1: Broadcast is disabled only while a check runs, and a clean check leaves it usable (1 broadcast) 2712ms\n     \u2713 L1: the Sign and Broadcast handlers themselves refuse while a check runs 2637ms\n     \u2713 L2: a stale Broadcast handler from before a fork check sends nothing (live-chain hash check) 2021ms\n   \u2713 BtcView header chain: re-review fixes (11)\n     \u2713 requires a fresh spentness scan when checked headers extend beyond the last local scan 2562ms\n     \u2713 F1: a transaction signed before Forget cannot be broadcast while its input is unchecked 3013ms\n     \u2713 M1: while a running check has already switched to a fork without the paying block, Sign and Broadcast refuse 3352ms\n     \u2713 M1: a signed transaction cannot be broadcast while a check that removes its input is running 2677ms\n     \u2713 L-e: lock resets the Forget confirmation, and a network switch clears the header notes (the checked tip reset there has no visible effect: lock already cleared the results) 2117ms\n     \u2713 F2: a chain loaded from storage is reconciled with on-screen results even when the sync does not move its tip 1545ms\n     \u2713 F3: forgetting during a running check re-enables Scan and Update headers 667ms\n     \u2713 F5: repeated checks never grow the chain past the size limit 1285ms\n     \u2713 L6: a check that finishes after Forget changes neither the results nor the checked tip 1094ms\n     \u2713 L6: a chain still loading from storage at Forget is not kept as the checked chain 1955ms\n     \u2713 L5: a pending Forget confirmation does not survive a network switch 968ms\n   \u2713 BtcView header chain: delta review fixes (4)\n     \u2713 after forgetting headers, a capped resync keeps results above the checked tip but does not let them be swept 2159ms\n     \u2713 asks before forgetting, and can keep the headers 639ms\n     \u2713 says another tab holds a heavier chain when the work-guarded save is refused 616ms\n     \u2713 an aborted sync never writes headers back after they were forgotten 1321ms\n   \u2713 BtcView header chain: review fixes (2)\n     \u2713 adopts a heavier fork deeper than one sync round of headers (fork depth between 2048 and 4032) 5907ms\n     \u2713 removes results from replaced blocks even when the sync fails after adopting a heavier fork 1000ms\n   \u2713 BtcView header chain (14)\n     \u2713 checks headers before scanning, saves them, and resumes from saved headers after they are checked again 2416ms\n     \u2713 discards saved headers with not JSON, never uses them, and checks again from genesis 2077ms\n     \u2713 discards saved headers with another network, never uses them, and checks again from genesis 1205ms\n     \u2713 discards saved headers with a tampered saved header, never uses them, and checks again from genesis 2154ms\n     \u2713 discards saved headers with a substituted anchor, never uses them, and checks again from genesis 1794ms\n     \u2713 fails closed on a header that breaks the chain rules: no scan runs and nothing is replaced 599ms\n     \u2713 fails closed on a header without valid proof of work 572ms\n     \u2713 ignores a competing chain with less work and refuses its blocks 2484ms\n     \u2713 says when saved headers cannot be forgotten 671ms\n     \u2713 follows a chain with more work and honestly removes the scan results from replaced blocks 1286ms\n     \u2713 discards the whole scan when its first block was replaced 1534ms\n     \u2713 says when headers stop below the first height to scan, and scans nothing 662ms\n     \u2713 saves headers in IndexedDB by default when the browser has it, and resumes from there 1120ms\n     \u2713 reports a header store that cannot save, and a cancelled header check 1478ms\n(node:71) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/BtcView.secrets.test.tsx (8 tests) 11378ms\n   \u2713 BtcView key and spend-tweak lifetime (8)\n     \u2713 keeps the seed of a created wallet only as bytes for its backup; Lock and leaving the view wipe them 809ms\n     \u2713 Lock wipes the scan and spend secrets and the spend tweaks of the scan results 1437ms\n     \u2713 a new scan wipes the previous results, and leaving the view wipes everything 1730ms\n     \u2713 Lock cancels a running scan: it ends as cancelled, wipes the spend tweaks it produced and shows nothing 1576ms\n     \u2713 drops and wipes a scan result that arrives after Lock (a scan that does not stop when cancelled) 1043ms\n     \u2713 drops and wipes a late scan result after changing provider consent 1539ms\n     \u2713 drops and wipes a late scan result after changing scan source 1624ms\n     \u2713 the app lock (idle timeout) wipes like Lock, clears a typed seed and says why 1617ms\n(node:79) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/headers.test.ts (32 tests) 22358ms\n   \u2713 loading saved headers (4)\n     \u2713 re-validates in chunks, yielding and reporting progress, and refuses a chain above the size limit 2465ms\n   \u2713 syncing headers (10)\n     \u2713 works in rounds, saves every few rounds and at the end, and stops at the round limit 11235ms\n     \u2713 a deeper competing branch than the package evaluates is a distinct failure, not \"less work\" 4952ms\n   \u2713 IndexedDB header store (7)\n     \u2713 two writers: the lower-work sync loses and the record keeps the heavier chain 790ms\n(node:87) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/BtcView.test.tsx (13 tests) 15985ms\n   \u2713 BtcView (13)\n     \u2713 creates a wallet whose backup seed stays hidden until asked for, address, payment instructions, and locks 1554ms\n     \u2713 copies the backup seed only after a warning, and Lock empties the clipboard again 494ms\n     \u2713 empties the clipboard at the next click when the app lock could not (no user activation) 544ms\n     \u2713 discloses what the scan verifies, its limits and the data-source modes (hosted scanning unavailable) 717ms\n     \u2713 rejects a malformed seed with a message 565ms\n     \u2713 recognises spent outputs locally by default and asks the server per outpoint only when the box is ticked 1425ms\n     \u2713 scans, reviews, requires approval, signs and broadcasts 2337ms\n     \u2713 validates scanned Bitcoin destinations for the selected test network before filling them, with nothing selected 1770ms\n     \u2713 selects no payment after a scan and warns, when selecting and in review, that payments swept together are linked 2335ms\n     \u2713 reports a bad destination, deselected inputs and server failures 1537ms\n     \u2713 refuses a server on a different network 586ms\n     \u2713 requires a numeric start height and a valid URL, and can fail to broadcast 1870ms\n(node:95) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/esplora.test.ts (38 tests) 13442ms\n   \u2713 EsploraClient (19)\n     \u2713 reads blocks of more than 10,000 transactions in full and refuses an impossible transaction count unread 1011ms\n     \u2713 weighs witness bytes at a quarter (BIP-141), so a block heavy with witness data is read 1013ms\n     \u2713 counts the header and the transaction count in the block weight: exactly 4,000,000 is read, more is refused 1168ms\n     \u2713 reads at most 64 MiB of pages for one block: light transactions padded through their spent outputs are refused 2129ms\n     \u2713 shares the 64 MiB between all pages of a block, whatever their bytes hold: exactly that is read, a byte more is not 1556ms\n   \u2713 EsploraTweakSource and scanning (10)\n     \u2713 retries a block after a failed fetch and bounds its cache 310ms\n     \u2713 refuses witness data the coinbase does not commit to (BIP-141), even when every txid still matches 585ms\n     \u2713 finds the payment, reports spent outputs, and finds nothing for another wallet 1117ms\n     \u2713 binds scanned data to a proof-of-work header: omitted, injected, edited or unlinked blocks are refused 1038ms\n     \u2713 scans a block whose transaction count is a multiple of 25 636ms\n     \u2713 says exactly what links the scanned blocks: an unanchored first block with an invented payment is accepted 553ms\n(node:103) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/BtcView.spentConsent.test.tsx (4 tests) 7055ms\n   \u2713 Bitcoin spent-check consent and unknown results (4)\n     \u2713 revokes provider checks while scanning, aborts the pending request, and never resumes later optional checks 2850ms\n     \u2713 does not carry mandatory light-mode disclosure into a later full Esplora scan 1669ms\n     \u2713 requires new optional consent after changing the selected provider 949ms\n     \u2713 keeps unknown discoveries visible but never describes or selects them as unspent 1585ms\n(node:111) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/sweep.test.ts (16 tests) 9003ms\n   \u2713 reviewSweep (5)\n     \u2713 shows exact amounts before any signing 1098ms\n     \u2713 rejects wrong-network and malformed destinations, empty selections and bad fees 874ms\n     \u2713 warns about high fee rates, big fee share and sweeping to self 510ms\n     \u2713 warns that spending several payments in one transaction links them publicly 966ms\n     \u2713 refuses a silent payment address for another network, or a malformed one, at review rather than at signing 1017ms\n   \u2713 destination letter case (BIP-173) (3)\n     \u2713 reviews an all-uppercase bech32 destination as its lowercase canonical form and signs it 605ms\n     \u2713 still rejects a mixed-case bech32 destination 578ms\n     \u2713 keeps base58 destinations exactly as typed and rejects a case-changed copy 433ms\n   \u2713 signSweep (5)\n     \u2713 signs exactly what was reviewed, with valid key-path signatures 881ms\n     \u2713 sweeps to a silent payment address too 487ms\n     \u2713 refuses when the selection differs from the review 421ms\n     \u2713 refuses a payment the wallet cannot spend (wrong output key) 407ms\n     \u2713 wipes the signer's copy of the spend secret when signing ends, also when signing fails 705ms\n(node:119) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scan.spends.test.ts (12 tests) 7472ms\n   \u2713 local spend tracking (spec 12): spent status without per-outpoint provider queries (12)\n     \u2713 reports unknown while the local range stops before the known chain tip 567ms\n     \u2713 does not trust a lower provider tip to erase already checked later headers 388ms\n     \u2713 retains a coverage-tip hash on a resumed-at-tip result so an unseen suffix fork invalidates it 645ms\n     \u2713 keeps historical spentness unknown after restoring a legacy checkpoint and permits an explicit provider refresh 807ms\n     \u2713 restores a canonical output after its spending block is orphaned, including a serialized reload 565ms\n     \u2713 does not extend historical coverage to an output first discovered while revalidating another match 494ms\n     \u2713 bounds output matches even when many outpoints share one spend-tweak buffer 945ms\n     \u2713 drops a payment spent in a later scanned block, without asking the server about any outpoint 1281ms\n     \u2713 asks the server per outpoint only with providerSpentCheck, and then reports the server as the source 790ms\n     \u2713 records the spend of a persisted match in the resumed state and stops offering it, with no outpoint query 588ms\n(node:127) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/BtcView.headerErrors.test.tsx (5 tests) 4623ms\n   \u2713 BtcView header failure messages (5)\n     \u2713 FORK_TOO_DEEP names the replace budget 1442ms\n     \u2713 FORK_UNRESOLVED says the longer branch did not overtake within the check 871ms\n     \u2713 INVALID_HEADER, INVALID_RESPONSE and UNSUPPORTED keep their own copy 723ms\n     \u2713 INVALID_RESPONSE is not reported as a chain-rule failure 895ms\n     \u2713 UNSUPPORTED names the size limit 689ms\n(node:135) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/oracleWorker.test.ts (14 tests) 7213ms\n   \u2713 selected oracle through the production worker bridge (14)\n     \u2713 refuses light-mode provider disclosure without explicit consent (false) before starting a worker 669ms\n     \u2713 refuses light-mode provider disclosure without explicit consent (undefined) before starting a worker 326ms\n     \u2713 checks every full block through http without sending wallet secrets 702ms\n     \u2713 checks every full block through grpc without sending wallet secrets 1108ms\n     \u2713 light http verifies exact matched outputs without downloading full blocks 477ms\n     \u2713 light grpc verifies exact matched outputs without downloading full blocks 501ms\n     \u2713 light mode refuses forged amount evidence before the matching block checkpoint 486ms\n     \u2713 light mode refuses forged proof evidence before the matching block checkpoint 646ms\n     \u2713 light mode refuses forged raw evidence before the matching block checkpoint 446ms\n     \u2713 checks no-match blocks against the second oracle and refuses omitted data 328ms\n     \u2713 revalidates restored light matches and cannot use a saved match as spend authority 407ms\n     \u2713 cancels a stalled oracle immediately and disposes a late response 551ms\n(node:143) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/BtcView.persistence.test.tsx (2 tests) 4899ms\n   \u2713 Bitcoin encrypted restart UI (2)\n     \u2713 opts in locally, restores cursor after remount, and revalidates saved outputs before offering a sweep 3253ms\n     \u2713 requires explicit deletion and does not restore a cursor after its tombstone 1642ms\n(node:155) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scanWorker.test.ts (22 tests) 12075ms\n   \u2713 BTC dedicated worker message integration (7)\n     \u2713 carries the provider spent-check opt-in into the worker and the spent status back out 1016ms\n     \u2713 matches direct scanning through cloned messages without sending spend secrets and wipes worker copies 1031ms\n     \u2713 awaits each checkpoint commit, resumes from committed state and freshly validates old matches 544ms\n   \u2713 BTC worker stale and untrusted boundary (15)\n     \u2713 rejects an unexpected matched-transaction merkle-proof query outside opted-in light mode 516ms\n     \u2713 rejects a provider-labelled result without consent and wipes its transferred tweak 455ms\n     \u2713 rejects a local-labelled result after an authorized provider query 393ms\n     \u2713 rejects a unknown-labelled result after an authorized provider query 460ms\n     \u2713 binds a same-session worker result to the requested range evidence 932ms\n     \u2713 binds a same-session worker result to the requested chain evidence 415ms\n     \u2713 binds a same-session worker result to the requested duplicate evidence 403ms\n     \u2713 binds a same-session worker result to the requested local-gap evidence 525ms\n     \u2713 binds a same-session worker result to the requested history-page evidence 623ms\n     \u2713 ignores another request and wipes a late result after cancellation 1421ms\n     \u2713 rejects malformed responses and wipes any valid tweak buffers they carry 529ms\n     \u2713 rechecks the pinned header checkpoint before making a worker network request 1161ms\n     \u2713 rejects a forged light-mode start without consent inside the worker before requesting source data 498ms\n(node:163) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scan.resume.test.ts (5 tests) 4329ms\n   \u2713 BTC per-block scan restart (5)\n     \u2713 saves each completed block and resumes without fetching earlier empty blocks 1533ms\n     \u2713 revalidates saved matches and regenerates tweaks before making outputs spendable 614ms\n     \u2713 rolls back persisted metadata and never revives a match removed by a fork 551ms\n     \u2713 paginates prior payment blocks while advancing the new cursor without dropping history 338ms\n     \u2713 persists only completed blocks and resumes after cancellation 1288ms\n(node:171) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/BtcView.headerOwnership.test.tsx (1 test) 3667ms\n   \u2713 Bitcoin header-load session ownership (1)\n     \u2713 does not let a delayed old-wallet header load discard a newer wallet\u2019s scan 3664ms\n(node:179) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/BtcView.oracle.test.tsx (1 test) 2842ms\n   \u2713 explicit source selection (1)\n     \u2713 makes no oracle request before consent, proves light results and invalidates them on source changes 2840ms\n(node:187) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scan-secrets.hardening.test.ts (4 tests) 2329ms\n   \u2713 Bitcoin scan spend-tweak cleanup (4)\n     \u2713 wipes the tweak of an output that is already spent and keeps the returned ones intact 766ms\n     \u2713 wipes every tweak when the scan fails after outputs were detected 756ms\n     \u2713 wipes the tweak of an output recognised as spent from a later scanned block (default, no server query) 576ms\n(node:195) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scanStore.test.ts (8 tests) 269ms\n(node:207) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scanWorkerSource.test.ts (9 tests) 243ms\n(node:215) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/oracleSource.test.ts (11 tests) 24ms\n(node:223) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/oracleBridge.test.ts (3 tests) 40ms\n(node:231) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/verification.i18n.test.ts (1 test) 12ms\n(node:239) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2193 src/features/btc/regtest.e2e.test.ts (1 test | 1 skipped)\n\n Test Files  21 passed | 1 skipped (22)\n      Tests  244 passed | 1 skipped (245)\n   Start at  00:23:01\n   Duration  244.92s (tests 81%, import 12%, environment 5%, transform 1%)\n\n    Isolate  22 workers spawned \u00b7 ~926ms startup each (spawn + environment, per file)\n             at least ~19.45s faster with isolate: false \u2014 reuses workers across files instead of one per file\n\nJSON report written to /workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-vitest.json\n{\"end\":\"2026-11-19T08:27:06.874Z\",\"durationMs\":245897,\"exitCode\":0,\"signal\":null,\"results\":{\"files\":22,\"total\":245,\"passed\":244,\"failed\":0,\"skipped\":1,\"todo\":0,\"success\":true,\"failedSuites\":[],\"failures\":[],\"skippedTests\":[{\"file\":\"/workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web/src/features/btc/regtest.e2e.test.ts\",\"name\":\"regtest end to end (live bitcoind) detects the silent payment, sweeps it, and sees it spent afterwards\",\"status\":\"skipped\"}]},\"sourceBefore\":{\"path\":\"/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-sources-before.json\",\"records\":118,\"canonicalSourcesSha256\":\"7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341\",\"rawFileSha256\":\"e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e\"},\"sourceAfter\":{\"path\":\"/workspace/scratch/c20ffc46347e/integration-evidence/btc-directory-consent-final-sources-after.json\",\"records\":118,\"canonicalSourcesSha256\":\"7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341\",\"rawFileSha256\":\"e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e\"},\"sourceUnchanged\":true}\n",
+    "vitestDurationSeconds": 244.92,
+    "qualificationScope": "Complete Bitcoin directory at1977a500/public981cc2f4. No coverage collected; one existing live-bitcoind skip because URL/seed/destination were absent. Does not replace full-web, full/lean browser or live-node gates.",
+    "independentEvidenceReview": {
+      "reviewer": "btc_review",
+      "verdict": "No accuracy issue found",
+      "sourceMatchedPinnedCommitAndWorktree": true,
+      "sourceRecordsVerified": 118,
+      "workspaceRuntimeDeclarationPairsVerified": 16,
+      "artifactHashesAndSizesVerified": 6,
+      "embeddedRawLogMatched": true,
+      "testsRerun": false,
+      "qualificationScope": "244 passed, 0 failed, 1 existing live-bitcoind skip; complete Bitcoin directory without coverage. No broader gate completion inferred."
+    }
+  },
+  "webTypecheck": {
+    "result": {
+      "sourcePin": "1977a50010e2d72476e0de67168b4f46715aab9c",
+      "sourceTree": "af61e24cb588fbf082915deac110c10cca008e70",
+      "sourceBefore": {
+        "checkoutHead": "1977a50010e2d72476e0de67168b4f46715aab9c",
+        "path": "/workspace/scratch/c20ffc46347e/integration-evidence/web-typecheck-consent-final-sources-before.json",
+        "records": 118,
+        "canonicalSourcesSha256": "7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341",
+        "rawFileSha256": "e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e",
+        "differences": "",
+        "trees": {
+          "apps/web": {
+            "baseline": "b290f3ffda2cf0f5365ac4bb161cb28f56736655",
+            "current": "b290f3ffda2cf0f5365ac4bb161cb28f56736655"
+          },
+          "packages": {
+            "baseline": "f3436c7e06f818aa6c4d97780389d84cf0947682",
+            "current": "f3436c7e06f818aa6c4d97780389d84cf0947682"
+          }
+        },
+        "sourceMatchesPin": true
+      },
+      "start": "2026-11-19T08:31:27.400Z",
+      "tools": {
+        "node": "v22.23.5",
+        "typescript": "5.9.3",
+        "npm": "11.9.0"
+      },
+      "cwd": "/workspace/scratch/c20ffc46347e/GhostPay-integration",
+      "command": "npm run typecheck -w @ghostpay/web",
+      "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+      "args": [
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/web"
+      ],
+      "environment": {
+        "PATHPrefix": "/workspace/scratch/c20ffc46347e/toolchain/bin",
+        "NODE_OPTIONS": "--max-old-space-size=1024"
+      },
+      "requiredWorkspaceOutputsVerified": 18,
+      "attempt": 1,
+      "configChanged": false,
+      "log": "/workspace/scratch/c20ffc46347e/integration-evidence/web-typecheck-consent-final.log",
+      "end": "2026-11-19T08:32:18.485Z",
+      "durationMs": 51085,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "sourceAfter": {
+        "checkoutHead": "1977a50010e2d72476e0de67168b4f46715aab9c",
+        "path": "/workspace/scratch/c20ffc46347e/integration-evidence/web-typecheck-consent-final-sources-after.json",
+        "records": 118,
+        "canonicalSourcesSha256": "7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341",
+        "rawFileSha256": "e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e",
+        "differences": "",
+        "trees": {
+          "apps/web": {
+            "baseline": "b290f3ffda2cf0f5365ac4bb161cb28f56736655",
+            "current": "b290f3ffda2cf0f5365ac4bb161cb28f56736655"
+          },
+          "packages": {
+            "baseline": "f3436c7e06f818aa6c4d97780389d84cf0947682",
+            "current": "f3436c7e06f818aa6c4d97780389d84cf0947682"
+          }
+        },
+        "sourceMatchesPin": true
+      },
+      "sourceUnchanged": true
+    },
+    "rawLog": "(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:26) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n{\"sourcePin\":\"1977a50010e2d72476e0de67168b4f46715aab9c\",\"sourceTree\":\"af61e24cb588fbf082915deac110c10cca008e70\",\"sourceBefore\":{\"checkoutHead\":\"1977a50010e2d72476e0de67168b4f46715aab9c\",\"path\":\"/workspace/scratch/c20ffc46347e/integration-evidence/web-typecheck-consent-final-sources-before.json\",\"records\":118,\"canonicalSourcesSha256\":\"7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341\",\"rawFileSha256\":\"e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e\",\"differences\":\"\",\"trees\":{\"apps/web\":{\"baseline\":\"b290f3ffda2cf0f5365ac4bb161cb28f56736655\",\"current\":\"b290f3ffda2cf0f5365ac4bb161cb28f56736655\"},\"packages\":{\"baseline\":\"f3436c7e06f818aa6c4d97780389d84cf0947682\",\"current\":\"f3436c7e06f818aa6c4d97780389d84cf0947682\"}},\"sourceMatchesPin\":true},\"start\":\"2026-11-19T08:31:27.400Z\",\"tools\":{\"node\":\"v22.23.5\",\"typescript\":\"5.9.3\",\"npm\":\"11.9.0\"},\"cwd\":\"/workspace/scratch/c20ffc46347e/GhostPay-integration\",\"command\":\"npm run typecheck -w @ghostpay/web\",\"executable\":\"/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm\",\"args\":[\"run\",\"typecheck\",\"-w\",\"@ghostpay/web\"],\"environment\":{\"PATHPrefix\":\"/workspace/scratch/c20ffc46347e/toolchain/bin\",\"NODE_OPTIONS\":\"--max-old-space-size=1024\"},\"requiredWorkspaceOutputsVerified\":18,\"attempt\":1,\"configChanged\":false,\"log\":\"/workspace/scratch/c20ffc46347e/integration-evidence/web-typecheck-consent-final.log\"}\n(node:39) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> @ghostpay/web@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n{\"end\":\"2026-11-19T08:32:18.485Z\",\"durationMs\":51085,\"exitCode\":0,\"signal\":null,\"sourceAfter\":{\"checkoutHead\":\"1977a50010e2d72476e0de67168b4f46715aab9c\",\"path\":\"/workspace/scratch/c20ffc46347e/integration-evidence/web-typecheck-consent-final-sources-after.json\",\"records\":118,\"canonicalSourcesSha256\":\"7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341\",\"rawFileSha256\":\"e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e\",\"differences\":\"\",\"trees\":{\"apps/web\":{\"baseline\":\"b290f3ffda2cf0f5365ac4bb161cb28f56736655\",\"current\":\"b290f3ffda2cf0f5365ac4bb161cb28f56736655\"},\"packages\":{\"baseline\":\"f3436c7e06f818aa6c4d97780389d84cf0947682\",\"current\":\"f3436c7e06f818aa6c4d97780389d84cf0947682\"}},\"sourceMatchesPin\":true},\"sourceUnchanged\":true}\n",
+    "logSha256": "bb9866a11e9dff1eba082fc3009c88905a13c9cae18839b64e2e0bc5a44c5c04",
+    "resultSha256": "7c7eb2fb13eab088d03f86f22484b92f7fb7c15a75fc5da6299b4906294dbacf"
+  },
+  "workspaceLint": {
+    "result": {
+      "sourcePin": "1977a50010e2d72476e0de67168b4f46715aab9c",
+      "sourceTree": "af61e24cb588fbf082915deac110c10cca008e70",
+      "sourceBefore": {
+        "checkoutHead": "1977a50010e2d72476e0de67168b4f46715aab9c",
+        "path": "/workspace/scratch/c20ffc46347e/integration-evidence/workspace-lint-consent-final-sources-before.json",
+        "records": 118,
+        "canonicalSourcesSha256": "7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341",
+        "rawFileSha256": "e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e",
+        "differences": "",
+        "trees": {
+          "apps": {
+            "baseline": "16a75249fd5d70d0a21a7d1220a4bdcca29086b3",
+            "current": "16a75249fd5d70d0a21a7d1220a4bdcca29086b3"
+          },
+          "packages": {
+            "baseline": "f3436c7e06f818aa6c4d97780389d84cf0947682",
+            "current": "f3436c7e06f818aa6c4d97780389d84cf0947682"
+          }
+        },
+        "configHashes": [
+          {
+            "path": "package.json",
+            "baseline": "1347a088f21c3e8fe182d05271bff716f325cda70cf7e2700cee1a3bb37025f4",
+            "current": "1347a088f21c3e8fe182d05271bff716f325cda70cf7e2700cee1a3bb37025f4"
+          },
+          {
+            "path": "package-lock.json",
+            "baseline": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+            "current": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+          },
+          {
+            "path": "eslint.config.js",
+            "baseline": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+            "current": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476"
+          },
+          {
+            "path": "tsconfig.base.json",
+            "baseline": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f",
+            "current": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+          }
+        ],
+        "sourceMatchesPin": true
+      },
+      "start": "2026-11-19T08:39:27.013Z",
+      "tools": {
+        "node": "v22.23.5",
+        "npm": "11.9.0",
+        "typescript": "5.9.3",
+        "eslint": "10.15.0",
+        "typescriptEslint": "8.73.0"
+      },
+      "cwd": "/workspace/scratch/c20ffc46347e/GhostPay-integration",
+      "command": "npm run lint",
+      "rootScript": "npm run lint --workspaces --if-present",
+      "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+      "args": [
+        "run",
+        "lint"
+      ],
+      "environment": {
+        "PATHPrefix": "/workspace/scratch/c20ffc46347e/toolchain/bin",
+        "NODE_OPTIONS": "--max-old-space-size=1024"
+      },
+      "login": false,
+      "attempt": 1,
+      "rulesDisabled": false,
+      "configChanged": false,
+      "prerequisites": {
+        "workspaces": 67,
+        "files": 1734,
+        "imports": 680,
+        "initiallyMissingUses": 26,
+        "stillMissing": 0,
+        "builtTargets": [
+          "@ghostpay/external-pools",
+          "@ghostpay/pool-sdk",
+          "@ghostpay/pool-prover"
+        ]
+      },
+      "log": "/workspace/scratch/c20ffc46347e/integration-evidence/workspace-lint-consent-final.log",
+      "end": "2026-11-19T08:50:12.705Z",
+      "durationMs": 645692,
+      "exitCode": 137,
+      "signal": null,
+      "launchError": null,
+      "sourceAfter": {
+        "checkoutHead": "1977a50010e2d72476e0de67168b4f46715aab9c",
+        "path": "/workspace/scratch/c20ffc46347e/integration-evidence/workspace-lint-consent-final-sources-after.json",
+        "records": 118,
+        "canonicalSourcesSha256": "7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341",
+        "rawFileSha256": "e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e",
+        "differences": "",
+        "trees": {
+          "apps": {
+            "baseline": "16a75249fd5d70d0a21a7d1220a4bdcca29086b3",
+            "current": "16a75249fd5d70d0a21a7d1220a4bdcca29086b3"
+          },
+          "packages": {
+            "baseline": "f3436c7e06f818aa6c4d97780389d84cf0947682",
+            "current": "f3436c7e06f818aa6c4d97780389d84cf0947682"
+          }
+        },
+        "configHashes": [
+          {
+            "path": "package.json",
+            "baseline": "1347a088f21c3e8fe182d05271bff716f325cda70cf7e2700cee1a3bb37025f4",
+            "current": "1347a088f21c3e8fe182d05271bff716f325cda70cf7e2700cee1a3bb37025f4"
+          },
+          {
+            "path": "package-lock.json",
+            "baseline": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+            "current": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+          },
+          {
+            "path": "eslint.config.js",
+            "baseline": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+            "current": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476"
+          },
+          {
+            "path": "tsconfig.base.json",
+            "baseline": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f",
+            "current": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+          }
+        ],
+        "sourceMatchesPin": true
+      },
+      "sourceUnchanged": true
+    },
+    "workspaceScriptsStarted": 67,
+    "failedWorkspaces": [
+      "@ghostpay/cli@0.1.0",
+      "@ghostpay/confidential-amounts@0.1.0",
+      "@ghostpay/external-pools-privacypools@0.1.0",
+      "@ghostpay/hygiene@0.1.0",
+      "@ghostpay/web@0.1.0"
+    ],
+    "rawLog": "(node:3) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:28) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n{\"sourcePin\":\"1977a50010e2d72476e0de67168b4f46715aab9c\",\"sourceTree\":\"af61e24cb588fbf082915deac110c10cca008e70\",\"sourceBefore\":{\"checkoutHead\":\"1977a50010e2d72476e0de67168b4f46715aab9c\",\"path\":\"/workspace/scratch/c20ffc46347e/integration-evidence/workspace-lint-consent-final-sources-before.json\",\"records\":118,\"canonicalSourcesSha256\":\"7f8963c265c0a5d9097d32a001a9fc3df34d32e8a600f6069d3671d213c0d341\",\"rawFileSha256\":\"e5598830e479a5c5daa0513513f88372813565d70f02325a031297ff1004bf2e\",\"differences\":\"\",\"trees\":{\"apps\":{\"baseline\":\"16a75249fd5d70d0a21a7d1220a4bdcca29086b3\",\"current\":\"16a75249fd5d70d0a21a7d1220a4bdcca29086b3\"},\"packages\":{\"baseline\":\"f3436c7e06f818aa6c4d97780389d84cf0947682\",\"current\":\"f3436c7e06f818aa6c4d97780389d84cf0947682\"}},\"configHashes\":[{\"path\":\"package.json\",\"baseline\":\"1347a088f21c3e8fe182d05271bff716f325cda70cf7e2700cee1a3bb37025f4\",\"current\":\"1347a088f21c3e8fe182d05271bff716f325cda70cf7e2700cee1a3bb37025f4\"},{\"path\":\"package-lock.json\",\"baseline\":\"e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e\",\"current\":\"e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e\"},{\"path\":\"eslint.config.js\",\"baseline\":\"e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476\",\"current\":\"e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476\"},{\"path\":\"tsconfig.base.json\",\"baseline\":\"316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f\",\"current\":\"316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f\"}],\"sourceMatchesPin\":true},\"start\":\"2026-11-19T08:39:27.013Z\",\"tools\":{\"node\":\"v22.23.5\",\"npm\":\"11.9.0\",\"typescript\":\"5.9.3\",\"eslint\":\"10.15.0\",\"typescriptEslint\":\"8.73.0\"},\"cwd\":\"/workspace/scratch/c20ffc46347e/GhostPay-integration\",\"command\":\"npm run lint\",\"rootScript\":\"npm run lint --workspaces --if-present\",\"executable\":\"/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm\",\"args\":[\"run\",\"lint\"],\"environment\":{\"PATHPrefix\":\"/workspace/scratch/c20ffc46347e/toolchain/bin\",\"NODE_OPTIONS\":\"--max-old-space-size=1024\"},\"login\":false,\"attempt\":1,\"rulesDisabled\":false,\"configChanged\":false,\"prerequisites\":{\"workspaces\":67,\"files\":1734,\"imports\":680,\"initiallyMissingUses\":26,\"stillMissing\":0,\"builtTargets\":[\"@ghostpay/external-pools\",\"@ghostpay/pool-sdk\",\"@ghostpay/pool-prover\"]},\"log\":\"/workspace/scratch/c20ffc46347e/integration-evidence/workspace-lint-consent-final.log\"}\n(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> ghostpay@0.1.0 lint\n> npm run lint --workspaces --if-present\n\n(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> @ghostpay/address-safety@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:67) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/amount-blur@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:80) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/btc-family@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:93) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/btc-payjoin@0.1.0 lint\n> eslint --config ../../eslint.config.js src e2e\n\n(node:106) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/btc-silent-payments@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:119) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n/workspace/scratch/c20ffc46347e/GhostPay-integration/packages/btc-silent-payments/src/scan/proto/indexing_server_pb.ts\n  3:1  warning  Unused eslint-disable directive (no problems were reported)\n\n\u2716 1 problem (0 errors, 1 warning)\n  0 errors and 1 warning potentially fixable with the `--fix` option.\n\n\n> @ghostpay/chain-adapters@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:132) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/chain-evm-extra@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:145) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/chain-solana@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:158) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/chain-tron@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:171) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/cli@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:184) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nKilled\nnpm error Lifecycle script `lint` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/c20ffc46347e/GhostPay-integration/packages/cli\nnpm error workspace @ghostpay/cli@0.1.0\nnpm error location /workspace/scratch/c20ffc46347e/GhostPay-integration/packages/cli\nnpm error command failed\nnpm error command sh -c eslint --config ../../eslint.config.js src\n\n\n> @ghostpay/confidential-amounts@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:197) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nKilled\nnpm error Lifecycle script `lint` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/c20ffc46347e/GhostPay-integration/packages/confidential-amounts\nnpm error workspace @ghostpay/confidential-amounts@0.1.0\nnpm error location /workspace/scratch/c20ffc46347e/GhostPay-integration/packages/confidential-amounts\nnpm error command failed\nnpm error command sh -c eslint --config ../../eslint.config.js src\n\n\n> @ghostpay/core-crypto@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:210) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/donation@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:223) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/external-pools@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:236) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/external-pools-privacypools@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:249) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nKilled\nnpm error Lifecycle script `lint` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/c20ffc46347e/GhostPay-integration/packages/external-pools-privacypools\nnpm error workspace @ghostpay/external-pools-privacypools@0.1.0\nnpm error location /workspace/scratch/c20ffc46347e/GhostPay-integration/packages/external-pools-privacypools\nnpm error command failed\nnpm error command sh -c eslint --config ../../eslint.config.js src\n\n\n> @ghostpay/external-pools-railgun@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:262) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/hops@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:275) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/hygiene@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:288) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nKilled\nnpm error Lifecycle script `lint` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/c20ffc46347e/GhostPay-integration/packages/hygiene\nnpm error workspace @ghostpay/hygiene@0.1.0\nnpm error location /workspace/scratch/c20ffc46347e/GhostPay-integration/packages/hygiene\nnpm error command failed\nnpm error command sh -c eslint --config ../../eslint.config.js src\n\n\n> @ghostpay/i18n@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:301) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/invoice-schema@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:314) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/merchant-billing@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:327) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/merchant-hooks@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:340) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/merchant-ledger@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:353) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/merchant-multisig@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:366) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/metadata-hardening@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:379) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/net-harness@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:392) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/net-transport@0.1.0 prelint\n> npm run build -w @ghostpay/net-harness --if-present\n\n(node:405) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> @ghostpay/net-harness@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/net-transport@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:427) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ops-monitor@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:440) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/payer-sponsor@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:453) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/payment-uri@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:466) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/pir-two-server@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:479) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/plugin-api@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:492) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/policy-scheme@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:505) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/pool-circuits@0.1.0 lint\n> eslint --config ../../eslint.config.js src test\n\n(node:518) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/pool-prover@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:531) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/pool-relayer@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:544) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/pool-sdk@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:557) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/privacy-pipeline@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:570) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/privacy-profiles@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:583) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/qr-exchange@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:596) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/relayer-guard@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:609) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/sandbox@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:622) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/scan-source@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:635) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/sdk@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:648) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/secret-box@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:661) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/solana-stealth@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:674) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/tron-adapter@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:687) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/tx-review@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:700) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-connect@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:713) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-core@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:726) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-export@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:739) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-fees@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:752) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-fiat@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:765) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-flow@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:778) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-guide@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:791) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-i18n@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:804) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-intake@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:817) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-links@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:830) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-notify@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:843) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-presets@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:856) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-privacy@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:869) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-receipts@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:882) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-sandbox@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:895) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-schedule@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:908) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/ux-vault@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:921) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/relayer@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n(node:934) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n> @ghostpay/web@0.1.0 lint\n> eslint --config ../../eslint.config.js src e2e\n\n(node:947) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nKilled\nnpm error Lifecycle script `lint` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web\nnpm error workspace @ghostpay/web@0.1.0\nnpm error location /workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web\nnpm error command failed\nnpm error command sh -c eslint --config ../../eslint.config.js src e2e\n{\"end\":\"2026-11-19T08:50:12.705Z\",\"durationMs\":645692,\"exitCode\":137,\"signal\":null,\"sourceUnchanged\":true}\n",
+    "rawLogSha256": "e68a89438f744e904ec8cfbd912a1e76f648dd1ee0d1f70220f3c580561feed1",
+    "resultSha256": "fc78c56d041e0d643ce468a4d2c039b6b201a71bbec966c23fcfd536bf9ef0c0",
+    "dependencyBuildLog": "(node:3) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n{\"node\":\"v22.23.5\",\"capMiB\":1024,\"packages\":[\"@ghostpay/external-pools\",\"@ghostpay/pool-sdk\",\"@ghostpay/pool-prover\"],\"start\":\"2026-11-19T08:36:14.135Z\"}\n(node:11) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> @ghostpay/external-pools@0.1.0 build\n> npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json\n\n(node:24) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> @ghostpay/secret-box@0.1.0 build\n> tsc -p tsconfig.build.json\n\n(node:53) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> @ghostpay/pool-sdk@0.1.0 build\n> tsc -p tsconfig.build.json\n\n(node:74) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n> @ghostpay/pool-prover@0.1.0 build\n> tsc -p tsconfig.build.json\n\n{\"end\":\"2026-11-19T08:36:27.641Z\",\"exitCode\":0}\n",
+    "dependencyBuildLogSha256": "4f4b59e50e1efc9c4fb7f63bdbb9c1f54320bd9e835d7c31e0128b7a1351d6b0",
+    "diagnostics": "Five lifecycle code-137 failures with Killed output. No ESLint rule errors recorded; one unused eslint-disable warning in the unchanged generated indexing_server_pb.ts. No terminated workspace is counted as passed. Termination cause remains unverified.",
+    "retries": 0,
+    "configurationOrRuleChanges": false
+  }
+}
