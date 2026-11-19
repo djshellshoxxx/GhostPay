@@ -4,6 +4,30 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  privateScanCheckpoints: [
+    'scan.checkpoint.retry',
+    'scan.checkpoint.loading',
+    'scan.checkpoint.notStarted',
+    'scan.checkpoint.interrupted',
+    'scan.checkpoint.scanning',
+    'scan.checkpoint.resuming',
+    'scan.checkpoint.paused',
+    'scan.checkpoint.completed',
+    'scan.checkpoint.failed',
+    'scan.checkpoint.invalidated',
+    'scan.checkpoint.saved',
+    'scan.checkpoint.last',
+    'scan.checkpoint.network',
+    'scan.checkpoint.privacy',
+    'scan.checkpoint.invalid',
+    'scan.checkpoint.conflict',
+    'scan.checkpoint.limit',
+    'scan.checkpoint.unavailable',
+    'scan.checkpoint.clear',
+    'scan.checkpoint.cleared',
+    'scan.checkpoint.loadStart',
+    'scan.checkpoint.deleteIncomplete',
+  ],
   invoiceSignerVerification: [
     'pay.signer.title',
     'pay.signer.status.checking',

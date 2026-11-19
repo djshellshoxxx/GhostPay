@@ -232,6 +232,27 @@ The coordinator owns browser privacy/receipts, shared integration and remote wri
 and must resolve to the same `omit`/`no-referrer`/`no-store` behavior.
 
 # Repository consolidation — 2026-11-18 (historical)
+# Private seller scan completion — 2026-11-19
+
+Owner: ChatGPT coordinator with independent scan reviewer, encrypted-storage worker and scan UI worker.
+Branch: `chatgpt/ghostpay-private-scan-completion-20261119`.
+Base: PR #235 `a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1`; main observed
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. Updated main
+`58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (#241 transport isolation and #237 log retention)
+was merged into this feature branch at `684eec18` before combined qualification.
+Owned paths: EVM `scanClient`, new `privateScanStore` and `privateScanLifecycle`, `views/Scan`,
+scan services, focused scanner/storage/lifecycle/browser tests, minimal seller-vault deletion integration,
+related locale strings and scoped user/developer/handoff documentation. The scanner's optional per-dispatch guard
+in `scanPrivacy.ts` is included; PR #241 transport implementations remain separate. Storage worker owns
+`privateScanStore.ts` and its tests; UI worker owns Scan/services and view/browser tests; coordinator owns
+engine/lifecycle/integration. Independent reviewer owns only
+`docs/handoffs/private-scan-independent-review.md` and otherwise remains read-only.
+Acceptance: atomic encrypted discovery+cursor persistence; seller/network/config/session isolation;
+safe interruption, recovery, cross-tab conflicts, deletion and reorg handling; bounded scan work;
+failing-first regression evidence; full/lean browser qualification and unchanged security gates.
+PR #238 is a read-only consolidation input; #241 transport modules, Spec 18 formats, contracts,
+dependency inputs, automation branches and unrelated work stay with their existing owners.
+No merge into main, deployment or release is authorized.
 
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
@@ -625,6 +646,41 @@ Acceptance: independently review new delegated registry signing, isolated escrow
 
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
 
+
+## Main-targeted Pages checkpoint v4 extraction — 2026-11-18
+
+Worker: ChatGPT privacy_review, Caveman surgical-patch.
+Branch: `chatgpt/ghostpay-pages-checkpoint-v4-20261118`; base main
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. Reviewed #222-lane source input:
+`1dd0fa6152f67010dd38db35d46d102130b583f3`, preserved with its handoff at
+`f90499d2925a965b73533da2650c60ca9ea119ed`.
+Owned paths: `apps/web/src/lib/scanClient.ts`, `apps/web/src/lib/scanClient.test.ts`,
+`apps/web/src/lib/scanCursorSlot.ts`, `apps/web/src/lib/scanCursorSlot.test.ts`,
+`apps/web/src/lib/scanCheckpointPrivacy.test.ts`,
+`apps/web/src/lib/scannerCore.spam.nocov.test.ts`, checkpoint row only in
+`docs/threat-model/PRIVACY_THREAT_MODEL.md` and the browser-profile row only in
+`docs/threat-model/THREAT_MODEL.md` (coordinator-approved), this claim and
+`docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`.
+Acceptance: extract only identity-bound v4 checkpoint persistence/lending and the
+relevant regressions onto main; preserve main scanner body, evidence/reorg/finality
+checks and application behavior. No #222 bulk-evidence feature, transport/BTC/contract
+or dependency changes. Reproduce main's legacy behavior before product edits; run
+focused/full scanClient tests, million-announcement resume, whole-web typecheck and
+scoped lint; request independent source/test review. Record both source lanes, old
+record rescan and privacy/storage limits. No remote mutation, duplicate PR, merge,
+deployment or local browser-pass claim.
+Status: completed at main product/test source
+`7c37de5154ac18e06725ecde6d194185b2e820f2`. Main RED commit
+`1d8e61776b2e28a4a4d2e082399eefe58148ea7c` reproduced 5 failures/2 controls.
+Full scanner/privacy/helper selection passed 110/110; million-announcement resume
+passed 1/1; full-web typecheck1536MiB and scoped lint passed. Independent recovery_review
+found no blocking source issue and reran 20 privacy/helper plus 3 pending-corroboration
+lifecycle cases at the exact source. Main scanner bytes before persistence are unchanged
+except the helper import; no #222 bulk-evidence code was copied. Public/unauthenticated
+cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal dependency,
+sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
+See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
+candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
 
 ## Beta acceptance log artifact capture — 2026-11-18
 

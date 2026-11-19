@@ -377,6 +377,19 @@ export interface WindowedOptions {
   readonly policy: WindowPolicy;
   readonly sleep: (ms: number) => Promise<void>;
   readonly cryptoApi?: CryptoLike;
+  /** Recheck session and endpoint selection after jitter, before every underlying dispatch. */
+  readonly assertCurrent?: () => void;
+}
+
+function guardedRpc(inner: RpcClient, guard: (() => void) | undefined): RpcClient {
+  if (guard === undefined) return inner;
+  return {
+    chainId: inner.chainId,
+    request: (method, params) => { guard(); return inner.request(method, params); },
+    blockNumber: () => { guard(); return inner.blockNumber(); },
+    getBlock: (number) => { guard(); return inner.getBlock(number); },
+    getLogs: (filter) => { guard(); return inner.getLogs(filter); },
+  };
 }
 
 /**
@@ -390,6 +403,7 @@ export interface WindowedOptions {
  * the scanner then re-reads for router-posted announcements (`router`, the one allowed caller filter).
  */
 export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): RpcClient {
+  inner = guardedRpc(inner, o.assertCurrent);
   const cryptoApi = o.cryptoApi ?? crypto;
   const [jMin, jMax] = o.policy.jitterMs;
   if (!Number.isSafeInteger(o.policy.windowBlocks) || o.policy.windowBlocks < 0) throw new RangeError('windowBlocks');
@@ -408,6 +422,7 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
   const nodeKey = (f: LogFilter, start: bigint, end: bigint): string => `${String(f.topics[1])}|${String(f.topics[3] ?? '')}:${start.toString()}:${end.toString()}`;
 
   async function fetchWindow(f: LogFilter, start: bigint, end: bigint): Promise<readonly RpcLog[]> {
+    o.assertCurrent?.();
     const key = nodeKey(f, start, end);
     const hit = cache.get(key);
     if (hit !== undefined) return hit;
@@ -667,6 +682,7 @@ export interface OpenScanOptions {
   readonly appRpc: () => Promise<RpcClient | undefined>;
   readonly fetchImpl: (url: string, init: RequestInit) => Promise<Response>;
   readonly sleep: (ms: number) => Promise<void>;
+  readonly assertCurrent?: () => void;
 }
 
 export interface ScanClients {
@@ -682,10 +698,14 @@ export interface ScanClients {
  * fail-closed handling stays in one place.
  */
 export async function openScanClients(o: OpenScanOptions): Promise<ScanClients | undefined> {
+  o.assertCurrent?.();
   const { plan } = o;
+  const fetchImpl = o.assertCurrent === undefined ? o.fetchImpl : (url: string, init: RequestInit): Promise<Response> => {
+    o.assertCurrent?.(); return o.fetchImpl(url, init);
+  };
   let base: RpcClient | undefined;
   if (plan.endpoint !== undefined) {
-    const transport = createFetchTransport({ fetchImpl: o.fetchImpl as unknown as FetchLike, allowInsecureLocalhost: plan.allowLoopbackHttp });
+    const transport = createFetchTransport({ fetchImpl: fetchImpl as unknown as FetchLike, allowInsecureLocalhost: plan.allowLoopbackHttp });
     try {
       base = await createClient(o.chain, plan.endpoint, { allowInsecureLocalhost: plan.allowLoopbackHttp, transport });
     } catch (e) {
@@ -696,10 +716,12 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
   } else {
     base = await o.appRpc();
   }
+  o.assertCurrent?.();
   if (base === undefined) return undefined;
+  base = guardedRpc(base, o.assertCurrent);
   const router = o.router === undefined ? {} : { router: o.router };
-  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl: o.fetchImpl, windowBlocks: plan.window.windowBlocks });
-  const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep });
+  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl, windowBlocks: plan.window.windowBlocks });
+  const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep, ...(o.assertCurrent === undefined ? {} : { assertCurrent: o.assertCurrent }) });
   return { base, scan };
 }
 

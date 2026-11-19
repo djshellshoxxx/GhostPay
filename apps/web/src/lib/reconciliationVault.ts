@@ -188,6 +188,28 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
       };
     }));
   }
+
+  /** Replace a bounded namespace atomically, retaining tombstones so previously opened handles cannot revive it. */
+  public replacePrefix(prefix: string, replacement: () => string): Promise<void> {
+    return this.withDb((db) => new Promise((resolve, reject) => {
+      const tx = db.transaction('vaults', 'readwrite');
+      const request = tx.objectStore('vaults').openCursor(IDBKeyRange.bound(prefix, `${prefix}\uffff`));
+      let count = 0;
+      request.onsuccess = () => {
+        const cursor = request.result;
+        if (cursor === null) return;
+        try {
+          if (++count > 10_000 || typeof cursor.key !== 'string' || !cursor.key.startsWith(prefix)) { tx.abort(); return; }
+          const next = replacement();
+          if (next.length > MAX_VAULT_BYTES) { tx.abort(); return; }
+          cursor.update(next);
+          cursor.continue();
+        } catch { tx.abort(); }
+      };
+      tx.oncomplete = () => resolve();
+      tx.onabort = tx.onerror = () => reject(new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationWriteDidNotCommit' }));
+    }));
+  }
 }
 
 /** `transaction()` on a connection the browser closed throws this; the adapters then open again once. */

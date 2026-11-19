@@ -16,6 +16,8 @@ import type { Services } from './services';
 import { TagVault, MemoryTagStore, type TagStore } from './tags';
 import { discoverWallets } from './wallet';
 import { createBrowserScanWorker } from './workerFactory';
+import { IdbReconciliationVaultStore } from './reconciliationVault';
+import { purgeLegacyPrivateScanHistory } from './privateScanLifecycle';
 
 function safeStorage(): Storage | undefined {
   try {
@@ -94,6 +96,7 @@ export function createSelectedRpc(
 }
 
 export function createDefaultServices(): Services {
+  purgeLegacyPrivateScanHistory(safeStorage());
   return {
     nowMs: () => Date.now(),
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
@@ -103,6 +106,7 @@ export function createDefaultServices(): Services {
     discoverWallets: () => discoverWallets(window),
     createScanWorker: createBrowserScanWorker,
     checkpoints: localCheckpointStore(safeStorage()),
+    privateScanStore: new IdbReconciliationVaultStore(),
     vault: new TagVault(makeStore()),
     baseUrl: () => `${window.location.origin}${window.location.pathname}`,
     chains: CHAINS.filter((c) => c.enabled),
