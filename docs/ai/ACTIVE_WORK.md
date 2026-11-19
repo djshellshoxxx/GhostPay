@@ -1268,3 +1268,15 @@ Privacy/recovery workers own their current shared lanes. No remote merge/push, c
 mainnet interaction, dependency upgrade or release action is included in this worker's assignment.
 
 BTC consolidation checkpoint: product head `e741aa8e8228a2099ee5abe3fd73aa14ffb011b8`; merge source and focused evidence are recorded in `docs/consolidation/btc-20261119/QUALIFICATION.md`. Coordinator final review and combined hosted qualification remain pending.
+
+# Manifest test integration repair — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT branch_recon, assigned by the current consolidation coordinator.
+Branch: `codex/ghostpay-manifest-test-integration-20261119`.
+Base: `cae9be35a006cdbf91113396bb9a86b85fc458a3` (the coordinator has merged this BTC lane).
+Owned paths: `apps/web/src/lib/manifest.test.ts`; this claim and focused qualification evidence.
+Acceptance: replace the obsolete scanner helper import with local TypeScript parse/print comment
+removal; preserve all runtime-fetch, deployments, testnet, unsigned and signed-only assertions;
+run the manifest test file with its original Vitest configuration. Independently review the
+coordinator's current BTC network-egress inventory changes without editing their checkout.
+No production scanner API change, broad compilation/lint retry, dependency change or remote write.

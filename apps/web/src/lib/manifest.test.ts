@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { prepareManifestFixture } from '../../e2e/prepare-manifest.mjs';
 import { fileURLToPath } from 'node:url';
-import { stripComments } from '../../scripts/scan-bundle.mjs';
+import ts from 'typescript';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { mockRpc } from '../test/mockRpc';
 import { loadBundledManifest, verifyManifestForFlow, verifyManifestState } from './manifest';
@@ -17,7 +17,9 @@ describe('manifest trust (strict bundled path only)', () => {
   it('exports no runtime-fetch or unsigned-dev manifest loader', async () => {
     const mod = (await import('./manifest')) as Record<string, unknown>;
     expect(Object.keys(mod).sort()).toEqual(['loadBundledManifest', 'verifyManifestForFlow', 'verifyManifestState']);
-    const source = stripComments(readFileSync(fileURLToPath(new URL('./manifest.ts', import.meta.url)), 'utf8'));
+    const manifestPath = fileURLToPath(new URL('./manifest.ts', import.meta.url));
+    const parsed = ts.createSourceFile(manifestPath, readFileSync(manifestPath, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+    const source = ts.createPrinter({ removeComments: true }).printFile(parsed);
     for (const forbidden of [/\bfetch\b/, /deployments\//, /verifyTextManifestSignature/, /console\./, /\btestnet\b/]) {
       expect(source, String(forbidden)).not.toMatch(forbidden);
     }
