@@ -46,3 +46,13 @@ An independent reviewer inspected #256 delta `df0d70de..247c3353`: two test file
 removals, with no production/dependency/configuration/workflow changes. Explicit types and nested error-message
 assertions retain rejection and idle-custody requirements. No scoped blocker was found; no tests were rerun for
 that test-only review. The documented #260 unload and atomic-restoration integration requirements remain unchanged.
+
+### Final current-head observations
+
+At 08:21:41 UTC, #255 `ea47fa75` had a failed strict Mythril job (exit 1), and #256 `247c3353` had a failed Pages
+browser journey (15 pass / 1 expiry-message assertion failure). The latter may involve a fixture clock jump crossing
+the idle deadline; missing DOM/trace prevents confirming that cause. It is not established as an environmental
+failure or an expiry bypass. No findings or assertions were weakened. An independent comparison of #262 `b1757f5b`
+with #260's tested product source confirmed preserved atomic install, canonical-byte checks, event-time unload
+custody and the five regression assertions. That comparison executed no tests on #262. Exact evidence and
+owner next actions are in [FINAL_CHECKPOINT.md](FINAL_CHECKPOINT.md).

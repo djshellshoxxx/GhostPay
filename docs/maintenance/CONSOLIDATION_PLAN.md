@@ -71,3 +71,13 @@ Before any main merge, reread the integration lease at `automation/ghostpay-inte
 Do not override the observed other owner. Do not merge the metadata branch. #216 was independently merged
 during this task; main is `a36f48da` at the later census. #249, #210 and #256 have newer heads than their initial
 review snapshots. Re-review each delta and discard stale qualification claims before consolidation.
+
+## Final coordination and candidate update
+
+The observed lock is now **released**, recorded by its owner at 2026-11-19T08:16:59Z; refresh and follow its
+cooperative acquisition protocol before another integration. #261 supplies separately owned lock tooling.
+Broad candidates #262 (`b1757f5b`) and #264 (`bf510471`) remain drafts with combined qualification incomplete.
+Independent comparison found #260's atomic installation, byte guards, event-time unload listener and all five
+new regression assertions preserved in #262. Select and qualify one combined candidate; account for overlapping
+source before merging or retiring anything. #256's current Pages browser failure and #255's strict Mythril failure
+are concrete blockers. See [FINAL_CHECKPOINT.md](FINAL_CHECKPOINT.md) for exact heads, checks and next actions.

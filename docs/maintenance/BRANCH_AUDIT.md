@@ -1,5 +1,34 @@
 # GhostPay branch audit
 
+## Final bounded observation
+
+The final API census at **2026-11-19T08:22:46Z** contains **272 remote heads and 262 PRs**: 58 open,
+62 merged and 142 closed unmerged. [FINAL_CHECKPOINT.md](FINAL_CHECKPOINT.md) records late #261–#264,
+the released integration lease, exact-head check failures and the independent #262 recovery-preservation review.
+The complete final ref/PR identity list is in [final-checkpoint.json](final-checkpoint.json). The earlier detailed
+graph and classifications below remain pinned to their stated observations; new evidence does not retroactively
+qualify earlier or later source. No source branch was deleted.
+
+The [final pinned-head delta](branch-delta-final.json) analyzes all three new and four moved refs. The other
+265 refs, including main, are unchanged from the detailed refresh, allowing their mechanical metrics to carry forward.
+Final graph totals: **172 ancestor-contained heads including main**, **100 non-ancestor heads**, with **87**
+containing unique non-merge patches and **13** containing none. No graph heads are unknown.
+
+| Final disposition | Heads |
+| --- | ---: |
+| SAFE_TO_DELETE_AFTER_VERIFICATION | 171 |
+| ACTIVE_DEVELOPMENT | 16 |
+| RETAIN_FOR_REFERENCE | 18 |
+| REPAIR_THEN_MERGE | 15 |
+| DUPLICATE_OR_SUPERSEDED | 25 |
+| PARTIALLY_RECOVERABLE | 22 |
+| SECURITY_BLOCKED | 5 |
+
+Labels for unchanged heads are carried forward. Changed owner heads are conservatively active; these labels are
+not release qualification. The final delta also records the #244 Bitcoin head and #264 master head advances.
+All changed application heads rehearse cleanly except #260's main rehearsal, whose conflict is confined to
+`docs/ai/ACTIVE_WORK.md`; #260 remains deliberately stacked on #239. Preserve both owner claims in any later merge.
+
 ## Later source refresh
 
 The independent later census at **2026-11-19T08:08:41.919437+00:00** observed **269 remote heads** and

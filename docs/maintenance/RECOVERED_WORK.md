@@ -39,6 +39,14 @@ already merged before this task started. The initial census and Git history esta
   production build, complete recovery/session suites, coverage or full/lean browsers. The broader twelve-file
   attempt exited 137 without an aggregate result. See #260's `RECOVERY_RECONCILIATION_20261119.md` and validation.json.
 
-Another coordinator holds the observed main integration lease. These drafts are published and reviewable;
+At this milestone, another coordinator held the observed main integration lease. These drafts were published and reviewable;
 main promotion remains blocked on the applicable current-head checks, upstream #238/#239 qualification where
 relevant, and coordinated integration. No auto-merge, deployment, lease takeover or source branch deletion is enabled.
+
+## Final preservation update
+
+At the final 08:22:46 UTC observation, that lease was released and the three published candidates were #259,
+#260 and maintenance #263. Independent source comparison found #260's recovery safeguards and regression assertions
+already retained in the separately owned broad #262 candidate at `b1757f5b`. No #262 runtime pass or main integration
+is inferred from that comparison. Do not count the preserved implementation twice or retire its source while the
+combined candidate remains unqualified. Exact evidence and next steps: [FINAL_CHECKPOINT.md](FINAL_CHECKPOINT.md).

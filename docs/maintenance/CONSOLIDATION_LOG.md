@@ -60,7 +60,7 @@ Do not dispatch deployment, change fee policy, introduce guardians or delete unr
   production build, complete recovery/session suites, coverage or full/lean browsers. The broader twelve-file
   attempt exited 137 without an aggregate result. See #260's `RECOVERY_RECONCILIATION_20261119.md` and validation.json.
 
-Another coordinator holds the observed main integration lease. These drafts are published and reviewable;
+At this milestone, another coordinator held the observed main integration lease. These drafts were published and reviewable;
 main promotion remains blocked on the applicable current-head checks, upstream #238/#239 qualification where
 relevant, and coordinated integration. No auto-merge, deployment, lease takeover or source branch deletion is enabled.
 
@@ -79,3 +79,25 @@ for #259/#250/#257/#256; (3) compose #260 with current recovery/session/privacy 
 documented custody guards; (4) complete #255 security qualification and explicit residual-risk disposition;
 (5) refresh the inventory after each qualified merge. Queued jobs, failing inherited #238 gates and absent
 external release evidence are blockers, not proof of completion. No overall completion claim is made.
+
+## Final live-state addendum — 2026-11-19T08:22:46Z
+
+- Final API identity census: **272 heads / 262 PRs**, with 58 open, 62 merged and 142 closed unmerged. Main remained
+  `a36f48da`. New #261/#262 and maintenance #263 plus newly opened #264 are recorded without changing earlier snapshots.
+- The other coordinator released the metadata-only lease at 08:16:59 UTC; ref `3ae60de5` records that transition.
+  This execution took no lease action. The earlier held-state observation is historical.
+- Independent comparison of #262 `b1757f5b` confirms preservation of #260's atomic install, byte guards, event-time
+  unload handling and all five regression assertions. It does not qualify that candidate's combined runtime.
+- Current-head #255 Mythril failed with exit 1. #256's Pages browser journey has 15 passes and one failed expiry
+  message assertion; a clock/idle interaction is inferred from source, pending retained reproduction. No broad
+  infrastructure-failure or expiry-bypass claim is made.
+- All seven requested maintenance reports and the checkpoint are published in #263. The addendum's final commit
+  identity and matching tree are recorded in that PR after publication. Prior-head CI does not qualify the addendum.
+
+[FINAL_CHECKPOINT.md](FINAL_CHECKPOINT.md) and [final-checkpoint.json](final-checkpoint.json) preserve the final
+evidence, exact head identities, current blockers and next actions. Overall completion is not claimed.
+
+The final bounded graph refresh fetched and analyzed all seven new/moved heads, with the other 265 refs unchanged
+at the identical main baseline. It confirms 172 ancestor-contained heads including main, 87 non-ancestor heads
+with unique non-merge patches and 13 without. The [delta record](branch-delta-final.json) preserves each new/moved
+ref's mechanical depth, owner disposition, ahead/behind counts and merge rehearsal. No source deletion occurred.

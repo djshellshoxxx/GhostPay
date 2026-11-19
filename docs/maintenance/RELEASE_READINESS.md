@@ -40,6 +40,15 @@ not evidence that a later combined tree has passed. See CONSOLIDATION_LOG.md for
   production build, complete recovery/session suites, coverage or full/lean browsers. The broader twelve-file
   attempt exited 137 without an aggregate result. See #260's `RECOVERY_RECONCILIATION_20261119.md` and validation.json.
 
-Another coordinator holds the observed main integration lease. These drafts are published and reviewable;
+At this milestone, another coordinator held the observed main integration lease. These drafts were published and reviewable;
 main promotion remains blocked on the applicable current-head checks, upstream #238/#239 qualification where
 relevant, and coordinated integration. No auto-merge, deployment, lease takeover or source branch deletion is enabled.
+
+## Final readiness update
+
+**Still not release-ready.** The final 08:22:46 UTC census is 272 heads / 262 PRs. The coordinator released its lease
+at 08:16:59 UTC; qualification failures remain. #255 has a failed strict Mythril job; #256 has a failed Pages browser
+expiry assertion; #250/#257/#259/#260 and the maintenance publication have pending checks. The independently owned
+large #262/#264 candidates require qualification as combined trees. No full install/build/browser/analyzer or
+external release acceptance is inferred from focused passes. [FINAL_CHECKPOINT.md](FINAL_CHECKPOINT.md) contains
+the precise source pins, failure evidence, independent preservation review and next actions.
