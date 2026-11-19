@@ -20,6 +20,16 @@ concurrency:
 # substitute for a complete hosted campaign on the exact checked-out source.
 # Python is pinned to 3.12 with actions/setup-python for every pip-installed tool: the runner's system Python moved to
 # 3.14, where mythril's coincurve/cffi build fails ("Expected exactly one LICENSE file in cffi distribution").
+#
+# Suites PR CI does not run (TB-09) run here: every examples/ test (ci.yml runs only money and POS parity), the anvil
+# suites of payer-sponsor and external-pools (they skip in PR CI), and the reconciliation IndexedDB browser check.
+# NOT run here, because their inputs are not in this repository:
+#   - packages/pool-circuits and packages/pool-relayer circuit/e2e suites (REQUIRE_CIRCUITS / REQUIRE_POOL_E2E): need
+#     the compiled circuits and the dev-ceremony zkeys from `npm run build:circuits` (circom download + a new ceremony
+#     that would not match the committed vkeys/verifiers); without them they skip, as in PR CI.
+#   - packages/external-pools-railgun and -privacypools anvil suites: need upstream Railgun / Privacy Pools checkouts,
+#     GPL verifier sources and the official circuit artifacts from scripts/integration/prepare-external-fixtures.mjs
+#     (docs/operators/external-integration-fixtures.md); fetching third-party code on a schedule is not enabled.
 
 jobs:
   fuzz:
@@ -58,11 +68,90 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
-      - name: Slither (same exclusions as ci.yml)
+      - name: Install Slither and the pinned compiler
         run: |
           python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
           solc-select install 0.8.28 && solc-select use 0.8.28
-          slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
+      # SEC-17: the gate fails on Medium or High and does not report Low/Informational. It is NOT "no detector
+      # exclusions": the next step runs every detector (Low and Informational included) and uploads the result.
+      - name: Slither gate (fails on Medium or High; same command as ci.yml)
+        run: slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
+      - name: Slither report with every detector, Low and Informational included (non-failing)
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/slither"
+          # --show-ignored-findings: the inline slither-disable sites (docs/audits/00-slither-triage.md) are listed too.
+          slither . --filter-paths "lib|test|script" --fail-none --show-ignored-findings \
+            --json "$RUNNER_TEMP/slither/slither-all-detectors.json" --checklist > "$RUNNER_TEMP/slither/slither-all-detectors.md"
+          jq -r '.results.detectors // [] | group_by(.impact) | map("\(.[0].impact): \(length)") | join(", ")' \
+            "$RUNNER_TEMP/slither/slither-all-detectors.json" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ !cancelled() }}
+        with:
+          name: slither-all-detectors-${{ github.sha }}
+          path: ${{ runner.temp }}/slither/
+          if-no-files-found: error
+          retention-days: 30
+
+  # TB-09: every examples/ test and the webhook self-test; they import the built workspace libs.
+  examples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - name: Example tests (all of examples/)
+        run: |
+          shopt -s globstar
+          node --test examples/**/*.test.mjs
+      - name: Webhook receiver self-test
+        run: node examples/webhook-receiver/selftest.mjs
+      - id: pw
+        run: echo "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+      # The same managed Chromium as ci.yml e2e; the check falls back to it when no pre-installed browser exists.
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      # TB-06: two tabs on a local Vite server, real IndexedDB, external origins aborted. No wallet, no RPC.
+      - name: Reconciliation vault IndexedDB two-tab check (Chromium)
+        working-directory: apps/web
+        run: node scripts/test-reconciliation-idb.mjs
+
+  # TB-09: anvil suites that skip in PR CI because their inputs are built here, not there. REQUIRE_ANVIL=1 makes a
+  # missing anvil or artifact fail instead of skip; it is set only for these two workspaces.
+  anvil-suites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: v1.8.5
+      # Test-only GPL-header source into a gitignored directory, as ci.yml contracts-extra does.
+      - name: Fetch test-only ERC-4337 EntryPoint v0.7.0 fixture
+        working-directory: packages/payer-hiding-contracts
+        run: bash scripts/fetch-entrypoint.sh
+      - name: Build the payer-hiding contracts for the sponsor e2e
+        working-directory: packages/payer-hiding-contracts
+        run: forge build
+      - name: Anvil suites (must run, not skip)
+        run: |
+          set -euo pipefail
+          anvil_bin="$(command -v anvil)"
+          test -x "$anvil_bin"
+          ANVIL_BIN="$anvil_bin" REQUIRE_ANVIL=1 npm test -w packages/payer-sponsor -w packages/external-pools
 
   dependency-audit:
     runs-on: ubuntu-latest

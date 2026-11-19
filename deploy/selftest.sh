@@ -189,5 +189,23 @@ run '' "${release[@]}" --expect-sha256 "$tar_sha" --yes
 [[ "$(cat "$dist/index.html" 2>/dev/null)" = safe ]] || fail 'bundle not installed after an interrupted install'
 [[ ! -e "$dist.installing" ]] || fail 'install-in-progress marker left after recovery'
 
+# SEC-26: every third-party image the recipe pulls is pinned by digest by default, and .env.example (copied to
+# deploy/.env) carries the same pins. Locally built images (ghostpay-relayer:local, ghostpay-tor:local) are exempt.
+out=""
+pinned='^[a-z0-9./_-]+:[A-Za-z0-9._-]+@sha256:[0-9a-f]{64}$'
+compose_default() { sed -nE "s/.*\\\$\\{$1:-([^}]*)\\}.*/\\1/p" "$here/docker-compose.yml" | head -n 1; }
+env_value() { sed -nE "s/^$1=(.*)$/\\1/p" "$here/.env.example" | head -n 1; }
+nginx_image="$(compose_default GHOSTPAY_NGINX_IMAGE)"
+tor_base="$(compose_default GHOSTPAY_TOR_BASE_IMAGE)"
+tor_arg="$(sed -nE 's/^ARG BASE_IMAGE=(.*)$/\1/p' "$here/tor/Dockerfile" | head -n 1)"
+[[ "$nginx_image" =~ $pinned ]] || fail "docker-compose.yml web image default is not pinned by digest: '$nginx_image'"
+[[ "$tor_base" =~ $pinned ]] || fail "docker-compose.yml tor BASE_IMAGE default is not pinned by digest: '$tor_base'"
+[[ "$tor_arg" =~ $pinned ]] || fail "tor/Dockerfile ARG BASE_IMAGE default is not pinned by digest: '$tor_arg'"
+[[ "$tor_arg" = "$tor_base" ]] || fail "tor/Dockerfile BASE_IMAGE ('$tor_arg') differs from the compose default ('$tor_base')"
+[[ "$(env_value GHOSTPAY_NGINX_IMAGE)" = "$nginx_image" ]] || fail '.env.example GHOSTPAY_NGINX_IMAGE differs from the pinned compose default'
+[[ "$(env_value GHOSTPAY_TOR_BASE_IMAGE)" = "$tor_base" ]] || fail '.env.example GHOSTPAY_TOR_BASE_IMAGE differs from the pinned compose default'
+images="$(sed -nE 's/^[[:space:]]*image:[[:space:]]*//p' "$here/docker-compose.yml")"
+[[ "$(grep -cv ':local}$' <<<"$images")" -eq 1 ]] || fail "unexpected third-party image in docker-compose.yml: $images"
+
 if [[ "$failures" -gt 0 ]]; then echo "selfhost selftest: $failures failure(s)" >&2; exit 1; fi
 echo 'selfhost selftest: ok'

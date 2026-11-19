@@ -1,0 +1,44 @@
+[
+  {
+    "label": "tooling-action-pins",
+    "command": [
+      "bash",
+      "scripts/check-actions-pinned.sh"
+    ],
+    "exit_code": 0,
+    "seconds": 0.35,
+    "log": "/workspace/scratch/9b4050d15a9b/audit-data/tooling-action-pins.log"
+  },
+  {
+    "label": "tooling-secrets",
+    "command": [
+      "bash",
+      "scripts/scan-secrets.sh"
+    ],
+    "exit_code": 0,
+    "seconds": 0.41,
+    "log": "/workspace/scratch/9b4050d15a9b/audit-data/tooling-secrets.log"
+  },
+  {
+    "label": "tooling-headers",
+    "command": [
+      "bash",
+      "infra/proxy/check-headers.sh"
+    ],
+    "exit_code": 0,
+    "seconds": 0.09,
+    "log": "/workspace/scratch/9b4050d15a9b/audit-data/tooling-headers.log"
+  },
+  {
+    "label": "tooling-shell-syntax",
+    "command": [
+      "bash",
+      "-n",
+      "deploy/selfhost.sh",
+      "deploy/selftest.sh"
+    ],
+    "exit_code": 0,
+    "seconds": 0.0,
+    "log": "/workspace/scratch/9b4050d15a9b/audit-data/tooling-shell-syntax.log"
+  }
+]
