@@ -1,0 +1,89 @@
+{
+  "source_commit": "bd05411b2a4c5b1b1793065bce1c10e0553cf952",
+  "observed_at_utc": "2026-11-19T12:55:04.298328+00:00",
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "--max-old-space-size=128",
+        "--check",
+        "scripts/tests/mythril-runner.test.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "--max-old-space-size=128",
+        "--check",
+        "scripts/tests/mythril-completeness.test.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "(node:14) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "--max-old-space-size=128",
+        "--check",
+        "scripts/tests/mythril-evidence.test.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "(node:22) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "--max-old-space-size=128",
+        "--check",
+        "scripts/tests/contract-analysis-workflow.test.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "(node:30) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "check": "Python AST parse",
+      "path": "packages/contracts/scripts/mythril-compat.py",
+      "exit_code": 0
+    },
+    {
+      "check": "Python AST parse",
+      "path": "packages/contracts/scripts/capture-mythril-evidence.py",
+      "exit_code": 0
+    },
+    {
+      "check": "Python AST parse",
+      "path": "packages/contracts/scripts/collect-analysis-report.py",
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "bash",
+        "-n",
+        "packages/contracts/scripts/run-mythril.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "7b4c1554382b05ac3fab48527aadf596d6b1ff7b",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "passed": 9,
+  "failed": 0
+}
