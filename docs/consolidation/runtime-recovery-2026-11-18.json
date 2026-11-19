@@ -1317,12 +1317,13 @@
   },
   "independent_review": {
     "reviewer": "ci_release_audit",
-    "scope": "relayer admission/canonical validation/limiter/privacy union and web pre-broadcast classification",
-    "finding": "no blocking source defect; final blob-pinned receipt pending commit",
+    "reviewed_commit": "d80aa890c6492247cccbe13ac0621f1242749254",
+    "scope": "config/privacy union; TCP caps; lane admission/release; canonical signatures; quote breaker; relayerClient refusal classification; limiter/LossBudget changes",
+    "finding": "No blocking source defect found; 11 reviewed staged blob identities verified equal to the final commit. Fixture and documentation corrections incorporated.",
     "test_execution": "none"
   },
   "pending": [
-    "final independent source receipt",
+    "broader combined-tree review and exact-head qualification",
     "hosted exact combined-tree install/build/lint/typecheck and original workspace coverage gates",
     "paired web relayer contract tests",
     "devnet lib and CLI acceptance; native timeout tests on supported Node22+"

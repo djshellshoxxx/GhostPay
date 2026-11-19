@@ -46,8 +46,9 @@ further local installs/tests. Historical test results in source commit messages 
 The original CLI, relayer-guard, relayer and invoice-schema coverage suites, paired web relayerClient/relayerContract
 tests, relevant builds/typechecks/lints and devnet lib/CLI acceptance remain required on the exact combined tree.
 Relayer tests must consume the recovered guard build. Native timeout tests need supported Node 22+.
-The independent reviewer found no blocking source defect in the relayer/guard/privacy changes, with execution
-and exact-head hosted checks still pending. This report does not authorize promotion by itself.
+Independent reviewer `ci_release_audit` found no blocking source defect in the relayer/guard/privacy changes at
+`d80aa890c6492247cccbe13ac0621f1242749254` and verified all 11 reviewed blobs match that commit. Execution, broader
+combined-tree review and exact-head hosted checks remain pending. This report does not authorize promotion by itself.
 
 ## Remaining PR #211 work — separate groups
 

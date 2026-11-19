@@ -336,9 +336,21 @@
     "runtime_tests": "not run per coordinator instruction after repeated exit137; hosted combined-tree qualification pending"
   },
   "pending": [
-    "independent source review and pinned source receipt",
     "original policy-scheme coverage/typecheck/lint/build including contract-vector digest parity",
     "web policy self-check/send and existing policy tests/typecheck/lint",
     "exact combined-source hosted gates; missing anvil/forge skips do not qualify contract integration"
-  ]
+  ],
+  "independent_review": {
+    "reviewer": "ci_release_audit",
+    "reviewed_commit": "63e67ff403c5daf45dbec5bf500a24ac386b6342",
+    "finding": "No blocking source finding. Digest is copied/validated before secret reveal; policy domain/types and local signing digest are bound; wipe finally preserved. Leaf binding matches contract double hash. Canonical decoder and prepare/final-send derivation binding retain existing amount/token/review/session/deadline checks.",
+    "regressions_read": [
+      "swapping getters",
+      "hidden and inherited salt",
+      "leaf inflation and inner-node substitution",
+      "valid ephemeral-key and view-tag swaps",
+      "zero wallet sends"
+    ],
+    "test_execution": "none"
+  }
 }

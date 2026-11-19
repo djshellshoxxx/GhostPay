@@ -41,7 +41,10 @@ workflow, protocol or mainnet-exposure change accompanies these validations.
 
 Executed static checks: `git diff --cached --check`, exact-source blob comparisons, retained-base file assertions,
 and confirmation that the contracts tree has no changed path. The machine receipt gives the exact counts and hashes.
-Independent review is requested for the resulting crypto/custody source rather than inherited source claims.
+Independent reviewer `ci_release_audit` reviewed the resulting crypto/custody source at
+`63e67ff403c5daf45dbec5bf500a24ac386b6342` and found no blocking source issue. The review confirmed copied local
+signing digests before secret reveal, preserved wipe paths, contract-matching leaf fields, and coherent decoder
+and prepare/final-send checks. It read the getter/salt/leaf/key-swap regressions and asserted no execution pass.
 
 No unit, coverage, typecheck, lint, browser or anvil suite was executed locally on this tree: the coordinator
 paused local test/install workloads after repeated exit 137. Earlier PR #211 test results are provenance only.
