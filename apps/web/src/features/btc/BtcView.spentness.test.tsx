@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { createScanState, type ScanState } from '@ghostpay/btc-silent-payments';
+import { bech32 } from '@scure/base';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { makeServices, renderWith } from '../../test/render';
 import type { ReconciliationVaultStore } from '../../lib/reconciliationVault';
 import { BtcView } from './BtcView';
@@ -12,8 +13,15 @@ import { EsploraHeaderSource, loadHeaderChain, MemoryHeaderStore, syncHeaders } 
 import { scanForPayments, wipeFound } from './scan';
 import { BtcScanVault } from './scanStore';
 import { InlineBtcScanWorker, inlineBtcScanWorker } from './scanWorker.testutil';
+import * as sweep from './sweep';
 
 const consentName = /Also ask the server whether each found output is unspent/;
+
+function reactOnClick(el: Element): () => void {
+  const key = Object.keys(el).find((k) => k.startsWith('__reactProps$'));
+  if (key === undefined) throw new Error('no react props');
+  return (el as unknown as Record<string, { onClick: () => void }>)[key]!.onClick;
+}
 
 class Store implements ReconciliationVaultStore {
   readonly values = new Map<string, string>();
@@ -124,6 +132,73 @@ describe('Bitcoin spentness consent and unknown UI', () => {
     await screen.findByText(/No unspent payments found/);
     expect(screen.queryByRole('checkbox', { name: /^Sweep / })).toBeNull();
     expect(chain.requests.some((path) => path.includes('/outspend/'))).toBe(false);
+  });
+
+  it('does not restore old sweep authority when a fee edit occurs during an advanced-header save', async () => {
+    const chain = mockChain('regtest', walletA()); const headers = new MemoryHeaderStore();
+    const originalSave = headers.save.bind(headers);
+    let hold = false; let held = false; let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    headers.save = async (serialized, work) => {
+      if (hold) { held = true; await gate; }
+      return originalSave(serialized, work);
+    };
+    const user = await open(chain.fetchFn, { headerStore: () => headers });
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('checkbox', { name: /^Sweep / }));
+    await user.type(screen.getByLabelText('Destination address'), bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(3))]));
+    const fee = screen.getByLabelText('Fee rate (sat/vB)');
+    await user.clear(fee); await user.type(fee, '2');
+    expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /^Sweep / }).checked).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Review sweep' }).disabled).toBe(false);
+    const payment = chain.blocks[3]!.txs.find((tx) => tx.vout.some((out) => out.scriptpubkey.startsWith('5120')))!;
+    const vout = payment.vout.findIndex((out) => out.scriptpubkey.startsWith('5120'));
+    appendBlocks(chain.blocks, [[coinbase(5), spendTx(5, { txid: payment.txid, vout, scriptpubkey: payment.vout[vout]!.scriptpubkey })]]);
+    hold = true;
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await waitFor(() => expect(held).toBe(true));
+    try {
+      await user.clear(fee);
+      const review = screen.queryByRole<HTMLButtonElement>('button', { name: 'Review sweep' });
+      expect(review === null || review.disabled).toBe(true);
+    } finally { release(); }
+    await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Scan' }).disabled).toBe(false));
+    expect(screen.queryByText(/1 unspent payment/)).toBeNull();
+    const output = screen.queryByRole<HTMLInputElement>('checkbox', { name: /^Sweep / });
+    expect(output === null || output.disabled).toBe(true);
+    hold = false;
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/No unspent payments found/);
+    expect(screen.queryByRole('checkbox', { name: /^Sweep / })).toBeNull();
+  });
+
+  it.each(['Sign', 'Broadcast'] as const)('refuses a retained %s handler after the same chain prefix gains a spending block', async (action) => {
+    const chain = mockChain('regtest', walletA()); const user = await open(chain.fetchFn);
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('checkbox', { name: /^Sweep / }));
+    await user.type(screen.getByLabelText('Destination address'), bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(3))]));
+    await user.click(screen.getByRole('button', { name: 'Review sweep' }));
+    await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
+    if (action === 'Broadcast') {
+      await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
+      await screen.findByText('Signed transaction');
+    }
+    const stale = reactOnClick(screen.getByRole('button', { name: action === 'Sign' ? 'Sign with software key' : /Broadcast to/ }));
+    const sign = vi.spyOn(sweep, 'signSweep');
+    try {
+      const payment = chain.blocks[3]!.txs.find((tx) => tx.vout.some((out) => out.scriptpubkey.startsWith('5120')))!;
+      const vout = payment.vout.findIndex((out) => out.scriptpubkey.startsWith('5120'));
+      appendBlocks(chain.blocks, [[coinbase(5), spendTx(5, { txid: payment.txid, vout, scriptpubkey: payment.vout[vout]!.scriptpubkey })]]);
+      await user.click(screen.getByRole('button', { name: 'Update headers' }));
+      await screen.findByText(/Spent status: unknown/);
+      await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Scan' }).disabled).toBe(false));
+      await act(async () => { stale(); await Promise.resolve(); });
+      expect(sign).not.toHaveBeenCalled();
+      expect(chain.broadcasts).toEqual([]);
+      expect(screen.queryByText('Signed transaction')).toBeNull();
+    } finally { sign.mockRestore(); }
   });
 
   it('restores legacy outputs as unknown and refreshes them only after explicit provider consent', async () => {

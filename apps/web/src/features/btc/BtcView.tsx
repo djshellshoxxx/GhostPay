@@ -228,16 +228,20 @@ export function BtcView(
     (scan?.spentStatus === 'local' || scan?.spentStatus === 'provider') && checkedTip !== undefined && f.height <= checkedTip;
   const selected: readonly FoundPayment[] = scan === undefined ? [] : scan.found.filter((f) => sweepable(f) && picked.has(`${f.txid}:${String(f.vout)}`));
 
-  /** Inputs of the review all sit in blocks the checked header chain reaches. */
+  /** A retained handler may use only outputs and spend coverage from the current scan and live header chain. */
   const inputsChecked = (r: SweepReview | undefined): boolean => {
     // The live chain too: a running check updates it in place before React state catches up.
     const live = chainRef.current?.netId === net.id ? chainRef.current.chain : undefined;
+    const current = scanRef.current;
     return (
       r !== undefined &&
       live !== undefined &&
+      current !== undefined &&
+      (current.spentStatus === 'local' || current.spentStatus === 'provider') &&
+      (current.spentStatus !== 'local' || current.toHeight >= live.tipHeight) &&
       r.inputs.every((i) => {
-        const f = scan?.found.find((x) => x.txid === i.txid && x.vout === i.vout);
-        return f !== undefined && sweepable(f) && live.hashAt(f.height) === f.blockHash;
+        const f = current.found.find((x) => x.txid === i.txid && x.vout === i.vout);
+        return f !== undefined && f.height <= live.tipHeight && live.hashAt(f.height) === f.blockHash;
       })
     );
   };
@@ -484,7 +488,9 @@ export function BtcView(
 
   /** Authority edits invalidate pending sign/broadcast work; an attempted request keeps its public reference. */
   const clearSigning = (): void => {
-    invalidate();
+    // Header checks must finish reconciling any shared-chain change before old scan results can become usable.
+    // A busy scan/check has already invalidated prior signing or broadcast work when it began.
+    if (!scanningRef.current) invalidate();
     setApproved(false);
     setSigned(undefined);
     setBroadcastOutcome((current) => current?.phase === 'broadcast-attempted' && current.reference !== undefined
