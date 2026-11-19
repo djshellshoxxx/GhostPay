@@ -34,12 +34,12 @@ test.describe('combined backup panel', () => {
     const file = await downloaded.path();
     await page.getByLabel('Downloaded keystore file', { exact: true }).setInputFiles(file);
     await page.getByLabel('Keystore passphrase', { exact: true }).fill('not the passphrase here');
-    await page.getByRole('button', { name: 'Verify backup' }).click();
+    await page.getByRole('button', { name: 'Verify backup', exact: true }).click();
     await expect(page.getByRole('alert')).toBeVisible({ timeout: 60_000 });
     await expect(keys.getByRole('status').first()).toContainText('Downloaded, not verified');
     await page.getByLabel('Downloaded keystore file', { exact: true }).setInputFiles(file);
     await page.getByLabel('Keystore passphrase', { exact: true }).fill(PASS);
-    await page.getByRole('button', { name: 'Verify backup' }).click();
+    await page.getByRole('button', { name: 'Verify backup', exact: true }).click();
     await expect(keys.getByRole('status').first()).toContainText('Done', { timeout: 60_000 });
     await expect(page.getByText('This backup is not verified yet')).toHaveCount(0);
 

@@ -1,0 +1,20 @@
+{
+  "source": "8461dbdfeab16648a78e3c1cd2f4dbb3c0fa5187",
+  "published_source": "07a7497d1a0cb39fb6904e5c50f8a52db2285820",
+  "file": "apps/web/src/components/StealthExportVerification.test.tsx",
+  "file_sha256": "1ecbf2fb1b1ee9321f8b72e1d5e9c9a45b2c8b5a932cdd760240df637b3e476d",
+  "git_blob": "1488d51d0857437ccbdfd017a879f31e13f11d33",
+  "diff_sha256": "a36c8f7c6a7ee5625183d17b5824cbd38574fc860947fefa711c8da643a2855f",
+  "diff_bytes": 3152,
+  "reviewer": "crypto_recovery_review",
+  "review_kind": "Read-only independent AI-agent review; no tests rerun by this reviewer",
+  "decision": "No blocking defect found",
+  "preserved": [
+    "Actual verify function called with all original arguments",
+    "Exact real Promise returned to component",
+    "Real failure required for wrong password",
+    "All original DOM, custody, announcement and disclosure assertions",
+    "All runtime behavior, KDF costs, timers, timeouts, workflows and skips"
+  ],
+  "notes": "Promise carrier reports operation start without assimilation. Awaiting settlement in act synchronizes React assertions; errors are not swallowed."
+}

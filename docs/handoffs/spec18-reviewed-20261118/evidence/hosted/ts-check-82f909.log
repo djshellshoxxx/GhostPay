@@ -1,0 +1,1487 @@
+﻿2026-11-18T23:14:06.5096845Z Current runner version: '2.338.2'
+2026-11-18T23:14:06.5116948Z ##[group]Runner Image Provisioner
+2026-11-18T23:14:06.5117679Z Hosted Compute Agent
+2026-11-18T23:14:06.5118228Z Version: 20261103.629
+2026-11-18T23:14:06.5118744Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T23:14:06.5119322Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T23:14:06.5119938Z Worker ID: {833b4c18-4199-4c90-bd67-3ff3efe3ed73}
+2026-11-18T23:14:06.5120545Z Region: westus2
+2026-11-18T23:14:06.5121066Z Cloud: Azure
+2026-11-18T23:14:06.5121515Z ##[endgroup]
+2026-11-18T23:14:06.5122811Z ##[group]Operating System
+2026-11-18T23:14:06.5123426Z Ubuntu
+2026-11-18T23:14:06.5123902Z 26.04.1
+2026-11-18T23:14:06.5124357Z LTS
+2026-11-18T23:14:06.5124843Z ##[endgroup]
+2026-11-18T23:14:06.5125296Z ##[group]Runner Image
+2026-11-18T23:14:06.5126071Z Image: ubuntu-26.04
+2026-11-18T23:14:06.5126624Z Version: 20261111.196.1
+2026-11-18T23:14:06.5127712Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T23:14:06.5128978Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T23:14:06.5129808Z ##[endgroup]
+2026-11-18T23:14:06.5130745Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T23:14:06.5132307Z Contents: read
+2026-11-18T23:14:06.5132780Z Metadata: read
+2026-11-18T23:14:06.5133292Z ##[endgroup]
+2026-11-18T23:14:06.5135000Z Secret source: Actions
+2026-11-18T23:14:06.5135724Z Cache mode: write
+2026-11-18T23:14:06.5136673Z Prepare workflow directory
+2026-11-18T23:14:06.5394010Z Prepare all required actions
+2026-11-18T23:14:06.5432380Z Getting action download info
+2026-11-18T23:14:06.8428721Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T23:14:07.0536220Z Complete job name: ts-check
+2026-11-18T23:14:07.1220745Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T23:14:07.1221565Z with:
+2026-11-18T23:14:07.1221950Z   persist-credentials: false
+2026-11-18T23:14:07.1222390Z   repository: djshellshoxxx/GhostPay
+2026-11-18T23:14:07.1225637Z   token: ***
+2026-11-18T23:14:07.1226209Z   ssh-strict: true
+2026-11-18T23:14:07.1226570Z   ssh-user: git
+2026-11-18T23:14:07.1226909Z   clean: true
+2026-11-18T23:14:07.1227273Z   sparse-checkout-cone-mode: true
+2026-11-18T23:14:07.1227688Z   fetch-depth: 1
+2026-11-18T23:14:07.1228038Z   fetch-tags: false
+2026-11-18T23:14:07.1228412Z   show-progress: true
+2026-11-18T23:14:07.1228770Z   lfs: false
+2026-11-18T23:14:07.1229091Z   submodules: false
+2026-11-18T23:14:07.1229443Z   set-safe-directory: true
+2026-11-18T23:14:07.1229842Z   allow-unsafe-pr-checkout: false
+2026-11-18T23:14:07.1230450Z ##[endgroup]
+2026-11-18T23:14:07.3226166Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T23:14:07.3228892Z ##[group]Getting Git version info
+2026-11-18T23:14:07.3230237Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:14:07.3231998Z [command]/usr/bin/git version
+2026-11-18T23:14:07.3233137Z git version 2.56.1
+2026-11-18T23:14:07.3237751Z ##[endgroup]
+2026-11-18T23:14:07.3245771Z Temporarily overriding HOME='/home/runner/work/_temp/fdf8275a-98b6-4c33-84a4-2a2cbd59dd3a' before making global git config changes
+2026-11-18T23:14:07.3249017Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:14:07.3250928Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:14:07.3308932Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:14:07.3311623Z ##[group]Determining repository object format
+2026-11-18T23:14:07.3313713Z ##[endgroup]
+2026-11-18T23:14:07.3316041Z ##[group]Initializing the repository
+2026-11-18T23:14:07.3317628Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:14:07.3389369Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T23:14:07.3391808Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T23:14:07.3394147Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T23:14:07.3396050Z hint: call:
+2026-11-18T23:14:07.3397342Z hint:
+2026-11-18T23:14:07.3398799Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T23:14:07.3400873Z hint:
+2026-11-18T23:14:07.3402862Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T23:14:07.3405772Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T23:14:07.3408179Z hint:
+2026-11-18T23:14:07.3409506Z hint: 	git branch -m <name>
+2026-11-18T23:14:07.3411014Z hint:
+2026-11-18T23:14:07.3412934Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T23:14:07.3416103Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T23:14:07.3421402Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:14:07.3466362Z ##[endgroup]
+2026-11-18T23:14:07.3467967Z ##[group]Disabling automatic garbage collection
+2026-11-18T23:14:07.3469665Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T23:14:07.3500843Z ##[endgroup]
+2026-11-18T23:14:07.3502308Z ##[group]Setting up auth
+2026-11-18T23:14:07.3503394Z Removing SSH command configuration
+2026-11-18T23:14:07.3505347Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:14:07.3535262Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:14:07.3901476Z Removing HTTP extra header
+2026-11-18T23:14:07.3904329Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:14:07.3925451Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:14:07.4161676Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:14:07.4165142Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:14:07.4193458Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:14:07.4419998Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T23:14:07.4452067Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config
+2026-11-18T23:14:07.4479350Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config
+2026-11-18T23:14:07.4508741Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config
+2026-11-18T23:14:07.4534706Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config
+2026-11-18T23:14:07.4560452Z ##[endgroup]
+2026-11-18T23:14:07.4561699Z ##[group]Fetching the repository
+2026-11-18T23:14:07.4565940Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d838d27ca987e4b8c988366537e52e7e68d8c25d:refs/remotes/pull/239/merge
+2026-11-18T23:14:08.7859149Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:14:08.7860935Z  * [new ref]         d838d27ca987e4b8c988366537e52e7e68d8c25d -> pull/239/merge
+2026-11-18T23:14:08.7863488Z ##[endgroup]
+2026-11-18T23:14:08.7864682Z ##[group]Determining the checkout info
+2026-11-18T23:14:08.7865389Z ##[endgroup]
+2026-11-18T23:14:08.7869280Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T23:14:08.7914365Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T23:14:08.7940639Z ##[group]Checking out the ref
+2026-11-18T23:14:08.7944781Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/239/merge
+2026-11-18T23:14:09.0418039Z Note: switching to 'refs/remotes/pull/239/merge'.
+2026-11-18T23:14:09.0418465Z 
+2026-11-18T23:14:09.0418775Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T23:14:09.0419415Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T23:14:09.0420092Z state without impacting any branches by switching back to a branch.
+2026-11-18T23:14:09.0420503Z 
+2026-11-18T23:14:09.0420806Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T23:14:09.0421426Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T23:14:09.0421821Z 
+2026-11-18T23:14:09.0421996Z   git switch -c <new-branch-name>
+2026-11-18T23:14:09.0422235Z 
+2026-11-18T23:14:09.0422409Z Or undo this operation with:
+2026-11-18T23:14:09.0422640Z 
+2026-11-18T23:14:09.0422803Z   git switch -
+2026-11-18T23:14:09.0423057Z 
+2026-11-18T23:14:09.0426827Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T23:14:09.0427266Z 
+2026-11-18T23:14:09.0427728Z HEAD is now at d838d27 Merge 82f909eb21843572eaf963b6bf36bcf9df581460 into 198aa5baff22272453733a0f3dcfcac0e0994eec
+2026-11-18T23:14:09.0432723Z ##[endgroup]
+2026-11-18T23:14:09.0483259Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T23:14:09.0509964Z d838d27ca987e4b8c988366537e52e7e68d8c25d
+2026-11-18T23:14:09.0516790Z ##[group]Removing auth
+2026-11-18T23:14:09.0517569Z Removing SSH command configuration
+2026-11-18T23:14:09.0519987Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:14:09.0547057Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:14:09.0783136Z Removing HTTP extra header
+2026-11-18T23:14:09.0785968Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:14:09.0812317Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:14:09.1042499Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:14:09.1045445Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:14:09.1066843Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:14:09.1067566Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:14:09.1067992Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:14:09.1068307Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:14:09.1073976Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:14:09.1094100Z /home/runner/work/_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config
+2026-11-18T23:14:09.1103766Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-ece81150\-62fe\-4fb3\-9282\-27fd7ef65482\.config
+2026-11-18T23:14:09.1138050Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:14:09.1158161Z /home/runner/work/_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config
+2026-11-18T23:14:09.1165302Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-ece81150\-62fe\-4fb3\-9282\-27fd7ef65482\.config
+2026-11-18T23:14:09.1200058Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:14:09.1220274Z /github/runner_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config
+2026-11-18T23:14:09.1226579Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-ece81150\-62fe\-4fb3\-9282\-27fd7ef65482\.config
+2026-11-18T23:14:09.1257217Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:14:09.1277335Z /github/runner_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config
+2026-11-18T23:14:09.1283981Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-ece81150\-62fe\-4fb3\-9282\-27fd7ef65482\.config
+2026-11-18T23:14:09.1312305Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:14:09.1541273Z Removing credentials config '/home/runner/work/_temp/git-credentials-ece81150-62fe-4fb3-9282-27fd7ef65482.config'
+2026-11-18T23:14:09.1549342Z ##[endgroup]
+2026-11-18T23:14:09.1809821Z Prepare all required actions
+2026-11-18T23:14:09.1810294Z Getting action download info
+2026-11-18T23:14:09.3070065Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-18T23:14:09.4586545Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-11-18T23:14:09.6164209Z ##[group]Run ./.github/actions/setup-node-libs
+2026-11-18T23:14:09.6164462Z with:
+2026-11-18T23:14:09.6164637Z   save-cache: true
+2026-11-18T23:14:09.6164822Z ##[endgroup]
+2026-11-18T23:14:09.6210105Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__self.__actions_setup-node]
+2026-11-18T23:14:09.6278412Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-18T23:14:09.6278706Z with:
+2026-11-18T23:14:09.6278868Z   node-version: 22
+2026-11-18T23:14:09.6279040Z   cache: npm
+2026-11-18T23:14:09.6279267Z   package-manager-cache: true
+2026-11-18T23:14:09.6279479Z   check-latest: false
+2026-11-18T23:14:09.6281508Z   token: ***
+2026-11-18T23:14:09.6281676Z ##[endgroup]
+2026-11-18T23:14:09.7296813Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-18T23:14:09.8195134Z ##[group]Environment details
+2026-11-18T23:14:10.0807323Z node: v22.23.4
+2026-11-18T23:14:10.0807531Z npm: 10.9.9
+2026-11-18T23:14:10.0807710Z yarn: 1.22.22
+2026-11-18T23:14:10.0808120Z ##[endgroup]
+2026-11-18T23:14:10.0822520Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache
+2026-11-18T23:14:10.1794858Z /home/runner/.npm
+2026-11-18T23:14:10.5512451Z Cache hit for: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:14:11.8650145Z Received 4194304 of 247554651 (1.7%), 4.0 MBs/sec
+2026-11-18T23:14:12.8659412Z Received 134217728 of 247554651 (54.2%), 63.9 MBs/sec
+2026-11-18T23:14:13.6400346Z Received 247554651 of 247554651 (100.0%), 85.0 MBs/sec
+2026-11-18T23:14:13.6400807Z Cache Size: ~236 MB (247554651 B)
+2026-11-18T23:14:13.6495669Z [command]/usr/bin/tar -xf /home/runner/work/_temp/379ba349-2490-4398-a0be-bf64d8b6e0a1/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:14:14.0025078Z Cache restored successfully
+2026-11-18T23:14:14.0126740Z Cache restored from key: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:14:14.0265013Z ##[end-action id=__self.__actions_setup-node;outcome=success;conclusion=success;duration_ms=4405]
+2026-11-18T23:14:14.0267855Z ##[start-action display=Run npm ci --ignore-scripts;id=__self.__run]
+2026-11-18T23:14:14.0300044Z ##[group]Run npm ci --ignore-scripts
+2026-11-18T23:14:14.0300345Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-18T23:14:14.0355451Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-18T23:14:14.0355752Z ##[endgroup]
+2026-11-18T23:14:18.3087206Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-18T23:14:20.3782237Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-18T23:14:25.5294482Z 
+2026-11-18T23:14:25.5295343Z added 721 packages, and audited 790 packages in 11s
+2026-11-18T23:14:25.5295656Z 
+2026-11-18T23:14:25.5295963Z 157 packages are looking for funding
+2026-11-18T23:14:25.5296308Z   run `npm fund` for details
+2026-11-18T23:14:25.5471666Z 
+2026-11-18T23:14:25.5472153Z 17 low severity vulnerabilities
+2026-11-18T23:14:25.5472393Z 
+2026-11-18T23:14:25.5472660Z To address issues that do not require attention, run:
+2026-11-18T23:14:25.5473093Z   npm audit fix
+2026-11-18T23:14:25.5473258Z 
+2026-11-18T23:14:25.5473584Z To address all issues possible (including breaking changes), run:
+2026-11-18T23:14:25.5474084Z   npm audit fix --force
+2026-11-18T23:14:25.5474273Z 
+2026-11-18T23:14:25.5474507Z Some issues need review, and may require choosing
+2026-11-18T23:14:25.5475288Z a different dependency.
+2026-11-18T23:14:25.5475481Z 
+2026-11-18T23:14:25.5475649Z Run `npm audit` for details.
+2026-11-18T23:14:25.6586157Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=11631]
+2026-11-18T23:14:25.6589448Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs]
+2026-11-18T23:14:26.2757014Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-11-18T23:14:26.2757318Z with:
+2026-11-18T23:14:26.2757500Z   path: packages/*/dist
+2026-11-18T23:14:26.2757850Z   key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:14:26.2758235Z   enableCrossOsArchive: false
+2026-11-18T23:14:26.2758455Z   fail-on-cache-miss: false
+2026-11-18T23:14:26.2758654Z   lookup-only: false
+2026-11-18T23:14:26.2758835Z   save-always: false
+2026-11-18T23:14:26.2759009Z ##[endgroup]
+2026-11-18T23:14:26.6283421Z Cache hit for: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:14:27.9053813Z Received 2029151 of 2029151 (100.0%), 2.0 MBs/sec
+2026-11-18T23:14:27.9054305Z Cache Size: ~2 MB (2029151 B)
+2026-11-18T23:14:27.9074375Z [command]/usr/bin/tar -xf /home/runner/work/_temp/5938e1bd-cfbe-4a49-a02d-562a9defd9f9/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:14:27.9660308Z Cache restored successfully
+2026-11-18T23:14:27.9797186Z Cache restored from key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:14:27.9885393Z ##[end-action id=__self.libs;outcome=success;conclusion=success;duration_ms=2329]
+2026-11-18T23:14:27.9889942Z ##[start-action display=Run actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs-restore]
+2026-11-18T23:14:27.9898448Z ##[end-action id=__self.libs-restore;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:14:27.9900092Z ##[start-action display=Run npm run build:libs;id=__self.__run_2]
+2026-11-18T23:14:27.9904636Z ##[end-action id=__self.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:14:27.9935356Z ##[group]Run npm ls --all --omit=dev > /dev/null
+2026-11-18T23:14:27.9935675Z [36;1mnpm ls --all --omit=dev > /dev/null[0m
+2026-11-18T23:14:27.9980725Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:14:27.9980960Z ##[endgroup]
+2026-11-18T23:14:28.6329993Z ##[group]Run npm run build
+2026-11-18T23:14:28.6330249Z [36;1mnpm run build[0m
+2026-11-18T23:14:28.6374017Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:14:28.6374252Z ##[endgroup]
+2026-11-18T23:14:28.7184905Z 
+2026-11-18T23:14:28.7185610Z > ghostpay@0.1.0 build
+2026-11-18T23:14:28.7186177Z > node scripts/build-workspaces.mjs
+2026-11-18T23:14:28.7186432Z 
+2026-11-18T23:14:28.8548211Z 
+2026-11-18T23:14:28.8548857Z > @ghostpay/address-safety@0.1.0 build
+2026-11-18T23:14:28.8549288Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:28.8549452Z 
+2026-11-18T23:14:30.2173883Z 
+2026-11-18T23:14:30.2174465Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:14:30.2174839Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:30.2174996Z 
+2026-11-18T23:14:31.3507378Z 
+2026-11-18T23:14:31.3508050Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:14:31.3508588Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:31.3508828Z 
+2026-11-18T23:14:32.2922561Z 
+2026-11-18T23:14:32.2923346Z > @ghostpay/chain-adapters@0.1.0 build
+2026-11-18T23:14:32.2924015Z > npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:14:32.2924387Z 
+2026-11-18T23:14:32.4203403Z 
+2026-11-18T23:14:32.4204295Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:14:32.4204916Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:32.4205159Z 
+2026-11-18T23:14:33.4366568Z 
+2026-11-18T23:14:33.4367253Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:14:33.4367760Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:33.4367977Z 
+2026-11-18T23:14:36.3573985Z 
+2026-11-18T23:14:36.3574612Z > @ghostpay/amount-blur@0.1.0 build
+2026-11-18T23:14:36.3575001Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:36.3575157Z 
+2026-11-18T23:14:37.3475320Z 
+2026-11-18T23:14:37.3476049Z > @ghostpay/btc-family@0.1.0 build
+2026-11-18T23:14:37.3476451Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:37.3476611Z 
+2026-11-18T23:14:38.2614436Z 
+2026-11-18T23:14:38.2615121Z > @ghostpay/btc-payjoin@0.1.0 build
+2026-11-18T23:14:38.2615562Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:38.2615724Z 
+2026-11-18T23:14:39.6842732Z 
+2026-11-18T23:14:39.6843324Z > @ghostpay/btc-silent-payments@0.1.0 build
+2026-11-18T23:14:39.6843703Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:39.6843895Z 
+2026-11-18T23:14:41.2519095Z 
+2026-11-18T23:14:41.2519814Z > @ghostpay/chain-evm-extra@0.1.0 build
+2026-11-18T23:14:41.2520274Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:41.2520433Z 
+2026-11-18T23:14:42.2194711Z 
+2026-11-18T23:14:42.2195350Z > @ghostpay/chain-solana@0.1.0 build
+2026-11-18T23:14:42.2195722Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:42.2196055Z 
+2026-11-18T23:14:43.0252387Z 
+2026-11-18T23:14:43.0253092Z > @ghostpay/chain-tron@0.1.0 build
+2026-11-18T23:14:43.0253624Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:43.0253873Z 
+2026-11-18T23:14:43.7553683Z 
+2026-11-18T23:14:43.7554329Z > @ghostpay/i18n@0.1.0 build
+2026-11-18T23:14:43.7554831Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:43.7555069Z 
+2026-11-18T23:14:44.6880344Z 
+2026-11-18T23:14:44.6881067Z > @ghostpay/merchant-hooks@0.1.0 build
+2026-11-18T23:14:44.6881905Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:14:44.6882390Z 
+2026-11-18T23:14:44.8133827Z 
+2026-11-18T23:14:44.8134579Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:14:44.8135114Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:44.8135367Z 
+2026-11-18T23:14:46.4319944Z 
+2026-11-18T23:14:46.4320651Z > @ghostpay/merchant-billing@0.1.0 build
+2026-11-18T23:14:46.4321540Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:46.4321878Z 
+2026-11-18T23:14:47.3266509Z 
+2026-11-18T23:14:47.3267271Z > @ghostpay/merchant-ledger@0.1.0 build
+2026-11-18T23:14:47.3268133Z > npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:14:47.3268605Z 
+2026-11-18T23:14:47.4501783Z 
+2026-11-18T23:14:47.4502476Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:14:47.4503002Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:47.4503246Z 
+2026-11-18T23:14:48.9642970Z 
+2026-11-18T23:14:48.9643724Z > @ghostpay/merchant-multisig@0.1.0 build
+2026-11-18T23:14:48.9644517Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:48.9644760Z 
+2026-11-18T23:14:49.7824581Z 
+2026-11-18T23:14:49.7825166Z > @ghostpay/qr-exchange@0.1.0 build
+2026-11-18T23:14:49.7826031Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:49.7826201Z 
+2026-11-18T23:14:50.6878653Z 
+2026-11-18T23:14:50.6879291Z > @ghostpay/sandbox@0.1.0 build
+2026-11-18T23:14:50.6879704Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:50.6879864Z 
+2026-11-18T23:14:51.4516186Z 
+2026-11-18T23:14:51.4516765Z > @ghostpay/ux-vault@0.1.0 build
+2026-11-18T23:14:51.4517114Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:51.4517273Z 
+2026-11-18T23:14:52.7675964Z 
+2026-11-18T23:14:52.7676586Z > @ghostpay/cli@0.1.0 build
+2026-11-18T23:14:52.7677166Z > tsc -p tsconfig.build.json && node stamp-build.mjs
+2026-11-18T23:14:52.7677478Z 
+2026-11-18T23:14:55.5106472Z 
+2026-11-18T23:14:55.5107089Z > @ghostpay/confidential-amounts@0.1.0 build
+2026-11-18T23:14:55.5107468Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:55.5107619Z 
+2026-11-18T23:14:59.2763860Z 
+2026-11-18T23:14:59.2764483Z > @ghostpay/donation@0.1.0 build
+2026-11-18T23:14:59.2764886Z > tsc -p tsconfig.build.json
+2026-11-18T23:14:59.2765087Z 
+2026-11-18T23:15:00.6976646Z 
+2026-11-18T23:15:00.6977244Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:15:00.6977604Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:00.6977768Z 
+2026-11-18T23:15:01.3425989Z 
+2026-11-18T23:15:01.3426700Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:15:01.3427525Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:01.3427978Z 
+2026-11-18T23:15:01.4708659Z 
+2026-11-18T23:15:01.4709229Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:15:01.4709601Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:01.4709758Z 
+2026-11-18T23:15:03.6092798Z 
+2026-11-18T23:15:03.6093534Z > @ghostpay/external-pools-privacypools@0.1.0 build
+2026-11-18T23:15:03.6094150Z > npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:03.6094458Z 
+2026-11-18T23:15:03.7344281Z 
+2026-11-18T23:15:03.7344972Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:15:03.7345959Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:03.7346467Z 
+2026-11-18T23:15:03.8596032Z 
+2026-11-18T23:15:03.8596419Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:15:03.8596756Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:03.8596911Z 
+2026-11-18T23:15:08.0064509Z 
+2026-11-18T23:15:08.0065153Z > @ghostpay/external-pools-railgun@0.1.0 build
+2026-11-18T23:15:08.0065750Z > npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:08.0066222Z 
+2026-11-18T23:15:08.1348319Z 
+2026-11-18T23:15:08.1348765Z > @ghostpay/external-pools@0.1.0 build
+2026-11-18T23:15:08.1349286Z > npm run build -w @ghostpay/secret-box --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:08.1349595Z 
+2026-11-18T23:15:08.2752794Z 
+2026-11-18T23:15:08.2753454Z > @ghostpay/secret-box@0.1.0 build
+2026-11-18T23:15:08.2753921Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:08.2754088Z 
+2026-11-18T23:15:11.9268400Z 
+2026-11-18T23:15:11.9268999Z > @ghostpay/hops@0.1.0 build
+2026-11-18T23:15:11.9270632Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:11.9270888Z 
+2026-11-18T23:15:13.3088933Z 
+2026-11-18T23:15:13.3089570Z > @ghostpay/hygiene@0.1.0 build
+2026-11-18T23:15:13.3089932Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:13.3090097Z 
+2026-11-18T23:15:14.8452055Z 
+2026-11-18T23:15:14.8452749Z > @ghostpay/metadata-hardening@0.1.0 build
+2026-11-18T23:15:14.8453301Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:14.8453547Z 
+2026-11-18T23:15:16.5334184Z 
+2026-11-18T23:15:16.5334851Z > @ghostpay/net-harness@0.1.0 build
+2026-11-18T23:15:16.5335387Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:16.5335635Z 
+2026-11-18T23:15:17.5252787Z 
+2026-11-18T23:15:17.5253470Z > @ghostpay/net-transport@0.1.0 build
+2026-11-18T23:15:17.5254373Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:17.5254630Z 
+2026-11-18T23:15:18.8066484Z 
+2026-11-18T23:15:18.8067062Z > @ghostpay/ops-monitor@0.1.0 build
+2026-11-18T23:15:18.8067431Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:18.8067585Z 
+2026-11-18T23:15:20.2487770Z 
+2026-11-18T23:15:20.2488433Z > @ghostpay/relayer-guard@0.1.0 build
+2026-11-18T23:15:20.2488978Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:20.2489227Z 
+2026-11-18T23:15:21.3127361Z 
+2026-11-18T23:15:21.3128035Z > @ghostpay/payer-sponsor@0.1.0 build
+2026-11-18T23:15:21.3128509Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:21.3128673Z 
+2026-11-18T23:15:23.4793054Z 
+2026-11-18T23:15:23.4793718Z > @ghostpay/payment-uri@0.1.0 build
+2026-11-18T23:15:23.4794246Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:23.4794490Z 
+2026-11-18T23:15:24.5236088Z 
+2026-11-18T23:15:24.5236777Z > @ghostpay/pir-two-server@0.1.0 build
+2026-11-18T23:15:24.5237326Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:24.5237556Z 
+2026-11-18T23:15:25.6131887Z 
+2026-11-18T23:15:25.6132452Z > @ghostpay/plugin-api@0.1.0 build
+2026-11-18T23:15:25.6132819Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:25.6132985Z 
+2026-11-18T23:15:26.3868609Z 
+2026-11-18T23:15:26.3869301Z > @ghostpay/policy-scheme@0.1.0 build
+2026-11-18T23:15:26.3870158Z > npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:26.3870619Z 
+2026-11-18T23:15:26.5108504Z 
+2026-11-18T23:15:26.5109073Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:15:26.5109430Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:26.5109592Z 
+2026-11-18T23:15:29.2297078Z 
+2026-11-18T23:15:29.2297743Z > @ghostpay/pool-circuits@0.1.0 build
+2026-11-18T23:15:29.2298169Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:29.2298332Z 
+2026-11-18T23:15:30.0888367Z 
+2026-11-18T23:15:30.0888948Z > @ghostpay/pool-prover@0.1.0 build
+2026-11-18T23:15:30.0889313Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:30.0889475Z 
+2026-11-18T23:15:30.9834003Z 
+2026-11-18T23:15:30.9834751Z > @ghostpay/pool-sdk@0.1.0 build
+2026-11-18T23:15:30.9835272Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:30.9835517Z 
+2026-11-18T23:15:33.0650156Z 
+2026-11-18T23:15:33.0650810Z > @ghostpay/pool-relayer@0.1.0 build
+2026-11-18T23:15:33.0651299Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:33.0651573Z 
+2026-11-18T23:15:36.7631121Z 
+2026-11-18T23:15:36.7631786Z > @ghostpay/privacy-pipeline@0.1.0 build
+2026-11-18T23:15:36.7632304Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:36.7632530Z 
+2026-11-18T23:15:38.2616265Z 
+2026-11-18T23:15:38.2616968Z > @ghostpay/privacy-profiles@0.1.0 build
+2026-11-18T23:15:38.2617519Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:38.2617747Z 
+2026-11-18T23:15:39.4651985Z 
+2026-11-18T23:15:39.4652641Z > @ghostpay/scan-source@0.1.0 build
+2026-11-18T23:15:39.4653467Z > npm run build -w @ghostpay/pir-two-server --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:39.4653944Z 
+2026-11-18T23:15:39.5892582Z 
+2026-11-18T23:15:39.5893198Z > @ghostpay/pir-two-server@0.1.0 build
+2026-11-18T23:15:39.5893609Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:39.5893769Z 
+2026-11-18T23:15:41.6102970Z 
+2026-11-18T23:15:41.6103540Z > @ghostpay/sdk@0.1.0 build
+2026-11-18T23:15:41.6104038Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:41.6104287Z 
+2026-11-18T23:15:42.3372639Z 
+2026-11-18T23:15:42.3373229Z > @ghostpay/solana-stealth@0.1.0 build
+2026-11-18T23:15:42.3373587Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:42.3373747Z 
+2026-11-18T23:15:43.7505594Z 
+2026-11-18T23:15:43.7506426Z > @ghostpay/tron-adapter@0.1.0 build
+2026-11-18T23:15:43.7507224Z > npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:43.7507674Z 
+2026-11-18T23:15:43.8753772Z 
+2026-11-18T23:15:43.8754435Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:15:43.8754960Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:43.8755205Z 
+2026-11-18T23:15:45.7562125Z 
+2026-11-18T23:15:45.7562750Z > @ghostpay/tx-review@0.1.0 build
+2026-11-18T23:15:45.7563276Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:45.7563886Z 
+2026-11-18T23:15:47.1179277Z 
+2026-11-18T23:15:47.1179608Z > @ghostpay/ux-connect@0.1.0 build
+2026-11-18T23:15:47.1180075Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:47.1180319Z 
+2026-11-18T23:15:47.8898890Z 
+2026-11-18T23:15:47.8899533Z > @ghostpay/ux-core@0.1.0 build
+2026-11-18T23:15:47.8900455Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:47.8900699Z 
+2026-11-18T23:15:48.8019834Z 
+2026-11-18T23:15:48.8020490Z > @ghostpay/ux-export@0.1.0 build
+2026-11-18T23:15:48.8021012Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:48.8021254Z 
+2026-11-18T23:15:49.5539244Z 
+2026-11-18T23:15:49.5539816Z > @ghostpay/ux-fees@0.1.0 build
+2026-11-18T23:15:49.5540157Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:49.5540318Z 
+2026-11-18T23:15:50.3281598Z 
+2026-11-18T23:15:50.3282238Z > @ghostpay/ux-fiat@0.1.0 build
+2026-11-18T23:15:50.3282761Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:50.3283004Z 
+2026-11-18T23:15:50.9824625Z 
+2026-11-18T23:15:50.9825243Z > @ghostpay/ux-flow@0.1.0 build
+2026-11-18T23:15:50.9825713Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:50.9826042Z 
+2026-11-18T23:15:51.7195141Z 
+2026-11-18T23:15:51.7195960Z > @ghostpay/ux-guide@0.1.0 build
+2026-11-18T23:15:51.7196474Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:51.7196720Z 
+2026-11-18T23:15:52.4388370Z 
+2026-11-18T23:15:52.4388941Z > @ghostpay/ux-i18n@0.1.0 build
+2026-11-18T23:15:52.4389303Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:52.4389461Z 
+2026-11-18T23:15:52.9575963Z 
+2026-11-18T23:15:52.9576631Z > @ghostpay/ux-intake@0.1.0 build
+2026-11-18T23:15:52.9577153Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:52.9577390Z 
+2026-11-18T23:15:53.7180153Z 
+2026-11-18T23:15:53.7180811Z > @ghostpay/ux-links@0.1.0 build
+2026-11-18T23:15:53.7181327Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:53.7181557Z 
+2026-11-18T23:15:54.4676933Z 
+2026-11-18T23:15:54.4677567Z > @ghostpay/ux-notify@0.1.0 build
+2026-11-18T23:15:54.4678072Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:54.4678313Z 
+2026-11-18T23:15:55.2581223Z 
+2026-11-18T23:15:55.2581946Z > @ghostpay/ux-presets@0.1.0 build
+2026-11-18T23:15:55.2582473Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:55.2582716Z 
+2026-11-18T23:15:56.0073975Z 
+2026-11-18T23:15:56.0074565Z > @ghostpay/ux-privacy@0.1.0 build
+2026-11-18T23:15:56.0074932Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:56.0075131Z 
+2026-11-18T23:15:56.6688330Z 
+2026-11-18T23:15:56.6688987Z > @ghostpay/ux-receipts@0.1.0 build
+2026-11-18T23:15:56.6689523Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:56.6689769Z 
+2026-11-18T23:15:57.4010536Z 
+2026-11-18T23:15:57.4011165Z > @ghostpay/ux-sandbox@0.1.0 build
+2026-11-18T23:15:57.4011698Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:57.4011931Z 
+2026-11-18T23:15:57.9139600Z 
+2026-11-18T23:15:57.9140306Z > @ghostpay/ux-schedule@0.1.0 build
+2026-11-18T23:15:57.9140838Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:57.9141077Z 
+2026-11-18T23:15:58.6087511Z 
+2026-11-18T23:15:58.6088160Z > @ghostpay/relayer@0.1.0 build
+2026-11-18T23:15:58.6089055Z > npm run build -w @ghostpay/chain-adapters && npm run build -w @ghostpay/relayer-guard && npm run build -w @ghostpay/metadata-hardening && tsc -p tsconfig.build.json
+2026-11-18T23:15:58.6089531Z 
+2026-11-18T23:15:58.7331663Z 
+2026-11-18T23:15:58.7332222Z > @ghostpay/chain-adapters@0.1.0 build
+2026-11-18T23:15:58.7332953Z > npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+2026-11-18T23:15:58.7333326Z 
+2026-11-18T23:15:58.8603380Z 
+2026-11-18T23:15:58.8603999Z > @ghostpay/core-crypto@0.1.0 build
+2026-11-18T23:15:58.8604399Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:58.8604548Z 
+2026-11-18T23:15:59.8747441Z 
+2026-11-18T23:15:59.8748030Z > @ghostpay/invoice-schema@0.1.0 build
+2026-11-18T23:15:59.8748401Z > tsc -p tsconfig.build.json
+2026-11-18T23:15:59.8748561Z 
+2026-11-18T23:16:02.8534844Z 
+2026-11-18T23:16:02.8535484Z > @ghostpay/relayer-guard@0.1.0 build
+2026-11-18T23:16:02.8536201Z > tsc -p tsconfig.build.json
+2026-11-18T23:16:02.8536462Z 
+2026-11-18T23:16:03.9151257Z 
+2026-11-18T23:16:03.9152132Z > @ghostpay/metadata-hardening@0.1.0 build
+2026-11-18T23:16:03.9152518Z > tsc -p tsconfig.build.json
+2026-11-18T23:16:03.9152673Z 
+2026-11-18T23:16:08.4030826Z 
+2026-11-18T23:16:08.4031690Z > @ghostpay/web@0.1.0 build
+2026-11-18T23:16:08.4032243Z > tsc -p tsconfig.json --noEmit && vite build
+2026-11-18T23:16:08.4032783Z 
+2026-11-18T23:16:22.8098379Z [36mvite v8.3.8 [32mbuilding client environment for production...[36m[39m
+2026-11-18T23:16:23.1158900Z transforming...
+2026-11-18T23:16:23.1503955Z 
+2026-11-18T23:16:23.1504494Z ./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+2026-11-18T23:16:23.4280158Z [33m[plugin rolldown:vite-resolve] Module "node:http" has been externalized for browser compatibility, imported by "/home/runner/work/GhostPay/GhostPay/packages/pir-two-server/dist/http.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+2026-11-18T23:16:23.4783313Z ✓ 1107 modules transformed.
+2026-11-18T23:16:23.5660476Z rendering chunks...
+2026-11-18T23:16:23.7767988Z computing gzip size...
+2026-11-18T23:16:23.8051122Z dist/build-info.json                          0.14 kB │ gzip:   0.14 kB
+2026-11-18T23:16:23.8051648Z dist/index.html                               3.36 kB │ gzip:   1.44 kB
+2026-11-18T23:16:23.8052240Z dist/privacy.html                             8.02 kB │ gzip:   3.28 kB
+2026-11-18T23:16:23.8052946Z dist/help.html                               16.85 kB │ gzip:   5.82 kB
+2026-11-18T23:16:23.8053508Z dist/assets/scanner.worker-DKkGvTTt.js       62.13 kB
+2026-11-18T23:16:23.8054033Z dist/assets/scan.worker-B3frbBfW.js         101.63 kB
+2026-11-18T23:16:23.8054559Z dist/assets/style-sbKVpGL7.css               11.94 kB │ gzip:   3.45 kB
+2026-11-18T23:16:23.8055045Z dist/assets/rolldown-runtime-XKyaHtl9.js      0.72 kB │ gzip:   0.42 kB
+2026-11-18T23:16:23.8055514Z dist/assets/jsQR-DMfxOdIb.js                129.98 kB │ gzip:  47.51 kB
+2026-11-18T23:16:23.8056178Z dist/assets/es-C8MQTGgs.js                  273.83 kB │ gzip:  75.61 kB
+2026-11-18T23:16:23.8056834Z dist/assets/ja-Dt4UulQJ.js                  322.78 kB │ gzip:  80.15 kB
+2026-11-18T23:16:23.8057544Z dist/assets/ar-CUoEVZ1l.js                  330.11 kB │ gzip:  80.87 kB
+2026-11-18T23:16:23.8058260Z dist/assets/index-CIgmmHiH.js             1,886.77 kB │ gzip: 569.49 kB
+2026-11-18T23:16:23.8058611Z 
+2026-11-18T23:16:23.8058905Z [33m[plugin builtin:vite-reporter] 
+2026-11-18T23:16:23.8059454Z (!) Some chunks are larger than 1200 kB after minification. Consider:
+2026-11-18T23:16:23.8060055Z - Using dynamic import() to code-split the application
+2026-11-18T23:16:23.8060941Z - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+2026-11-18T23:16:23.8061678Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+2026-11-18T23:16:23.8062962Z [33m[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0m../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.
+2026-11-18T23:16:23.8063809Z [39m
+2026-11-18T23:16:23.8064465Z [32m✓ built in 996ms[39m
+2026-11-18T23:16:23.8729257Z 
+2026-11-18T23:16:23.8730025Z > @ghostpay/web@0.1.0 postbuild
+2026-11-18T23:16:23.8730469Z > node scripts/apply-csp.mjs && node scripts/scan-bundle.mjs
+2026-11-18T23:16:23.8730700Z 
+2026-11-18T23:16:23.8980761Z apply-csp: broad connect-src (GHOSTPAY_CONNECT_ORIGINS not set)
+2026-11-18T23:16:24.2727961Z Bundle scan passed: 19 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.
+2026-11-18T23:16:24.2995005Z ##[group]Run node scripts/check-chain-matrix.mjs
+2026-11-18T23:16:24.2995338Z [36;1mnode scripts/check-chain-matrix.mjs[0m
+2026-11-18T23:16:24.3038932Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:16:24.3039147Z ##[endgroup]
+2026-11-18T23:16:24.4437223Z Chain matrix schema/configuration passed: 14 chains, 9 tokens, 4 feeds (/home/runner/work/GhostPay/GhostPay/packages/chain-adapters/config/matrix.json).
+2026-11-18T23:16:24.4523079Z ##[group]Run node --test apps/web/scripts/localBuildProfile.test.mjs
+2026-11-18T23:16:24.4523657Z [36;1mnode --test apps/web/scripts/localBuildProfile.test.mjs[0m
+2026-11-18T23:16:24.4567578Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:16:24.4567809Z ##[endgroup]
+2026-11-18T23:16:24.4939020Z TAP version 13
+2026-11-18T23:16:24.5486923Z # Subtest: parseProfile defaults to full and rejects anything else
+2026-11-18T23:16:24.5512448Z ok 1 - parseProfile defaults to full and rejects anything else
+2026-11-18T23:16:24.5516546Z   ---
+2026-11-18T23:16:24.5518313Z   duration_ms: 1.090025
+2026-11-18T23:16:24.5518882Z   type: 'test'
+2026-11-18T23:16:24.5519380Z   ...
+2026-11-18T23:16:24.5520117Z # Subtest: selectAppEntry only redirects ./App from main.tsx in lean
+2026-11-18T23:16:24.5521072Z ok 2 - selectAppEntry only redirects ./App from main.tsx in lean
+2026-11-18T23:16:24.5521756Z   ---
+2026-11-18T23:16:24.5522259Z   duration_ms: 0.295875
+2026-11-18T23:16:24.5522774Z   type: 'test'
+2026-11-18T23:16:24.5523348Z   ...
+2026-11-18T23:16:24.5524133Z # Subtest: copyPublicFiltered drops only embed SDKs and keeps every other byte
+2026-11-18T23:16:24.5525189Z ok 3 - copyPublicFiltered drops only embed SDKs and keeps every other byte
+2026-11-18T23:16:24.5526077Z   ---
+2026-11-18T23:16:24.5526617Z   duration_ms: 1.528911
+2026-11-18T23:16:24.5527120Z   type: 'test'
+2026-11-18T23:16:24.5527556Z   ...
+2026-11-18T23:16:24.5528167Z # Subtest: copyPublicFiltered refuses symlinks without following them
+2026-11-18T23:16:24.5529080Z ok 4 - copyPublicFiltered refuses symlinks without following them
+2026-11-18T23:16:24.5529772Z   ---
+2026-11-18T23:16:24.5530245Z   duration_ms: 0.652751
+2026-11-18T23:16:24.5530728Z   type: 'test'
+2026-11-18T23:16:24.5532765Z   ...
+2026-11-18T23:16:24.5533494Z # Subtest: writeReportExclusive requires an absolute path and never overwrites
+2026-11-18T23:16:24.5534488Z ok 5 - writeReportExclusive requires an absolute path and never overwrites
+2026-11-18T23:16:24.5535165Z   ---
+2026-11-18T23:16:24.5535629Z   duration_ms: 0.477063
+2026-11-18T23:16:24.5536278Z   type: 'test'
+2026-11-18T23:16:24.5536754Z   ...
+2026-11-18T23:16:24.5537455Z # Subtest: collectChunkModules fails honestly without module metadata
+2026-11-18T23:16:24.5538460Z ok 6 - collectChunkModules fails honestly without module metadata
+2026-11-18T23:16:24.5539192Z   ---
+2026-11-18T23:16:24.5539694Z   duration_ms: 0.297287
+2026-11-18T23:16:24.5540222Z   type: 'test'
+2026-11-18T23:16:24.5540713Z   ...
+2026-11-18T23:16:24.5541500Z # Subtest: incomplete or nonfinite rendered lengths cannot become exclusion evidence
+2026-11-18T23:16:24.5542578Z ok 7 - incomplete or nonfinite rendered lengths cannot become exclusion evidence
+2026-11-18T23:16:24.5549692Z   ---
+2026-11-18T23:16:24.5550229Z   duration_ms: 0.890922
+2026-11-18T23:16:24.5550775Z   type: 'test'
+2026-11-18T23:16:24.5551271Z   ...
+2026-11-18T23:16:24.5552107Z # Subtest: valid zero-length modules are kept as not rendered, distinct from absent evidence
+2026-11-18T23:16:24.5553280Z ok 8 - valid zero-length modules are kept as not rendered, distinct from absent evidence
+2026-11-18T23:16:24.5554157Z   ---
+2026-11-18T23:16:24.5554667Z   duration_ms: 0.224801
+2026-11-18T23:16:24.5555191Z   type: 'test'
+2026-11-18T23:16:24.5555677Z   ...
+2026-11-18T23:16:24.5556607Z # Subtest: a symlink public ROOT is refused instead of reading outside it
+2026-11-18T23:16:24.5557566Z ok 9 - a symlink public ROOT is refused instead of reading outside it
+2026-11-18T23:16:24.5558251Z   ---
+2026-11-18T23:16:24.5558733Z   duration_ms: 1.150364
+2026-11-18T23:16:24.5559251Z   type: 'test'
+2026-11-18T23:16:24.5559739Z   ...
+2026-11-18T23:16:24.5560666Z # Subtest: module report cannot be emitted inside the resolved web output (relative and absolute outDir)
+2026-11-18T23:16:24.5561574Z ok 10 - module report cannot be emitted inside the resolved web output (relative and absolute outDir)
+2026-11-18T23:16:24.5562097Z   ---
+2026-11-18T23:16:24.5562429Z   duration_ms: 1.526307
+2026-11-18T23:16:24.5562779Z   type: 'test'
+2026-11-18T23:16:24.5563363Z   ...
+2026-11-18T23:16:24.5564082Z # Subtest: full and lean both build Help and Privacy through the app bundler entry set
+2026-11-18T23:16:24.5565099Z ok 11 - full and lean both build Help and Privacy through the app bundler entry set
+2026-11-18T23:16:24.5565579Z   ---
+2026-11-18T23:16:24.5566117Z   duration_ms: 0.476681
+2026-11-18T23:16:24.5566567Z   type: 'test'
+2026-11-18T23:16:24.5566853Z   ...
+2026-11-18T23:16:24.5567450Z # Subtest: HTML entry wiring preserves explicit bundler inputs and stays out of Worker builds
+2026-11-18T23:16:24.5568325Z ok 12 - HTML entry wiring preserves explicit bundler inputs and stays out of Worker builds
+2026-11-18T23:16:24.5568859Z   ---
+2026-11-18T23:16:24.5569122Z   duration_ms: 0.658469
+2026-11-18T23:16:24.5569411Z   type: 'test'
+2026-11-18T23:16:24.5569656Z   ...
+2026-11-18T23:16:24.5570328Z # Subtest: standalone document entries keep their explicit styles without inheriting the app-only print CSS
+2026-11-18T23:16:24.5571168Z ok 13 - standalone document entries keep their explicit styles without inheriting the app-only print CSS
+2026-11-18T23:16:24.5571554Z   ---
+2026-11-18T23:16:24.5571725Z   duration_ms: 0.50294
+2026-11-18T23:16:24.5571922Z   type: 'test'
+2026-11-18T23:16:24.5572102Z   ...
+2026-11-18T23:16:24.5572460Z # Subtest: lean entry redirection is bound to the configured web root, not another main.tsx
+2026-11-18T23:16:24.5573001Z ok 14 - lean entry redirection is bound to the configured web root, not another main.tsx
+2026-11-18T23:16:24.5573334Z   ---
+2026-11-18T23:16:24.5573512Z   duration_ms: 0.171032
+2026-11-18T23:16:24.5573703Z   type: 'test'
+2026-11-18T23:16:24.5573875Z   ...
+2026-11-18T23:16:24.5574244Z # Subtest: lean rejects rendered optional features even when no external report was requested
+2026-11-18T23:16:24.5574774Z ok 15 - lean rejects rendered optional features even when no external report was requested
+2026-11-18T23:16:24.5575111Z   ---
+2026-11-18T23:16:24.5575273Z   duration_ms: 0.990569
+2026-11-18T23:16:24.5575460Z   type: 'test'
+2026-11-18T23:16:24.5575621Z   ...
+2026-11-18T23:16:24.5576211Z # Subtest: lean requires real nonempty chunk-module facts without a report flag
+2026-11-18T23:16:24.5576935Z ok 16 - lean requires real nonempty chunk-module facts without a report flag
+2026-11-18T23:16:24.5577381Z   ---
+2026-11-18T23:16:24.5577617Z   duration_ms: 0.241977
+2026-11-18T23:16:24.5577897Z   type: 'test'
+2026-11-18T23:16:24.5578143Z   ...
+2026-11-18T23:16:24.5578658Z # Subtest: shared embed notification is admitted but embedding startup exports fail
+2026-11-18T23:16:24.5579461Z ok 17 - shared embed notification is admitted but embedding startup exports fail
+2026-11-18T23:16:24.5579949Z   ---
+2026-11-18T23:16:24.5580204Z   duration_ms: 0.309966
+2026-11-18T23:16:24.5580484Z   type: 'test'
+2026-11-18T23:16:24.5580740Z   ...
+2026-11-18T23:16:24.5581264Z # Subtest: lean Worker hook rejects deferred modules and captures actual module facts
+2026-11-18T23:16:24.5582069Z ok 18 - lean Worker hook rejects deferred modules and captures actual module facts
+2026-11-18T23:16:24.5582527Z   ---
+2026-11-18T23:16:24.5582765Z   duration_ms: 0.157452
+2026-11-18T23:16:24.5583053Z   type: 'test'
+2026-11-18T23:16:24.5583292Z   ...
+2026-11-18T23:16:24.5583687Z # Subtest: lean final output refuses missing Worker proof
+2026-11-18T23:16:24.5584227Z ok 19 - lean final output refuses missing Worker proof
+2026-11-18T23:16:24.5584619Z   ---
+2026-11-18T23:16:24.5584863Z   duration_ms: 0.490492
+2026-11-18T23:16:24.5585142Z   type: 'test'
+2026-11-18T23:16:24.5585385Z   ...
+2026-11-18T23:16:24.5586078Z # Subtest: lean emitted evidence contains actual app/Worker facts with source-relative ids
+2026-11-18T23:16:24.5586909Z ok 20 - lean emitted evidence contains actual app/Worker facts with source-relative ids
+2026-11-18T23:16:24.5587424Z   ---
+2026-11-18T23:16:24.5587669Z   duration_ms: 0.990268
+2026-11-18T23:16:24.5587945Z   type: 'test'
+2026-11-18T23:16:24.5588201Z   ...
+2026-11-18T23:16:24.5616170Z # Subtest: lean refuses a newly added uninspected executable public asset
+2026-11-18T23:16:24.5617056Z ok 21 - lean refuses a newly added uninspected executable public asset
+2026-11-18T23:16:24.5617746Z   ---
+2026-11-18T23:16:24.5618017Z   duration_ms: 0.421541
+2026-11-18T23:16:24.5618341Z   type: 'test'
+2026-11-18T23:16:24.5618612Z   ...
+2026-11-18T23:16:24.5619118Z # Subtest: external evidence is rechecked against the actual output override
+2026-11-18T23:16:24.5619846Z ok 22 - external evidence is rechecked against the actual output override
+2026-11-18T23:16:24.5620307Z   ---
+2026-11-18T23:16:24.5620548Z   duration_ms: 0.284259
+2026-11-18T23:16:24.5620816Z   type: 'test'
+2026-11-18T23:16:24.5621056Z   ...
+2026-11-18T23:16:24.5621533Z # Subtest: nonempty lean chunks cannot omit all module provenance
+2026-11-18T23:16:24.5622191Z ok 23 - nonempty lean chunks cannot omit all module provenance
+2026-11-18T23:16:24.5622615Z   ---
+2026-11-18T23:16:24.5622892Z   duration_ms: 0.147758
+2026-11-18T23:16:24.5623196Z   type: 'test'
+2026-11-18T23:16:24.5623471Z   ...
+2026-11-18T23:16:24.5624062Z # Subtest: a later-emitted executable asset must also have Worker module proof
+2026-11-18T23:16:24.5624868Z ok 24 - a later-emitted executable asset must also have Worker module proof
+2026-11-18T23:16:24.5625373Z   ---
+2026-11-18T23:16:24.5625621Z   duration_ms: 0.343726
+2026-11-18T23:16:24.5626105Z   type: 'test'
+2026-11-18T23:16:24.5626375Z   ...
+2026-11-18T23:16:24.5626988Z # Subtest: unreported public HTML remains rejected, including Help and Privacy filenames
+2026-11-18T23:16:24.5627894Z ok 25 - unreported public HTML remains rejected, including Help and Privacy filenames
+2026-11-18T23:16:24.5628438Z   ---
+2026-11-18T23:16:24.5628709Z   duration_ms: 1.426721
+2026-11-18T23:16:24.5629050Z   type: 'test'
+2026-11-18T23:16:24.5629326Z   ...
+2026-11-18T23:16:24.5629900Z # Subtest: bundler-reported Help and Privacy HTML are admitted at their stable URLs
+2026-11-18T23:16:24.5630772Z ok 26 - bundler-reported Help and Privacy HTML are admitted at their stable URLs
+2026-11-18T23:16:24.5631316Z   ---
+2026-11-18T23:16:24.5631592Z   duration_ms: 0.681814
+2026-11-18T23:16:24.5631891Z   type: 'test'
+2026-11-18T23:16:24.5632208Z   ...
+2026-11-18T23:16:24.5632710Z # Subtest: stale unreported output code is refused without deleting it
+2026-11-18T23:16:24.5633454Z ok 27 - stale unreported output code is refused without deleting it
+2026-11-18T23:16:24.5633936Z   ---
+2026-11-18T23:16:24.5634211Z   duration_ms: 0.44164
+2026-11-18T23:16:24.5634523Z   type: 'test'
+2026-11-18T23:16:24.5634765Z   ...
+2026-11-18T23:16:24.5635324Z # Subtest: unreported stale HTML and HTM output is refused without deleting it
+2026-11-18T23:16:24.5636194Z ok 28 - unreported stale HTML and HTM output is refused without deleting it
+2026-11-18T23:16:24.5636662Z   ---
+2026-11-18T23:16:24.5636912Z   duration_ms: 0.660052
+2026-11-18T23:16:24.5637139Z   type: 'test'
+2026-11-18T23:16:24.5637307Z   ...
+2026-11-18T23:16:24.5637624Z # Subtest: actual bundle-reported index HTML remains admitted
+2026-11-18T23:16:24.5638028Z ok 29 - actual bundle-reported index HTML remains admitted
+2026-11-18T23:16:24.5638361Z   ---
+2026-11-18T23:16:24.5638658Z   duration_ms: 0.522098
+2026-11-18T23:16:24.5638971Z   type: 'test'
+2026-11-18T23:16:24.5639266Z   ...
+2026-11-18T23:16:24.5639751Z # Subtest: final writeBundle HTML metadata admits HTML emitted after generateBundle
+2026-11-18T23:16:24.5640486Z ok 30 - final writeBundle HTML metadata admits HTML emitted after generateBundle
+2026-11-18T23:16:24.5640968Z   ---
+2026-11-18T23:16:24.5641225Z   duration_ms: 0.476882
+2026-11-18T23:16:24.5641496Z   type: 'test'
+2026-11-18T23:16:24.5641750Z   ...
+2026-11-18T23:16:24.5642218Z # Subtest: final reported HTML does not admit an unrelated stale HTML file
+2026-11-18T23:16:24.5642919Z ok 31 - final reported HTML does not admit an unrelated stale HTML file
+2026-11-18T23:16:24.5643397Z   ---
+2026-11-18T23:16:24.5643639Z   duration_ms: 0.410545
+2026-11-18T23:16:24.5643901Z   type: 'test'
+2026-11-18T23:16:24.5644142Z   ...
+2026-11-18T23:16:24.5644880Z # Subtest: final bundle metadata rechecks late executable assets and deferred app modules
+2026-11-18T23:16:24.5645664Z ok 32 - final bundle metadata rechecks late executable assets and deferred app modules
+2026-11-18T23:16:24.5646437Z   ---
+2026-11-18T23:16:24.5646697Z   duration_ms: 0.300743
+2026-11-18T23:16:24.5646975Z   type: 'test'
+2026-11-18T23:16:24.5647219Z   ...
+2026-11-18T23:16:24.5647655Z # Subtest: lean final output refuses absent final bundle metadata
+2026-11-18T23:16:24.5648242Z ok 33 - lean final output refuses absent final bundle metadata
+2026-11-18T23:16:24.5648651Z   ---
+2026-11-18T23:16:24.5648883Z   duration_ms: 0.266512
+2026-11-18T23:16:24.5649144Z   type: 'test'
+2026-11-18T23:16:24.5649373Z   ...
+2026-11-18T23:16:24.5682316Z 1..33
+2026-11-18T23:16:24.5682620Z # tests 33
+2026-11-18T23:16:24.5682889Z # suites 0
+2026-11-18T23:16:24.5683157Z # pass 33
+2026-11-18T23:16:24.5683419Z # fail 0
+2026-11-18T23:16:24.5683690Z # cancelled 0
+2026-11-18T23:16:24.5683962Z # skipped 0
+2026-11-18T23:16:24.5684339Z # todo 0
+2026-11-18T23:16:24.5684833Z # duration_ms 83.270016
+2026-11-18T23:16:24.5756545Z ##[group]Run node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs
+2026-11-18T23:16:24.5757173Z [36;1mnode --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs[0m
+2026-11-18T23:16:24.5801355Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:16:24.5801595Z ##[endgroup]
+2026-11-18T23:16:24.6224907Z TAP version 13
+2026-11-18T23:16:24.6546979Z # Subtest: exponents
+2026-11-18T23:16:24.6567427Z ok 1 - exponents
+2026-11-18T23:16:24.6572130Z   ---
+2026-11-18T23:16:24.6573199Z   duration_ms: 0.616267
+2026-11-18T23:16:24.6573553Z   type: 'test'
+2026-11-18T23:16:24.6573864Z   ...
+2026-11-18T23:16:24.6574217Z # Subtest: conversion never rounds or rescales
+2026-11-18T23:16:24.6574677Z ok 2 - conversion never rounds or rescales
+2026-11-18T23:16:24.6575010Z   ---
+2026-11-18T23:16:24.6575262Z   duration_ms: 1.1005
+2026-11-18T23:16:24.6575562Z   type: 'test'
+2026-11-18T23:16:24.6575981Z   ...
+2026-11-18T23:16:24.6576458Z # Subtest: table equals the GhostPay app table
+2026-11-18T23:16:24.6576904Z ok 3 - table equals the GhostPay app table
+2026-11-18T23:16:24.6577294Z   ---
+2026-11-18T23:16:24.6577549Z   duration_ms: 0.753459
+2026-11-18T23:16:24.6577835Z   type: 'test'
+2026-11-18T23:16:24.6578086Z   ...
+2026-11-18T23:16:24.6721113Z # pos-terminal parity: ok
+2026-11-18T23:16:24.6763517Z # Subtest: examples/pos-terminal/parity.test.mjs
+2026-11-18T23:16:24.6764686Z ok 2 - examples/pos-terminal/parity.test.mjs
+2026-11-18T23:16:24.6765216Z   ---
+2026-11-18T23:16:24.6765543Z   duration_ms: 56.211519
+2026-11-18T23:16:24.6766551Z   type: 'test'
+2026-11-18T23:16:24.6766848Z   ...
+2026-11-18T23:16:24.6767102Z 1..4
+2026-11-18T23:16:24.6767353Z # tests 4
+2026-11-18T23:16:24.6767610Z # suites 0
+2026-11-18T23:16:24.6767867Z # pass 4
+2026-11-18T23:16:24.6768132Z # fail 0
+2026-11-18T23:16:24.6768398Z # cancelled 0
+2026-11-18T23:16:24.6768684Z # skipped 0
+2026-11-18T23:16:24.6768942Z # todo 0
+2026-11-18T23:16:24.6769235Z # duration_ms 66.027262
+2026-11-18T23:16:24.6841143Z ##[group]Run node scripts/i18n/check.mjs
+2026-11-18T23:16:24.6841444Z [36;1mnode scripts/i18n/check.mjs[0m
+2026-11-18T23:16:24.6885772Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:16:24.6886209Z ##[endgroup]
+2026-11-18T23:16:24.9827509Z WARNING ar.json: sweep.balanceRead.warning: identical to English (untranslated?)
+2026-11-18T23:16:24.9828421Z WARNING ar.json: sweep.balanceRead.note: identical to English (untranslated?)
+2026-11-18T23:16:24.9829230Z WARNING ar.json: registry.lookupLabel: identical to English (untranslated?)
+2026-11-18T23:16:24.9830051Z WARNING ar.json: receipt.includeAddress: identical to English (untranslated?)
+2026-11-18T23:16:24.9830896Z WARNING ar.json: receipt.includeAddress.warning: identical to English (untranslated?)
+2026-11-18T23:16:24.9831717Z WARNING ar.json: ledger.ambiguity.late: identical to English (untranslated?)
+2026-11-18T23:16:24.9832582Z WARNING ar.json: ledger.ambiguity.blockTimeMissing: identical to English (untranslated?)
+2026-11-18T23:16:24.9833712Z WARNING ar.json: transaction.field.hash: 3.00x longer than English (limit 2.5); check the layout for truncation
+2026-11-18T23:16:24.9835482Z WARNING ar.json: registry.submissionOutcome: identical to English (untranslated?)
+2026-11-18T23:16:24.9836559Z WARNING ar.json: btc.verification.mode.other.available: identical to English (untranslated?)
+2026-11-18T23:16:24.9837531Z WARNING ar.json: scanPrivacy.blocked.requirePrivatePath: identical to English (untranslated?)
+2026-11-18T23:16:24.9838489Z WARNING ar.json: scanPrivacy.blocked.proxyEndpoint: identical to English (untranslated?)
+2026-11-18T23:16:24.9839365Z WARNING ar.json: scanPrivacy.blocked.indexerChain: identical to English (untranslated?)
+2026-11-18T23:16:24.9840292Z WARNING ar.json: scanPrivacy.blocked.indexerMissing: identical to English (untranslated?)
+2026-11-18T23:16:24.9841206Z WARNING ar.json: scanPrivacy.blocked.endpointRejected: identical to English (untranslated?)
+2026-11-18T23:16:24.9842148Z WARNING ar.json: scanPrivacy.blocked.indexerRejected: identical to English (untranslated?)
+2026-11-18T23:16:24.9843074Z WARNING ar.json: scanPrivacy.disclosure.windowsFixed: identical to English (untranslated?)
+2026-11-18T23:16:24.9844002Z WARNING ar.json: scanPrivacy.disclosure.windowsExact: identical to English (untranslated?)
+2026-11-18T23:16:24.9844897Z WARNING ar.json: scanPrivacy.disclosure.ipDirect: identical to English (untranslated?)
+2026-11-18T23:16:24.9845925Z WARNING ar.json: scanPrivacy.disclosure.ipTorBrowser: identical to English (untranslated?)
+2026-11-18T23:16:24.9846836Z WARNING ar.json: scanPrivacy.disclosure.ipProxyExit: identical to English (untranslated?)
+2026-11-18T23:16:24.9847752Z WARNING ar.json: scanPrivacy.disclosure.logsIndexer: identical to English (untranslated?)
+2026-11-18T23:16:24.9848629Z WARNING ar.json: scanPrivacy.disclosure.logsRpc: identical to English (untranslated?)
+2026-11-18T23:16:24.9849504Z WARNING ar.json: scanPrivacy.disclosure.rpcParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9850359Z WARNING ar.json: scanPrivacy.disclosure.rpc: identical to English (untranslated?)
+2026-11-18T23:16:24.9851247Z WARNING ar.json: scanPrivacy.disclosure.indexerParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9852132Z WARNING ar.json: scanPrivacy.disclosure.indexer: identical to English (untranslated?)
+2026-11-18T23:16:24.9853030Z WARNING ar.json: scanPrivacy.disclosure.proxyParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9853903Z WARNING ar.json: scanPrivacy.disclosure.proxy: identical to English (untranslated?)
+2026-11-18T23:16:24.9854793Z WARNING ar.json: scanPrivacy.disclosure.torExitParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9855689Z WARNING ar.json: scanPrivacy.disclosure.torExit: identical to English (untranslated?)
+2026-11-18T23:16:24.9856727Z WARNING ar.json: scanPrivacy.disclosure.torBrowserNotice: identical to English (untranslated?)
+2026-11-18T23:16:24.9857958Z WARNING ar.json: scanPrivacy.disclosure.secondParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9858940Z WARNING ar.json: scanPrivacy.disclosure.secondWindowsFixed: identical to English (untranslated?)
+2026-11-18T23:16:24.9859942Z WARNING ar.json: scanPrivacy.disclosure.secondWindowsExact: identical to English (untranslated?)
+2026-11-18T23:16:24.9860919Z WARNING ar.json: scanPrivacy.disclosure.secondDirectIp: identical to English (untranslated?)
+2026-11-18T23:16:24.9861820Z WARNING ar.json: scanPrivacy.disclosure.second: identical to English (untranslated?)
+2026-11-18T23:16:24.9862717Z WARNING ar.json: scanPrivacy.disclosure.sweepParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9863615Z WARNING ar.json: scanPrivacy.disclosure.sweepAuto: identical to English (untranslated?)
+2026-11-18T23:16:24.9864549Z WARNING ar.json: scanPrivacy.disclosure.sweepOnRequest: identical to English (untranslated?)
+2026-11-18T23:16:24.9865501Z WARNING ar.json: scanPrivacy.disclosure.everyoneParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9866523Z WARNING ar.json: scanPrivacy.disclosure.everyone: identical to English (untranslated?)
+2026-11-18T23:16:24.9867591Z WARNING ar.json: scanPrivacy.disclosure.everyonePrivate: identical to English (untranslated?)
+2026-11-18T23:16:24.9868533Z WARNING ar.json: scanPrivacy.disclosure.firstUseNotice: identical to English (untranslated?)
+2026-11-18T23:16:24.9869364Z WARNING ar.json: scan.privacySet.body: identical to English (untranslated?)
+2026-11-18T23:16:24.9870106Z WARNING ar.json: scan.privacySet.medium: identical to English (untranslated?)
+2026-11-18T23:16:24.9870853Z WARNING ar.json: scan.privacySet.high: identical to English (untranslated?)
+2026-11-18T23:16:24.9871705Z WARNING ar.json: merchantProfile.identityUnverified.title: identical to English (untranslated?)
+2026-11-18T23:16:24.9872677Z WARNING ar.json: merchantProfile.identityUnverified.body: identical to English (untranslated?)
+2026-11-18T23:16:24.9873383Z WARNING ar.json: merchantProfile.name: identical to English (untranslated?)
+2026-11-18T23:16:24.9873904Z WARNING ar.json: merchantProfile.signerFingerprint: identical to English (untranslated?)
+2026-11-18T23:16:24.9874438Z WARNING ar.json: merchantProfile.load.title: identical to English (untranslated?)
+2026-11-18T23:16:24.9874927Z WARNING ar.json: merchantProfile.load.url: identical to English (untranslated?)
+2026-11-18T23:16:24.9875415Z WARNING ar.json: merchantProfile.load.privacy: identical to English (untranslated?)
+2026-11-18T23:16:24.9876150Z WARNING ar.json: merchantProfile.load.action: identical to English (untranslated?)
+2026-11-18T23:16:24.9877038Z WARNING ar.json: merchantProfile.load.loading: identical to English (untranslated?)
+2026-11-18T23:16:24.9877637Z WARNING ar.json: merchantProfile.load.cancel: identical to English (untranslated?)
+2026-11-18T23:16:24.9878147Z WARNING ar.json: merchantProfile.load.failed: identical to English (untranslated?)
+2026-11-18T23:16:24.9878626Z WARNING ar.json: merchantProfile.source: identical to English (untranslated?)
+2026-11-18T23:16:24.9879112Z WARNING ar.json: merchantProfile.signerKey: identical to English (untranslated?)
+2026-11-18T23:16:24.9879609Z WARNING ar.json: merchantProfile.pin.action: identical to English (untranslated?)
+2026-11-18T23:16:24.9880099Z WARNING ar.json: merchantProfile.pin.confirm: identical to English (untranslated?)
+2026-11-18T23:16:24.9880582Z WARNING ar.json: merchantProfile.pin.help: identical to English (untranslated?)
+2026-11-18T23:16:24.9881065Z WARNING ar.json: merchantProfile.pin.match: identical to English (untranslated?)
+2026-11-18T23:16:24.9881798Z WARNING ar.json: merchantProfile.pin.changed: identical to English (untranslated?)
+2026-11-18T23:16:24.9882397Z WARNING ar.json: merchantProfile.pin.savedKey: identical to English (untranslated?)
+2026-11-18T23:16:24.9882931Z WARNING ar.json: merchantProfile.pin.remove: identical to English (untranslated?)
+2026-11-18T23:16:24.9883457Z WARNING ar.json: merchantProfile.pin.removeConfirm: identical to English (untranslated?)
+2026-11-18T23:16:24.9884138Z WARNING ar.json: merchantProfile.pin.failed: identical to English (untranslated?)
+2026-11-18T23:16:24.9884664Z WARNING ar.json: merchantProfile.pin.unavailable: identical to English (untranslated?)
+2026-11-18T23:16:24.9885186Z WARNING ar.json: merchantProfile.pin.inline: identical to English (untranslated?)
+2026-11-18T23:16:24.9885687Z WARNING ar.json: merchantProfile.templates.title: identical to English (untranslated?)
+2026-11-18T23:16:24.9886354Z WARNING ar.json: merchantProfile.templates.notice: identical to English (untranslated?)
+2026-11-18T23:16:24.9886873Z WARNING ar.json: merchantProfile.templates.select: identical to English (untranslated?)
+2026-11-18T23:16:24.9887386Z WARNING ar.json: merchantProfile.templates.unknown: identical to English (untranslated?)
+2026-11-18T23:16:24.9887910Z WARNING ar.json: merchantProfile.templates.amount: identical to English (untranslated?)
+2026-11-18T23:16:24.9888426Z WARNING ar.json: merchantProfile.templates.currency: identical to English (untranslated?)
+2026-11-18T23:16:24.9888981Z WARNING ar.json: merchantProfile.templates.expires: identical to English (untranslated?)
+2026-11-18T23:16:24.9889571Z WARNING ar.json: merchantProfile.expired: identical to English (untranslated?)
+2026-11-18T23:16:24.9900908Z WARNING ar.json: registry.ensHint: identical to English (untranslated?)
+2026-11-18T23:16:24.9901651Z WARNING ar.json: registry.ensResolved: identical to English (untranslated?)
+2026-11-18T23:16:24.9902217Z WARNING ar.json: btc.persistence.enable: identical to English (untranslated?)
+2026-11-18T23:16:24.9902706Z WARNING ar.json: btc.persistence.help: identical to English (untranslated?)
+2026-11-18T23:16:24.9903204Z WARNING ar.json: btc.persistence.unavailable: identical to English (untranslated?)
+2026-11-18T23:16:24.9903713Z WARNING ar.json: btc.persistence.saved: identical to English (untranslated?)
+2026-11-18T23:16:24.9904158Z WARNING ar.json: btc.persistence.error: identical to English (untranslated?)
+2026-11-18T23:16:24.9904620Z WARNING ar.json: btc.persistence.reload: identical to English (untranslated?)
+2026-11-18T23:16:24.9905078Z WARNING ar.json: btc.persistence.forget: identical to English (untranslated?)
+2026-11-18T23:16:24.9905561Z WARNING ar.json: btc.persistence.forgetConfirm: identical to English (untranslated?)
+2026-11-18T23:16:24.9906222Z WARNING ar.json: btc.persistence.forgetYes: identical to English (untranslated?)
+2026-11-18T23:16:24.9906722Z WARNING ar.json: merchantProfile.issue.title: identical to English (untranslated?)
+2026-11-18T23:16:24.9907234Z WARNING ar.json: merchantProfile.issue.authority: identical to English (untranslated?)
+2026-11-18T23:16:24.9907739Z WARNING ar.json: merchantProfile.issue.fixed: identical to English (untranslated?)
+2026-11-18T23:16:24.9908230Z WARNING ar.json: merchantProfile.issue.chain: identical to English (untranslated?)
+2026-11-18T23:16:24.9908706Z WARNING ar.json: merchantProfile.issue.token: identical to English (untranslated?)
+2026-11-18T23:16:24.9909218Z WARNING ar.json: merchantProfile.issue.tokenAmount: identical to English (untranslated?)
+2026-11-18T23:16:24.9909739Z WARNING ar.json: merchantProfile.issue.feePolicy: identical to English (untranslated?)
+2026-11-18T23:16:24.9910314Z WARNING ar.json: merchantProfile.issue.action: identical to English (untranslated?)
+2026-11-18T23:16:24.9910803Z WARNING ar.json: merchantProfile.issue.link: identical to English (untranslated?)
+2026-11-18T23:16:24.9911286Z WARNING ar.json: merchantProfile.issue.copy: identical to English (untranslated?)
+2026-11-18T23:16:24.9911761Z WARNING ar.json: merchantProfile.issue.backup: identical to English (untranslated?)
+2026-11-18T23:16:24.9912259Z WARNING ar.json: merchantProfile.issue.invalid: identical to English (untranslated?)
+2026-11-18T23:16:24.9912751Z WARNING ar.json: merchantProfile.issue.signer: identical to English (untranslated?)
+2026-11-18T23:16:24.9913245Z WARNING ar.json: merchantProfile.issue.changed: identical to English (untranslated?)
+2026-11-18T23:16:24.9913773Z WARNING ar.json: merchantProfile.issue.amountOverride: identical to English (untranslated?)
+2026-11-18T23:16:24.9914495Z WARNING ar.json: merchantProfile.issue.request: identical to English (untranslated?)
+2026-11-18T23:16:24.9915051Z WARNING ar.json: merchantProfile.issue.requestRejected: identical to English (untranslated?)
+2026-11-18T23:16:24.9915575Z WARNING ar.json: merchantProfile.issue.none: identical to English (untranslated?)
+2026-11-18T23:16:24.9916216Z WARNING ar.json: merchantProfile.issue.expiry: identical to English (untranslated?)
+2026-11-18T23:16:24.9916703Z WARNING ar.json: btc.persistence.page: identical to English (untranslated?)
+2026-11-18T23:16:24.9917171Z WARNING ar.json: btc.persistence.previous: identical to English (untranslated?)
+2026-11-18T23:16:24.9917667Z WARNING ar.json: btc.persistence.next: identical to English (untranslated?)
+2026-11-18T23:16:24.9918101Z WARNING ar.json: btc.oracle.modeLabel: identical to English (untranslated?)
+2026-11-18T23:16:24.9918520Z WARNING ar.json: btc.oracle.none: identical to English (untranslated?)
+2026-11-18T23:16:24.9918938Z WARNING ar.json: btc.oracle.http: identical to English (untranslated?)
+2026-11-18T23:16:24.9919338Z WARNING ar.json: btc.oracle.grpc: identical to English (untranslated?)
+2026-11-18T23:16:24.9919876Z WARNING ar.json: btc.oracle.urlLabel: identical to English (untranslated?)
+2026-11-18T23:16:24.9920307Z WARNING ar.json: btc.oracle.urlHint: identical to English (untranslated?)
+2026-11-18T23:16:24.9920740Z WARNING ar.json: btc.oracle.fullHelp: identical to English (untranslated?)
+2026-11-18T23:16:24.9921161Z WARNING ar.json: btc.oracle.light: identical to English (untranslated?)
+2026-11-18T23:16:24.9921591Z WARNING ar.json: btc.oracle.lightHelp: identical to English (untranslated?)
+2026-11-18T23:16:24.9922035Z WARNING ar.json: btc.oracle.disclosure: identical to English (untranslated?)
+2026-11-18T23:16:24.9922502Z WARNING ar.json: btc.oracle.secondEnable: identical to English (untranslated?)
+2026-11-18T23:16:24.9922960Z WARNING ar.json: btc.oracle.secondKind: identical to English (untranslated?)
+2026-11-18T23:16:24.9923416Z WARNING ar.json: btc.oracle.secondUrl: identical to English (untranslated?)
+2026-11-18T23:16:24.9923865Z WARNING ar.json: btc.oracle.lightChecks: identical to English (untranslated?)
+2026-11-18T23:16:24.9924311Z WARNING ar.json: btc.oracle.lightLimits: identical to English (untranslated?)
+2026-11-18T23:16:24.9924747Z WARNING ar.json: btc.oracle.resultsNote: identical to English (untranslated?)
+2026-11-18T23:16:24.9925204Z WARNING ar.json: settings.network.legend: identical to English (untranslated?)
+2026-11-18T23:16:24.9925654Z WARNING ar.json: settings.network.hint: identical to English (untranslated?)
+2026-11-18T23:16:24.9926258Z WARNING ar.json: settings.network.rpcProfile: identical to English (untranslated?)
+2026-11-18T23:16:24.9926773Z WARNING ar.json: settings.network.relayerProfile: identical to English (untranslated?)
+2026-11-18T23:16:24.9927277Z WARNING ar.json: settings.network.profile.direct: identical to English (untranslated?)
+2026-11-18T23:16:24.9927816Z WARNING ar.json: settings.network.profile.torBrowser: identical to English (untranslated?)
+2026-11-18T23:16:24.9928321Z WARNING ar.json: settings.network.rpcMode: identical to English (untranslated?)
+2026-11-18T23:16:24.9928809Z WARNING ar.json: settings.network.rpcMode.single: identical to English (untranslated?)
+2026-11-18T23:16:24.9929313Z WARNING ar.json: settings.network.rpcMode.ownNode: identical to English (untranslated?)
+2026-11-18T23:16:24.9929820Z WARNING ar.json: settings.network.statusHeading: identical to English (untranslated?)
+2026-11-18T23:16:24.9930354Z WARNING ar.json: settings.network.status.loopbackTested: identical to English (untranslated?)
+2026-11-18T23:16:24.9930894Z WARNING ar.json: settings.network.status.unverified: identical to English (untranslated?)
+2026-11-18T23:16:24.9931402Z WARNING ar.json: settings.network.notice.title: identical to English (untranslated?)
+2026-11-18T23:16:24.9931898Z WARNING ar.json: settings.network.notice.body: identical to English (untranslated?)
+2026-11-18T23:16:24.9932515Z WARNING ar.json: settings.network.notice.unverified: identical to English (untranslated?)
+2026-11-18T23:16:24.9933033Z WARNING ar.json: settings.network.notice.ack: identical to English (untranslated?)
+2026-11-18T23:16:24.9933515Z WARNING ar.json: settings.network.pending: identical to English (untranslated?)
+2026-11-18T23:16:24.9934006Z WARNING ar.json: settings.network.active: identical to English (untranslated?)
+2026-11-18T23:16:24.9934450Z WARNING ar.json: settings.network.save: identical to English (untranslated?)
+2026-11-18T23:16:24.9934905Z WARNING ar.json: settings.network.saved: identical to English (untranslated?)
+2026-11-18T23:16:24.9935352Z WARNING ar.json: settings.network.refused: identical to English (untranslated?)
+2026-11-18T23:16:24.9935968Z WARNING ar.json: error.network.ownNodeRpcRefused: identical to English (untranslated?)
+2026-11-18T23:16:24.9936488Z WARNING ar.json: settings.scanPrivacy.padBlocks: identical to English (untranslated?)
+2026-11-18T23:16:24.9937026Z WARNING ar.json: settings.scanPrivacy.padBlocksHint: identical to English (untranslated?)
+2026-11-18T23:16:24.9937557Z WARNING ar.json: settings.scanPrivacy.errPad: identical to English (untranslated?)
+2026-11-18T23:16:24.9938182Z WARNING ar.json: settings.scanPrivacy.bulkEvidence: identical to English (untranslated?)
+2026-11-18T23:16:24.9938727Z WARNING ar.json: settings.scanPrivacy.bulkEvidenceHint: identical to English (untranslated?)
+2026-11-18T23:16:24.9939254Z WARNING ar.json: settings.scanPrivacy.errBulk: identical to English (untranslated?)
+2026-11-18T23:16:24.9939748Z WARNING ar.json: stealthExport.downloadBlocked: identical to English (untranslated?)
+2026-11-18T23:16:24.9940283Z WARNING ar.json: stealthExport.details.futureDeposits: identical to English (untranslated?)
+2026-11-18T23:16:24.9940814Z WARNING ar.json: stealthExport.details.public.done: identical to English (untranslated?)
+2026-11-18T23:16:24.9941345Z WARNING ar.json: stealthExport.details.rpcPrivacy: identical to English (untranslated?)
+2026-11-18T23:16:24.9941880Z WARNING ar.json: stealthExport.details.encrypted.done: identical to English (untranslated?)
+2026-11-18T23:16:24.9942407Z WARNING ar.json: stealthExport.raw.confirm.body: identical to English (untranslated?)
+2026-11-18T23:16:24.9942880Z WARNING ar.json: stealthExport.raw.done: identical to English (untranslated?)
+2026-11-18T23:16:24.9943354Z WARNING ar.json: stealthExport.archive.hint: identical to English (untranslated?)
+2026-11-18T23:16:24.9943827Z WARNING ar.json: stealthExport.archive.done: identical to English (untranslated?)
+2026-11-18T23:16:24.9944305Z WARNING ar.json: stealthExport.master.done: identical to English (untranslated?)
+2026-11-18T23:16:24.9944905Z WARNING ar.json: error.paymentKeyExport.publicRecordIsNotBackup: identical to English (untranslated?)
+2026-11-18T23:16:24.9945455Z WARNING ar.json: stealthExport.open.verify: identical to English (untranslated?)
+2026-11-18T23:16:24.9946158Z WARNING ar.json: stealthExport.verify.success: identical to English (untranslated?)
+2026-11-18T23:16:24.9946814Z WARNING ar.json: stealthExport.verify.masterScope: identical to English (untranslated?)
+2026-11-18T23:16:24.9947376Z WARNING ar.json: stealthExport.open.replace.savedTitle: identical to English (untranslated?)
+2026-11-18T23:16:24.9947927Z WARNING ar.json: stealthExport.open.replace.savedBody: identical to English (untranslated?)
+2026-11-18T23:16:24.9948440Z WARNING ar.json: stealthExport.verify.heading: identical to English (untranslated?)
+2026-11-18T23:16:24.9948928Z WARNING ar.json: stealthExport.verify.generated: identical to English (untranslated?)
+2026-11-18T23:16:24.9949445Z WARNING ar.json: stealthExport.verify.retryDownload: identical to English (untranslated?)
+2026-11-18T23:16:24.9949976Z WARNING ar.json: stealthExport.verify.downloadStarted: identical to English (untranslated?)
+2026-11-18T23:16:24.9950493Z WARNING ar.json: stealthExport.verify.retained: identical to English (untranslated?)
+2026-11-18T23:16:24.9951002Z WARNING ar.json: stealthExport.verify.savedSuccess: identical to English (untranslated?)
+2026-11-18T23:16:24.9951641Z WARNING ar.json: stealthExport.verify.scope: identical to English (untranslated?)
+2026-11-18T23:16:24.9952134Z WARNING ar.json: stealthExport.verify.keep: identical to English (untranslated?)
+2026-11-18T23:16:24.9952619Z WARNING ar.json: stealthExport.verify.file: identical to English (untranslated?)
+2026-11-18T23:16:24.9953113Z WARNING ar.json: stealthExport.verify.passphrase: identical to English (untranslated?)
+2026-11-18T23:16:24.9953635Z WARNING ar.json: stealthExport.verify.submit: identical to English (untranslated?)
+2026-11-18T23:16:24.9954150Z WARNING ar.json: stealthExport.verify.differentFile: identical to English (untranslated?)
+2026-11-18T23:16:24.9954634Z WARNING es.json: sweep.tokenFallback: identical to English (untranslated?)
+2026-11-18T23:16:24.9955167Z WARNING es.json: sweep.relayerFee: 1.80x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9955892Z WARNING es.json: sweep.balanceRead.warning: identical to English (untranslated?)
+2026-11-18T23:16:24.9956386Z WARNING es.json: sweep.balanceRead.note: identical to English (untranslated?)
+2026-11-18T23:16:24.9957068Z WARNING es.json: sellerKeys.newVaultPass: 1.62x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9957717Z WARNING es.json: sellerKeys.repeatVaultPass: 1.74x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9958258Z WARNING es.json: registry.lookupLabel: identical to English (untranslated?)
+2026-11-18T23:16:24.9959104Z WARNING es.json: btc.review.fee: 2.67x longer than English (limit 2.5); check the layout for truncation
+2026-11-18T23:16:24.9959916Z WARNING es.json: btc.review.feeDetail: identical to English (untranslated?)
+2026-11-18T23:16:24.9960674Z WARNING es.json: policy.deployment.router: identical to English (untranslated?)
+2026-11-18T23:16:24.9961229Z WARNING es.json: policy.create.tokenLabel: identical to English (untranslated?)
+2026-11-18T23:16:24.9961683Z WARNING es.json: policy.pay.router: identical to English (untranslated?)
+2026-11-18T23:16:24.9962202Z WARNING es.json: policy.pay.fee: 2.67x longer than English (limit 2.5); check the layout for truncation
+2026-11-18T23:16:24.9962829Z WARNING es.json: sellerKeys.pairing.download: 1.70x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9963346Z WARNING es.json: create.token: identical to English (untranslated?)
+2026-11-18T23:16:24.9963858Z WARNING es.json: create.pricing.fiat: 1.68x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9964504Z WARNING es.json: create.pricing.fiatUnavailable: 1.69x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9965151Z WARNING es.json: create.passphrase.repeat: 1.72x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9965742Z WARNING es.json: scan.deepScan: 1.79x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9966434Z WARNING es.json: pay.token: identical to English (untranslated?)
+2026-11-18T23:16:24.9966930Z WARNING es.json: pay.fiatStated: 2.13x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9967486Z WARNING es.json: pay.final.fee: 2.67x longer than English (limit 2.5); check the layout for truncation
+2026-11-18T23:16:24.9967952Z WARNING es.json: sol.col.slot: identical to English (untranslated?)
+2026-11-18T23:16:24.9968350Z WARNING es.json: sol.review.fee: identical to English (untranslated?)
+2026-11-18T23:16:24.9968894Z WARNING es.json: receipt.validation.lowercase: 1.70x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9969555Z WARNING es.json: receipt.error.keysUnavailable: 1.61x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9970171Z WARNING es.json: receipt.passphrase: 1.63x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9970888Z WARNING es.json: receipt.invoiceFile: 1.79x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9971511Z WARNING es.json: receipt.clearBinding: 1.67x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9972222Z WARNING es.json: error.reconciliationVault.invalidReorgBlock: 1.75x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9972807Z WARNING es.json: ledger.ambiguity.late: identical to English (untranslated?)
+2026-11-18T23:16:24.9973305Z WARNING es.json: ledger.ambiguity.blockTimeMissing: identical to English (untranslated?)
+2026-11-18T23:16:24.9973928Z WARNING es.json: ledger.ui.previewEncryptedBackup: 1.67x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9974562Z WARNING es.json: ledger.legacy.title: 1.61x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9975191Z WARNING es.json: error.tags.labelOrNotesTooLong: 1.88x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9976090Z WARNING es.json: error.tags.tagsChangedWhileUnlockingUnlockAgain: 1.63x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9977118Z WARNING es.json: error.idbStore.tooManyStoredTagsToOpenSafelyExistingTagsHave: 1.62x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9978066Z WARNING es.json: error.idbStore.tooManyStoredTagsToModifySafelyExistingTagsHave: 1.63x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9979001Z WARNING es.json: error.idbStore.tooManyTagsToStoreSafelyExistingTagsHaveBeen: 1.65x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9979948Z WARNING es.json: error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust: 1.64x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:24.9980638Z WARNING es.json: transaction.field.hash: identical to English (untranslated?)
+2026-11-18T23:16:24.9981123Z WARNING es.json: registry.submissionOutcome: identical to English (untranslated?)
+2026-11-18T23:16:24.9981665Z WARNING es.json: btc.verification.mode.other.available: identical to English (untranslated?)
+2026-11-18T23:16:24.9982237Z WARNING es.json: scanPrivacy.blocked.requirePrivatePath: identical to English (untranslated?)
+2026-11-18T23:16:24.9982814Z WARNING es.json: scanPrivacy.blocked.proxyEndpoint: identical to English (untranslated?)
+2026-11-18T23:16:24.9983348Z WARNING es.json: scanPrivacy.blocked.indexerChain: identical to English (untranslated?)
+2026-11-18T23:16:24.9983874Z WARNING es.json: scanPrivacy.blocked.indexerMissing: identical to English (untranslated?)
+2026-11-18T23:16:24.9984426Z WARNING es.json: scanPrivacy.blocked.endpointRejected: identical to English (untranslated?)
+2026-11-18T23:16:24.9984968Z WARNING es.json: scanPrivacy.blocked.indexerRejected: identical to English (untranslated?)
+2026-11-18T23:16:24.9985508Z WARNING es.json: scanPrivacy.disclosure.windowsFixed: identical to English (untranslated?)
+2026-11-18T23:16:24.9986204Z WARNING es.json: scanPrivacy.disclosure.windowsExact: identical to English (untranslated?)
+2026-11-18T23:16:24.9986761Z WARNING es.json: scanPrivacy.disclosure.ipDirect: identical to English (untranslated?)
+2026-11-18T23:16:24.9987285Z WARNING es.json: scanPrivacy.disclosure.ipTorBrowser: identical to English (untranslated?)
+2026-11-18T23:16:24.9987822Z WARNING es.json: scanPrivacy.disclosure.ipProxyExit: identical to English (untranslated?)
+2026-11-18T23:16:24.9988344Z WARNING es.json: scanPrivacy.disclosure.logsIndexer: identical to English (untranslated?)
+2026-11-18T23:16:24.9988864Z WARNING es.json: scanPrivacy.disclosure.logsRpc: identical to English (untranslated?)
+2026-11-18T23:16:24.9989368Z WARNING es.json: scanPrivacy.disclosure.rpcParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9989867Z WARNING es.json: scanPrivacy.disclosure.rpc: identical to English (untranslated?)
+2026-11-18T23:16:24.9990495Z WARNING es.json: scanPrivacy.disclosure.indexerParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9991031Z WARNING es.json: scanPrivacy.disclosure.indexer: identical to English (untranslated?)
+2026-11-18T23:16:24.9991550Z WARNING es.json: scanPrivacy.disclosure.proxyParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9992067Z WARNING es.json: scanPrivacy.disclosure.proxy: identical to English (untranslated?)
+2026-11-18T23:16:24.9992581Z WARNING es.json: scanPrivacy.disclosure.torExitParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9993098Z WARNING es.json: scanPrivacy.disclosure.torExit: identical to English (untranslated?)
+2026-11-18T23:16:24.9993632Z WARNING es.json: scanPrivacy.disclosure.torBrowserNotice: identical to English (untranslated?)
+2026-11-18T23:16:24.9994178Z WARNING es.json: scanPrivacy.disclosure.secondParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9994731Z WARNING es.json: scanPrivacy.disclosure.secondWindowsFixed: identical to English (untranslated?)
+2026-11-18T23:16:24.9995315Z WARNING es.json: scanPrivacy.disclosure.secondWindowsExact: identical to English (untranslated?)
+2026-11-18T23:16:24.9996144Z WARNING es.json: scanPrivacy.disclosure.secondDirectIp: identical to English (untranslated?)
+2026-11-18T23:16:24.9996804Z WARNING es.json: scanPrivacy.disclosure.second: identical to English (untranslated?)
+2026-11-18T23:16:24.9997324Z WARNING es.json: scanPrivacy.disclosure.sweepParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9997851Z WARNING es.json: scanPrivacy.disclosure.sweepAuto: identical to English (untranslated?)
+2026-11-18T23:16:24.9998392Z WARNING es.json: scanPrivacy.disclosure.sweepOnRequest: identical to English (untranslated?)
+2026-11-18T23:16:24.9999058Z WARNING es.json: scanPrivacy.disclosure.everyoneParty: identical to English (untranslated?)
+2026-11-18T23:16:24.9999601Z WARNING es.json: scanPrivacy.disclosure.everyone: identical to English (untranslated?)
+2026-11-18T23:16:25.0000132Z WARNING es.json: scanPrivacy.disclosure.everyonePrivate: identical to English (untranslated?)
+2026-11-18T23:16:25.0000689Z WARNING es.json: scanPrivacy.disclosure.firstUseNotice: identical to English (untranslated?)
+2026-11-18T23:16:25.0001184Z WARNING es.json: scan.privacySet.body: identical to English (untranslated?)
+2026-11-18T23:16:25.0001645Z WARNING es.json: scan.privacySet.medium: identical to English (untranslated?)
+2026-11-18T23:16:25.0002090Z WARNING es.json: scan.privacySet.high: identical to English (untranslated?)
+2026-11-18T23:16:25.0002657Z WARNING es.json: sellerKeys.verify.checking: 1.70x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0003274Z WARNING es.json: merchantProfile.identityUnverified.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0003854Z WARNING es.json: merchantProfile.identityUnverified.body: identical to English (untranslated?)
+2026-11-18T23:16:25.0004347Z WARNING es.json: merchantProfile.name: identical to English (untranslated?)
+2026-11-18T23:16:25.0004837Z WARNING es.json: merchantProfile.signerFingerprint: identical to English (untranslated?)
+2026-11-18T23:16:25.0005341Z WARNING es.json: merchantProfile.load.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0005978Z WARNING es.json: merchantProfile.load.url: identical to English (untranslated?)
+2026-11-18T23:16:25.0006477Z WARNING es.json: merchantProfile.load.privacy: identical to English (untranslated?)
+2026-11-18T23:16:25.0006981Z WARNING es.json: merchantProfile.load.action: identical to English (untranslated?)
+2026-11-18T23:16:25.0007468Z WARNING es.json: merchantProfile.load.loading: identical to English (untranslated?)
+2026-11-18T23:16:25.0007960Z WARNING es.json: merchantProfile.load.cancel: identical to English (untranslated?)
+2026-11-18T23:16:25.0008436Z WARNING es.json: merchantProfile.load.failed: identical to English (untranslated?)
+2026-11-18T23:16:25.0008900Z WARNING es.json: merchantProfile.source: identical to English (untranslated?)
+2026-11-18T23:16:25.0009488Z WARNING es.json: merchantProfile.signerKey: identical to English (untranslated?)
+2026-11-18T23:16:25.0009987Z WARNING es.json: merchantProfile.pin.action: identical to English (untranslated?)
+2026-11-18T23:16:25.0010477Z WARNING es.json: merchantProfile.pin.confirm: identical to English (untranslated?)
+2026-11-18T23:16:25.0010950Z WARNING es.json: merchantProfile.pin.help: identical to English (untranslated?)
+2026-11-18T23:16:25.0011425Z WARNING es.json: merchantProfile.pin.match: identical to English (untranslated?)
+2026-11-18T23:16:25.0011894Z WARNING es.json: merchantProfile.pin.changed: identical to English (untranslated?)
+2026-11-18T23:16:25.0012396Z WARNING es.json: merchantProfile.pin.savedKey: identical to English (untranslated?)
+2026-11-18T23:16:25.0012878Z WARNING es.json: merchantProfile.pin.remove: identical to English (untranslated?)
+2026-11-18T23:16:25.0013377Z WARNING es.json: merchantProfile.pin.removeConfirm: identical to English (untranslated?)
+2026-11-18T23:16:25.0013866Z WARNING es.json: merchantProfile.pin.failed: identical to English (untranslated?)
+2026-11-18T23:16:25.0014369Z WARNING es.json: merchantProfile.pin.unavailable: identical to English (untranslated?)
+2026-11-18T23:16:25.0014976Z WARNING es.json: merchantProfile.pin.inline: identical to English (untranslated?)
+2026-11-18T23:16:25.0015470Z WARNING es.json: merchantProfile.templates.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0016183Z WARNING es.json: merchantProfile.templates.notice: identical to English (untranslated?)
+2026-11-18T23:16:25.0016732Z WARNING es.json: merchantProfile.templates.select: identical to English (untranslated?)
+2026-11-18T23:16:25.0017246Z WARNING es.json: merchantProfile.templates.unknown: identical to English (untranslated?)
+2026-11-18T23:16:25.0017760Z WARNING es.json: merchantProfile.templates.amount: identical to English (untranslated?)
+2026-11-18T23:16:25.0018273Z WARNING es.json: merchantProfile.templates.currency: identical to English (untranslated?)
+2026-11-18T23:16:25.0018805Z WARNING es.json: merchantProfile.templates.expires: identical to English (untranslated?)
+2026-11-18T23:16:25.0019295Z WARNING es.json: merchantProfile.expired: identical to English (untranslated?)
+2026-11-18T23:16:25.0019747Z WARNING es.json: registry.ensHint: identical to English (untranslated?)
+2026-11-18T23:16:25.0020181Z WARNING es.json: registry.ensResolved: identical to English (untranslated?)
+2026-11-18T23:16:25.0020630Z WARNING es.json: btc.persistence.enable: identical to English (untranslated?)
+2026-11-18T23:16:25.0021069Z WARNING es.json: btc.persistence.help: identical to English (untranslated?)
+2026-11-18T23:16:25.0021528Z WARNING es.json: btc.persistence.unavailable: identical to English (untranslated?)
+2026-11-18T23:16:25.0021986Z WARNING es.json: btc.persistence.saved: identical to English (untranslated?)
+2026-11-18T23:16:25.0022418Z WARNING es.json: btc.persistence.error: identical to English (untranslated?)
+2026-11-18T23:16:25.0022860Z WARNING es.json: btc.persistence.reload: identical to English (untranslated?)
+2026-11-18T23:16:25.0023303Z WARNING es.json: btc.persistence.forget: identical to English (untranslated?)
+2026-11-18T23:16:25.0023783Z WARNING es.json: btc.persistence.forgetConfirm: identical to English (untranslated?)
+2026-11-18T23:16:25.0024261Z WARNING es.json: btc.persistence.forgetYes: identical to English (untranslated?)
+2026-11-18T23:16:25.0024740Z WARNING es.json: merchantProfile.issue.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0025228Z WARNING es.json: merchantProfile.issue.authority: identical to English (untranslated?)
+2026-11-18T23:16:25.0025725Z WARNING es.json: merchantProfile.issue.fixed: identical to English (untranslated?)
+2026-11-18T23:16:25.0026325Z WARNING es.json: merchantProfile.issue.chain: identical to English (untranslated?)
+2026-11-18T23:16:25.0026804Z WARNING es.json: merchantProfile.issue.token: identical to English (untranslated?)
+2026-11-18T23:16:25.0027297Z WARNING es.json: merchantProfile.issue.tokenAmount: identical to English (untranslated?)
+2026-11-18T23:16:25.0027931Z WARNING es.json: merchantProfile.issue.feePolicy: identical to English (untranslated?)
+2026-11-18T23:16:25.0028454Z WARNING es.json: merchantProfile.issue.action: identical to English (untranslated?)
+2026-11-18T23:16:25.0028950Z WARNING es.json: merchantProfile.issue.link: identical to English (untranslated?)
+2026-11-18T23:16:25.0029422Z WARNING es.json: merchantProfile.issue.copy: identical to English (untranslated?)
+2026-11-18T23:16:25.0029902Z WARNING es.json: merchantProfile.issue.backup: identical to English (untranslated?)
+2026-11-18T23:16:25.0030390Z WARNING es.json: merchantProfile.issue.invalid: identical to English (untranslated?)
+2026-11-18T23:16:25.0030882Z WARNING es.json: merchantProfile.issue.signer: identical to English (untranslated?)
+2026-11-18T23:16:25.0031364Z WARNING es.json: merchantProfile.issue.changed: identical to English (untranslated?)
+2026-11-18T23:16:25.0031890Z WARNING es.json: merchantProfile.issue.amountOverride: identical to English (untranslated?)
+2026-11-18T23:16:25.0032409Z WARNING es.json: merchantProfile.issue.request: identical to English (untranslated?)
+2026-11-18T23:16:25.0032939Z WARNING es.json: merchantProfile.issue.requestRejected: identical to English (untranslated?)
+2026-11-18T23:16:25.0033568Z WARNING es.json: merchantProfile.issue.none: identical to English (untranslated?)
+2026-11-18T23:16:25.0034078Z WARNING es.json: merchantProfile.issue.expiry: identical to English (untranslated?)
+2026-11-18T23:16:25.0034549Z WARNING es.json: btc.persistence.page: identical to English (untranslated?)
+2026-11-18T23:16:25.0034998Z WARNING es.json: btc.persistence.previous: identical to English (untranslated?)
+2026-11-18T23:16:25.0035439Z WARNING es.json: btc.persistence.next: identical to English (untranslated?)
+2026-11-18T23:16:25.0035965Z WARNING es.json: btc.oracle.modeLabel: identical to English (untranslated?)
+2026-11-18T23:16:25.0036395Z WARNING es.json: btc.oracle.none: identical to English (untranslated?)
+2026-11-18T23:16:25.0036800Z WARNING es.json: btc.oracle.http: identical to English (untranslated?)
+2026-11-18T23:16:25.0037223Z WARNING es.json: btc.oracle.grpc: identical to English (untranslated?)
+2026-11-18T23:16:25.0037639Z WARNING es.json: btc.oracle.urlLabel: identical to English (untranslated?)
+2026-11-18T23:16:25.0038073Z WARNING es.json: btc.oracle.urlHint: identical to English (untranslated?)
+2026-11-18T23:16:25.0038495Z WARNING es.json: btc.oracle.fullHelp: identical to English (untranslated?)
+2026-11-18T23:16:25.0038917Z WARNING es.json: btc.oracle.light: identical to English (untranslated?)
+2026-11-18T23:16:25.0039335Z WARNING es.json: btc.oracle.lightHelp: identical to English (untranslated?)
+2026-11-18T23:16:25.0039772Z WARNING es.json: btc.oracle.disclosure: identical to English (untranslated?)
+2026-11-18T23:16:25.0040215Z WARNING es.json: btc.oracle.secondEnable: identical to English (untranslated?)
+2026-11-18T23:16:25.0040659Z WARNING es.json: btc.oracle.secondKind: identical to English (untranslated?)
+2026-11-18T23:16:25.0041088Z WARNING es.json: btc.oracle.secondUrl: identical to English (untranslated?)
+2026-11-18T23:16:25.0041527Z WARNING es.json: btc.oracle.lightChecks: identical to English (untranslated?)
+2026-11-18T23:16:25.0041978Z WARNING es.json: btc.oracle.lightLimits: identical to English (untranslated?)
+2026-11-18T23:16:25.0042411Z WARNING es.json: btc.oracle.resultsNote: identical to English (untranslated?)
+2026-11-18T23:16:25.0043078Z WARNING es.json: error.keyVault.secretExportNeedsKeystorePassphrase: 1.82x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0043726Z WARNING es.json: stealthExport.downloadBlocked: identical to English (untranslated?)
+2026-11-18T23:16:25.0044314Z WARNING es.json: stealthExport.auth.keystore: 2.19x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0044977Z WARNING es.json: stealthExport.auth.keystoreFile: 1.90x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0045876Z WARNING es.json: stealthExport.auth.keystorePassphrase: 1.97x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0046591Z WARNING es.json: stealthExport.auth.chooseKeystore: 1.77x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0047257Z WARNING es.json: stealthExport.pass.repeat: 1.70x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0047911Z WARNING es.json: stealthExport.pass.strength: 1.63x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0048506Z WARNING es.json: stealthExport.details.futureDeposits: identical to English (untranslated?)
+2026-11-18T23:16:25.0049045Z WARNING es.json: stealthExport.details.public.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0049574Z WARNING es.json: stealthExport.details.rpcPrivacy: identical to English (untranslated?)
+2026-11-18T23:16:25.0050106Z WARNING es.json: stealthExport.details.encrypted.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0050645Z WARNING es.json: stealthExport.raw.confirm.body: identical to English (untranslated?)
+2026-11-18T23:16:25.0051251Z WARNING es.json: stealthExport.raw.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0051733Z WARNING es.json: stealthExport.archive.hint: identical to English (untranslated?)
+2026-11-18T23:16:25.0052207Z WARNING es.json: stealthExport.archive.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0052788Z WARNING es.json: stealthExport.master.heading: 1.65x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0053441Z WARNING es.json: stealthExport.master.download: 1.77x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0053995Z WARNING es.json: stealthExport.master.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0054557Z WARNING es.json: stealthExport.open.heading: 1.64x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0055191Z WARNING es.json: stealthExport.open.file: 1.83x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0055923Z WARNING es.json: stealthExport.open.passphrase: 2.09x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0056614Z WARNING es.json: stealthExport.open.replace.title: 1.60x longer than English (limit 1.6); check the layout for truncation
+2026-11-18T23:16:25.0057269Z WARNING es.json: error.paymentKeyExport.publicRecordIsNotBackup: identical to English (untranslated?)
+2026-11-18T23:16:25.0057817Z WARNING es.json: stealthExport.open.verify: identical to English (untranslated?)
+2026-11-18T23:16:25.0058315Z WARNING es.json: stealthExport.verify.success: identical to English (untranslated?)
+2026-11-18T23:16:25.0058827Z WARNING es.json: stealthExport.verify.masterScope: identical to English (untranslated?)
+2026-11-18T23:16:25.0059374Z WARNING es.json: stealthExport.open.replace.savedTitle: identical to English (untranslated?)
+2026-11-18T23:16:25.0059931Z WARNING es.json: stealthExport.open.replace.savedBody: identical to English (untranslated?)
+2026-11-18T23:16:25.0060460Z WARNING es.json: stealthExport.verify.heading: identical to English (untranslated?)
+2026-11-18T23:16:25.0060968Z WARNING es.json: stealthExport.verify.generated: identical to English (untranslated?)
+2026-11-18T23:16:25.0061501Z WARNING es.json: stealthExport.verify.retryDownload: identical to English (untranslated?)
+2026-11-18T23:16:25.0062036Z WARNING es.json: stealthExport.verify.downloadStarted: identical to English (untranslated?)
+2026-11-18T23:16:25.0062564Z WARNING es.json: stealthExport.verify.retained: identical to English (untranslated?)
+2026-11-18T23:16:25.0063068Z WARNING es.json: stealthExport.verify.savedSuccess: identical to English (untranslated?)
+2026-11-18T23:16:25.0063580Z WARNING es.json: stealthExport.verify.scope: identical to English (untranslated?)
+2026-11-18T23:16:25.0064057Z WARNING es.json: stealthExport.verify.keep: identical to English (untranslated?)
+2026-11-18T23:16:25.0064685Z WARNING es.json: stealthExport.verify.file: identical to English (untranslated?)
+2026-11-18T23:16:25.0065199Z WARNING es.json: stealthExport.verify.passphrase: identical to English (untranslated?)
+2026-11-18T23:16:25.0065719Z WARNING es.json: stealthExport.verify.submit: identical to English (untranslated?)
+2026-11-18T23:16:25.0066341Z WARNING es.json: stealthExport.verify.differentFile: identical to English (untranslated?)
+2026-11-18T23:16:25.0066869Z WARNING ja.json: sweep.balanceRead.warning: identical to English (untranslated?)
+2026-11-18T23:16:25.0067332Z WARNING ja.json: sweep.balanceRead.note: identical to English (untranslated?)
+2026-11-18T23:16:25.0067786Z WARNING ja.json: registry.lookupLabel: identical to English (untranslated?)
+2026-11-18T23:16:25.0068277Z WARNING ja.json: pay.col.description: only 0.18x the length of English; possibly truncated
+2026-11-18T23:16:25.0068799Z WARNING ja.json: receipt.transaction: only 0.18x the length of English; possibly truncated
+2026-11-18T23:16:25.0069286Z WARNING ja.json: receipt.includeAddress: identical to English (untranslated?)
+2026-11-18T23:16:25.0069770Z WARNING ja.json: receipt.includeAddress.warning: identical to English (untranslated?)
+2026-11-18T23:16:25.0070366Z WARNING ja.json: ledger.ambiguity.late: identical to English (untranslated?)
+2026-11-18T23:16:25.0070859Z WARNING ja.json: ledger.ambiguity.blockTimeMissing: identical to English (untranslated?)
+2026-11-18T23:16:25.0071358Z WARNING ja.json: registry.submissionOutcome: identical to English (untranslated?)
+2026-11-18T23:16:25.0071875Z WARNING ja.json: btc.verification.mode.other.available: identical to English (untranslated?)
+2026-11-18T23:16:25.0072440Z WARNING ja.json: scanPrivacy.blocked.requirePrivatePath: identical to English (untranslated?)
+2026-11-18T23:16:25.0072977Z WARNING ja.json: scanPrivacy.blocked.proxyEndpoint: identical to English (untranslated?)
+2026-11-18T23:16:25.0073502Z WARNING ja.json: scanPrivacy.blocked.indexerChain: identical to English (untranslated?)
+2026-11-18T23:16:25.0074024Z WARNING ja.json: scanPrivacy.blocked.indexerMissing: identical to English (untranslated?)
+2026-11-18T23:16:25.0074575Z WARNING ja.json: scanPrivacy.blocked.endpointRejected: identical to English (untranslated?)
+2026-11-18T23:16:25.0075114Z WARNING ja.json: scanPrivacy.blocked.indexerRejected: identical to English (untranslated?)
+2026-11-18T23:16:25.0075651Z WARNING ja.json: scanPrivacy.disclosure.windowsFixed: identical to English (untranslated?)
+2026-11-18T23:16:25.0076309Z WARNING ja.json: scanPrivacy.disclosure.windowsExact: identical to English (untranslated?)
+2026-11-18T23:16:25.0076835Z WARNING ja.json: scanPrivacy.disclosure.ipDirect: identical to English (untranslated?)
+2026-11-18T23:16:25.0077360Z WARNING ja.json: scanPrivacy.disclosure.ipTorBrowser: identical to English (untranslated?)
+2026-11-18T23:16:25.0077904Z WARNING ja.json: scanPrivacy.disclosure.ipProxyExit: identical to English (untranslated?)
+2026-11-18T23:16:25.0078426Z WARNING ja.json: scanPrivacy.disclosure.logsIndexer: identical to English (untranslated?)
+2026-11-18T23:16:25.0078945Z WARNING ja.json: scanPrivacy.disclosure.logsRpc: identical to English (untranslated?)
+2026-11-18T23:16:25.0079453Z WARNING ja.json: scanPrivacy.disclosure.rpcParty: identical to English (untranslated?)
+2026-11-18T23:16:25.0079955Z WARNING ja.json: scanPrivacy.disclosure.rpc: identical to English (untranslated?)
+2026-11-18T23:16:25.0080463Z WARNING ja.json: scanPrivacy.disclosure.indexerParty: identical to English (untranslated?)
+2026-11-18T23:16:25.0080977Z WARNING ja.json: scanPrivacy.disclosure.indexer: identical to English (untranslated?)
+2026-11-18T23:16:25.0081487Z WARNING ja.json: scanPrivacy.disclosure.proxyParty: identical to English (untranslated?)
+2026-11-18T23:16:25.0081999Z WARNING ja.json: scanPrivacy.disclosure.proxy: identical to English (untranslated?)
+2026-11-18T23:16:25.0082508Z WARNING ja.json: scanPrivacy.disclosure.torExitParty: identical to English (untranslated?)
+2026-11-18T23:16:25.0083131Z WARNING ja.json: scanPrivacy.disclosure.torExit: identical to English (untranslated?)
+2026-11-18T23:16:25.0083692Z WARNING ja.json: scanPrivacy.disclosure.torBrowserNotice: identical to English (untranslated?)
+2026-11-18T23:16:25.0084247Z WARNING ja.json: scanPrivacy.disclosure.secondParty: identical to English (untranslated?)
+2026-11-18T23:16:25.0084815Z WARNING ja.json: scanPrivacy.disclosure.secondWindowsFixed: identical to English (untranslated?)
+2026-11-18T23:16:25.0085400Z WARNING ja.json: scanPrivacy.disclosure.secondWindowsExact: identical to English (untranslated?)
+2026-11-18T23:16:25.0086046Z WARNING ja.json: scanPrivacy.disclosure.secondDirectIp: identical to English (untranslated?)
+2026-11-18T23:16:25.0086583Z WARNING ja.json: scanPrivacy.disclosure.second: identical to English (untranslated?)
+2026-11-18T23:16:25.0087095Z WARNING ja.json: scanPrivacy.disclosure.sweepParty: identical to English (untranslated?)
+2026-11-18T23:16:25.0087620Z WARNING ja.json: scanPrivacy.disclosure.sweepAuto: identical to English (untranslated?)
+2026-11-18T23:16:25.0088164Z WARNING ja.json: scanPrivacy.disclosure.sweepOnRequest: identical to English (untranslated?)
+2026-11-18T23:16:25.0088835Z WARNING ja.json: scanPrivacy.disclosure.everyoneParty: identical to English (untranslated?)
+2026-11-18T23:16:25.0089371Z WARNING ja.json: scanPrivacy.disclosure.everyone: identical to English (untranslated?)
+2026-11-18T23:16:25.0089915Z WARNING ja.json: scanPrivacy.disclosure.everyonePrivate: identical to English (untranslated?)
+2026-11-18T23:16:25.0090484Z WARNING ja.json: scanPrivacy.disclosure.firstUseNotice: identical to English (untranslated?)
+2026-11-18T23:16:25.0090971Z WARNING ja.json: scan.privacySet.body: identical to English (untranslated?)
+2026-11-18T23:16:25.0091422Z WARNING ja.json: scan.privacySet.medium: identical to English (untranslated?)
+2026-11-18T23:16:25.0091861Z WARNING ja.json: scan.privacySet.high: identical to English (untranslated?)
+2026-11-18T23:16:25.0092382Z WARNING ja.json: merchantProfile.identityUnverified.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0092961Z WARNING ja.json: merchantProfile.identityUnverified.body: identical to English (untranslated?)
+2026-11-18T23:16:25.0093464Z WARNING ja.json: merchantProfile.name: identical to English (untranslated?)
+2026-11-18T23:16:25.0093945Z WARNING ja.json: merchantProfile.signerFingerprint: identical to English (untranslated?)
+2026-11-18T23:16:25.0094456Z WARNING ja.json: merchantProfile.load.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0094934Z WARNING ja.json: merchantProfile.load.url: identical to English (untranslated?)
+2026-11-18T23:16:25.0095423Z WARNING ja.json: merchantProfile.load.privacy: identical to English (untranslated?)
+2026-11-18T23:16:25.0096001Z WARNING ja.json: merchantProfile.load.action: identical to English (untranslated?)
+2026-11-18T23:16:25.0096498Z WARNING ja.json: merchantProfile.load.loading: identical to English (untranslated?)
+2026-11-18T23:16:25.0096976Z WARNING ja.json: merchantProfile.load.cancel: identical to English (untranslated?)
+2026-11-18T23:16:25.0097459Z WARNING ja.json: merchantProfile.load.failed: identical to English (untranslated?)
+2026-11-18T23:16:25.0097925Z WARNING ja.json: merchantProfile.source: identical to English (untranslated?)
+2026-11-18T23:16:25.0098397Z WARNING ja.json: merchantProfile.signerKey: identical to English (untranslated?)
+2026-11-18T23:16:25.0098868Z WARNING ja.json: merchantProfile.pin.action: identical to English (untranslated?)
+2026-11-18T23:16:25.0099341Z WARNING ja.json: merchantProfile.pin.confirm: identical to English (untranslated?)
+2026-11-18T23:16:25.0099822Z WARNING ja.json: merchantProfile.pin.help: identical to English (untranslated?)
+2026-11-18T23:16:25.0100289Z WARNING ja.json: merchantProfile.pin.match: identical to English (untranslated?)
+2026-11-18T23:16:25.0100772Z WARNING ja.json: merchantProfile.pin.changed: identical to English (untranslated?)
+2026-11-18T23:16:25.0101251Z WARNING ja.json: merchantProfile.pin.savedKey: identical to English (untranslated?)
+2026-11-18T23:16:25.0101899Z WARNING ja.json: merchantProfile.pin.remove: identical to English (untranslated?)
+2026-11-18T23:16:25.0102433Z WARNING ja.json: merchantProfile.pin.removeConfirm: identical to English (untranslated?)
+2026-11-18T23:16:25.0102948Z WARNING ja.json: merchantProfile.pin.failed: identical to English (untranslated?)
+2026-11-18T23:16:25.0103445Z WARNING ja.json: merchantProfile.pin.unavailable: identical to English (untranslated?)
+2026-11-18T23:16:25.0103944Z WARNING ja.json: merchantProfile.pin.inline: identical to English (untranslated?)
+2026-11-18T23:16:25.0104436Z WARNING ja.json: merchantProfile.templates.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0104953Z WARNING ja.json: merchantProfile.templates.notice: identical to English (untranslated?)
+2026-11-18T23:16:25.0105463Z WARNING ja.json: merchantProfile.templates.select: identical to English (untranslated?)
+2026-11-18T23:16:25.0106075Z WARNING ja.json: merchantProfile.templates.unknown: identical to English (untranslated?)
+2026-11-18T23:16:25.0106607Z WARNING ja.json: merchantProfile.templates.amount: identical to English (untranslated?)
+2026-11-18T23:16:25.0107242Z WARNING ja.json: merchantProfile.templates.currency: identical to English (untranslated?)
+2026-11-18T23:16:25.0107766Z WARNING ja.json: merchantProfile.templates.expires: identical to English (untranslated?)
+2026-11-18T23:16:25.0108255Z WARNING ja.json: merchantProfile.expired: identical to English (untranslated?)
+2026-11-18T23:16:25.0108701Z WARNING ja.json: registry.ensHint: identical to English (untranslated?)
+2026-11-18T23:16:25.0109139Z WARNING ja.json: registry.ensResolved: identical to English (untranslated?)
+2026-11-18T23:16:25.0109585Z WARNING ja.json: btc.persistence.enable: identical to English (untranslated?)
+2026-11-18T23:16:25.0110032Z WARNING ja.json: btc.persistence.help: identical to English (untranslated?)
+2026-11-18T23:16:25.0110494Z WARNING ja.json: btc.persistence.unavailable: identical to English (untranslated?)
+2026-11-18T23:16:25.0110959Z WARNING ja.json: btc.persistence.saved: identical to English (untranslated?)
+2026-11-18T23:16:25.0111404Z WARNING ja.json: btc.persistence.error: identical to English (untranslated?)
+2026-11-18T23:16:25.0111839Z WARNING ja.json: btc.persistence.reload: identical to English (untranslated?)
+2026-11-18T23:16:25.0112283Z WARNING ja.json: btc.persistence.forget: identical to English (untranslated?)
+2026-11-18T23:16:25.0112756Z WARNING ja.json: btc.persistence.forgetConfirm: identical to English (untranslated?)
+2026-11-18T23:16:25.0113243Z WARNING ja.json: btc.persistence.forgetYes: identical to English (untranslated?)
+2026-11-18T23:16:25.0113715Z WARNING ja.json: merchantProfile.issue.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0114220Z WARNING ja.json: merchantProfile.issue.authority: identical to English (untranslated?)
+2026-11-18T23:16:25.0114708Z WARNING ja.json: merchantProfile.issue.fixed: identical to English (untranslated?)
+2026-11-18T23:16:25.0115190Z WARNING ja.json: merchantProfile.issue.chain: identical to English (untranslated?)
+2026-11-18T23:16:25.0115660Z WARNING ja.json: merchantProfile.issue.token: identical to English (untranslated?)
+2026-11-18T23:16:25.0116279Z WARNING ja.json: merchantProfile.issue.tokenAmount: identical to English (untranslated?)
+2026-11-18T23:16:25.0116795Z WARNING ja.json: merchantProfile.issue.feePolicy: identical to English (untranslated?)
+2026-11-18T23:16:25.0117306Z WARNING ja.json: merchantProfile.issue.action: identical to English (untranslated?)
+2026-11-18T23:16:25.0117793Z WARNING ja.json: merchantProfile.issue.link: identical to English (untranslated?)
+2026-11-18T23:16:25.0118271Z WARNING ja.json: merchantProfile.issue.copy: identical to English (untranslated?)
+2026-11-18T23:16:25.0118793Z WARNING ja.json: merchantProfile.issue.backup: identical to English (untranslated?)
+2026-11-18T23:16:25.0119576Z WARNING ja.json: merchantProfile.issue.invalid: identical to English (untranslated?)
+2026-11-18T23:16:25.0120181Z WARNING ja.json: merchantProfile.issue.signer: identical to English (untranslated?)
+2026-11-18T23:16:25.0120831Z WARNING ja.json: merchantProfile.issue.changed: identical to English (untranslated?)
+2026-11-18T23:16:25.0121698Z WARNING ja.json: merchantProfile.issue.amountOverride: identical to English (untranslated?)
+2026-11-18T23:16:25.0122238Z WARNING ja.json: merchantProfile.issue.request: identical to English (untranslated?)
+2026-11-18T23:16:25.0122764Z WARNING ja.json: merchantProfile.issue.requestRejected: identical to English (untranslated?)
+2026-11-18T23:16:25.0123296Z WARNING ja.json: merchantProfile.issue.none: identical to English (untranslated?)
+2026-11-18T23:16:25.0123791Z WARNING ja.json: merchantProfile.issue.expiry: identical to English (untranslated?)
+2026-11-18T23:16:25.0124269Z WARNING ja.json: btc.persistence.page: identical to English (untranslated?)
+2026-11-18T23:16:25.0124722Z WARNING ja.json: btc.persistence.previous: identical to English (untranslated?)
+2026-11-18T23:16:25.0125185Z WARNING ja.json: btc.persistence.next: identical to English (untranslated?)
+2026-11-18T23:16:25.0125623Z WARNING ja.json: btc.oracle.modeLabel: identical to English (untranslated?)
+2026-11-18T23:16:25.0126437Z WARNING ja.json: btc.oracle.none: identical to English (untranslated?)
+2026-11-18T23:16:25.0126868Z WARNING ja.json: btc.oracle.http: identical to English (untranslated?)
+2026-11-18T23:16:25.0127270Z WARNING ja.json: btc.oracle.grpc: identical to English (untranslated?)
+2026-11-18T23:16:25.0127690Z WARNING ja.json: btc.oracle.urlLabel: identical to English (untranslated?)
+2026-11-18T23:16:25.0128121Z WARNING ja.json: btc.oracle.urlHint: identical to English (untranslated?)
+2026-11-18T23:16:25.0128570Z WARNING ja.json: btc.oracle.fullHelp: identical to English (untranslated?)
+2026-11-18T23:16:25.0129003Z WARNING ja.json: btc.oracle.light: identical to English (untranslated?)
+2026-11-18T23:16:25.0129437Z WARNING ja.json: btc.oracle.lightHelp: identical to English (untranslated?)
+2026-11-18T23:16:25.0129881Z WARNING ja.json: btc.oracle.disclosure: identical to English (untranslated?)
+2026-11-18T23:16:25.0130346Z WARNING ja.json: btc.oracle.secondEnable: identical to English (untranslated?)
+2026-11-18T23:16:25.0130903Z WARNING ja.json: btc.oracle.secondKind: identical to English (untranslated?)
+2026-11-18T23:16:25.0131456Z WARNING ja.json: btc.oracle.secondUrl: identical to English (untranslated?)
+2026-11-18T23:16:25.0131902Z WARNING ja.json: btc.oracle.lightChecks: identical to English (untranslated?)
+2026-11-18T23:16:25.0132354Z WARNING ja.json: btc.oracle.lightLimits: identical to English (untranslated?)
+2026-11-18T23:16:25.0132796Z WARNING ja.json: btc.oracle.resultsNote: identical to English (untranslated?)
+2026-11-18T23:16:25.0133251Z WARNING ja.json: settings.network.legend: identical to English (untranslated?)
+2026-11-18T23:16:25.0133694Z WARNING ja.json: settings.network.hint: identical to English (untranslated?)
+2026-11-18T23:16:25.0134188Z WARNING ja.json: settings.network.rpcProfile: identical to English (untranslated?)
+2026-11-18T23:16:25.0134704Z WARNING ja.json: settings.network.relayerProfile: identical to English (untranslated?)
+2026-11-18T23:16:25.0135213Z WARNING ja.json: settings.network.profile.direct: identical to English (untranslated?)
+2026-11-18T23:16:25.0135750Z WARNING ja.json: settings.network.profile.torBrowser: identical to English (untranslated?)
+2026-11-18T23:16:25.0136428Z WARNING ja.json: settings.network.rpcMode: identical to English (untranslated?)
+2026-11-18T23:16:25.0136931Z WARNING ja.json: settings.network.rpcMode.single: identical to English (untranslated?)
+2026-11-18T23:16:25.0137442Z WARNING ja.json: settings.network.rpcMode.ownNode: identical to English (untranslated?)
+2026-11-18T23:16:25.0137950Z WARNING ja.json: settings.network.statusHeading: identical to English (untranslated?)
+2026-11-18T23:16:25.0138477Z WARNING ja.json: settings.network.status.loopbackTested: identical to English (untranslated?)
+2026-11-18T23:16:25.0139022Z WARNING ja.json: settings.network.status.unverified: identical to English (untranslated?)
+2026-11-18T23:16:25.0139654Z WARNING ja.json: settings.network.notice.title: identical to English (untranslated?)
+2026-11-18T23:16:25.0140170Z WARNING ja.json: settings.network.notice.body: identical to English (untranslated?)
+2026-11-18T23:16:25.0140678Z WARNING ja.json: settings.network.notice.unverified: identical to English (untranslated?)
+2026-11-18T23:16:25.0141195Z WARNING ja.json: settings.network.notice.ack: identical to English (untranslated?)
+2026-11-18T23:16:25.0141664Z WARNING ja.json: settings.network.pending: identical to English (untranslated?)
+2026-11-18T23:16:25.0142128Z WARNING ja.json: settings.network.active: identical to English (untranslated?)
+2026-11-18T23:16:25.0142578Z WARNING ja.json: settings.network.save: identical to English (untranslated?)
+2026-11-18T23:16:25.0143028Z WARNING ja.json: settings.network.saved: identical to English (untranslated?)
+2026-11-18T23:16:25.0143481Z WARNING ja.json: settings.network.refused: identical to English (untranslated?)
+2026-11-18T23:16:25.0143969Z WARNING ja.json: error.network.ownNodeRpcRefused: identical to English (untranslated?)
+2026-11-18T23:16:25.0144475Z WARNING ja.json: settings.scanPrivacy.padBlocks: identical to English (untranslated?)
+2026-11-18T23:16:25.0145121Z WARNING ja.json: settings.scanPrivacy.padBlocksHint: identical to English (untranslated?)
+2026-11-18T23:16:25.0145634Z WARNING ja.json: settings.scanPrivacy.errPad: identical to English (untranslated?)
+2026-11-18T23:16:25.0146228Z WARNING ja.json: settings.scanPrivacy.bulkEvidence: identical to English (untranslated?)
+2026-11-18T23:16:25.0146787Z WARNING ja.json: settings.scanPrivacy.bulkEvidenceHint: identical to English (untranslated?)
+2026-11-18T23:16:25.0147305Z WARNING ja.json: settings.scanPrivacy.errBulk: identical to English (untranslated?)
+2026-11-18T23:16:25.0147808Z WARNING ja.json: stealthExport.downloadBlocked: identical to English (untranslated?)
+2026-11-18T23:16:25.0148331Z WARNING ja.json: stealthExport.details.futureDeposits: identical to English (untranslated?)
+2026-11-18T23:16:25.0148872Z WARNING ja.json: stealthExport.details.public.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0149392Z WARNING ja.json: stealthExport.details.rpcPrivacy: identical to English (untranslated?)
+2026-11-18T23:16:25.0149936Z WARNING ja.json: stealthExport.details.encrypted.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0150455Z WARNING ja.json: stealthExport.raw.confirm.body: identical to English (untranslated?)
+2026-11-18T23:16:25.0150937Z WARNING ja.json: stealthExport.raw.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0151412Z WARNING ja.json: stealthExport.archive.hint: identical to English (untranslated?)
+2026-11-18T23:16:25.0151897Z WARNING ja.json: stealthExport.archive.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0152368Z WARNING ja.json: stealthExport.master.done: identical to English (untranslated?)
+2026-11-18T23:16:25.0152935Z WARNING ja.json: error.paymentKeyExport.publicRecordIsNotBackup: identical to English (untranslated?)
+2026-11-18T23:16:25.0153482Z WARNING ja.json: stealthExport.open.verify: identical to English (untranslated?)
+2026-11-18T23:16:25.0153999Z WARNING ja.json: stealthExport.verify.success: identical to English (untranslated?)
+2026-11-18T23:16:25.0154503Z WARNING ja.json: stealthExport.verify.masterScope: identical to English (untranslated?)
+2026-11-18T23:16:25.0155051Z WARNING ja.json: stealthExport.open.replace.savedTitle: identical to English (untranslated?)
+2026-11-18T23:16:25.0155594Z WARNING ja.json: stealthExport.open.replace.savedBody: identical to English (untranslated?)
+2026-11-18T23:16:25.0156222Z WARNING ja.json: stealthExport.verify.heading: identical to English (untranslated?)
+2026-11-18T23:16:25.0156723Z WARNING ja.json: stealthExport.verify.generated: identical to English (untranslated?)
+2026-11-18T23:16:25.0157248Z WARNING ja.json: stealthExport.verify.retryDownload: identical to English (untranslated?)
+2026-11-18T23:16:25.0157917Z WARNING ja.json: stealthExport.verify.downloadStarted: identical to English (untranslated?)
+2026-11-18T23:16:25.0158449Z WARNING ja.json: stealthExport.verify.retained: identical to English (untranslated?)
+2026-11-18T23:16:25.0158966Z WARNING ja.json: stealthExport.verify.savedSuccess: identical to English (untranslated?)
+2026-11-18T23:16:25.0159473Z WARNING ja.json: stealthExport.verify.scope: identical to English (untranslated?)
+2026-11-18T23:16:25.0159951Z WARNING ja.json: stealthExport.verify.keep: identical to English (untranslated?)
+2026-11-18T23:16:25.0160413Z WARNING ja.json: stealthExport.verify.file: identical to English (untranslated?)
+2026-11-18T23:16:25.0160905Z WARNING ja.json: stealthExport.verify.passphrase: identical to English (untranslated?)
+2026-11-18T23:16:25.0161401Z WARNING ja.json: stealthExport.verify.submit: identical to English (untranslated?)
+2026-11-18T23:16:25.0162043Z WARNING ja.json: stealthExport.verify.differentFile: identical to English (untranslated?)
+2026-11-18T23:16:25.0162523Z i18n check: 4 catalogs, 0 errors, 572 warnings
+2026-11-18T23:16:25.0189462Z ##[group]Run npm audit --omit=dev --audit-level=high
+2026-11-18T23:16:25.0189801Z [36;1mnpm audit --omit=dev --audit-level=high[0m
+2026-11-18T23:16:25.0233253Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:16:25.0233479Z ##[endgroup]
+2026-11-18T23:16:25.5048676Z found 0 vulnerabilities
+2026-11-18T23:16:25.5211312Z Post job cleanup.
+2026-11-18T23:16:25.5214648Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__9539d7c7-dd39-43a2-a75b-bd631f3d34eb.libs]
+2026-11-18T23:16:26.1157692Z Post job cleanup.
+2026-11-18T23:16:26.2235386Z Cache hit occurred on the primary key libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2, not saving cache.
+2026-11-18T23:16:26.2294690Z ##[end-action id=__9539d7c7-dd39-43a2-a75b-bd631f3d34eb.libs;outcome=success;conclusion=success;duration_ms=707]
+2026-11-18T23:16:26.2298036Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__9539d7c7-dd39-43a2-a75b-bd631f3d34eb.__actions_setup-node]
+2026-11-18T23:16:26.2335678Z Post job cleanup.
+2026-11-18T23:16:26.3229422Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c, not saving cache.
+2026-11-18T23:16:26.3288720Z ##[end-action id=__9539d7c7-dd39-43a2-a75b-bd631f3d34eb.__actions_setup-node;outcome=success;conclusion=success;duration_ms=98]
+2026-11-18T23:16:26.3343640Z Post job cleanup.
+2026-11-18T23:16:26.4019187Z [command]/usr/bin/git version
+2026-11-18T23:16:26.4087290Z git version 2.56.1
+2026-11-18T23:16:26.4115708Z Temporarily overriding HOME='/home/runner/work/_temp/84c7b060-7fad-4f6d-b5b5-a2c9509c097b' before making global git config changes
+2026-11-18T23:16:26.4117017Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:16:26.4120052Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:16:26.4148331Z Removing SSH command configuration
+2026-11-18T23:16:26.4153500Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:16:26.4186202Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:16:26.4484025Z Removing HTTP extra header
+2026-11-18T23:16:26.4498277Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:16:26.4539369Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:16:26.4799753Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:16:26.4806121Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:16:26.4834595Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:16:26.5587323Z Cleaning up orphan processes
+

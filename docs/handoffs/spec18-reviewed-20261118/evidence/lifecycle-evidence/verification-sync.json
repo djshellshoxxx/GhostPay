@@ -1,0 +1,48 @@
+{
+  "base": "7d99c223e977938cd96c5e496232bad44a3b4799",
+  "published_base": "b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73",
+  "red_evidence": {
+    "job_id": "135212473022",
+    "log": "qualification/hosted-135212473022.log",
+    "result": "2998 passed,2 failed,1 skipped; both failures in saved-backup real-crypto verification while DOM still showed decryption in progress."
+  },
+  "finding": "Default Testing Library 1-second DOM polling expired before real verification settled under full coverage. The production operation remained pending; no synthetic delay or timeout adjustment was used.",
+  "fix": "Observe the actual verifyStealthExport Promise through a call-through spy and a deferred {operation} carrier. Await fulfillment/rejection within React act, then execute unchanged DOM/custody/no-secret assertions. Wrong-passphrase case requires an explicit rejected Promise with the expected error.",
+  "changed_paths": [
+    "apps/web/src/components/StealthExportVerification.test.tsx",
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "test_source_sha256": "1ecbf2fb1b1ee9321f8b72e1d5e9c9a45b2c8b5a932cdd760240df637b3e476d",
+  "test_diff_sha256": "a36c8f7c6a7ee5625183d17b5824cbd38574fc860947fefa711c8da643a2855f",
+  "review": "crypto_recovery_review independently source-cleared the exact test diff; no rule, KDF, crypto, assertion, timeout, workflow or runtime change.",
+  "tests": [
+    {
+      "log": "verification-sync.log",
+      "exit_code": 0,
+      "files_passed": 1,
+      "tests_passed": 14,
+      "seconds": 3.13,
+      "sha256": "36b914271597bbb24c496cfa2f14d4b4c8ab1829bfbb29d3f2f93cc7fc41173e"
+    },
+    {
+      "log": "feature-sync.log",
+      "exit_code": 0,
+      "files_passed": 13,
+      "tests_passed": 156,
+      "seconds": 35.2,
+      "sha256": "01beceaa1c4b76f9233176518621e0c26e3101d01ec902d54b5c610d2fd8d258"
+    }
+  ],
+  "runtime": {
+    "node": "v22.23.5",
+    "heap_mib": 512,
+    "vitest_workers": 1,
+    "coverage": false
+  },
+  "limits": [
+    "The 14-case file is included in the 156-case selection; do not add their counts as distinct cases.",
+    "Hosted log provides the executed red evidence; local busy-loop/sleep reproduction was deliberately not introduced.",
+    "Fresh hosted full-web coverage and other gates remain required for the changed test source.",
+    "No git commit or remote write was made by this lane."
+  ]
+}

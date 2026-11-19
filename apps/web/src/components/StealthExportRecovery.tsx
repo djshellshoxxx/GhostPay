@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
 import { loadedKeysRecoverable } from '../lib/keyVault';
-import { RecoveredMasterKeys, RecoveredPaymentKeys, openStealthExport } from '../lib/paymentKeyExport';
+import { RecoveredMasterKeys, RecoveredPaymentKeys, openStealthExport, verifyStealthExport, type VerifiedStealthExport } from '../lib/paymentKeyExport';
 import { captureSessionVersionGuard, getSessionBackup, sessionHasExternalCopy } from '../lib/session';
 import { STEALTH_EXPORT_LIMITS, type StealthKeypairHeader, type StealthMasterHeader, type StealthPublicRecord } from '../lib/stealthExport';
 import type { MessageKey } from '../i18n/catalog';
@@ -36,9 +36,11 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<ExportMessage | undefined>(undefined);
   const [shown, setShown] = useState<Shown | undefined>(undefined);
+  const [verified, setVerified] = useState<VerifiedStealthExport | undefined>(undefined);
   const [rawIndex, setRawIndex] = useState<number | undefined>(undefined);
-  const [confirmReplace, setConfirmReplace] = useState(false);
+  const [confirmReplace, setConfirmReplace] = useState<'saved' | 'unbacked' | undefined>(undefined);
   const held = useRef<RecoveredPaymentKeys | RecoveredMasterKeys | undefined>(undefined);
+  const replacement = useRef<{ readonly keys: RecoveredMasterKeys; readonly controller: AbortController; readonly unchanged: () => void } | undefined>(undefined);
   const confirmRef = useRef<HTMLDivElement | null>(null);
   const mounted = useRef(false);
 
@@ -48,14 +50,15 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
   };
   const reset = (): void => {
     wipeHeld();
-    setShown(undefined); setRawIndex(undefined); setConfirmReplace(false); setPassphrase(''); setBusy(false);
+    replacement.current = undefined;
+    setShown(undefined); setVerified(undefined); setRawIndex(undefined); setConfirmReplace(undefined); setPassphrase(''); setBusy(false); setMessage(undefined);
   };
   const op = useExportOperation(reset);
   useEffect(() => {
     mounted.current = true;
     return () => { mounted.current = false; wipeHeld(); };
   }, []);
-  useEffect(() => { if (rawIndex !== undefined) confirmRef.current?.focus(); }, [rawIndex]);
+  useEffect(() => { if (rawIndex !== undefined || confirmReplace !== undefined) confirmRef.current?.focus(); }, [rawIndex, confirmReplace]);
 
   const fail = (text: DisplayMessage): void => { setMessage({ kind: 'error', text }); };
   const done = (text: DisplayMessage): void => {
@@ -66,12 +69,12 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
     op.stop(); reset(); setMessage(undefined);
   };
 
-  const onOpen = (e: FormEvent): void => {
-    e.preventDefault();
+  const openSelected = (mode: 'open' | 'verify'): void => {
     if (file === undefined) { fail({ key: 'stealthExport.open.chooseFile' }); return; }
-    if (file.size > STEALTH_EXPORT_LIMITS.keypairFileBytes) { fail({ key: 'error.stealthExport.tooLarge' }); return; }
+    if (file.size > STEALTH_EXPORT_LIMITS.keypairFileBytes) { setPassphrase(''); fail({ key: 'error.stealthExport.tooLarge' }); return; }
     const controller = op.start();
-    wipeHeld(); setShown(undefined); setRawIndex(undefined); setConfirmReplace(false);
+    wipeHeld(); replacement.current = undefined;
+    setShown(undefined); setVerified(undefined); setRawIndex(undefined); setConfirmReplace(undefined);
     const selected = file; const pass = passphrase;
     setBusy(true);
     setMessage({ kind: 'ok', text: { key: 'stealthExport.open.working' } });
@@ -79,6 +82,16 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
       try {
         const text = await selected.text();
         if (!op.current(controller)) return;
+        // File.text() can strip a UTF-8 BOM. Portable exports are ASCII bytes; never certify a normalized file that the
+        // independent decoder would reject. The codec separately rejects every remaining non-ASCII character.
+        if (selected.size !== text.length) throw new UserFacingError({ key: 'error.stealthExport.invalidFile' });
+        if (mode === 'verify') {
+          const result = await verifyStealthExport(text, pass, { signal: controller.signal });
+          if (!op.current(controller)) return;
+          setPassphrase(''); setBusy(false); setVerified(result);
+          done({ key: 'stealthExport.verify.success' });
+          return;
+        }
         const opened = await openStealthExport(text, pass, { signal: controller.signal });
         if (!op.current(controller)) {
           if (opened.kind !== 'public') opened.keys.dispose();
@@ -102,6 +115,8 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
     })();
   };
 
+  const onOpen = (e: FormEvent): void => { e.preventDefault(); openSelected('open'); };
+
   const onDownloadRaw = (index: number): void => {
     const keys = held.current;
     try {
@@ -115,12 +130,12 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
     }
   };
 
-  const install = (): void => {
-    setConfirmReplace(false);
-    const keys = held.current;
+  const install = (keys: RecoveredMasterKeys): void => {
+    if (held.current !== keys) return;
+    setConfirmReplace(undefined);
+    replacement.current = undefined;
     held.current = undefined;
     try {
-      if (!(keys instanceof RecoveredMasterKeys)) throw new UserFacingError({ key: 'error.paymentKeyExport.recoveredKeysClosed' });
       // Installing changes the session, which resets this panel through useExportOperation before the outcome is shown.
       keys.install();
       reset();
@@ -131,18 +146,44 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
     }
   };
 
-  // Loading replaces the loaded keys: without a recoverable copy that needs the same confirmation as unlocking a vault
-  // (L1-01, C-R12). A key change during the storage read drops the request.
+  // Every replacement needs fresh consent for this exact export and session. The storage read only selects the warning;
+  // its result can never install keys. A missing copy keeps the existing sole-copy loss warning (L1-01, C-R12).
   const onLoadMaster = (): void => {
     const controller = op.start();
     const selected = held.current;
-    if (getSessionBackup() === undefined || sessionHasExternalCopy()) { install(); return; }
+    if (!(selected instanceof RecoveredMasterKeys) || selected.loaded) return;
+    if (getSessionBackup() === undefined) { install(selected); return; }
     const unchanged = captureSessionVersionGuard();
+    setBusy(true); setMessage(undefined); setConfirmReplace(undefined); replacement.current = undefined;
     void loadedKeysRecoverable().then((recoverable) => {
       // A storage read belongs to this export only. Closing, locking or opening another export cancels the request.
       if (!mounted.current || !op.current(controller) || held.current !== selected) return;
       try { unchanged(); } catch { return; }
-      if (recoverable) install(); else setConfirmReplace(true);
+      setBusy(false);
+      replacement.current = { keys: selected, controller, unchanged };
+      setConfirmReplace(recoverable ? 'saved' : 'unbacked');
+    }).catch((error: unknown) => {
+      if (!op.current(controller) || held.current !== selected) return;
+      setBusy(false); fail(captureUserMessage(error));
+    });
+  };
+
+  const confirmInstall = (): void => {
+    const consent = replacement.current;
+    if (consent === undefined || !op.current(consent.controller) || held.current !== consent.keys) return;
+    try { consent.unchanged(); } catch { return; }
+    if (confirmReplace === 'unbacked' || sessionHasExternalCopy()) { install(consent.keys); return; }
+    // A vault can disappear in another tab after the initial warning. Recheck before replacing; losing the saved copy
+    // requires a new confirmation of the stronger warning, never a silent change of the consent's meaning.
+    setBusy(true);
+    void loadedKeysRecoverable().then((recoverable) => {
+      if (!op.current(consent.controller) || replacement.current !== consent || held.current !== consent.keys) return;
+      try { consent.unchanged(); } catch { return; }
+      setBusy(false);
+      if (recoverable) install(consent.keys); else setConfirmReplace('unbacked');
+    }).catch((error: unknown) => {
+      if (!op.current(consent.controller) || replacement.current !== consent) return;
+      setBusy(false); fail(captureUserMessage(error));
     });
   };
 
@@ -161,11 +202,25 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
           {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={file.name} /></bdi></p>}
         </>}</Field>
         <Field label={t('stealthExport.open.passphrase')} hint={t('stealthExport.open.passphraseHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-stealth-export-open" value={passphrase} onChange={(e) => { setPassphrase(e.target.value); }} />}
+          {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-stealth-export-open" disabled={busy} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); setVerified(undefined); setMessage(undefined); }} />}
         </Field>
         <button type="submit" className="btn" data-testid="stealth-export-open-submit" disabled={busy || file === undefined}>{t('stealthExport.open.submit')}</button>
+        <button type="button" className="btn" data-testid="stealth-export-verify-submit" disabled={busy || file === undefined} onClick={() => { openSelected('verify'); }}>{t('stealthExport.open.verify')}</button>
         {busy && <button type="button" className="btn" onClick={closeExport}>{t('stealthExport.cancel')}</button>}
       </form>
+
+      {verified !== undefined && (
+        <div className="stack" data-testid="stealth-export-verified">
+          {verified.kind === 'keypair' ? (
+            <>
+              <p>{t('stealthExport.open.keypair.summary', { count: verified.header.count, chain: chainLabel(verified.header.chainId, t), scope: t(SCOPE_KEYS[verified.header.scope]) })}</p>
+              <ul className="plain-list">{verified.header.payments.map((record) => <li key={record.stealthAddress}><Mono>{record.stealthAddress}</Mono></li>)}</ul>
+            </>
+          ) : (
+            <><p><Mono>{verified.header.metaAddress}</Mono></p><p>{t('stealthExport.verify.masterScope')}</p></>
+          )}
+        </div>
+      )}
 
       {shown?.kind === 'public' && (
         <Notice kind="info" title={t('stealthExport.open.public.title')}>
@@ -210,14 +265,16 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
           {shown.loaded ? (
             <Notice kind="info">{t('stealthExport.open.master.loaded')}</Notice>
           ) : (
-            <p><button type="button" className="btn btn-primary" disabled={confirmReplace} onClick={onLoadMaster}>{t('stealthExport.open.master.load')}</button></p>
+            <p><button type="button" className="btn btn-primary" disabled={busy || confirmReplace !== undefined} onClick={onLoadMaster}>{t('stealthExport.open.master.load')}</button></p>
           )}
-          {confirmReplace && (
-            <Notice kind="warn" title={t('stealthExport.open.replace.title')}>
-              <p>{t('stealthExport.open.replace.body')}</p>
-              <button type="button" className="btn btn-danger" onClick={install}>{t('stealthExport.open.replace.confirm')}</button>{' '}
-              <button type="button" className="btn" onClick={() => { setConfirmReplace(false); }}>{t('stealthExport.cancel')}</button>
-            </Notice>
+          {confirmReplace !== undefined && (
+            <div ref={confirmRef} tabIndex={-1} role="group" aria-label={t(confirmReplace === 'saved' ? 'stealthExport.open.replace.savedTitle' : 'stealthExport.open.replace.title')}>
+              <Notice kind="warn" title={t(confirmReplace === 'saved' ? 'stealthExport.open.replace.savedTitle' : 'stealthExport.open.replace.title')}>
+                <p>{t(confirmReplace === 'saved' ? 'stealthExport.open.replace.savedBody' : 'stealthExport.open.replace.body')}</p>
+                <button type="button" className="btn btn-danger" disabled={busy} onClick={confirmInstall}>{t('stealthExport.open.replace.confirm')}</button>{' '}
+                <button type="button" className="btn" onClick={() => { op.stop(); replacement.current = undefined; setBusy(false); setConfirmReplace(undefined); }}>{t('stealthExport.cancel')}</button>
+              </Notice>
+            </div>
           )}
         </div>
       )}
@@ -229,4 +286,4 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
   );
 }
 
-// i18n-use: stealthExport.open.scope.single stealthExport.open.scope.selected stealthExport.open.scope.allDiscovered stealthExport.open.chooseFile stealthExport.open.master.done stealthExport.open.working stealthExport.raw.done
+// i18n-use: stealthExport.open.scope.single stealthExport.open.scope.selected stealthExport.open.scope.allDiscovered stealthExport.open.chooseFile stealthExport.open.master.done stealthExport.open.working stealthExport.raw.done stealthExport.verify.success stealthExport.open.replace.savedTitle stealthExport.open.replace.savedBody stealthExport.open.replace.title stealthExport.open.replace.body

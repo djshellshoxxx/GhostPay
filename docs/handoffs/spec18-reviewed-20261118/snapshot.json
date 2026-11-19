@@ -1,0 +1,112 @@
+{
+  "source_branch": "chatgpt/spec18-recovery-completion-20261118",
+  "source_base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "provenance": "Fixed snapshot of concurrent uncommitted work; original checkout is read-only. These hashes identify copied content, not a commit or completed validation.",
+  "files": [
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "sha256": "0c6c487bdb7f916be9097d9442900258b9688cb9a3598646ee96797b15c4a032",
+      "bytes": 24744
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "sha256": "e275045e2801bb4b3f3b80ae6799be365cbbea8a99265fa253b506e48f8a92da",
+      "bytes": 257037
+    },
+    {
+      "path": "apps/web/src/components/StealthExportArchive.tsx",
+      "sha256": "7d689e7078513be5056ac454d9c4eac06693406baa91b7dd1dc2ed43d5cf6b84",
+      "bytes": 6484
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.tsx",
+      "sha256": "2806b9c32c95a2faf127c00368c95307dd3c45ad5c54f12ad8766a3df10cdcd1",
+      "bytes": 10517
+    },
+    {
+      "path": "apps/web/src/components/StealthExportMaster.tsx",
+      "sha256": "492f760ffa4207abe4264c1ad048a025356dbaef942382fc43a108c110c8c37a",
+      "bytes": 4170
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+      "sha256": "38d8cad3da38e1e2939d95dd2562588324b3e0588b32dcf22dbb45c9a51fc1c1",
+      "bytes": 20312
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.tsx",
+      "sha256": "4a1780cab0dde7c3aebac23d702454daacc6656ebded21c287318e7504e5db8b",
+      "bytes": 9816
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+      "sha256": "7c3f29bacfc38cfa391136c6edfec1718c1f44bee3cbebdffae54de7fb183ed9",
+      "bytes": 25854
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.tsx",
+      "sha256": "5e45b80bd8e727564533c8a48a4148f254e99994b85ff4cf6ab009eda5ce0b7b",
+      "bytes": 16341
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "sha256": "723d7c826639a2c3f9533507812b440e257e8a1ef954545948db72da052d8dbe",
+      "bytes": 87471
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+      "sha256": "b3f55bcfda896087efe695fd91d305137a5df0763b0ba48bfad4743353442b93",
+      "bytes": 25793
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "sha256": "8af22a668291f5bfe6cba43b3992b0561d701fdd149070263db8a6fc824c9186",
+      "bytes": 22597
+    },
+    {
+      "path": "docs/specs/18-stealth-keypair-export-formats.md",
+      "sha256": "31e5db9da4bd5bc1bfd36dbcf99c6c0445df49aff00b6ed14c83a19afb719c01",
+      "bytes": 15652
+    },
+    {
+      "path": "docs/user/recover-stealth-payment-keys.md",
+      "sha256": "2bfa4d49ab60226f9772710706d82d6d51a9b2d23d7a8ae9f6cd71d12027d565",
+      "bytes": 16220
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.test.ts",
+      "sha256": "f307a67f7c915f28730cc7da1769fff91c9f93eeb52740c407c8c87236f4d2cb",
+      "bytes": 60646
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.ts",
+      "sha256": "d0bad95bd056f18c0fc91e26558505fd116754e75d0ac1bb17fb41606622403f",
+      "bytes": 39595
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.mjs",
+      "sha256": "1f7bf1405c303df2acdf13cfd0afbf477ab53d24ffc50b69859016ad13c04f90",
+      "bytes": 35669
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.test.mjs",
+      "sha256": "d51132340a309e2282d739afe4f04f2f1790ce78959e76e26810367c0106b7bd",
+      "bytes": 28591
+    },
+    {
+      "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+      "sha256": "f2f08a15adc302eada037dac69a64128f3dae5354ed7d9695d8a16daebd60791",
+      "bytes": 6950
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+      "sha256": "8006871c8f64def1d62e5e511bb40ef1f480b1ea21163954f3bf108f8cfcdeab",
+      "bytes": 7439
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.tsx",
+      "sha256": "554f35f0ebe72b8de9f83666e52601ff87559e24c40fe2d54b9c74cc112371bd",
+      "bytes": 5768
+    }
+  ]
+}
