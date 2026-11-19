@@ -1,0 +1,67 @@
+{
+  "base": "58995408bec0e072a969db7bd4eb4687579bd4a7",
+  "hosted_findings_jobs": [
+    "135206455356",
+    "135206455231",
+    "135206357114"
+  ],
+  "changes": [
+    "Keep native HTMLElement.click receiver via explicit .call(this) in the anchor-specific blocked-download test.",
+    "Bind SecretBox.copyOf to its constructor before spying, retaining all allocation-failure assertions.",
+    "Use typed codec.inspectPaymentKeys and a missing-fixture guard to obtain the public record without unsafe JSON any access.",
+    "Match the exact legacy Verify backup button in all six e2e locations; this leaves Verify backup without importing as a separate action.",
+    "Record scoped lane and acceptance in ACTIVE_WORK."
+  ],
+  "files": [
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "sha256": "72b72239737de041c2a6b2b8e7538c341a52d18a35d40782a7776f6c13f6baa3"
+    },
+    {
+      "path": "apps/web/src/lib/session.atomicity.test.ts",
+      "sha256": "587ec50765d7d05b675038929cb891b963da1a5d001763b21e28eb6485a0b441"
+    },
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "sha256": "907e7fe2a6425c833712f0c58284a4aba5300b8aaaa67a0f9f21313814841805"
+    },
+    {
+      "path": "apps/web/e2e/backup-panel.spec.ts",
+      "sha256": "af17a9726cb69683605f7751e10d2d1d73a824fb4c8516dc9269b43ebd3e60a7"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "sha256": "1525ee1b45b27fca4a4e96f70d703f0e450685736a86a3d142d4d7955dba20c5"
+    },
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "sha256": "35d81ada3bb7db01d4555281fc5439a79bb38c96cefdae03dd0e3ce62b351a0f"
+    }
+  ],
+  "validation": [
+    {
+      "command": "Node22.23.5 vitest run src/lib/session.atomicity.test.ts --coverage=false --maxWorkers=1 (heap256)",
+      "exit_code": 0,
+      "result": "4 passed; 933ms",
+      "log": "hosted-followup-atomicity.log",
+      "sha256": "741ce0df3147b7b4a6fbf53e7ad708eb11e8fb60dd826f88443c581a22fee091"
+    },
+    {
+      "command": "Node22.23.5 playwright test --list e2e/stealth-export.spec.ts e2e/core-journey.spec.ts e2e/backup-panel.spec.ts (heap256)",
+      "exit_code": 0,
+      "result": "16 tests discovered in 3 files; no browser execution",
+      "log": "hosted-followup-browser-list.log",
+      "sha256": "2396d2f1a73c782456aeee02dc3b3e89945a7f41317b2a3979a58e6092a25108"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "limits": [
+    "No local typed lint or whole-web typecheck attempted during coordinator coverage run.",
+    "Pages-devnet uses a real signed manifest/Anvil state and was not executed or discovered under a fabricated environment.",
+    "Fresh hosted lint/browser rerun still needed for changed test source; prior full/lean feature passes belong to their original source.",
+    "No runtime, assertion, timeout, skip, threshold, dependency or release-gate changes; no commit or remote write by this lane."
+  ]
+}

@@ -3,6 +3,7 @@ import { ChainFeeList, useLimits } from '../components/Disclosure';
 import { Mono } from '../components/Common';
 import { computeReleaseHash, entryScriptUrl } from '../lib/release';
 import { useServices } from '../lib/services';
+import type { NetworkAuthorization } from '../lib/networkAuthorization';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
@@ -20,16 +21,20 @@ export function Home(): ReactNode {
       setHash('unavailable');
       return;
     }
-    computeReleaseHash(src, services.fetchFn, document.baseURI).then(
+    let context: NetworkAuthorization | undefined;
+    try { context = services.network?.authorize({ action: 'release-hash', category: 'resource', endpoint: src }); }
+    catch { setHash('unavailable'); return; }
+    computeReleaseHash(src, context?.fetchFn ?? services.fetchFn, document.baseURI).then(
       (h) => {
         if (live) setHash(h);
       },
       () => {
         if (live) setHash('unavailable');
       },
-    );
+    ).finally(() => { context?.dispose(); });
     return () => {
       live = false;
+      context?.dispose();
     };
   }, [services]);
 

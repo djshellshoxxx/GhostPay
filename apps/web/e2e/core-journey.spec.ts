@@ -336,7 +336,7 @@ async function verifyBackup(page: Page, keystore: string): Promise<void> {
   await expect(page.getByText('This backup is not verified yet')).toBeVisible();
   await keysView(page).getByLabel('Downloaded keystore file', { exact: true }).setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') });
   await keysView(page).getByLabel('Keystore passphrase', { exact: true }).fill(BACKUP_PASS);
-  await keysView(page).getByRole('button', { name: 'Verify backup' }).click();
+  await keysView(page).getByRole('button', { name: 'Verify backup', exact: true }).click();
   await kdfExpect(keysView(page).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible();
   await expect(page.getByText('This backup is not verified yet')).toHaveCount(0);
 }
@@ -602,10 +602,13 @@ test('invoice expiry is refused at the final pay guard: nothing reaches the wall
   await withChain(browser, async (sim, open) => {
     const s = await openSeller(open);
     const link = await createShortInvoice(s, 1);
+    const { invoice } = await parseFragment(new URL(link).hash);
     const payer = await openPayer(open, sim, { clock: true });
+    // Mount near expiry so the 90-second transition tests the send guard without also crossing the idle deadline.
+    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt - 60) * 1000));
     await reviewToFinalCheck(payer.page, sim, link);
     // The invoice expires between the reviewed final check and the send click.
-    await payer.context.clock.setSystemTime(Date.now() + 2 * 3_600_000);
+    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt + 30) * 1000));
     await payer.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await expect(payer.page.getByText('This invoice has expired. Nothing was sent.')).toBeVisible();
     await expect(payer.page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);

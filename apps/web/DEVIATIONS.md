@@ -83,6 +83,13 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     keystore export and a new vault for the rest of the session, also if the saved record is deleted; deleting a vault that names
     the loaded meta-address needs its passphrase, any other vault is deleted after its meta-address is shown (audit L1-02). Keys
     that were never in a vault have no step-up passphrase.
+    GP-PAGES-04 completion: expiry immediately suspends ordinary session authority before the asynchronous custody check.
+    Retained sole-copy keys permit only the existing encrypted-keystore backup/save/verification path; signing, scanning,
+    pairing and raw key exports stay unavailable until normal import or vault unlock. Backup verification does not itself
+    resume use. Wall and monotonic observations, capture-phase activity, lifecycle events and sensitive-operation guards
+    enforce one deadline; stale timer/session/effect generations cannot revive it. A retained copy remains in memory and
+    its encrypted recovery path is accessible to whoever controls the tab; it is not equivalent to a wiped vault.
+    See [session security](../../docs/user/session-security.md) for exact behavior and browser-test limitations.
 12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
     (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
     native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. On OP Stack chains the quote and the re-check add the

@@ -1,6 +1,6 @@
 import type { ChainConfig } from '@ghostpay/chain-adapters';
 import type { PolicyRecord } from '@ghostpay/policy-scheme';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { UserFacingError, userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
@@ -22,6 +22,8 @@ export interface PolicyCtx {
   readonly addRecord: (r: PolicyRecord) => void;
   /** Captured deployment scope; invalidated immediately by edits, re-verification or leaving this view. */
   readonly assertDeploymentCurrent: () => void;
+  /** Cancels all app-owned requests that depend on this verified deployment. */
+  readonly networkSignal?: AbortSignal;
 }
 
 function WalletPicker(props: { readonly chainId: number; readonly onConnected: (w: WalletSession) => void }): ReactNode {
@@ -69,24 +71,29 @@ export function PolicyView(): ReactNode {
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [records, setRecords] = useState<readonly PolicyRecord[]>([]);
   const revision = useRef(0);
+  const operation = useRef(new AbortController());
   const [scope, setScope] = useState(0);
-  useEffect(() => () => { revision.current++; }, []);
+  useEffect(() => () => { revision.current++; operation.current.abort(); }, []);
 
-  const invalidateDeployment = (): number => {
+  const invalidateDeployment = useCallback((): number => {
+    operation.current.abort();
+    operation.current = new AbortController();
     const next = ++revision.current;
     setScope(next);
     setDeployment(undefined);
     setDepErr(undefined);
     setBusy(false);
     return next;
-  };
+  }, []);
+  useEffect(() => services.network?.subscribe(invalidateDeployment), [services.network, invalidateDeployment]);
+  const networkRevision = services.network?.getRevision() ?? 0;
 
   const verify = async (): Promise<void> => {
     if (chain === undefined) return;
     const started = invalidateDeployment();
     setBusy(true);
     try {
-      const client = await app.getRpc(chain.chainId);
+      const client = await app.getRpc(chain.chainId, { action: 'policy', signal: operation.current.signal });
       if (revision.current !== started) return;
       if (client === undefined) throw new Error('no-rpc');
       const verified = await verifyPolicyDeployment(client, chain, { factory, router });
@@ -103,9 +110,10 @@ export function PolicyView(): ReactNode {
     deployment,
     wallet: wallet?.chainId === chain.chainId ? wallet : undefined,
     records,
+    networkSignal: operation.current.signal,
     addRecord: (r) => { setRecords((prev) => (prev.some((x) => x.policyHash === r.policyHash) ? prev : [...prev, r])); },
     assertDeploymentCurrent: () => {
-      if (revision.current !== scope || deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
+      if (revision.current !== scope || deployment === undefined || operation.current.signal.aborted || (services.network?.getRevision() ?? 0) !== networkRevision) throw new UserFacingError(t('policy.error.verifyFirst'));
     },
   };
 

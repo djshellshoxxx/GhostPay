@@ -79,6 +79,18 @@ export function limitLeafHash(l: TokenLimit): Hex {
   return keccak256(inner);
 }
 
+/**
+ * @internal True when `leaf` is exactly the leaf of `(token, limit, windowSeconds)`. False, never a
+ * throw, for values that no leaf can have (a zero limit, a limited zero window, malformed input).
+ */
+export function isLimitLeaf(l: TokenLimit, leaf: unknown): boolean {
+  try {
+    return limitLeafHash(l) === bytes32(leaf, 'leaf');
+  } catch {
+    return false;
+  }
+}
+
 /** @internal OpenZeppelin `Hashes.commutativeKeccak256`. */
 function hashPair(a: Hex, b: Hex): Hex {
   return a < b ? keccak256(concatHex([a, b])) : keccak256(concatHex([b, a]));
@@ -126,9 +138,10 @@ export function buildLimitsTree(limits: readonly TokenLimit[]): LimitsTree {
 /**
  * Merkle proof of a token's leaf, ready for `requestWithdraw` and for `limitLeafHash`.
  *
- * @param tree Tree from {@link buildLimitsTree}.
+ * @param tree Tree from {@link buildLimitsTree}, or one restored from storage.
  * @param token Token (zero address for native).
- * @returns Limit, window, proof and leaf; the proof is self-verified against the root.
+ * @returns Limit, window, proof and leaf; the proof is self-verified against the root, and the leaf is
+ * recomputed from the entry's `(token, limit, windowSeconds)`.
  * @throws {PolicySchemeError} `UNKNOWN_TOKEN`, `INVALID_ADDRESS`, `INVALID_PROOF`.
  * @security Public data (reveals the token's cap once submitted on-chain).
  * @testVector policy-scheme.limitTrees
@@ -146,6 +159,8 @@ export function getLimitProof(tree: LimitsTree, token: Address): TokenLimitProof
     pos = Math.floor((pos - 1) / 2);
   }
   if (!verifyLimitProof(tree.root, entry.leaf, proof)) return fail('INVALID_PROOF');
+  // A tree restored from storage is untrusted: the stored leaf must be the hash of its own fields.
+  if (!isLimitLeaf(entry, entry.leaf)) return fail('INVALID_PROOF', 'leaf does not match token, limit and window');
   return Object.freeze({
     limit: entry.limit,
     windowSeconds: entry.windowSeconds,

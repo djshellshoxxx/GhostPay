@@ -34,6 +34,12 @@ No new crypto libraries: `@noble/curves`, `@noble/hashes`, `viem` and `@ghostpay
 
 `npm run gen-abi` regenerates `src/abi/*.ts` from forge output; `npm run gen-vectors` regenerates the vectors.
 
+## Trust notes
+
+- The scheme-2 meta-address string is **unauthenticated** (no checksum, chain id, factory or signature). Whoever supplies it chooses the payee keys and `policyHash`; a swapped `policyHash` pays an account the recipient never scans for. Obtain it over an authenticated channel and verify it out of band.
+- `decodePolicyPaymentCalldata` proves only internal consistency: `stealth` is the account of the calldata's `PolicyRef{owner, policyHash}`, the encoding is canonical, `R` is a compressed point, and the metadata matches the call (kind, token, net = gross minus fee for the ERC-20 methods, net at least `minNet`). A frontend that swaps the whole payee still passes. Compare the returned `owner`, `policyHash`, `ephemeralPublicKey` and metadata (view tag, token, net) with your own derivation, and check the router address and `msg.value` (the gross of `payNative`) yourself.
+- `signPolicyTypedData` reads its input once and refuses typed data that is not exactly a policy-account struct (the domain's four own fields and no `salt`, own, inherited or hidden; name and version; `primaryType`; `types`; the message field types). It signs only the digest it recomputes from validated copies with this package's own domain and types, and the input's `digest` must equal it. It does not check the message values: sign only builder output, and pass `expectedOwner`. `buildWithdrawTypedData` and `getLimitProof` recompute the limit leaf from `(token, limit, windowSeconds)`, so a proof or restored tree whose limit fields were edited is refused.
+
 ## Status and deviations
 
 Experimental; imported only by the flagged `apps/web/src/features/policy` view, not by `apps/relayer`. [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md) records 60 passed for this package in the 2026-10-21 run (the anvil tests skip when anvil or forge artifacts are missing). Deviations: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts: `build`, `typecheck`, `test`, `lint`, `gen-abi`, `gen-vectors`.

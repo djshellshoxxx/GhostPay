@@ -60,7 +60,10 @@ export interface FetchPaddedOptions extends PadOptions {
  * block number (stable for equal blocks) and, by default, trimmed back to the requested range so callers see what they asked for.
  *
  * Every window is requested even when the request is small; there is no early exit that would depend on the true range.
- * @throws ScanSourceError as {@link padRange}, plus `TRUNCATED` when more than `maxRequests` calls would be needed.
+ * Cancellation prevents later windows from being scheduled and discards late results. It cannot recall a request
+ * already dispatched; settlement still depends on the supplied backend's timeout/cancellation behavior.
+ * @throws ScanSourceError as {@link padRange}, plus `TRUNCATED` when more than `maxRequests` calls would be needed,
+ * and `TRANSPORT` on cancellation (the caller's potentially sensitive abort reason is not propagated).
  */
 export async function fetchPadded<T extends { readonly blockNumber: bigint }>(
   req: { readonly fromBlock: bigint; readonly toBlock: bigint },
@@ -68,14 +71,18 @@ export async function fetchPadded<T extends { readonly blockNumber: bigint }>(
   o: FetchPaddedOptions,
   signal?: AbortSignal,
 ): Promise<{ readonly items: readonly T[]; readonly coverage: { readonly fromBlock: bigint; readonly toBlock: bigint } }> {
+  const assertActive = (): void => { if (signal?.aborted === true) throw new ScanSourceError('TRANSPORT', 'scan cancelled'); };
+  assertActive();
   requireArg(Number.isInteger(o.windowBlocks) && o.windowBlocks >= 1, 'windowBlocks out of range');
   const maxRequests = o.maxRequests ?? 50;
   requireArg(Number.isInteger(maxRequests) && maxRequests >= 1, 'maxRequests out of range');
   const padded = padRange(req.fromBlock, req.toBlock, o, o.head);
   const W = BigInt(o.windowBlocks);
+  // Check the cost arithmetically before allocating a potentially enormous list of windows.
+  const calls = (padded.to - padded.from) / W + 1n;
+  if (calls > BigInt(maxRequests)) throw new ScanSourceError('TRUNCATED', 'request budget exceeded');
   const windows: [bigint, bigint][] = [];
   for (let s = padded.from; s <= padded.to; s += W) windows.push([s, s + W - 1n < padded.to ? s + W - 1n : padded.to]);
-  if (windows.length > maxRequests) throw new ScanSourceError('TRUNCATED', 'request budget exceeded');
   const random = o.random;
   if (random !== undefined) {
     for (let i = windows.length - 1; i > 0; i--) {
@@ -86,7 +93,10 @@ export async function fetchPadded<T extends { readonly blockNumber: bigint }>(
   }
   const all: T[] = [];
   for (const [s, e] of windows) {
-    for (const item of await fetchWindow(s, e, signal)) {
+    assertActive();
+    const response = await fetchWindow(s, e, signal);
+    assertActive();
+    for (const item of response) {
       if (item.blockNumber >= s && item.blockNumber <= e) all.push(item);
     }
   }
@@ -94,5 +104,6 @@ export async function fetchPadded<T extends { readonly blockNumber: bigint }>(
   const items = all
     .filter((x) => !exact || (x.blockNumber >= req.fromBlock && x.blockNumber <= req.toBlock))
     .sort((a, b) => (a.blockNumber < b.blockNumber ? -1 : a.blockNumber > b.blockNumber ? 1 : 0));
+  assertActive();
   return { items, coverage: { fromBlock: padded.from, toBlock: padded.to } };
 }

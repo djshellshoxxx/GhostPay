@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SecretBox } from '@ghostpay/secret-box';
 import { clearSession, exportKeystore, getSessionBackup, getSessionPublic, importSession } from './session';
 import * as stealthExport from './stealthExport';
 import { decryptMasterBackup, decryptPaymentKeys, inspectPaymentKeys } from './stealthExport';
@@ -13,6 +14,7 @@ import {
   exportPublicRecord,
   exportRawPrivateKey,
   openStealthExport,
+  verifyStealthExport,
 } from './paymentKeyExport';
 import { TEST_N, VECTORS, VECTOR_CHAIN, VECTOR_PASS, VECTOR_TIME, codeRpc, loadVectorSeller, vectorAnnouncement, vectorMatch } from './paymentKeyExport.testutil';
 import type { SecretExportCredential } from './keyVault';
@@ -103,18 +105,25 @@ describe('single encrypted keypair', () => {
   it('discards the result and wipes the key when the keys are wiped while the file is being sealed', async () => {
     let captured: Uint8Array | undefined;
     let release: () => void = () => undefined;
+    let reached: () => void = () => undefined;
+    const sealing = new Promise<void>((resolve) => { reached = resolve; });
     const actual = stealthExport.encryptPaymentKeys;
     vi.spyOn(stealthExport, 'encryptPaymentKeys').mockImplementation(async (items, options) => {
       captured = items[0]?.secret;
       expect(captured?.some((b) => b !== 0)).toBe(true);
+      reached();
       await new Promise<void>((resolve) => { release = resolve; });
       return actual(items, options);
     });
     const pending = exportEncryptedPayment(vectorMatch('a1'), keystore, EXPORT_PASS, { rpc: codeRpc(), N: TEST_N });
-    await vi.waitFor(() => { expect(captured).toBeDefined(); });
-    clearSession();
-    release();
-    await expect(pending).rejects.toThrow(/changed during this action/);
+    const rejected = expect(pending).rejects.toThrow(/changed during this action/);
+    try {
+      await Promise.race([sealing, pending]);
+      clearSession();
+    } finally {
+      release();
+      await rejected;
+    }
     expect(captured?.every((b) => b === 0)).toBe(true);
   });
 
@@ -176,6 +185,14 @@ describe('payment key archive', () => {
     expect(() => describePaymentArchive(many.map((m) => ({ ...m, stealthAddress: m.announcement.stealthAddress })))).toThrow(/at most 1024/);
   });
 
+  it('resolves same-locator replay metadata deterministically regardless of scan input order', () => {
+    const first = vectorMatch('a1', { transactionHash: `0x${'11'.repeat(32)}`, metadata: '0xff' });
+    const lowerTransaction = vectorMatch('a1', { transactionHash: `0x${'00'.repeat(32)}`, metadata: '0xff' });
+    const lowerViewTag = vectorMatch('a1', { transactionHash: `0x${'00'.repeat(32)}`, metadata: '0x00' });
+    expect(distinctPayments([first, lowerTransaction, lowerViewTag])).toEqual([lowerViewTag]);
+    expect(distinctPayments([lowerViewTag, lowerTransaction, first])).toEqual([lowerViewTag]);
+  });
+
   it('exports every distinct payment once, checks each address once and never includes master keys', async () => {
     const rpc = codeRpc();
     const matches = [vectorMatch('a2'), vectorMatch('a1'), vectorMatch('a1', { id: 'replay', blockNumber: 7_000_000n }), vectorMatch('a4')];
@@ -234,6 +251,33 @@ describe('master backup', () => {
 describe('opening an export (recovery)', () => {
   beforeEach(() => { clearSession(); });
 
+  it('wipes the decrypted payment scalars after boxing while keeping each boxed key usable', async () => {
+    const opened = await decryptPaymentKeys(VECTORS.files.archive.text, VECTOR_PASS);
+    const keys = RecoveredPaymentKeys.take(opened.header, opened.payments);
+    try {
+      expect(opened.payments.every((payment) => payment.secret.every((byte) => byte === 0))).toBe(true);
+      const index = opened.header.payments.findIndex((payment) => payment.stealthAddress === vectorAnnouncement('a1').announcement.stealthAddress);
+      expect(keys.rawKeyFile(index, true).text).toBe(VECTORS.files.rawPrivateKey.text);
+    } finally {
+      keys.dispose();
+    }
+  });
+
+  it('disposes partial master boxes and wipes source scalars if boxing the second key fails', async () => {
+    const opened = await decryptMasterBackup(VECTORS.files.master.text, VECTOR_PASS);
+    const actual = SecretBox.copyOf.bind(SecretBox);
+    let first: SecretBox | undefined;
+    vi.spyOn(SecretBox, 'copyOf').mockImplementation((bytes, options) => {
+      if (first !== undefined) throw new Error('simulated allocation failure');
+      first = actual(bytes, options);
+      return first;
+    });
+    expect(() => RecoveredMasterKeys.take(opened.header, opened.spendingSecret, opened.viewingSecret)).toThrow('simulated allocation failure');
+    expect(first?.disposed).toBe(true);
+    expect(opened.spendingSecret.every((byte) => byte === 0)).toBe(true);
+    expect(opened.viewingSecret.every((byte) => byte === 0)).toBe(true);
+  });
+
   it('opens every reference file in a session with no keys loaded', async () => {
     const pub = await openStealthExport(VECTORS.files.public.text, '');
     expect(pub.kind === 'public' && pub.record.stealthAddress).toBe(vectorAnnouncement('a1').announcement.stealthAddress);
@@ -273,6 +317,15 @@ describe('opening an export (recovery)', () => {
     expect(again.kind === 'master' && again.keys.loaded).toBe(true);
   });
 
+  it('applies an explicit chain constraint to public records and rejects chain-neutral master backups before decryption', async () => {
+    const publicRecord = await openStealthExport(VECTORS.files.public.text, '', { expectedChainId: VECTOR_CHAIN });
+    expect(publicRecord.kind).toBe('public');
+    await expect(openStealthExport(VECTORS.files.public.text, '', { expectedChainId: 84532 })).rejects.toThrow(/different chain/);
+    const decrypt = vi.spyOn(stealthExport, 'decryptMasterBackup');
+    await expect(openStealthExport(VECTORS.files.master.text, VECTOR_PASS, { expectedChainId: VECTOR_CHAIN })).rejects.toThrow(/different chain/);
+    expect(decrypt).not.toHaveBeenCalled();
+  });
+
   it('fails closed on every reference refusal, a foreign file, an oversized file and a cancelled open', async () => {
     for (const bad of VECTORS.invalid) {
       await expect(openStealthExport(bad.text, bad.passphrase ?? ''), bad.id).rejects.toThrow();
@@ -293,5 +346,60 @@ describe('opening an export (recovery)', () => {
       await expect(openStealthExport(text, VECTOR_PASS, { signal: late.signal })).rejects.toThrow(/cancelled/);
       for (const spy of spies) spy.mockRestore();
     }
+  });
+});
+
+describe('verifying an export without importing', () => {
+  it('checks payment and master keys, disposes every key box, and leaves the current wallet and custody unchanged', async () => {
+    const session = getSessionPublic();
+    const custody = getSessionBackup();
+    const paymentDispose = vi.spyOn(RecoveredPaymentKeys.prototype, 'dispose');
+    const masterDispose = vi.spyOn(RecoveredMasterKeys.prototype, 'dispose');
+    const payment = await verifyStealthExport(VECTORS.files.archive.text, VECTOR_PASS, { expectedChainId: VECTOR_CHAIN });
+    expect(payment.kind === 'keypair' && payment.header.count).toBe(3);
+    expect(payment).not.toHaveProperty('keys');
+    expect(paymentDispose).toHaveBeenCalledTimes(1);
+    expect(paymentDispose.mock.instances[0]).toHaveProperty('disposed', true);
+    const master = await verifyStealthExport(VECTORS.files.master.text, VECTOR_PASS);
+    expect(master.kind === 'master' && master.header.metaAddress).toBe(VECTORS.seller.metaAddress);
+    expect(master).not.toHaveProperty('keys');
+    expect(masterDispose).toHaveBeenCalledTimes(1);
+    expect(masterDispose.mock.instances[0]).toHaveProperty('disposed', true);
+    expect(getSessionPublic()).toBe(session);
+    expect(getSessionBackup()).toEqual(custody);
+  });
+
+  it('never verifies a public record, wrong password, corrupt file or wrong chain as a backup', async () => {
+    await expect(verifyStealthExport(VECTORS.files.public.text, '')).rejects.toThrow(/contains no private keys/);
+    await expect(verifyStealthExport(VECTORS.files.single.text, 'wrong password')).rejects.toThrow(/Wrong passphrase/);
+    await expect(verifyStealthExport('{"v":1}', VECTOR_PASS)).rejects.toThrow(/not a valid GhostPay stealth key export/);
+    await expect(verifyStealthExport(VECTORS.files.single.text, VECTOR_PASS, { expectedChainId: 84532 })).rejects.toThrow(/different chain/);
+  });
+
+  it('disposes keys and refuses a verification result after the wallet changes during decryption', async () => {
+    const actual = stealthExport.decryptMasterBackup;
+    const dispose = vi.spyOn(RecoveredMasterKeys.prototype, 'dispose');
+    vi.spyOn(stealthExport, 'decryptMasterBackup').mockImplementation(async (...args) => {
+      const opened = await actual(...args);
+      clearSession();
+      return opened;
+    });
+    await expect(verifyStealthExport(VECTORS.files.master.text, VECTOR_PASS)).rejects.toThrow(/changed during this action/);
+    expect(dispose).toHaveBeenCalledTimes(1);
+    expect(dispose.mock.instances[0]).toHaveProperty('disposed', true);
+  });
+
+  it('never reports success when cancellation arrives during decryption', async () => {
+    const controller = new AbortController();
+    const actual = stealthExport.decryptPaymentKeys;
+    const dispose = vi.spyOn(RecoveredPaymentKeys.prototype, 'dispose');
+    vi.spyOn(stealthExport, 'decryptPaymentKeys').mockImplementation(async (...args) => {
+      const opened = await actual(...args);
+      controller.abort();
+      return opened;
+    });
+    await expect(verifyStealthExport(VECTORS.files.archive.text, VECTOR_PASS, { signal: controller.signal })).rejects.toThrow(/cancelled/);
+    expect(dispose).toHaveBeenCalledTimes(1);
+    expect(dispose.mock.instances[0]).toHaveProperty('disposed', true);
   });
 });

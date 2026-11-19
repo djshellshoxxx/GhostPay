@@ -43,7 +43,9 @@ const keyOf = (i) => `0x${Buffer.from(acct(i).getHdKey().privateKey).toString('h
 const payer = acct(state.accounts.payer);
 const funder = acct(state.accounts.sellerFunder);
 const hot = acct(state.accounts.relayerHot);
-const relayerFeeTo = acct(5);
+// The relayer refuses a feeTo other than the signed manifest's feeRecipient, and the web client refuses such a quote
+// (R07-2), so the relayer's fee goes to the deployment's fee recipient here as well.
+const relayerFeeTo = acct(state.accounts.feeRecipient);
 const sellerDest = acct(6); // seller's cold destination for swept funds
 const sweepDest2 = acct(7);
 

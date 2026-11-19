@@ -299,19 +299,19 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const verifyPass = keysView(sp).getByLabel('Keystore passphrase', { exact: true });
     await verifyFile.setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(tamperCiphertext(keystoreText), 'utf8') });
     await verifyPass.fill(KEYSTORE_PASS);
-    await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
+    await keysView(sp).getByRole('button', { name: 'Verify backup', exact: true }).click();
     await expect(keysView(sp).getByRole('alert')).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
     await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await verifyFile.setInputFiles(testInfo.outputPath('ghostpay-keystore.json'));
     await verifyPass.fill('wrong passphrase for the file');
-    await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
+    await keysView(sp).getByRole('button', { name: 'Verify backup', exact: true }).click();
     await expect(keysView(sp).getByRole('alert')).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toBeVisible();
     await expect(sp.getByText('Back up these seller keys first')).toBeVisible();
     await verifyFile.setInputFiles(testInfo.outputPath('ghostpay-keystore.json'));
     await verifyPass.fill(KEYSTORE_PASS);
-    await keysView(sp).getByRole('button', { name: 'Verify backup' }).click();
+    await keysView(sp).getByRole('button', { name: 'Verify backup', exact: true }).click();
     await expect(keysView(sp).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible({ timeout: 30_000 });
     await expect(sp.getByText('This backup is not verified yet')).toHaveCount(0);
     await expect(sp.getByText('Back up these seller keys first')).toHaveCount(0);
@@ -588,7 +588,8 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(sha256((await readSellerVault(sp)) ?? '')).toBe(vaultDigest);
     expect(await webStorageContains(sp, VAULT_PASS)).toBe(false);
 
-    // Scan state: the checkpoint persisted (localStorage); matches are in memory only, so none before a new scan.
+    // The authenticated encrypted journal persists discovery with its cursor. Restored history stays nonactionable
+    // until the real scanner rereads its blocks and revalidates payment evidence against this local chain.
     await nav(sp).getByRole('button', { name: 'Scan and receive' }).click();
     await sp.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
     await expect(sp.getByText(/^A checkpoint exists at block \d+\.$/)).toBeVisible();
@@ -610,9 +611,10 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(reconciliationBackup).not.toContain(payHash.toLowerCase());
     expect(reconciliationBackup).not.toContain(digest);
 
-    // Resuming from the checkpoint finds nothing new; a full rescan finds the one payment, which is not counted twice.
+    // Resume revalidates the saved payment even when its block is behind the cursor; a full rescan also keeps one entry.
     await scanFromZero(sp, true);
-    await expect(sp.getByText(/^Finished\./)).toContainText(' 0 payments found');
+    await expect(sp.getByText(/^Finished\./)).toContainText(' 1 payments found');
+    await expect(scanMatches(sp)).toHaveCount(1);
     await scanFromZero(sp, false);
     await expect(sp.getByText(/^Finished\./)).toContainText(' 1 payments found');
     await expect(scanMatches(sp)).toHaveCount(1);
@@ -1025,8 +1027,13 @@ test.describe('GitHub Pages artifact: refusals', () => {
       const createdAt = Math.floor(Date.now() / 1000);
       expect(parsed.invoice.expiresAt - createdAt).toBeGreaterThan(3_500);
       expect(parsed.invoice.expiresAt - createdAt).toBeLessThanOrEqual(3_600);
-      const past = new Date((parsed.invoice.expiresAt + 300) * 1000);
-      const payer = await openPayer(c, ACCOUNTS.expiryPayer);
+      const past = new Date((parsed.invoice.expiresAt + 30) * 1000);
+      // Keep the seller's clock unchanged, and mount the payer near expiry so only 90 seconds pass before Send.
+      // A one-hour jump after mounting would also trigger the independent 15-minute idle lock before the click.
+      const payerContext = await newContext(browser, baseURL, net);
+      extra.push(payerContext);
+      await payerContext.clock.install({ time: new Date((parsed.invoice.expiresAt - 60) * 1000) });
+      const payer = await openPayer(payerContext, ACCOUNTS.expiryPayer);
       const p = payer.page;
       const nonce = await anvil.nonce(ACCOUNTS.expiryPayer);
 

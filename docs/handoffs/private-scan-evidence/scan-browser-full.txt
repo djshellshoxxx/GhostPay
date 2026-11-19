@@ -1,0 +1,25 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/web@0.1.0 test:e2e
+> playwright test --max-failures=1
+
+[WebServer] (node:31) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+[WebServer] Killed
+[WebServer] npm error Lifecycle script `build` failed with error:
+[WebServer] npm error code 137
+[WebServer] npm error path /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+[WebServer] npm error workspace @ghostpay/web@0.1.0
+[WebServer] npm error location /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+[WebServer] npm error command failed
+[WebServer] npm error command sh -c tsc -p tsconfig.json --noEmit && vite build
+Error: Process from config.webServer was not able to start. Exit code: 137
+
+npm error Lifecycle script `test:e2e` failed with error:
+npm error code 1
+npm error path /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+npm error command failed
+npm error command sh -c playwright test --max-failures=1

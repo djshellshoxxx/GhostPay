@@ -40,6 +40,129 @@ Run all 88 scanner/privacy tests on Node 22, scan the resulting eligible product
 sources, and obtain independent integration-diff review. Source conflicts require
 inspection; publication and hosted qualification remain coordinator-owned.
 
+
+# Spec 18 independent completion review — 2026-11-18
+
+Coordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.
+Base: PR #238 at `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. A concurrent local Spec 18 implementation
+on `chatgpt/spec18-recovery-completion-20261118` is preserved read-only. This branch
+integrates a fixed, hashed snapshot for independent testing and fixes, without
+changing the original checkout or its branch.
+
+Ownership: coordinator owns snapshot integration, browser acceptance, locales, reports
+and publication; separate review lanes inspect crypto/offline recovery and UI/lifecycle
+with edits assigned explicitly after findings. Acceptance: all twenty specified threats
+are traced to source and executed tests; backup retention and verification stay distinct;
+imports require fresh bound consent; offline recovery reproduces spending authority;
+full feature gates execute or exact blockers are recorded. No release, deployment,
+main merge, forced update, secret persistence or unrelated feature work.
+
+Assigned lanes on this branch:
+
+- `crypto_recovery_review`: `packages/ux-vault/src/stealth-export-portable*.ts`,
+  `scripts/recovery/**`, the Spec 18 format reference and independent recovery guide.
+  Acceptance: authenticated bounded recovery, authority reproduction and failure cleanup.
+- `lifecycle_review`: `StealthExportRecovery`, `StealthExportVerification`, their tests,
+  `StealthExportSelection.test.tsx`, and `paymentKeyExport` source/tests. Acceptance:
+  bound fresh consent, verify-only disposal, selected-file and session cancellation.
+  A reproduced import-preservation defect additionally assigns the narrow `session.ts`
+  box/install transaction and `session.atomicity.test.ts`: stage the replacement
+  before disposing the old keys and clean partially allocated secret boxes on failure.
+- Coordinator: remaining export panels/Common, locales/security keys, browser tests,
+  dependency preparation, combined qualification, evidence and integration.
+- `recovery_recon`: read-only independent final source/threat review; sole write scope
+  is `docs/handoffs/spec18-reviewed-20261118/THREAT_REVIEW.md`.
+
+Hosted test follow-up, `lifecycle_review`: local source
+`58995408bec0e072a969db7bd4eb4687579bd4a7`; findings from hosted jobs
+`135206455356`, `135206455231` and `135206357114`.
+Owned paths: the test-only receiver/type repairs in `apps/web/e2e/stealth-export.spec.ts`
+and `apps/web/src/lib/session.atomicity.test.ts`; exact legacy `Verify backup` button
+selectors across the affected `apps/web/e2e/` journeys. Acceptance: resolve the three
+hosted typed-lint diagnostics and disambiguate legacy keystore verification from the
+new Spec 18 verify-only button while retaining all assertions, timing and release gates.
+Run only bounded focused checks during the coordinator's full web coverage run;
+fresh hosted browser/lint results remain necessary. No runtime or remote changes.
+
+Hosted real-crypto synchronization follow-up, `lifecycle_review`: local source
+`7d99c223e977938cd96c5e496232bad44a3b4799`, published candidate
+`b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73`; hosted job `135212473022`.
+Owned path: `apps/web/src/components/StealthExportVerification.test.tsx` only.
+The two real-verification cases exceeded Testing Library's default polling deadline
+while the KDF remained active. Observe the actual call-through verification promise
+and await its settlement inside React `act` before the existing DOM assertions.
+Require the real rejection for the wrong passphrase. Preserve cryptography, KDF cost,
+all assertions, the global test deadline and every gate; no synthetic success or delays.
+Acceptance: focused 14-case file and the existing 13-file feature selection execute,
+with separate source review and a fresh hosted full-web result still required.
+
+Final status: Spec 18 feature acceptance complete on local `8461dbdf`, published
+`07a7497d1a0cb39fb6904e5c50f8a52db2285820` (identical tree
+`6febc03ffd521fe9ac00ac10275f9ff625db509c`). Final hosted web coverage passes
+3,000 tests with one existing BTC regtest skip; the separate nocov phase passes 3/3.
+Vault 353/353, core crypto 76/76, all eight Spec 18 browser cases in each profile,
+Pages Anvil 16/16, typechecking, source builds and production dependency audit pass.
+Independent offline recovery passes 22/22 and synthetic Foundry spending passes 1/1.
+All twenty threats are reviewed with no unresolved feature blocker. Draft PR #239
+is stacked on the unchanged #238 base. Inherited owner-review/package-map gates,
+chain-adapter lint and hostile-text navigation remain failed; release/device limits
+remain explicit. Final report and raw evidence: `docs/handoffs/spec18-reviewed-20261118/`.
+The final handoff commit changes documentation/evidence only. No merge or deployment.
+# Pinned invoice signer completion — 2026-11-18
+
+Worker: ChatGPT coordinator, protocol_validation, pin_management, and independent integration/security reviewers.
+Branch: `chatgpt/ghostpay-pinned-signer-completion-20261119`.
+Base: `198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238; includes PR #234 at `5e9e7be70399a9818579cf87bd494e013e25d4f9`).
+Owned paths: invoice-schema validation/error regressions; Pay inspection and focused lifecycle tests;
+new invoice signer pin store/component and tests; additive signer i18n entries; dedicated browser acceptance;
+user/developer signer documentation and this task's source-pinned qualification report.
+Acceptance: preserve canonical secp256k1 signatures and all existing envelope formats; explicit local seller-key
+pins and confirmed replacement; accurately separate signature validity from selected-key trust; invalid/missing/
+unsupported/malformed/unavailable states; no stale asynchronous trust, cross-seller substitution or new network
+requests; execute focused and full applicable qualification, and obtain independent security review.
+PR #239/#240 recovery, #241 network isolation, session key lifecycles, unrelated lint/dependency gates and Mythril
+findings remain separately owned. No smart-contract changes, main merge, deployment or release.
+
+# Sleep-aware session security completion — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT coordinator with independent clock/lifecycle, vault/session and integration reviewers.
+Branch: `chatgpt/ghostpay-idle-lifecycle-20261119`.
+Base/integration target: PR #238, `integration/ghostpay-pages-completion-20261118`,
+`198aa5baff22272453733a0f3dcfcac0e0994eec`; main `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+PR #227 `613667be4eeb132c7d21ccd06c627f9a7144d85b` is already an ancestor.
+Owned paths: `apps/web/src/AppShell*`; idle-specific session/key-vault lifecycle changes and tests;
+`apps/web/e2e/idle-session.spec.ts`; directly required lock-state locale/security-key entries;
+`apps/web/DEVIATIONS.md`; session-security guidance and `docs/handoffs/idle-session-20261119/`.
+Acceptance: fail closed on expired/invalid clocks before activity; retire old timer/session generations;
+synchronously revoke protected key operations at expiry; preserve sole-copy keys for the existing encrypted
+backup/recovery path; qualify full/lean lifecycle behavior; independently review and integrate into #238.
+No wallet encryption/KDF redesign, Spec 18 feature work, contract/analyzer remediation, network-isolation
+redesign, dependency upgrade, deployment, release, force push or protection bypass. Other source branches
+remain read-only; #239/#240 overlaps must be reconciled only if they reach the selected integration head.
+Initial defects and exact acceptance evidence are tracked in the task handoff directory.
+
+# Browser network isolation completion — 2026-11-19 UTC
+
+Worker: ChatGPT lead, bounded-transport implementer, policy/adapter implementer, independent review.
+Branch: `codex/network-isolation-complete-20261119`.
+Pinned inputs: main `dfc75ef2087fa6463ae59e0818abec01796c578d`; #238
+`198aa5baff22272453733a0f3dcfcac0e0994eec`; #241
+`e8857bfa1ec93fafa9ff83f63f7430ef26a362c2`. This isolated integration preserves
+both input histories; source branches remain read-only. The stacked PR targets
+`integration/ghostpay-pages-completion-20261118`.
+Owned additions: central browser authorization/lifetime module and focused tests; bounded
+Esplora/indexer/relayer follow-up and tests; per-dispatch service/scan authorization integration;
+network-specific settings/Sweep/chain-view integration as required; browser/native regression
+fixtures; network inventory, acceptance matrix, documentation and source-pinned evidence.
+Unrelated session/key-export/recovery/signing behavior and all contracts/security gates are
+outside this work. Recheck active source heads before publication; retain concurrent fixes.
+Qualification update: source implementation and independent bounded review are complete; local full-web and package gates are running. Main rechecked at `58d89b39b27a66454ebf392bcd35d5c68b57b2f8`: #241 and #237 were merged externally, and both exact inputs already exist in this branch. #238 remains at the pinned draft head. Chromium launch is blocked locally by a native socket permission error; final hosted browser/Pages qualification is required before completion is claimed.
+Acceptance: fail closed on revoked or stale authorization/settings, preserve the exact selected
+endpoint without fallback, bound non-cooperative fetch/reads/cleanup, invalidate old sessions and
+cross-tab settings, action-scope Sweep consent, preserve offline actions and prove actual
+outbound destinations in browser/native fixtures. No merge, deployment or release claim.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
@@ -68,6 +191,9 @@ Sweep, catalogs, consolidation ledgers and release gates are not owned by this t
 five lower-level transport files were compared against these heads and are unchanged; this
 lane extends existing adapters without a second policy engine. Recheck all heads before PR.
 
+
+
+# Repository consolidation — 2026-11-18 (active)
 
 # Pages smoke render-error regression — 2026-11-18
 
@@ -220,6 +346,87 @@ The coordinator owns browser privacy/receipts, shared integration and remote wri
 and must resolve to the same `omit`/`no-referrer`/`no-store` behavior.
 
 # Repository consolidation — 2026-11-18 (historical)
+# Private seller scan completion — 2026-11-19
+
+Owner: ChatGPT coordinator with independent scan reviewer, encrypted-storage worker and scan UI worker.
+Branch: `chatgpt/ghostpay-private-scan-completion-20261119`.
+Base: PR #235 `a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1`; main observed
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. Updated main
+`58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (#241 transport isolation and #237 log retention)
+was merged into this feature branch at `684eec18` before combined qualification.
+Owned paths: EVM `scanClient`, new `privateScanStore` and `privateScanLifecycle`, `views/Scan`,
+scan services, focused scanner/storage/lifecycle/browser tests, minimal seller-vault deletion integration,
+related locale strings and scoped user/developer/handoff documentation. The scanner's optional per-dispatch guard
+in `scanPrivacy.ts` is included; PR #241 transport implementations remain separate. Storage worker owns
+`privateScanStore.ts` and its tests; UI worker owns Scan/services and view/browser tests; coordinator owns
+engine/lifecycle/integration. Independent reviewer owns only
+`docs/handoffs/private-scan-independent-review.md` and otherwise remains read-only.
+Acceptance: atomic encrypted discovery+cursor persistence; seller/network/config/session isolation;
+safe interruption, recovery, cross-tab conflicts, deletion and reorg handling; bounded scan work;
+failing-first regression evidence; full/lean browser qualification and unchanged security gates.
+PR #238 is a read-only consolidation input; #241 transport modules, Spec 18 formats, contracts,
+dependency inputs, automation branches and unrelated work stay with their existing owners.
+No merge into main, deployment or release is authorized.
+
+# Browser network isolation: unowned transport gaps — 2026-11-18
+
+Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
+Branch: `codex/ghostpay-browser-isolation-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (live `main`).
+Owned paths: `packages/net-transport/src/fetchTransport.ts`, `fetchAdapter.ts` and new focused
+transport isolation tests; `packages/solana-stealth/src/rpc.ts`, `packages/tron-adapter/src/rpc.ts`
+and new `rpc.isolation.test.ts` tests (chain adapter worker); `apps/web/src/lib/release.ts`, its
+focused tests, a new browser network isolation spec; new machine-readable egress inventory
+and scoped isolation documentation; new `scripts/tests/network-egress-inventory.test.mjs` and
+independently authored `scripts/tests/network-isolation-native.test.mjs` QA. Both chain RPC files were checked against all 39 open
+PRs, including new recovery #239 (`d2c64522`); no current PR changes either file.
+Acceptance: reproduce and fix unintended redirect egress, cancelled/stale request dispatch,
+unbounded transport failure and untrusted error disclosure in these paths; prove no fallback,
+bounded failure and fixed error messages with controlled fixtures and browser requests. Record
+source-pinned findings, exact checks and unresolved integration dependencies.
+Status: implemented and independently re-reviewed in draft PR #241. Hosted first-head typecheck,
+unit/integration suites and lean browser acceptance passed; 11 lint errors were corrected with their
+adversarial assertions preserved. Final-head checks and the separately owned policy integration are
+tracked in `docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md` and the PR.
+
+Active inputs remain read-only: privacy #222 (`2bc20982`), own-node #228 (`685fe1a3`), Sweep
+consent #231 (`d9ff3868`), browser fixtures #233 (`67cf835d`), integration #238 (`198aa5ba`),
+recovery/keypair exports and Mythril remediation. Their UI, service policy, settings, scan,
+Sweep, catalogs, consolidation ledgers and release gates are not owned by this task. The
+five lower-level transport files were compared against these heads and are unchanged; this
+lane extends existing adapters without a second policy engine. Recheck all heads before PR.
+
+# Historical safeguard recovery — 2026-11-18
+
+Worker: history_census (Caveman investigate-first), coordinated by master consolidation.
+Branch: `integration/ghostpay-historical-fixes-20261118`.
+Base: `5a33a435ffbb4711d0a5fa69ade9d32ad4f8b929` (reviewed PR #241 merged).
+Owned paths: `packages/chain-adapters/src/{deployments,quote,rpc}.ts` and focused tests;
+`packages/tron-adapter/src/rpc.ts` block-range validation only and `scan.test.ts`; this claim and scoped handoff.
+Source provenance: `e2fef011ca1195d6c5edaf4e1ea1055692462004`,
+`b098b73a3a93bde331b7f49123e99d3406b6cb6f`, `c37604d1b1cf561573270d6cc002418003f80b69`.
+Status: selected runtime safeguards recovered; baseline regressions reproduced; affected package coverage
+passed (552 chain-adapter tests plus 104 TRON tests). Coordinator independently reviewed the source diff.
+Concurrent typecheck was killed with exit 137; remaining checks and combined-source CI are recorded in the
+scoped handoff, `docs/handoffs/consolidation-20261118/HISTORICAL_ADAPTER_SAFEGUARDS.md`.
+Acceptance: reject impossible manifest calendar dates; bounded retries for non-finite inputs; preserve the existing
+0..30 price-decimals bound with additional regressions; refuse incomplete/noncontiguous TRON block ranges;
+preserve PR #241 transport isolation. The historical price-decimals runtime hunk is redundant and excluded.
+Apply only those previously implemented safeguards and regressions, run focused failing/passing evidence and
+affected package checks, then hand off for independent review. No new feature, dependency, policy, deployment or release.
+
+# Pages idle-clock integration — 2026-11-18
+
+Worker: ChatGPT coordinator, with independent privacy-review implementation and source review.
+Branch: `chatgpt/ghostpay-pages-idle-clock-20261118`; base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/AppShell.tsx`, `apps/web/src/AppShell.idleClock.test.tsx`, and the idle-clock handoff.
+Acceptance: reproduce clock rollback on current main, retain sleep-aware wall-time checks, add monotonic expiry,
+preserve sole-copy key recovery policy, pass focused shell tests and scoped lint, then require exact-head CI.
+The test file is imported from the separate review lane; product edits start after this claim. PR #209's frame and
+unload changes remain on its own branch. No deployment, signing, publication, mainnet, or release-gate changes.
+
+# Repository consolidation — 2026-11-18 (active)
+
 
 
 Coordinator: Claude Code session (integration owner). Integration branch: `nodata/wizardly-allen-qwol6u`, created from
@@ -636,6 +843,8 @@ artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.2
 also passes all 19 helper tests. See the source-pinned handoff under
 `docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
 
+
+
 ## Shared invoice signer-policy extraction — 2026-11-18
 
 Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-invoice-validation-20261118`.
@@ -712,6 +921,21 @@ candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
 
 
 
+
+
+## Beta acceptance log artifact capture — 2026-11-18
+
+Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (main).
+Owned paths: `.github/workflows/beta-acceptance.yml`; this claim;
+`docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
+
+Acceptance: trace the observed missing artifact in run `44279444368`, job `134715943959`, to the retained
+log paths and the exact pinned upload action behavior; enable hidden-file inclusion only for the existing
+`scripts/beta/.state/*.log` upload. Preserve the path, artifact name, retention, permissions, failure behavior,
+acceptance commands and every existing gate. Run existing relevant workflow/action checks and inspect the
+exact diff; add no setting-mirroring test. No product/dependency change, new infrastructure, deployment,
+workflow rerun, publication or upload of state JSON/private fixture material.
 
 Status: workflow source `05a3b45bda60d18a6922c0897d48bd8984bad377` adds only the requested boolean
 input. Existing workflow checks pass 6/6 with no skips; action-pin check passes all 111 references;
@@ -820,3 +1044,140 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+# Master repository reconciliation — 2026-11-18
+
+Worker: ChatGPT integration coordinator. Branch: `integration/ghostpay-master-consolidation-20261118`.
+Base: PR #238, `198aa5baff22272453733a0f3dcfcac0e0994eec`; initial main: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: integration conflicts; branch/PR census and evidence in `docs/consolidation/master-20261118/`;
+`scripts/tests/lean-core-reachability.test.mjs`, generated package map, `packages/chain-adapters/src/payments.bulkCancellation.test.ts`,
+`apps/web/e2e/app.spec.ts`, and the export-cancellation regression only if still required after recovery reconciliation.
+Independent workers own recovery reconciliation, CodeQL repairs and selected historical correctness fixes in separate worktrees.
+Acceptance: evidence-backed disposition for every branch; preserve source provenance and security invariants; fix reproduced integration
+failures; execute focused and combined qualification; merge only qualified groups under the user's master consolidation authorization.
+Do not delete branches, force-push shared history, deploy, publish releases or weaken security requirements.
+
+
+# Recovery reconciliation — 2026-11-18
+
+Worker: independent feature/custody reviewer for the master consolidation. Branch:
+`integration/ghostpay-recovery-reconciled-20261118`; base PR #239
+`4a1b181c89e02ee564b5568d4b4b8d689f5e42c5`.
+
+Owned paths: `apps/web/src/AppShell.tsx`, its beforeunload regression; the recovery and saved-export verification
+components and their tests; `apps/web/e2e/stealth-export.spec.ts`, `stealthExportFixtures.ts`, `sweep.spec.ts`;
+the focused SellerKeys recovery consent test; this claim and `docs/consolidation/RECOVERY_RECONCILIATION_2026-11-18.md`.
+
+Acceptance: retain every PR #239 protection and selectively preserve PR #240's exact-file byte checks, current
+external-copy unload guard, fresh replacement consent and keyboard recovery regressions. No changes to the codec,
+custody model, contracts, dependencies, e2e helpers, remote source branches or security gates. Record actual test
+results separately from static review. The master coordinator owns integration and publication.
+
+
+## Master consolidation: bounded CodeQL reconciliation — 2026-11-18
+
+Worker: independent CI/release reviewer, Caveman investigate-first.
+Branch: `integration/ghostpay-codeql-reconciled-20261118`.
+Base: PR #238 `198aa5baff22272453733a0f3dcfcac0e0994eec`.
+Owned paths: `packages/pir-two-server/src/client.ts` and its regression tests;
+`apps/web/src/views/Settings.test.tsx`; this claim; a scoped consolidation handoff.
+Acceptance: reproduce the uncontrolled trailing-slash normalization mechanism, remove
+quadratic processing without changing ordinary endpoint semantics, and keep regression
+coverage; replace the Settings preloaded-storage fixture with an honest synthetic
+test setup while preserving persisted-provider-warning and session-only assertions.
+No CodeQL suppression, scanner exclusion, gate, dependency, crypto, network-policy or
+release change. Record actual tests and source identities; hosted CodeQL must rerun
+on the combined candidate before the alerts can be claimed closed.
+# Existing runtime correctness recovery — 2026-11-18
+
+Worker: feature/custody reviewer continuing the authorized all-repository consolidation.
+Branch: `integration/ghostpay-runtime-recovery-20261118`; base
+`c5f9b190935251c5274a434341f40db3c9175ef1`.
+Owned paths: `packages/cli/**`, `apps/relayer/**`, `packages/relayer-guard/**`,
+`apps/web/src/lib/relayerClient.ts` and its focused test; this claim and the scoped runtime recovery handoff.
+Scope addition approved by the coordinator: `scripts/devnet/e2e.mjs`, only the PR #218 companion that aligns
+the relayer fee recipient with the signed manifest while preserving the existing balance assertions.
+Further test-only scope: `packages/invoice-schema/src/pinnedSigner.test.ts`, preserving four unique #218
+regressions alongside the existing #234 tests. Invoice runtime and public behavior remain at the current base.
+Acceptance: recover useful CLI input/redaction and relayer admission/fee/logging/limiter fixes from PR #218
+`b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, preserving PR #222 request padding and privacy controls.
+Do not reapply invoice-schema #234, alter contract/policy/multichain behavior, change dependencies or weaken checks.
+Inspect #211 for remaining unique work and report excluded architectural scope. Original branches are read-only;
+coordinator owns integration/publication and exact combined-source validation.
+
+# Existing policy validation recovery — 2026-11-18
+
+Worker: feature/custody reviewer, after the independently reviewable #218 runtime group at `d80aa890`.
+Branch: `integration/ghostpay-runtime-recovery-20261118`.
+Owned paths: `packages/policy-scheme/src/{router.ts,router.test.ts,eip712.ts,limits.ts,derive.ts,negative.test.ts}`,
+`packages/policy-scheme/README.md`, `apps/web/src/features/policy/{pay.ts,pay.selfcheck.test.ts,send.ts,send.test.ts}`,
+this claim and focused source/provenance handoff.
+Acceptance: recover the existing #211 decoder, policy-only signing, leaf recomputation and secret-copy lifetime
+checks with paired prepare/send regressions. Retain current experimental/disabled exposure, L2 delay values,
+contract runtime, dependency versions and v4 checkpoints. Separate asset-coverage UI and multichain format changes
+remain outside this group. No local test/install workload during coordinator's resource limit; hosted combined
+qualification and independent crypto/custody review remain required before promotion.
+
+# Master consolidation: unique PR246 security safeguards — 2026-11-18
+
+Coordinator owns the selective port of five reviewed paths from PR246
+`28edbcf55093a6d6056232fd59ef37a2ae832b9a`: confidential router native forwarding,
+ReturnBombStealth and its regression; deployment shell preflight and its offline tests.
+Preserve current CLI, TRON completeness, browser-warning assertion, dependency boundary
+review and all release/analyzer gates. Independent reviewer completed the exact source
+crosswalk before this claim. No deployment, fee-token policy approval or source-branch edits.
+# TM1–TM15 hardening completion — 2026-11-18
+
+Coordinator: ChatGPT root; reviewers: browser_privacy, metadata_privacy, relayer_chain_privacy, acceptance_review.
+Branch: `chatgpt/ghostpay-tm-hardening-20261118`.
+Base: `198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238), which already contains
+main `dfc75ef2087fa6463ae59e0818abec01796c578d` and PR #222
+`2bc2098298d90928eb1acafad969f28316bb05fc` as ancestors. The new PR will be stacked
+on #238 so only the TM-specific continuation is proposed; existing integration is
+an input, not repeated repository consolidation.
+
+| Worker | Owned paths | TM acceptance |
+|---|---|---|
+| browser_privacy | `apps/web/src/lib/settings*.ts`, `apps/web/src/views/Settings*.tsx`; focused new privacy tests | TM4 session-only settings and credential-bearing configuration never leak through accidental persistence/export; TM1/TM2/TM3/TM7/TM14 existing implementations reviewed and qualified. |
+| metadata_privacy | `apps/web/src/components/ReceiptPanel*.tsx`, `packages/scan-source/src/{padded,range}*.ts`, `apps/web/src/lib/scanPrivacy*.ts`, `apps/web/src/views/Scan{,.privacy.test}.tsx`; focused invoice/default acceptance tests | TM9 opt-in scoped to receipt identity; TM15 bounded/cancellable padding; TM8/TM10/TM12 source and test qualification while preserving checkpoint owner. |
+| relayer_chain_privacy | Existing TM11 relayer privacy source/tests/docs and TM13 BTC/Solana/TRON flow-specific tests; runtime only for a confirmed in-scope defect | Strict padding/ingress/zero-log behavior; chain-specific query consent and sign-time checks. |
+| acceptance_review | Read-only fourth-role review and acceptance-review report | Test coverage, active call paths, disclosure boundaries and independently reviewed corrections. |
+| coordinator | CSP scripts/tests and deployment documentation; privacy matrix/defaults tests; catalogs after coordination; qualification and review evidence | TM5 generated meta/header/nginx validation; TM6 accurate Tor guidance; all 15 dispositions, independent cross-review and exact-source qualification. |
+
+All 15 authoritative recommendations were read before product changes. First phase
+is read-only source review, then failing regressions for each confirmed defect.
+PR #241 owns general browser transports, #235 owns checkpoint architecture, #234
+owns pinned invoice signers, and #239/#240 own Spec 18. Those implementations are
+not independently redesigned. Main merges, deployment, release publication,
+contracts/Mythril, unrelated dependency upgrades and general consolidation are
+outside this task. Do not overwrite concurrent changes; recheck remote heads
+before publication. Final source and test evidence belong in
+`docs/handoffs/tm-hardening-20261118/`.
+
+TM acceptance fixture follow-up: browser_privacy owns only the hostile-text case in `apps/web/e2e/app.spec.ts`; the existing dialog listener must acknowledge one expected outgoing beforeunload prompt without suppressing invoice-origin dialogs. Runtime/key retention and global helpers stay unchanged. acceptance_review independently reviews the fixture delta; hosted full/lean execution remains required.
+
+
+# Sleep-aware session security completion — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT coordinator with independent clock/lifecycle, vault/session and integration reviewers.
+Branch: `chatgpt/ghostpay-idle-lifecycle-qualified-20261119`.
+Qualified source base: PR #242, `ab4e0da2cfe2a18adac0424896fba0b40fac81a8`, subsequently merged
+by another workstream as main `e454de6abfefda70d82784fafc1d8949b277c334` with an identical source tree.
+Successor integration target: `integration/ghostpay-idle-session-completion-20261119`, from that main.
+PR #227 `613667be4eeb132c7d21ccd06c627f9a7144d85b` is already an ancestor.
+Owned paths: `apps/web/src/AppShell*`; idle-specific session/key-vault lifecycle changes and tests;
+the idle-authority token in `apps/web/src/lib/scanCursorSlot.ts` and its regression tests;
+`apps/web/e2e/idle-session.spec.ts`; directly required lock-state locale/security-key entries;
+`apps/web/DEVIATIONS.md`; session-security guidance and `docs/handoffs/idle-session-20261119/`.
+Acceptance: fail closed on expired/invalid clocks before activity; retire old timer/session generations;
+synchronously revoke protected key operations at expiry; preserve sole-copy keys for the existing encrypted
+backup/recovery path; qualify full/lean lifecycle behavior; independently review and integrate into the successor candidate.
+No wallet encryption/KDF redesign, Spec 18 feature work, contract/analyzer remediation, network-isolation
+redesign, dependency upgrade, deployment, release, force push or protection bypass. Other source branches
+remain read-only; #238 and its recovery/privacy follow-ups continue independently outside this focused port.
+Initial defects and exact acceptance evidence are tracked in the task handoff directory.
+
+Provenance: the idle-only delta is ported from local `b2fb5f20455ca2823739f7a29ed784ec94e049c2`,
+preserved remotely as `7e6089e2e40a2a7daf93961eddef17d3fe8501fd` on `chatgpt/ghostpay-idle-lifecycle-20261119`.
+The broader #238 tree and its unrelated worker claims are not imported; this combined target requires fresh qualification.

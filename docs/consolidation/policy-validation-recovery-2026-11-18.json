@@ -1,0 +1,356 @@
+{
+  "format": "ghostpay-policy-validation-recovery-v1",
+  "base": "d80aa890c6492247cccbe13ac0621f1242749254",
+  "claim_commit": "6316b0c4f3fa38ac883025fa3d05b220558f1dba",
+  "source_pr": 211,
+  "source_head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+  "branch": "integration/ghostpay-runtime-recovery-20261118",
+  "method": "Nine original source patches applied in dependency order with git apply --3way; no conflict or full stale branch merge.",
+  "source_commits": [
+    {
+      "commit": "0c0bbaa26d6ccf9e3a4a0c079c28a75559238374",
+      "subject": "policy-scheme: decodePolicyPaymentCalldata checks encoding, R and metadata again",
+      "paths": [
+        "packages/policy-scheme/src/router.test.ts",
+        "packages/policy-scheme/src/router.ts"
+      ]
+    },
+    {
+      "commit": "6e27f497e3f526921b6f9ad3a98dc5cba87d82a2",
+      "subject": "policy-scheme: signPolicyTypedData refuses foreign typed data again",
+      "paths": [
+        "packages/policy-scheme/src/eip712.ts",
+        "packages/policy-scheme/src/negative.test.ts"
+      ]
+    },
+    {
+      "commit": "86fa1fef1aeff8c37b9b5f2fd2d926087256774f",
+      "subject": "policy-scheme: buildWithdrawTypedData recomputes the limit leaf again",
+      "paths": [
+        "packages/policy-scheme/src/eip712.ts",
+        "packages/policy-scheme/src/limits.ts",
+        "packages/policy-scheme/src/negative.test.ts"
+      ]
+    },
+    {
+      "commit": "ba877c31e0730f5838322828ec3c02194028375c",
+      "subject": "policy-scheme: getLimitProof recomputes the stored leaf of a restored tree",
+      "paths": [
+        "packages/policy-scheme/src/limits.ts",
+        "packages/policy-scheme/src/negative.test.ts"
+      ]
+    },
+    {
+      "commit": "1613308217adac75f7acf84b924b9ad4accdb41f",
+      "subject": "policy-scheme: checkScheme2Announcement copies the viewing secret after validation",
+      "paths": [
+        "packages/policy-scheme/src/derive.ts",
+        "packages/policy-scheme/src/negative.test.ts"
+      ]
+    },
+    {
+      "commit": "818aa34f4d3f927a88665f88018710a897cb41c3",
+      "subject": "policy-scheme: restore the README trust notes",
+      "paths": [
+        "packages/policy-scheme/README.md"
+      ]
+    },
+    {
+      "commit": "0dab0db44c349a45a19e20df9449c430d3bcedbe",
+      "subject": "Keep the send-guard swap tests self-consistent under the stricter decoder",
+      "paths": [
+        "apps/web/src/features/policy/send.test.ts"
+      ]
+    },
+    {
+      "commit": "ca2c6b75017504bee66c65e01653da21410f4a53",
+      "subject": "policy-scheme: signPolicyTypedData reads its input once and signs the recomputed digest",
+      "paths": [
+        "packages/policy-scheme/README.md",
+        "packages/policy-scheme/src/eip712.ts",
+        "packages/policy-scheme/src/negative.test.ts"
+      ]
+    },
+    {
+      "commit": "60f44acdc6eb9ae87ddae6488ea6feafd5618f05",
+      "subject": "web/policy: the send gate and the prepare self-check bind R and the metadata",
+      "paths": [
+        "apps/web/src/features/policy/pay.selfcheck.test.ts",
+        "apps/web/src/features/policy/pay.ts",
+        "apps/web/src/features/policy/send.test.ts",
+        "apps/web/src/features/policy/send.ts"
+      ]
+    }
+  ],
+  "recovered_files": [
+    {
+      "path": "apps/web/src/features/policy/pay.selfcheck.test.ts",
+      "base": null,
+      "source": {
+        "git_blob": "a719bc51a3a4cb227e20ddcdf7ccd0e650f8ab9d",
+        "sha256": "0a97997dfd8c427d9f7278b51846ea0e047ec48ec4813b9d5a2c47b0bf0ffd1f"
+      },
+      "recovered": {
+        "git_blob": "a719bc51a3a4cb227e20ddcdf7ccd0e650f8ab9d",
+        "sha256": "0a97997dfd8c427d9f7278b51846ea0e047ec48ec4813b9d5a2c47b0bf0ffd1f"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/web/src/features/policy/pay.ts",
+      "base": {
+        "git_blob": "26e0609e4b4554e6dce06f8949895e9fdf8f5bfb",
+        "sha256": "962eb7052d62365d636ebe154e31185b91eab728c8b23d0230ccc9640ab268f3"
+      },
+      "source": {
+        "git_blob": "204debaa8a9081b2cc1c5821956a06fa5d2c3e57",
+        "sha256": "79be4053d869baa495e3cc126e35df812645e06020821bbb6f2810680159595b"
+      },
+      "recovered": {
+        "git_blob": "1da6869e3d9322004d29ede85ac20923f31d1777",
+        "sha256": "6e1940161ecf26ca83ba215c64f883669b7fdba395924d9ff01c3f2b6ca96845"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/web/src/features/policy/send.test.ts",
+      "base": {
+        "git_blob": "2d6e6e6a6afe4f066c4e23027366bf9dd9d57577",
+        "sha256": "407ec29b9553515bfc420629758308d61afa03a1f2e20b7bf034a942cef4cebd"
+      },
+      "source": {
+        "git_blob": "aa1b08c198e72dc55854551183670d37061984b0",
+        "sha256": "44f644ad5c06c6b63db3666de84fa459af905a80e1fe81245a0e98e6a77dbf34"
+      },
+      "recovered": {
+        "git_blob": "aa1b08c198e72dc55854551183670d37061984b0",
+        "sha256": "44f644ad5c06c6b63db3666de84fa459af905a80e1fe81245a0e98e6a77dbf34"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/web/src/features/policy/send.ts",
+      "base": {
+        "git_blob": "7058f958a66eafc4c6bc77156cb968e5bd23cc40",
+        "sha256": "e78a011ebba1ce6802913e69e1a2300b85e66beb7f25390d3c9393aa36c97d64"
+      },
+      "source": {
+        "git_blob": "04ac08be009c2942b394f35975171325738ce12a",
+        "sha256": "4fa76827fabf11fd9de5c8daf1ac2212d04a01e65c8656ffb861f7cafe72687e"
+      },
+      "recovered": {
+        "git_blob": "04ac08be009c2942b394f35975171325738ce12a",
+        "sha256": "4fa76827fabf11fd9de5c8daf1ac2212d04a01e65c8656ffb861f7cafe72687e"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/policy-scheme/README.md",
+      "base": {
+        "git_blob": "c63e4b5047cae2e5c8333996134409101cbbec1b",
+        "sha256": "b4f56653f8137445c63c40b333b1094b82b6efd65111eb90a53ce2bfdd691461"
+      },
+      "source": {
+        "git_blob": "ac0576535fc4c0fec527d4b0d944761a5e4c5560",
+        "sha256": "3f175b0865784bc6ce5ee8ed35f242e11d609791318c2c0712d2f748048d6e44"
+      },
+      "recovered": {
+        "git_blob": "ac0576535fc4c0fec527d4b0d944761a5e4c5560",
+        "sha256": "3f175b0865784bc6ce5ee8ed35f242e11d609791318c2c0712d2f748048d6e44"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/policy-scheme/src/derive.ts",
+      "base": {
+        "git_blob": "d70af630f3dfe38100f4714b1e8f5c38ab4d4e89",
+        "sha256": "4ce3662afa83bfc5cc4031a49ca63ddee5a15b4b9eda06e50f9885451d1c1e48"
+      },
+      "source": {
+        "git_blob": "ce4be42c09dec5e77b34f185c2af717687143330",
+        "sha256": "f0ebc6cf04c669c4ec371c908aa8f5bec59970757595e855263c9bad23d4514d"
+      },
+      "recovered": {
+        "git_blob": "ce4be42c09dec5e77b34f185c2af717687143330",
+        "sha256": "f0ebc6cf04c669c4ec371c908aa8f5bec59970757595e855263c9bad23d4514d"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/policy-scheme/src/eip712.ts",
+      "base": {
+        "git_blob": "5a300009bf3bd95e3c0bc808acffaa00ac366f36",
+        "sha256": "6d389e39a244be82f4c2c3bd1e152955e0e9763af114abca8573d75a257ec4a5"
+      },
+      "source": {
+        "git_blob": "2f7679ede1e91ad43690fbe3f6fbfc4ab65910d7",
+        "sha256": "9ce2f59ee33760be9c26253b22e6ea5b1ccbee69835640f766b1707d3d62fbd1"
+      },
+      "recovered": {
+        "git_blob": "2f7679ede1e91ad43690fbe3f6fbfc4ab65910d7",
+        "sha256": "9ce2f59ee33760be9c26253b22e6ea5b1ccbee69835640f766b1707d3d62fbd1"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/policy-scheme/src/limits.ts",
+      "base": {
+        "git_blob": "b25c1fa2a7b50ccb800c5eedfca2f927c33697a9",
+        "sha256": "50da51daa54c22442dc87a085e660b5c1a3a522d1b7e6981e4a50e863ed9e9a3"
+      },
+      "source": {
+        "git_blob": "2836251024e902ab3bbfd203b90f6ebacd42a9db",
+        "sha256": "42dc67e28aaa6fa357e825d9e6316cb40b908b661f3e52b6464879536e99a357"
+      },
+      "recovered": {
+        "git_blob": "2836251024e902ab3bbfd203b90f6ebacd42a9db",
+        "sha256": "42dc67e28aaa6fa357e825d9e6316cb40b908b661f3e52b6464879536e99a357"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/policy-scheme/src/negative.test.ts",
+      "base": {
+        "git_blob": "02b5b6de41abdbb30ed9ce47550f51de63a09058",
+        "sha256": "796dba68a43d1c30da94f5f999d35db504657633e0b27ce42afa0314584bdaee"
+      },
+      "source": {
+        "git_blob": "2c165a79511ed3cec13f5aeb8d4c403aea64f14d",
+        "sha256": "afd5544bab97c2d145667f0a7644631f60426e6414baefa41ddaad5776c28567"
+      },
+      "recovered": {
+        "git_blob": "2c165a79511ed3cec13f5aeb8d4c403aea64f14d",
+        "sha256": "afd5544bab97c2d145667f0a7644631f60426e6414baefa41ddaad5776c28567"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/policy-scheme/src/router.test.ts",
+      "base": {
+        "git_blob": "5bc471b3b68dbb55059320d6cc9a693605cff002",
+        "sha256": "c9b3c048ca135f3de08bdd41abe92eb3df33a67217f43adf2154f443c0d9efc8"
+      },
+      "source": {
+        "git_blob": "1dac985854f331b2d0c1887e7d87d874b9d47c3f",
+        "sha256": "8f7cd52900a473cf7af79022551f42bbf925a2b993c0f5665550571861cb3a80"
+      },
+      "recovered": {
+        "git_blob": "1dac985854f331b2d0c1887e7d87d874b9d47c3f",
+        "sha256": "8f7cd52900a473cf7af79022551f42bbf925a2b993c0f5665550571861cb3a80"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/policy-scheme/src/router.ts",
+      "base": {
+        "git_blob": "3e1af8ed068229466ec14478a39aa07bc5aaccb1",
+        "sha256": "358f09ab9c40fb59227034d9a8b4ff49ca6c39cf0aa25601b2e0eecbd40a9e3c"
+      },
+      "source": {
+        "git_blob": "35f20d3f07e02f42fac244552f4b50bce292402f",
+        "sha256": "4d7384b710f793ec3deaf997a766751c28181217e1c4e56de0cf7e2ae299a458"
+      },
+      "recovered": {
+        "git_blob": "35f20d3f07e02f42fac244552f4b50bce292402f",
+        "sha256": "4d7384b710f793ec3deaf997a766751c28181217e1c4e56de0cf7e2ae299a458"
+      },
+      "matches_source": true
+    }
+  ],
+  "preserved_base_files": [
+    {
+      "path": "packages/policy-scheme/package.json",
+      "git_blob": "94ea19b1d7622eb3204a5b368748cc0aa1bd3bfb",
+      "sha256": "eef6c14b2bb08cad359ef172f1ad4d7df014c1280e1ee252d34a008e1c2e4b76"
+    },
+    {
+      "path": "packages/policy-scheme/vitest.config.ts",
+      "git_blob": "05b7aaca377b4b03162148bc7b9542a1f44c0ff3",
+      "sha256": "64c6cc321c4239b12352badedc0e68286d14c847e2aea1245ded2f348d928314"
+    },
+    {
+      "path": "packages/policy-scheme/src/policy.ts",
+      "git_blob": "7eddd3ef29e0f05e01497982656d9b66128a048f",
+      "sha256": "c9d04566457f5712af4716fd63f5a75fac2ff2a6a085d449d77d8ba4b1048ad6"
+    },
+    {
+      "path": "packages/policy-scheme/src/abi/policyRouter.ts",
+      "git_blob": "9ab31d3aa8f722a90f7c4743569eb1e3bcce1868",
+      "sha256": "4f88779ddac3dc25a567c364677a3cbbc9903c308445abb5a3acf945471b6d50"
+    },
+    {
+      "path": "packages/policy-scheme/src/record.ts",
+      "git_blob": "b6b3a7b25d3f5b436a5a87da5b46ad6f7295db08",
+      "sha256": "a76eeb17fd6db2887e41232695644d714df456d218742a2a14c909442d77c4b9"
+    },
+    {
+      "path": "packages/policy-scheme/src/index.ts",
+      "git_blob": "25f3fd86983a045a24d364b99b08d4df7807829d",
+      "sha256": "66f82b95615de95284e8e4dc0def69e12263ff4dac829fca9f6edde8e32459e2"
+    },
+    {
+      "path": "apps/web/src/features/policy/chain.ts",
+      "git_blob": "758e19ef20d5f1ad2d3388979fb2d59e9db6578c",
+      "sha256": "f84773fd2ae17e707ff18972f24fa890e310e1412487ed9c23278d393a89ffbd"
+    },
+    {
+      "path": "apps/web/src/features/policy/deploymentEvidence.ts",
+      "git_blob": "21b6f4f009532bb2dc40979f2e8186cec3cf67ff",
+      "sha256": "a93379b07324a9575a10001094e6ce378b5235aca3505e911b3745cc65350e3e"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyCreate.tsx",
+      "git_blob": "2798b82ef3d1fa095e8c487847a1c98702607bb9",
+      "sha256": "1f8cbbea74a4d72d402d4217e5ada2d36b0284e55daae6a59a4ebdb5925f919e"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyPay.tsx",
+      "git_blob": "4fa15f2aa20e428f70d789ec9186c6d36377ccc6",
+      "sha256": "4b44ea4d04a6121e076ff3b60705d6b71a0e04ab359de1c2737971782e821a78"
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.ts",
+      "git_blob": "d33c6f6e4099fb386016289cc8aa560b1380ffa8",
+      "sha256": "dc80aae231ff33262897e01c94ca3c2bf275e626b4be0325f495c0f9d5404f20"
+    },
+    {
+      "path": "package.json",
+      "git_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d"
+    },
+    {
+      "path": "package-lock.json",
+      "git_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2"
+    }
+  ],
+  "preserved_contracts": {
+    "tree": "a84815152b8f07c854197c84b5613b02f7939882",
+    "changed_paths": []
+  },
+  "scope": "Existing policy-only typed-data signing; canonical calldata and R/metadata consistency; withdrawal/restored-tree leaf binding; viewing-secret copy lifetime; paired web prepare/send regressions.",
+  "excluded": "No asset-coverage UI, L2 minimum-delay policy, deployment exposure, contract runtime, dependencies, v3 checkpoint or multichain changes.",
+  "validation": {
+    "diff_cached_check": "passed",
+    "source_and_retained_blob_checks": "passed",
+    "runtime_tests": "not run per coordinator instruction after repeated exit137; hosted combined-tree qualification pending"
+  },
+  "pending": [
+    "original policy-scheme coverage/typecheck/lint/build including contract-vector digest parity",
+    "web policy self-check/send and existing policy tests/typecheck/lint",
+    "exact combined-source hosted gates; missing anvil/forge skips do not qualify contract integration"
+  ],
+  "independent_review": {
+    "reviewer": "ci_release_audit",
+    "reviewed_commit": "63e67ff403c5daf45dbec5bf500a24ac386b6342",
+    "finding": "No blocking source finding. Digest is copied/validated before secret reveal; policy domain/types and local signing digest are bound; wipe finally preserved. Leaf binding matches contract double hash. Canonical decoder and prepare/final-send derivation binding retain existing amount/token/review/session/deadline checks.",
+    "regressions_read": [
+      "swapping getters",
+      "hidden and inherited salt",
+      "leaf inflation and inner-node substitution",
+      "valid ephemeral-key and view-tag swaps",
+      "zero wallet sends"
+    ],
+    "test_execution": "none"
+  }
+}

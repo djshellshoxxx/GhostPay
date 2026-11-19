@@ -19,6 +19,8 @@ interface VectorFile {
     readonly expected: { readonly stealthAddress: string; readonly privateKey: string; readonly announcedViewTag: string };
   }[];
   readonly files: {
+    readonly public: { readonly text: string };
+    readonly master: { readonly text: string };
     readonly single: { readonly text: string };
     readonly archive: { readonly text: string };
     readonly rawPrivateKey: { readonly text: string };

@@ -161,7 +161,8 @@ function ownerFromAnnouncement(viewing: Uint8Array, spend: CompressedPoint, ephe
  * @param deployment Factory and implementation of the chain the log came from.
  * @returns Match with owner, account and policy hash, or `{ matches: false }`.
  * @throws {GhostPayCryptoError} `INVALID_SCALAR`, `INVALID_POINT`. {@link PolicySchemeError} `INVALID_HEX`, `INVALID_ADDRESS`.
- * @security Never logs the viewing secret (a validated copy is zeroized). The view tag leaks one
+ * @security Never logs the viewing secret. Its copy is made after the argument checks and zeroized on
+ * every path after that (best effort in JavaScript). The view tag leaks one
  * byte of the shared-secret hash by design. A match only proves the address derivation; the
  * payment amount in metadata is an unauthenticated payer claim.
  * @testVector policy-scheme.accounts
@@ -174,9 +175,10 @@ export function checkScheme2Announcement(
   deployment: PolicyDeployment,
 ): Scheme2Check {
   const spend = parseCompressedPoint(spendingPublicKey);
-  const viewing = secretScalarFromBytes(viewingSecret);
   const hashes = policyHashes.map((p, i) => bytes32(p, `policyHashes[${String(i)}]`));
   const dep = { factory: nonZeroAddr(deployment.factory, 'factory'), implementation: nonZeroAddr(deployment.implementation, 'implementation') };
+  // Copy the secret only after every argument check, so no error path leaves the copy unwiped.
+  const viewing = secretScalarFromBytes(viewingSecret);
   try {
     const parsed = parse(announcement);
     if (parsed === null) return { matches: false };

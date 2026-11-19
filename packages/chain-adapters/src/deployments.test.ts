@@ -79,6 +79,8 @@ describe('validateManifest', () => {
     rejects(mut((m) => (m['solcVersion'] = 5)), /solc/);
     rejects(mut((m) => (m['date'] = 'yesterday')), /date/);
     rejects(mut((m) => (m['date'] = '2026-13-45T99:99:99Z')), /date/);
+    rejects(mut((m) => (m['date'] = '2026-02-30T00:00:00Z')), /date/); // CHAIN-ADAPTERS-10: calendar-impossible day
+    rejects(mut((m) => (m['date'] = '2026-04-31T00:00:00Z')), /date/);
     rejects(mut((m) => (m['signature'] = 'nothex')), /signature/);
     rejects(mut((m) => (m['signature'] = 5)), /signature/);
   });

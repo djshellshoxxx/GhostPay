@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChainAdapterError } from '@ghostpay/chain-adapters';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { SETTINGS_KEY, clearRpcSessionOnly } from '../lib/settings';
+import { SETTINGS_KEY, clearRpcSessionOnly, isRpcSessionOnly } from '../lib/settings';
 import { createSelectedRpc, loadNetworkSelection } from '../lib/defaultServices';
 import { SCAN_LANES_KEY } from '../lib/scanSpam';
 import { mockRpc } from '../test/mockRpc';
@@ -26,6 +26,7 @@ async function open(services = makeServices()): Promise<ReturnType<typeof userEv
 const stored = (): Record<string, unknown> => JSON.parse(window.localStorage.getItem(SETTINGS_KEY) ?? '{}') as Record<string, unknown>;
 
 describe('Settings RPC secrets (TM4)', () => {
+  // Public, deliberately key-shaped fixture on a reserved example domain; never a real provider credential.
   const SECRET = 'https://rpc.example/v2/AbCdEf0123456789AbCdEf0123456789';
   it('warns about a key-like URL and keeps it out of localStorage when session-only is ticked', async () => {
     const user = await open();
@@ -44,10 +45,45 @@ describe('Settings RPC secrets (TM4)', () => {
     expect(window.localStorage.getItem(SETTINGS_KEY) ?? '').toContain('AbCdEf');
   });
   it('flags an already persisted secret-looking URL and keeps it', async () => {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': SECRET } }));
+    // Persist through the explicit save path, then discard mounted and session-only state so this
+    // exercises both serialization and initialization of the saved-endpoint warning on a fresh mount.
+    const user = await open();
+    await user.type(screen.getByLabelText('Base Sepolia RPC URL'), SECRET);
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    expect(await screen.findByText('Settings saved.')).toBeTruthy();
+    expect(stored()).toMatchObject({ rpcUrls: { '84532': SECRET } });
+    cleanup();
+    clearRpcSessionOnly();
     await open();
     expect(await screen.findByText(/saved endpoint URL looks like it contains a provider key/)).toBeTruthy();
-    expect(window.localStorage.getItem(SETTINGS_KEY) ?? '').toContain('AbCdEf');
+    expect((screen.getByLabelText('Base Sepolia RPC URL') as HTMLInputElement).value).toBe(SECRET);
+    expect(stored()).toMatchObject({ rpcUrls: { '84532': SECRET } });
+  });
+  it('offers session-only storage even when a provider credential is not recognized by the heuristic', async () => {
+    const user = await open();
+    const endpoint = 'https://rpc.example/provider-assigned-opaque-value';
+    await user.type(screen.getByLabelText('Base Sepolia RPC URL'), endpoint);
+    expect(screen.queryByText(/looks like it contains a provider key/)).toBeNull();
+    await user.click(screen.getByLabelText(/Keep this endpoint for this session only/));
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    expect(await screen.findByText('Settings saved.')).toBeTruthy();
+    expect(isRpcSessionOnly('primary', '84532', endpoint)).toBe(true);
+    expect(window.localStorage.getItem(SETTINGS_KEY) ?? '').not.toContain('provider-assigned-opaque-value');
+  });
+  it('does not clear session-only consent when a settings form fails validation', async () => {
+    const user = await open();
+    await user.type(screen.getByLabelText('Base Sepolia RPC URL'), SECRET);
+    await user.click(screen.getByLabelText(/Keep this endpoint for this session only/));
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    expect(await screen.findByText('Settings saved.')).toBeTruthy();
+    expect(isRpcSessionOnly('primary', '84532', SECRET)).toBe(true);
+    await user.click(screen.getByLabelText(/Keep this endpoint for this session only/));
+    await user.clear(screen.getByLabelText(/Idle lock after minutes/));
+    await user.type(screen.getByLabelText(/Idle lock after minutes/), '0');
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/Lock timeout/);
+    expect(isRpcSessionOnly('primary', '84532', SECRET)).toBe(true);
+    expect(window.localStorage.getItem(SETTINGS_KEY) ?? '').not.toContain('AbCdEf');
   });
 });
 
@@ -315,20 +351,23 @@ describe('Settings network profiles (TM14)', () => {
     expect(notice.textContent).toMatch(/UNVERIFIED in this build/);
     expect(notice.textContent).toMatch(/do not make payments anonymous/);
     expect(notice.textContent).toContain('this page cannot verify it');
-    await save(user);
-    // Stored, but not in effect: the default still applies.
+    // An unsaved form change is not an active transport-policy change.
     expect(loadNetworkSelection().rpcProfile).toBe('direct');
-    expect(within(section()).getByText(/Not in effect yet/)).toBeTruthy();
     expect(section().textContent).toMatch(/In effect now: RPC reads Direct/);
+    await save(user);
+    // Stored, but not acknowledged: RPC is blocked rather than silently falling back to Direct.
+    expect(() => loadNetworkSelection()).toThrow(/acknowledge|notice/i);
+    expect(within(section()).getByText(/unacknowledged saved profile are blocked/)).toBeTruthy();
+    expect(section().textContent).not.toMatch(/In effect now:/);
     await user.click(within(section()).getByLabelText(/I have read this notice/));
     await save(user);
     expect(loadNetworkSelection()).toMatchObject({ rpcProfile: 'tor-browser', relayerProfile: 'direct', rpcMode: 'single', noticeAcknowledged: true });
-    expect(within(section()).queryByText(/Not in effect yet/)).toBeNull();
+    expect(within(section()).queryByText(/unacknowledged saved profile are blocked/)).toBeNull();
     // Any further change clears the acknowledgement again.
     await user.selectOptions(within(section()).getByLabelText('RPC mode'), 'own-node');
     expect(within(section()).getByLabelText<HTMLInputElement>(/I have read this notice/).checked).toBe(false);
     await save(user);
-    expect(loadNetworkSelection().rpcMode).toBe('single');
+    expect(() => loadNetworkSelection()).toThrow(/acknowledge|notice/i);
   });
 
   it('own node refuses a third-party RPC with its own message and contacts nothing', async () => {
@@ -352,5 +391,38 @@ describe('Settings network profiles (TM14)', () => {
     expect(await within(section()).findByText(/refused to store the network profiles/)).toBeTruthy();
     spy.mockRestore();
     expect(loadNetworkSelection().relayerProfile).toBe('direct');
+  });
+  it('shows a blocked state for corrupt profile storage and repairs it only on explicit save', async () => {
+    window.localStorage.setItem(NET_KEY, '{broken');
+    const user = await open();
+    expect(within(section()).getByText(/network profile settings are invalid or unavailable/i)).toBeTruthy();
+    expect(within(section()).queryByText(/In effect now: RPC reads Direct/)).toBeNull();
+    expect(window.localStorage.getItem(NET_KEY)).toBe('{broken');
+    await save(user);
+    expect(loadNetworkSelection().rpcMode).toBe('single');
+    expect(within(section()).getByText(/In effect now: RPC reads Direct/)).toBeTruthy();
+  });
+  it('a failed replacement save preserves an existing acknowledged own-node policy', async () => {
+    window.localStorage.setItem(NET_KEY, JSON.stringify({ rpcProfile: 'direct', relayerProfile: 'direct', rpcMode: 'own-node', noticeAcknowledged: true }));
+    const user = await open();
+    await user.selectOptions(within(section()).getByLabelText('RPC mode'), 'single');
+    expect(loadNetworkSelection().rpcMode).toBe('own-node');
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota'); });
+    try {
+      await user.click(within(section()).getByRole('button', { name: 'Save network profiles' }));
+      expect(await within(section()).findByText(/refused to store the network profiles/)).toBeTruthy();
+      expect(loadNetworkSelection().rpcMode).toBe('own-node');
+      expect(within(section()).getByText(/In effect now:.*Own node/)).toBeTruthy();
+    } finally { spy.mockRestore(); }
+  });
+  it('updates the saved-policy status after a cross-tab storage event without overwriting the unsaved form', async () => {
+    const user = await open();
+    await user.selectOptions(within(section()).getByLabelText(/Profile for RPC reads/), 'tor-browser');
+    window.localStorage.setItem(NET_KEY, '{broken');
+    fireEvent(window, new StorageEvent('storage', { key: NET_KEY, newValue: '{broken' }));
+    expect(within(section()).getByText(/network profile settings are invalid or unavailable/i)).toBeTruthy();
+    expect(within(section()).queryByText(/In effect now:/)).toBeNull();
+    expect(within(section()).getByLabelText<HTMLSelectElement>(/Profile for RPC reads/).value).toBe('tor-browser');
+    expect(() => loadNetworkSelection()).toThrow(/invalid or unavailable/);
   });
 });

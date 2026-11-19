@@ -1,0 +1,92 @@
+✔ targeted workspace build includes dependencies and omits unrelated applications (14177.380603ms)
+✔ Mocha serializes worker options without mutating functions or losing RegExp/Date (296.524681ms)
+✔ Mocha discovers nested globs, honors minimatch ignores, and runs parallel workers (16360.031985ms)
+✔ Mocha watch discovery retains Glob pattern objects and dotfile matching (385.416711ms)
+✖ Mocha failure reporter still renders unified and inline diffs (32682.786076ms)
+✖ solc tmp API writes and removes SMT files and rejects traversal prefixes (18915.434418ms)
+✔ network inventory has unique complete records and references existing sources and tests (34.19502ms)
+✔ every explicit production web network reference is represented in the inventory (33538.710238ms)
+✔ shipped SDK and transport boundaries are represented, with library-only adapters distinguished (0.263845ms)
+✔ inventory detector recognizes calls and aliases without flagging type declarations or comments (696.578912ms)
+✔ CI changes filter: docs-only and code pull requests are classified as before (audit L7-L4) (749.997354ms)
+✔ CI changes filter fails safe when the 3000-file list may be truncated (audit L7-L4) (16263.181772ms)
+✔ Pages mirror builds every workspace lib from source, never from the Actions cache (audit L7-M4) (31.908705ms)
+✔ hosting-kit qualification runs for app-only changes and ties the package to the commit (17.453995ms)
+✔ native workspace shard receives the executable pinned compiler and fails before tests when it is missing (5451.151364ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 13
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 78023.479398
+
+✖ failing tests:
+
+test at scripts/tests/dependency-tooling.test.mjs:80:1
+✖ Mocha failure reporter still renders unified and inline diffs (32682.786076ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + Error: spawnSync /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node ETIMEDOUT
+  +     at Object.spawnSync (node:internal/child_process:1191:20)
+  +     at spawnSync (node:child_process:929:24)
+  +     at runMocha (file:///workspace/scratch/f3944b12cd1b/GhostPay/scripts/tests/dependency-tooling.test.mjs:22:10)
+  +     at TestContext.<anonymous> (file:///workspace/scratch/f3944b12cd1b/GhostPay/scripts/tests/dependency-tooling.test.mjs:84:20)
+  +     at Test.runInAsyncScope (node:async_hooks:227:14)
+  +     at Test.run (node:internal/test_runner/test:1402:25)
+  +     at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+  +     at Test.postRun (node:internal/test_runner/test:1542:19)
+  +     at Test.run (node:internal/test_runner/test:1467:12)
+  +     at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+  +   code: 'ETIMEDOUT',
+  +   errno: -110,
+  +   path: '/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node',
+  +   spawnargs: [
+  +     '/workspace/scratch/f3944b12cd1b/GhostPay/node_modules/mocha/bin/mocha.js',
+  +     '--no-config',
+  +     '--no-package',
+  +     'failure.cjs',
+  +     '--no-color'
+  +   ],
+  +   syscall: 'spawnSync /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node'
+  + }
+  - undefined
+
+      at TestContext.<anonymous> (file:///workspace/scratch/f3944b12cd1b/GhostPay/scripts/tests/dependency-tooling.test.mjs:85:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: spawnSync /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node ETIMEDOUT
+        at Object.spawnSync (node:internal/child_process:1191:20)
+        at spawnSync (node:child_process:929:24)
+        at runMocha (file:///workspace/scratch/f3944b12cd1b/GhostPay/scripts/tests/dependency-tooling.test.mjs:22:10)
+        at TestContext.<anonymous> (file:///workspace/scratch/f3944b12cd1b/GhostPay/scripts/tests/dependency-tooling.test.mjs:84:20)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1402:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+        at Test.postRun (node:internal/test_runner/test:1542:19)
+        at Test.run (node:internal/test_runner/test:1467:12)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tests/dependency-tooling.test.mjs:93:1
+✖ solc tmp API writes and removes SMT files and rejects traversal prefixes (18915.434418ms)
+  Error: Failed to solve SMT query. Error: spawnSync /bin/sh ETIMEDOUT
+      at solve (/workspace/scratch/f3944b12cd1b/GhostPay/node_modules/solc/smtsolver.js:79:19)
+      at TestContext.<anonymous> (file:///workspace/scratch/f3944b12cd1b/GhostPay/scripts/tests/dependency-tooling.test.mjs:109:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

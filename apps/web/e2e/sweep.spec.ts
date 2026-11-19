@@ -105,7 +105,14 @@ for (const outcome of ['success', 'unknown'] as const) {
     await expect(sign(page)).toBeDisabled(); // An absent receipt does not erase the lock.
     await auditAccessibility(page, `sweep-${outcome}-pending-status-lock-retained`);
 
-    await page.reload();
+    // A browser-local vault is not a verified external backup: another tab could have removed it before this reload.
+    await Promise.all([
+      page.waitForEvent('dialog').then(async (dialog) => {
+        expect(dialog.type()).toBe('beforeunload');
+        await dialog.accept();
+      }),
+      page.reload(),
+    ]);
     await nav(page).getByRole('button', { name: 'Seller keys' }).click();
     await keys(page).getByLabel('Vault passphrase', { exact: true }).fill(PASS);
     await keys(page).getByRole('button', { name: 'Unlock saved vault' }).click();

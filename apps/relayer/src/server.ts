@@ -1,18 +1,19 @@
 import { RejectSpikeDetector } from './rejectSpike.js';
-import { randomUUID } from 'node:crypto';
+import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
-import type { AddressInfo } from 'node:net';
+import type { AddressInfo, Socket } from 'node:net';
 import {
   TokenBucketLimiter,
   TrustedProxies,
   bucketKey,
   groupKey,
   monotonicNow,
+  parseIp,
   resolveClientIp,
 } from '@ghostpay/relayer-guard';
 import { stripPad } from '@ghostpay/metadata-hardening';
 import { nullAlerts, type AlertSink } from './alerts.js';
-import type { RelayerConfig } from './config.js';
+import { MAX_CONNECTIONS, type RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
 import type { Metrics } from './metrics.js';
 import type { RateLimiter } from './limiter.js';
@@ -22,6 +23,24 @@ import { parseQuoteRequest, parseSweepRequest } from './validate.js';
 
 /** Maximum accepted request body in bytes (16 KiB). */
 export const MAX_BODY_BYTES = 16 * 1024;
+
+/** Socket timeouts of the payment API listener, ms. */
+export interface ServerTimeouts {
+  /** Complete request headers must arrive within this (slow-header clients). */
+  readonly headersMs: number;
+  /** The whole request must arrive within this (slow-body clients). */
+  readonly requestMs: number;
+  /** An idle keep-alive connection is closed after this. */
+  readonly keepAliveMs: number;
+  /**
+   * How often Node checks the header and request timeouts (`connectionsCheckingInterval`). Node's default of 30 s
+   * would let a header-dripping client hold a connection for about 30 s whatever `headersMs` says (S4).
+   */
+  readonly checkIntervalMs: number;
+}
+
+/** Production socket timeouts. */
+export const DEFAULT_TIMEOUTS: ServerTimeouts = Object.freeze({ headersMs: 10_000, requestMs: 15_000, keepAliveMs: 5_000, checkIntervalMs: 1_000 });
 
 /** Dependencies of {@link RelayerHttpServer}. */
 export interface HttpDeps {
@@ -37,6 +56,8 @@ export interface HttpDeps {
   readonly monotonic?: () => number;
   /** Request id generator (tests). */
   readonly newRequestId?: () => string;
+  /** Overrides {@link DEFAULT_TIMEOUTS} (tests). */
+  readonly timeouts?: Partial<ServerTimeouts>;
 }
 
 type Route = '/healthz' | '/v1/info' | '/v1/quote' | '/v1/sweep';
@@ -146,6 +167,13 @@ export class RelayerHttpServer {
   private readonly quoteBudget: TokenBucketLimiter;
   private draining = false;
   private readonly rejects: RejectSpikeDetector;
+  /**
+   * Open connections per peer bucket (IPv4 address, IPv6 /64), keyed by a truncated HMAC under a random per-process key
+   * so no raw address is held. An entry exists only while that peer has an open connection, so the map never holds more
+   * than {@link MAX_CONNECTIONS} entries.
+   */
+  private readonly connections = new Map<string, number>();
+  private readonly connectionKey = randomBytes(32);
 
   public constructor(private readonly d: HttpDeps) {
     this.origins = new Set(d.config.allowedOrigins);
@@ -157,13 +185,43 @@ export class RelayerHttpServer {
       { ratePerSecond: rl.quoteGlobalPerMinute / 60, burst: rl.quoteGlobalBurst, maxKeys: 1 },
       d.monotonic ?? monotonicNow,
     );
-    this.server = createServer({ maxHeaderSize: 8192 }, (req, res) => {
+    const timeouts = { ...DEFAULT_TIMEOUTS, ...d.timeouts };
+    this.server = createServer({ maxHeaderSize: 8192, connectionsCheckingInterval: timeouts.checkIntervalMs }, (req, res) => {
       void this.handle(req, res);
     });
-    this.server.headersTimeout = 10_000;
-    this.server.requestTimeout = 15_000;
-    this.server.keepAliveTimeout = 5_000;
-    this.server.maxConnections = 1024;
+    this.server.headersTimeout = timeouts.headersMs;
+    this.server.requestTimeout = timeouts.requestMs;
+    this.server.keepAliveTimeout = timeouts.keepAliveMs;
+    this.server.maxConnections = MAX_CONNECTIONS;
+    this.server.on('connection', (sock: Socket) => {
+      this.admitConnection(sock);
+    });
+  }
+
+  /**
+   * Per-peer connection cap (S3-18): without it one peer can hold every one of the server-wide slots. Trusted proxies
+   * are exempt because they carry many clients; behind one, the per-client limit belongs to the proxy.
+   */
+  private admitConnection(sock: Socket): void {
+    const peer = parseIp(sock.remoteAddress ?? '');
+    if (peer === null) {
+      sock.destroy();
+      return;
+    }
+    if (this.proxies.has(peer)) return;
+    const key = createHmac('sha256', this.connectionKey).update(bucketKey(peer)).digest('base64url').slice(0, 22);
+    const n = (this.connections.get(key) ?? 0) + 1;
+    if (n > this.d.config.server.maxConnectionsPerIp) {
+      this.d.metrics?.inc('relayer_connections_refused_total');
+      sock.destroy();
+      return;
+    }
+    this.connections.set(key, n);
+    sock.once('close', () => {
+      const left = (this.connections.get(key) ?? 1) - 1;
+      if (left <= 0) this.connections.delete(key);
+      else this.connections.set(key, left);
+    });
   }
 
   /**
@@ -280,7 +338,13 @@ export class RelayerHttpServer {
   private async dispatch(c: Ctx): Promise<void> {
     const { req, res } = c;
     // Reject query-bearing requests: these endpoints never accept URL parameters, which could leak sensitive data into logs.
-    const target = new URL(req.url ?? '/', 'http://relayer.invalid');
+    // A target URL parsing rejects (`//`, a bad authority) is the client's error, not an internal one (N-03).
+    let target: URL;
+    try {
+      target = new URL(req.url ?? '/', 'http://relayer.invalid');
+    } catch {
+      throw new RelayerError(400, 'invalid_url');
+    }
     if (target.search !== '') throw new RelayerError(400, 'unexpected_query');
     const path = target.pathname;
     if (isRoute(path)) c.route = path;

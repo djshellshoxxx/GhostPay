@@ -1,6 +1,6 @@
 # 18 — Requirement 3q: Browser-only stealth keypair export and independent recovery
 
-**Status:** Approved user requirement; implementation integrated in the Pages candidate. Source-pinned local verification and the remaining browser, pinned-toolchain and device gates are recorded in the [current recovery integration handoff](../handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md). This is not a release-complete claim.
+**Status:** Feature implementation, independent source review and feature acceptance complete on published source `07a7497d1a0cb39fb6904e5c50f8a52db2285820`, stacked on the Pages candidate. Source-pinned crypto, lifecycle, Chromium, pinned-toolchain and independent recovery results, along with the remaining product/device gates, are recorded in the [Spec 18 completion report](../handoffs/spec18-reviewed-20261118/COMPLETION_REPORT.md). This is not a release-complete claim.
 **Priority:** Core seller portability, before beta exit.
 **Scope:** ERC-5564 scheme-1 EVM one-time addresses. Bitcoin BIP-352, contract accounts, ERC-4337 and EIP-7702 have different custody/key models and are excluded until separately specified.
 **Existing integration:** `packages/core-crypto/src/stealth.ts` (`checkAnnouncement`, `deriveStealthSecret`); seller scan/payment details; encrypted local vault and backup. No remote key-generation, account or recovery backend.

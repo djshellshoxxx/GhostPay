@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -39,6 +39,20 @@ describe('requestQuote', () => {
       return Promise.resolve(json(goodQuote));
     }, { pad: false });
     expect(JSON.parse(sent)).toEqual({ chainId: 84532, token: TOKEN, owner: OWNER, destination: DEST, amount: '1000000' });
+  });
+  it('does not silently drop padding or send a request when secure randomness fails', async () => {
+    const fetchFn = vi.fn<FetchFn>().mockResolvedValue(json(goodQuote));
+    const random = vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(() => {
+      throw new Error('private random-source diagnostic');
+    });
+    try {
+      await expect(requestQuote('https://relay.test', Q, fetchFn)).rejects.toMatchObject({
+        translation: { key: 'error.relayerClient.paddingFailed' },
+      });
+      expect(fetchFn).not.toHaveBeenCalled();
+    } finally {
+      random.mockRestore();
+    }
   });
   it('retries once unpadded only when an older relayer refuses the pad member while parsing', async () => {
     const bodies: string[] = [];
@@ -129,6 +143,11 @@ describe('requestQuote', () => {
     }
     expect(RELAYER_PRE_BROADCAST_CODES).not.toContain('nonce_used');
     expect(emitted.get('send_failed')).toBe(503);
+    // The other direction: a 4xx class the relayer can emit and this list does not know keeps the signing lock for
+    // nothing (the relayer sends no 4xx after a broadcast, see its README). A new class must be listed here on purpose.
+    const unknown = [...emitted].filter(([code, status]) => status >= 400 && status < 500 && code !== 'nonce_used' && !/^invalid_[a-z_]{1,32}$/.test(code) && !RELAYER_PRE_BROADCAST_CODES.includes(code)).map(([code]) => code);
+    expect(unknown).toEqual([]);
+    expect(new RelayerRefusedError('x', 429, 'client_queue_full').beforeBroadcast).toBe(true);
   });
   it('handles transport failures, oversized and non-JSON replies', async () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline')))).rejects.toThrow(/Could not reach the relayer/);

@@ -21,7 +21,7 @@ tar -xzf release-out/ghostpay-web-*.tar.gz -C /tmp/x && cp -a /tmp/x/ghostpay-we
 ```
 Compare the tarball hash with the published one (`scripts/repro-check.sh`). A bundle built from an untagged tree is for testing only.
 
-Checks the script runs: `index.html` present, no `*.map`. nginx serves the headers from `apps/web/public/_headers` (mirrored in `nginx/security-headers.conf`; keep both in sync when that file changes).
+Checks include an active CSP in `index.html`, the expected `connect-src`, and no source maps. Header-capable hosts use their own header configuration: nginx does not interpret a Netlify/Cloudflare `_headers` file.
 
 ## Tight `connect-src` (recommended default for hosted builds)
 
@@ -30,8 +30,32 @@ By default the CSP says `connect-src 'self' https: wss:`, so the page may talk t
 GHOSTPAY_CONNECT_ORIGINS="https://rpc.example.org,https://relay.example.org" \
 GHOSTPAY_REQUIRE_TIGHT_CSP=1 npm run build --workspace apps/web
 ```
-Bare `https://` or `wss://` origins only, comma separated, no path. `npm run build` runs `apps/web/scripts/apply-csp.mjs` as its first postbuild step. It rewrites `dist/_headers` and the meta CSP in `dist/index.html` to `connect-src 'self' <origins>`, then fails if any `connect-src` still differs from that list. `GHOSTPAY_REQUIRE_TIGHT_CSP=1` also fails the build when the list is empty. `scan-bundle` then runs as before.
+Use bare `https://` or `wss://` origins only, comma separated, without path, query, fragment, userinfo, wildcard or policy syntax. Names and default ports are normalized and duplicates removed. Invalid-input errors never echo a potentially credential-bearing URL. `npm run build` runs `apps/web/scripts/apply-csp.mjs` as its first postbuild step. It rewrites `dist/_headers` and the meta CSP in `dist/index.html` to `connect-src 'self' <origins>`, then checks the actual enforced policy locations, including duplicate directives, missing files, report-only substitutions and malformed/inert meta tags. The meta must precede resource loading in the generated head. `GHOSTPAY_REQUIRE_TIGHT_CSP=1` refuses an empty list; values other than `0` or `1` fail. `scan-bundle` retains its existing checks.
 
 Tradeoff: an RPC or relayer origin a user adds in Settings is blocked by the browser until it is added to the list and the site is rebuilt and redeployed. Users cannot widen the policy themselves. Without the list the policy stays broad and a compromised page could send data to any https host.
 
-The nginx files in `deploy/nginx/` carry their own copy of the CSP and are not rewritten by this step: edit the `connect-src` there to the same origin list when you serve through nginx.
+### GitHub Pages
+
+The Pages builder now forwards both CSP variables into its clean build environment and runs the same validator against its actual intermediate output, before the existing bundle/site guards:
+
+```sh
+GHOSTPAY_CONNECT_ORIGINS="https://rpc.example.org,https://relay.example.org" \
+GHOSTPAY_REQUIRE_TIGHT_CSP=1 bash scripts/pages/build-pages.sh /absolute/new/output
+```
+
+GitHub Pages ignores `_headers`; the builder removes that file. The published `index.html` meta CSP is the enforcement point. Its `connect-src` constrains browser connections, but meta policy cannot enforce `frame-ancestors`, `sandbox` or report-only CSP, and cannot retroactively block resources preceding it. HTTP security headers such as `X-Frame-Options` and `Permissions-Policy` are separate. See [CSP Level 3, meta delivery](https://www.w3.org/TR/CSP3/#meta-element). Existing Pages framing guards remain separate controls.
+
+The ordinary development profile keeps the existing broad `https: wss:` policy when the allowlist is unset. The recommended hosted profile sets both variables above. No default RPC provider or invented production origin is supplied. The allowlist is build configuration; UI endpoint edits cannot broaden it.
+
+### Nginx
+
+Generate matching header artifacts from the shipped templates using the same list:
+
+```sh
+GHOSTPAY_CONNECT_ORIGINS="https://rpc.example.org,https://relay.example.org" \
+node deploy/nginx/render-security-headers.mjs /absolute/new/nginx-headers
+```
+
+This renders `security-headers.conf` and `security-headers-embed.conf` in a separate directory, without editing source templates, starting nginx or deploying. The standard profile retains `frame-ancestors 'none'` and `X-Frame-Options: DENY`; the explicitly selected embed profile retains the reviewed `$gp_frame_ancestors` map requirement. Install the appropriate generated file at the existing include path and validate the server configuration in the intended environment. Both HTTP-header and meta policies apply together; one cannot relax the other. A generated file is not evidence that a live server sends it.
+
+Loopback HTTP remains unsupported by this CSP allowlist; use an explicitly configured HTTPS loopback endpoint where the browser accepts its certificate. URL validation alone does not prove browser, certificate, mixed-content, private-network or Tor reachability. Real hosting and Tor network qualification remain unverified until exercised and recorded.

@@ -1,0 +1,47 @@
+{
+  "reviewer": "crypto_recovery_review",
+  "mode": "independent read-only consistency review; no tests or edits",
+  "outcome": "No new blocker or factual inconsistency in reviewed scope.",
+  "reviewed_snapshots": [
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/COMPLETION_REPORT.md",
+      "sha256": "7d58fd23c8e144d156b883583d2e8907da40770ed9b5fb6cc14fdcd730e7e5d1"
+    },
+    {
+      "path": "docs/user/recover-stealth-payment-keys.md",
+      "sha256": "cc497859357a8a7d12a4843cde3029e2d6aedf3398e1019e75aa9b872cf70389"
+    },
+    {
+      "path": "docs/specs/18-stealth-keypair-export.md",
+      "sha256": "990a26c0fbb9e80a6ae407fcc219678eb8b451b5e844827cd117d9e4e70ba289"
+    }
+  ],
+  "findings": [
+    "Local/published source mappings and both relevant Git trees are consistent.",
+    "Historical b536b1c5 full-web failure remains 2998 passed, 2 failed, 1 skipped; not an accepted gate.",
+    "Final focused results are 156/156, including the separately executed 14/14 verification file.",
+    "Vault 353/353, core crypto 76/76, standalone 22/22 and native authority 1/1 match retained evidence.",
+    "Master restore creates a new invoice-signing key; the master export contains only spending/viewing keys and does not satisfy full three-key seller backup policy.",
+    "Chain labels do not restrict authority to one chain; authenticated encrypted metadata is distinguished from public/raw records.",
+    "Delegated, policy and contract accounts, native devices, Safari, hardware wallets and named wallet apps are not represented as tested.",
+    "Guide and canonical Spec 18 status resolve to the same completion report."
+  ],
+  "limits": "Review occurred before final hosted result and evidence-index refresh. Later source-identity, result and status updates are coordinator-owned and do not rewrite the reviewed snapshot hashes.",
+  "final_review": {
+    "reviewer": "crypto_recovery_review",
+    "mode": "read-only; no tests or edits",
+    "outcome": "Clear; no concrete issue found. Scoped final-source feature acceptance, failed overall CI, and untested device/wallet boundaries are consistent.",
+    "report_sha256": "0ed5c50ad0143fdb67ac6902bfce7f48e2b47b854a4c939b7a918647cdcfb91b",
+    "published_source": "07a7497d1a0cb39fb6904e5c50f8a52db2285820",
+    "checked": [
+      "Completion report, recovery guide, canonical Spec 18 status and top ACTIVE_WORK final status.",
+      "Final web 3000 passed with 1 BTC regtest skip; separate nocov 3/3.",
+      "Vault 353/353 and core crypto 76/76 with original passing coverage.",
+      "All 8 Spec 18 browser cases per profile; full 85/1/1, lean 73/1/3, Pages Anvil 16/16.",
+      "Hosted merge tree/parents match the recorded source; retained web log matches original qualification copy.",
+      "No tracked non-documentation changes relative to final implementation/test HEAD.",
+      "Master restore generates a new invoice signer; chain labels do not restrict authority."
+    ],
+    "limits": "Final evidence index and documentation publication are coordinator-owned."
+  }
+}
