@@ -19,7 +19,8 @@ The fresh-directory recovery test used a Node permission flag that Node 24 rejec
 - Baseline, `paymentKeyExport.expiry.test.ts`: **5 failed, 1 passed**.
 - Fixed source, `paymentKeyExport.expiry.test.ts`, existing `paymentKeyExport.test.ts`, and `session.atomicity.test.ts`: **39 passed**, 3 files, zero failures or skips (Node 24.22.3, Vitest 5.1.0, serial worker with bounded heap).
 - Independent Node 24 fresh-directory recovery: **1 passed**, covering all five file formats, archive recovery, master recovery of an omitted payment, and enforced repository-read denial.
-- Node 22 focused replay and independent isolation replay are in progress at this source checkpoint.
+- Node 22.23.4 focused expiry replay: **6 passed**, one file, zero failures/skips. Independent Node 22.23.4 fresh-directory recovery: **1 passed**, covering the same five formats and enforced repository-read denial. These Node 22 commands used `NODE_OPTIONS='--max-old-space-size=384 --max-semi-space-size=8'` and serial Vitest execution.
+- The fixed runtime/test/harness source is commit `bdf6589f0dd07d9ab1935489c72160e1d99f2c82`; this follow-up records evidence only. Captured red/green output is retained under `evidence/*.txt`; only final blank lines are removed.
 - `git diff --check`: passed.
 - Full typed ESLint of the two changed TypeScript files reached the explicit 512 MiB JavaScript heap limit and exited 134. It is not a lint pass; no rules were changed. Earlier broader builds/coverage attempts were resource-killed and are not used as qualification evidence.
 
