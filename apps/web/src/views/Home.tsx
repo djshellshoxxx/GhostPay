@@ -21,10 +21,15 @@ export function Home(): ReactNode {
       setHash('unavailable');
       return;
     }
+    let resolvedSrc: string;
     let context: NetworkAuthorization | undefined;
-    try { context = services.network?.authorize({ action: 'release-hash', category: 'resource', endpoint: src }); }
+    try {
+      // The bundle uses relative module URLs on project sites; bind authority and hashing to the same absolute URL.
+      resolvedSrc = new URL(src, document.baseURI).href;
+      context = services.network?.authorize({ action: 'release-hash', category: 'resource', endpoint: resolvedSrc });
+    }
     catch { setHash('unavailable'); return; }
-    computeReleaseHash(src, context?.fetchFn ?? services.fetchFn, document.baseURI).then(
+    computeReleaseHash(resolvedSrc, context?.fetchFn ?? services.fetchFn, document.baseURI).then(
       (h) => {
         if (live) setHash(h);
       },
