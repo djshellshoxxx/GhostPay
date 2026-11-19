@@ -203,7 +203,10 @@ export function Sweep(): ReactNode {
       // Once the transport accepts a transaction/order, a session lock cannot make it unsent.
       if (broadcast !== true) assertAuthorized();
     } catch (e) {
-      if (operation.current === id && currentBalanceScope.current === balanceScope) setError(captureUserMessage(e));
+      if (operation.current === id && !controller.signal.aborted && authEpoch.current === epoch
+        && currentBalanceScope.current === balanceScope && currentQuoteScope.current === quoteScope) {
+        setError(captureUserMessage(e));
+      }
     } finally {
       controller.abort();
       setVaultPass('');
@@ -278,7 +281,7 @@ export function Sweep(): ReactNode {
       let submitted: string;
       const relayerContext = services.network?.authorize({ action: 'sweep-submit', category: 'relayer', endpoint: `${app.settings.relayerUrl.replace(/\/+$/, '')}/v1/sweep`, signal, allowDirectOnce: true });
       try {
-        submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: relayerContext?.fetchFn ?? services.fetchFn, onBeforeHandoff });
+        submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: relayerContext?.fetchFn ?? services.fetchFn, assertReviewCurrent, onBeforeHandoff });
       } catch (e) {
         // Only an explicit pre-broadcast refusal releases the lock; timeouts, 409 and 5xx stay unresolved until the
         // chain shows the order executed or expired.
@@ -341,7 +344,7 @@ export function Sweep(): ReactNode {
       let res: DirectSweepResult;
       try {
         res = await directSweep({
-          target, manifest: loaded, destination: dest, amount: balance, rpc,
+          target, manifest: loaded, destination: dest, amount: balance, rpc, assertReviewCurrent,
           ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
           onBeforeHandoff: (a) => {
             assertReviewCurrent();
