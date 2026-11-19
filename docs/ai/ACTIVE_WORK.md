@@ -1252,3 +1252,15 @@ Privacy/recovery workers own their current shared lanes. No remote merge/push, c
 mainnet interaction, dependency upgrade or release action is included in this worker's assignment.
 
 BTC consolidation checkpoint: product head `e741aa8e8228a2099ee5abe3fd73aa14ffb011b8`; merge source and focused evidence are recorded in `docs/consolidation/btc-20261119/QUALIFICATION.md`. Coordinator final review and combined hosted qualification remain pending.
+# Home release-hash authorization repair — 2026-11-19
+
+Worker: privacy_completion; root delegated this exact hosted failure after the final PR sweep.
+Branch: `codex/ghostpay-home-release-hash-20261119`.
+Base: coordinator candidate `5dd63d651384a4712615e237bb09da3afcd40afb`.
+Owned paths: `apps/web/src/views/Home.tsx`, a focused production-authority Home regression,
+this registry and a scoped evidence handoff. Preserve strict network authorization parsing.
+Acceptance: relative module script URLs under `/GhostPay/` resolve against `document.baseURI`
+before granting authority; the exact resolved URL binds grant and digest fetch; cross-origin
+targets remain refused; reproduce the hosted PR #251 failure before fixing it, then run focused
+tests and obtain an independent recovery-worker review. No broad checks or remote mutation.
+
