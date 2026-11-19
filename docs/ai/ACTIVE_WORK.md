@@ -1803,3 +1803,11 @@ Worker: `/root/provenance`, delegated read-only review by the integration coordi
 Reviewed immutable source: security worker `ed95c5601b0ec127be56cad57fcb78d44954b2fb`; base published PR #278 `7b4c1554382b05ac3fab48527aadf596d6b1ff7b`.
 Owned changes: this additive registry note and `docs/handoffs/recovered-native-authority-review-20261119/` only. No implementation/test modifications or runtime test execution.
 Acceptance: compare recovered helper, component and adversarial tests with the retained independently reviewed final-02760 blob identities; inspect manifest expiry, one-time confirmation, session/scope/endpoint/replacement binding, signing boundaries and post-handoff outcomes. Report lost prior execution logs as unavailable and keep source review separate from new runtime/CI qualification.
+
+
+## Complete branch census delta after recovery — 2026-11-19
+
+Worker: `/root/provenance`, delegated read-only release qualification by the coordinator.
+Owned writes: this additive entry and `docs/handoffs/branch-census-delta-20261119/` only. The established `docs/release/branch-disposition-ledger.json` remains unchanged.
+Scope: paginate all live branches, preserve historical dispositions only for unchanged exact heads, mark every new/advanced head needs_review, record source-specific main/candidate/lease/CI observations and fresh candidate ancestry separately. No heavy fetch, product changes, test execution, source-branch writes, PR closures or workflow dispatch.
+Acceptance: complete unique census with pagination evidence; pinned baseline hash; honest mixed observation timestamps; manual semantic review distinguished from ancestry; new recovery refs remain unqualified despite preserved history.

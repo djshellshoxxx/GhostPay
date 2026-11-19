@@ -1,0 +1,42 @@
+{
+  "schema": "ghostpay.independent-scoped-source-review.v1",
+  "observed_at_utc": "2026-11-19T13:18:35.838923+00:00",
+  "reviewer": "/root/provenance",
+  "reviewed_commit": "98786e75f7979708b52fbe7424825a41100e2d98",
+  "normal_merge_parents": [
+    "397c9e140120bdbc9b683de5c157cb35b02b365a",
+    "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+  ],
+  "source_pr": 279,
+  "source_pr_head": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+  "files": [
+    {
+      "path": "apps/web/src/lib/qrMultipart.ts",
+      "first_parent_blob": "48032d32ea18fa660ac72c342263d741ceb7cc0d",
+      "reviewed_blob": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+      "upstream_blob": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+      "exact_upstream_match": true
+    },
+    {
+      "path": "apps/web/src/lib/qrMultipart.test.ts",
+      "first_parent_blob": "45992f537d1f226dd20e57d96a246c6f18419395",
+      "reviewed_blob": "45992f537d1f226dd20e57d96a246c6f18419395",
+      "upstream_blob": "45992f537d1f226dd20e57d96a246c6f18419395",
+      "exact_upstream_match": true
+    }
+  ],
+  "findings": [],
+  "verified_properties": [
+    "The sole production change imports the existing QrExchangeError and rejects surrogate code points with the Unicode-mode regular expression before TextEncoder.",
+    "The same Unicode guard already exists in the application and QR-exchange single-QR generators.",
+    "Unpaired high/low surrogates are rejected; Unicode-mode matching treats a valid surrogate pair as its astral code point, preserving valid UTF-8 encoding.",
+    "The existing GPQ1 encoder, byte/count limits, checksums, assembler, camera/network and signature formats are unchanged.",
+    "New regression asserts the expected error class through both toMultipart and multipartIfNeeded for lone and embedded surrogate forms and preserves a valid astral round-trip control.",
+    "All existing QR helper assertions remain; the recovered regression is already present in the first parent while runtime stays unchanged there, supporting a genuine test-first reproduction.",
+    "The reviewed runtime and regression blobs exactly match the original PR and its original head is retained as the second merge parent."
+  ],
+  "scope": "Source and assertion review only; no repository tests or browser actions were executed by this reviewer.",
+  "execution_evidence": "Security worker owns fresh RED/GREEN, package checks and exact-source integration qualification. No standalone or historical result is counted here as current product acceptance.",
+  "verdict": "APPROVED_SCOPED_SOURCE_REVIEW",
+  "census_relation": "Subsequent focused review after DELTA.json observation. The prior census intentionally remains unchanged: PR279 was then needs_review and not integrated/qualified. This receipt does not establish main merge, deployment or release readiness."
+}
