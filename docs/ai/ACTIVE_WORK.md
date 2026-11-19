@@ -1,3 +1,19 @@
+# Focused hosting timestamp promotion — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-hosting-timestamp-main-20261119`.
+Base: `14ded337a10c140d7a9f9a9238ec038587d925bb`, independently verified as GitHub main.
+Owned paths: the three reviewed source/test files from
+`38fe7fdaf151ef433be9721af8fea7cbcdea89c4` under `tools/portable-hosting-kit/`,
+the unchanged historical evidence in `docs/consolidation/hosting-timestamp-20261119/`,
+new provenance in `docs/consolidation/hosting-timestamp-main-20261119/`, and this
+additive claim. Acceptance: cherry-pick the exact reviewed fix without importing
+feature-candidate ancestry; verify all three blobs and the complete kit tree match
+the tested product; preserve every prior main claim; identify differences in root
+configuration/lockfiles and record evidence limits honestly. Obtain independent
+recovery-worker review. No other runtime, dependency, workflow, threshold, deployment
+or remote changes. The coordinator owns publication and hosted qualification.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
