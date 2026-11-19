@@ -147,3 +147,111 @@ These hashes identify the independently reviewed correction even though the coor
 | `apps/web/src/views/Scan.privacy.test.tsx` | `72edf4d3856c30478c078730b11afad05486b288145250b0d86018b8b1bbf6e9` |
 
 **Final reviewer disposition:** no unresolved confirmed source blocker remains in the reviewed TM1–TM15 continuation. Both findings from this independent review have bounded source corrections and explicit remaining execution limits. Proceed with the authorized draft continuation and exact-source hosted qualification. Preserve inherited gate failures and owner decisions; do not represent this report as permission to merge, deploy or release.
+
+## Final browser acceptance fixture follow-up
+
+Independently reviewed the subsequent `apps/web/e2e/app.spec.ts` fixture-only
+change at SHA-256
+`3de758e7faeb865eeed05156bc4f9cadd517c6332d77e13d78e85f9663c34362`.
+The inherited hostile-text test dismissed the application's existing unsaved-key
+beforeunload confirmation while intentionally navigating through `about:blank`.
+The correction accepts exactly one expected beforeunload during that outgoing
+navigation, disarms in `finally` before opening the invoice, and preserves every
+unexpected-dialog and hostile-content assertion. Unchanged helper and AppShell
+source confirms this does not modify runtime backup protection, custody or
+invoice defaults.
+
+No source blocker identified; scoped whitespace validation passed. No tests were
+run by this reviewer. Detailed independent findings are appended to
+`browser-fixture-review.md`. Actual final-source full and lean Chromium results
+remain hosted qualification, not inferred from this source review.
+
+## Hosted test typing regression follow-up
+
+Hosted Pages job `135390508109` and qualification job `135390508402` exposed a
+new TS2769 regression in the continuation's `Scan.privacy.test.tsx` fixture:
+Testing Library's `getByRole` options do not support `exact`. This is recorded as
+a new continuation regression, not an inherited failure.
+
+Independently reviewed the isolated one-property correction in
+`GhostPay-typefix`. Removing `exact: true` preserves `name: 'Cancel'`; installed
+`@testing-library/dom` 10.4.2 source confirms role name string matchers use strict
+equality. All cancellation, window-count and no-Finished assertions remain.
+No source blocker identified, and scoped whitespace validation passed. No tests,
+compiler or build were run by this reviewer.
+
+The corrected file hash is
+`85605a1bdf245a0f38ee5c5e6e81ea5b04c6fef771583b152c3b759cb24c1a07`, superseding
+only the earlier `Scan.privacy.test.tsx` hash in this report. Local reviewed HEAD
+after the coordinator's commit is `fafe41305a6645edeec825f199324afdea8876ba`.
+Detailed source evidence is in `scan-privacy-typefix-review.md`. Exact published
+source and hosted reruns still determine qualification.
+
+## TM5 actual-artifact scanner integration follow-up
+
+The coordinator's actual full and lean tight Vite artifacts at
+`f0c15de9b381ac8a13ed3c76781d7fad8b236391` passed CSP application but failed the
+bundle scanner on the configured CSP origin literals. Independently reviewed
+the narrow five-file correction by `browser_privacy`. The scanner now permits
+only the exact canonical origin tokens inside the unambiguous source content of
+the single early enforcing head-meta `connect-src`. Inert/malformed/duplicate or
+encoded markup cannot grant the exception, and other directives, attributes,
+JavaScript, CSS and resource URLs retain the existing checks. The final guard
+also rejects non-ASCII separators despite the semantic helper's wider whitespace
+normalization. Global origin allowlists, workflows, owner gates and transport
+implementation remain unchanged.
+
+At final `scan-bundle.mjs` SHA-256
+`26736f6b00fc1933ed491c575803f6bc1b5a96739f02e3b11f49bf6b788fcec1`, independent
+Node probes exited 0 with **54 synthetic cases and 2 actual-artifact scans
+passing (56/56)**. The unchanged `e2e/devnet/scan-dist.mjs` entrypoint then exited
+0 against each existing full and lean artifact with the strict environment,
+including deployment and source-tree checks. No rebuild or browser/typecheck/
+lint run is implied. The implementer's final existing-plus-new CSP test suite
+reports 79/79 passing; the existing CI wildcard includes the new test file.
+
+One initial reviewer probe expected a different spelling of the existing
+remote-script diagnostic; the actual rejection was correct. Its initial log is
+preserved, and only the reviewer harness matcher changed before the clean final
+probe run. Source review identified no unresolved blocker in this correction.
+Full findings, exact commands, execution limits and all five source hashes are
+in `tm5-scanner-acceptance-review.md`. Fresh final-head artifacts and hosted
+qualification remain with the coordinator; inherited owner/release blockers
+remain distinct.
+
+## TM1 / TM7 / TM8 local execution gap closed
+
+At the coordinator's request, identified the exact existing tests from the
+current completion matrix and ran one bounded selection against runtime
+`f0c15de9b381ac8a13ed3c76781d7fad8b236391`, with the unrelated CSP-only correction
+present. The selected runtime/test/configuration inputs matched that checkpoint
+before execution. Twenty recorded source/built-entry hashes were unchanged
+afterward.
+
+The single run used `NODE_OPTIONS=--max-old-space-size=512`, `--maxWorkers=1` and
+a 120-second supervised timeout. It exited **0 in 21.744 seconds** with **six
+files, 58 passing tests, zero failures and 138 deliberately filtered tests**.
+There was no hang, retry, product edit or test edit.
+
+| Selection | Passed | Deliberately filtered |
+|---|---:|---:|
+| Sweep balance privacy | 17 | 0 |
+| Sweep TM1/TM7 integration | 2 | 55 |
+| Session-only destination history | 10 | 0 |
+| Private cursor-slot derivation/lifetime | 13 | 0 |
+| Checkpoint format reconciliation | 7 | 0 |
+| Scan-client checkpoint/storage/session cases | 9 | 83 |
+
+The TM8 selection proves HKDF-v4 behavior and **non-resume** of both legacy v3
+formats, including HMAC; it does not reinstate the superseded migration policy.
+Corrupt cursor handling is parser behavior, not authentication of plaintext
+checkpoint contents. TM1 and TM7 now have executed current-source consent,
+session, lock and late-result evidence in addition to the source review.
+
+Detailed acceptance mapping and the exact command are recorded in
+`tm1-tm7-tm8-acceptance-execution.md`; machine-readable evidence, before/after
+hashes, conventional checksum manifest and full log are
+`acceptance-tm1-tm7-tm8.{json,sha256,log}`. These receipts close the local targeted
+execution gap without claiming a full web suite, coverage, typecheck, lint,
+clean build or actual browser pass. Final hosted/full-lean qualification and
+inherited owner/release blockers remain unchanged.

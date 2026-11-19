@@ -76,3 +76,10 @@ Every proposed path below maps to the bounded threat-model work. Existing custod
 | `scripts/tests/privacy-csp.test.mjs` | TM5 | Exact CSP normalization, enforcing artifacts, Pages propagation and matching nginx renderer. |
 | `apps/web/e2e/app.spec.ts` | TM10 | Preserve historical plaintext invoice rendering acceptance; acknowledge exactly one expected outgoing beforeunload prompt while retaining every unexpected-dialog/XSS assertion. |
 | `docs/handoffs/tm-hardening-20261118/browser-fixture-review.md` | TM10 | Source-pinned inherited browser failure, narrow fixture correction and pending hosted execution. |
+| `apps/web/scripts/scan-bundle.mjs` | TM5 | Accept exact configured origins only inside a validated enforcing connect-src; preserve all other host, resource, inline-code and source gates. |
+| `apps/web/scripts/scan-bundle.d.mts` | TM5 | Declare the bounded CSP scanner configuration without changing existing ownOrigin callers. |
+| `scripts/tests/privacy-csp-bundle.test.mjs` | TM5 | Failing-first configured-CSP integration regressions, malformed/inert/encoded source rejection and preserved host gates. |
+| `docs/handoffs/tm-hardening-20261118/bundle-csp-review.md` | TM5 | Implementation red/green evidence, exact five-file source hashes and artifact-only scope. |
+| `docs/handoffs/tm-hardening-20261118/tm5-scanner-acceptance-review.md` | TM5 | Independent adversarial probes, actual-artifact scanner acceptance and no-source-blocker review. |
+| `docs/handoffs/tm-hardening-20261118/scan-privacy-typefix-review.md` | TM12 / TM15 | Independent review of the new hosted fixture-typing regression and one-property correction; no weakened cancellation assertion. |
+| `docs/handoffs/tm-hardening-20261118/tm1-tm7-tm8-acceptance-execution.md` | TM1 / TM7 / TM8 | Independent targeted execution of unchanged Sweep consent, local reuse history and current v4 checkpoint boundaries; exact commands, filtered counts and source pins. |

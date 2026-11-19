@@ -32,6 +32,8 @@ GHOSTPAY_REQUIRE_TIGHT_CSP=1 npm run build --workspace apps/web
 ```
 Use bare `https://` or `wss://` origins only, comma separated, without path, query, fragment, userinfo, wildcard or policy syntax. Names and default ports are normalized and duplicates removed. Invalid-input errors never echo a potentially credential-bearing URL. `npm run build` runs `apps/web/scripts/apply-csp.mjs` as its first postbuild step. It rewrites `dist/_headers` and the meta CSP in `dist/index.html` to `connect-src 'self' <origins>`, then checks the actual enforced policy locations, including duplicate directives, missing files, report-only substitutions and malformed/inert meta tags. The meta must precede resource loading in the generated head. `GHOSTPAY_REQUIRE_TIGHT_CSP=1` refuses an empty list; values other than `0` or `1` fail. `scan-bundle` retains its existing checks.
 
+The bundle scanner recognizes configured origins only inside the validated `connect-src` value of the actual enforcing meta in `index.html`. It checks the matching generated `_headers` policy before Pages removes that unsupported file. Duplicate, inert, encoded or ambiguous policy source cannot gain this exception. The same host in application JavaScript, CSS, another directive, another attribute or other HTML remains subject to the existing host gate. This configuration does not permit embedding an RPC provider in application code.
+
 Tradeoff: an RPC or relayer origin a user adds in Settings is blocked by the browser until it is added to the list and the site is rebuilt and redeployed. Users cannot widen the policy themselves. Without the list the policy stays broad and a compromised page could send data to any https host.
 
 ### GitHub Pages

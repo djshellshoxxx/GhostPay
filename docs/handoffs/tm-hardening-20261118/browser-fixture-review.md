@@ -47,3 +47,29 @@ Source review and whitespace-diff validation only. No local browser, heavy test,
 build, lint or typecheck execution for this follow-up. Actual final-source full
 and lean browser results remain coordinator-owned hosted qualification; this
 note makes no executed-browser or passing-browser claim.
+
+## Independent acceptance/integration follow-up
+
+Reviewer: `acceptance_review`, fourth independent role. Source-only review of the
+fixture delta, its unchanged `openFresh`/`generateKeys`/`createInvoice` helpers,
+and the unchanged `AppShell` beforeunload safeguard. Verified reviewed file:
+
+`apps/web/e2e/app.spec.ts` SHA-256:
+`3de758e7faeb865eeed05156bc4f9cadd517c6332d77e13d78e85f9663c34362`.
+
+**No source concern or blocker identified.** The allowance is initially false,
+armed only for the outgoing `about:blank` navigation, and consumed synchronously
+by the first matching `beforeunload` event. A `finally` block removes it before
+invoice navigation even on navigation failure. Exactly one acceptance is
+asserted. Other dialog types, extra beforeunload dialogs and invoice-page dialogs
+remain recorded/dismissed and fail the unchanged empty-dialog assertion.
+
+The existing inert-text, execution-marker and injected-element assertions are
+preserved. The test still performs a true fresh document load. It neither catches
+the navigation failure as success nor relaxes the runtime key/backup protection.
+The helper's explicit plaintext choice is unchanged; this correction does not
+alter invoice encryption defaults or custody behavior.
+
+Independent scoped `git diff --check -- apps/web/e2e/app.spec.ts` exited 0. No
+browser, unit, lint, typecheck or build execution was performed for this review.
+Final full/lean Chromium qualification remains pending on the published source.
