@@ -15,6 +15,34 @@ exact toolchain is available. Preserve loopback-only behavior and all existing t
 and security gates. Record any unsupported tooling peers and remaining broad upgrade
 gates explicitly. Root owns publication; no push, merge, deployment or paid automation.
 
+# Browser network isolation: unowned transport gaps — 2026-11-18
+
+Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
+Branch: `codex/ghostpay-browser-isolation-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (live `main`).
+Owned paths: `packages/net-transport/src/fetchTransport.ts`, `fetchAdapter.ts` and new focused
+transport isolation tests; `packages/solana-stealth/src/rpc.ts`, `packages/tron-adapter/src/rpc.ts`
+and new `rpc.isolation.test.ts` tests (chain adapter worker); `apps/web/src/lib/release.ts`, its
+focused tests, a new browser network isolation spec; new machine-readable egress inventory
+and scoped isolation documentation; new `scripts/tests/network-egress-inventory.test.mjs` and
+independently authored `scripts/tests/network-isolation-native.test.mjs` QA. Both chain RPC files were checked against all 39 open
+PRs, including new recovery #239 (`d2c64522`); no current PR changes either file.
+Acceptance: reproduce and fix unintended redirect egress, cancelled/stale request dispatch,
+unbounded transport failure and untrusted error disclosure in these paths; prove no fallback,
+bounded failure and fixed error messages with controlled fixtures and browser requests. Record
+source-pinned findings, exact checks and unresolved integration dependencies.
+Status: implemented and independently re-reviewed in draft PR #241. Hosted first-head typecheck,
+unit/integration suites and lean browser acceptance passed; 11 lint errors were corrected with their
+adversarial assertions preserved. Final-head checks and the separately owned policy integration are
+tracked in `docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md` and the PR.
+
+Active inputs remain read-only: privacy #222 (`2bc20982`), own-node #228 (`685fe1a3`), Sweep
+consent #231 (`d9ff3868`), browser fixtures #233 (`67cf835d`), integration #238 (`198aa5ba`),
+recovery/keypair exports and Mythril remediation. Their UI, service policy, settings, scan,
+Sweep, catalogs, consolidation ledgers and release gates are not owned by this task. The
+five lower-level transport files were compared against these heads and are unchanged; this
+lane extends existing adapters without a second policy engine. Recheck all heads before PR.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
@@ -366,3 +394,25 @@ Owned paths: `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md` and this claim
 Acceptance: independently review new delegated registry signing, isolated escrow supporting harness, corrected worker fetch injection/CI setup, browser regression repairs, and oracle critical-message integration. Preserve prior reviewed-source evidence and separate execution, external acceptance, and final-candidate gates. Record findings at exact source pins and execute bounded focused regressions when available.
 
 Review milestone: source-scoped delta review complete in `docs/handoffs/agents/UNIFIED_FINAL_DELTA_REVIEW.md`. Independent workflow 5/5, worker/privacy 51/51, locale 12/12, delegated helper 53/53, native registry 9/9, escrow model 19/19 and browser DOM 34/34 passed. Hosted pairing rejection status remains pending actual browser rerun; final combined qualification remains coordinator-owned.
+
+## Beta acceptance log artifact capture — 2026-11-18
+
+Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (main).
+Owned paths: `.github/workflows/beta-acceptance.yml`; this claim;
+`docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
+
+Acceptance: trace the observed missing artifact in run `44279444368`, job `134715943959`, to the retained
+log paths and the exact pinned upload action behavior; enable hidden-file inclusion only for the existing
+`scripts/beta/.state/*.log` upload. Preserve the path, artifact name, retention, permissions, failure behavior,
+acceptance commands and every existing gate. Run existing relevant workflow/action checks and inspect the
+exact diff; add no setting-mirroring test. No product/dependency change, new infrastructure, deployment,
+workflow rerun, publication or upload of state JSON/private fixture material.
+
+Status: workflow source `05a3b45bda60d18a6922c0897d48bd8984bad377` adds only the requested boolean
+input. Existing workflow checks pass 6/6 with no skips; action-pin check passes all 111 references;
+`git diff --check` passes. Coordinator and privacy reviewer independently cleared that exact workflow
+source after checking the pinned upstream filter, retained logs and unchanged upload scope. No new test,
+dependency, build, upload or rerun. Hosted artifact existence remains unverified; early failures can still
+precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
+limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
