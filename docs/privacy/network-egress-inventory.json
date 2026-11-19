@@ -1518,7 +1518,7 @@
       "flows": [
         "bitcoin-scan",
         "matched-output-validation",
-        "sweep-preflight"
+        "explicit-provider-spentness-check"
       ],
       "sourcePaths": [
         "apps/web/src/features/btc/esplora.ts",
@@ -1534,7 +1534,7 @@
         "merkleProof",
         "isUnspent"
       ],
-      "trigger": "A matched output is validated or refreshed.",
+      "trigger": "User-started light-oracle scans fetch matched transaction bytes and Merkle proofs. Full-block scans use bulk block contents. Per-outpoint status is requested only when the user selects optional provider checking or explicitly selects light-oracle mode, which requires that disclosure.",
       "destination": "Esplora /tx/<txid>/hex, /merkle-proof and /outspend/<vout>.",
       "transport": "http-get",
       "sensitiveData": [
@@ -1543,9 +1543,9 @@
         "ownership interest"
       ],
       "automatic": true,
-      "authorization": "Matched output proof/spentness checks belong to the current btc-scan or explicit btc-sweep action and its selected Esplora capability; they reveal exact matching transaction/outpoint interest.",
+      "authorization": "The current btc-scan capability is bound to the selected network and Esplora prefix. The worker bridge requires light-oracle mode for matched transaction/proof paths and separately refuses outpoint paths unless provider checking was explicitly enabled. Full-block scanning defaults to continuous local input coverage; incomplete coverage remains unknown.",
       "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
-      "failureBehavior": "Fixed SilentPaymentError classifications; nonblocking cleanup and late response disposal; selected node remains authoritative. Already transmitted BTC broadcasts stay uncertain on lost responses and are not automatically resent.",
+      "failureBehavior": "Incomplete or missing local input coverage remains unknown and cannot authorize a sweep. Provider checking is an explicit scan choice; errors do not enable it automatically. Fixed transport/protocol classifications and bounded cancellation are preserved.",
       "profile": [
         "full"
       ],
@@ -1562,14 +1562,16 @@
         "apps/web/src/features/btc/esplora.isolation.test.ts",
         "apps/web/src/lib/boundedRequest.browser.test.ts",
         "apps/web/src/lib/transportCancellation.test.ts",
-        "apps/web/src/lib/transportNative.test.ts"
+        "apps/web/src/lib/transportNative.test.ts",
+        "apps/web/src/features/btc/BtcView.spentness.test.tsx",
+        "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+        "apps/web/src/features/btc/scanWorkerSource.test.ts"
       ],
       "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
       "authority": {
         "boundary": "application-action",
         "actions": [
-          "btc-scan",
-          "btc-sweep"
+          "btc-scan"
         ],
         "category": "rpc",
         "endpointMatch": "prefix",
@@ -1612,7 +1614,7 @@
         "selected proof transaction IDs and outpoints"
       ],
       "automatic": true,
-      "authorization": "A user-started BTC scan issues source capabilities only to main-thread bridges. Worker messages select allowed public paths or source indices, never arbitrary origins or secret-bearing requests.",
+      "authorization": "A user-started BTC scan issues source capabilities only to main-thread bridges. Worker messages select allowed public paths or source indices, never arbitrary origins or secret-bearing requests. Matched transaction/proof paths require the captured light-oracle mode. Per-outpoint paths separately require the provider-check flag captured from the user choice; full-block default scans cannot request either class.",
       "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
       "failureBehavior": "Cancel/deadline terminates bridge requests and discards late replies; source errors are fixed codes.",
       "profile": [
@@ -1718,7 +1720,6 @@
     {
       "id": "btc-sweep",
       "flows": [
-        "bitcoin-fees",
         "bitcoin-sweep",
         "bitcoin-broadcast"
       ],
@@ -1732,14 +1733,12 @@
         "apps/web/src/lib/boundedRequest.ts"
       ],
       "symbols": [
-        "feeRate",
-        "isUnspent",
         "broadcast",
         "signSweep"
       ],
-      "trigger": "User requests review/sign/broadcast of selected outputs.",
-      "destination": "Selected Esplora /fee-estimates, outspend/proof paths and POST /tx.",
-      "transport": "http-get-and-post",
+      "trigger": "After local review, confirmation and signing, the user explicitly broadcasts the selected transaction. Review and signing perform no automatic per-outpoint query.",
+      "destination": "Selected Esplora prefix plus POST /tx.",
+      "transport": "http-post",
       "sensitiveData": [
         "chosen inputs",
         "signed raw transaction",
@@ -1747,8 +1746,8 @@
         "amount",
         "network timing"
       ],
-      "automatic": true,
-      "authorization": "An explicit BTC review/sign/broadcast operation creates btc-sweep authority for the selected network and Esplora prefix; scan-only authority does not permit broadcasting. Input selection, fresh proof and signing checks are preserved.",
+      "automatic": false,
+      "authorization": "Explicit broadcast creates btc-sweep authority for the selected network and Esplora prefix; scan authority does not permit broadcasting. Local signing requires current header ownership and sufficient spentness evidence, including exact-tip local coverage. Optional provider refresh is a separate user-selected scan action.",
       "privatePath": "Production calls use action-scoped network authority. Current own-node and required-private-path settings are checked before every dispatch and while reading; mismatches revoke the grant without provider fallback. Tor-browser mode describes ambient user-selected routing, which the app cannot verify.",
       "failureBehavior": "Fixed SilentPaymentError classifications; nonblocking cleanup and late response disposal; selected node remains authoritative. Already transmitted BTC broadcasts stay uncertain on lost responses and are not automatically resent.",
       "profile": [
@@ -1767,7 +1766,10 @@
         "apps/web/src/features/btc/esplora.isolation.test.ts",
         "apps/web/src/lib/boundedRequest.browser.test.ts",
         "apps/web/src/lib/transportCancellation.test.ts",
-        "apps/web/src/lib/transportNative.test.ts"
+        "apps/web/src/lib/transportNative.test.ts",
+        "apps/web/src/features/btc/BtcView.spentness.test.tsx",
+        "apps/web/src/features/btc/BtcView.headerOwnership.test.tsx",
+        "apps/web/src/features/btc/BtcView.headers.test.tsx"
       ],
       "qualification": "Source mapping reviewed; final combined-head feature qualification and independent review pending.",
       "authority": {
