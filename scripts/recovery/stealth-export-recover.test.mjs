@@ -440,11 +440,18 @@ test('offline recovery works in a fresh directory with no GhostPay packages or r
       const source = dirname(fileURLToPath(import.meta.resolve(entry)));
       cpSync(source, join(vendor, name), { recursive: true, dereference: true });
     }
+    // Node 22 accepts the former experimental name; newer supported runtimes expose only the stable flag.
+    // Choose a supported spelling without ever running the independence check without permission enforcement.
+    const permissionFlag = process.allowedNodeEnvironmentFlags.has('--permission') ? '--permission' : '--experimental-permission';
+    const denied = spawnSync(process.execPath, [permissionFlag, `--allow-fs-read=${isolated}`, '-e',
+      "try { require('node:fs').readFileSync(process.argv[1]); process.exitCode = 1; } catch (error) { if (error.code !== 'ERR_ACCESS_DENIED') throw error; }", SCRIPT,
+    ], { cwd: isolated, encoding: 'utf8', env: { PATH: '' } });
+    assert.equal(denied.status, 0, `repository access was not refused: ${denied.stderr}`);
     const run = (name, text, flags = [], input = '') => {
       const path = join(isolated, name);
       writeFileSync(path, text);
       return spawnSync(process.execPath, [
-        '--experimental-permission', `--allow-fs-read=${isolated}`, script, path, ...flags,
+        permissionFlag, `--allow-fs-read=${isolated}`, script, path, ...flags,
       ], { cwd: isolated, input, encoding: 'utf8', env: { PATH: '' } });
     };
     // Each invocation starts a new process, with only the export, script and two noble packages readable.
