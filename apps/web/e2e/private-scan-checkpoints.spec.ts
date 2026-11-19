@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { configureRpc, mockNetwork, RPC, stageVerifiedErc20Payment, type MockNetworkState } from './flowMocks';
 
 // Synthetic keys are imported through the real seller UI. No runtime hooks or cleartext scan-state fixtures.
@@ -20,6 +20,11 @@ async function openScan(page: Page): Promise<void> {
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Scan and receive', exact: true }).click();
   await page.getByLabel('Chain', { exact: true }).selectOption('84532');
   await expect(page.getByRole('button', { name: 'Start scan', exact: true })).toBeEnabled();
+}
+
+/** A verified payment also renders its address in its receipt; count discovery rows, not address copies. */
+function paymentRows(page: Page, address: string): Locator {
+  return page.locator('ul.matches > li').filter({ has: page.getByText(address, { exact: true }) });
 }
 
 async function readEncryptedScanRows(page: Page): Promise<string[]> {
@@ -59,7 +64,7 @@ test('private checkpoints preserve discovery through reload and independently re
   await page.getByLabel('Start block', { exact: true }).fill('100');
   await page.getByRole('button', { name: 'Start scan', exact: true }).click();
   await expect(page.getByText(/Finished\./)).toBeVisible();
-  await expect(page.getByText(mine.stealthAddress, { exact: true })).toBeVisible();
+  await expect(paymentRows(page, mine.stealthAddress)).toBeVisible();
   const rows = await readEncryptedScanRows(page);
   const ciphertexts = rows.filter((text) => text.includes('ciphertext'));
   expect(ciphertexts).toHaveLength(1);
@@ -73,7 +78,7 @@ test('private checkpoints preserve discovery through reload and independently re
   await expect(page.getByText(mine.stealthAddress, { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Start scan', exact: true }).click();
   await expect(page.getByText(/Finished\./)).toBeVisible();
-  await expect(page.getByText(mine.stealthAddress, { exact: true })).toHaveCount(1);
+  await expect(paymentRows(page, mine.stealthAddress)).toHaveCount(1);
 
   // Recovery in a genuinely independent profile has the seller keys but no progress. It must rediscover from zero.
   const recovered = await browser.newContext({ baseURL: 'http://localhost:4173', serviceWorkers: 'block' });
@@ -88,7 +93,7 @@ test('private checkpoints preserve discovery through reload and independently re
     await expect(other.getByText(/1 saved payment observation/)).toHaveCount(0);
     await other.getByRole('button', { name: 'Start scan', exact: true }).click();
     await expect(other.getByText(/Finished\./)).toBeVisible();
-    await expect(other.getByText(mine.stealthAddress, { exact: true })).toHaveCount(1);
+    await expect(paymentRows(other, mine.stealthAddress)).toHaveCount(1);
   } finally { await recovered.close(); }
 });
 
@@ -131,7 +136,7 @@ test('concurrent tabs reject a stale checkpoint writer and can resume the commit
     await expect(loser.getByRole('button', { name: 'Start scan', exact: true })).toBeEnabled();
     await loser.getByRole('button', { name: 'Start scan', exact: true }).click();
     await expect(loser.getByText(/Finished\./)).toBeVisible();
-    await expect(loser.getByText(mine.stealthAddress, { exact: true })).toHaveCount(1);
+    await expect(paymentRows(loser, mine.stealthAddress)).toHaveCount(1);
     expect((await readEncryptedScanRows(page)).filter((text) => text.includes('ciphertext'))).toHaveLength(1);
   } finally { release(); await second.close(); }
 });
