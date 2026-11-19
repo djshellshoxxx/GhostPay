@@ -1,3 +1,18 @@
+# Private checkpoint browser assertion repair — 2026-11-19
+
+Worker: current ChatGPT consolidation coordinator, independently reviewed by the integration reviewer.
+Branch: `codex/ghostpay-private-checkpoint-browser-20261119`.
+Base: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).
+Owned paths: `apps/web/e2e/private-scan-checkpoints.spec.ts`, this additive claim,
+and `docs/handoffs/PRIVATE_CHECKPOINT_BROWSER_20261119.md`.
+Acceptance: preserve the original discovery, one-payment, no-payment-before-revalidation,
+encrypted-storage, independent-profile, and concurrent-writer assertions while selecting
+payment rows instead of every repeated rendering of the address. The unchanged browser
+file (blob `db9e79a1337f1d8bcc423d0fc28c51e36975ee23`) already failed both full and lean
+hosted browser jobs for PR #248 because the receipt repeats the payment address.
+Obtain independent review and execute the available browser checks; record unavailable
+or interrupted execution honestly. No runtime, storage, dependency, workflow or threshold changes.
+
 # Hosting export timestamp precision — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
