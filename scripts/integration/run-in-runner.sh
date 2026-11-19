@@ -107,7 +107,7 @@ suite_evm() {
   node scripts/devnet/e2e.mjs
   log "relayer anvil e2e (vitest; spawns its own anvil)"
   ( cd packages/contracts && forge build )
-  ( cd apps/relayer && REQUIRE_ANVIL=1 ANVIL_BIN="$(command -v anvil)" npx vitest run src/e2e.anvil.test.ts )
+  ( cd apps/relayer && REQUIRE_ANVIL=1 ANVIL_BIN="$(command -v anvil)" npx --no -- vitest run src/e2e.anvil.test.ts )
 }
 suite_btc() { node scripts/integration/btc-regtest.e2e.mjs; }
 suite_solana() { node scripts/integration/solana-local.e2e.mjs; }

@@ -106,6 +106,10 @@ export const fetchTransport: RpcTransport = {
         body,
         signal: ctl.signal,
         redirect: 'error',
+        // Match the other egress points: no ambient cookies, no Referer, no cached RPC answers (audit C-1).
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer',
+        cache: 'no-store',
       });
       if (!res.ok) throw new RpcHttpError(res.status);
       if (res.body === null) return fail('RPC_FAILURE', 'empty body');

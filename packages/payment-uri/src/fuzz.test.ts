@@ -126,7 +126,7 @@ describe('round trips (build -> parse identity)', () => {
 });
 
 describe('hostile input never crashes with anything but PaymentUriError', () => {
-  const alphabet = 'abcdefABCDEF0123456789:?&=%/@#+.-_ x‮\u0000é';
+  const alphabet = 'abcdefABCDEF0123456789:?&=%/@#+.-_ x\u202e\u0000é';
   const seeds = [
     `ethereum:${F.EVM}`,
     `bitcoin:${F.BTC_BECH32}?amount=1&label=x`,

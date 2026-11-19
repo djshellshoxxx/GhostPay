@@ -12,6 +12,9 @@ import {
   createIndexerScanClient,
   createWindowedScanClient,
   describeScanDisclosure,
+  describeScanDisclosureMessages,
+  MAX_PAD_BLOCKS,
+  clampPadBlocks,
   loadScanPrivacy,
   planScan,
   saveScanPrivacy,
@@ -48,12 +51,12 @@ const logFilters = (rpc: MockRpc) => rpc.calls.filter((c) => c.method === 'eth_g
 /** Deterministic "CSPRNG" for ordering tests: every draw returns the same word. */
 const fixedCrypto = (word: number) => ({ getRandomValues: <T extends ArrayBufferView | null>(a: T): T => { if (a !== null) new Uint32Array(a.buffer, a.byteOffset, a.byteLength / 4).fill(word); return a; } });
 
-function windowed(inner: MockRpc, over: Partial<{ windowBlocks: number; jitterMs: readonly [number, number]; router: Address }> = {}, sleeps: number[] = [], crypto = fixedCrypto(0)) {
+function windowed(inner: MockRpc, over: Partial<{ windowBlocks: number; jitterMs: readonly [number, number]; router: Address; padBlocks: number }> = {}, sleeps: number[] = [], crypto = fixedCrypto(0)) {
   return createWindowedScanClient(inner, {
     chain,
     announcer: FAKE_ANNOUNCER,
     ...(over.router === undefined ? {} : { router: over.router }),
-    policy: { windowBlocks: over.windowBlocks ?? 1000, jitterMs: over.jitterMs ?? [0, 0] },
+    policy: { windowBlocks: over.windowBlocks ?? 1000, jitterMs: over.jitterMs ?? [0, 0], ...(over.padBlocks === undefined ? {} : { padBlocks: over.padBlocks }) },
     sleep: (ms) => { sleeps.push(ms); return Promise.resolve(); },
     cryptoApi: crypto,
   });
@@ -252,6 +255,61 @@ describe('createWindowedScanClient', () => {
   });
 });
 
+describe('TM15 padded scan windows (padBlocks)', () => {
+  const q = (fromBlock: bigint, toBlock: bigint) => ({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, SCHEME_TOPIC as `0x${string}`], fromBlock, toBlock });
+  const asked = (rpc: MockRpc) => logFilters(rpc).map((f) => [f.fromBlock, f.toBlock]).sort((a, b) => Number(a[0]! - b[0]!));
+
+  it('padBlocks 0 (and omitted) asks for exactly the plain grid, as before', async () => {
+    for (const padBlocks of [undefined, 0]) {
+      const inner = fakeChain(5000, []);
+      await windowed(inner, padBlocks === undefined ? {} : { padBlocks }).getLogs(q(1000n, 1999n));
+      expect(asked(inner)).toEqual([[1000n, 1999n]]);
+    }
+  });
+
+  it('padBlocks > 0 does not reveal exact range boundaries: a range aligned to the grid gets neighbour windows', async () => {
+    const meta = encodeMetaAddress(generateKeySet());
+    const logs = [500, 1000, 1999, 2500].map((b, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: b, index: i, caller: OTHER }).log);
+    const inner = fakeChain(5000, logs);
+    const got = await windowed(inner, { padBlocks: 1 }).getLogs(q(1000n, 1999n));
+    // The caller still sees only its own range.
+    expect(got.map((l) => Number(BigInt(l.blockNumber)))).toEqual([1000, 1999]);
+    const ranges = asked(inner);
+    expect(ranges).toEqual([[0n, 999n], [1000n, 1999n], [2000n, 2999n]]);
+    // Neither the exact start nor the exact end is a window edge the provider can single out.
+    expect(ranges.some(([a]) => a === 1000n) && ranges.some(([a]) => a! < 1000n)).toBe(true);
+    expect(ranges.some(([, b]) => b! > 1999n)).toBe(true);
+    for (const f of logFilters(inner)) {
+      expect(f.fromBlock % 1000n).toBe(0n);
+      expect((f.toBlock + 1n) % 1000n).toBe(0n);
+    }
+  });
+
+  it('padding is clamped to block 0 and to the head', async () => {
+    const inner = fakeChain(2500, []);
+    await windowed(inner, { padBlocks: 600 }).getLogs(q(0n, 2400n));
+    expect(asked(inner)).toEqual([[0n, 999n], [1000n, 1999n], [2000n, 2500n]]);
+  });
+
+  it('refuses an invalid padBlocks policy before any request', () => {
+    const inner = fakeChain(5000, []);
+    for (const padBlocks of [-1, 1.5, Number.NaN, MAX_PAD_BLOCKS + 1]) expect(() => windowed(inner, { padBlocks })).toThrow(RangeError);
+    expect(inner.calls).toHaveLength(0);
+  });
+
+  it('settings: default 0, stored values validated and clamped, passed to the plan', () => {
+    expect(DEFAULT_SCAN_PRIVACY.padBlocks).toBe(0);
+    const s = memory();
+    for (const [stored, want] of [[250, 250], [-3, 0], ['500', 0], [12.7, 12], [1e12, MAX_PAD_BLOCKS], [null, 0]] as const) {
+      s.setItem('ghostpay.scanPrivacy.v1', JSON.stringify({ padBlocks: stored }));
+      expect(loadScanPrivacy(s).padBlocks).toBe(want);
+    }
+    expect(clampPadBlocks(Number.POSITIVE_INFINITY)).toBe(MAX_PAD_BLOCKS);
+    expect(planScan({ ...DEFAULT_SCAN_PRIVACY, padBlocks: 300 }, chain)).toMatchObject({ kind: 'ready', window: { padBlocks: 300 } });
+    expect(planScan(DEFAULT_SCAN_PRIVACY, chain)).toMatchObject({ kind: 'ready', window: { padBlocks: 0 } });
+  });
+});
+
 // ---- indexer ----
 
 interface IdxDoc { announcements: Record<string, unknown>[]; headers: { number: string; hash: string; parentHash: string }[] }
@@ -446,12 +504,16 @@ describe('describeScanDisclosure', () => {
         expect(sweep, JSON.stringify(s)).toHaveLength(1);
         expect(sweep[0]!.learns).toMatch(/one-time address/);
         expect(sweep[0]!.learns).toMatch(/not through the scan path/);
+        expect(sweep[0]!.learns).toContain('only when you press "Read balance from the Settings RPC"');
+        expect(sweep[0]!.learns).not.toContain('as soon as you open');
+        expect(describeScanDisclosureMessages(s, { hasSecondary }).find((row) => row.party.key === 'scanPrivacy.disclosure.sweepParty')?.learns.key)
+          .toBe('scanPrivacy.disclosure.sweepOnRequest');
         expect(rows.at(-1)!.party).toBe('Everyone');
       }
     }
     const learns = (s: ScanPrivacySettings): string => describeScanDisclosure(s, { hasSecondary: false }).find((r) => r.party === 'Settings RPC (Sweep)')!.learns;
-    expect(learns(base())).toMatch(/^your IP address;.*reads its balance as soon as you open it/);
-    expect(learns(proxy)).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*as soon as you open it/);
+    expect(learns(base())).toMatch(/^your IP address;.*only when you press/);
+    expect(learns(proxy)).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*only when you press/);
     expect(learns({ ...proxy, requireProxy: true })).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*only when you press "Read balance from the Settings RPC"/);
   });
   function base(): ScanPrivacySettings { return { ...DEFAULT_SCAN_PRIVACY }; }

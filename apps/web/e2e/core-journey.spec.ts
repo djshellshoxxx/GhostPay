@@ -513,6 +513,9 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
     await expect(panel.getByRole('button', { name: 'Sign receipt', exact: true })).toBeDisabled();
     await expect(s.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receiptText = await panel.getByLabel('Signed receipt JSON').inputValue();
@@ -534,6 +537,7 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     // 6. Direct sweep of that payment, step-up authorized with the vault passphrase; journaled, then included.
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
     await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
@@ -628,6 +632,7 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
     await payAndDetect(payer.page, sim, link, s);
 
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
     const held = sim.hold('eth_gasPrice'); // The first RPC read inside the actual direct sweep, after its session capture.

@@ -35,7 +35,7 @@ describe('normalisers', () => {
   it.each([
     ['empty', '   '],
     ['zero width', 'Al\u200bice'],
-    ['bidi override', 'Alice‮txt'],
+    ['bidi override', 'Alice\u202etxt'],
     ['control', 'Al\x00ice'],
     ['too long', 'x'.repeat(65)],
     ['unassigned', 'a͸'],
@@ -66,7 +66,7 @@ describe('normalisers', () => {
   });
   it('note allows newlines, rejects control/format and long', () => {
     expect(normalizeNote('a\r\nb')).toBe('a\nb');
-    expect(() => normalizeNote('a‮b')).toThrow();
+    expect(() => normalizeNote('a\u202eb')).toThrow();
     expect(() => normalizeNote('x'.repeat(501))).toThrow();
   });
   it('addressKey: EVM and bech32 case-insensitive, base58 case-sensitive', () => {

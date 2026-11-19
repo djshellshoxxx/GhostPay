@@ -51,7 +51,8 @@ describe('receipt invoice binding', () => {
 
   it('rejects a correctly signed but wrong amount instead of trusting the seller attestation', async () => {
     const { io, receipt } = bound();
-    const payload = { invoiceDigest: receipt.invoiceDigest, chainId: receipt.chainId, txHash: receipt.txHash, stealthAddress: receipt.stealthAddress, asset: receipt.asset, amountMinorUnits: receipt.amountMinorUnits, issuedAt: receipt.issuedAt };
+    // The one-time address is optional (TM9); re-sign exactly the fields the receipt carries.
+    const payload = { invoiceDigest: receipt.invoiceDigest, chainId: receipt.chainId, txHash: receipt.txHash, ...(receipt.stealthAddress === undefined ? {} : { stealthAddress: receipt.stealthAddress }), asset: receipt.asset, amountMinorUnits: receipt.amountMinorUnits, issuedAt: receipt.issuedAt };
     io.files.set('receipt', JSON.stringify(signReceipt({ ...payload, amountMinorUnits: '999' }, KEY_BYTES)));
     await expect(invoke(receiptCommands, 'receipt verify', ['--in', 'receipt', '--invoice', 'invoice'], io)).rejects.toMatchObject({ code: 'RECEIPT_AMOUNT_MISMATCH' });
   });
@@ -70,7 +71,7 @@ describe('receipt invoice binding', () => {
     const { io, receipt } = bound();
     const { invoiceDigest, chainId, txHash, stealthAddress, asset, amountMinorUnits, issuedAt } = receipt;
     io.files.set('receipt', JSON.stringify(signReceipt(
-      { invoiceDigest, chainId, txHash, stealthAddress, asset, amountMinorUnits, issuedAt, ...patch }, KEY_BYTES,
+      { invoiceDigest, chainId, txHash, ...(stealthAddress === undefined ? {} : { stealthAddress }), asset, amountMinorUnits, issuedAt, ...patch }, KEY_BYTES,
     )));
     await expect(invoke(receiptCommands, 'receipt verify', ['--in', 'receipt', '--invoice', 'invoice'], io))
       .rejects.toMatchObject({ code });
@@ -83,7 +84,7 @@ describe('receipt invoice binding', () => {
     alternateKey[31] = 8;
     const { invoiceDigest, chainId, txHash, stealthAddress, asset, amountMinorUnits, issuedAt } = receipt;
     io.files.set('receipt', JSON.stringify(signReceipt(
-      { invoiceDigest, chainId, txHash, stealthAddress, asset, amountMinorUnits, issuedAt }, alternateKey,
+      { invoiceDigest, chainId, txHash, ...(stealthAddress === undefined ? {} : { stealthAddress }), asset, amountMinorUnits, issuedAt }, alternateKey,
     )));
     await expect(invoke(receiptCommands, 'receipt verify', ['--in', 'receipt', '--invoice', 'invoice'], io))
       .rejects.toMatchObject({ code: 'RECEIPT_SIGNER_MISMATCH' });

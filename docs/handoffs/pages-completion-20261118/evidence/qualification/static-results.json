@@ -1,0 +1,40 @@
+[
+  {
+    "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
+    "command": "npm run typecheck",
+    "node": "22.23.5",
+    "npm": "11.21.2",
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=768",
+      "VITEST_MAX_WORKERS": "1"
+    },
+    "exitCode": 134,
+    "seconds": 125.17,
+    "log": "typecheck.log"
+  },
+  {
+    "source": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
+    "command": "npm run lint",
+    "node": "22.23.5",
+    "npm": "11.21.2",
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=768",
+      "VITEST_MAX_WORKERS": "1"
+    },
+    "exitCode": 137,
+    "seconds": 199.38,
+    "log": "lint.log"
+  },
+  {
+    "source": "ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929",
+    "command": "npm run typecheck --workspace @ghostpay/web",
+    "node": "22.23.5",
+    "npm": "11.9.0",
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=1536"
+    },
+    "exitCode": 0,
+    "log": "web-typecheck-retry.log",
+    "note": "Completes the web workspace that exhausted the earlier 768MiB cap; all other workspace typechecks passed in that earlier full run."
+  }
+]

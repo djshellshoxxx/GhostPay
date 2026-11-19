@@ -1,0 +1,32 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/GhostPay/apps/web
+
+ ❯ src/lib/scanPrivacy.test.ts (37 tests | 1 failed | 36 skipped) 8ms
+   ❯ describeScanDisclosure (3)
+     × lists that Sweep balance reads and sweep submission use the Settings RPC, not the scan path (R12-2) 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scanPrivacy.test.ts > describeScanDisclosure > lists that Sweep balance reads and sweep submission use the Settings RPC, not the scan path (R12-2)
+AssertionError: expected 'your IP address; the one-time address…' to contain 'only when you press "Read balance fro…'
+
+Expected: "only when you press "Read balance from the Settings RPC""
+Received: "your IP address; the one-time address of a found payment, because Sweep reads its balance as soon as you open it. Signing a sweep also reads from it, and a direct sweep is sent through it. These requests go to the RPC in Settings directly, not through the scan path."
+
+ ❯ src/lib/scanPrivacy.test.ts:507:34
+    505|         expect(sweep[0]!.learns).toMatch(/one-time address/);
+    506|         expect(sweep[0]!.learns).toMatch(/not through the scan path/);
+    507|         expect(sweep[0]!.learns).toContain('only when you press "Read …
+       |                                  ^
+    508|         expect(sweep[0]!.learns).not.toContain('as soon as you open');
+    509|         expect(describeScanDisclosureMessages(s, { hasSecondary }).fin…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 36 skipped (37)
+   Start at  06:09:01
+   Duration  744ms (import 68%, transform 31%, tests 1%)
+

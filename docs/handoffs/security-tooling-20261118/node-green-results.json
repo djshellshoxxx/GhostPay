@@ -1,0 +1,48 @@
+[
+  {
+    "name": "mythril-green",
+    "command": "node --test scripts/tests/mythril-disposition-check.test.mjs",
+    "exit_code": 0,
+    "summary": [
+      "\u2714 tool errors, a missing analysis and malformed documents never pass (1.701862ms)",
+      "\u2714 malformed, unassociated and duplicate runner error annotations fail closed (1.630102ms)",
+      "\u2139 tests 13",
+      "\u2139 suites 0",
+      "\u2139 pass 13",
+      "\u2139 fail 0",
+      "\u2139 cancelled 0",
+      "\u2139 skipped 0",
+      "\u2139 duration_ms 374.142022"
+    ]
+  },
+  {
+    "name": "static-green",
+    "command": "node --test docs/audits/poc/static-server.test.mjs",
+    "exit_code": 0,
+    "summary": [
+      "\u2139 tests 8",
+      "\u2139 suites 0",
+      "\u2139 pass 8",
+      "\u2139 fail 0",
+      "\u2139 cancelled 0",
+      "\u2139 skipped 0",
+      "\u2139 duration_ms 778.03424"
+    ]
+  },
+  {
+    "name": "automation-green",
+    "command": "node --test scripts/tests/ghostpay-automation-hardening.test.mjs scripts/tests/ghostpay-parallel-review-workflow.test.mjs",
+    "exit_code": 0,
+    "summary": [
+      "\u2714 tools the step tests need are present (13.895657ms)",
+      "\u2714 reports require provenance, independent tests and conflict analysis (0.158712ms)",
+      "\u2139 tests 27",
+      "\u2139 suites 0",
+      "\u2139 pass 27",
+      "\u2139 fail 0",
+      "\u2139 cancelled 0",
+      "\u2139 skipped 0",
+      "\u2139 duration_ms 1033.170991"
+    ]
+  }
+]

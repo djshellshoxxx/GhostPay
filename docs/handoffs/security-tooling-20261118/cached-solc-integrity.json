@@ -1,0 +1,6 @@
+{
+  "cold_cache_exit": 0,
+  "tampered_cache_exit": 1,
+  "tampered_output": "/tmp/gp-cached-solc-check-4ijmquwh/.svm/0.8.28/solc-0.8.28: FAILED\n::error::cached solc 0.8.28 hash mismatch: /tmp/gp-cached-solc-check-4ijmquwh/.svm/0.8.28/solc-0.8.28\nsha256sum: WARNING: 1 computed checksum did NOT match\n",
+  "official_binary_positive_check": "Not executed; no claim of downloaded compiler verification."
+}

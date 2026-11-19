@@ -1,0 +1,7 @@
+{
+  "base": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "node": "v24.22.1",
+  "npm": "11.9.0",
+  "lock_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+  "dependency_source": "Copied installed dependency trees from coordinator checkout at same starting lock; no npm install or dependency mutation."
+}

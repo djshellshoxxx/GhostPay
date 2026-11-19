@@ -26,6 +26,63 @@ Sweep, catalogs, consolidation ledgers and release gates are not owned by this t
 five lower-level transport files were compared against these heads and are unchanged; this
 lane extends existing adapters without a second policy engine. Recheck all heads before PR.
 
+
+# Pages smoke render-error regression — 2026-11-18
+
+Worker: security_recovery, independent Pages review lane. Branch:
+`integration/ghostpay-pages-smoke-render-errors-20261118`. Base:
+`e85db1ef942bda9cb54317a6c036a22484b46ff9` (coordinator integration source).
+Owned paths: `scripts/pages/smoke*`, a narrow render-error observer and its Node
+regressions, this claim, and `docs/handoffs/agents/PAGES_SMOKE_RENDER_ERRORS_20261118.md`.
+Acceptance: a caught, uncaught or recoverable React root error must fail the Pages
+smoke check even when navigation still renders; arbitrary console messages and
+error payloads must not be copied into the new failure record. Preserve existing
+page-error, request-failure and foreign-request checks and manual deployment policy.
+Run low-memory Node regressions only while the coordinator builds libraries.
+No browser-pass claim, app/runtime change, remote mutation or deployment.
+Status: source `a77cadbb7deca0cb2bf8829ed1215962bb8b4d9f` passes all 9 new
+entrypoint regressions and the complete 95-test Pages Node suite with one worker;
+the CI reviewer independently cleared the source and reran all 9 regressions.
+The tests use synthetic browser events, so actual Chromium/hosted acceptance remains
+pending. See `docs/handoffs/agents/PAGES_SMOKE_RENDER_ERRORS_20261118.md`.
+
+# Pages beta consolidation continuation — 2026-11-18
+
+Worker: ChatGPT coordinator, with independent branch archaeology, recovery/security and CI reviewers.
+Branch: `integration/ghostpay-pages-completion-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: consolidation conflicts and Pages security/privacy integration, focused regression tests,
+this registry, and `docs/handoffs/pages-completion-20261118/`.
+Follow-up: the coordinator owns the legacy portable keystore's temporary passphrase-byte lifetime and its focused
+regression in `packages/ux-vault/src/keystore-portable*`; archaeology independently reviews the change.
+Recovery, dependency and security-tooling implementation use separate worktrees and branches.
+Existing remote PRs are read-only source inputs. The #209 extraction includes Pages hosting protections,
+root error reporting and backup navigation; release-test relaxation and unrelated workflow updates are excluded.
+Acceptance: preserve non-custodial client-side key handling and testnet restrictions; integrate only reviewed changes;
+execute focused and combined tests; obtain independent review; record source and evidence before any main merge.
+No deployment, release, branch deletion, force-push, or paid agent workflow activation is authorized.
+This restores the coordinator claim first committed in `b828b44e`, dropped during registry reconciliation.
+Qualification update: the full `npm test` command completed at `e8c77e7e8699dd16b86b7a1ff90b834594d07105`
+with exit 0 on Node 22.23.5/npm 11.21.2. The identical runtime tree was published as draft PR #238 at
+`9bad95e5cc0ee73f5adb8d2c587161074b21e080`. Documentation integration `e033855b` changes no runtime/test input.
+The coordinator owns final result/diagnostic reconciliation in the completion packet and the Pages README's
+HTTP/CSP reachability clarification. Subsequent published-runtime full/lean builds, Pages static/loopback checks,
+development release build and two-clean-clone reproducibility passed. The final isolated web lint retry exited 137;
+actual browser attempts failed before application assertions. Strict Mythril, full dependency audit and final
+candidate hosted/security gates remain unresolved. Completed execution and independent evidence review are in
+[the completion packet](../handoffs/pages-completion-20261118/COMPLETION_REPORT.md); the PR body carries the final
+documentation head, transport mapping and refreshed CI observation. No main merge or release is qualified.
+
+# Pages privacy consolidation — 2026-11-18
+
+Worker: ChatGPT coordinator. Branch: `integration/ghostpay-privacy-20261118`.
+Base: `305ccb0d570c27a47435083059492edc819a0101` (reviewed narrow repairs staged from main).
+Owned paths: privacy changes from #222, #228, #230 and #233, their integration conflicts and focused regressions.
+Acceptance: preserve v4 checkpoint names and explicit balance-request lifecycle from #235/#231; encrypted invoice default,
+minimized receipts, per-dispatch RPC policy and session-only sweep linkage must pass combined tests and independent review.
+All publication, main merge, hosted qualification and release actions remain coordinator gated.
+
+
 # Pages idle-clock integration — 2026-11-18
 
 Worker: ChatGPT coordinator, with independent privacy-review implementation and source review.
@@ -33,18 +90,95 @@ Branch: `chatgpt/ghostpay-pages-idle-clock-20261118`; base: `dfc75ef2087fa6463ae
 Owned paths: `apps/web/src/AppShell.tsx`, `apps/web/src/AppShell.idleClock.test.tsx`, and the idle-clock handoff.
 Acceptance: reproduce clock rollback on current main, retain sleep-aware wall-time checks, add monotonic expiry,
 preserve sole-copy key recovery policy, pass focused shell tests and scoped lint, then require exact-head CI.
-The test file is imported from the separate review lane; product edits start after this claim. PR #209's frame and
-unload changes remain on its own branch. No deployment, signing, publication, mainnet, or release-gate changes.
+Source `613667be` is now staged in the consolidation branch; final combined-head qualification remains pending.
 
-# Repository consolidation — 2026-11-18 (active)
+# Session-only sweep destination history — 2026-11-18
 
-Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
-branches were local only and are not pushed. Integrated as: specs `b20e1c98`; cigates `15c302cd`; mythril-expiry
-`1fa4179f` (+ review `3f10fcaf`); tagarchive `0dda9ca1`; mythril-factory `afbce0a6` (+ review `1e1121b3`); reimport
-`84b4e605` (+ `86b6e9e5`, `4a3d47d8`); echidna `81aa5e68`. Coordinator fixes: bundle scanner `b441cc64`/`5ddb042a`,
-audit test `bbd24cd0`, blocked keystore download `cfb482f9`. Remaining work is coordinator-owned: final CI evidence,
-census at the final head and the promotion packet. Open draft PR #204 (another session, base `main`) conflicts in
-`.github/workflows/ci.yml` and `CLAUDE.md` and is not part of this consolidation.
+Worker: ChatGPT security review, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-ledger-memory-20261118`.
+Base: PR #222, `2bc2098298d90928eb1acafad969f28316bb05fc`.
+Owned paths: sweep destination history source/tests, the two Sweep view recording call sites and focused tests,
+the existing reuse-warning messages, user privacy guidance, this claim and the task handoff.
+Acceptance: no source/destination linkage is serialized to browser storage; delete only the legacy plaintext key
+without importing it; clear memory on app lock and seller-session change; reject delayed records from old epochs;
+retain nonblocking reuse warnings within the active session. Persistence across sessions stays unavailable until an
+encrypted, explicitly opted-in design is qualified. Signing and duplicate-send journal behavior remain unchanged.
+Local verification complete: 171 affected tests, focused lint, whole-web typecheck and i18n check passed.
+Evidence and remaining integration gates: `docs/handoffs/GHOSTPAY_SWEEP_LEDGER_PRIVACY_20261118.md`.
+
+# Pages Spec 18 recovery integration — 2026-11-18
+
+Worker: security_recovery (independent integration lane). Branch:
+`integration/ghostpay-recovery-completion-20261118`. Base:
+`dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: Spec 18 export/recovery components and tests, paymentKeyExport and stealthExport
+helpers, exact credential/session additions, ux-vault portable codec and tests, recovery
+scripts/vectors, recovery i18n entries, exact Scan/SellerKeys wiring, and this handoff.
+Inputs: #213 `ebf7c92c3be1c7aebd37fc58b5567e114fb932fc` and #229
+`18110015e99efbeb4f23d47cd88bd6f917010108`. The coordinator owns unrelated
+privacy/session/scanner changes and final integration. Acceptance: inspect current sources,
+reconcile both PRs onto live main, reproduce and fix concrete defects, run complete focused
+codec/recovery/vault checks plus web typecheck and scoped lint, and record exact evidence.
+No remote mutation, deployment, release, mainnet enablement or browser-pass claim.
+Status: integrated and independently reviewed at code/test source
+`f2ed1ed4240f91ef2fb41f3edaf3ea6546e87e60`. Web recovery selection 135/135,
+core crypto 75/75 and complete vault coverage 348/348 pass; the independent
+export/i18n selection passes 24/24. Node recovery passes 15 cases, with the
+separate raw-key interoperability case passing on available Foundry 1.5.1 only.
+Full-web typed lint remains blocked by executor memory; actual browser, pinned
+Foundry 1.8.5 and final combined/hosted qualification remain pending. See
+[the exact-source recovery handoff](../handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md).
+
+# Recovery cancellation review — 2026-11-18
+
+Worker: ChatGPT recovery review agent using the Caveman workflow. Branch:
+`chatgpt/ghostpay-recovery-review-20261118`; base PR #213
+`ebf7c92c3be1c7aebd37fc58b5567e114fb932fc`. Root coordinates integration.
+Owned paths: `apps/web/src/components/StealthExportRecovery.tsx` and its test;
+`docs/user/recover-stealth-payment-keys.md`; the scheme-1 boundary in the format reference and recovery script help;
+the three existing payment-export warning strings in `apps/web/locales/{en,es,ja,ar}.json` (coordinator-approved);
+this claim and the recovery review handoff.
+Acceptance: reproduce a cancelled master-import request affecting a later export, bind replacement authorization
+to the selected export and current operation, preserve lock/session guards, and verify the focused recovery suites.
+Document the scheme-1 viewing-key plus payment-private-key spending-authority boundary. Other locale, session,
+Scan and CI paths remain coordinator-owned. No remote mutation, deployment, release or real funds.
+
+# Spec 18 key portability + consolidation follow-through — 2026-11-18 (ACTIVE)
+
+Worker: Claude Code cloud session `ghostpay-consolidation-9xhtxg` (this session promoted PR #203 to `main` as
+`5467c158`). Spec 18 work started 06:27 UTC from candidate `71abc7e5` (tree equal to `main` `5467c158`) on local branch
+`spec18-local`; pushed to `claude/ghostpay-consolidation-9xhtxg-spec18`. Committed so far: format reference `a62f489d`,
+codec `5c0a12cc`, independent recovery script + K04 anvil interop + user guide `b5762d19`; web UI, e2e, independent
+review and verification in progress.
+
+| Lane | Owned paths (exclusive) | Acceptance |
+|---|---|---|
+| Spec 18 K01-K06 (codec, recovery, web UI, e2e) | `docs/specs/18-stealth-keypair-export-formats.md`; `packages/ux-vault/src/stealth-export-portable*.ts`, `packages/ux-vault/src/{portable,portable-errors}.ts` export/error lines; `test-vectors/{generate-stealth-export.mjs,stealth-export.json}`; `scripts/recovery/**`; recovery user-guide page; `apps/web/src/lib/{stealthExport,paymentKeyExport}.ts` (+ tests), re-authentication helper lines in `apps/web/src/lib/{session,keyVault}.ts`; spec 18 entry points in `apps/web/src/views/{Scan,SellerKeys}.tsx`; `apps/web/src/components/StealthExport*.tsx`; `apps/web/e2e/stealth-export.spec.ts`; `stealthExport.*` / `error.stealthExport.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`; one glob added to the ts-test shard-0 script-test line in `.github/workflows/ci.yml` | Spec 18 acceptance list on one exact SHA; independent review; external wallet/device rows pending |
+| #204 reconciliation (PR #206) | `CLAUDE.md`, `.claude/skills/ghostpay-package-map/PACKAGE_MAP.md`, the ci.yml shard-0 script-test line | Merged after green CI |
+| Security/release reconciliation (PR #212) | `docs/audits/{mythril-reevaluation,echidna-and-fee-token-review,ci-supply-chain-review}-20261118.md`, `docs/handoffs/consolidation-20261118/{OWNER_ACTION_PACKET,STATIC_BETA_DECISIONS}.md`, `docs/pages/PAGES_QUALIFICATION_20261118.md`, `scripts/contract-analysis/mythril-disposition-check.mjs` + test; already made before seeing #209's claim: `.github/dependabot.yml` (CI-06), `apps/web/package.json` `validate:deployments` script + `apps/web/src/validateDeploymentsScript.test.ts` + `apps/web/deployments/README.md` (B03) | Merged after green CI; #209 lanes B1/B4 may skip CI-06 and B03 |
+
+Not claimed (left to PR #209 / #211): SEC-09/SEC-10 Pages origin and loopback CSP, every other #205 row.
+Out of scope: deployment, signing, release, mainnet, contract source changes, branch deletion, owner decisions.
+
+
+# Pages beta security tooling extraction — 2026-11-18
+
+Worker: ChatGPT branch-archaeology/security-tooling worker. Coordinator: current Pages integration session.
+Branch: `integration/ghostpay-security-tooling-20261118`; base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+
+Owned paths: standalone Mythril disposition helper and its tests; web deployment-validator npm entrypoint and
+regressions; local audit static helper and tests; HTTPS-only pinned download commands; bidirectional-character
+source escapes; shared RPC fetch metadata regression; viewing-key boundary regression and directly related docs;
+agent workflow path-policy and untrusted-input hardening plus focused tests; cached-solc integrity verification.
+Source inputs: #212 + #225, #224 + #226, and selected security changes from #220. These branches remain read-only.
+
+Acceptance: preserve source pins, current action pins, runner selection, existing workflow triggers and approval
+gates; the Mythril helper remains unwired; reproduce applicable pre-fix regressions and run focused Node/Vitest,
+typecheck, lint and security checks. No contract, D-1 proof-design, deployment, publication or gate-policy change.
+The coordinator owns browser privacy/receipts, shared integration and remote writes. RPC fetch options overlap #222
+and must resolve to the same `omit`/`no-referrer`/`no-store` behavior.
+
+# Repository consolidation — 2026-11-18 (historical)
+
 
 Coordinator: Claude Code session (integration owner). Integration branch: `nodata/wizardly-allen-qwol6u`, created from
 unified `beb525dd` (tree `36177d29`), main ancestry merged at `f5e10f84` (tree unchanged), Pages #200 lineage merged at
@@ -493,6 +627,10 @@ See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and com
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
 
 
+
+## Beta acceptance log artifact capture — 2026-11-18
+
+
 ## Feature completion and consolidation — 2026-11-19
 
 Worker: ChatGPT root coordinator with independent privacy, recovery, and branch-review workers.
@@ -506,3 +644,56 @@ Acceptance: retain original feature ancestry and main fixes, repair reproducible
 weaker assertions or gates, independently review combined source, run applicable validation, and merge only
 qualified work under current repository protections. No mainnet deployment, release publication, branch deletion,
 shared-branch rewrite, or finding suppression. External live writers remain read-only inputs until rechecked.
+
+
+Status: workflow source `05a3b45bda60d18a6922c0897d48bd8984bad377` adds only the requested boolean
+input. Existing workflow checks pass 6/6 with no skips; action-pin check passes all 111 references;
+`git diff --check` passes. Coordinator and privacy reviewer independently cleared that exact workflow
+source after checking the pinned upstream filter, retained logs and unchanged upload scope. No new test,
+dependency, build, upload or rerun. Hosted artifact existence remains unverified; early failures can still
+precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
+limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
+
+# Own-node request guard — 2026-11-18
+
+Worker: ChatGPT privacy review agent using the Caveman workflow. Branch:
+`chatgpt/ghostpay-own-node-guard-20261118`; base PR #222
+`2bc2098298d90928eb1acafad969f28316bb05fc`.
+Owned paths: `apps/web/src/lib/defaultServices.ts`, its focused tests, this claim,
+`docs/handoffs/OWN_NODE_GUARD_REVIEW_20261118.md` and
+`docs/handoffs/PRIVACY_CONSOLIDATION_REVIEW_20261118.md`.
+Acceptance: switching to acknowledged own-node mode prevents cached RPC clients
+and their retries from sending new requests to a third party. Refusals contain
+no endpoint or request data. Loopback requests remain usable in own-node mode.
+Other #222 findings and integration conflicts remain separate; no Tor or release
+qualification, remote mutation, deployment or public-chain transaction.
+
+## Privacy-default browser fixtures — 2026-11-18
+
+Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-privacy-browser-fixtures-20261118`.
+Base: PR #222 head `2bc2098298d90928eb1acafad969f28316bb05fc`; the failing hosted Pages job tested synthetic merge
+`644a43ee6366298f418a0aca5a40ecf974871748` in run `44279444265`, job `134715947261`.
+Owned paths: affected receipt/envelope/consent setup in `apps/web/e2e/{pages-devnet,core-journey,devnet-journey,flows,sweep}.spec.ts`,
+`apps/web/e2e/devnet/pages.ts`, a pure invoice-tamper fixture helper, its focused `apps/web/src/test` regression,
+this claim and `docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md`.
+Acceptance: assert minimized receipts omit the payment address, then explicitly opt into full receipts without
+weakening signature/address assertions; preserve encrypted invoice defaults and prove altered amounts still decrypt
+but fail signature verification; explicitly request Sweep balances before existing spend/dust assertions.
+Runtime sources, defaults, dependencies, CI gates and skips remain unchanged. Local helper and existing UI tests,
+scoped lint/typecheck and independent source review are evidence only for their stated scope. Local Chromium cannot
+launch; no browser acceptance is claimed and fresh hosted CI remains required.
+
+Milestone: repaired fixture source `6dc3ae7c419c8f706c11fc3d96de66e055ad165d` passes 49 focused tests, whole-web
+typecheck at a 1536 MiB cap and scoped lint. Independent review reports no blocker and independently passes the
+three pure tamper-helper tests. Playwright discovery lists 14 tests in three mocked suites without execution.
+The prior hosted result remains 11 passed, 2 failed and 3 not run until fresh exact-source CI executes.
+Handoff: `docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md`.
+
+## Pages beta dependency qualification — 2026-11-18
+
+Worker: ci_qualification, Caveman investigate-first, lean-build and verify-and-stop workflows.
+Branch: `integration/ghostpay-dependency-qualification-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: root/workspace package manifests, package-lock.json, dependency tooling regressions if a defect is reproduced, and a source-pinned dependency handoff. No application source, workflows, coverage configuration, contracts or deployment changes.
+Acceptance: integrate the exact paired #210 and #236 dependency revisions; clean installation; library and web builds; relevant original coverage-enabled suites, typechecks and lints; full and production dependency audits; preserve pending browser and hosted qualification honestly. No forced peers, casts, blanket overrides or weakened gates.
+Source candidates: #210 `4d19655a2e5d93ad9378803cd4163245168aca24`; #236 `defdaa308a2d05ab407af7e42f8dc457cf52d103`.

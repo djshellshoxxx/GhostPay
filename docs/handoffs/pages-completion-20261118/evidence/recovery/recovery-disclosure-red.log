@@ -1,0 +1,251 @@
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/recovery/apps/web
+
+ ❯ src/components/StealthExportPayment.test.tsx (12 tests | 1 failed | 11 skipped) 196ms
+   ❯ Payment details (spec 18 flow 1) (9)
+     × derives, downloads and reveals nothing until asked, and labels ownership apart from payment status 195ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/StealthExportPayment.test.tsx > Payment details (spec 18 flow 1) > derives, downloads and reveals nothing until asked, and labels ownership apart from payment status
+TestingLibraryElementError: Unable to find an element with the text: /Secret exports check this payment address for contract code through the RPC used by this scan/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"stealth-export"[39m
+      [33mdata-testid[39m=[32m"payment-details"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-controls[39m=[32m"_r_0_"[39m
+        [33maria-expanded[39m=[32m"true"[39m
+        [33mclass[39m=[32m"btn"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0mPayment details[0m
+      [36m</button>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"Payment details"[39m
+        [33mclass[39m=[32m"panel stack"[39m
+        [33mid[39m=[32m"_r_0_"[39m
+      [36m>[39m
+        [36m<dl>[39m
+          [36m<dt>[39m
+            [0mChain[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [0mEthereum Sepolia (chain ID 11155111)[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mPayment address[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [36m<code[39m
+              [33mclass[39m=[32m"mono"[39m
+              [33mdir[39m=[32m"ltr"[39m
+            [36m>[39m
+              [0m0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9[0m
+            [36m</code>[39m
+          [36m</dd>[39m
+        [36m</dl>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"notice notice-info"[39m
+          [33mrole[39m=[32m"note"[39m
+        [36m>[39m
+          [36m<strong[39m
+            [33mclass[39m=[32m"notice-title"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+            [36m>[39m
+              [0mℹ[0m
+              [0m [0m
+            [36m</span>[39m
+            [0mKey ownership[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m:[0m
+            [36m</span>[39m
+          [36m</strong>[39m
+          [36m<div>[39m
+            [36m<p>[39m
+              [0mYour keys control this address. This is not payment confirmation or finality.[0m
+            [36m</p>[39m
+            [36m<p>[39m
+              [0mA private key keeps control of its address after the funds there are swept, including any future deposits to it. Anyone who also has your private viewing key and this payment’s public announcement can reconstruct your master spending key and spend your other discoverable scheme-1 payments.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<h4>[39m
+          [0mPublic record[0m
+        [36m</h4>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hint"[39m
+        [36m>[39m
+          [0mA ghostpay-stealth-public-v1 file with the address, its public key and the announcement locator. It holds no secret.[0m
+        [36m</p>[39m
+        [36m<p>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn"[39m
+            [33mdata-testid[39m=[32m"stealth-export-public"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mDownload public record[0m
+          [36m</button>[39m
+        [36m</p>[39m
+        [36m<fieldset[39m
+          [33mclass[39m=[32m"stack"[39m
+        [36m>[39m
+          [36m<legend>[39m
+            [0mProve that you hold the loaded keys[0m
+          [36m</legend>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hint"[39m
+          [36m>[39m
+            [0mSecret exports need the passphrase of the encrypted vault that holds the loaded keys, or your keystore backup file of them with its passphrase. Nothing you enter here is saved.[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"check"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33mchecked[39m=[32m""[39m
+              [33mid[39m=[32m"_r_1_-vault"[39m
+              [33mname[39m=[32m"_r_1_-kind"[39m
+              [33mtype[39m=[32m"radio"[39m
+            [36m/>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"_r_1_-vault"[39m
+            [36m>[39m
+              [0mUse the encrypted vault in this browser[0m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"check"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33mid[39m=[32m"_r_1_-keystore"[39m
+              [33mname[39m=[32m"_r_1_-kind"[39m
+              [33mtype[39m=[32m"radio"[39m
+            [36m/>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"_r_1_-keystore"[39m
+            [36m>[39m
+              [0mUse my keystore backup file[0m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"_r_2_"[39m
+            [36m>[39m
+              [0mPassphrase of your encrypted vault[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mautocomplete[39m=[32m"off"[39m
+              [33mid[39m=[32m"_r_2_"[39m
+              [33mname[39m=[32m"ghostpay-export-vault-step-up"[39m
+              [33mtype[39m=[32m"password"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</fieldset>[39m
+        [36m<h4>[39m
+          [0mEncrypted keypair[0m
+        [36m</h4>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hint"[39m
+        [36m>[39m
+          [0mThe one-time private key of this payment, encrypted with a new passphrase (ghostpay-stealth-keypair-v1). It can be opened in any browser with GhostPay or with the reference recovery script.[0m
+        [36m</p>[39m
+        [36m<form[39m
+          [33mautocomplete[39m=[32m"off"[39m
+          [33mclass[39m=[32m"stack"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"_r_3_"[39m
+            [36m>[39m
+              [0mNew passphrase for the export file (at least 14 characters)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mautocomplete[39m=[32m"new-password"[39m
+              [33mid[39m=[32m"_r_3_"[39m
+              [33mspellcheck[39m=[32m"false"[39m
+              [33mtype[39m=[32m"password"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<p>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSuggest a passphrase[0m
+            [36m</button>[39m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"_r_4_"[39m
+            [36m>[39m
+              [0mRepeat the export file passphrase[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mautocomplete[39m=[32m"new-password"[39m
+              [33mid[39m=[32m"_r_4_"[39m
+              [33mtype[39m=[32m"password"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn"[39m
+            [33mdata-testid[39m=[32m"stealth-export-encrypted"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mDownload encrypted keypair[0m
+          [36m</button>[39m
+        [36m</form>[39m
+        [36m<h4>[39m
+          [0mRaw private key[0m
+        [36m</h4>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hint"[39m
+        [36m>[39m
+          [0mA plain-text file with this payment’s EVM private key, for wallets that import a private key. It is never shown on screen or copied.[0m
+        [36m</p>[39m
+        [36m<p>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn"[39m
+            [33mdata-testid[39m=[32m"stealth-export-raw"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mPrepare the private key download[0m
+          [36m</button>[39m
+        [36m</p>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/StealthExportPayment.test.tsx:74:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 skipped (12)
+   Start at  05:58:09
+   Duration  2.67s (transform 43%, import 25%, environment 24%, tests 8%)
+

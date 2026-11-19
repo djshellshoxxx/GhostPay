@@ -27,7 +27,7 @@ describe('sanitizeInput', () => {
     expect(code('a'.repeat(4097))).toBe('too-large');
     expect(code('a\u0000b')).toBe('control-char');
     expect(code('a​b')).toBe('control-char');
-    expect(code('a‮b')).toBe('control-char');
+    expect(code('a\u202eb')).toBe('control-char');
     expect(code('аbc')).toBe('non-ascii');
     expect(code('a b')).toBe('whitespace');
   });

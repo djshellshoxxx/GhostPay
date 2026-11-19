@@ -1,0 +1,22 @@
+$ bash scripts/pages/build-pages.sh /workspace/scratch/4fa14be12559/analysis-build/artifacts/pages-project
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=1536", "pages_node_cap": true}
+(node:8) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:32) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+manifests: none (payments disabled on every chain)
+== build apps/web (lean profile, relative base) at 9bad95e5cc0ee73f5adb8d2c587161074b21e080
+== assemble Pages site
+(node:125) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+== verify site
+(node:134) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:142) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Pages site verified: 16 files; DEMO: payments disabled on every chain (no deployment manifest)
+build-pages: OK -> /workspace/scratch/4fa14be12559/analysis-build/artifacts/pages-project/site (evidence in /workspace/scratch/4fa14be12559/analysis-build/artifacts/pages-project/evidence)
+
+EXIT_CODE=0
+SECONDS=15.275

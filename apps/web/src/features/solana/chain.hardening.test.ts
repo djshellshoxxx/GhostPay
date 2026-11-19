@@ -6,7 +6,7 @@ import { DEST, SEED_A, mockChain, walletA } from './fixtures.testutil';
 import { DEVNET_GENESIS, MAINNET_GENESIS, TESTNET_GENESIS, solNetwork } from './network';
 import { checkNetwork, createRpc, getBalance, sendTransaction, solErrorMessage, SolViewError } from './rpc';
 import { scanForPayments, wipeFound } from './scan';
-import { formatSol, NEW_ACCOUNT_MIN_LAMPORTS, reviewSweep, signSweep, SWEEP_FEE_LAMPORTS } from './sweep';
+import { formatSol, NEW_ACCOUNT_MIN_LAMPORTS, readSweepBalance, reviewSweep, signSweep, SWEEP_FEE_LAMPORTS } from './sweep';
 import { randomSeedHex, walletFromSeedHex, wipeWallet } from './wallet';
 
 function reply(result: unknown): SolanaRpc {
@@ -91,7 +91,7 @@ describe('Solana scan and signing hardening', () => {
   it('returns an empty bounded result when the finalized head precedes the requested slot', async () => {
     const chain = mockChain('localnet', walletA());
     const result = await scanForPayments({ rpc: createRpc('http://127.0.0.1:8899', chain.fetchFn), wallet: walletA(), fromSlot: 601n });
-    expect(result).toEqual({ fromSlot: 601n, toSlot: 600n, found: [], emptiedCount: 0 });
+    expect(result).toEqual({ fromSlot: 601n, toSlot: 600n, found: [] });
     expect(chain.calls).toEqual(['getSlot']);
   });
 
@@ -101,12 +101,21 @@ describe('Solana scan and signing hardening', () => {
     expect(chain.calls).toEqual([]);
   });
 
-  it('counts emptied addresses and does not offer them for signing', async () => {
-    const chain = mockChain('localnet', walletA());
+  it('makes no balance request while scanning: the balance of one address is read when its sweep is reviewed (TM13)', async () => {
+    const wallet = walletA();
+    const chain = mockChain('localnet', wallet);
     chain.balance = 0n;
-    const result = await scanForPayments({ rpc: createRpc('http://127.0.0.1:8899', chain.fetchFn), wallet: walletA(), fromSlot: 0n });
-    expect(result.emptiedCount).toBe(1);
-    expect(result.found).toEqual([]);
+    const rpc = createRpc('http://127.0.0.1:8899', chain.fetchFn);
+    const result = await scanForPayments({ rpc, wallet, fromSlot: 0n });
+    expect(chain.calls).not.toContain('getBalance');
+    expect(result.found).toHaveLength(1);
+    expect('balanceLamports' in (result.found[0] ?? {})).toBe(false);
+    const funded = await readSweepBalance(rpc, result.found[0]!);
+    expect(chain.calls.filter((m) => m === 'getBalance')).toHaveLength(1);
+    expect(funded.balanceLamports).toBe(0n);
+    // An emptied address is still never offered for signing: the review refuses it.
+    expect(() => reviewSweep(wallet, funded, DEST)).toThrow(/network fee/);
+    wipeFound(result.found);
   });
 
   it('treats a disappeared finalized transaction as absent and rejects a slot mismatch', async () => {
@@ -147,7 +156,8 @@ describe('Solana scan and signing hardening', () => {
     const found = result.found[0];
     if (found === undefined) throw new Error('fixture must yield a payment');
     const stranger = walletFromSeedHex('b2'.repeat(32), solNetwork('localnet'));
-    await expect(signSweep({ rpc, wallet: stranger, found, review: reviewSweep(wallet, found, DEST) })).rejects.toMatchObject({ code: 'DERIVED_KEY_INVALID' });
+    const funded = await readSweepBalance(rpc, found);
+    await expect(signSweep({ rpc, wallet: stranger, found: funded, review: reviewSweep(wallet, funded, DEST) })).rejects.toMatchObject({ code: 'DERIVED_KEY_INVALID' });
     expect(chain.broadcasts).toEqual([]);
     expect(chain.calls).not.toContain('sendTransaction');
     wipeFound(result.found);
@@ -165,7 +175,8 @@ describe('Solana scan and signing hardening', () => {
     const result = await scanForPayments({ rpc, wallet, fromSlot: 0n });
     const found = result.found[0];
     if (found === undefined) throw new Error('fixture must yield a payment');
-    const signed = await signSweep({ rpc, wallet, found, review: reviewSweep(wallet, found, DEST) });
+    const funded = await readSweepBalance(rpc, found);
+    const signed = await signSweep({ rpc, wallet, found: funded, review: reviewSweep(wallet, funded, DEST) });
     expect(base58.decode(signed.signature)).toHaveLength(64);
     expect(requests.filter((r) => r.method === 'getBalance').every((r) => JSON.stringify(r.params).includes('finalized'))).toBe(true);
     expect(requests.find((r) => r.method === 'getLatestBlockhash')?.params).toEqual([{ commitment: 'finalized' }]);
@@ -179,11 +190,12 @@ describe('Solana scan and signing hardening', () => {
     const result = await scanForPayments({ rpc, wallet, fromSlot: 0n });
     const found = result.found[0];
     if (found === undefined) throw new Error('fixture must yield a payment');
+    const funded = await readSweepBalance(rpc, found);
     const controller = new AbortController();
     controller.abort();
     await expect(signSweep({
       rpc: { request: (method, params) => rpc.request(method, params) },
-      wallet, found, review: reviewSweep(wallet, found, DEST), signal: controller.signal,
+      wallet, found: funded, review: reviewSweep(wallet, funded, DEST), signal: controller.signal,
     })).rejects.toThrow('Cancelled.');
     expect(chain.broadcasts).toEqual([]);
     wipeFound(result.found);

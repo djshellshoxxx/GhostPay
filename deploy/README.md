@@ -26,3 +26,7 @@ Behind the onion service the proxy sees only the Tor container's IP, so per-IP r
 `bash deploy/selftest.sh` (also run in CI) covers archive validation (valid bundle, symlink and traversal archives) and the release gate: `--tarball` is refused without `--manifest` or an authenticity check, with a wrong `--expect-sha256`, a commit the manifest does not record or that is not a full lower-case SHA, or a failing `gh attestation verify` (called with exactly `--signer-workflow` release.yml, `--source-ref` the tag, `--source-digest` the commit and `--deny-self-hosted-runners`), and nothing is extracted or started; a verified bundle is installed and nothing starts until `start` is typed or the script is re-run (the printed re-run command keeps `--onion` and a non-default `--env-file`). `bash -n` passes. Docker Compose is unavailable in this environment, so compose config, image builds, container startup, and live mount permissions were not tested. `shellcheck` is unavailable; shell syntax was checked with `bash -n`.
 
 Spec: `docs/remote/usability/specs/self-host-one-command.md`. Tor notes: `TOR.md`. Bundle notes: `BUILD-WEB.md`.
+
+## Tight connect-src
+
+Hosted builds should set `GHOSTPAY_CONNECT_ORIGINS` (and `GHOSTPAY_REQUIRE_TIGHT_CSP=1`) so `connect-src` lists only your RPC and relayer origins instead of `https: wss:`; see `BUILD-WEB.md`. Tradeoff: origins users add in Settings are blocked until you add them and redeploy. The nginx recipe keeps its own CSP copy in `nginx/security-headers.conf`; set the same `connect-src` there.

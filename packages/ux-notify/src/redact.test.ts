@@ -33,7 +33,7 @@ describe('redact', () => {
     );
   });
   it('sanitizes labels', () => {
-    expect(sanitizeLabel('  a\u0000b‮  c\n\td ')).toBe('a b c d');
+    expect(sanitizeLabel('  a\u0000b\u202e  c\n\td ')).toBe('a b c d');
     expect(sanitizeLabel('x'.repeat(100))).toHaveLength(40);
   });
 });

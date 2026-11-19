@@ -62,12 +62,12 @@ describe('placeholders and injection', () => {
     expect(escapeHtml('`')).toBe('&#96;');
   });
   it('strips control and bidi override characters', () => {
-    expect(formatMessage('{a}', 'en', { a: 'ab‮cd\u0000ef⁦g‎h\u009fi\n' })).toBe('abcdefghi');
+    expect(formatMessage('{a}', 'en', { a: 'ab\u202ecd\u0000ef\u2066g\u200eh\u009fi\n' })).toBe('abcdefghi');
   });
   it('isolates in RTL locales and when forced', () => {
-    expect(formatMessage('x {a}', 'ar', { a: '0xabc' })).toBe('x ⁨0xabc⁩');
+    expect(formatMessage('x {a}', 'ar', { a: '0xabc' })).toBe('x \u20680xabc\u2069');
     expect(formatMessage('x {a}', 'ar', { a: '1' }, { isolate: 'never' })).toBe('x 1');
-    expect(formatMessage('x {a}', 'en', { a: 'q' }, { isolate: 'always' })).toBe('x ⁨q⁩');
+    expect(formatMessage('x {a}', 'en', { a: 'q' }, { isolate: 'always' })).toBe('x \u2068q\u2069');
     expect(formatMessage('{a}', 'ar', { a: 5 })).toBe('5');
   });
   it('rejects object arguments and ignores inherited properties', () => {

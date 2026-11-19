@@ -1,0 +1,452 @@
+(node:688) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> ghostpay@0.1.0 lint
+> npm run lint --workspaces --if-present
+
+(node:701) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/address-safety@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:714) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/amount-blur@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:727) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/btc-family@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:740) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/btc-payjoin@0.1.0 lint
+> eslint --config ../../eslint.config.js src e2e
+
+(node:753) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/btc-silent-payments@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:766) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+/workspace/scratch/4fa14be12559/GhostPay/packages/btc-silent-payments/src/scan/proto/indexing_server_pb.ts
+  3:1  warning  Unused eslint-disable directive (no problems were reported)
+
+✖ 1 problem (0 errors, 1 warning)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
+
+> @ghostpay/chain-adapters@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:779) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+/workspace/scratch/4fa14be12559/GhostPay/packages/chain-adapters/src/payments.bulkCancellation.test.ts
+  21:7  error  Async method 'getLogs' has no 'await' expression  @typescript-eslint/require-await
+
+✖ 1 problem (1 error, 0 warnings)
+
+npm error Lifecycle script `lint` failed with error:
+npm error code 1
+npm error path /workspace/scratch/4fa14be12559/GhostPay/packages/chain-adapters
+npm error workspace @ghostpay/chain-adapters@0.1.0
+npm error location /workspace/scratch/4fa14be12559/GhostPay/packages/chain-adapters
+npm error command failed
+npm error command sh -c eslint --config ../../eslint.config.js src
+
+
+> @ghostpay/chain-evm-extra@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:792) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/chain-solana@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:805) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/chain-tron@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:818) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/cli@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:831) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/confidential-amounts@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:844) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/core-crypto@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:857) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/donation@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:870) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/external-pools@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:883) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/external-pools-privacypools@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:896) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/external-pools-railgun@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:909) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/hops@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:922) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/hygiene@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:935) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/i18n@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:948) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/invoice-schema@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:961) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/merchant-billing@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:974) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/merchant-hooks@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:987) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/merchant-ledger@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1000) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/merchant-multisig@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1013) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/metadata-hardening@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1026) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/net-harness@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1039) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/net-transport@0.1.0 prelint
+> npm run build -w @ghostpay/net-harness --if-present
+
+(node:1052) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/net-harness@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/net-transport@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1074) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ops-monitor@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1087) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/payer-sponsor@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1100) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/payment-uri@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1113) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/pir-two-server@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1126) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/plugin-api@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1139) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/policy-scheme@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1152) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/pool-circuits@0.1.0 lint
+> eslint --config ../../eslint.config.js src test
+
+(node:1165) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/pool-prover@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1178) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/pool-relayer@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1191) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/pool-sdk@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1204) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/privacy-pipeline@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1217) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/privacy-profiles@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1230) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/qr-exchange@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1243) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/relayer-guard@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1256) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/sandbox@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1269) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/scan-source@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1282) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/sdk@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1295) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/secret-box@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1308) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/solana-stealth@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1321) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/tron-adapter@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1334) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/tx-review@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1347) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-connect@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1360) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-core@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1373) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-export@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1386) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-fees@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1399) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-fiat@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1412) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-flow@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1425) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-guide@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1438) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-i18n@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1451) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-intake@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1464) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-links@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1477) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-notify@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1490) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-presets@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1503) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-privacy@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1516) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-receipts@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1529) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-sandbox@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1542) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-schedule@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1555) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/ux-vault@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1568) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/relayer@0.1.0 lint
+> eslint --config ../../eslint.config.js src
+
+(node:1581) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/web@0.1.0 lint
+> eslint --config ../../eslint.config.js src e2e
+
+(node:1594) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Killed
+npm error Lifecycle script `lint` failed with error:
+npm error code 137
+npm error path /workspace/scratch/4fa14be12559/GhostPay/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/4fa14be12559/GhostPay/apps/web
+npm error command failed
+npm error command sh -c eslint --config ../../eslint.config.js src e2e

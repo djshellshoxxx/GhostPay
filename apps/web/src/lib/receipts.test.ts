@@ -3,7 +3,7 @@ import { buildErc20Metadata, deriveStealthPayment, parseMetadata } from '@ghostp
 import { grossForNet, routerSplit } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { describe, expect, it } from 'vitest';
-import { bindReceiptToInvoice, canonicalReceiptPayload, parseVerifiedReceipt, receiptBindingForInvoice, receiptInvoiceFragment, receiptJson, signReceipt, validateReceiptPayload, verifyReceipt } from './receipts';
+import { bindReceiptToInvoice, canonicalReceiptPayload, parseVerifiedReceipt, receiptBindingForInvoice, receiptSigningFields, receiptInvoiceFragment, receiptJson, signReceipt, validateReceiptPayload, verifyReceipt } from './receipts';
 import { makeParsed, NOW } from '../test/invoiceFixtures';
 import { getSessionPublic, withSessionSecrets } from './session';
 import type { ScanMatch } from './scanClient';
@@ -131,5 +131,19 @@ describe('invoice-bound receipt creation', () => {
     expect(() => bind({ ...match, stealthAddress: fields.stealthAddress as ScanMatch['stealthAddress'] })).toThrow(/recipient/);
     expect(() => bind({ ...match, announcement: { ...match.announcement, ephemeralPublicKey: `0x02${'f'.repeat(64)}` } })).toThrow(/recipient/);
     expect(() => withSessionSecrets((s) => receiptBindingForInvoice(parsed, match, 'different', s.keys, NOW))).toThrow(/signer/);
+  });
+});
+
+describe('minimal receipt default', () => {
+  const facts = { invoiceDigest: `0x${'a'.repeat(64)}`, chainId: 84532, txHash: `0x${'b'.repeat(64)}`, stealthAddress: `0x${'C'.repeat(40)}`, asset: 'native', amountMinorUnits: '1000', issuedAt: 1_800_000_000 };
+  it('omits the one-time address unless explicitly included, and both formats verify', () => {
+    const key = Uint8Array.from([...new Array<number>(31).fill(0), 7]);
+    const minimal = signReceipt(receiptSigningFields(facts), key);
+    expect('stealthAddress' in minimal).toBe(false);
+    expect(verifyReceipt(minimal)).toBe(true);
+    const full = signReceipt(receiptSigningFields(facts, { includeAddress: true }), key);
+    expect(full.stealthAddress).toBe(`0x${'c'.repeat(40)}`);
+    expect(verifyReceipt(full)).toBe(true);
+    expect(parseVerifiedReceipt(receiptJson(minimal))).toEqual(minimal);
   });
 });

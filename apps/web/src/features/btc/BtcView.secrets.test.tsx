@@ -156,7 +156,8 @@ describe('BtcView key and spend-tweak lifetime', () => {
       return r;
     };
     const { user } = await ready(async (url, init) => {
-      if (url.includes('/outspend/')) {
+      // The payment sits in block 3; holding the read of block 4 stops the scan after the tweak exists, before it returns.
+      if (url.includes('/block-height/4')) {
         held = true;
         await gate;
       }

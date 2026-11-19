@@ -27,7 +27,7 @@ async function importSeed(user: User) {
 async function scan(user: User) {
   await user.type(screen.getByLabelText(/First slot/), '0');
   await user.click(screen.getByRole('button', { name: 'Scan' }));
-  await screen.findByText(/1 funded payment/);
+  await screen.findByText(/1 payment\(s\) found/);
 }
 
 async function review(user: User) {
@@ -97,12 +97,17 @@ describe('SolanaView', () => {
     await importSeed(user);
     expect(screen.queryByText(/Backup seed/)).toBeNull();
     await scan(user);
-    expect(screen.getByText('0.002 SOL')).toBeTruthy();
+    // The scan reads no balance: none is shown until a sweep is reviewed.
+    expect(chain.calls).not.toContain('getBalance');
+    expect(screen.queryByText('0.002 SOL')).toBeNull();
+    expect(screen.getByText(/What the RPC node can see/)).toBeTruthy();
     expect(screen.getByText(/single-provider check, not independent verification/i)).toBeTruthy();
     expect(screen.getByRole('radio', { name: new RegExp(`Sweep ${chain.payment.stealthAddress}`) })).toBeTruthy();
 
     await review(user);
-    expect(screen.getByText('Review before signing')).toBeTruthy();
+    expect(await screen.findByText('Review before signing')).toBeTruthy();
+    expect(chain.calls.filter((m) => m === 'getBalance')).toHaveLength(1);
+    expect(screen.getByText('0.002 SOL')).toBeTruthy();
     expect(screen.getByText('0.001995 SOL')).toBeTruthy();
     expect(screen.getAllByText(DEST).length).toBeGreaterThan(0);
 
@@ -192,7 +197,7 @@ describe('SolanaView', () => {
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
     release();
     await new Promise((r) => setTimeout(r, 50));
-    expect(screen.queryByText(/funded payment/)).toBeNull();
+    expect(screen.queryByText(/payment\(s\) found/)).toBeNull();
     expect(screen.queryByText(/Scanned slots/)).toBeNull();
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
@@ -203,6 +208,7 @@ describe('SolanaView', () => {
     await importSeed(user);
     await scan(user);
     await review(user);
+    await screen.findByText('Review before signing');
     await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
     chain.balance = 1_000_000n;
     await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
@@ -215,6 +221,7 @@ describe('SolanaView', () => {
     await importSeed(user);
     await scan(user);
     await review(user);
+    await screen.findByText('Review before signing');
     await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
     await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
     await screen.findByText('Signed transaction');
