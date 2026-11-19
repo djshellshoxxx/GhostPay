@@ -1588,3 +1588,12 @@ Prior full web build attempts were environment-limited (heap OOM 134, killed137)
 final full typecheck/build, browser acceptance and exact-head hosted gates remain.
 See the source-pinned handoff for commands and limits. Candidate remains draft.
 No deployment, release or real transaction is authorized by this worker claim.
+
+
+## 2026-11-19 — Sweep signing review authority (246ff268d20d)
+
+- Worker: independent security reviewer, delegated bounded implementation by final Pages coordinator.
+- Branch: `review/ghostpay-final-security-20261119`; base `7f44cf742f25df25105a5a21d223b6d0d1efb62d`.
+- Owned paths: `apps/web/src/lib/sweep.ts`, `apps/web/src/lib/sweep.reviewAuthority.test.ts`, this claim and scoped evidence. Root owns the Sweep component; payment-export worker owns network/export source.
+- Requirement: revalidate the user's live review before key derivation, immediately before every signature, after asynchronous helpers, and before external handoff. A stale recipient/balance/manifest review must not authorize a local signature merely because the journal hook later prevents transport.
+- Acceptance: regression-first proof against the prior helper; focused real-signing controls, cancellation and post-handoff outcome tests; preserve all existing journal and uncertainty semantics; independent review by another worker. No contract, relayer server, dependency, gate, deployment or remote changes.
