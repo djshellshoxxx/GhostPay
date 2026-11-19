@@ -1,3 +1,20 @@
+# Tag archive idle regression reconciliation — 2026-11-19
+
+Worker: `recovery_completion`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-tag-archive-idle-20261119`.
+Base: `e76451ad56ba1634eed9d03468961900433fd130`.
+Owned paths: `apps/web/src/components/TagArchive.test.tsx`, this additive claim and
+scoped evidence under `docs/handoffs/tag-archive-idle-20261119/`.
+Acceptance: reproduce the C-R11 full-unit failure with the original Vitest configuration,
+identify stale UI expectations versus a real wiping defect, and preserve both passphrase
+property/attribute clearing and the retained-copy backup-only boundary. Runtime edits
+require a demonstrated defect and a separately announced scope. No root-checkout edits,
+coverage threshold changes or broad qualification claims.
+Status: original-config C-R11 selection reproduced one stale-form failure after the
+61-second expiry; repaired selection passes with eight unrelated cases deselected.
+All original mounted-field wiping assertions remain, followed by actual idle
+retained-seller, suspended-authority and absent-archive checks. Runtime is unchanged.
+
 # Idle regression type reconciliation — 2026-11-19
 
 Worker: `recovery_completion`, delegated by the feature-consolidation coordinator.
