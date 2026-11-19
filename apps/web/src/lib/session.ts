@@ -194,13 +194,18 @@ function summarize(s: SessionSecrets): SessionPublic {
 
 /** Moves freshly created scalars into boxes (wiping the scalars) and returns the stored form. */
 function box(next: SessionSecrets): Stored {
-  return {
-    spending: SecretBox.copyOf(next.keys.spendingSecret, { label: 'spending' }),
-    viewing: SecretBox.copyOf(next.keys.viewingSecret, { label: 'viewing' }),
-    signing: SecretBox.copyOf(next.signingKey, { label: 'signing' }),
-    spendingPublicKey: next.keys.spendingPublicKey,
-    viewingPublicKey: next.keys.viewingPublicKey,
-  };
+  let spending: SecretBox | undefined;
+  let viewing: SecretBox | undefined;
+  let signing: SecretBox | undefined;
+  try {
+    spending = SecretBox.copyOf(next.keys.spendingSecret, { label: 'spending' });
+    viewing = SecretBox.copyOf(next.keys.viewingSecret, { label: 'viewing' });
+    signing = SecretBox.copyOf(next.signingKey, { label: 'signing' });
+    return { spending, viewing, signing, spendingPublicKey: next.keys.spendingPublicKey, viewingPublicKey: next.keys.viewingPublicKey };
+  } catch (error) {
+    spending?.dispose(); viewing?.dispose(); signing?.dispose();
+    throw error;
+  }
 }
 
 function scalarOf(b: SecretBox): SecretScalar {
@@ -232,11 +237,20 @@ export function getSessionPublic(): SessionPublic | undefined {
 type Origin = { readonly from: 'generated' | 'import' | 'import-new-signer' } | { readonly from: 'vault'; readonly record: string };
 
 function install(next: SessionSecrets, origin: Origin): SessionPublic {
-  if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError({ key: 'error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd' });
+  let nextSummary: SessionPublic;
+  let nextStored: Stored;
+  try {
+    if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError({ key: 'error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd' });
+    // Prepare the complete replacement before wiping the current wallet. A failed allocation must preserve its keys,
+    // custody state and revision. Summarize first because boxing consumes the new scalars.
+    nextSummary = summarize(next);
+    nextStored = box(next);
+  } finally {
+    wipeOpened(next);
+  }
   clearSession(false);
-  // Summarize first: boxing wipes the scalars.
-  publicSummary = summarize(next);
-  current = box(next);
+  publicSummary = nextSummary;
+  current = nextStored;
   const vault = origin.from === 'vault' ? origin.record : undefined;
   const imported = origin.from === 'import' || origin.from === 'import-new-signer';
   setCustody({ external: origin.from === 'import' ? 'verified' : 'none', paymentKeysExternal: imported, vaultRecord: vault, vaultStored: vault !== undefined, waived: false }, false);

@@ -1,0 +1,6 @@
+{
+  "command": "/usr/bin/time -v env PATH=<Node22-bin>:<existing-PATH> NODE_OPTIONS=--max-old-space-size=512 npm test -w packages/ux-vault -- --maxWorkers=1",
+  "exit_code": 127,
+  "reason": "/usr/bin/time unavailable",
+  "test_started": false
+}

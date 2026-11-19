@@ -1,0 +1,501 @@
+# Spec 18 independent threat and source review — 2026-11-18
+
+## Decision and scope
+
+The independent reviewer found no additional confirmed blocking source defect in the
+reviewed candidate identified below. The review supports retaining the completed
+recovery changes for integration review. Source review alone does **not** establish
+feature acceptance or release qualification. Together with the executed final-source
+web, browser and crypto checks, this review supports Spec 18 acceptance within the
+existing scheme-1 EVM scope. The addenda preserve the earlier two failed feature
+waits, all prior failed attempts, and the later source-pinned passing results.
+The authoritative feature acceptance and remaining product gates are recorded in
+[COMPLETION_REPORT.md](COMPLETION_REPORT.md). This is an AI-assisted source review,
+not an external audit.
+
+The review covers the Spec 18 snapshot, coordinator changes to export panels and
+download retry, selected-input cancellation, verification without installation,
+master replacement consent, atomic session replacement, and the standalone recovery
+changes. It also checks the directly relevant existing vault, codec and custody
+boundaries. Contracts, deployment policy and unrelated product features are outside
+this change review.
+
+Base: PR #238 at `198aa5baff22272453733a0f3dcfcac0e0994eec`.
+Imported candidate snapshot: `1e3c3466fe168d02194f31b754a85377929136eb`.
+Reviewed implementation commit: `7c1e710a0a4bd38928b3b74814ba4b0ec4865305`.
+The original concurrent checkout was inspected read-only and was not modified.
+The coordinator owns final commits and publication. The blob identities below
+match the reviewed implementation commit and remain useful across subsequent
+documentation-only commits.
+
+| Reviewed runtime file | Git blob identity |
+| --- | --- |
+| `apps/web/src/components/StealthExportCommon.tsx` | `bc18fbcad9d3aa88f4b05aee039f2ad04efeab55` |
+| `apps/web/src/components/StealthExportPayment.tsx` | `8db65de1837b1bf70dff72a4be1e0e30a5d27006` |
+| `apps/web/src/components/StealthExportArchive.tsx` | `b4ba62a90797295349725dbc0e991d83da576826` |
+| `apps/web/src/components/StealthExportMaster.tsx` | `c703b8a853f9b8613db64d78892bce49484872dc` |
+| `apps/web/src/components/StealthExportVerification.tsx` | `1fa430acb1a1bdac01525e803faa1395b8501f45` |
+| `apps/web/src/components/StealthExportRecovery.tsx` | `d430bc359cb40d4295dc49963d04a203dc66c385` |
+| `apps/web/src/lib/paymentKeyExport.ts` | `eb21473822afb6d01b0304bd44017fa3c21450e2` |
+| `apps/web/src/lib/session.ts` | `79e144ae0e0a86c27dcd1fef5e29b2acf5d92e7b` |
+| `packages/ux-vault/src/stealth-export-portable.ts` | `c677180b208bae95573fc4f14ab8ce06d8099cb9` |
+| `scripts/recovery/stealth-export-recover.mjs` | `c33e64770aa71b2d0751ce6104853725b0f2cbd7` |
+
+## Review findings and resolutions
+
+### R1. Failed replacement could destroy the old session — repaired
+
+The original `session.install` cleared the current session before boxing the three
+replacement keys. An exception while preparing a replacement could therefore remove
+the old keys and expose an inconsistent public summary. The lifecycle reviewer
+reproduced three failure positions through `RecoveredMasterKeys.install`.
+
+The repair prepares the entire replacement public summary and all three secret
+boxes before calling `clearSession(false)`. Partial boxes are disposed on failure;
+incoming scalars are wiped in `finally`. Before the replacement is fully prepared,
+the current keys, custody summary and revision remain untouched. A successful
+replacement still publishes one completed state, and the distinction between a
+full imported keystore and a master pair with a newly generated signing key remains
+unchanged.
+
+This reviewer inspected the change and independently executed all four tests in
+[`session.atomicity.test.ts`](../../../apps/web/src/lib/session.atomicity.test.ts).
+They passed, including preservation of usable old keys, custody, guards, disposal
+of staged material and single-notification success.
+
+### R2. A blocked download discarded the generated encrypted file — repaired
+
+The export panels now retain the generated ciphertext when the browser download
+request throws. They distinguish file generation from download initiation and
+offer a retry of the same file. The retry does not run key derivation or encryption
+again, and does not mark the file retained or verified. Lock/session reset removes
+the retained file from the component.
+
+The reviewer checked all three callers and independently ran the payment, archive
+and master cases in
+[`StealthExportDownload.test.tsx`](../../../apps/web/src/components/StealthExportDownload.test.tsx).
+All three passed. This proves the tested exception/retry behavior in jsdom; a
+browser's download API still cannot prove that a file reached durable storage.
+
+### R3. Verification, consent and public metadata remain distinct
+
+The new saved-file verification first requires exact text equality with the
+encrypted export generated by that panel. A different valid archive with the same
+name or similar public header cannot verify the generated download. The selected
+file is then authenticated and all private/public key relationships are checked.
+The verify-only helper disposes its secret boxes before returning public metadata.
+
+Verification changes neither the active wallet nor its custody flags. A payment
+archive contains only its payment keys; a master backup lacks the invoice-signing
+key. Consequently, neither is silently promoted to a complete seller-keystore
+backup. Public-only records cannot satisfy secret-backup verification.
+
+Master replacement now requires fresh consent for any existing session, including
+one whose keys already have a recoverable copy. Consent is bound to the exact
+recovered object, operation and session revision. The existing #229 cancellation
+fix is preserved. A vault-only copy is read again when confirming replacement; if
+it disappeared after review, the stronger sole-copy warning requires fresh
+confirmation.
+
+### R4. Scope changes invalidate pending export authority
+
+`useExportOperation` records a snapshot of selected scope and checks it against
+the latest render. A payment, announcement, chain or RPC change prevents an older
+promise from causing a download before the cleanup effect runs. The public
+selection identity contains no private material. Equivalent selections preserve
+an operation, while the new public selection or RPC invalidates it.
+
+This reviewer independently ran the seven cases in
+[`StealthExportSelection.test.tsx`](../../../apps/web/src/components/StealthExportSelection.test.tsx).
+All passed. The tested cases cover changed payment/RPC raw-key consent, delayed
+encrypted export results, changed announcement metadata, new same-chain archive
+results and an equivalent rerender.
+
+### R5. Secret-buffer and offline diagnostic cleanup — source reviewed
+
+The portable codec retains its existing scrypt/AES-GCM format and parameters. Its
+owned UTF-8 passphrase buffer and raw derived key are now wiped on successful and
+failed derivation/import. Partial master-key boxing disposes an already allocated
+box if the next allocation fails. The standalone tool wipes bounded raw-file read
+buffers and previously received passphrase chunks even when stdin fails. Unknown
+options no longer echo arbitrary option text.
+
+The crypto reviewer's standalone run contains the corresponding regressions and
+passed 22/22. This reviewer inspected the completed log and source. The separate
+raw-key test passed 1/1; the crypto reviewer records the workflow-pinned Foundry
+1.8.5 provenance in its qualification evidence. These are supplemental local
+execution results, not external-wallet certification.
+
+A hypothesized successful payment-scalar leak was rejected during review:
+`SecretBox.copyOf` defaults to `wipeSource: true`. The existing successful
+`RecoveredPaymentKeys.take` path already wipes each input scalar as it boxes it.
+No unnecessary repair was made for that hypothesis.
+
+## Threat-by-threat evidence map
+
+This matrix maps all twenty threats in the assignment to concrete implementation
+and test sources. A named test is coverage evidence, **not** a claim that it ran.
+Executed results and their limits are recorded in the next section and in the
+coordinator's completion report.
+
+| # | Threat | Source control and behavior | Concrete regression evidence |
+| --- | --- | --- | --- |
+| 1 | Wrong-password attacks | Portable codec authenticates with AES-GCM after bounded scrypt; wrong passwords and altered ciphertext use the same fixed refusal. Export re-authentication must prove the loaded key set. | `stealth-export-portable.test.ts`: wrong-passphrase keypair/master cases; `keyVault.secretExport.test.ts`: wrong/empty/foreign credential refusals; `StealthExportVerification.test.tsx`: wrong password cannot mark a saved file verified. |
+| 2 | Corrupted encrypted archives | Codec checks ciphertext length before KDF and authentication before parsing or returning keys. Any per-entry failure wipes all accumulated secrets. | `stealth-export-portable.test.ts`: truncation/extension/flip and atomic decrypted-scalar tests; standalone `stealth-export-recover.test.mjs`: tampering and invalid-vector cases. |
+| 3 | Maliciously modified metadata | Per-format AAD includes canonical complete public header, KDF/cipher parameters, scope, chain and entries. Public-only/raw files explicitly lack that authentication. | `stealth-export-portable.test.ts`: every-header-field and valid-looking-AAD-change cases; standalone metadata-tampering cases. |
+| 4 | Excessive KDF parameters/resource exhaustion | Codec validates size, exact key sets, power-of-two N range, r/p limits, salt/IV lengths and ciphertext length before KDF. Browser file-size checks precede file reads where possible. | `stealth-export-portable.test.ts`: oversize/bad-KDF-before-work case; `StealthExportVerification.test.tsx`: oversized file refused before read/KDF; standalone bounds and oversized-read-buffer cases. Accepted maximum KDF cost is bounded, not guaranteed fast on every mobile device. |
+| 5 | Unsupported archive versions | Format routing refuses unknown versions and schemes; master, payment, public and legacy keystore formats are not reinterpreted as one another. | `stealth-export-portable.test.ts`: version/scheme and format-separation cases; standalone invalid vectors; `paymentKeyExport.test.ts`: foreign/oversized/refused opening cases. |
+| 6 | Replay of obsolete import operations | Recovery operation controller, selected held-key object and session revision must still match after each asynchronous boundary. Closing/selection/session/lock cancels the operation. | `StealthExportRecovery.test.tsx`: cancelled load cannot affect a later export; obsolete confirmation cannot appear for a later file; delayed verify cannot affect a different selection. |
+| 7 | Concurrent tabs modifying the vault | Existing IndexedDB store uses atomic add-if-empty and compare-and-delete. Recovery rereads a vault-only copy when confirming replacement and upgrades to the sole-copy warning if it disappeared. | `keyVault.test.ts`: competing saves, pending writes, changed/deleted records and rechecks; `StealthExportRecovery.test.tsx`: another tab deletes the vault after review. This is a checked storage snapshot, not a promise that another tab can never delete a copy afterward. |
+| 8 | Session locking during export | Export helpers combine captured session guards with AbortSignal checks after awaits. Components cancel on app lock; retained ciphertext/typed credentials clear; stale download results are refused. | `StealthExportPayment.test.tsx`: idle lock/chain/close and key-change cases; `StealthExportRecovery.test.tsx`: master-export lock cancellation; `StealthExportDownload.test.tsx`: lock removes retained retry state. |
+| 9 | Session locking during import | `useExportOperation` cancels; recovery clears held boxes and consent; verify-only helper disposes temporary boxes even when the session changes. | `StealthExportRecovery.test.tsx`: lock wipes held keys and late open; `StealthExportVerification.test.tsx`: delayed lock/session/cancel/unmount results discarded; `paymentKeyExport.test.ts`: verify disposal/cancellation. |
+| 10 | Replacement without fresh consent | Any nonempty existing master session requires review. Replacement ref captures exact keys/controller/revision; saved and unbacked warnings are distinguished and stale requests cannot install. | `StealthExportRecovery.test.tsx`: confirmation required for backed and unbacked keys, cancellation/reselection, vault-deletion warning upgrade; `session.atomicity.test.ts`: failed installation preserves original session. |
+| 11 | Duplicate payment-key identifiers | Import rejects duplicate addresses atomically. Export collapses identical address/ephemeral replays deterministically and rejects conflicting ephemeral keys. Tie-breaking is independent of input order. | Codec bulk ordering/duplicate/conflict cases; `paymentKeyExport.test.ts`: distinct-payment deterministic locator/tie and mixed-chain tests; standalone archive and duplicate refusals. |
+| 12 | Cross-network key confusion | Payment/public/raw exports carry chain identity. Browser helper and standalone `--expected-chain` reject a mismatched chain; chain-neutral master files reject that constraint. Recovery UI displays the verified public chain identity. | `paymentKeyExport.test.ts`: expected-chain public/master cases; standalone expected-chain tests for raw/public/header-only/master; codec wrong-chain-before-KDF test. These checks validate a recorded identifier, not live chain state. |
+| 13 | Secrets in logs/diagnostics | Fixed user-facing errors do not include decrypted keys, passphrases or file text. Standalone output excludes private keys unless the explicit reveal flag is supplied, and never prints master keys. Unknown option text is not echoed. | Codec fixed-diagnostic tests; standalone no-echo/unknown-option/failed-stdin tests; browser leak probe in `stealth-export.spec.ts` passed on both hosted Chromium profiles at the addendum's source pin. |
+| 14 | Secrets in filenames | All export paths use fixed `STEALTH_EXPORT_FILENAMES`; generated names contain no address, key, chain or timestamp. Uploaded names render through `SafeText`. | `StealthExportPayment.test.tsx`, `StealthExportDownload.test.tsx` and existing browser filename assertions check exact generated names. Source defines the full constant set. |
+| 15 | Plaintext private keys in browser storage | Recovery keys stay in SecretBoxes, public metadata in UI state, generated backup state contains ciphertext. Verify-only changes no wallet/custody. The existing vault persists encrypted keystore text only. No new localStorage/sessionStorage/IndexedDB write was introduced. | `paymentKeyExport.test.ts` and `StealthExportVerification.test.tsx` check unchanged session/custody and disposal; existing `keyVault.test.ts` covers encrypted storage. Hosted Chromium storage/egress leak assertions passed on both profiles at the addendum's source pin; the local launch remained blocked. |
+| 16 | Incomplete/failed backup downloads | Generated, initiated, user-retained and verified are separate states. A blocked request retains ciphertext for exact-file retry. No download click changes full-session recoverability. | Three cases in `StealthExportDownload.test.tsx`; generated-versus-initiated and retention prerequisites in `StealthExportVerification.test.tsx`; legacy unverified-download custody tests in `keyVault.test.ts`. |
+| 17 | Misleading verification success | Saved-file verification requires exact generated bytes, retention confirmation, successful decryption and key/public correspondence. New selection/passphrase/retention changes clear prior success; public-only records are refused as backups. | `StealthExportVerification.test.tsx`: same-name different archive, wrong password, seven late-result invalidations, reselection and edited passphrase; `StealthExportRecovery.test.tsx`: verify-only/public-record cases. |
+| 18 | Loss of the only private-key copy | Existing sole-copy replacement warning and idle-lock custody policy are preserved. New replacement staging leaves old keys intact if new key preparation fails. Partial Spec 18 verification never grants full seller backup authority. | `session.atomicity.test.ts`: three failure stages and successful single publication; `keyVault.test.ts`: no-backup/unverified-copy replacement refusal; Recovery and Verification custody assertions. Physical file loss after verification remains outside what the app can guarantee. |
+| 19 | Correlation across exported payments | Public authenticated headers still reveal chain, addresses, locators and membership. UI and guide disclose archive linkage and combined viewing/payment-key authority. Payment exports omit master/viewing secrets. | Existing disclosure assertions in `StealthExportPayment.test.tsx` and security-key checks; codec/plaintext-secret exclusion tests; guide and format reference. This is a documented privacy boundary, not confidentiality of public headers. |
+| 20 | Offline recovery produces wrong spending authority | Separate Node crypto implementation checks scalar range, compressed public keys, checksummed addresses and master derivation context. Fresh isolated processes recover known keys and an archive-omitted payment; raw key signs a local transfer with independent tooling. | `stealth-export-recover.test.mjs`: isolated directory, cross-implementation outputs, deterministic vectors and omitted-payment recovery; `raw-key-anvil.test.mjs`: address reproduction and accepted synthetic transfer. |
+
+### Source references for the matrix
+
+- [Browser export and verify-only orchestration](../../../apps/web/src/lib/paymentKeyExport.ts)
+  and [its regressions](../../../apps/web/src/lib/paymentKeyExport.test.ts).
+- [Portable codec](../../../packages/ux-vault/src/stealth-export-portable.ts),
+  [codec unit tests](../../../packages/ux-vault/src/stealth-export-portable.test.ts)
+  and [property tests](../../../packages/ux-vault/src/stealth-export-portable.property.test.ts).
+- [Recovery UI](../../../apps/web/src/components/StealthExportRecovery.tsx),
+  [recovery UI tests](../../../apps/web/src/components/StealthExportRecovery.test.tsx),
+  [saved-file verification](../../../apps/web/src/components/StealthExportVerification.tsx)
+  and [verification tests](../../../apps/web/src/components/StealthExportVerification.test.tsx).
+- [Operation lifecycle and selected-input identity](../../../apps/web/src/components/StealthExportCommon.tsx),
+  [selection regressions](../../../apps/web/src/components/StealthExportSelection.test.tsx),
+  [payment/archive UI regressions](../../../apps/web/src/components/StealthExportPayment.test.tsx)
+  and [download retry regressions](../../../apps/web/src/components/StealthExportDownload.test.tsx).
+- [Session custody and replacement](../../../apps/web/src/lib/session.ts),
+  [atomic replacement regressions](../../../apps/web/src/lib/session.atomicity.test.ts),
+  [encrypted vault](../../../apps/web/src/lib/keyVault.ts),
+  [vault regressions](../../../apps/web/src/lib/keyVault.test.ts)
+  and [secret-export credential regressions](../../../apps/web/src/lib/keyVault.secretExport.test.ts).
+- [Standalone recovery](../../../scripts/recovery/stealth-export-recover.mjs),
+  [standalone regressions](../../../scripts/recovery/stealth-export-recover.test.mjs)
+  and [raw-key interoperability](../../../scripts/recovery/raw-key-anvil.test.mjs).
+- [Browser journeys and leak probes](../../../apps/web/e2e/stealth-export.spec.ts),
+  [recovery guide](../../user/recover-stealth-payment-keys.md)
+  and [normative format reference](../../specs/18-stealth-keypair-export-formats.md).
+
+## Executed evidence inspected
+
+### Independent reviewer execution
+
+From `apps/web`, Node `v24.22.1`, Vitest `5.1.0`:
+
+```sh
+NODE_OPTIONS=--max-old-space-size=640 ../../node_modules/.bin/vitest run \
+  src/components/StealthExportSelection.test.tsx \
+  src/components/StealthExportDownload.test.tsx \
+  src/lib/session.atomicity.test.ts \
+  --coverage.enabled=false --maxWorkers=1
+```
+
+Result: **14 passed, 0 failed, 0 skipped; three files; exit 0; 11.37 seconds**.
+This is a focused independent regression run. It does not replace coverage gates
+or browser execution. The cases overlap the implementation reviewers' runs and
+must not be added to their totals as new distinct tests.
+
+The run preceded the implementation commit; its tested functions and three test
+files are unchanged in `7c1e710a`. The final review also inspected the subsequent
+localization fallback/comments and added browser retry journey. Those additions
+do not turn this focused run into browser acceptance. The retry journey was
+subsequently executed in the separately pinned hosted runs below.
+
+### Other reviewers' logs inspected directly
+
+- `crypto-evidence/standalone-recovery.log`: **22 passed, 0 failed, 0 skipped**.
+  Includes the fresh isolated directory and stdin/raw-buffer failure cleanup.
+- `crypto-evidence/raw-key-anvil.log`: **1 passed, 0 failed, 0 skipped**. The crypto
+  reviewer's toolchain evidence identifies pinned Foundry 1.8.5.
+- `lifecycle-evidence/lifecycle-session-final.log`: **103 passed, 1 failed** across
+  seven files. The failure was a test selector expecting different retry-button
+  wording. It must not be described as a green combined run.
+- `lifecycle-evidence/verification-final.log`: the corrected verification file
+  passed **14/14**. The lifecycle reviewer reports **104 unique passing cases
+  across the seven files after that targeted rerun**, not one fully green combined
+  invocation. Final combined qualification remains the coordinator's job.
+- The initial `crypto-evidence/ux-vault-coverage.log` reports two worker SIGKILL
+  errors, **262 passed out of 353 collected**, and incomplete coverage below the
+  unchanged thresholds. That invocation remains failed/incomplete.
+- The completed `crypto-evidence/ux-vault-coverage-serialized.log` and matching
+  JSON result were then inspected: **353 passed, 0 failed, 0 skipped; ten files;
+  exit 0** with the same vault inputs as `7c1e710a`. Node 22.23.5, one worker,
+  512 MiB heap; 170.85 seconds measured by the runner. Coverage: statements 97%,
+  branches 94.24%, functions 99.5%, lines 98.89%; original thresholds passed.
+  This successful independent invocation does not relabel the earlier failed run.
+- `browser-launch.log`: Chromium launched and then aborted with
+  `socket() failed: Operation not permitted (1)` at `process_singleton_posix.cc`.
+  No application assertion ran. This is an environment block, not browser
+  acceptance. No access-control workaround was attempted.
+
+The coordinator may retain these logs under the completion packet. The relative
+scratch names above identify inspected logs; they do not imply that every log is
+already a committed artifact. Final source/result reconciliation belongs in the
+completion report, including any successful retry that follows this review.
+See [COMPLETION_REPORT.md](COMPLETION_REPORT.md) for the final combined source,
+executed checks, retained artifacts and publication mapping.
+
+## Hosted qualification addendum — first published candidate
+
+This addendum preserves the original review and failed-run history. It records
+direct inspection of the four hosted logs named below; no runtime source or gate
+was changed by this reviewer during this follow-up.
+
+| Identity | Source pin |
+| --- | --- |
+| Published PR #239 head | `82f909eb21843572eaf963b6bf36bcf9df581460` |
+| Equivalent local implementation commit | `58995408bec0e072a969db7bd4eb4687579bd4a7` |
+| Published/local source tree, per publication mapping | `27aeec9cca36e1b5a8a4643b96bc9336e5fae52d` |
+| PR #238 base | `198aa5baff22272453733a0f3dcfcac0e0994eec` |
+| Actual checkout in both browser logs, PR #239 merge ref | `d838d27ca987e4b8c988366537e52e7e68d8c25d` |
+| Workflow run | [CI 44418861275](https://github.com/djshellshoxxx/GhostPay/actions/runs/44418861275) |
+
+The local commit/tree identity was independently checked. The logs identify the
+merge of the published feature head into the stated base. All ten runtime blobs
+in the original review table are unchanged between `7c1e710a` and `58995408`;
+test-fixture typing changes do not expand the original source-review scope.
+
+### Actual browser results
+
+| Profile and job | Spec 18 cases | Whole job | Inspected log |
+| --- | --- | --- | --- |
+| [Full Chromium, job 135206455231](https://github.com/djshellshoxxx/GhostPay/actions/runs/44418861275/job/135206455231) | **8 passed, 0 failed, 0 skipped** | **82 passed, 4 failed, 1 skipped** | `qualification/hosted-135206455231.log` |
+| [Lean Chromium, job 135206455366](https://github.com/djshellshoxxx/GhostPay/actions/runs/44418861275/job/135206455366) | **8 passed, 0 failed, 0 skipped** | **71 passed, 3 failed, 3 skipped** | `qualification/hosted-135206455366.log` |
+
+The eight executed cases cover public/encrypted/raw export with consent; blocked
+encrypted-download retry; keystore-file reauthentication when no vault exists;
+fresh-browser encrypted-file recovery and wrong-password refusal; verification
+without installation at a mobile viewport; private-key leakage probes across
+requests, console, URL/history, browser storage, IndexedDB and clipboard; idle
+lock during export; and key wipe during master-backup derivation. Each passed in
+both profiles. A mobile viewport in the desktop Chromium project is not a
+physical mobile-device test, and the leak probe establishes its tested paths,
+not an exhaustive absence of every possible leak.
+
+Both complete jobs remain failed. The reported failures were the hostile-text
+navigation test and two existing core-journey backup selectors; the full profile
+also failed its combined-backup-panel case. The coordinator identified an
+unchanged hostile-text harness interaction: dismissing every dialog also dismisses
+the legitimate `beforeunload` navigation confirmation. The lifecycle lane owns
+the feature-induced backup-selector ambiguity and scoped lint corrections.
+Neither planned repairs nor a later passing retry relabel this first run as green.
+Corrected-source execution and final acceptance belong in
+[COMPLETION_REPORT.md](COMPLETION_REPORT.md).
+
+The earlier local Chromium `socket() failed: Operation not permitted (1)` remains
+a failed local launch with zero app assertions. Hosted execution supplies the
+browser evidence above; it does not change that local outcome.
+
+### Inherited rest0 and chain-adapter lint failures
+
+[rest0 job 135206455667](https://github.com/djshellshoxxx/GhostPay/actions/runs/44418861275/job/135206455667)
+reported **247 passed, 3 failed, 0 skipped**. Exact base-versus-candidate comparison
+found no changes to workspace manifests, package-map generation or its test,
+the reachability gate, or the chain-adapter fixture below. The three rest0 failures
+are inherited inputs from PR #238, outside the thirty-file recovery diff:
+
+| Failure | Exact source and unchanged blob | Cause and proper follow-up |
+| --- | --- | --- |
+| Stale generated package map | [`workspaces.test.mjs`](https://github.com/djshellshoxxx/GhostPay/blob/198aa5baff22272453733a0f3dcfcac0e0994eec/scripts/agent/workspaces.test.mjs), blob `073d998655bb2ab4b9266928051aea33df378e0a`; map blob `93645e24b5e2a4717637754943cfccf563f0fb9e` | The generated graph includes inherited hygiene/metadata edges and script metadata absent from the committed map. A separate routine regeneration with `node scripts/agent/package-map.mjs` can refresh it. No regeneration was performed in this review. |
+| Web closure differs from the owner-reviewed and pending lists | [`lean-core-reachability.test.mjs`](https://github.com/djshellshoxxx/GhostPay/blob/198aa5baff22272453733a0f3dcfcac0e0994eec/scripts/tests/lean-core-reachability.test.mjs), blob `6d7c6963807a4603a4c1d90ce1bec09495415280`; web manifest blob `a61b1551353e02de0bc2e2775d1e45cec1cd72fd` | The actual closure additionally contains `@ghostpay/hygiene` and `@ghostpay/metadata-hardening`. Existing imports in `apps/web/src/lib/sweep.ts` and `relayerClient.ts` use them. Removing manifest entries alone would misrepresent the source. Retention/removal and list changes need the designated owner decision and evidence. |
+| Relayer closure differs from the reviewed list | Same reachability-test blob; relayer manifest blob `98933cea02cb5087e86603f235bf27078763ada8` | The actual closure additionally contains `@ghostpay/metadata-hardening`, used by `apps/relayer/src/server.ts`. Its owner-review gate remains unchanged and unresolved. |
+
+The map generator itself also matches the base: `scripts/agent/package-map.mjs`,
+blob `5c743b28a984e5788d82da79781e663efa227c74`. These identity comparisons attribute
+the failures to unchanged base inputs; they do not claim the whole base was
+reexecuted or that all remaining repository failures are inherited.
+
+[Lint job 135206455356](https://github.com/djshellshoxxx/GhostPay/actions/runs/44418861275/job/135206455356)
+reports `@typescript-eslint/require-await` for `getLogs` in
+[`payments.bulkCancellation.test.ts`](https://github.com/djshellshoxxx/GhostPay/blob/198aa5baff22272453733a0f3dcfcac0e0994eec/packages/chain-adapters/src/payments.bulkCancellation.test.ts).
+That fixture has identical base/candidate blob
+`387e7e49a969288aedc10e08093587312a78f171`. Its `async` method only throws.
+A minimal separate repair would return `Promise.reject(new Error('Unexpected log
+query'))` from a non-`async` method, preserving rejection behavior. This reviewer
+left it unchanged. The same job also reports three feature-test lint errors;
+those are separately assigned to the lifecycle lane and are not inherited.
+
+No owner-review allowlist, package manifest, map, assertion or CI threshold was
+changed to clear these inherited failures. They remain qualification blockers
+until resolved by the responsible integration owner.
+
+For retained-log identity, SHA-256 values from the inspected local downloads are:
+
+| Log job suffix | SHA-256 |
+| --- | --- |
+| `135206455231` | `45870da97779101bc46e4e929466bf85a3c490f12682f478f668ad90598cd21d` |
+| `135206455366` | `85face60e5a19a75f316508d5b04d090cd33488e8725ec01dbec07ee772464ff` |
+| `135206455667` | `d7c3ce0c500fdd7ae36c1f626eeaba42b2ea4c8e1df5bed670b403f194a0e5fb` |
+| `135206455356` | `473b7bc30761af348a35c15503ec45d38d48919eda42e60115d6d22eefe7d117` |
+
+## Corrected-source qualification addendum — published b536b1c5
+
+This later candidate is published as
+`b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73`, equivalent to local
+`7d99c223e977938cd96c5e496232bad44a3b4799`, tree
+`142627469a1c2a28f910283425d774e0d9c53b42`. The inspected hosted logs identify
+merge checkout `3177702f25d36a54e24837f69175b4787ecc04a5`, merging that head into
+the unchanged PR #238 base. The ten reviewed runtime blobs remain unchanged from
+`7c1e710a`. The five test-file corrections retain their assertions; their diff
+SHA-256 is `8bcd9f34f4c972d187e2aa5b962d93308d706f8a1ff27fa4326aa7031fe9d92a`.
+
+| Executed check | Actual result |
+| --- | --- |
+| [Full Chromium, job 135212473010](https://github.com/djshellshoxxx/GhostPay/actions/runs/44420520704/job/135212473010) | **85 passed, 1 failed, 1 skipped**; all **8 Spec 18 cases passed**, none skipped. |
+| [Lean Chromium, job 135212473168](https://github.com/djshellshoxxx/GhostPay/actions/runs/44420520704/job/135212473168) | **73 passed, 1 failed, 3 skipped**; all **8 Spec 18 cases passed**, none skipped. |
+| [Pages artifact on Anvil, job 135211939647](https://github.com/djshellshoxxx/GhostPay/actions/runs/44420520708/job/135211939647) | **16 passed**, none failed or skipped. |
+| [Web unit job 135212473022](https://github.com/djshellshoxxx/GhostPay/actions/runs/44420520704/job/135212473022) | **2 failed, 2,998 passed, 1 skipped** out of 3,001; files: **1 failed, 220 passed, 1 skipped**. Exit 1 after 631.72 seconds; Node 22.23.4, Vitest 5.1.0. |
+| [rest-2 job 135212473116](https://github.com/djshellshoxxx/GhostPay/actions/runs/44420520704/job/135212473116), ux-vault portion | **353 passed**, no failures, skips or worker errors; ten files; 127.76 seconds. Coverage **97% statements / 94.24% branches / 99.5% functions / 98.89% lines**, satisfying the original thresholds. The whole shard passed but has **five skipped tests elsewhere**, one in external-pools and four in payer-sponsor. |
+| Coordinator's immutable-source focused run | **156 passed**, no failures or skips, thirteen feature/session/vault files on local `7d99c223`, one worker, coverage disabled. This focused result does not substitute for the failing full web run. |
+
+The exact legacy backup selectors now pass in both Chromium profiles, and the
+previously failing Pages backup journey passes. Both complete Chromium jobs still
+fail the unchanged hostile-text navigation test. The old selector failures above
+remain failed historical results. Desktop Chromium with a mobile viewport still
+does not establish native mobile-browser or external-wallet compatibility.
+
+The full web failures are **feature tests, not inherited failures**. In
+`StealthExportVerification.test.tsx`, the successful-decryption assertion at line
+71 and wrong-password alert lookup at line 98 expire through Testing Library's
+real-timer wait. The failure DOM still has the passphrase and submit controls
+disabled, indicating verification is pending. Those two tests exercise the real
+KDF and use the library's default 1,000 ms asynchronous wait; the workspace's
+60,000 ms Vitest test timeout does not extend that wait. This supports a timing
+budget mismatch under full-suite load, but is not by itself proof of a runtime
+defect or a passing test. No worker SIGKILL or unhandled worker error appears in
+this hosted run. No coverage summary was emitted, and the subsequent
+`vitest.nocov.config.ts` pass did not run because the first command failed.
+
+The coordinator has assigned a test-only follow-up to synchronize with the actual
+verification promise while preserving real cryptography, all assertions, the
+global test timeout, KDF parameters and workflow gates. That follow-up and its
+independent review are pending at this addendum's cutoff. No corrected-source pass
+or feature-complete conclusion is claimed here.
+
+The separate earlier local full-web attempt also remains incomplete: **2,905
+passed, 13 skipped and four worker SIGKILL errors**; exit 1 after approximately
+1,000 seconds. Its partial coverage was **91.16 / 86.83 / 93.27 / 94.86%** in
+statement/branch/function/line order. The killed files were TagArchive, Pay,
+BTC esplora and ReconciliationLedger. The cause of those kills was not established.
+Its metadata records starting HEAD `58995408`; it is not final-candidate coverage.
+
+The inspected corrected-browser logs and focused run are retained under
+`evidence/hosted/` and `evidence/coordinator/feature-final.{log,json}`. The two
+monitored jobs' decoded logs were saved to the coordinator's `qualification/`
+directory without altering their content for subsequent evidence copying. Their
+identities, together with the inspected browser logs, are:
+
+| Log job suffix | SHA-256 |
+| --- | --- |
+| `135212473010` | `c646ce9ce8e09bc02c47089bfad1f2a06a0908b4f14839ec80ffd9d2d1f2b333` |
+| `135212473168` | `aa1dee2af0f0630294ca11ca8461a5077f71b386e0c8d8702dcbaf4e03393477` |
+| `135211939647` | `6e6786eb34eac889a63c2ff45d11a79e31c39677e46ff63d8ee25a169a1a9796` |
+| `135212473022` | `54fdf6dcbd89204782821b881e6823abc6f3664a9c0539a69bacbba58b19ee98` |
+| `135212473116` | `f517545b028ed4f35e62701f920f6bbd450c3f8ddf5201c9be91d229b3553fa2` |
+
+No retry, test change or gate adjustment was performed by this reviewer during
+monitoring. Source review remains distinct from acceptance; the feature-test
+failures require an explicit disposition and any subsequent executed evidence in
+[COMPLETION_REPORT.md](COMPLETION_REPORT.md). This addendum neither clears the
+inherited integration gates nor qualifies the broader release.
+
+## Final web qualification addendum — 2026-11-19 UTC
+
+The test-only synchronization repair was published as
+`07a7497d1a0cb39fb6904e5c50f8a52db2285820`, equivalent to local
+`8461dbdfeab16648a78e3c1cd2f4dbb3c0fa5187`, tree
+`6febc03ffd521fe9ac00ac10275f9ff625db509c`. The actual hosted checkout was
+`24bc65f525ec9f19a670e6e5600b071c03edbd56`, merging that head into the unchanged
+PR #238 base. The local tree identity was independently checked. The delta from
+`7d99c223` contains the verification test and its coordination record; runtime,
+KDF settings, existing assertions, coverage thresholds and workflows remain unchanged.
+The repaired test blob is `1488d51d0857437ccbdfd017a879f31e13f11d33`.
+
+[CI run 44423317037, web job 135221701253](https://github.com/djshellshoxxx/GhostPay/actions/runs/44423317037/job/135221701253)
+completed **successfully**. Direct inspection of its terminal log confirms that
+both commands in `vitest run --coverage && vitest run --config
+vitest.nocov.config.ts` executed:
+
+| Phase | Actual result |
+| --- | --- |
+| Full web coverage suite | **3,000 passed, 1 skipped, 0 failed** out of 3,001 tests; **221 files passed, 1 skipped** out of 222; 645.22 seconds. |
+| Original coverage gate | **93.31% statements / 89.52% branches / 95.06% functions / 97.04% lines**; original **90 / 85 / 90 / 90%** thresholds passed. |
+| Separate no-coverage suite | **3 passed, 0 skipped, 0 failed**, three files; 12.72 seconds. Includes the scanner benchmark, tag-archive fuzz and scanner spam cases. |
+| Previously failing verification file | **14/14 passed** within the full coverage run, including the two real-KDF cases that failed on `b536b1c5`. |
+
+The runner used Node **22.23.4**, npm **10.9.9** and Vitest **5.1.0**. No failed
+assertion, worker SIGKILL or unhandled worker error was reported. The sole main-suite
+skip is `src/features/btc/regtest.e2e.test.ts`: the existing test requires the
+dedicated live-bitcoind `GHOSTPAY_REGTEST_*` setup. It is outside Spec 18 and is
+explicitly a skip, not a pass. It was not disabled by the synchronization repair.
+
+The exact decoded terminal log was saved as
+`qualification/hosted-135221701253.log` for the coordinator's evidence packet:
+**283,911 bytes**, SHA-256
+`6c53ac595d3cda29bfe1836206c93859aab5cd4a8087864de25097de89162112`.
+Monitoring ended after completion; this reviewer ran no new tests and made no
+runtime or gate changes.
+
+The coordinator then retained the final-source dependency results. Their logs
+were also inspected directly and identify the same `24bc65f` merge checkout:
+
+| Workspace and job | Tests and files | Coverage: statements / branches / functions / lines |
+| --- | --- | --- |
+| [ux-vault in rest-2, job 135221701273](https://github.com/djshellshoxxx/GhostPay/actions/runs/44423317037/job/135221701273) | **353/353**, ten files, no vault skips or failures; 145.08 seconds. | **97 / 94.24 / 99.5 / 98.89%**, original thresholds passed. |
+| [core-crypto, job 135221701208](https://github.com/djshellshoxxx/GhostPay/actions/runs/44423317037/job/135221701208) | **76/76**, ten files, no skips or failures; 39.50 seconds. | **98.5 / 98.16 / 100 / 98.21%**, original thresholds passed. |
+
+The final rest-2 job succeeded; the vault's zero-skip result does not imply that
+the other workspaces in that shard had no intentional skips. Saved-log SHA-256:
+`hosted-135221701273.log` is
+`4a0b9e7d8c9809cdc73b4b77f0a6781e461e710f2f4dcc48b64f64f00670cab2`;
+`hosted-135221701208.log` is
+`068fa03ceee7077172d464438228f6a60c3d8093bcdb14f2413985330576d66a`.
+
+This executed result resolves the full-web qualification gap recorded for
+`b536b1c5`; it does not relabel that earlier run as successful. The coordinator
+also reports passing final-source Spec 18 browser cases and Pages devnet journeys;
+their complete job identities and remaining inherited failures are reconciled in
+[COMPLETION_REPORT.md](COMPLETION_REPORT.md). The source review and executed scoped
+checks support feature acceptance at the stated final source. Overall CI remains
+red on the documented inherited failures. Broader release qualification,
+owner-review gates and external-device or wallet support are not established by
+these passing feature checks.
+
+## Remaining limits and acceptance
+
+- Actual Chromium recovery/export/import/download evidence is now available at
+  the addendum's pin. Corrected-candidate results and the failing whole-job gates
+  still require reconciliation. Firefox, WebKit, physical mobile devices and Tor
+  Browser are not inferred from Chromium, viewport emulation or a Node test.
+- Runtime syntax/type/lint/build, unchanged coverage thresholds, scanner and hosted
+  checks require their own final-candidate evidence. The earlier #238 product-wide
+  failures are not cleared by this focused feature review.
+- A storage check observes the vault at a point in time. The recheck closes the
+  demonstrated deletion-between-review-and-confirmation case; it cannot promise
+  that a separate tab or later user action will never delete the remaining copy.
+- Saved-file verification proves that the selected bytes were readable and
+  recoverable during that verification. It cannot guarantee later disk retention,
+  the passphrase's continued availability or operating-system backup behavior.
+- Public headers remain correlatable. A payment private key combined with the
+  private viewing key and announcement permits recovery of broader master spending
+  authority. Those properties are disclosed and unchanged.
+- JavaScript strings, engine-managed copies and browser-managed memory cannot be
+  reliably erased. The reviewed wiping changes concern owned mutable buffers and
+  are not complete memory-erasure claims.
+- No deployment, release publication, main merge, new network enablement, custody
+  service, third-party escrow or telemetry is authorized by this review.
+
+The feature must remain marked **incomplete pending acceptance** wherever the
+required browser or other final qualification evidence is still missing.

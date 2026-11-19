@@ -1,3 +1,72 @@
+# Spec 18 independent completion review — 2026-11-18
+
+Coordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.
+Base: PR #238 at `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. A concurrent local Spec 18 implementation
+on `chatgpt/spec18-recovery-completion-20261118` is preserved read-only. This branch
+integrates a fixed, hashed snapshot for independent testing and fixes, without
+changing the original checkout or its branch.
+
+Ownership: coordinator owns snapshot integration, browser acceptance, locales, reports
+and publication; separate review lanes inspect crypto/offline recovery and UI/lifecycle
+with edits assigned explicitly after findings. Acceptance: all twenty specified threats
+are traced to source and executed tests; backup retention and verification stay distinct;
+imports require fresh bound consent; offline recovery reproduces spending authority;
+full feature gates execute or exact blockers are recorded. No release, deployment,
+main merge, forced update, secret persistence or unrelated feature work.
+
+Assigned lanes on this branch:
+
+- `crypto_recovery_review`: `packages/ux-vault/src/stealth-export-portable*.ts`,
+  `scripts/recovery/**`, the Spec 18 format reference and independent recovery guide.
+  Acceptance: authenticated bounded recovery, authority reproduction and failure cleanup.
+- `lifecycle_review`: `StealthExportRecovery`, `StealthExportVerification`, their tests,
+  `StealthExportSelection.test.tsx`, and `paymentKeyExport` source/tests. Acceptance:
+  bound fresh consent, verify-only disposal, selected-file and session cancellation.
+  A reproduced import-preservation defect additionally assigns the narrow `session.ts`
+  box/install transaction and `session.atomicity.test.ts`: stage the replacement
+  before disposing the old keys and clean partially allocated secret boxes on failure.
+- Coordinator: remaining export panels/Common, locales/security keys, browser tests,
+  dependency preparation, combined qualification, evidence and integration.
+- `recovery_recon`: read-only independent final source/threat review; sole write scope
+  is `docs/handoffs/spec18-reviewed-20261118/THREAT_REVIEW.md`.
+
+Hosted test follow-up, `lifecycle_review`: local source
+`58995408bec0e072a969db7bd4eb4687579bd4a7`; findings from hosted jobs
+`135206455356`, `135206455231` and `135206357114`.
+Owned paths: the test-only receiver/type repairs in `apps/web/e2e/stealth-export.spec.ts`
+and `apps/web/src/lib/session.atomicity.test.ts`; exact legacy `Verify backup` button
+selectors across the affected `apps/web/e2e/` journeys. Acceptance: resolve the three
+hosted typed-lint diagnostics and disambiguate legacy keystore verification from the
+new Spec 18 verify-only button while retaining all assertions, timing and release gates.
+Run only bounded focused checks during the coordinator's full web coverage run;
+fresh hosted browser/lint results remain necessary. No runtime or remote changes.
+
+Hosted real-crypto synchronization follow-up, `lifecycle_review`: local source
+`7d99c223e977938cd96c5e496232bad44a3b4799`, published candidate
+`b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73`; hosted job `135212473022`.
+Owned path: `apps/web/src/components/StealthExportVerification.test.tsx` only.
+The two real-verification cases exceeded Testing Library's default polling deadline
+while the KDF remained active. Observe the actual call-through verification promise
+and await its settlement inside React `act` before the existing DOM assertions.
+Require the real rejection for the wrong passphrase. Preserve cryptography, KDF cost,
+all assertions, the global test deadline and every gate; no synthetic success or delays.
+Acceptance: focused 14-case file and the existing 13-file feature selection execute,
+with separate source review and a fresh hosted full-web result still required.
+
+Final status: Spec 18 feature acceptance complete on local `8461dbdf`, published
+`07a7497d1a0cb39fb6904e5c50f8a52db2285820` (identical tree
+`6febc03ffd521fe9ac00ac10275f9ff625db509c`). Final hosted web coverage passes
+3,000 tests with one existing BTC regtest skip; the separate nocov phase passes 3/3.
+Vault 353/353, core crypto 76/76, all eight Spec 18 browser cases in each profile,
+Pages Anvil 16/16, typechecking, source builds and production dependency audit pass.
+Independent offline recovery passes 22/22 and synthetic Foundry spending passes 1/1.
+All twenty threats are reviewed with no unresolved feature blocker. Draft PR #239
+is stacked on the unchanged #238 base. Inherited owner-review/package-map gates,
+chain-adapter lint and hostile-text navigation remain failed; release/device limits
+remain explicit. Final report and raw evidence: `docs/handoffs/spec18-reviewed-20261118/`.
+The final handoff commit changes documentation/evidence only. No merge or deployment.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:

@@ -1,0 +1,224 @@
+﻿2026-11-18T23:44:42.1459017Z Current runner version: '2.338.2'
+2026-11-18T23:44:42.1483524Z ##[group]Runner Image Provisioner
+2026-11-18T23:44:42.1484489Z Hosted Compute Agent
+2026-11-18T23:44:42.1485055Z Version: 20261103.629
+2026-11-18T23:44:42.1485658Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T23:44:42.1486350Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T23:44:42.1486960Z Worker ID: {9fef9abc-959d-4a67-a084-09ff80c91634}
+2026-11-18T23:44:42.1487647Z Region: westcentralus
+2026-11-18T23:44:42.1488226Z Cloud: Azure
+2026-11-18T23:44:42.1488725Z ##[endgroup]
+2026-11-18T23:44:42.1490916Z ##[group]Operating System
+2026-11-18T23:44:42.1491499Z Ubuntu
+2026-11-18T23:44:42.1492070Z 26.04.1
+2026-11-18T23:44:42.1492560Z LTS
+2026-11-18T23:44:42.1493013Z ##[endgroup]
+2026-11-18T23:44:42.1493574Z ##[group]Runner Image
+2026-11-18T23:44:42.1494106Z Image: ubuntu-26.04
+2026-11-18T23:44:42.1494686Z Version: 20261111.196.1
+2026-11-18T23:44:42.1495893Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T23:44:42.1497301Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T23:44:42.1498152Z ##[endgroup]
+2026-11-18T23:44:42.1499204Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T23:44:42.1501452Z Contents: read
+2026-11-18T23:44:42.1502089Z Metadata: read
+2026-11-18T23:44:42.1502606Z ##[endgroup]
+2026-11-18T23:44:42.1504613Z Secret source: Actions
+2026-11-18T23:44:42.1505556Z Cache mode: write
+2026-11-18T23:44:42.1506179Z Prepare workflow directory
+2026-11-18T23:44:42.1834337Z Prepare all required actions
+2026-11-18T23:44:42.1883357Z Getting action download info
+2026-11-18T23:44:42.4696272Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T23:44:42.6805763Z Complete job name: secrets-and-egress
+2026-11-18T23:44:42.7629201Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T23:44:42.7630461Z with:
+2026-11-18T23:44:42.7631069Z   persist-credentials: false
+2026-11-18T23:44:42.7631633Z   repository: djshellshoxxx/GhostPay
+2026-11-18T23:44:42.7635545Z   token: ***
+2026-11-18T23:44:42.7636323Z   ssh-strict: true
+2026-11-18T23:44:42.7636789Z   ssh-user: git
+2026-11-18T23:44:42.7637279Z   clean: true
+2026-11-18T23:44:42.7637761Z   sparse-checkout-cone-mode: true
+2026-11-18T23:44:42.7638314Z   fetch-depth: 1
+2026-11-18T23:44:42.7638815Z   fetch-tags: false
+2026-11-18T23:44:42.7639494Z   show-progress: true
+2026-11-18T23:44:42.7640013Z   lfs: false
+2026-11-18T23:44:42.7640464Z   submodules: false
+2026-11-18T23:44:42.7640932Z   set-safe-directory: true
+2026-11-18T23:44:42.7641556Z   allow-unsafe-pr-checkout: false
+2026-11-18T23:44:42.7642442Z ##[endgroup]
+2026-11-18T23:44:43.0790300Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T23:44:43.0793536Z ##[group]Getting Git version info
+2026-11-18T23:44:43.0794929Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:44:43.0796474Z [command]/usr/bin/git version
+2026-11-18T23:44:43.0799236Z git version 2.56.1
+2026-11-18T23:44:43.0812116Z ##[endgroup]
+2026-11-18T23:44:43.0823453Z Temporarily overriding HOME='/home/runner/work/_temp/9189d7a5-d1f3-4538-b368-9c93a255e428' before making global git config changes
+2026-11-18T23:44:43.0826634Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:44:43.0829881Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:44:43.0894024Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:44:43.0897548Z ##[group]Determining repository object format
+2026-11-18T23:44:43.0900097Z ##[endgroup]
+2026-11-18T23:44:43.0901892Z ##[group]Initializing the repository
+2026-11-18T23:44:43.0905079Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:44:43.1044115Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T23:44:43.1045306Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T23:44:43.1046636Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T23:44:43.1047658Z hint: call:
+2026-11-18T23:44:43.1048116Z hint:
+2026-11-18T23:44:43.1048690Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T23:44:43.1049906Z hint:
+2026-11-18T23:44:43.1050842Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T23:44:43.1052576Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T23:44:43.1054049Z hint:
+2026-11-18T23:44:43.1054954Z hint: 	git branch -m <name>
+2026-11-18T23:44:43.1055866Z hint:
+2026-11-18T23:44:43.1057184Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T23:44:43.1059536Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T23:44:43.1067543Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:44:43.1121366Z ##[endgroup]
+2026-11-18T23:44:43.1123112Z ##[group]Disabling automatic garbage collection
+2026-11-18T23:44:43.1124699Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T23:44:43.1175369Z ##[endgroup]
+2026-11-18T23:44:43.1177211Z ##[group]Setting up auth
+2026-11-18T23:44:43.1178406Z Removing SSH command configuration
+2026-11-18T23:44:43.1182908Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:44:43.1225209Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:44:43.1697710Z Removing HTTP extra header
+2026-11-18T23:44:43.1705406Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:44:43.1736996Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:44:43.1980869Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:44:43.1987579Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:44:43.2022985Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:44:43.2265671Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T23:44:43.2306763Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config
+2026-11-18T23:44:43.2338972Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config
+2026-11-18T23:44:43.2376194Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config
+2026-11-18T23:44:43.2413332Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config
+2026-11-18T23:44:43.2441557Z ##[endgroup]
+2026-11-18T23:44:43.2443213Z ##[group]Fetching the repository
+2026-11-18T23:44:43.2449965Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +24bc65f525ec9f19a670e6e5600b071c03edbd56:refs/remotes/pull/239/merge
+2026-11-18T23:44:44.8007845Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:44:44.8010051Z  * [new ref]         24bc65f525ec9f19a670e6e5600b071c03edbd56 -> pull/239/merge
+2026-11-18T23:44:44.8012727Z ##[endgroup]
+2026-11-18T23:44:44.8014081Z ##[group]Determining the checkout info
+2026-11-18T23:44:44.8015163Z ##[endgroup]
+2026-11-18T23:44:44.8020697Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T23:44:44.8072364Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T23:44:44.8098597Z ##[group]Checking out the ref
+2026-11-18T23:44:44.8103149Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/239/merge
+2026-11-18T23:44:45.0489823Z Note: switching to 'refs/remotes/pull/239/merge'.
+2026-11-18T23:44:45.0490474Z 
+2026-11-18T23:44:45.0490909Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T23:44:45.0491752Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T23:44:45.0492662Z state without impacting any branches by switching back to a branch.
+2026-11-18T23:44:45.0493474Z 
+2026-11-18T23:44:45.0493878Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T23:44:45.0494764Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T23:44:45.0495269Z 
+2026-11-18T23:44:45.0495505Z   git switch -c <new-branch-name>
+2026-11-18T23:44:45.0495837Z 
+2026-11-18T23:44:45.0496030Z Or undo this operation with:
+2026-11-18T23:44:45.0496310Z 
+2026-11-18T23:44:45.0496515Z   git switch -
+2026-11-18T23:44:45.0496797Z 
+2026-11-18T23:44:45.0497223Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T23:44:45.0497875Z 
+2026-11-18T23:44:45.0498444Z HEAD is now at 24bc65f Merge 07a7497d1a0cb39fb6904e5c50f8a52db2285820 into 198aa5baff22272453733a0f3dcfcac0e0994eec
+2026-11-18T23:44:45.0505102Z ##[endgroup]
+2026-11-18T23:44:45.0560188Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T23:44:45.0585417Z 24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:44:45.0595069Z ##[group]Removing auth
+2026-11-18T23:44:45.0595846Z Removing SSH command configuration
+2026-11-18T23:44:45.0599882Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:44:45.0628943Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:44:45.0851033Z Removing HTTP extra header
+2026-11-18T23:44:45.0854809Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:44:45.0881857Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:44:45.1095710Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:44:45.1098317Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:44:45.1117709Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:44:45.1118558Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:44:45.1119251Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:44:45.1119907Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:44:45.1125528Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:44:45.1143393Z /home/runner/work/_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config
+2026-11-18T23:44:45.1153922Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-0cd4934a\-8ec3\-4085\-b4e0\-3921700f9754\.config
+2026-11-18T23:44:45.1186654Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:44:45.1204745Z /home/runner/work/_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config
+2026-11-18T23:44:45.1211784Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-0cd4934a\-8ec3\-4085\-b4e0\-3921700f9754\.config
+2026-11-18T23:44:45.1243067Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:44:45.1260663Z /github/runner_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config
+2026-11-18T23:44:45.1267897Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-0cd4934a\-8ec3\-4085\-b4e0\-3921700f9754\.config
+2026-11-18T23:44:45.1298503Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:44:45.1318589Z /github/runner_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config
+2026-11-18T23:44:45.1326104Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-0cd4934a\-8ec3\-4085\-b4e0\-3921700f9754\.config
+2026-11-18T23:44:45.1353778Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:44:45.1563608Z Removing credentials config '/home/runner/work/_temp/git-credentials-0cd4934a-8ec3-4085-b4e0-3921700f9754.config'
+2026-11-18T23:44:45.1572332Z ##[endgroup]
+2026-11-18T23:44:45.1762508Z ##[group]Run bash scripts/scan-secrets.sh
+2026-11-18T23:44:45.1762972Z [36;1mbash scripts/scan-secrets.sh[0m
+2026-11-18T23:44:45.1797700Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:45.1797988Z ##[endgroup]
+2026-11-18T23:44:45.3392174Z OK: no committed env files or key material found.
+2026-11-18T23:44:45.3438578Z ##[group]Run bash scripts/check-actions-pinned.sh
+2026-11-18T23:44:45.3439016Z [36;1mbash scripts/check-actions-pinned.sh[0m
+2026-11-18T23:44:45.3471307Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:45.3471591Z ##[endgroup]
+2026-11-18T23:44:45.4829194Z OK: 113 'uses:' reference(s) checked, all pinned to full SHAs with version comments.
+2026-11-18T23:44:45.4877748Z ##[group]Run bash scripts/check-tx-origin.sh
+2026-11-18T23:44:45.4878159Z [36;1mbash scripts/check-tx-origin.sh[0m
+2026-11-18T23:44:45.4911850Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:45.4912123Z ##[endgroup]
+2026-11-18T23:44:45.7356762Z OK: no tx.origin in 39 Solidity source file(s).
+2026-11-18T23:44:45.7485547Z ##[group]Run bash infra/proxy/check-headers.sh
+2026-11-18T23:44:45.7485894Z [36;1mbash infra/proxy/check-headers.sh[0m
+2026-11-18T23:44:45.7515774Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:45.7516038Z ##[endgroup]
+2026-11-18T23:44:45.7990638Z OK: proxy and meta headers match apps/web/public/_headers; embed routes send CORS/CORP; dotfiles are not served
+2026-11-18T23:44:45.8025117Z ##[group]Run bash deploy/selftest.sh
+2026-11-18T23:44:45.8025431Z [36;1mbash deploy/selftest.sh[0m
+2026-11-18T23:44:45.8055025Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:45.8055291Z ##[endgroup]
+2026-11-18T23:44:49.3149510Z selfhost selftest: ok
+2026-11-18T23:44:49.3201260Z ##[group]Run python3 scripts/tests/audit-permissions.test.py
+2026-11-18T23:44:49.3201712Z [36;1mpython3 scripts/tests/audit-permissions.test.py[0m
+2026-11-18T23:44:49.3233241Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:44:49.3233499Z ##[endgroup]
+2026-11-18T23:44:50.5117008Z test_existing_output_modes_are_read_preserving_and_safe (__main__.AuditPublicationModes.test_existing_output_modes_are_read_preserving_and_safe) ... ok
+2026-11-18T23:44:50.7395986Z test_failure_never_changes_existing_unsafe_bytes_or_permissions (__main__.AuditPublicationModes.test_failure_never_changes_existing_unsafe_bytes_or_permissions) ... ok
+2026-11-18T23:44:50.8775978Z test_invalid_preserves_bytes_and_mode (__main__.AuditPublicationModes.test_invalid_preserves_bytes_and_mode) ... ok
+2026-11-18T23:44:50.9262954Z test_malformed_json_preserves_status (__main__.AuditPublicationModes.test_malformed_json_preserves_status) ... ok
+2026-11-18T23:44:51.5272798Z test_new_output_modes_honor_stricter_umasks_without_unsafe_bits (__main__.AuditPublicationModes.test_new_output_modes_honor_stricter_umasks_without_unsafe_bits) ... ok
+2026-11-18T23:44:51.5751874Z test_new_status_mode (__main__.AuditPublicationModes.test_new_status_mode) ... ok
+2026-11-18T23:44:51.6217678Z test_outside_data_refused (__main__.AuditPublicationModes.test_outside_data_refused) ... ok
+2026-11-18T23:44:51.6685310Z test_outside_result_refused (__main__.AuditPublicationModes.test_outside_result_refused) ... ok
+2026-11-18T23:44:51.7949197Z test_report_failure_preserves_bytes_and_mode (__main__.AuditPublicationModes.test_report_failure_preserves_bytes_and_mode) ... ok
+2026-11-18T23:44:51.9083815Z test_report_modes_and_bytes (__main__.AuditPublicationModes.test_report_modes_and_bytes) ... ok
+2026-11-18T23:44:52.0010632Z test_report_outside_and_symlink_refusal (__main__.AuditPublicationModes.test_report_outside_and_symlink_refusal) ... ok
+2026-11-18T23:44:52.0932631Z test_symlink_result_and_directory_refused (__main__.AuditPublicationModes.test_symlink_result_and_directory_refused) ... ok
+2026-11-18T23:44:52.1400755Z test_symlink_status_refused (__main__.AuditPublicationModes.test_symlink_status_refused) ... ok
+2026-11-18T23:44:52.1884395Z test_untrusted_directory_refused (__main__.AuditPublicationModes.test_untrusted_directory_refused) ... ok
+2026-11-18T23:44:52.2391087Z test_valid_and_mode (__main__.AuditPublicationModes.test_valid_and_mode) ... ok
+2026-11-18T23:44:52.3192249Z test_write_failure_preserves_status_and_removes_stage (__main__.AuditPublicationModes.test_write_failure_preserves_status_and_removes_stage) ... ok
+2026-11-18T23:44:52.3192808Z 
+2026-11-18T23:44:52.3192961Z ----------------------------------------------------------------------
+2026-11-18T23:44:52.3193337Z Ran 16 tests in 2.937s
+2026-11-18T23:44:52.3193471Z 
+2026-11-18T23:44:52.3193697Z OK
+2026-11-18T23:44:52.3404010Z Post job cleanup.
+2026-11-18T23:44:52.4207816Z [command]/usr/bin/git version
+2026-11-18T23:44:52.4248087Z git version 2.56.1
+2026-11-18T23:44:52.4281221Z Temporarily overriding HOME='/home/runner/work/_temp/48520ef9-6ff7-4f2e-b9e4-58019f26ceb4' before making global git config changes
+2026-11-18T23:44:52.4282703Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:44:52.4286553Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:44:52.4320225Z Removing SSH command configuration
+2026-11-18T23:44:52.4321781Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:44:52.4352545Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:44:52.4588555Z Removing HTTP extra header
+2026-11-18T23:44:52.4594769Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:44:52.4627286Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:44:52.4871519Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:44:52.4879809Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:44:52.4914170Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:44:52.5256264Z Cleaning up orphan processes

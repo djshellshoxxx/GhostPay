@@ -65,7 +65,7 @@ describe('Open a stealth key export (spec 18 flow 4)', () => {
     expect(downloads.files.map((f) => f.filename)).toEqual(['ghostpay-stealth-private-key.txt']);
     expect(await downloads.files[0]!.blob.text()).toBe(VECTORS.files.rawPrivateKey.text);
     expect(document.body.textContent).not.toContain(A1.expected.privateKey.slice(2));
-    expect(announce).toHaveBeenCalledWith('Private key file downloaded. Keep it offline and delete it when you no longer need it.');
+    expect(announce).toHaveBeenCalledWith('Private key file generated; download initiated. Confirm that you saved it. Keep it offline and delete it when you no longer need it.');
     await user.click(screen.getByRole('button', { name: 'Close the export and wipe its keys' }));
     expect(screen.queryByTestId('stealth-export-open-keypair')).toBeNull();
   });
@@ -127,14 +127,22 @@ describe('Open a stealth key export (spec 18 flow 4)', () => {
     expect(within(again).queryByRole('button', { name: 'Load these spending and viewing keys' })).toBeNull();
   });
 
-  it('loads master keys over keys that have a proven copy without asking, and a key change closes the export', async () => {
+  it('requires fresh confirmation even when the loaded keys have a proven copy, and a key change closes the export', async () => {
     const user = userEvent.setup();
-    // Imported with their signing key: a copy exists outside this tab (L1-01), so no confirmation is needed.
+    // An existing recoverable copy changes the warning, never the requirement for replacement consent.
     importSession({ spendingKeyHex: '44'.repeat(32), viewingKeyHex: '55'.repeat(32), signingKeyHex: '66'.repeat(32) });
+    const before = getSessionPublic();
     render(<StealthExportRecovery announce={announce} />);
     await openFile(user, VECTORS.files.master.text, VECTOR_PASS);
     const master = await screen.findByTestId('stealth-export-open-master', {}, { timeout: 30_000 });
     await user.click(within(master).getByRole('button', { name: 'Load these spending and viewing keys' }));
+    expect(await within(master).findByText('Replace the currently loaded keys?')).toBeTruthy();
+    expect(document.activeElement).toBe(within(master).getByRole('group', { name: 'Replace the currently loaded keys?' }));
+    expect(getSessionPublic()).toBe(before);
+    await user.click(within(master).getByRole('button', { name: 'Cancel' }));
+    expect(getSessionPublic()).toBe(before);
+    await user.click(within(master).getByRole('button', { name: 'Load these spending and viewing keys' }));
+    await user.click(await within(master).findByRole('button', { name: 'Replace the loaded keys' }));
     expect(getSessionPublic()?.metaAddress).toBe(VECTORS.seller.metaAddress);
     expect(screen.queryByText('The keys loaded now have no verified backup')).toBeNull();
 
@@ -170,7 +178,32 @@ describe('Open a stealth key export (spec 18 flow 4)', () => {
     const reopened = screen.getByTestId('stealth-export-open-master');
     expect(screen.queryByText(/loaded from the master backup, with a new invoice-signing key/)).toBeNull();
     await user.click(within(reopened).getByRole('button', { name: 'Load these spending and viewing keys' }));
+    expect(await within(reopened).findByText('Replace the currently loaded keys?')).toBeTruthy();
+    expect(getSessionPublic()).toBe(before);
+    await user.click(within(reopened).getByRole('button', { name: 'Replace the loaded keys' }));
     await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(VECTORS.seller.metaAddress); });
+  });
+
+  it('requires the sole-copy warning again when another tab deletes the vault after replacement review', async () => {
+    const user = userEvent.setup();
+    const store = new MemoryKeyVaultStore();
+    setKeyVaultStoreForTests(store);
+    generateSession();
+    await saveEncryptedVault(FILE_PASS, { N: TEST_N }, store);
+    const saved = await store.get();
+    if (saved === undefined) throw new Error('fixture vault missing');
+    const before = getSessionPublic();
+    render(<StealthExportRecovery announce={announce} />);
+    await openFile(user, VECTORS.files.master.text, VECTOR_PASS);
+    const master = await screen.findByTestId('stealth-export-open-master', {}, { timeout: 30_000 });
+    await user.click(within(master).getByRole('button', { name: 'Load these spending and viewing keys' }));
+    expect(await within(master).findByText('Replace the currently loaded keys?')).toBeTruthy();
+    await store.delete(saved);
+    await user.click(within(master).getByRole('button', { name: 'Replace the loaded keys' }));
+    expect(await within(master).findByText('The keys loaded now have no verified backup')).toBeTruthy();
+    expect(getSessionPublic()).toBe(before);
+    await user.click(within(master).getByRole('button', { name: 'Replace the loaded keys' }));
+    expect(getSessionPublic()?.metaAddress).toBe(VECTORS.seller.metaAddress);
   });
 
   it('does not show a stale replacement confirmation on a later export', async () => {
@@ -227,6 +260,89 @@ describe('Open a stealth key export (spec 18 flow 4)', () => {
   });
 });
 
+describe('verify an existing backup without importing', () => {
+  it('verifies an archive without holding raw keys or changing the loaded wallet', async () => {
+    const user = userEvent.setup();
+    generateSession();
+    const before = getSessionPublic();
+    const custody = getSessionBackup();
+    const disposed = vi.spyOn(exportModule.RecoveredPaymentKeys.prototype, 'dispose');
+    render(<StealthExportRecovery announce={announce} />);
+    await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.archive.text));
+    await user.type(screen.getByLabelText('Export file passphrase'), VECTOR_PASS);
+    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    const verified = await screen.findByTestId('stealth-export-verified', {}, { timeout: 30_000 });
+    expect(within(verified).getByText(A1.announcement.stealthAddress)).toBeTruthy();
+    expect(screen.getByText(/Backup verified\. It decrypted successfully/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Download private key for/ })).toBeNull();
+    expect(screen.queryByTestId('stealth-export-open-keypair')).toBeNull();
+    expect(disposed).toHaveBeenCalledTimes(1);
+    expect(disposed.mock.instances[0]).toHaveProperty('disposed', true);
+    expect(getSessionPublic()).toBe(before);
+    expect(getSessionBackup()).toEqual(custody);
+    expect(passwordValues().every((value) => value === '')).toBe(true);
+    expect(downloads.files).toEqual([]);
+    act(() => { notifyAppLock('idle'); });
+    expect(screen.queryByTestId('stealth-export-verified')).toBeNull();
+    expect(screen.queryByText(/Backup verified\. It decrypted successfully/)).toBeNull();
+  });
+
+  it('verifies master spending authority in an empty session without loading it or claiming a signing-key backup', async () => {
+    const user = userEvent.setup();
+    render(<StealthExportRecovery announce={announce} />);
+    await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.master.text));
+    await user.type(screen.getByLabelText('Export file passphrase'), VECTOR_PASS);
+    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    const verified = await screen.findByTestId('stealth-export-verified', {}, { timeout: 30_000 });
+    expect(within(verified).getByText(VECTORS.seller.metaAddress)).toBeTruthy();
+    expect(within(verified).getByText(/does not include the invoice-signing key/)).toBeTruthy();
+    expect(getSessionPublic()).toBeUndefined();
+    expect(getSessionBackup()).toBeUndefined();
+    expect(screen.queryByRole('button', { name: 'Load these spending and viewing keys' })).toBeNull();
+  });
+
+  it('refuses public records and wrong passwords without marking the selected file verified', async () => {
+    const user = userEvent.setup();
+    render(<StealthExportRecovery announce={announce} />);
+    await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.public.text));
+    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/contains no private keys/);
+    expect(screen.queryByTestId('stealth-export-verified')).toBeNull();
+    await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.single.text));
+    await user.type(screen.getByLabelText('Export file passphrase'), 'wrong passphrase');
+    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    expect((await screen.findByRole('alert', {}, { timeout: 30_000 })).textContent).toMatch(/Wrong passphrase/);
+    expect(screen.queryByTestId('stealth-export-verified')).toBeNull();
+    expect(passwordValues().every((value) => value === '')).toBe(true);
+  });
+
+  it('cannot apply a delayed verification to another selected file', async () => {
+    const user = userEvent.setup();
+    let release: () => void = () => undefined;
+    let reached: () => void = () => undefined;
+    const verifying = new Promise<void>((resolve) => { reached = resolve; });
+    const actual = exportModule.verifyStealthExport;
+    vi.spyOn(exportModule, 'verifyStealthExport').mockImplementation(async (...args) => {
+      const result = await actual(...args);
+      reached();
+      await new Promise<void>((resolve) => { release = resolve; });
+      return result;
+    });
+    render(<StealthExportRecovery announce={announce} />);
+    await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.single.text));
+    await user.type(screen.getByLabelText('Export file passphrase'), VECTOR_PASS);
+    await user.click(screen.getByRole('button', { name: 'Verify backup without importing' }));
+    await verifying;
+    expect(screen.getByLabelText('Export file passphrase').hasAttribute('disabled')).toBe(true);
+    await user.upload(screen.getByLabelText('Stealth key export file'), asFile(VECTORS.files.master.text, 'another.json'));
+    await act(async () => { release(); await Promise.resolve(); });
+    expect(screen.queryByTestId('stealth-export-verified')).toBeNull();
+    expect(screen.queryByText(/Backup verified\. It decrypted successfully/)).toBeNull();
+    expect(announce).not.toHaveBeenCalled();
+    expect(getSessionPublic()).toBeUndefined();
+  });
+});
+
 describe('Master stealth key backup (spec 18 flow 3)', () => {
   it('exports the spending and viewing keys after re-authentication with a keystore file, never the signing key', async () => {
     const user = userEvent.setup();
@@ -249,7 +365,7 @@ describe('Master stealth key backup (spec 18 flow 3)', () => {
     const opened = await decryptMasterBackup(text, FILE_PASS);
     expect(opened.header.metaAddress).toBe(VECTORS.seller.metaAddress);
     expect(passwordValues().every((v) => v === '')).toBe(true);
-    expect(announce).toHaveBeenCalledWith('Master backup downloaded.');
+    expect(announce).toHaveBeenCalledWith('Master backup generated; download initiated. Keep and verify the saved file.');
   });
 
   it('refuses without a vault, clears the passphrases, and cancels on the idle lock', async () => {

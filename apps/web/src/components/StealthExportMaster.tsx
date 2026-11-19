@@ -1,7 +1,9 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
 import { exportMasterBackup } from '../lib/paymentKeyExport';
+import type { StealthExportFile } from '../lib/paymentKeyExport';
 import { Notice } from './Common';
+import { StealthExportVerification } from './StealthExportVerification';
 import {
   CredentialFields,
   EMPTY_CREDENTIAL,
@@ -28,18 +30,23 @@ import { startDownload } from './StealthExportPayment';
 export function StealthExportMaster(props: { readonly announce: (message: string) => void }): ReactNode {
   const t = useExportT();
   const latestT = useLatestExportT(t);
+  const [generated, setGenerated] = useState<StealthExportFile | undefined>(undefined);
+  const [downloadStarted, setDownloadStarted] = useState(false);
   const [message, setMessage] = useState<ExportMessage | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [credential, setCredential] = useState<CredentialInput>(EMPTY_CREDENTIAL);
   const [newPass, setNewPass] = useState<NewPassphrase>(EMPTY_PASSPHRASE);
   const clearTyped = (): void => { setCredential(withoutPassphrase); setNewPass(EMPTY_PASSPHRASE); };
-  const reset = (): void => { clearTyped(); setBusy(false); };
+  const reset = (): void => { setGenerated(undefined); setDownloadStarted(false); clearTyped(); setBusy(false); setMessage(undefined); };
   const op = useExportOperation(reset);
 
   const fail = (text: DisplayMessage): void => { setMessage({ kind: 'error', text }); };
   const done = (text: DisplayMessage): void => {
     setMessage({ kind: 'ok', text });
     props.announce(displayMessage(text, latestT.current));
+  };
+  const download = (file: StealthExportFile): void => {
+    if (startDownload(file, fail)) { setDownloadStarted(true); done({ key: 'stealthExport.master.done' }); }
   };
 
   const onSubmit = (e: FormEvent): void => {
@@ -48,7 +55,7 @@ export function StealthExportMaster(props: { readonly announce: (message: string
     if (problem !== undefined) { fail(problem); return; }
     const controller = op.start();
     const passphrase = newPass.pass; const input = credential;
-    setBusy(true);
+    setGenerated(undefined); setDownloadStarted(false); setBusy(true);
     setMessage({ kind: 'ok', text: { key: 'stealthExport.status.working' } });
     void (async () => {
       try {
@@ -57,7 +64,7 @@ export function StealthExportMaster(props: { readonly announce: (message: string
         const file = await exportMasterBackup(proof, passphrase, { signal: controller.signal });
         if (!op.current(controller)) return;
         reset();
-        if (startDownload(file, fail)) done({ key: 'stealthExport.master.done' });
+        setGenerated(file); download(file);
       } catch (error) {
         if (!op.current(controller)) return;
         reset();
@@ -73,10 +80,11 @@ export function StealthExportMaster(props: { readonly announce: (message: string
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       <form onSubmit={onSubmit} className="stack" autoComplete="off">
         <CredentialFields value={credential} onChange={setCredential} disabled={busy} />
-        <NewPassphraseFields value={newPass} onChange={setNewPass} />
+        <NewPassphraseFields value={newPass} onChange={setNewPass} disabled={busy} />
         <button type="submit" className="btn" data-testid="stealth-master-download" disabled={busy || !credentialReady(credential)}>{t('stealthExport.master.download')}</button>
         {busy && <button type="button" className="btn" onClick={() => { op.stop(); reset(); setMessage(undefined); }}>{t('stealthExport.cancel')}</button>}
       </form>
+      {generated !== undefined && <StealthExportVerification file={generated} downloadStarted={downloadStarted} onRetryDownload={() => { download(generated); }} announce={props.announce} />}
     </section>
   );
 }
