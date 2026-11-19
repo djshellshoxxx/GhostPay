@@ -1,0 +1,63 @@
+{
+  "method": "Read-only independent source/diff review; no local runtime suite executed",
+  "heads": {
+    "main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "238": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "239": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+    "240": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+    "241": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+    "234": "5e9e7be70399a9818579cf87bd494e013e25d4f9"
+  },
+  "trees": {
+    "main": "21929503cbb7ee6186cfbfc4b278815387d35d66",
+    "238": "e86585f8fe9ae904cbd62802147c0804a48d9a2f",
+    "239": "bd4eac2eae1a93530c1b7c307d0b42b3252c4941",
+    "240": "d959e5bea2fb8cae9a8847229e1c0f1b14e833ad",
+    "241": "837fa8d51c3bf632cb5b56cba654e1a420213651",
+    "234": "c9c773efd95e0799cf2219bd2f8cab9d44c9648d"
+  },
+  "pr241_runtime": {
+    "apps/web/src/lib/release.ts": {
+      "git_blob": "49ef9237bd75259bb829d0d64cbc404e51ec9533",
+      "sha256": "dce1b02fa429d287a99b67c1958c7080de15d2b658d3dbc401c269a7f5231035"
+    },
+    "packages/net-transport/src/fetchAdapter.ts": {
+      "git_blob": "977ace28e04bc6dca12fb67d1b3275ae72f9a700",
+      "sha256": "f354351bbb067c3e73a8493c3631e8b59437b80670c1fa6340bdba163cfb9c9e"
+    },
+    "packages/net-transport/src/fetchTransport.ts": {
+      "git_blob": "3c4f105bcdacb3c10f3b40063328d4bfb1d590b8",
+      "sha256": "51bf75966b97f9d64757a0ec80a98b71b37968a578c02a78fb72fe1816d86d40"
+    },
+    "packages/solana-stealth/src/rpc.ts": {
+      "git_blob": "8cf20d721bfa038c0a4068155cfbbe7d3e9024b1",
+      "sha256": "62bb6b2a0a9e08933cc2b9cd61397e80726c3a57fa6eef4e18fe8747aea04181"
+    },
+    "packages/tron-adapter/src/rpc.ts": {
+      "git_blob": "45983a55998d9ba820c00466f941670231cb445a",
+      "sha256": "ea83e41e65c0fa618df3a1bbb55ad8b24c818ea06b291a3fe48b4f2bae446ba4"
+    }
+  },
+  "recovery_same_runtime_blobs": {
+    "packages/ux-vault/src/stealth-export-portable.ts": {
+      "239": "c677180b208bae95573fc4f14ab8ce06d8099cb9",
+      "240": "c677180b208bae95573fc4f14ab8ce06d8099cb9",
+      "equal": true
+    },
+    "apps/web/src/lib/paymentKeyExport.ts": {
+      "239": "eb21473822afb6d01b0304bd44017fa3c21450e2",
+      "240": "eb21473822afb6d01b0304bd44017fa3c21450e2",
+      "equal": true
+    },
+    "apps/web/src/components/StealthExportCommon.tsx": {
+      "239": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55",
+      "240": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55",
+      "equal": true
+    }
+  },
+  "verdicts": {
+    "241": "No blocking source defect found in scoped changed modules; independent CI/protection check required before merge",
+    "234": "No blocking source defect found; independent CI/protection check required before merge",
+    "recovery": "Use PR239 as functional base; selectively preserve unique PR240 byte and unload guards; combined validation required"
+  }
+}
