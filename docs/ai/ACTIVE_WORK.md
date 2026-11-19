@@ -1686,3 +1686,10 @@ Owned paths: payment export RPC/key export and network-authorization code/tests,
 Acceptance: preserve existing session/profile/idle authority; secret exports obtain fresh address-bound permission independently of ended scans; cancellation and expired/replaced authority refuse late exports; original selected endpoint remains fixed; relevant original tests pass with no weakened assertions. Retain current merchant-profile and canonicalization code. No other source checkout, remote branch, shared integration lease, release or deployment mutation.
 
 Follow-up assigned by the release coordinator: validate every network-authority clock sample. Reproduce invalid issuance/continuation clocks and observed rollback, permanently revoke affected grants, and preserve existing idle/request deadlines. Only `networkAuthorization.ts` and its focused tests are added to this same owned scope.
+
+
+## Final Pages dependency-tree qualification — 2026-11-19
+
+Worker: `key_exports`, reassigned by the release coordinator. Branch `repair/ghostpay-dependency-qualification-20261119`, base `acdebc5a281d41bf0250e93bf217c04624fdd9d9`.
+Scope: diagnose clean-install `npm ls --all --omit=dev` failures for existing viem/underscore/ws overrides; distinguish npm/environment behavior from actual lock drift. Own only dependency qualification evidence and a minimal manifest/lock/tooling fix if a genuine repository defect is reproduced. Preserve existing dependency versions, overrides, security checks and other workers' root installations.
+Acceptance: exact-cause evidence, original dependency-tree/audit gate under the supported toolchain, no suppressed invalid edges, and no root node_modules mutation while tests run.
