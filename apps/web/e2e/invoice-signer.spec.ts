@@ -255,6 +255,50 @@ test('a passphrase header is never trusted, and selecting a seller requires decr
   await expect(panel(page).getByText(UNPINNED, { exact: true })).toBeVisible();
 });
 
+test('idle lock clears trusted invoice review without seller keys or wallet requests', async ({ page, context }) => {
+  const alice = await fixture(41);
+  await context.clock.install({ time: new Date() });
+  await page.addInitScript(() => {
+    const calls: string[] = [];
+    Object.defineProperty(window, '__signerWalletCalls', { value: calls });
+    Object.defineProperty(window, 'ethereum', { value: {
+      request: (request: { method: string }) => { calls.push(request.method); return Promise.reject(new Error('No wallet call is authorized by this test')); },
+      on: () => undefined,
+      removeListener: () => undefined,
+    } });
+  });
+  // This fresh payer profile never generates or imports seller keys.
+  await page.goto(`/${alice.fragment}`);
+  await addPin(page, 'Alice', alice.signer);
+  await expect(panel(page).getByText(VALID, { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Review payment', exact: true })).toBeVisible();
+  // No RPC is configured in this payer profile, so signer trust alone must not authorize payment.
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled();
+  expect(await page.evaluate(() => (window as unknown as { __signerWalletCalls: string[] }).__signerWalletCalls)).toEqual([]);
+
+  const afterIdle = await page.evaluate(() => Date.now() + 16 * 60_000);
+  expect(afterIdle).toBeLessThan((await parseFragment(alice.fragment)).invoice.expiresAt * 1000);
+  // Wall time crosses the default 15-minute idle deadline; pointerdown checks it before accepting new activity.
+  await context.clock.setSystemTime(afterIdle);
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
+  // This notice is specific to the idle-lock branch with no seller session.
+  await expect(page.getByText('Local tags locked after inactivity.', { exact: true })).toHaveCount(1);
+  await expect(panel(page).getByText(UNAVAILABLE, { exact: true })).toBeVisible();
+  await expect(panel(page).getByText(VALID, { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 2, name: 'Review payment', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Send payment in my wallet', exact: true })).toHaveCount(0);
+  expect(await page.evaluate(() => (window as unknown as { __signerWalletCalls: string[] }).__signerWalletCalls)).toEqual([]);
+
+  // The public pin remains saved, but trust returns only after the invoice is opened and checked again.
+  await expect(panel(page).getByLabel('Expected seller (optional)', { exact: true })).toHaveValue('Alice');
+  await page.goto(`/${alice.fragment}`);
+  await expect(panel(page).getByText(VALID, { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Review payment', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled();
+  expect(await page.evaluate(() => (window as unknown as { __signerWalletCalls: string[] }).__signerWalletCalls)).toEqual([]);
+});
+
 test('pin controls work with the keyboard and fit a narrow Chromium viewport', async ({ page }) => {
   const alice = await fixture(41);
   await page.setViewportSize({ width: 375, height: 812 });

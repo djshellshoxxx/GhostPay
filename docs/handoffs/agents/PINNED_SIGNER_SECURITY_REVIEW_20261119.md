@@ -40,6 +40,10 @@ qualification remain separately owned and must be read from their exact-source r
 signature-verification or payment-authorization bypass was found in the inspected revisions; this is a bounded
 assessment, not an assertion that all acceptance criteria or release gates passed.
 
+Post-publication qualification subsequently exposed the introduced accessibility/integration regression PIN-06 below.
+Its narrow correction and the expiry/idle-lock browser fixtures were independently source-reviewed in the working
+tree. The coordinator's subsequent execution is attributed separately below; final hosted qualification is pending.
+
 ## Scope
 
 Reviewed the existing Pay parser, QR intake, passphrase, receipt and payment lifecycles; the new
@@ -60,6 +64,7 @@ checks, recovery work, browser privacy controls and release gates.
 | PIN-03 | Medium: obsolete mutation completion | The initial pin component checked only mount state after awaiting a write, then unconditionally cleared editor/busy/confirmation state. Its old auto-selection could also revive after seller A to B to A. | An operation token now gates completion; identity scope includes a selection revision. New edit/confirm/cancel/remove actions invalidate old operations. | Final-source component regressions for a later identity's editor, same-invoice storage update/new editing and unmount passed independently. Parent selection-revision wiring was source-reviewed. |
 | PIN-04 | Low: wrong selected identity | The store normalized labels to NFC, but the component initially auto-selected the original NFD label after save. A stored `Caf\u00e9` pin could be selected as the unavailable spelling `Cafe\u0301`. | The component normalizes the label before confirmation and selection. | Final-source NFC addition/auto-selection regression passed independently. |
 | PIN-05 | Low: misleading diagnostic | The first paste fallback treated supported-v1 malformed whitespace as unsupported, and classified an unsupported full-link version differently from a bare fragment. | A narrower positive-unsupported-version helper accounts for a full-link prefix. | Five final-source rejected-paste classification cases passed independently. |
+| PIN-06 | Medium: competing error announcements / introduced integration regression | A negative signer-status `Notice` used `kind="error"` inside an existing polite `role="status"` region. `Notice` emits `role="alert"` for that kind, so Pay's real invoice rejection and the supplementary status created two assertive alerts. Existing rejection tests could not uniquely identify the rejection. | The status-only negative branch now uses `kind="warn"`, preserving the visible failure text within its polite status region. Explicit pin-mutation errors remain assertive; signer/payment authority is unchanged. | Coordinator reports the two new component cases failing before the one-line correction and all 14 component cases passing afterwards; four selected unchanged Pay rejection/final-send-expiry cases also passed. Independent review of this follow-up is source-only. Final hosted qualification remains pending. |
 
 PIN-01 and PIN-02 refer to the inspected pre-feature Pay implementation and its missing guarantees under this task's
 expanded acceptance criteria. PIN-03 and PIN-04 were found in the new uncommitted implementation and corrected before
@@ -277,3 +282,63 @@ reviewer did not rerun tests or lint. Because this changes a component test file
 32-test run, that run remains evidence for its recorded original source only. The coordinator is rerunning all 84
 feature tests on the corrected source and will record the published correction and final hosted qualification in the
 PR body. The inherited lint failure and any other integration failures remain separate and are not cleared here.
+
+## Post-publication alert and clock-fixture review
+
+### PIN-06: supplementary signer status competed with invoice rejection
+
+The coordinator identified four existing `Pay.test.tsx` failures in the earlier cancelled full-web run: wrong-passphrase
+rejection, a signed invoice with an unrepresentable expiry, an oversized fragment and a non-invoice paste. Independent
+source inspection confirms that their single-alert queries encountered the new supplementary signer alert alongside
+Pay's rejection alert. `Common.tsx` assigns `role="alert"` to an error `Notice`; the signer component already wraps its
+status in `role="status" aria-live="polite"`.
+
+The reviewed runtime correction changes exactly the negative-status `Notice` branch from `error` to `warn`. It
+retains the same status text and leaves the explicit pin-mutation failure alert intact. No signer classification,
+selection, pin comparison, lifecycle invalidation or payment guard changes. The new component regression covers
+`unavailable` and `malformed-invoice`, asserting a polite live region, no nested alert, preserved status text and the
+single existing invoice-rejection alert. Existing Pay assertions were not changed.
+
+Coordinator-reported local execution on the uncommitted correction:
+
+| Check | Author-reported result | Reviewer boundary |
+|---|---|---|
+| Two new alert regressions before the runtime correction | 2/2 failed | Reported by coordinator; not independently executed |
+| Complete component file after the correction | 14/14 passed; Node 22 / Vitest 5.1.0; 10.52 seconds | Source reviewed; execution reported by coordinator |
+| Four selected unchanged Pay rejection/final-send-expiry cases | 4 passed; 27.78 seconds; `pay-rejection-expiry-green.log` | Source reviewed; execution reported by coordinator |
+| Isolated cold-start expiry attempt | Failed before Continue appeared | Not counted as a pass or proof of an expiry-guard failure |
+| Duplicate local full-Pay run | Interrupted, exit 130 | Not counted as completed qualification |
+
+These results do not replace an actual completed hosted full-web run on the final candidate. The original independent
+32-test run above is not attributed to this later component/runtime revision.
+
+### Expiry and idle-lock are separate refusal boundaries
+
+The reviewer independently retrieved [Pages Anvil job 135384582330](https://github.com/djshellshoxxx/GhostPay/actions/runs/44472336589/job/135384582330)
+for candidate `d3a2fbfe54a933173296699b68d7a0b482df68aa` (its synthetic merge `9d1e363241f855424179cfca763305cfe978d206`
+has the same recorded tree). The log reports **15 passed, 1 failed**: the expiry-at-send case could not find its
+expiry-specific message after advancing the mounted payer's clock by more than an hour. The log does not expose the
+failure-page state, so the idle-lock diagnosis is source-supported rather than a direct observation of that page.
+
+`AppShell.tsx` checks wall-clock and monotonic idle deadlines before accepting pointerdown activity; the default idle
+limit in `settings.ts` is 15 minutes. A one-hour clock jump therefore activates the real idle-lock boundary. Pay's new
+required lock subscriber invalidates its verification epoch and clears the invoice/parsed state, including when no
+seller session exists. Its authority guards refuse an obsolete send and suppress obsolete result text. An expiry
+message is not required to supersede that lock. No runtime defect was identified in this behavior.
+
+The reviewed test-only changes to `pages-devnet.spec.ts` and `core-journey.spec.ts` start a fresh payer application at
+invoice expiry minus 60 seconds and move to expiry plus 30 seconds after preparation. This 90-second transition
+isolates the unchanged expiry guard without crossing the default idle deadline. Pages now uses an independent payer
+context with the same RPC routing/preset, leaving the seller's and lagging payer's clocks independent; Core already
+isolates payer profiles. All original expiry, wallet, journal, RPC and chain assertions remain.
+
+The added `invoice-signer.spec.ts` idle case tests the other boundary explicitly: a fresh profile has no seller keys,
+the invoice is demonstrably still unexpired, and a 16-minute wall-clock jump followed by a real navigation-button
+pointerdown triggers the default idle lock. It requires the no-seller-session idle notice, removes old trusted status,
+review and payment controls, retains the selected public pin, records zero wallet requests, and requires the invoice
+to be reopened and checked before trust returns. The coordinator corrected the new case's initial expectation:
+Continue is disabled before the lock and after reopening because this profile has no RPC-backed payment context;
+signer trust alone cannot authorize payment. After lock the Continue control must disappear entirely. No RPC/settings
+mock was added, and the test records zero wallet calls before the clock jump as well. This bounds the case to local
+trust/lifecycle invalidation, separate from the prepared-payment expiry fixtures. Source inspection found no blocker in these three browser-test
+changes. This reviewer made no production or test edits and performed no browser execution for this follow-up.
