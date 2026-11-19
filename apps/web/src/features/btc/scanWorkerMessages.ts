@@ -12,6 +12,8 @@ export interface BtcScanStart {
   readonly fromHeight: number; readonly toHeight?: number; readonly resumeState?: string;
   readonly recoveryOffset?: number; readonly recoveryLimit?: number; readonly checkpoints: boolean;
   readonly oracle?: BtcOracleConfig;
+  /** Ask the server per outpoint whether each found output is unspent (reveals the outpoints); default false. */
+  readonly providerSpentCheck?: boolean;
 }
 export type BtcScanRequest = BtcScanStart
   | BtcOracleRequest
