@@ -1,0 +1,334 @@
+{
+  "reviewed_at_utc": "2026-11-19T07:52:57.199972+00:00",
+  "base": "736f1056537c79dbb0d2be3cd9cf071d0470bb24",
+  "candidate": "8c81265de08b821e6062d02baa26ba3b80571f9f",
+  "original_pr211": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+  "source_commits": "8c81265de08b821e6062d02baa26ba3b80571f9f\nDocument the fail-closed TRON build() and refresh chain-tron coverage\n\nREADME states that createTronAdapter payment requests quote but build()\nthrows MEMO_NOT_BOUND until the GPT1 memo can be bound into raw_data.data,\nand records the coverage measured after G5b: `vitest run --coverage` in\npackages/chain-tron -> 54 passed; statements 166/166, branches 105/105,\nfunctions 38/38, lines 139/139.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8iqgjq8HrsujW8aaQL\n(cherry picked from commit 90146562b7f7809746966edbedccb4a4e68e8a68)\n\n45e257ec05b20651b276f711f560b3c9045fabd9\ncli: surface LEGACY_META_ADDRESS instead of a generic INVALID_INPUT\n\nchainBoundary turned every chain-package error into INVALID_INPUT, so a\nrecipient in a retired format (gpsol: for Solana, st:eth:0x for TRON)\nonly saw \"chain input or evidence is invalid.\" and never the one fix:\nask for the current meta-address. A SolanaStealthError or TronError with\ncode LEGACY_META_ADDRESS now keeps that code (fail, exit 1, usual JSON\nerror shape) and carries the library's fixed message, which never embeds\ncaller input. Every other chain error stays generic.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8iqgjq8HrsujW8aaQL\n(cherry picked from commit b79bb24a81e254b3ca06501c8669c54403a19f0a)\n\na156ee13f5a3bd3978b8e5eb8bcfca2485a0a1a1\ncli: report the Solana recipient cluster and refuse mainnet\n\nchain recipient inspect --family solana accepted a meta-address for any\ncluster, mainnet included, and reported network: null. It now reports the\ndecoded cluster (devnet, testnet or localnet) in network, as the Bitcoin\nbranch does, and refuses a mainnet meta-address with CHAIN_DISABLED\n(unsupported, exit 5), the code the CLI already uses for disabled chains:\nexperimental chains are testnet-only.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8iqgjq8HrsujW8aaQL\n(cherry picked from commit 67a3c3c0f305eb0f82414c3623300a81afd59cc3)\n\na8a7f9d9997e2c6fe5b6829176671144eead99da\nchain-tron: fail closed in build() until the GPT1 memo can be bound\n\nADR-0019 puts the \"GPT1\" || R || viewTag announcement in the payment\ntransaction's own raw_data.data, and the web scanner reads the memo only\nfrom the hashed raw_data_hex. build() returned the memo next to a\ntriggersmartcontract body that cannot carry it, so a request broadcast as\nreturned paid a stealth address the receiver could never detect. This\npackage has no local Transaction.raw encoder to bind it, so build() now\nthrows TronAdapterError MEMO_NOT_BOUND before deriving anything.\nbuildPaymentRequest checks amount and fee_limit up front, since build()\nno longer reaches the TRC-20 builder's checks. No caller outside this\npackage uses the adapter (the CLI only imports parseTronAddress).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8iqgjq8HrsujW8aaQL\n(cherry picked from commit b9af22a9c85c6a8674d8ac72d7f038954ce713b9)\n\n5d7ea8b3691ca94621d5ba2fbc2f7c4678076d8d\nUpdate the CLI chain-command fixtures to the ADR-0017 Solana formats\n\nCoordinator follow-up to lane G5 (TB-08): chain-solana now emits and parses\nst:sol: meta-addresses with a cluster byte and the gpst1: base58 memo, so the\nCLI fixture builds the devnet meta-address, the memo without metadata and\nexpects metadataHex ''. Adds a case proving a legacy gpsol: meta-address is\nrejected.\n\nRED: with the lane commits alone, the full CLI suite was 568/570 (the two\nfixture tests). GREEN (lane worker, patched copy): chain-commands.test.ts\n39/39.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8iqgjq8HrsujW8aaQL\n(cherry picked from commit c3d7d70207f74df4a6857231647dcf1ab87122c5)\n\nd664c48fbd449371e4d418e56306a7083136b66d\nchain-tron: adopt the ADR-0019 st:trx:0x meta-address and GPT1 memo (TB-08)\n\nchain-tron took core-crypto st:eth:0x meta-addresses for TRON, while the\nweb app (@ghostpay/tron-adapter, ADR-0019 section 2) issues st:trx:0x, so\nneither side accepted the other's string. New src/meta.ts reimplements\nthe tron-adapter codec over core-crypto (same accept set, lowercase\ncanonical form) and the GPT1 || R || viewTag memo; deriveTronStealthPayment\nand the adapter now take st:trx:0x and return the memo. st:eth:0x is\nrefused with LEGACY_META_ADDRESS: it is the EVM meta-address and need not\nbelong to the recipient's TRON keys.\n\nsrc/interop.test.ts checks this package and the tron-adapter source\nagainst test-vectors/meta-address-sol-tron-v1.json and the web package's\ntest-vectors/tron.json, plus random cross round trips (each side's\npayment is detected by the other's scanner).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8iqgjq8HrsujW8aaQL\n(cherry picked from commit 28ce8a0b6fe22458505da6a77ae7c7cf81db8864)\n\nb46b886eb787e39aafcb8ebd339d09a8d6e56305\nchain-solana: adopt the ADR-0017 formats shipped by the web app (TB-08)\n\nchain-solana (imported by the CLI) used gpsol: base58check meta-addresses,\na [8]-cofactor derivation with its own tweak/view-tag hashes and gpst1:\nbase64url memos. For the same S, V and r it derived a different one-time\naddress than @ghostpay/solana-stealth, so a CLI-side payer would pay an\naddress the web wallet never detects. ADR-0017 sections 3 and 5 define\nthe scheme and the web app ships it, so this package now follows it:\n\n- meta-address st:sol: + base58(0x01 || cluster || S || V || checksum4),\n  cluster bound; gpsol: refused with LEGACY_META_ADDRESS, S == V still\n  refused (KEY_REUSE); decodeMetaAddress(text, cluster) -> NETWORK_MISMATCH\n- Z = r*V, h = SHA-512(dst(shared) || R || Z || S), view tag\n  SHA-256(dst(view-tag) || R || Z)[0]\n- memo gpst1: + base58(R || view tag); metadata refused, not dropped\n- adapter binds meta-addresses to its chain id's cluster\n\nsrc/interop.test.ts checks this package and the solana-stealth source\nagainst test-vectors/meta-address-sol-tron-v1.json and\ntest-vectors/solana-stealth.json, plus random cross round trips. The\nself-generated vectors and BigInt reference follow ADR-0017.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8iqgjq8HrsujW8aaQL\n(cherry picked from commit 179a5b433f35396ca4f0961c99226dbb38e4e4cd)\n\n7060943be540783ffaf4a0203d2a5c83d980742a\nAdd TB-08 shared Solana and TRON meta-address vectors\n\ntest-vectors/meta-address-sol-tron-v1.json pins the formats the web app\nships: the ADR-0017 st:sol: meta-address (10 valid, 23 invalid incl. the\nretired gpsol: form, 2 cluster mismatches, 1 documented S == V case),\n3 payments with gpst1: base58 memos and 8 invalid memos; the ADR-0019\nst:trx:0x meta-address (3 valid, 1 non-canonical accepted, 14 invalid\nincl. the st:eth:0x form) and 2 payments with GPT1 memos.\n\nThe generator imports only @ghostpay/solana-stealth, @ghostpay/tron-adapter\nand @ghostpay/core-crypto (built dist), never the CLI-side packages under\ntest, and self-checks every vector against the web decoders.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8iqgjq8HrsujW8aaQL\n(cherry picked from commit e2427c20387aa2e228309c49a1558d3edc6583ce)\n\n325895d6aa8fe3559fa25de1f4f3d1c209c7844e\ndocs: claim bounded historical multichain compatibility recovery",
+  "paths": [
+    {
+      "path": "packages/chain-solana/DEVIATIONS.md",
+      "candidate_blob": "d63dda0ada844150894b62bb5215cd00e3b1df3e",
+      "original_211_blob": "d63dda0ada844150894b62bb5215cd00e3b1df3e",
+      "base_blob": "74749371be6942ed7d6083d8d0980aa9c4a40d43",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/README.md",
+      "candidate_blob": "43c0e49f3526da3ac13f1462ae12dae75d935bcf",
+      "original_211_blob": "43c0e49f3526da3ac13f1462ae12dae75d935bcf",
+      "base_blob": "dd758e6320cb23ff21195c37ef0cd46de9d4c311",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/scripts/gen-meta-address-sol-tron-vectors.mjs",
+      "candidate_blob": "aaaa0744c9bf79a44eec4873a816da7bafe782db",
+      "original_211_blob": "aaaa0744c9bf79a44eec4873a816da7bafe782db",
+      "base_blob": null,
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/adapter.test.ts",
+      "candidate_blob": "2e08c10414bfbace71e52fcd3040e9b04e3d8e4e",
+      "original_211_blob": "2e08c10414bfbace71e52fcd3040e9b04e3d8e4e",
+      "base_blob": "dbc137d66e302379a929de1b4f21c9d7c00136ed",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/adapter.ts",
+      "candidate_blob": "c78f9e9cc396658d5464d324bdb1a5a8cfbca393",
+      "original_211_blob": "c78f9e9cc396658d5464d324bdb1a5a8cfbca393",
+      "base_blob": "6c64074f358e0ac63cb92edb6095a4373252593b",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/announcement.test.ts",
+      "candidate_blob": "8be295d981c59181752bba8a08073a4bf533d19a",
+      "original_211_blob": "8be295d981c59181752bba8a08073a4bf533d19a",
+      "base_blob": "4d73923bb9e8e3e8cfbfc2c23837f247545a760e",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/announcement.ts",
+      "candidate_blob": "a296fddacf7b9c20d0b3115ef034172ad3b9e454",
+      "original_211_blob": "a296fddacf7b9c20d0b3115ef034172ad3b9e454",
+      "base_blob": "0d2e05a493293ea91e5299f35ac3147d2e01e9f8",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/errors.ts",
+      "candidate_blob": "726e15616d200b0a754ce0699dc1b9205933c3c0",
+      "original_211_blob": "726e15616d200b0a754ce0699dc1b9205933c3c0",
+      "base_blob": "fb597d8e72a2696df68109c62f67d30f666bd826",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/hash.ts",
+      "candidate_blob": "30172f03249971641525b894530a5c35b5206c6c",
+      "original_211_blob": "30172f03249971641525b894530a5c35b5206c6c",
+      "base_blob": "42d37763c4942c93b38f6b11ed614bfc6f19104e",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/index.ts",
+      "candidate_blob": "511a0ff44967382dc3799b5670ee4494d55c1b9f",
+      "original_211_blob": "511a0ff44967382dc3799b5670ee4494d55c1b9f",
+      "base_blob": "1e498338ee3aca23ce75b9b21c6e72b3497b5af8",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/interop.test.ts",
+      "candidate_blob": "d9e09f1723b2e175c04577d75062aecd945093db",
+      "original_211_blob": "d9e09f1723b2e175c04577d75062aecd945093db",
+      "base_blob": null,
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/keys.test.ts",
+      "candidate_blob": "21f362073a75ca1c811db593e932b4bb58429120",
+      "original_211_blob": "21f362073a75ca1c811db593e932b4bb58429120",
+      "base_blob": "ece481abab8541248700ea94970ac573090b503a",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/keys.ts",
+      "candidate_blob": "92dc2a8c03475e55004cac9989bc4e3e96550c91",
+      "original_211_blob": "92dc2a8c03475e55004cac9989bc4e3e96550c91",
+      "base_blob": "0415de09ea571eeb049175747bb1fda49cc3a3bc",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/properties.test.ts",
+      "candidate_blob": "39fd8208dfef8540f3e0690b16e56bdfcff31b1e",
+      "original_211_blob": "39fd8208dfef8540f3e0690b16e56bdfcff31b1e",
+      "base_blob": "8aed38860fa4f235c58ebce85f5eeec7a5049791",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/reference.testutil.ts",
+      "candidate_blob": "8dafe2c58fad2bdf0a9a34ac2240ad5b3ffd3fbf",
+      "original_211_blob": "8dafe2c58fad2bdf0a9a34ac2240ad5b3ffd3fbf",
+      "base_blob": "9550d989d1aee08bb5f7d6db5ea4515bc89d54d3",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/stealth.test.ts",
+      "candidate_blob": "3ba194305893d7a2408ba1422125dd7a0cd41e25",
+      "original_211_blob": "3ba194305893d7a2408ba1422125dd7a0cd41e25",
+      "base_blob": "32b3fb38403e58b840df2870bf64f74c7ecd5656",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/stealth.ts",
+      "candidate_blob": "d0ebd5a39b03b652fdae99664aee9d497ec44a1d",
+      "original_211_blob": "d0ebd5a39b03b652fdae99664aee9d497ec44a1d",
+      "base_blob": "08426798027c64c6b84f1257cd07757404884145",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/src/vectors.test.ts",
+      "candidate_blob": "79d9add4490c729c23bc137fea424f37ac928a13",
+      "original_211_blob": "79d9add4490c729c23bc137fea424f37ac928a13",
+      "base_blob": "0a5108ca65b20e6fef8d2f32f784e6a1850263ad",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-solana/test-vectors/self-generated-v1.json",
+      "candidate_blob": "f2b390d682db29b623a2937416b79bdc43061259",
+      "original_211_blob": "f2b390d682db29b623a2937416b79bdc43061259",
+      "base_blob": "46096be62b7d95de23ed7a09ec4e58ee3ec511d2",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/DEVIATIONS.md",
+      "candidate_blob": "a0b6f3122cf5c3dbb5e43747667304c4a2a75afd",
+      "original_211_blob": "a0b6f3122cf5c3dbb5e43747667304c4a2a75afd",
+      "base_blob": "867c79e380e86c3ca42d6732e3b49cdbc017ba90",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/README.md",
+      "candidate_blob": "a0c6299f7c4d095fa692d53e318c1ee3b885b1f8",
+      "original_211_blob": "a0c6299f7c4d095fa692d53e318c1ee3b885b1f8",
+      "base_blob": "166f4bd30b4ae5d75f6321ae8acd515a091f38a0",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/adapter.test.ts",
+      "candidate_blob": "a8374f6362279505986c657287c1daf75ad19831",
+      "original_211_blob": "a8374f6362279505986c657287c1daf75ad19831",
+      "base_blob": "68788dbe4304065c4705162b19ebf840a0428851",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/adapter.ts",
+      "candidate_blob": "b7c54a84c8a99246637cea7a1ee0efe55da5da0e",
+      "original_211_blob": "b7c54a84c8a99246637cea7a1ee0efe55da5da0e",
+      "base_blob": "a332a5cd2300f0ee44488038427d1480de510ebc",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/errors.ts",
+      "candidate_blob": "2515e41e404ddf062dd9a3955d60bbfa4acbfaf4",
+      "original_211_blob": "2515e41e404ddf062dd9a3955d60bbfa4acbfaf4",
+      "base_blob": "c939c4a8f1e2438a891c5b4f5d589102beb372cc",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/index.ts",
+      "candidate_blob": "98a2145671cdf4f2516289462d26fbac74ec601c",
+      "original_211_blob": "98a2145671cdf4f2516289462d26fbac74ec601c",
+      "base_blob": "174ec64059f5758d401e2c27b50d176ec20a4539",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/interop.test.ts",
+      "candidate_blob": "2ef35aa486389c3d47aee715a0b87b5a92e71b56",
+      "original_211_blob": "2ef35aa486389c3d47aee715a0b87b5a92e71b56",
+      "base_blob": null,
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/meta.test.ts",
+      "candidate_blob": "49ab50b99171b1fed2c3bb689a08010532a5de22",
+      "original_211_blob": "49ab50b99171b1fed2c3bb689a08010532a5de22",
+      "base_blob": null,
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/meta.ts",
+      "candidate_blob": "089efc6917e77539a0977ac7b2588082e40e57c6",
+      "original_211_blob": "089efc6917e77539a0977ac7b2588082e40e57c6",
+      "base_blob": null,
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/stealth.test.ts",
+      "candidate_blob": "34b877e1a714db0cc2908626a04ef1142000af3c",
+      "original_211_blob": "34b877e1a714db0cc2908626a04ef1142000af3c",
+      "base_blob": "03c50426715f8e8e1b7ad86d9a514c46d126e052",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/chain-tron/src/stealth.ts",
+      "candidate_blob": "c1fa84344cd182056e968a596ff6ece90ea26548",
+      "original_211_blob": "c1fa84344cd182056e968a596ff6ece90ea26548",
+      "base_blob": "a6a5593c89e4b8d2bda9e9a22ad46907ce66e044",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/cli/src/chain-commands.test.ts",
+      "candidate_blob": "e4ea836a3d3bea0a1112d2575daa4372c296b7cd",
+      "original_211_blob": "e4ea836a3d3bea0a1112d2575daa4372c296b7cd",
+      "base_blob": "c2b0b71b167580275ee255cdfe70d37fb3d4d64a",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/cli/src/commands/chain.ts",
+      "candidate_blob": "51e5df33aca5fa1c821c8e8f0bedbb30edfe8660",
+      "original_211_blob": "51e5df33aca5fa1c821c8e8f0bedbb30edfe8660",
+      "base_blob": "64809b2f64738db68f99595adfceed8564c3c9f6",
+      "same_as_original": true
+    },
+    {
+      "path": "packages/cli/src/payment-context.ts",
+      "candidate_blob": "c62d2da45723579b9707427c77cc8b02faa2045e",
+      "original_211_blob": "c62d2da45723579b9707427c77cc8b02faa2045e",
+      "base_blob": "420a0fef6e71d46adca721416ebb65c20f1fb2cf",
+      "same_as_original": true
+    },
+    {
+      "path": "test-vectors/meta-address-sol-tron-v1.json",
+      "candidate_blob": "4b6fa67b5f8ea71deb56b1e8dd786240bd03b508",
+      "original_211_blob": "4b6fa67b5f8ea71deb56b1e8dd786240bd03b508",
+      "base_blob": null,
+      "same_as_original": true
+    }
+  ],
+  "retained_boundaries": [
+    {
+      "path": "packages/chain-solana/src/point.ts",
+      "base_blob": "c7dd1bf50742e4723fafcbcf1e4fc2589021148b",
+      "candidate_blob": "c7dd1bf50742e4723fafcbcf1e4fc2589021148b",
+      "unchanged": true
+    },
+    {
+      "path": "packages/chain-solana/src/secret.ts",
+      "base_blob": "be06bf43ecf4e7e4ff4efd3a48d6877ef2462763",
+      "candidate_blob": "be06bf43ecf4e7e4ff4efd3a48d6877ef2462763",
+      "unchanged": true
+    },
+    {
+      "path": "packages/chain-solana/src/rng.ts",
+      "base_blob": "98c1c83cb8adce21b8b5adfaf7bb35410235678b",
+      "candidate_blob": "98c1c83cb8adce21b8b5adfaf7bb35410235678b",
+      "unchanged": true
+    },
+    {
+      "path": "packages/chain-solana/src/sign.ts",
+      "base_blob": "47c90cc845748932d1fc30dee324c0c6eecb183a",
+      "candidate_blob": "47c90cc845748932d1fc30dee324c0c6eecb183a",
+      "unchanged": true
+    },
+    {
+      "path": "packages/chain-solana/package.json",
+      "base_blob": "5aa6b0f0103a49480e0d6aa37086069102d4db35",
+      "candidate_blob": "5aa6b0f0103a49480e0d6aa37086069102d4db35",
+      "unchanged": true
+    },
+    {
+      "path": "packages/chain-tron/package.json",
+      "base_blob": "aaa3a4b7254263a86a507b13e5b913db3ea14875",
+      "candidate_blob": "aaa3a4b7254263a86a507b13e5b913db3ea14875",
+      "unchanged": true
+    },
+    {
+      "path": "packages/cli/package.json",
+      "base_blob": "1b8a12c0cc915e74918c62a77c2dd9318e0371fd",
+      "candidate_blob": "1b8a12c0cc915e74918c62a77c2dd9318e0371fd",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "base_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "candidate_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "base_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "candidate_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "unchanged": true
+    },
+    {
+      "path": "packages/solana-stealth/src/meta-address.ts",
+      "base_blob": "b78051c06cb758ea738f8d4f96d376313eb4544a",
+      "candidate_blob": "b78051c06cb758ea738f8d4f96d376313eb4544a",
+      "unchanged": true
+    },
+    {
+      "path": "packages/solana-stealth/src/stealth.ts",
+      "base_blob": "813f78b6fcdfc59ecbf73b9fad492c8f1af6df93",
+      "candidate_blob": "813f78b6fcdfc59ecbf73b9fad492c8f1af6df93",
+      "unchanged": true
+    },
+    {
+      "path": "packages/solana-stealth/src/announcement.ts",
+      "base_blob": "a2fd3e8cfa8a0b9ef7df7f38bf28df591aea0cc9",
+      "candidate_blob": "a2fd3e8cfa8a0b9ef7df7f38bf28df591aea0cc9",
+      "unchanged": true
+    },
+    {
+      "path": "packages/tron-adapter/src/meta.ts",
+      "base_blob": "c217edf4db6e687b671828f82862340814b073c8",
+      "candidate_blob": "c217edf4db6e687b671828f82862340814b073c8",
+      "unchanged": true
+    },
+    {
+      "path": "packages/tron-adapter/src/scan.ts",
+      "base_blob": "b7a3ce1fa5c8e87f9af03414ed19a2eba6ee6a50",
+      "candidate_blob": "b7a3ce1fa5c8e87f9af03414ed19a2eba6ee6a50",
+      "unchanged": true
+    }
+  ],
+  "source_review_only": true
+}

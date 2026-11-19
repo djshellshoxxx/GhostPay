@@ -4,6 +4,8 @@ import {
   validateRpcUrl, verifyDeployment, verifyObjectManifestSignature,
   type ChainConfig, type DeploymentManifest, type ManifestSignatureResult, type RpcClient, type RpcTransport,
 } from '@ghostpay/chain-adapters';
+import { SolanaStealthError } from '@ghostpay/chain-solana';
+import { TronError } from '@ghostpay/chain-tron';
 import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { parseIntOption, requireValue, type Parsed } from './args.js';
 import type { Ctx } from './ctx.js';
@@ -25,6 +27,10 @@ export async function chainBoundary<T>(operation: () => Promise<T> | T): Promise
           : error.code === 'CHAIN_DISABLED' ? 'unsupported' : 'fail';
       throw new CliError(kind, error.code, `chain operation rejected (${error.code}).`);
     }
+    // A retired recipient format has one fix (ask for the current one), so its code and the library's fixed,
+    // value-free message reach the user; every other chain failure stays generic.
+    if ((error instanceof SolanaStealthError || error instanceof TronError) && error.code === 'LEGACY_META_ADDRESS')
+      throw failError(error.code, `chain input rejected (${error.code}): ${error.message}.`);
     throw failError('INVALID_INPUT', 'chain input or evidence is invalid.');
   }
 }
