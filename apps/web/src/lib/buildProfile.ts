@@ -23,7 +23,11 @@ export const ShellProfileContext = createContext<BuildProfile | undefined>(undef
  * another, so `profile="full"` inside a lean shell or a lean build stays lean.
  */
 export function resolveProfile(explicit: BuildProfile | undefined, shell: BuildProfile | undefined, build: BuildProfile): BuildProfile {
-  return explicit === 'lean' || shell === 'lean' || build === 'lean' ? 'lean' : 'full';
+  // TypeScript cannot guarantee that runtime values (including embedded props) satisfy the union.
+  // Only an explicitly full build with known full/absent overrides may enable the wider profile.
+  return build === 'full' &&
+    (explicit === undefined || explicit === 'full') &&
+    (shell === undefined || shell === 'full') ? 'full' : 'lean';
 }
 
 /** Effective profile for a component rendered inside (or outside) an AppShell. */
