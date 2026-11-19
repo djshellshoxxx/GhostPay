@@ -687,3 +687,19 @@ No application, dependency, workflow, contract, security threshold, deployment o
 Original #259 and other workers' source branches remain read-only. Root holds verified cooperative
 lease generation 3 for shared integration actions; that metadata-only control history is never merged.
 This scope expansion is recorded before the recovery and corrective documentation edits.
+
+## Consolidation checkpoint evidence continuation — 2026-11-19
+
+Owner: the same root coordinator for `codex/ghostpay-consolidation-records-20261119`.
+Prior verified checkpoint: `64e192916d66500db8a47a251b4ab17c4d756906`; tree `8923964e4dd7aeab68fc92c722cdd23d0e9a40fa`.
+Additional owned paths, registered before repository edits:
+`docs/consolidation/20261119-eligibility-snapshot-1134.json`,
+`docs/consolidation/20261119-eligibility-snapshot-1134.md`,
+`docs/consolidation/20261119-security-gates-264.json`, and
+`docs/consolidation/20261119-final-observations.json`.
+Purpose: preserve the final source-bound CI inventory, current #264 analyzer evidence,
+late branch/source dispositions, and this coordinator's verified lease handoff.
+Acceptance: retain historical snapshots unchanged; separate pending, failed and completed
+checks; keep original artifact hashes and exact heads; preserve every other claim and
+all application/dependency/workflow blobs. The already owned eight consolidation records
+will be updated to reference this evidence. No test, runtime or security threshold changes.
