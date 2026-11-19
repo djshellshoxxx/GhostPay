@@ -1,3 +1,17 @@
+# Historical adapter qualification — 2026-11-19
+
+Worker: ChatGPT integration coordinator, with independent branch and security reviewers.
+Branch: `integration/ghostpay-adapter-qualification-20261119`.
+Base: `14ded337a10c140d7a9f9a9238ec038587d925bb` (verified live main).
+Owned paths: integration of PR #250, its historical adapter source and tests, the shared
+TRON browser fixture and its hardening tests, and a scoped qualification handoff.
+Acceptance: preserve the strict contiguous-block response validation and all original
+regression assertions; recover the already implemented fixture repair from `a3442053`;
+prove the failing TRON browser tests pass against the combined source; run relevant
+adapter tests, typecheck, lint, and hosted qualification before any merge into main.
+The original #250 and #262 branches are read-only inputs and remain intact. No
+deployment, release, dependency update, or security-gate change belongs to this task.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
@@ -35,6 +49,25 @@ Acceptance: reproduce clock rollback on current main, retain sleep-aware wall-ti
 preserve sole-copy key recovery policy, pass focused shell tests and scoped lint, then require exact-head CI.
 The test file is imported from the separate review lane; product edits start after this claim. PR #209's frame and
 unload changes remain on its own branch. No deployment, signing, publication, mainnet, or release-gate changes.
+
+# Historical safeguard recovery — 2026-11-18
+
+Worker: history_census (Caveman investigate-first), coordinated by master consolidation.
+Branch: `integration/ghostpay-historical-fixes-20261118`.
+Base: `5a33a435ffbb4711d0a5fa69ade9d32ad4f8b929` (reviewed PR #241 merged).
+Owned paths: `packages/chain-adapters/src/{deployments,quote,rpc}.ts` and focused tests;
+`packages/tron-adapter/src/rpc.ts` block-range validation only and `scan.test.ts`; this claim and scoped handoff.
+Source provenance: `e2fef011ca1195d6c5edaf4e1ea1055692462004`,
+`b098b73a3a93bde331b7f49123e99d3406b6cb6f`, `c37604d1b1cf561573270d6cc002418003f80b69`.
+Status: selected runtime safeguards recovered; baseline regressions reproduced; affected package coverage
+passed (552 chain-adapter tests plus 104 TRON tests). Coordinator independently reviewed the source diff.
+Concurrent typecheck was killed with exit 137; remaining checks and combined-source CI are recorded in the
+scoped handoff, `docs/handoffs/consolidation-20261118/HISTORICAL_ADAPTER_SAFEGUARDS.md`.
+Acceptance: reject impossible manifest calendar dates; bounded retries for non-finite inputs; preserve the existing
+0..30 price-decimals bound with additional regressions; refuse incomplete/noncontiguous TRON block ranges;
+preserve PR #241 transport isolation. The historical price-decimals runtime hunk is redundant and excluded.
+Apply only those previously implemented safeguards and regressions, run focused failing/passing evidence and
+affected package checks, then hand off for independent review. No new feature, dependency, policy, deployment or release.
 
 # Repository consolidation — 2026-11-18 (active)
 
@@ -491,3 +524,11 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+## Historical correctness promotion — 2026-11-18
+
+Worker: ChatGPT integration coordinator. Branch: `integration/ghostpay-historical-promotion-20261118`.
+Base: `ab4e0da2cfe2a18adac0424896fba0b40fac81a8` (#242 qualified group, still pending its last checks).
+Owned paths: merge of reviewed historical ports at `b1a2005472132c4787f1416386c629a399350151`; registry conflict resolution and qualification record.
+Acceptance: preserve current transport hardening, validate real calendar dates, bound invalid retry counts and reject incomplete TRON ranges; retain failing-first evidence and complete both package coverage gates; combined hosted checks and independent review before main merge.
+No other historical payload, dependency update, deployment, release or branch deletion.
