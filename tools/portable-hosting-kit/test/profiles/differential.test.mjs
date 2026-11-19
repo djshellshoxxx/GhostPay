@@ -38,6 +38,8 @@ function differential(hostConfig, label) {
     await fs.chmod(outDir, 0o755);
     const runDir = await tempDir('run');
     ctx.closers.push(() => fs.rm(siteDir, { recursive: true, force: true }), () => fs.rm(outDir, { recursive: true, force: true }), () => fs.rm(runDir, { recursive: true, force: true }));
+    // Stats.mtime rounds this fractional millisecond into the next second; raw mtimeMs must survive export.
+    await fs.utimes(path.join(siteDir, 'assets/font.woff2'), '1795078174.9996', '1795078174.9996');
     const { wwwRoot } = await exportStatic({ siteDir, files, entrypoint: 'index.html', hostConfig, policy, outDir });
     for (let attempt = 0; ; attempt++) {
       const port = await freePort();
