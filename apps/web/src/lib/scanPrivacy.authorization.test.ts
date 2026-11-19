@@ -25,7 +25,7 @@ describe('scan caller cancellation without a network authority mock', () => {
     await expect(openScanClients({
       plan: ready({ endpoint, allowLoopbackHttp: endpoint !== undefined }), chain, announcer: FAKE_ANNOUNCER,
       appRpc, fetchImpl, sleep, signal: AbortSignal.abort('private reason'),
-    })).rejects.toThrow('scan cancelled');
+    })).rejects.toThrow('scan-aborted');
     expect(appRpc).not.toHaveBeenCalled();
     expect(fetchImpl).not.toHaveBeenCalled();
   });
@@ -68,7 +68,7 @@ describe('scan caller cancellation without a network authority mock', () => {
     await started.promise;
     controller.abort();
     firstLogs.resolve([]);
-    expect(await outcome).toMatchObject({ code: 'RPC_URL_REJECTED', message: 'RPC_URL_REJECTED: scan cancelled' });
+    expect(await outcome).toMatchObject({ message: 'scan-aborted' });
     expect(rpc.calls.filter((call) => call.method === 'eth_getLogs')).toHaveLength(1);
   });
 
@@ -87,7 +87,7 @@ describe('scan caller cancellation without a network authority mock', () => {
     await sleeping.promise;
     controller.abort();
     wake.resolve();
-    expect(await outcome).toMatchObject({ code: 'RPC_URL_REJECTED', message: 'RPC_URL_REJECTED: scan cancelled' });
+    expect(await outcome).toMatchObject({ message: 'scan-aborted' });
     expect(sleepImpl).toHaveBeenCalledTimes(1);
     expect(rpc.calls.filter((call) => call.method === 'eth_getLogs')).toHaveLength(1);
   });
