@@ -1,3 +1,33 @@
+# Consolidation records and branch census — 2026-11-19
+
+Owner: ChatGPT root coordinator; initial census writer: branch_scout (Caveman investigator).
+Branch: `codex/ghostpay-consolidation-records-20261119`.
+Base: `14ded337a10c140d7a9f9a9238ec038587d925bb` (main; reread 2026-11-19 10:32 UTC).
+
+Owned paths: `docs/consolidation/BRANCH_INVENTORY.md`,
+`docs/consolidation/20261119-branch-census.json`, `docs/consolidation/PR-census.json`
+(initial branch_scout phase), followed by coordinator-owned
+`docs/consolidation/FEATURE_MATRIX.md`, `RECOVERED_WORK.md`, `SECURITY_AUDIT.md`,
+`TEST_RESULTS.md`, `MAIN_MERGE_LOG.md`, `REMAINING_WORK.md`, and `HANDOFF.md`;
+this claim only in `docs/ai/ACTIVE_WORK.md`. All seven abbreviated filenames are under
+`docs/consolidation/`.
+
+Acceptance: preserve the observed 278-branch / 267-PR census with exact source heads and explicit
+dispositions; distinguish later observations, verified ancestry, inherited source review and unrun gates;
+record independent recovery and candidate findings without turning them into release qualification;
+publish reviewable documentation from the pinned main tree. The local environment became unavailable,
+so reconstruct from retained connector responses and source-pinned repository evidence; never depend on
+unreachable scratch files or claim that they were recovered. No application, dependency, workflow,
+security-gate, deployment or integration-lock mutation belongs to this branch.
+
+Write ownership is sequential: branch_scout publishes the census, then ceases all writes and supplies
+its exact head to root; root may append the seven records only with an expected-head guard. Existing
+claims and source candidates remain read-only inputs. The separate active main integration lease stays
+untouched. Source-only fixes remain on their dedicated PRs. A documentation PR is not permission to
+merge, release, deploy, delete branches or close unmerged source work.
+
+Status: claim recorded before census edits. Root owns final review, subsequent documentation and handoff.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
