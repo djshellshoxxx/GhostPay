@@ -173,18 +173,21 @@ function parseTx(v: unknown): EsploraTx {
   const { hex, weight } = serializeTx(v, vin, vout);
   const raw = parseRawTransaction(hex);
   if (raw.txid !== txid) return bad();
+  // is_coinbase is JSON metadata, not committed by the txid. It must never hide a real input.
+  for (const input of vin) {
+    if (!isRecord(input) || (input['is_coinbase'] !== undefined && input['is_coinbase'] !== raw.isCoinbase)) return bad();
+  }
   const outputs = vout.map((o: unknown) => {
     if (!isRecord(o)) return bad();
     return { scriptPubKey: hexToBytes(hexStr(o['scriptpubkey'])), valueSats: BigInt(uint(o['value'])) };
   });
-  return { txid, inputs: parseInputs(vin), outputs, raw, weight };
+  return { txid, inputs: raw.isCoinbase ? null : parseInputs(vin), outputs, raw, weight };
 }
 
-function parseInputs(vin: readonly unknown[]): readonly TxInput[] | null {
+function parseInputs(vin: readonly unknown[]): readonly TxInput[] {
   const out: TxInput[] = [];
   for (const i of vin) {
     if (!isRecord(i)) return bad();
-    if (i['is_coinbase'] === true) return null;
     const prevout = i['prevout'];
     if (!isRecord(prevout)) return bad();
     // The spent script is not part of the transaction, so no weight bounds it: a valid block spends none longer.
@@ -556,8 +559,10 @@ export class EsploraTweakSource implements TweakSource {
     const outputs: BlockOutput[] = [];
     const spends: BlockSpend[] = [];
     for (const tx of txs) {
-      if (tx.inputs === null) continue; // coinbase
-      for (const i of tx.inputs) spends.push({ txid: i.txid, vout: i.vout, spentBy: tx.txid });
+      if (tx.raw.isCoinbase) continue;
+      // Consumed outpoints come from the re-parsed transaction bound to the checked Merkle root.
+      for (const i of tx.raw.inputs) spends.push({ txid: i.txid, vout: i.vout, spentBy: tx.txid });
+      if (tx.inputs === null) return bad();
       let tweak;
       try {
         tweak = computeTransactionTweak(tx.inputs);

@@ -17,7 +17,7 @@ import type { BtcWallet } from './wallet';
 import { verifyMatchedOutput } from './inclusion';
 import { CrossCheckedTweakSource, OracleTweakSource, type BtcOracleConfig, type ReadOracleBlock } from './oracleSource';
 
-/** A detected, still-unspent silent payment output. */
+/** A detected silent payment candidate. Spend authority also requires a non-unknown result spentStatus. */
 export interface FoundPayment extends SpendableOutput {
   readonly height: number;
   readonly blockHash: string;
@@ -67,9 +67,9 @@ export interface ScanParams {
 }
 
 /**
- * How the spent status of the returned payments was established: `local` from the inputs of the scanned blocks (a
- * spend still in the mempool is not visible; the server learned no outpoint), `provider` by asking the server per
- * outpoint, `unknown` when the source serves no block spends (light oracle mode) and the server was not asked.
+ * How the spent status of the returned payments was established: `local` with continuous input coverage from every
+ * returned output's discovery through the sampled chain tip (no mempool guarantee), `provider` by authorized server
+ * queries for candidates not already spent locally, or `unknown` for incomplete ranges or missing historical evidence.
  */
 export type SpentStatus = 'local' | 'provider' | 'unknown';
 
@@ -99,17 +99,20 @@ const outpointId = (txid: string, vout: number): string => `${txid}:${String(vou
 /**
  * Scans a block range for silent payments to the wallet and drops outputs that are already spent.
  * Spent outputs are recognised locally: the source lists the outpoints each scanned block consumes (Esplora blocks
- * carry their inputs), the scanner matches them against the outputs it found and against the persisted unspent
- * matches, and the state records them, so the server learns no outpoint. A spend still in the mempool, or a spend in
- * a block scanned before spend tracking existed, is not visible; `providerSpentCheck` asks the server per outpoint
- * instead (and reveals the outpoints). The scan secret stays in this process; the server sees block heights.
+ * carry their inputs), the scanner matches them against found and persisted matches, and records continuous coverage.
+ * Old history without that evidence and partially scanned ranges remain unknown and must not be swept. A fresh
+ * rescan or explicit `providerSpentCheck` refreshes status; the latter reveals queried outpoints. Light oracle mode
+ * requires that authorization before any request. Local scans do not detect mempool spends.
  * Every spend tweak the scanner produced that is not in the returned `found` (spent, skipped, or all of them when
  * the scan fails) is wiped before this returns; the caller owns, and must wipe, the returned ones ({@link wipeFound}).
  */
 export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const { client, wallet, fromHeight, signal } = p;
   const checkAbort = (): void => { if (signal?.aborted === true) throw new SilentPaymentError('ABORTED'); };
+  checkAbort();
   if (!Number.isInteger(fromHeight) || fromHeight < 0) throw new SilentPaymentError('INVALID_INPUT');
+  if ((p.providerSpentCheck !== undefined && typeof p.providerSpentCheck !== 'boolean') ||
+      (p.oracle?.mode === 'light' && p.providerSpentCheck !== true)) throw new SilentPaymentError('INVALID_INPUT');
   const esplora = new EsploraTweakSource(client, wallet.net);
   const lightHeaders = p.oracle?.mode === 'light' ? p.headers : undefined;
   if (p.oracle?.mode === 'light' && lightHeaders === undefined) throw new SilentPaymentError('INVALID_INPUT');
@@ -136,7 +139,9 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   // Persistent scans advance in bounded pages; the next run resumes from the last committed block.
   const toHeight = Math.min(p.toHeight ?? tip, tip, restored === undefined ? tip : resumeHeight + MAX_SCAN_BLOCKS - 1);
   const providerCheck = p.providerSpentCheck === true;
-  const spentStatus: SpentStatus = providerCheck ? 'provider' : source.getSpends === undefined ? 'unknown' : 'local';
+  // Neither a lagging source nor a header sync still behind that source establishes complete negative-spend evidence.
+  const knownTip = Math.max(serverTip, p.headers?.tipHeight ?? serverTip);
+  let spentStatus: SpentStatus = providerCheck ? 'provider' : source.getSpends !== undefined && toHeight >= knownTip ? 'local' : 'unknown';
   if (toHeight < fromHeight) return { fromHeight, toHeight, found: [], spentCount: 0, blocks: [], headerAnchored, spentStatus };
   if (toHeight - resumeHeight + 1 > MAX_SCAN_BLOCKS) throw new SilentPaymentError('INVALID_INPUT');
 
@@ -146,6 +151,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const tweaks = new Set<Uint8Array>();
   const found: FoundPayment[] = [];
   let returned = false;
+  let latestState = reconciled?.state;
   let recoveredHistory: ScanResult['recoveredHistory'];
   // Outpoints a scanned block consumed: the spends reported for this call's own matches, plus the spends the state
   // already remembers (a persisted match re-derived below may have been spent in a block an earlier call scanned).
@@ -184,8 +190,8 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       })) accept(r);
     } else {
       noteStateSpends(reconciled.state);
-      // Restored metadata contains no spend tweak. Re-read only prior matched blocks against current headers,
-      // re-derive each output locally and check current outspend status before returning anything spendable.
+      // Restored metadata contains no spend tweak. Re-read matched blocks against current headers and re-derive
+      // outputs. Continuous local coverage or an authorized provider check is separately required for spending.
       const recoveryHeights = [...new Set(reconciled.state.matches.filter((m) => m.status === 'confirmed' && m.spent === undefined && m.height <= toHeight).map((m) => m.height))].sort((a, b) => a - b);
       const offset = recoveryOffset >= recoveryHeights.length ? 0 : recoveryOffset;
       const end = Math.min(offset + recoveryLimit, recoveryHeights.length);
@@ -200,6 +206,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       for await (const r of resumeScan({ ...common, state: reconciled.state, hashAt: (h) => p.headers?.hashAt(h),
         onState: async (state) => {
           checkAbort();
+          latestState = state;
           noteStateSpends(state);
           if (state.lastHash !== null) blocks.push({ height: state.lastHeight, hash: state.lastHash });
           await p.onState?.(state);
@@ -214,6 +221,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
     }
     let spentCount = 0;
     for (const c of candidates) {
+      checkAbort();
       if (localSpent.has(outpointId(c.txid, c.vout)) || (providerCheck && !(await client.isUnspent(c.txid, c.vout, signal)))) {
         spentCount++;
         continue;
@@ -222,6 +230,29 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       found.push(duplicateKey === c.duplicateKey ? c : { ...c, duplicateKey });
     }
     checkAbort();
+    const evidenceBlocks = new Set(blocks.map((b) => `${String(b.height)}:${b.hash}`));
+    const keepEvidence = (height: number, hash: string): void => {
+      const id = `${String(height)}:${hash}`;
+      if (!evidenceBlocks.has(id)) { evidenceBlocks.add(id); blocks.push({ height, hash }); }
+    };
+    // Even an empty resumed result can depend on saved spends. Bind it to the reconciled prefix so an orphaned
+    // spend cannot leave a permanent "no unspent payments" result when no discovery block was reread this time.
+    if (latestState !== undefined && latestState.lastHash !== null) keepEvidence(latestState.lastHeight, latestState.lastHash);
+    if (spentStatus === 'local' && latestState !== undefined) {
+      const prior = new Map(latestState.matches.map((m) => [outpointId(m.txid ?? '', m.vout ?? -1), m]));
+      for (const candidate of found) {
+        const match = prior.get(outpointId(candidate.txid, candidate.vout));
+        const covered = match?.spentCheckedThrough;
+        if (match?.status !== 'confirmed' || covered === undefined || covered.height < toHeight ||
+            p.headers?.hashAt(covered.height) !== covered.blockHash) {
+          spentStatus = 'unknown';
+          break;
+        }
+        // Recovered discovery blocks alone do not cover a later fork. Retain the coverage anchor so the UI can
+        // invalidate this result if any block supporting its negative-spend evidence is replaced.
+        keepEvidence(covered.height, covered.blockHash);
+      }
+    }
     returned = true;
     blocks.sort((a, b) => a.height - b.height);
     return { fromHeight, toHeight, found, spentCount, blocks, headerAnchored, spentStatus, ...(recoveredHistory === undefined ? {} : { recoveredHistory }) };

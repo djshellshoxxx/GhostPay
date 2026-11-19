@@ -199,6 +199,14 @@ describe('EsploraClient', () => {
     for (const e of edits) expect(await codeOf(serve(e).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
   });
 
+  it('rejects an uncommitted coinbase flag that would hide a real consumed outpoint', async () => {
+    const forged = { ...SIMPLE_TX, vin: SIMPLE_TX.vin.map((input) => ({ ...input, is_coinbase: true })) };
+    expect(await codeOf(servePage([forged]).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+    const cb = coinbase(1);
+    const disguised = { ...cb, vin: cb.vin.map((input) => ({ ...input, is_coinbase: false })) };
+    expect(await codeOf(servePage([disguised]).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+  });
+
   it('requests exactly the pages a block has, also when its last page is full (electrs answers 400 past the end)', async () => {
     for (const n of [1, 24, 25, 26, 50]) {
       const { client, hash, requests } = electrsBlock(Array.from({ length: n }, () => SIMPLE_TX));

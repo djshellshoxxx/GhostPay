@@ -14,6 +14,7 @@ import { isHeight, isScanSourcePath, isWorkerErrorCode, MAX_SOURCE_BYTES, MAX_SO
 export class BtcScanProtocol {
   private started = false;
   private stopped = false;
+  private providerSpentCheck = false;
   private readonly abort = new AbortController();
   private secret: Uint8Array | undefined;
   private pending: { id: number; sequence: number; resolve: () => void; reject: (e: Error) => void } | undefined;
@@ -77,7 +78,8 @@ export class BtcScanProtocol {
     });
   }
   private source(path: string, signal: AbortSignal | null | undefined): Promise<Response> {
-    if (!isScanSourcePath(path) || this.sources.size >= MAX_SOURCE_PENDING) return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
+    if (!isScanSourcePath(path) || (path.includes('/outspend/') && !this.providerSpentCheck) || this.sources.size >= MAX_SOURCE_PENDING)
+      return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
     if (this.stopped || signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
     const requestId = ++this.requestId;
     return new Promise<Response>((resolve, reject) => {
@@ -107,6 +109,8 @@ export class BtcScanProtocol {
       // Reuse the source parser with its configured base, but emit only allowed path suffixes to the main thread.
       const baseUrl = normalizeEsploraUrl(m.baseUrl);
       const oracle = m.oracle === undefined ? undefined : normalizeOracleConfig(m.oracle, baseUrl);
+      this.providerSpentCheck = m.providerSpentCheck === true;
+      if (oracle?.mode === 'light' && !this.providerSpentCheck) throw new SilentPaymentError('INVALID_INPUT');
       const client = new EsploraClient({ baseUrl, fetchFn: (url, init) => {
         if (!url.startsWith(`${baseUrl}/`) || (init.method !== undefined && init.method !== 'GET') || init.body !== undefined)
           return Promise.reject(new SilentPaymentError('INVALID_INPUT'));

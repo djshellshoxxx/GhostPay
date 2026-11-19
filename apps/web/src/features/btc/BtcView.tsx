@@ -120,11 +120,13 @@ export function BtcView(
   /** Bumped by "Forget saved headers": a sync started before it may neither save nor change scan results. */
   const forgetGen = useRef(0);
   const net = btcNetwork(netId);
+  const effectiveLight = oracleKind !== 'none' && lightScan;
 
   const invalidate = (): void => {
     op.current++;
     abort.current?.abort();
     setBusy(false);
+    setHeaderProgress(undefined);
   };
 
   const begin = (): { readonly signal: AbortSignal; readonly live: () => boolean } => {
@@ -172,7 +174,7 @@ export function BtcView(
     invalidate(); resetFlow(); setError(undefined); setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
   };
   const oracleSelection = (): BtcOracleConfig | undefined => oracleKind === 'none' ? undefined : normalizeOracleConfig({
-    kind: oracleKind, url: oracleUrl, mode: lightScan ? 'light' : 'full',
+    kind: oracleKind, url: oracleUrl, mode: effectiveLight ? 'light' : 'full',
     ...(secondOracle ? { second: { kind: secondKind, url: secondUrl } } : {}),
   }, url);
   const persistencePolicy = (oracle: BtcOracleConfig | undefined): string | undefined => oracle === undefined ? undefined
@@ -221,8 +223,9 @@ export function BtcView(
     }
   }, [wallet, amount]);
 
-  /** Only payments in blocks the checked header chain reaches may be swept. */
-  const sweepable = (f: FoundPayment): boolean => checkedTip !== undefined && f.height <= checkedTip;
+  /** Unknown spentness is never spending authority, even when the output's own block is header-checked. */
+  const sweepable = (f: FoundPayment): boolean =>
+    (scan?.spentStatus === 'local' || scan?.spentStatus === 'provider') && checkedTip !== undefined && f.height <= checkedTip;
   const selected: readonly FoundPayment[] = scan === undefined ? [] : scan.found.filter((f) => sweepable(f) && picked.has(`${f.txid}:${String(f.vout)}`));
 
   /** Inputs of the review all sit in blocks the checked header chain reaches. */
@@ -266,6 +269,9 @@ export function BtcView(
     scanRef.current = next;
     setScan(next);
     clearFlowState();
+    // A newer tip can make local coverage incomplete without orphaning a discovery or a spend.
+    if (next !== undefined && next.toHeight === current.toHeight && next.blocks === current.blocks && next.found === current.found)
+      return [];
     return [
       next === undefined
         ? { kind: 'warn', text: { key: 'btc.headers.scanDiscarded' } }
@@ -290,6 +296,7 @@ export function BtcView(
       const loaded = await loadHeaderChain(net, headerStorage.storeFor(net.id), {
         onProgress: (h) => { if (live()) setHeaderProgress({ key: 'btc.headers.loading', values: { height: String(h) } }); },
       });
+      if (!live()) return undefined;
       chain = loaded.chain;
       if (forgetGen.current === gen) chainRef.current = { netId: net.id, chain };
       if (loaded.loaded === 'restored') notes.push({ kind: 'info', text: { key: 'btc.headers.restored', values: { count: String(chain.tipHeight) } } });
@@ -305,7 +312,7 @@ export function BtcView(
         sources: [new EsploraHeaderSource(c)],
         store: headerStorage.storeFor(net.id),
         signal,
-        canSave: () => forgetGen.current === gen,
+        canSave: () => live() && forgetGen.current === gen,
         ...props.headerSyncLimits,
         onProgress: (h) => { if (live()) setHeaderProgress({ key: 'btc.headers.progress', values: { height: String(h) } }); },
       });
@@ -314,7 +321,8 @@ export function BtcView(
     } finally {
       if (live()) setHeaderProgress(undefined);
     }
-    // The chain may have switched before a failure, or while this action went stale, or it was just loaded from
+    if (!live()) return undefined;
+    // The current session's chain may have switched before a failure, or it was just loaded from
     // storage (another tab's, or a fresh one after a forget) and never compared with what is on screen: results from
     // blocks it does not have are removed (and their tweaks wiped), before anything else.
     const dropped = forgetGen.current !== gen || (!fresh && chain.tipHash === before) ? [] : applyChainToScan(chain);
@@ -439,7 +447,7 @@ export function BtcView(
           headers,
           signal,
           ...(oracle === undefined ? {} : { oracle }),
-          providerSpentCheck: lightScan || providerCheck,
+          providerSpentCheck: effectiveLight || providerCheck,
           ...(vault === undefined ? {} : {
             resumeState: resumeState ?? createScanState(net.id, from),
             recoveryOffset,
@@ -578,7 +586,9 @@ export function BtcView(
               value={netId}
               disabled={wallet !== undefined}
               onChange={(e) => {
+                changeSource();
                 setNetId(e.target.value as BtcNetworkId);
+                chainRef.current = undefined;
                 setConfirmForget(false);
                 setHeaderNotes([]);
                 setCheckedTip(undefined);
@@ -715,10 +725,12 @@ export function BtcView(
           </Field>
           <div className="field">
             <label>
-              <input type="checkbox" checked={lightScan || providerCheck} disabled={scanning || lightScan} onChange={(e) => { setProviderCheck(e.target.checked); }} />{' '}
+              <input type="checkbox" checked={effectiveLight || providerCheck} disabled={effectiveLight} onChange={(e) => {
+                setProviderCheck(e.target.checked); invalidate(); resetFlow(); setError(undefined);
+              }} />{' '}
               {t('btc.scan.providerCheckLabel')}
             </label>
-            <p className="hint">{t(lightScan ? 'btc.scan.providerCheckLight' : 'btc.scan.providerCheckHint')}</p>
+            <p className="hint">{t(effectiveLight ? 'btc.scan.providerCheckLight' : 'btc.scan.providerCheckHint')}</p>
           </div>
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={() => { runScan(); }}>
             {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
@@ -750,10 +762,10 @@ export function BtcView(
           <details>
             <summary>{t('btc.scan.details')}</summary>
             <p>{t('btc.scan.checked')}</p>
-            <ul>{(oracleKind !== 'none' && lightScan ? SCAN_CHECK_KEYS.filter((key) => key !== 'btc.verification.check.transactions' && key !== 'btc.verification.check.witness') : SCAN_CHECK_KEYS).map((key) => <li key={key}>{t(key)}</li>)}</ul>
-            {oracleKind !== 'none' && lightScan && <p>{t('btc.oracle.lightChecks')}</p>}
+            <ul>{(effectiveLight ? SCAN_CHECK_KEYS.filter((key) => key !== 'btc.verification.check.transactions' && key !== 'btc.verification.check.witness') : SCAN_CHECK_KEYS).map((key) => <li key={key}>{t(key)}</li>)}</ul>
+            {effectiveLight && <p>{t('btc.oracle.lightChecks')}</p>}
             <p>{t('btc.scan.limits')}</p>
-            {oracleKind !== 'none' && lightScan ? <p>{t('btc.oracle.lightLimits')}</p> : <ul>{SCAN_LIMIT_KEYS.map((key) => <li key={key}>{t(key)}</li>)}</ul>}
+            {effectiveLight ? <p>{t('btc.oracle.lightLimits')}</p> : <ul>{SCAN_LIMIT_KEYS.map((key) => <li key={key}>{t(key)}</li>)}</ul>}
             <div className="table-wrap">
               <table>
                 <caption>{t('btc.scan.sourceCaption')}</caption>
@@ -776,19 +788,22 @@ export function BtcView(
           </>}
           {scan !== undefined && (
             <>
-              <p>
-                {scan.found.length === 0
+              <p role="status">
+                {scan.spentStatus === 'unknown'
+                  ? t('btc.scan.foundUnknown', { count: String(scan.found.length), spent: String(scan.spentCount) })
+                  : scan.found.length === 0
                   ? t('btc.scan.noneFound')
                   : t('btc.scan.foundCount', { count: String(scan.found.length) })}
-                {scan.spentCount > 0 && ` ${t('btc.scan.alreadySpent', { count: String(scan.spentCount) })}`}
+                {scan.spentStatus !== 'unknown' && scan.spentCount > 0 && ` ${t('btc.scan.alreadySpent', { count: String(scan.spentCount) })}`}
               </p>
               <p role="note">{t(scan.spentStatus === 'local' ? 'btc.scan.spentStatus.local' : scan.spentStatus === 'provider' ? 'btc.scan.spentStatus.provider' : 'btc.scan.spentStatus.unknown', { height: String(scan.toHeight) })}</p>
+              {scan.spentStatus === 'unknown' && <Notice kind="warn">{t('btc.scan.unknownRefresh')}</Notice>}
               {scan.found.length > 0 && (
                 <div className="table-wrap">
                   <p role="note">
                     {t(oracleKind === 'none' ? 'btc.scan.singleProvider' : 'btc.oracle.resultsNote')}
                   </p>
-                  {scan.found.some((f) => !sweepable(f)) && (
+                  {scan.found.some((f) => checkedTip === undefined || f.height > checkedTip) && (
                     <Notice kind="warn">{checkedTip === undefined ? t('btc.headers.uncheckedNone') : t('btc.headers.uncheckedResults', { height: String(checkedTip) })}</Notice>
                   )}
                   <table>
@@ -932,5 +947,5 @@ export function BtcView(
   );
 }
 
-// i18n-use: btc.scan.providerCheckLabel btc.scan.providerCheckHint btc.scan.providerCheckLight btc.scan.spentStatus.local btc.scan.spentStatus.provider btc.scan.spentStatus.unknown
+// i18n-use: btc.scan.providerCheckLabel btc.scan.providerCheckHint btc.scan.providerCheckLight btc.scan.spentStatus.local btc.scan.spentStatus.provider btc.scan.spentStatus.unknown btc.scan.foundUnknown btc.scan.unknownRefresh
 // i18n-use: btc.headers.scanDiscarded btc.headers.resultsDropped btc.headers.loading btc.headers.restored btc.headers.discarded btc.headers.checking btc.headers.progress btc.headers.reorg btc.headers.lessWork btc.headers.conflictHint btc.headers.forkTooDeep btc.headers.forkUnresolved btc.headers.tooMany btc.headers.claimRejected btc.headers.failed btc.headers.otherTab btc.headers.notSaved btc.headers.verified btc.headers.more btc.headers.forgotten btc.headers.forgetFailed btc.scan.firstHeightRequired btc.headers.behind btc.scan.foundBlock btc.scan.scanned btc.sweep.invalidQr

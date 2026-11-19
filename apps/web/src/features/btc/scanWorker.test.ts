@@ -96,6 +96,49 @@ describe('BTC dedicated worker message integration', () => {
 
 
 describe('BTC worker stale and untrusted boundary', () => {
+  it('rejects a forged outpoint request before any network access when the session did not opt in', async () => {
+    const f = await fixture(); const fetchFn = vi.fn<EsploraFetch>();
+    let fake!: BtcScanWorker; let id = 0; const terminate = vi.fn();
+    const running = scanForPaymentsInWorker(f, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate, postMessage: (m) => { id = m.id; },
+    }), fetchFn);
+    fake.onmessage?.({ data: { type: 'source', id, requestId: 1, path: `/tx/${'ab'.repeat(32)}/outspend/1` } });
+    await expect(running).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(fetchFn).not.toHaveBeenCalled(); expect(terminate).toHaveBeenCalledOnce();
+  });
+
+  it('rejects provider status from a worker when the active scan did not grant provider consent', async () => {
+    const f = await fixture(); const result = await scanForPayments(f);
+    let fake!: BtcScanWorker; let id = 0;
+    const running = scanForPaymentsInWorker(f, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate: () => {}, postMessage: (m) => { id = m.id; },
+    }), f.chain.fetchFn);
+    fake.onmessage?.({ data: { type: 'done', id, result: { ...result, spentStatus: 'provider' } } });
+    await expect(running).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(result.found[0]!.spendTweak.every((b) => b === 0)).toBe(true);
+  });
+
+  it.each([undefined, false, 'true'])('rejects light scans with provider consent %s before worker creation', async (consent) => {
+    const f = await fixture(); const factory = vi.fn(() => new InlineBtcScanWorker());
+    await expect(scanForPaymentsInWorker({ ...f, oracle: { kind: 'http', url: 'https://oracle.test', mode: 'light' },
+      ...(consent === undefined ? {} : { providerSpentCheck: consent as boolean }),
+    }, factory, f.chain.fetchFn)).rejects.toMatchObject({ code: 'INVALID_INPUT' });
+    expect(factory).not.toHaveBeenCalled();
+  });
+
+  it.each([false, 'true'])('the worker independently rejects light start messages with invalid consent %s', async (consent) => {
+    const f = await fixture(); f.chain.requests.length = 0;
+    class InvalidConsentWorker extends InlineBtcScanWorker {
+      public override postMessage(m: BtcScanRequest): void {
+        super.postMessage(m.type === 'start' ? { ...m, providerSpentCheck: consent as boolean } : m);
+      }
+    }
+    await expect(scanForPaymentsInWorker({ ...f, providerSpentCheck: true,
+      oracle: { kind: 'http', url: 'https://oracle.test', mode: 'light' },
+    }, () => new InvalidConsentWorker(), f.chain.fetchFn)).rejects.toMatchObject({ code: 'INVALID_INPUT' });
+    expect(f.chain.requests).toEqual([]);
+  });
+
   it('ignores another request and wipes a late result after cancellation', async () => {
     const f = await fixture(); const result = await scanForPayments(f); const ac = new AbortController();
     let posted!: BtcScanRequest; let fake!: BtcScanWorker; const terminate = vi.fn();

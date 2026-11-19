@@ -135,11 +135,11 @@ describe('BtcView', () => {
     await user.type(screen.getByLabelText(/First block height/), '0');
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
-    expect(screen.getByText(/Spent status: derived on this device from the blocks scanned through height/).textContent).toMatch(/No outpoint of this wallet was sent to the server/);
+    expect(screen.getByText(/Spent status: checked locally through height/).textContent).toMatch(/No optional per-output spent-status query was sent/);
     expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(false);
     await user.click(box);
     await user.click(screen.getByRole('button', { name: 'Scan' }));
-    await screen.findByText(/Spent status: the configured Esplora server was asked about each found output/);
+    await screen.findByText(/Spent status: the selected Esplora server was asked about outputs not already known locally to be spent/);
     expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(true);
   });
 
