@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-11-19T13:43:42.007686+00:00",
+  "command": [
+    "/dev/shm/ghostpay-slither-246ff268d20d/bin/echidna",
+    "--version"
+  ],
+  "environment_overrides": {
+    "GHCRTS": "-N4 -M1536m"
+  },
+  "exit_code": 1,
+  "output": "echidna: Most RTS options are disabled. Link with -rtsopts to enable them.\n",
+  "scope": "Official binary version smoke with proposed supported runtime resource options; no campaign results."
+}

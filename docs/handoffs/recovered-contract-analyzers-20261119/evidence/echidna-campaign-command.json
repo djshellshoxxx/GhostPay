@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "candidate": "c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a",
+  "command": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "100m",
+    "bash",
+    "scripts/run-echidna.sh"
+  ],
+  "cwd": "/dev/shm/ghostpay-echidna-246ff268d20d/packages/contracts",
+  "environment_overrides": {
+    "FOUNDRY_SOLC": "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28",
+    "FOUNDRY_PROFILE": "default",
+    "FOUNDRY_OFFLINE": "true",
+    "RAYON_NUM_THREADS": "1",
+    "GHCRTS": "-N4",
+    "TMPDIR": "/dev/shm/ghostpay-echidna-246ff268d20d/tmp",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "runtime_note": "Four Echidna campaign workers unchanged. GHCRTS=-N4 bounds Haskell runtime capabilities to those four workers; Rayon only bounds compiler threads. No analyzer wrapper or argument override.",
+  "started_at": "2026-11-19T13:34:28.041997+00:00",
+  "memory_available_at_start": 3415425024,
+  "status": "PROCESS_COMPLETE",
+  "supervisor_pid": 6,
+  "exit_code": 1,
+  "finished_at": "2026-11-19T13:51:35.013680+00:00"
+}
