@@ -26,6 +26,20 @@ all ownership sections, and the reviewed pool implementation/test blobs. Run the
 19 helper tests on Node 22 and obtain independent integration-diff review. Source
 conflicts require inspection; publication and hosted qualification remain coordinator-owned.
 
+# Historical scanner repair main reconciliation — 2026-11-19
+
+Worker: actions_repair, assigned by the pre-merge reconciliation coordinator.
+Branch: `repair/ghostpay-history-scanner-20261118-local`.
+Starting local head: `3db24b5496a2d1979a55757a2b83eb8dd362614b`; reviewed tree:
+`96e15f7544b592bac8da065ad64188f56b0d9f4d`. Merge target: main
+`e454de6abfefda70d82784fafc1d8949b277c334`, independently observed after PR #242 merged.
+Owned scope: this additive claim, preservation of the existing AST scanner repair
+while merging current main, and scoped validation evidence. Preserve both source
+histories, all ownership sections, and the reviewed scanner implementation/test blobs.
+Run all 88 scanner/privacy tests on Node 22, scan the resulting eligible production
+sources, and obtain independent integration-diff review. Source conflicts require
+inspection; publication and hosted qualification remain coordinator-owned.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
@@ -449,6 +463,8 @@ dependency, build, upload or rerun. Hosted artifact existence remains unverified
 precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
 limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
 
+# Historical source-sink scanner reconciliation — 2026-11-18
+
 
 # Historical pool input guard recovery — 2026-11-18
 
@@ -465,6 +481,18 @@ minimal repair independently. All 44 open PR file lists were checked; none
 changes the two owned source/test paths. The existing pool circuit constraints,
 proof artifacts, contracts, crypto, dependencies, deployment and security gates
 remain outside this scope. The coordinator owns publication and integration.
+
+Owned paths: `apps/web/scripts/scan-bundle.mjs`, its `.d.mts` declaration,
+`apps/web/src/scanBundle.test.ts`, this claim and a source-pinned scanner handoff.
+Acceptance: reproduce the source scanner's false negatives after nested template,
+regex and JSX text; reconcile only the TypeScript AST source-sink check from
+historical `016fa2521f7cd7c1cfbe763aaf658e32f6e27be6`; retain current built-artifact,
+HTML, CSP, deployment and release-boundary checks unchanged. Add behavioral
+regressions, use already-declared TypeScript without dependency changes, fail on
+unparsable source, and independently review before integration.
+Ownership check: open PRs #209 and #238 still contain the old comment stripper;
+their separately owned hosting/HTML/deployment changes are preserved. Original
+branches remain read-only. No workflow, contract, paid-automation or deployment changes.
 
 Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
 regressions (4 failed / 15 passed before correction; 19/19 after), package
