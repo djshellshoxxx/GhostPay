@@ -182,3 +182,93 @@ remain locally invisible, and a provider's unspent response remains unproven.
 This closes the independent source review of the stated feature scope. It does
 not authorize a merge or deployment, replace the remaining qualification gates,
 or clear unrelated GhostPay release blockers.
+
+## Integration review of current main
+
+On 19 November 2026 UTC, the reviewer independently inspected the incoming main
+changes and the completed integration in the separate `GhostPay-integration`
+worktree. **No feature-specific integration blocker was identified.** The exact
+reviewed source is:
+
+| Item | Pin |
+| --- | --- |
+| Integration merge | `3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a` |
+| Integration tree | `0074dde6081e45188c45feb39503c64243ef99b8` |
+| First parent: reviewed Bitcoin continuation | `fe9582626be39d1b52bed6ec84645c4d2acdf28f` |
+| Second parent: updated main | `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` |
+
+Updated main includes the browser-network isolation and beta-log retention merges.
+The only merge conflict was `docs/ai/ACTIVE_WORK.md`; the coordinator retained both
+claim sections. Bitcoin runtime/package files, Bitcoin browser tests, locale
+catalogs and security keys have no changes between the reviewed first parent and
+the integration merge. The feature diff against the new main remains limited to
+Bitcoin implementation/tests, Bitcoin disclosures and the qualification packet,
+plus the work-tracking entry. It does not modify the incoming shared transport,
+Solana/TRON adapters, release helper, CI, dependency lockfile or build profiles.
+
+### Compatibility trace
+
+- `apps/web/src/lib/release.ts` now constrains the entry-script hash read used by
+  `apps/web/src/views/Home.tsx`: same-origin HTTP(S), no redirects or credentials,
+  and bounded response bytes and time. It does not replace global fetch or mutate
+  the injected service used by Bitcoin.
+- `apps/web/src/lib/defaultServices.ts` still supplies its direct browser-fetch
+  adapter. `BtcView.tsx` passes that service to Esplora and the scan worker client;
+  `scanWorkerSource.ts` and `oracleBridge.ts` retain their own selected-origin,
+  method/path, disclosure-consent, cancellation and result-ownership guards.
+- Incoming `packages/net-transport/src/fetchTransport.ts` changes apply through
+  the EVM `apps/web/src/lib/scanPrivacy.ts` path. Neither that transport nor the
+  POST-only `fetchAdapter.ts` replaces Bitcoin's GET source bridge. The incoming
+  Solana/TRON adapter changes do not modify Bitcoin dispatch.
+- Vite profiles, Playwright configuration and full/lean app entry points are
+  unchanged by this feature relative to the new main. Bitcoin remains in the
+  full profile; lean acceptance checks its intentional absence. The incoming
+  beta-log workflow change only retains hidden acceptance-log files.
+
+### Inherited inventory and verification limits
+
+The inherited `docs/privacy/network-egress-inventory.json` and
+`docs/privacy/browser-network-isolation.md` explicitly describe the earlier
+`dfc75ef2087fa6463ae59e0818abec01796c578d` baseline. Their `btc-match-proof`
+authorization description says queries are automatic within a started scan or
+spend validation. That historical description must not be presented as the new
+Bitcoin consent contract. The updated Bitcoin user guide and this review describe
+the current explicit, revocable outpoint/proof authorization. Preserving the
+pinned historical inventory is not a runtime integration defect. No new production
+network dispatcher file is introduced by this feature.
+
+**No additional tests were executed for this integration review.** The 119 passing
+tests above remain the actual independent selections at their recorded source
+anchors; they are not relabelled as combined-head runs. Final combined builds,
+typecheck, lint, coverage and hosted full/lean Chromium qualification remain the
+coordinator's evidence. This integration addendum changes documentation only.
+
+## Independent packet accuracy check
+
+The same independent reviewer subsequently checked the draft qualification packet without changing files or
+executing acceptance tests. Remote Git objects for published implementation
+`ef08170a83d86d194b8ce4186299e791027e461e` and hosted merge
+`278b1d5afcbc5056fd096ea52e34feaaeedfdb4e` both independently resolved to tree
+`0074dde6081e45188c45feb39503c64243ef99b8`. All 38 changed implementation/test-file hashes and all 89 Bitcoin
+package hashes matched the pinned source and current files. Four embedded independent logs and the final
+local package coverage/lint/typecheck logs matched their retained hashes and originals.
+
+The reviewer confirmed the reported Pages tooling, egress, catalog and translation-key counts, and the final
+local 566-pass/1-timeout/0-skip package result. Two stale draft statements were corrected: the local Node22 run
+had finished, and the Pages build/browser jobs used different Node22 patch versions. This was an evidence
+accuracy check, not another acceptance-test run or a claim that pending CI had passed.
+
+## Review of the final typing correction
+
+Hosted ESLint identified ten unsafe-member/argument diagnostics in the later `validateResult` callbacks.
+The final correction at local `10c3993d4d7a215c57b936ee2b1967741d247675` (published equivalent
+`4a878e302beac5cca52d20e17cdd756f3fbebb0d`) adds only three parameter type annotations, matching the earlier
+validated-array callbacks. The reviewer independently compared the exact diff and confirmed that header/range,
+consent, uniqueness and rejection predicates are unchanged. No feature-specific blocker was found.
+
+An independent TypeScript5.9.3 ES2022/ESNext transpilation under Node24.22.3 reproduced the implementer's
+Node22.23.5 result: both emitted files are10,176 bytes and share SHA-256
+`7d6dd13f1bd0e28209ad0667695045a3a6373d98810a5f9a20caeec572e4d853`.
+The reviewer ran no additional tests for this source-only check. The implementer's separate evidence records
+the ten-error lint reproduction, 28-file lint pass and 29 unchanged worker regressions passing after the fix;
+those executions are not added to the independent119-test count.

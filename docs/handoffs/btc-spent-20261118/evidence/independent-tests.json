@@ -1,0 +1,29 @@
+{
+  "note": "Exact focused-run output; source anchors and commands are in INDEPENDENT_REVIEW.md. These are earlier selections, not whole combined-source qualification.",
+  "runs": [
+    {
+      "log": "independent-worker-review.log",
+      "sha256": "3efef9f154c2a07a6d0b171f6bc8a505f39577de7145bbaa11e34453ae68e233",
+      "bytes": 596,
+      "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay/apps/web\n\n\n Test Files  4 passed (4)\n      Tests  46 passed (46)\n   Start at  22:10:29\n   Duration  71.67s (tests 63%, import 28%, transform 9%)\n\n     Import  127 modules were evaluated 189 times \u00b7 18.89s total, 28% of tracked time\n             ~6.20s faster with isolate: false \u2014 shared modules are evaluated once per worker instead of once per file\n             learn more: https://vitest.dev/guide/improving-performance#test-isolation\n\n"
+    },
+    {
+      "log": "independent-state-review.log",
+      "sha256": "13b92fa5ce25b667b919e640a12562261ab9141ad0bb782b601769aed9bc1f78",
+      "bytes": 319,
+      "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay/packages/btc-silent-payments\n\n\n Test Files  2 passed (2)\n      Tests  39 passed (39)\n   Start at  22:12:55\n   Duration  23.33s (tests 93%, import 4%, transform 3%)\n\n"
+    },
+    {
+      "log": "independent-scan-review.log",
+      "sha256": "3a5e97f1e0362f1bf739b8ebc8f738363377e8677e7bc24e6800b9aff1c5362e",
+      "bytes": 300,
+      "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay/apps/web\n\n\n Test Files  4 passed (4)\n      Tests  29 passed (29)\n   Start at  22:12:54\n   Duration  45.35s (tests 67%, import 27%, transform 6%)\n\n"
+    },
+    {
+      "log": "independent-ui-review.log",
+      "sha256": "31330626132a76a31fed93cfb31a8ffa8a7c4988c737a1f51eaf709024867377",
+      "bytes": 514,
+      "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n\n RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay/apps/web\n\n\n Test Files  2 passed (2)\n      Tests  5 passed (5)\n   Start at  22:15:27\n   Duration  30.85s (tests 64%, environment 16%, import 15%, transform 5%)\n\n    Isolate  2 workers spawned \u00b7 ~3.02s startup each (spawn + environment, per file)\n             at least ~3.02s faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n"
+    }
+  ]
+}
