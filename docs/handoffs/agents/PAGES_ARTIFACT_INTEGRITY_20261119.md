@@ -1,0 +1,44 @@
+# Independent GitHub Pages artifact integrity verification — 2026-11-19
+
+## Scope and ownership
+
+- Isolated branch: `chatgpt/ghostpay-pages-artifact-integrity-20261119`
+- Starting `main`: `8f56376427c96881f49590920ff0bf8543ec81b4`.
+- Changed production file: `scripts/pages/verify-pages-artifact.mjs` (blob `b13870688d722fe5928ed192499ae76be55554ee`, commit `924559411aff83e6de50cb23059dd3976bd9d03a`).
+- New tests: `scripts/pages/verify-pages-artifact.test.mjs` (blob `26ed2b9f2401946a257ee76e4536db82458842f3`, commit `35e2b6f92fabdfd5125e5997bdd71ec5c0887934`).
+- Existing integration branches, workflows, release settings, testnet manifests, contracts, and deployed Pages content were not modified.
+
+## Purpose
+
+Provide an independent consumer-side check that an extracted Pages release artifact matches an externally trusted `evidence/SHA256SUMS`. This is separate from the producing build's own site verifier. It rejects missing, extra and modified files, noncanonical, malformed, duplicated or out-of-order checksum records, unsafe/traversal paths, and symlinked files or checksum inputs. An optional full 40-hex source commit must match `site/build-info.json`. It checks that `index.html`, `.nojekyll`, and `build-info.json` are present.
+
+## Usage
+
+From the repository root after extracting the approved Pages artifact:
+
+```sh
+node scripts/pages/verify-pages-artifact.mjs \
+  /path/to/extracted/site \
+  /path/to/trusted/evidence/SHA256SUMS \
+  --expect-commit <approved-40-hex-source-commit>
+```
+
+Exit 0 confirms the file inventory and hashes matched the supplied trusted manifest; exit 1 indicates failed verification; exit 2 indicates invalid CLI usage. Obtain the checksum manifest from the independently approved workflow/release, **not from the same untrusted site**. File hashes alone do not authenticate a publisher, prove the safety of the software, or qualify a deployed site.
+
+## Executed verification
+
+- Node `v22.16.0` run: `node --test verify-pages-artifact.test.mjs` on exact file blobs copied to `/mnt/data/ghostpay-work`.
+- Result: **5 test groups passed, 0 failed, 0 skipped**; includes fixture-level positive, integrity failures, path/manifest validation, symlink denial and source-commit mismatch.
+- Local `git hash-object` of both tested files exactly matches their published GitHub blob SHAs above.
+- No full workspace dependency installation or actual published Pages artifact was used in this environment. Repository CI and independent code review remain **pending**, not passed.
+
+## Next integration steps
+
+1. Review this isolated patch independently, including filesystem race and checksum trust assumptions.
+2. Run the repository Pages job on the exact candidate. The existing Pages workflow runs `node --test scripts/pages/*.test.mjs`, which includes the new test.
+3. Confirm artifact verification on a real fresh Pages artifact. Consider invoking the new checker in the existing Pages validation job after confirming it does not overlap the active release-engineering owners.
+4. Refresh against current `main`, obtain exact-source CI and reviewer approval, then merge via the normal PR workflow. No deployment or version tag is authorized by this work.
+
+## Release dependencies not affected
+
+ADR-0029 is still proposed. GP-PAGES-01 dedicated-origin decision and other mandatory owner/external release gates remain open. This task does not enable any payment execution, mainnet, signed manifest, deployment, or public release.
