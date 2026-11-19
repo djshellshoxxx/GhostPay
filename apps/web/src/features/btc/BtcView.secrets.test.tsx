@@ -204,6 +204,24 @@ describe('BtcView key and spend-tweak lifetime', () => {
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
   });
 
+  it.each(['provider consent', 'scan source'])('drops and wipes a late scan result after changing %s', async (edit) => {
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let held = false;
+    scanHook.wrap = async (p, real) => {
+      const res = await real(p); held = true; await gate; return res;
+    };
+    const { user } = await ready();
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await waitFor(() => expect(held).toBe(true));
+    if (edit === 'provider consent') await user.click(screen.getByRole('checkbox', { name: /Also ask the server whether each found output is unspent/ }));
+    else await user.type(screen.getByLabelText(/Esplora server URL/), '/other');
+    release();
+    await waitFor(() => expect(observed.tweaks.every(wiped)).toBe(true));
+    expect(screen.queryByRole('checkbox', { name: /^Sweep / })).toBeNull();
+    expect(screen.queryByText(/Scanned blocks/)).toBeNull();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
   it('the app lock (idle timeout) wipes like Lock, clears a typed seed and says why', async () => {
     const { user, keys } = await ready();
     await user.type(screen.getByLabelText(/First block height/), '0');

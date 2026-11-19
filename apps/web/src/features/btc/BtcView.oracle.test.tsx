@@ -19,6 +19,8 @@ describe('explicit source selection', () => {
     expect(screen.getByText(/The oracle can still omit payments/)).toBeTruthy();
     expect(f.calls).toHaveLength(0);
     await user.type(screen.getByLabelText(/Or import a seed/), SEED_A); await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Scan' }).disabled).toBe(true);
+    await user.click(screen.getByRole('checkbox', { name: /Allow required provider checks for this light scan/ }));
     await user.type(screen.getByLabelText(/First block height/), '1'); await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
     expect(f.chain.requests.some((path) => path.endsWith('/merkle-proof'))).toBe(true);

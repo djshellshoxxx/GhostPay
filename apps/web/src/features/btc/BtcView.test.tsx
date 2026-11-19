@@ -139,7 +139,7 @@ describe('BtcView', () => {
     expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(false);
     await user.click(box);
     await user.click(screen.getByRole('button', { name: 'Scan' }));
-    await screen.findByText(/Spent status: the configured Esplora server was asked about each found output/);
+    await screen.findByText(/Spent status: the configured Esplora server was asked about candidate outputs/);
     expect(chain.requests.some((r) => r.includes('/outspend/'))).toBe(true);
   });
 

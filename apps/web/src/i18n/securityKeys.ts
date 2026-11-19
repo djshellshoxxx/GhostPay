@@ -163,6 +163,12 @@ export const SECURITY_KEY_GROUPS = {
     'btc.scan.spentStatus.local',
     'btc.scan.spentStatus.provider',
     'btc.scan.spentStatus.unknown',
+    'btc.scan.providerCheckLightLabel',
+    'btc.scan.mode.local',
+    'btc.scan.mode.provider',
+    'btc.scan.mode.light',
+    'btc.scan.unknownCount',
+    'btc.scan.spentEvidenceChanged',
   ],
   supportedChainOutcomes: [
     'btc.verification.check.header',
