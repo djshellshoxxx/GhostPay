@@ -1730,3 +1730,28 @@ Acceptance: run the original checksum/adversarial/CLI tests; check exact publish
 - Scope: recover the already reviewed PR #277 and #275 integrations, beta metadata, narrowly selected PR #255 analyzer changes, native fee-review work, and release evidence. Root owns integration, metadata and release documents; workers own their explicitly recorded source paths on separate branches.
 - The replacement environment did not retain the previous temporary filesystem. Published history is intact. Unpublished local commits and missing logs remain historical identifiers until actual bytes are recovered. Reconstructed code requires fresh verification; old passing results do not qualify a different source tree.
 - Acceptance: preserve existing and original PR ancestry; compare recovered source identities where recorded; obtain fresh tests and independent review; publish recoverable source checkpoints promptly. Do not weaken assertions, coverage thresholds, analyzer policy, deployment approvals or external review requirements. No main merge, public deployment, tag or release before all applicable gates pass.
+## Policy Anvil fixture reconciliation — 2026-11-19
+
+Worker: ChatGPT strict_json_review, delegated by the main consolidation coordinator.
+Branch: `repair/ghostpay-270-policy-fixture-20261119`.
+Base: `73545f63112910d46002718354ab5e99f8652e1f` (current PR #270).
+Original source input `fefcd57fb2397685a361dcbb9b9cf705efbfc17b` is its
+verified direct parent; the policy fixture blob is unchanged across that refresh.
+Owned paths: `packages/policy-scheme/src/anvil.test.ts`, this additive claim and
+`docs/handoffs/agents/POLICY_ANVIL_FIXTURE_20261119.md`.
+Acceptance: recover only the eight-line historical fixture hunk from
+`cd4539d2b7f3f14c63227c74d88c032e1e1f360d`, whose parent is
+`95d2480a6e2bacf16fe3c142c38a2538758bd102`; retain strict builder and encoder
+leaf/token binding and the intentionally malformed order's on-chain revert.
+Do not copy the historical whole file or its earlier salt-only ABI changes.
+Run bounded existing policy tests, typecheck and lint with source/dependency
+provenance; require real Anvil and contract artifacts for an Anvil pass.
+Obtain independent review, publish only this owned draft and preserve the parent.
+
+Fresh overlap check before edits: private-scan lint branch
+`1b010ec910d04df105fd662cc360629cb0a2f5dd` and export-authorization branch
+`b0abb726c138ad1df2f03b7b102c9bd9de318887` own the remaining observed web lint
+work; both retain the same unrepaired policy fixture blob as this base. This
+worker makes no web/runtime/lint-site, dependency, threshold, workflow, contract,
+main, lease, #264/#270/#272 or other-owner branch changes. The root coordinator
+owns later integration and qualification.
