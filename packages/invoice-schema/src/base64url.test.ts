@@ -33,7 +33,7 @@ describe('base64url', () => {
       [],
       { length: 0 },
       new Uint8Array([0x41]),
-      { length: 2, charCodeAt: (_index: number) => 0x51 },
+      { length: 2, charCodeAt: () => 0x51 },
     ];
     for (const input of inputs) {
       expect(() => decodeBase64Url(input as string)).toThrow(Base64UrlError);
