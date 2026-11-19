@@ -1,0 +1,46 @@
+{
+  "recorded_at": "2026-11-19T11:20:27.684433+00:00",
+  "implementation_commit": "1d8445b656bdc6a78449dcc3b112b57322e3f482",
+  "regression_source": "5fedb1be",
+  "base_commit": "7f44cf742f25df25105a5a21d223b6d0d1efb62d",
+  "runtime_blob": "6ea4e3713c2f314e4dff89cc0a93a30fce2f50cc",
+  "tests_blob": "5f110f95607ff7768e8fd1577ecfe98c97ad10bc",
+  "checks": [
+    {
+      "name": "red",
+      "exit_code": 1,
+      "result": "14 cases: 11 failed, 3 passed on unchanged prior helper",
+      "log": "evidence/red.log",
+      "sha256": "3c13c9d9c0a3ece8dedc2d7eed785af0ad13ef2774defb26cc06cee597649e09"
+    },
+    {
+      "name": "green",
+      "exit_code": 0,
+      "result": "14 cases passed on corrected helper",
+      "log": "evidence/green.log",
+      "sha256": "293c08a5b718189d8da789ab9072271c6a17726ca210423be2894ecab789e9ef"
+    },
+    {
+      "name": "regression",
+      "exit_code": 0,
+      "result": "126 cases passed across helper authority, existing sweep and destination privacy files",
+      "log": "evidence/regression.log",
+      "sha256": "9de2bfb7140066be80ad20233da65949b188b43aeb2935a1c784645d16ea592d"
+    },
+    {
+      "name": "lint",
+      "exit_code": 0,
+      "result": "Original type-aware ESLint passed for helper and regression file",
+      "log": "evidence/lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "limits": [
+    "Focused suites disabled coverage for diagnosis only; existing coverage gates unchanged.",
+    "Initial preflight collected no tests because tx-review dist was absent; root then rebuilt all libraries and synchronized the worker output.",
+    "One repair command used the wrong working directory and reran the unchanged RED source; no pass was claimed for that invocation.",
+    "Node 24.22.3 and Vitest 5.1.0 from task-relevant cached dependencies, not a successful clean dependency installation.",
+    "No browser, external wallet, testnet, complete coverage or hosted CI qualification was performed by this worker.",
+    "Root must pass callback from the final Sweep component and qualify the combined source."
+  ]
+}
