@@ -1,0 +1,267 @@
+{
+  "schema": "ghostpay-independent-review/1",
+  "reviewer": "review_gen2",
+  "generation": 2,
+  "recorded_at": "2026-11-19T23:44:30.170554+00:00",
+  "reviewed_security_commit": "84f39e41ef132af88b4ca3280818ed701026d412",
+  "reviewed_integration_commit": "a080c2db54d79a280def1f1ed365637d16180e44",
+  "original_candidate": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "node_version": "v22.23.4",
+  "node_sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+  "dependency_resolution": {
+    "node_modules_symlink": "/workspace/scratch/0a7bc3583588/GhostPay/node_modules",
+    "web_source": "local independent worktree through original Vite configuration",
+    "workspace_libraries": "root clean install and built dist; shared read-only installed dependency graph",
+    "limitation": "Focused source verification, not independent clean whole-workspace or production artifact qualification."
+  },
+  "sources": [
+    {
+      "path": "apps/web/src/components/StealthExportCommon.tsx",
+      "git_blob": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a",
+      "sha256": "7a5d823f58b9fc51b72c77600577d352fb9ee88af397668ea9070058ca287f7a"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.expiry.test.tsx",
+      "git_blob": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+      "sha256": "6d22194e24c38d63c6ca07dc26db6646ad051cbe6c2d257764c7879d99974eee"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.review.test.tsx",
+      "git_blob": "1c9f60cee51327f25d7e76407fb03b82058439f7",
+      "sha256": "3e922cdcbc62cda6a67fbeea2ff52682d4b93e4052bf8808583d263f0d6e2b7b"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.tsx",
+      "git_blob": "8db65de1837b1bf70dff72a4be1e0e30a5d27006",
+      "sha256": "6ac29c027f86b93a424240b15080fbc9580c0178372fe3384d9168e886d90299"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.tsx",
+      "git_blob": "fda705e782c147702ebcbac125ddb30ffee94910",
+      "sha256": "ec4205232e9962c7c19aa0f4d1bf198a86277c0a7a35c3a6b282c5d99b1cde61"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.tsx",
+      "git_blob": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8",
+      "sha256": "b573653b4ccd53602ef56c19e16536df660b7f66c8d7603af7f64653a7d306c3"
+    },
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "git_blob": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "sha256": "1c847443c605a270cddea3f7c07dc62dd2e65bfc20a12ee936206aaa59479672"
+    },
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "git_blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "sha256": "9a9716abdc2c891e494337c8b0ffcbf228a9659205b185af45115c9ee7cb6198"
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+    },
+    {
+      "path": "apps/web/package.json",
+      "git_blob": "dc383c41588864646c2bfa0083acc1d9d33e1f54",
+      "sha256": "8dc92a2cb449e4ed9661c24a7265da5f912836ca0d82bf593ae643897f8f9ad9"
+    },
+    {
+      "path": "package-lock.json",
+      "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+    }
+  ],
+  "results": [
+    {
+      "id": "expiry-red",
+      "files": 1,
+      "numTotalTests": 4,
+      "numPassedTests": 1,
+      "numFailedTests": 3,
+      "numPendingTests": 0,
+      "success": false
+    },
+    {
+      "id": "expiry-green",
+      "files": 1,
+      "numTotalTests": 4,
+      "numPassedTests": 4,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    {
+      "id": "export-combined",
+      "files": 7,
+      "numTotalTests": 62,
+      "numPassedTests": 62,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    {
+      "id": "review-final",
+      "files": 1,
+      "numTotalTests": 3,
+      "numPassedTests": 3,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    {
+      "id": "extractions-web",
+      "files": 5,
+      "numTotalTests": 73,
+      "numPassedTests": 73,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    {
+      "id": "extractions-invoice",
+      "files": 2,
+      "numTotalTests": 29,
+      "numPassedTests": 29,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  ],
+  "evidence": [
+    {
+      "path": "expiry-green.json.gz",
+      "raw_sha256": "ce12a06d68a9ef1fa40796ccb7b0c055168e444e57a70a045870723dcca9c00b",
+      "compressed_sha256": "8ebe9f3a3b1773bd0fe6a9a2c3f670b080873046e6854e1b8f6bd42d4fd62764",
+      "uncompressed_bytes": 2472
+    },
+    {
+      "path": "expiry-green.log.gz",
+      "raw_sha256": "93f0f6e6182e405cda17d55f3b5b2817c8d29b0030d001ffe3597ce9d89cecab",
+      "compressed_sha256": "3caff810beb76dfb1457d7408208a89d561befe94ff15df3b629d6a63531e1ad",
+      "uncompressed_bytes": 510
+    },
+    {
+      "path": "expiry-red.json.gz",
+      "raw_sha256": "b32aaefd58ba693b5bdcc445572d3b843489a3d055475b0e82b7ab54bc2160a6",
+      "compressed_sha256": "3d6e824da9d486311ab9b1865b92392afc17a30c9edd96caec6907722c0d59d4",
+      "uncompressed_bytes": 5334
+    },
+    {
+      "path": "expiry-red.log.gz",
+      "raw_sha256": "7adbd70ec16249df22d33de588913a492da8c046a08f75f99b9e4dc7761fa9b5",
+      "compressed_sha256": "8f3b0ba835576948fad52a92b3c73b908200e19e1ee9c3732565d8c8ad47ce60",
+      "uncompressed_bytes": 507
+    },
+    {
+      "path": "export-combined.json.gz",
+      "raw_sha256": "0402ccc3dc2c58e67811dd09a8effd315c62dcb664e5e4f867542ddd374a2052",
+      "compressed_sha256": "68612eea28842073a1464b802d34488adff76d7aea5b00e76fe0394bf921a282",
+      "uncompressed_bytes": 26496
+    },
+    {
+      "path": "export-combined.log.gz",
+      "raw_sha256": "1ae554a7331c971e7ea4cb0a98a5fe9f26589268b83d20fe4d2a0bf417711ff7",
+      "compressed_sha256": "697fb4aae09090c2c1108c4c977ef9443e92d0015799b436aa8752e867fd9270",
+      "uncompressed_bytes": 1563
+    },
+    {
+      "path": "export-lint-final.log.gz",
+      "raw_sha256": "fbd225f885d630dc79d8364944905ccb081b7e0939b813fcc3c0c828b9fdd785",
+      "compressed_sha256": "db19a69089e76e99292756acb2e40db75a1a719419bd1118485697d24c32ec00",
+      "uncompressed_bytes": 175
+    },
+    {
+      "path": "export-lint.log.gz",
+      "raw_sha256": "c69cbd28421fbea645174b120d889b0afa80edaa9d1ea17870c72654a4029b0b",
+      "compressed_sha256": "504c2596b89deea5049d612aa0822d1993481089eb64c4e1cb1b770a6bf8a617",
+      "uncompressed_bytes": 408
+    },
+    {
+      "path": "extractions-invoice.json.gz",
+      "raw_sha256": "10e5610db134c147eaa96402ae02a7a7e239692a6a6c2844dff9946d7751eca6",
+      "compressed_sha256": "b9d0a8cd88efbdf6131415792d703b3aad8558edb48c9b1207a001a1e4a13fe7",
+      "uncompressed_bytes": 9104
+    },
+    {
+      "path": "extractions-invoice.log.gz",
+      "raw_sha256": "6f5184713d9378c3c585248e8c7b099eba4d269d0740beeff678650dfedd1297",
+      "compressed_sha256": "5ae7d2b0beb94a2be08dda59fc0a498e03f4746eb5f7d19bbd5d3c1f6fa22816",
+      "uncompressed_bytes": 694
+    },
+    {
+      "path": "extractions-web.json.gz",
+      "raw_sha256": "4a8ec72ec3e09a5181732bd935052ec6a7ee1f55443fbbb33e0e502e881725d6",
+      "compressed_sha256": "6d1b8cad497c0c8676f43fc290149c6e012883da39c87045ca90c329978e4649",
+      "uncompressed_bytes": 24659
+    },
+    {
+      "path": "extractions-web.log.gz",
+      "raw_sha256": "7d1138edcc5bc4e8dfece1a5de5ead0126981089414d7bfda6a69b7a669a8f2b",
+      "compressed_sha256": "ec250b0ebc4188eb66ddc6ce0ef7c13b6c628372b5267b604a38da6345a00ea7",
+      "uncompressed_bytes": 1213
+    },
+    {
+      "path": "review-final.json.gz",
+      "raw_sha256": "56297d985ccb67c04b0052224ea381042f1adabb098994f717c5c384fbe337b5",
+      "compressed_sha256": "998d52a49ed46a243e1888fe5678dc7e64926fa405ec6075290209d96b004d92",
+      "uncompressed_bytes": 1913
+    },
+    {
+      "path": "review-final.log.gz",
+      "raw_sha256": "34b725d4ee947d2bdaacd1ab6c8cbdd29d59a4eb077338e61292fc98de5b5c91",
+      "compressed_sha256": "9be7db89d239828ca44d039253cd39062ba6e0819b9498aead26ae6b40488378",
+      "uncompressed_bytes": 509
+    }
+  ],
+  "additional_commands": [
+    {
+      "id": "export-combined",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+      "command": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/StealthExportCommon.review.test.tsx",
+        "src/components/StealthExportCommon.expiry.test.tsx",
+        "src/components/StealthExportPayment.test.tsx",
+        "src/components/StealthExportRecovery.test.tsx",
+        "src/components/StealthExportVerification.test.tsx",
+        "src/components/StealthExportSelection.test.tsx",
+        "src/components/StealthExportDownload.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=<evidence>/export-combined.json"
+      ],
+      "exit_code": 0,
+      "note": "Before equivalent prefer-const spelling correction in new review fixture."
+    },
+    {
+      "id": "review-final",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+      "command": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/StealthExportCommon.review.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=<evidence>/review-final.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "export-lint-final",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+      "command": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src/components/StealthExportCommon.review.test.tsx",
+        "src/components/StealthExportCommon.expiry.test.tsx",
+        "src/components/StealthExportCommon.tsx"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

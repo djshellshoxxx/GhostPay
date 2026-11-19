@@ -1865,3 +1865,12 @@ Acceptance: reproduce the failure on original source; preserve fresh empty-sessi
 recovery and valid exports; cancel stale operations before download; retain existing
 assertions, cryptographic work and limits; obtain separate review after repair.
 No remote publication, contract, fee, deployment, dependency or gate changes.
+
+# Continuous engineering independent generation 2 review — 2026-11-19
+
+Worker: review_gen2, independent of generation 1 implementation.
+Branch: `review/ghostpay-continuous-gen2-20261119`.
+Base: security repair `84f39e41ef132af88b4ca3280818ed701026d412`; original candidate `c993bb2340942c85dbf10303b61f69a91c4944e0`.
+Owned paths: `docs/engineering-handoffs/continuous-20261119/generation-2-review/` and any new uniquely named adversarial review tests only. Existing product files remain owned by their implementers.
+Acceptance: independently reproduce the checked-in expiry test failures on original product source, verify the fixed source with original configuration, inspect fresh empty-session recovery, silent revision invalidation and reentrant callbacks; independently compare the five source extractions and lint fixture semantics. Report exact evidence and limits.
+No remote writes, main/integration merge, production release, configuration relaxation or simulated browser acceptance.
