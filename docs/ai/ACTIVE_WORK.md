@@ -1,3 +1,46 @@
+# Dependency candidate reconciliation with current main — 2026-11-19
+
+Worker: backlog_ci; branch `chatgpt/ghostpay-dependency-reconcile-20261119`.
+Base PR #210: `7fab4b92f90d65dd8d3e992eaca2483187f544a7`, including merged #236.
+Main source: `e454de6abfefda70d82784fafc1d8949b277c334`.
+Owned paths: reconciliation of these exact source parents, this registry and
+`docs/handoffs/agents/DEPENDENCY_RECONCILE_20261119.md` with evidence.
+The preliminary merge has only a registry conflict; no runtime, workflow,
+manifest or lock conflict is present. Preserve both histories and every current
+main source change, retain the paired minor/patch dependency repair, and qualify
+manifest/lock integrity and the existing dependency-tooling checks. No dependency
+regeneration, version migration, feature repair, gate change, deployment, branch
+publication or GitHub merge. The coordinator owns review and publication.
+Status: the registry-only conflict preserves all main content; all 74 tracked
+manifests and the lock equal the reviewed paired head. Two independent reviews
+passed. Fresh clean install, 5/5 tooling checks, actual shared-viem and coverage
+import checks pass. Production-tree validation passes with Node 22's bundled
+npm 10.9.9; the executor npm 11.9.0 override-reporting failure is retained in the
+handoff. Exact remote candidate CI remains required before a main merge.
+
+## PR #210 viem dependency alignment — 2026-11-18
+
+Worker: ChatGPT security_review, Caveman workflow. Branch: `chatgpt/ghostpay-viem-alignment-20261118`.
+Base: `4d19655a2e5d93ad9378803cd4163245168aca24` (exact PR #210 head).
+Owned paths: root `package.json`, `package-lock.json`, this claim, and
+`docs/handoffs/GHOSTPAY_VIEM_ALIGNMENT_20261118.md`. Other sources and workflows are read-only.
+Acceptance: reproduce the Zama SDK/client type conflict; align the existing viem override with the
+workspace's pinned compatible version through normal lock regeneration; preserve package integrity
+and unrelated dependency choices; run the affected library build, package tests/types/lint and
+dependency-tooling checks; record exact audit outcomes and obtain independent source review.
+Follow-up: the coordinator authorized a separate local same-version coverage-provider placement fix
+after the candidate's original coverage commands failed before running tests. Preserve all coverage
+settings and package versions; distinguish the executed candidate failure from the original head's
+source-proven provider placement (resource-limited baseline reinstalls supplied no test result).
+No casts, force installs, audit suppressions, major dependency migrations, publication or merge.
+Status: completed locally in separate source commits `0597852aeede368b0b8819be0c4cd68c9b1a6081`
+and `8b98e68effa2da42dd612c7db456b63dbdf990a2`. Clean install, complete library build, affected
+coverage suites (161 passed / 4 existing artifact-dependent skips), 5 dependency-tooling checks,
+package types/lint and full web build/bundle scan passed. Independent source/lock review and 17
+independently rerun SDK tests passed. Production audit remains zero; full audit remains 30 entries
+(14 high / 16 low). Hosted CI/integration remain pending. See the dedicated handoff for exact
+source boundaries, failed baseline attempts and scope limitations.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
