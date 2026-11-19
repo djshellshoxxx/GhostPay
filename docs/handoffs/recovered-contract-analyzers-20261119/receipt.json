@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-19T13:32:30.137918+00:00",
+  "source": "e8680e138dcdd9d82737971cc55ad757a6640fbf",
+  "status": "FRESH_SLITHER_PASS_OTHER_ANALYZER_GATES_OPEN",
+  "slither_result": "evidence/slither-result.json",
+  "source_inputs": "evidence/slither-source.json",
+  "commands": "evidence/slither-commands.json",
+  "installation": {
+    "result": "evidence/install-result.json",
+    "resolved_artifacts": "evidence/slither-installed-report.json",
+    "dependency_check": "evidence/post-install-checks.json",
+    "environment_size_mib": 102,
+    "official_environment_path": "/dev/shm/ghostpay-slither-246ff268d20d/venv",
+    "temporary_compilation_path": "/dev/shm/ghostpay-slither-246ff268d20d/out",
+    "global_dependencies_modified": false
+  },
+  "logs": [
+    {
+      "path": "evidence/compile.log.gz",
+      "raw_bytes": 91,
+      "raw_sha256": "220b42f6da11ddf2c62a2cad9c5d3fe181d4afff3f594d8cf618d15059e6ae60",
+      "gzip_bytes": 98,
+      "gzip_sha256": "270cf95cc54b160d7e80768792d317793b39e29aa696e9469c22f34f0033a8fe"
+    },
+    {
+      "path": "evidence/echidna-version.log.gz",
+      "raw_bytes": 14,
+      "raw_sha256": "2a9c2237fa127e4f9974f59e1c283f711c6f2d609cb7c57867d23bed1785cb7c",
+      "gzip_bytes": 34,
+      "gzip_sha256": "0a80f8722cf3a4c84c2ebbe89fb76c50c38eb8abda0756fc9d9ba9bf2b961f8a"
+    },
+    {
+      "path": "evidence/forge-version.log.gz",
+      "raw_bytes": 155,
+      "raw_sha256": "3ecb821e24278b54261fe72dd6d92425cd8d0cc9539de26c9acffdc63789e3f2",
+      "gzip_bytes": 153,
+      "gzip_sha256": "3783e197d0e9d039799b6b960b4828a787ddc5d11ebe90d950a940852b339f21"
+    },
+    {
+      "path": "evidence/install-plan.log.gz",
+      "raw_bytes": 13714,
+      "raw_sha256": "ee2606e2f2d193a57171db8a52844e4a226ed0ed0ff3d17d3f1f7c651d43f814",
+      "gzip_bytes": 2083,
+      "gzip_sha256": "7957eb9235ecec01e65b79e24818d8d4b7425a1785a1a14917737d531d0762e5"
+    },
+    {
+      "path": "evidence/install.log.gz",
+      "raw_bytes": 14284,
+      "raw_sha256": "85cdc1210c1a4b39f968e38a5249bc54216bf7823eb2d600fc0ab2c5551aa4dd",
+      "gzip_bytes": 2252,
+      "gzip_sha256": "27f4396923d332c5d6998e6fa084282c1645406e37c9469c3f5bb632b184cd58"
+    },
+    {
+      "path": "evidence/pip-check.log.gz",
+      "raw_bytes": 30,
+      "raw_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
+      "gzip_bytes": 50,
+      "gzip_sha256": "19331bf55e9bdcae3bc4f121388ff289d6083fc54f6766dfde9259f47e5f1c8f"
+    },
+    {
+      "path": "evidence/pip-freeze.log.gz",
+      "raw_bytes": 860,
+      "raw_sha256": "c092fba11d1b820417c6c557b93ada6e46c5d6ca72b4916d5cc14ee68a74a91f",
+      "gzip_bytes": 483,
+      "gzip_sha256": "12e77f5b644c89d6e9806c006067f8b2d715e2c6861f5b7559acf20daa500242"
+    },
+    {
+      "path": "evidence/slither-version.log.gz",
+      "raw_bytes": 7,
+      "raw_sha256": "5f6ca10b1d6b6eb9112c2ba20ee0decd761b864bfbf9dd595c6c9192d2936f03",
+      "gzip_bytes": 27,
+      "gzip_sha256": "b44d5044152ed772a5dbdb6230980c959bd2e86366437e5668e806ea6fc1490d"
+    },
+    {
+      "path": "evidence/slither.log.gz",
+      "raw_bytes": 196,
+      "raw_sha256": "a99232cde39f43235f0305d41b83f73a113b7af4f5947dbf7d68a63d5c5d5285",
+      "gzip_bytes": 171,
+      "gzip_sha256": "4067f0750576efa03ec8f6a567041f83d4f1000a9bb145580d08fe95831e2056"
+    },
+    {
+      "path": "evidence/solc-version.log.gz",
+      "raw_bytes": 92,
+      "raw_sha256": "c0b37bb98c77c4653be063e61a01f5e6595fb3a74e69a9c60a429b705a97a9d0",
+      "gzip_bytes": 106,
+      "gzip_sha256": "966af21d4e40ea0fe32c17de10b8eeeb758dafb20300900176e1771ef39a2d94"
+    },
+    {
+      "path": "evidence/venv.log.gz",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "path": "evidence/versions.log.gz",
+      "raw_bytes": 63,
+      "raw_sha256": "d35bef332c46f076d361cf6e329e863188ae6c31cd4353a7615beaef9a3bd61d",
+      "gzip_bytes": 82,
+      "gzip_sha256": "dc50e31661846a1c31b6e505f36bb03810587ea05f304f6a7015f80f693df5e7"
+    }
+  ],
+  "other_analyzers": {
+    "acquisition": "evidence/other-analyzer-acquisition.json",
+    "echidna": "Official checksum-pinned 2.2.7 binary and version smoke passed. Full campaign newly authorized by coordinator, pending separate exact-source campaign receipt.",
+    "mythril": "0.24.8 source distribution checksum verified and official requirements inspected. Full dependency environment and campaign not installed/executed. Python 3.12 is not declared unsupported: metadata allows >=3.7 while README advertises 3.7\u20133.10 and repository CI historically used 3.12. Required native/scientific/solver packages need a separate complete environment; no packages substituted or patched."
+  },
+  "historical_mythril": "evidence/historical-mythril-dispositions.json",
+  "lint_source_review": "LINT_SOURCE_REVIEW.json",
+  "release_verdict": "BLOCKED; this is a scoped analyzer/test-fixture evidence handoff, not release qualification.",
+  "official_source_documents": [
+    {
+      "path": "evidence/mythril-official-README.md.txt.gz",
+      "raw_bytes": 4903,
+      "raw_sha256": "4186b841b1e99891c95be9219a41fc36e5d23a0c21e46962b6649888c57a3e9f",
+      "gzip_bytes": 2176,
+      "gzip_sha256": "bc1c3d77294c753b198a8739368307171d96c662c35a61ff10eb990cb6ac60b9",
+      "encoding": "Deterministic gzip (mtime=0); exact original official source bytes retained, including upstream whitespace."
+    }
+  ]
+}

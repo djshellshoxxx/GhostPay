@@ -1,0 +1,194 @@
+{
+  "observed_at": "2026-11-19T13:27:53.172634+00:00",
+  "candidate": "e8680e138dcdd9d82737971cc55ad757a6640fbf",
+  "candidate_tree": "d0d4be9b6a910a2ee29b1a76d7c7d921e988ecd4",
+  "production_tree": "dabfd36a98424a4184ee7e267e12815763d1157f",
+  "contract_tree": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+  "foundry_config_sha256": "07fb03295f899933c3a6e85e3cb080184f6d3f7f5f089c9528891fa2b9191f8c",
+  "preserved_record_sha256": "928d3eff398e6acce9b2ed8e5ad80ed4bb161201cd743aea14c340d900d12911",
+  "inputs": [
+    {
+      "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC1363.sol",
+      "sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
+      "sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol",
+      "sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC5267.sol",
+      "sha256": "f89772d2d4fafcbef8b73bb10ee9a3373edec2eedb2f1b302320915b351dc3d1",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+      "sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+      "sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol",
+      "sha256": "c302edfbf7f396e1130be81278c5c994543868f0f5bf0c0fb3f557e166d8d3f2",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Bytes.sol",
+      "sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Create2.sol",
+      "sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Errors.sol",
+      "sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/LowLevelCall.sol",
+      "sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Panic.sol",
+      "sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+      "sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/ShortStrings.sol",
+      "sha256": "1cfa08d3c551e9ec0b9cd249b09987f04e7e90f352e1a5e3b0d6a3bc426b3de7",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/StorageSlot.sol",
+      "sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Strings.sol",
+      "sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol",
+      "sha256": "ba7c2d314fcd61c9783e0b3f0c664d004b76b408fda6a84edc8267d17c5012d6",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+      "sha256": "2845caaaf70757b6cce612ae4ffbec2c382cb3d1cb9765c98fa649c0f5f1c794",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/Hashes.sol",
+      "sha256": "ecdbce11c5ecdf32b306e26b8ab1b878327c08154b4ccd04518b6b64b298cf31",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol",
+      "sha256": "fd5635e85da7518bf1a153eaa99d3fad8bb6700f9d5d9cb70ddde75935cb122c",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/MessageHashUtils.sol",
+      "sha256": "538a0d7c4f0ec5a8562f58561890f7b49d14580674ecf58bc5f505b45c73df65",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+      "sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/math/Math.sol",
+      "sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/math/SafeCast.sol",
+      "sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "matches_preserved": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/math/SignedMath.sol",
+      "sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/GhostPayPolicyRouter.sol",
+      "sha256": "2799f00d68b53d606fa1a146899fe29d056a87bb390d9c2badadc6c8c4ce2a37",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/GhostPayRouter.sol",
+      "sha256": "cc2fbfcc6c221ace6e7b888ca9bb3ca7886d0898dc33d40804dd3839067bffc8",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/GhostPaySweepRelayer.sol",
+      "sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/PolicyAccount.sol",
+      "sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/PolicyAccountFactory.sol",
+      "sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/interfaces/IERC5564Announcer.sol",
+      "sha256": "398af64980d0f52d8a445a83ca3d2a22f73203821554185e1bf118775671968f",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/interfaces/IGhostPayPolicyRouter.sol",
+      "sha256": "e6f9977e522e18f956d06005d40da7530c016ae059ec4d6c189a3d47aba91db5",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/interfaces/IGhostPayRouter.sol",
+      "sha256": "0d9baf16716fc8edbd801af57b9ce08010d8737e415a4ce3bb764f0e4c6425ca",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/interfaces/IGhostPaySweepRelayer.sol",
+      "sha256": "db744507d3d1b063f23e9d0e5bc5504410e67f054869acf0f8ba039958fcffd8",
+      "matches_preserved": true
+    },
+    {
+      "path": "src/interfaces/IPolicyAccount.sol",
+      "sha256": "d4275113091d25c54a79fc5948f00a3df7466b27347661aa93d00b97b5282874",
+      "matches_preserved": true
+    }
+  ],
+  "memory_before": {
+    "MemAvailable": 3004321792
+  }
+}

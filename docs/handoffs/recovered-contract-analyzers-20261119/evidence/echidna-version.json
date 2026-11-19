@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/dev/shm/ghostpay-slither-246ff268d20d/bin/echidna",
+    "--version"
+  ],
+  "started_at": "2026-11-19T13:29:46.465586+00:00",
+  "finished_at": "2026-11-19T13:29:46.478446+00:00",
+  "exit_code": 0,
+  "output": "Echidna 2.2.7\n",
+  "qualification_scope": "Version smoke only; no campaign executed."
+}

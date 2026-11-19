@@ -1,0 +1,36 @@
+[
+  {
+    "command": [
+      "/dev/shm/ghostpay-slither-246ff268d20d/venv/bin/python",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "started_at": "2026-11-19T13:30:44.184939+00:00",
+    "finished_at": "2026-11-19T13:30:44.655595+00:00",
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/dev/shm/ghostpay-slither-246ff268d20d/venv/bin/python",
+      "-m",
+      "pip",
+      "freeze",
+      "--all"
+    ],
+    "started_at": "2026-11-19T13:30:44.655684+00:00",
+    "finished_at": "2026-11-19T13:30:45.301311+00:00",
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/dev/shm/ghostpay-slither-246ff268d20d/venv/bin/python",
+      "-m",
+      "slither",
+      "--version"
+    ],
+    "started_at": "2026-11-19T13:30:45.301385+00:00",
+    "finished_at": "2026-11-19T13:30:45.758372+00:00",
+    "exit_code": 0
+  }
+]

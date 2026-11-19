@@ -1,0 +1,132 @@
+[
+  {
+    "name": "versions",
+    "command": [
+      "/dev/shm/ghostpay-slither-246ff268d20d/venv/bin/python",
+      "-c",
+      "import importlib.metadata as m;print(\"slither-analyzer\",m.version(\"slither-analyzer\"));print(\"crytic-compile\",m.version(\"crytic-compile\"));print(\"solc-select\",m.version(\"solc-select\"))"
+    ],
+    "cwd": "/workspace/scratch/246ff268d20d/GhostPay/packages/contracts",
+    "environment_overrides": {
+      "FOUNDRY_DYNAMIC_TEST_LINKING": "false",
+      "FOUNDRY_SOLC": "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28"
+    },
+    "started_at": "2026-11-19T13:27:53.187175+00:00",
+    "memory_before": {
+      "MemAvailable": 3004358656
+    },
+    "exit_code": 0,
+    "finished_at": "2026-11-19T13:27:53.263349+00:00",
+    "memory_after": {
+      "MemAvailable": 3004088320
+    }
+  },
+  {
+    "name": "forge-version",
+    "command": [
+      "/workspace/scratch/75c78c17e2fc/contract-tools/forge",
+      "--version"
+    ],
+    "cwd": "/workspace/scratch/246ff268d20d/GhostPay/packages/contracts",
+    "environment_overrides": {
+      "FOUNDRY_DYNAMIC_TEST_LINKING": "false",
+      "FOUNDRY_SOLC": "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28"
+    },
+    "started_at": "2026-11-19T13:27:53.264242+00:00",
+    "memory_before": {
+      "MemAvailable": 3004088320
+    },
+    "exit_code": 0,
+    "finished_at": "2026-11-19T13:27:53.313650+00:00",
+    "memory_after": {
+      "MemAvailable": 3043368960
+    }
+  },
+  {
+    "name": "solc-version",
+    "command": [
+      "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28",
+      "--version"
+    ],
+    "cwd": "/workspace/scratch/246ff268d20d/GhostPay/packages/contracts",
+    "environment_overrides": {
+      "FOUNDRY_DYNAMIC_TEST_LINKING": "false",
+      "FOUNDRY_SOLC": "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28"
+    },
+    "started_at": "2026-11-19T13:27:53.314413+00:00",
+    "memory_before": {
+      "MemAvailable": 3043368960
+    },
+    "exit_code": 0,
+    "finished_at": "2026-11-19T13:27:53.323752+00:00",
+    "memory_after": {
+      "MemAvailable": 3046625280
+    }
+  },
+  {
+    "name": "compile",
+    "command": [
+      "/workspace/scratch/75c78c17e2fc/contract-tools/forge",
+      "build",
+      "--ast",
+      "--build-info",
+      "--offline",
+      "--threads",
+      "1",
+      "--skip",
+      "./test/**",
+      "./script/**",
+      "--out",
+      "/dev/shm/ghostpay-slither-246ff268d20d/out",
+      "--cache-path",
+      "/dev/shm/ghostpay-slither-246ff268d20d/cache",
+      "--build-info-path",
+      "/dev/shm/ghostpay-slither-246ff268d20d/out/build-info"
+    ],
+    "cwd": "/workspace/scratch/246ff268d20d/GhostPay/packages/contracts",
+    "environment_overrides": {
+      "FOUNDRY_DYNAMIC_TEST_LINKING": "false",
+      "FOUNDRY_SOLC": "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28"
+    },
+    "started_at": "2026-11-19T13:27:53.324506+00:00",
+    "memory_before": {
+      "MemAvailable": 3046625280
+    },
+    "exit_code": 0,
+    "finished_at": "2026-11-19T13:27:55.828024+00:00",
+    "memory_after": {
+      "MemAvailable": 3097518080
+    }
+  },
+  {
+    "name": "slither",
+    "command": [
+      "/dev/shm/ghostpay-slither-246ff268d20d/venv/bin/slither",
+      ".",
+      "--ignore-compile",
+      "--foundry-out-directory",
+      "/dev/shm/ghostpay-slither-246ff268d20d/out",
+      "--foundry-build-info-directory",
+      "/dev/shm/ghostpay-slither-246ff268d20d/out/build-info",
+      "--filter-paths",
+      "lib|test|script",
+      "--fail-medium",
+      "--exclude-informational",
+      "--exclude-low"
+    ],
+    "cwd": "/workspace/scratch/246ff268d20d/GhostPay/packages/contracts",
+    "environment_overrides": {
+      "FOUNDRY_DYNAMIC_TEST_LINKING": "false",
+      "FOUNDRY_SOLC": "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28"
+    },
+    "started_at": "2026-11-19T13:27:55.830714+00:00",
+    "memory_before": {
+      "MemAvailable": 3097518080
+    },
+    "exit_code": 0,
+    "finished_at": "2026-11-19T13:27:59.751292+00:00",
+    "memory_after": {
+      "MemAvailable": 3146575872
+    }
+  }
+]

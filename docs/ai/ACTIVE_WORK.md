@@ -1820,3 +1820,14 @@ Acceptance: correct all six actual diagnostics without changing assertions, rule
 Evidence baseline: original `eslint --config ../../eslint.config.js src e2e` completed at this exact base with six errors, zero warnings, exit 1, 93.20 seconds, maximum child RSS 1,690,568 KiB; source remained unchanged. This is a genuine lint failure, not an infrastructure skip. Root owns integration, Pages/full coverage and publication; security worker's QR work is disjoint.
 
 Six-diagnostic repair qualification: implementation `e8e2edecd0b989a90f5afb65622df4efefeebf93`, tree `477f8b25a744ba6ae9cd805776b234c1f27563f9`; 367 affected original tests in 10 files passed with no skips, full web typecheck passed, and full original web ESLint passed under Node 22.23.5. Independent provenance source review approved the exact delta without weakening assertions or gates. Source-pinned receipts, the six-error baseline and compressed raw logs are in `docs/handoffs/final-web-lint-repair-20261119/`. Coordinator integration and fresh combined QR+lint qualification remain required.
+
+
+## Recovered contract analyzer environment and scoped review — 2026-11-19
+
+Worker: `/root/provenance`, delegated by the final Pages integration coordinator.
+Branch: `repair/ghostpay-analyzer-recovered-20261119`; prior preserved tail `422fe16e991035cccf1862f0b2f7c929242de33d`.
+Owned writes: this additive claim and `docs/handoffs/recovered-contract-analyzers-20261119/` only; temporary official-tool environment/artifacts under `/dev/shm/ghostpay-slither-246ff268d20d`. Product, contract, workflow and root-owned release documents are unchanged.
+Acceptance: install pinned official Slither 0.11.6 / solc-select 1.2.0 without global dependency changes or compatibility patches; execute the preserved one-thread production analysis with unchanged flags when coordinated resources allow; compare all 36 compilation inputs with the preserved record; retain fresh commands, exit statuses, output and limitations. Assess official pinned Mythril/Echidna feasibility and preserve the historical 11-record dispositions without declaring them closed or running a reduced campaign as a pass.
+Also record read-only independent review of the coordinator-authorized six-file lint repair `e8e2edecd0b989a90f5afb65622df4efefeebf93`; no tests are independently rerun for that small review. Native analyzer results, test results and source review remain separate evidence.
+
+Coordinator follow-up: after the fresh Slither pass, authorize the complete unchanged Echidna 2.2.7 runner in an isolated `/dev/shm` source/corpus directory: all three harnesses, original 300,000-call budget and four workers. Own the resulting scoped campaign evidence only. Preserve exact source inputs, full output and strict canary/property/completeness checks; do not infer a pass from partial output or installation. Heavy runtime is coordinated with the release coordinator; no contract, configuration, gate or other checkout mutations.
