@@ -4,7 +4,7 @@ import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup } from './lib/session';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { RegistryView } from './features/registry/RegistryView';
@@ -228,16 +228,20 @@ export function AppShell(props: AppShellProps): ReactNode {
     };
   }, [services, settings.lockTimeoutMin]);
 
-  // Leaving the page while seller keys exist only here (no verified backup) loses them and every payment to their
-  // meta-address: ask the browser to confirm (SEC-40). Reads the existing backup state only; nothing is stored.
-  const unsavedKeys = session !== undefined && backup?.verified !== true;
+  // A cached local-vault copy can disappear in another tab before this tab learns about it. Closing is synchronous:
+  // protect loaded keys unless a full verified copy exists outside this browser profile (SEC-40). Check custody at
+  // the event, because verifying an external copy need not change a summary already marked verified by a local vault.
+  const loadedKeys = session !== undefined;
   useEffect(() => {
-    if (!unsavedKeys) return;
+    if (!loadedKeys) return;
     // preventDefault is the standard; a truthy returnValue covers older engines.
-    const onBeforeUnload = (e: BeforeUnloadEvent): void => { e.preventDefault(); e.returnValue = true; };
+    const onBeforeUnload = (e: BeforeUnloadEvent): void => {
+      if (!hasSession() || sessionHasExternalCopy()) return;
+      e.preventDefault(); e.returnValue = true;
+    };
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => { window.removeEventListener('beforeunload', onBeforeUnload); };
-  }, [unsavedKeys]);
+  }, [loadedKeys]);
 
   useEffect(() => {
     if (first.current) {
