@@ -68,9 +68,10 @@ const matchKey = (m: { readonly txid?: string; readonly vout?: number; readonly 
   m.txid !== undefined && m.vout !== undefined ? `${m.txid}:${String(m.vout)}` : `key:${m.xOnlyPublicKey}`;
 
 /**
- * Appends one fully scanned block (must be `lastHeight + 1`), its outputs and the spends it reported. Outputs seen
- * before are re-confirmed in place (unspent again); a spend marks the match with that outpoint and is ignored when no
- * match has it. `localSpendsComplete` must be true only after the complete spend list for this block was validated.
+ * Appends one fully scanned block (must be `lastHeight + 1`), its outputs and the spends it reported. Pending outputs
+ * are re-confirmed in place; a previously confirmed outpoint cannot reappear at a later height. The first recorded
+ * spend is preserved so a later duplicate cannot replace its canonical evidence. Spends of unknown or pending
+ * matches are ignored. `localSpendsComplete` must be true only after the complete spend list for this block was validated.
  * The default preserves legacy callers without granting negative spend evidence from an empty list.
  */
 export function recordScannedBlock(
@@ -97,14 +98,20 @@ export function recordScannedBlock(
       status: 'confirmed',
       ...(localSpendsComplete && f.txid !== undefined && f.vout !== undefined ? { spentCheckedThrough: { height, blockHash: hash } } : {}),
     };
-    matches.delete(matchKey(m));
-    matches.set(matchKey(m), m);
+    const key = matchKey(m);
+    const prior = matches.get(key);
+    if (prior?.status === 'confirmed' && m.txid !== undefined && m.vout !== undefined) {
+      if (prior.height !== height || prior.blockHash !== hash) return fail('INVALID_RESPONSE');
+      continue; // An identical outpoint repeated within this block keeps its first discovery record.
+    }
+    matches.delete(key);
+    matches.set(key, m);
   }
   for (const sp of spends) {
     if (sp.height !== height || sp.blockHash !== hash) return fail('INVALID_INPUT');
     const key = `${sp.txid}:${String(sp.vout)}`;
     const m = matches.get(key);
-    if (m?.status === 'confirmed') matches.set(key, { ...m, spent: { height, blockHash: hash, spentBy: sp.spentBy } });
+    if (m?.status === 'confirmed' && m.spent === undefined) matches.set(key, { ...m, spent: { height, blockHash: hash, spentBy: sp.spentBy } });
   }
   if (localSpendsComplete) {
     for (const [key, m] of matches) {
