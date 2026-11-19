@@ -1,3 +1,24 @@
+# Pages continuation integration — 2026-11-19
+
+Worker: current ChatGPT consolidation coordinator (workspace 11e5ddb9da60).
+Branch: `codex/ghostpay-private-checkpoint-browser-20261119` (PR #269).
+Initial base: `c40b7581b9b996f33612186bc91960c65273cb64`.
+Observed principal update: `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`.
+Owned work: integrate the existing private-checkpoint browser correction with the
+delegated private-scan error/lint repair and reauthenticated payment-key export
+authorization repair; preserve the principal update and all ordered source parents.
+Shared-file resolution is limited to additive ACTIVE_WORK claims. Runtime paths
+remain with their delegated owners until their frozen source is independently reviewed.
+Acceptance: preserve existing assertions, scoped network authorization, current-session
+checks, endpoint binding, cancellation, and original qualification gates. Verify
+published contents and provenance. Record baseline failures, partial observations,
+interrupted checks, and unavailable execution separately; no passing-suite claim
+without a completed result. The execution environment became unavailable during this
+cycle, so reconstruct and review exact owned patches through the authorized connector.
+Do not overwrite #262, main, another worker's branch, workflows, dependencies or gates.
+Integration lock owner: `20261119T100000Z-11e5ddb9da60-root`; release after publication.
+Status: source integration in progress; applicable exact-source checks remain required.
+
 # Private checkpoint browser assertion repair — 2026-11-19
 
 Worker: current ChatGPT consolidation coordinator, independently reviewed by the integration reviewer.
