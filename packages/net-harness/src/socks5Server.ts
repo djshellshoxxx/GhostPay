@@ -284,6 +284,11 @@ export async function startSocks5Server(opts: Socks5ServerOptions = {}): Promise
     };
     client.on('data', (d) => {
       if (state === 'tunnel') return;
+      // SOCKS needs the original bytes; text decoding may already have replaced invalid UTF-8.
+      if (typeof d === 'string') {
+        client.destroy();
+        return;
+      }
       cur.push(d);
       step();
     });

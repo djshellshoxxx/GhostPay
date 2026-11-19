@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "pr": null,
+  "branch": "repair/ghostpay-history-pool-values-20261118-local",
+  "base_sha": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+  "original_shas": [
+    "ea1f0b244f0adf4794e55cda6dc7dbd1e5f4039c",
+    "768b1f4cc86638e747cb1553297d012973c4cbb0"
+  ],
+  "repair_code_sha": "b22d71475e84519af7fdad9a5571452e088bc4ae",
+  "repair_code_tree": "0a1f38c3f4a6e79a371916c4ba716e6156b9f7e1",
+  "target": "main",
+  "status": "REPAIRED — VALIDATION PENDING",
+  "open_pr_file_lists_checked": 44,
+  "owned_source_test_overlap": [],
+  "conflicts": [],
+  "tests": {
+    "before": {"passed": 15, "failed": 4},
+    "after_node24": {"passed": 19, "failed": 0},
+    "after_node22": {"passed": 19, "failed": 0},
+    "full_available_package": {"passed": 23, "failed": 0, "skipped": 59},
+    "coverage_percent": {"statements": 100, "branches": 100, "functions": 100, "lines": 100},
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "secrets": "passed",
+    "action_pins": "passed"
+  },
+  "security_status": "contract, circuit, crypto, verifier, dependency and gate sources unchanged; independent review pending",
+  "review_status": "coordinator independent review pending",
+  "ci_status": "exact published-head checks not yet run",
+  "merge_simulation_sha": null,
+  "integration_status": "local source handoff to pre-merge repair coordinator",
+  "main_merge_sha": null,
+  "remaining_blockers": [
+    "independent review",
+    "artifact-dependent witness and proof execution",
+    "exact published-head hosted checks and required approvals",
+    "refresh target and validate combined source before merge"
+  ]
+}
