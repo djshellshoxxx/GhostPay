@@ -685,3 +685,19 @@ Acceptance: retain every PR #239 protection and selectively preserve PR #240's e
 external-copy unload guard, fresh replacement consent and keyboard recovery regressions. No changes to the codec,
 custody model, contracts, dependencies, e2e helpers, remote source branches or security gates. Record actual test
 results separately from static review. The master coordinator owns integration and publication.
+
+
+## Master consolidation: bounded CodeQL reconciliation — 2026-11-18
+
+Worker: independent CI/release reviewer, Caveman investigate-first.
+Branch: `integration/ghostpay-codeql-reconciled-20261118`.
+Base: PR #238 `198aa5baff22272453733a0f3dcfcac0e0994eec`.
+Owned paths: `packages/pir-two-server/src/client.ts` and its regression tests;
+`apps/web/src/views/Settings.test.tsx`; this claim; a scoped consolidation handoff.
+Acceptance: reproduce the uncontrolled trailing-slash normalization mechanism, remove
+quadratic processing without changing ordinary endpoint semantics, and keep regression
+coverage; replace the Settings preloaded-storage fixture with an honest synthetic
+test setup while preserving persisted-provider-warning and session-only assertions.
+No CodeQL suppression, scanner exclusion, gate, dependency, crypto, network-policy or
+release change. Record actual tests and source identities; hosted CodeQL must rerun
+on the combined candidate before the alerts can be claimed closed.

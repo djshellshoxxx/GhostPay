@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChainAdapterError } from '@ghostpay/chain-adapters';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -26,6 +26,7 @@ async function open(services = makeServices()): Promise<ReturnType<typeof userEv
 const stored = (): Record<string, unknown> => JSON.parse(window.localStorage.getItem(SETTINGS_KEY) ?? '{}') as Record<string, unknown>;
 
 describe('Settings RPC secrets (TM4)', () => {
+  // Public, deliberately key-shaped fixture on a reserved example domain; never a real provider credential.
   const SECRET = 'https://rpc.example/v2/AbCdEf0123456789AbCdEf0123456789';
   it('warns about a key-like URL and keeps it out of localStorage when session-only is ticked', async () => {
     const user = await open();
@@ -44,10 +45,19 @@ describe('Settings RPC secrets (TM4)', () => {
     expect(window.localStorage.getItem(SETTINGS_KEY) ?? '').toContain('AbCdEf');
   });
   it('flags an already persisted secret-looking URL and keeps it', async () => {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': SECRET } }));
+    // Persist through the explicit save path, then discard mounted and session-only state so this
+    // exercises both serialization and initialization of the saved-endpoint warning on a fresh mount.
+    const user = await open();
+    await user.type(screen.getByLabelText('Base Sepolia RPC URL'), SECRET);
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    expect(await screen.findByText('Settings saved.')).toBeTruthy();
+    expect(stored()).toMatchObject({ rpcUrls: { '84532': SECRET } });
+    cleanup();
+    clearRpcSessionOnly();
     await open();
     expect(await screen.findByText(/saved endpoint URL looks like it contains a provider key/)).toBeTruthy();
-    expect(window.localStorage.getItem(SETTINGS_KEY) ?? '').toContain('AbCdEf');
+    expect((screen.getByLabelText('Base Sepolia RPC URL') as HTMLInputElement).value).toBe(SECRET);
+    expect(stored()).toMatchObject({ rpcUrls: { '84532': SECRET } });
   });
 });
 
