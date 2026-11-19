@@ -1,0 +1,88 @@
+{
+  "exit_code": 1,
+  "problems": [
+    {
+      "path": [],
+      "version": "0.1.0",
+      "problems": [
+        "invalid: viem@2.57.19 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/viem",
+        "invalid: underscore@1.13.8 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/underscore",
+        "invalid: ws@8.21.0 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/ws"
+      ],
+      "invalid": null,
+      "overridden": null
+    },
+    {
+      "path": [
+        "@ghostpay/confidential-amounts",
+        "@zama-fhe/sdk",
+        "@fhevm/sdk",
+        "viem"
+      ],
+      "version": "2.57.19",
+      "problems": [
+        "invalid: viem@2.57.19 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/viem"
+      ],
+      "invalid": "\"2.22.14\" from node_modules/@0xbow/privacy-pools-core-sdk",
+      "overridden": null
+    },
+    {
+      "path": [
+        "@ghostpay/external-pools-privacypools",
+        "@0xbow/privacy-pools-core-sdk",
+        "viem"
+      ],
+      "version": "2.57.19",
+      "problems": [
+        "invalid: viem@2.57.19 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/viem"
+      ],
+      "invalid": "\"2.22.14\" from node_modules/@0xbow/privacy-pools-core-sdk",
+      "overridden": null
+    },
+    {
+      "path": [
+        "@ghostpay/pool-prover",
+        "snarkjs",
+        "bfj",
+        "jsonpath",
+        "underscore"
+      ],
+      "version": "1.13.8",
+      "problems": [
+        "invalid: underscore@1.13.8 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/underscore"
+      ],
+      "invalid": "\"1.13.6\" from node_modules/jsonpath",
+      "overridden": false
+    },
+    {
+      "path": [
+        "@ghostpay/pool-sdk",
+        "@zk-kit/lean-imt",
+        "@zk-kit/utils",
+        "ethers",
+        "ws"
+      ],
+      "version": "8.21.0",
+      "problems": [
+        "invalid: ws@8.21.0 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/ws"
+      ],
+      "invalid": "\"8.17.1\" from node_modules/@zk-kit/utils/node_modules/ethers",
+      "overridden": null
+    },
+    {
+      "path": [
+        "@ghostpay/solana-stealth",
+        "@solana/kit",
+        "@solana/rpc-subscriptions",
+        "@solana/rpc-subscriptions-channel-websocket",
+        "ws"
+      ],
+      "version": "8.21.0",
+      "problems": [
+        "invalid: ws@8.21.0 /workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/ws"
+      ],
+      "invalid": "\"8.17.1\" from node_modules/@zk-kit/utils/node_modules/ethers, \"^8.21.3\" from node_modules/@solana/rpc-subscriptions-channel-websocket",
+      "overridden": null
+    }
+  ]
+}
