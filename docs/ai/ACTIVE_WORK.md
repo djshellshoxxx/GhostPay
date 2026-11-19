@@ -20,6 +20,42 @@ lint passed. Recovery-worker review found no introduced blocker. Real nginx is
 absent locally and its differential remains a hosted gate. Evidence:
 `docs/consolidation/hosting-timestamp-20261119/QUALIFICATION.md`.
 
+# QR import visibility cancellation — 2026-11-19
+
+Worker: GhostPay automation bug worker, with a separate security reviewer.
+Branch: `automation/20261119T073600Z/bug/camera-visibility`.
+Base: `e454de6abfefda70d82784fafc1d8949b277c334` (current main at claim).
+Owned paths: `apps/web/src/components/CameraImporter.tsx`, focused `CameraImporter` tests,
+and `docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md`.
+Acceptance: reproduce pending image/paste imports remaining authorized while the document is hidden;
+abort those operations on hiding; reject late delivery and hidden dispatch; retain existing camera,
+multipart, scope and retry behavior. Run focused tests and independent review before publication.
+This isolated claim does not own other workers' scan, session, recovery, transport or integration paths.
+Status: implemented at `d6e9dd38`; nine regressions failed on the original runtime and pass after repair.
+All 77 focused importer tests pass. Independent security review found no source blocker and reran the
+nine regressions successfully. Scoped TypeScript/typed lint pass; full hosted gates and integration remain
+coordinator-owned. See `docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md` for exact evidence and limits.
+
+# Camera visibility integration — 2026-11-19
+
+Worker: `privacy_completion`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-camera-visibility-integration-20261119`.
+Base: `74e3111f994481e7c9201ddb0494cf4a8405eadd`.
+Owned paths: `apps/web/src/components/CameraImporter.tsx`, focused CameraImporter
+visibility tests, this additive claim, and a scoped integration receipt.
+Acceptance: reproduce PR #258's nine hidden-document regression cases against the
+unchanged candidate runtime; merge exact `84398a79e18673f3e371a405931bc464e1cca99a`
+with original ancestry; preserve idle pasted drafts, explicit retries, multipart,
+scope cancellation and caller AbortSignal obligations; replay all importer tests
+using the original configuration and reconciled compiled prerequisites; obtain
+independent source review before coordinator integration. Preserve the original
+PR author claim and receipt. No source edits outside the importer pair, no broader
+web lint/typecheck, configuration/rule/threshold changes or remote mutation.
+Status: original ancestry merged at `f0fe867d`; only the additive ownership registry
+conflicted. Runtime/test blobs match upstream exactly. Original-config baseline nine
+regressions failed, then all 77 importer tests passed on Node 22; independent source
+review and qualification limits are in the scoped camera-visibility integration receipt.
+
 # Settings exchange disclosure assertion reconciliation — 2026-11-19
 
 Worker: `privacy_completion`, delegated by the feature-consolidation coordinator.
