@@ -42,3 +42,20 @@ Exit 0 confirms the file inventory and hashes matched the supplied trusted manif
 ## Release dependencies not affected
 
 ADR-0029 is still proposed. GP-PAGES-01 dedicated-origin decision and other mandatory owner/external release gates remain open. This task does not enable any payment execution, mainnet, signed manifest, deployment, or public release.
+
+## Actual Pages artifact verification (supplemental, not this PR's own build)
+
+Downloaded the GitHub Actions artifact from the completed Pages run
+[44476268665](https://github.com/djshellshoxxx/GhostPay/actions/runs/44476268665)
+associated with PR #252, artifact ID `14507875287`.
+The archive digest from the GitHub artifacts API is
+`sha256:133a610fb8e1973aa227c84ecf4c2803117171ecf72d204c060fa61342479349`;
+the locally downloaded ZIP hash matched exactly.
+
+- Built and recorded source: `e959f6ba6e5e868a8edf87a8d5bb42f27eb2e757` (the workflow's pull-request merge source, **not** the PR #252 head or this PR's source).
+- `node verify-pages-artifact.mjs site evidence/SHA256SUMS --expect-commit e959f6ba6e5e868a8edf87a8d5bb42f27eb2e757`: **PASS, 16/16 files verified**.
+- Repeated with expected commit `4085622463411d3ba27f4efb7b73a70575170535`: **exit 1**, `build-info.json: unexpected source commit`.
+- Artifact `pages-evidence.json` reports `paymentsEnabledChainIds: []`, release profile `lean`, and `sharedOrigin: true`. These are artifact metadata observations, not deployment qualification or a separate assertion that the payment UI is unreachable.
+- Tests and artifact verification were executed on Node 22.16.0. The actual PR #276 GitHub Actions results remain separately pending and cannot be inferred from this older artifact.
+
+No site was deployed or accessed by this work. The origin-isolation decision remains unresolved.
