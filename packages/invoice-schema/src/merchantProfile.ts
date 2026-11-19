@@ -151,7 +151,7 @@ export function signMerchantProfile(body: MerchantProfileBody, signingKey: Uint8
  * Never throws. A valid result means the holder of `signer` signed these exact fields; it does not identify the merchant.
  *
  * @param input JSON text (size-checked in UTF-8 bytes) or an already parsed object.
- * @param nowSec Current unix time in seconds.
+ * @param nowSec Current finite Unix time in seconds (fractional values allowed). Invalid runtime clocks fail as expired.
  */
 export function verifyMerchantProfile(input: unknown, nowSec: number): ProfileResult {
   let raw: unknown = input;
@@ -178,6 +178,6 @@ export function verifyMerchantProfile(input: unknown, nowSec: number): ProfileRe
     return { ok: false, reason: 'signature' };
   }
   if (!valid) return { ok: false, reason: 'signature' };
-  if (p.exp <= nowSec) return { ok: false, reason: 'expired' };
+  if (!Number.isFinite(nowSec) || p.exp <= nowSec) return { ok: false, reason: 'expired' };
   return { ok: true, profile: p };
 }
