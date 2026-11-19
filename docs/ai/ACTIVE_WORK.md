@@ -1,3 +1,14 @@
+# Comprehensive branch audit and consolidation — 2026-11-19 UTC
+
+Worker: ChatGPT root coordinator with independent security, consolidation and recovery reviewers.
+Branch: `maintenance/ghostpay-branch-audit-20261119`.
+Base: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (main after the qualified historical audit merge #214).
+Owned paths: new `docs/maintenance/**`, this claim and focused integration-conflict resolution only.
+Acceptance: inventory every advertised remote branch and accessible PR, pin ancestry/patch/merge evidence,
+record dependencies and remaining release gates, verify every merge through the established PR workflow,
+and preserve active source owners. Recovery and Wiki repair work use separate claimed worktrees.
+No deployment, branch deletion, fee-recipient decision, guardian recovery or weakening of security gates.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
