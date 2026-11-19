@@ -42,6 +42,85 @@ Acceptance: run the exact upstream regression against unchanged baseline source,
 Scope: malformed verification clocks at the existing public API. No production exploit, clock-control, signature-bypass, full-workspace, coverage or deployment claim is implied. Do not change compiler/lint/coverage settings, signing formats, dependencies or adjacent feature paths.
 Coordination: root holds expensive work while these bounded checks execute. Root remains responsible for final integration, rebuilt consumer outputs, publication and hosted qualification.
 
+# Pages continuation integration — 2026-11-19
+
+Worker: current ChatGPT consolidation coordinator (workspace 11e5ddb9da60).
+Branch: `codex/ghostpay-private-checkpoint-browser-20261119` (PR #269).
+Initial base: `c40b7581b9b996f33612186bc91960c65273cb64`.
+Observed principal update: `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`.
+Owned work: integrate the existing private-checkpoint browser correction with the
+delegated private-scan error/lint repair and reauthenticated payment-key export
+authorization repair; preserve the principal update and all ordered source parents.
+Shared-file resolution is limited to additive ACTIVE_WORK claims. Runtime paths
+remain with their delegated owners until their frozen source is independently reviewed.
+Acceptance: preserve existing assertions, scoped network authorization, current-session
+checks, endpoint binding, cancellation, and original qualification gates. Verify
+published contents and provenance. Record baseline failures, partial observations,
+interrupted checks, and unavailable execution separately; no passing-suite claim
+without a completed result. The execution environment became unavailable during this
+cycle, so reconstruct and review exact owned patches through the authorized connector.
+Do not overwrite #262, main, another worker's branch, workflows, dependencies or gates.
+Integration lock owner: `20261119T100000Z-11e5ddb9da60-root`; release after publication.
+Status: source integrated for PR #269; applicable exact-source checks remain required.
+
+# Payment export authorization completion — 2026-11-19
+
+Worker: `feature_verification`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-export-authorization-20261119`.
+Base: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).
+Owned paths: `apps/web/src/views/Scan.tsx`, its focused stealth-export integration tests,
+`apps/web/src/lib/paymentKeyExport.ts`, new `paymentExportRpc.ts` and tests,
+`apps/web/src/lib/networkAuthorization.ts` and focused action-policy tests,
+`docs/privacy/network-egress-inventory.json`, this additive claim, and
+`docs/handoffs/payment-export-authorization-20261119/`.
+Acceptance: reproduce an explicit payment-key export failing after its scan grant expires
+or is cancelled; obtain fresh, bounded authority only after an explicit export action,
+bound to the original verified scan endpoint and chain. Preserve session and live-settings
+checks, forbid fallback and unrelated RPC methods, propagate export cancellation, and
+dispose each export authorization. Execute RED/GREEN integration regressions and independent
+source review. Also normalize two existing Scan promise rejections identified in hosted
+lint, preserving Error values and cancellation precedence. The coordinator owns integration
+into continuation PR #269; this isolated source branch does not change #262, #269 or main.
+No cryptographic-format, dependency, release-gate or deployment changes.
+Status: confirmed two-case behavioral RED; initial repair reached both expected downloads,
+then failed only an exact canonical-URL assertion. Final GREEN and inventory-runner validation
+remain pending after executor interruptions. Source reconstructed from the exact base and
+recorded patches when the workspace became unavailable; local claim/test commits remain
+provenance, not claimed identical remote commit IDs. Details are in the scoped qualification.
+
+# Private scan lint and rejection boundaries — 2026-11-19
+
+Worker: `branches`, delegated by the continuation coordinator.
+Branch: `codex/ghostpay-private-scan-lint-20261119`.
+Base: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).
+Owned paths: `apps/web/src/lib/privateScanLifecycle.test.ts`,
+`apps/web/src/lib/scanClient.ts`, `apps/web/src/lib/scanClient.test.ts`,
+`apps/web/src/views/Scan.privateCheckpoint.test.tsx`, this additive claim,
+and a scoped qualification handoff. The feature worker owns `views/Scan.tsx`.
+Acceptance: repair the inherited diagnostics identified by PR #248 lint job
+`135425979082` without suppression or rule changes; retain mock assertions,
+checkpoint promises and scan behavior; preserve Error identity and cancellation
+precedence while replacing non-Error rejection causes with a fixed safe Error.
+Add focused boundary regressions, obtain independent review, and run the bounded
+original-config checks only after the coordinator grants the execution slot.
+Other feature branches remain unchanged. No dependency, configuration, threshold,
+remote publication, merge, deployment or release changes.
+
+# Private checkpoint browser assertion repair — 2026-11-19
+
+Worker: current ChatGPT consolidation coordinator, independently reviewed by the integration reviewer.
+Branch: `codex/ghostpay-private-checkpoint-browser-20261119`.
+Base: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).
+Owned paths: `apps/web/e2e/private-scan-checkpoints.spec.ts`, this additive claim,
+and `docs/handoffs/PRIVATE_CHECKPOINT_BROWSER_20261119.md`.
+Acceptance: preserve the original discovery, one-payment, no-payment-before-revalidation,
+encrypted-storage, independent-profile, and concurrent-writer assertions while selecting
+payment rows instead of every repeated rendering of the address. The unchanged browser
+file (blob `db9e79a1337f1d8bcc423d0fc28c51e36975ee23`) already failed both full and lean
+hosted browser jobs for PR #248 because the receipt repeats the payment address.
+Obtain independent review and execute the available browser checks; record unavailable
+or interrupted execution honestly. No runtime, storage, dependency, workflow or threshold changes.
+
 # Canonical array repair integration — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.

@@ -86,6 +86,44 @@ describe('per-action browser authorization', () => {
   });
 });
 
+describe('payment-key-export action boundaries', () => {
+  it('permits only chain identity and the exact bound address at latest, without unrelated dispatch', async () => {
+    const h = harness(); const grant = h.authorize({ action: 'payment-key-export', scope: owner });
+    expect(await text(grant, rpc, jsonRpc('eth_chainId'))).toBe('ok');
+    expect(await text(grant, rpc, jsonRpc('eth_getCode', [owner, 'latest']))).toBe('ok');
+    const refused: readonly (readonly [string, readonly unknown[]])[] = [
+      ['eth_chainId', [owner]], ['eth_getCode', [token, 'latest']], ['eth_getCode', [owner, '0x1']],
+      ['eth_getCode', [owner, 'latest', 'extra']], ['eth_getCode', [owner]], ['eth_getBalance', [owner, 'latest']],
+      ['eth_call', [{ to: owner }, 'latest']], ['eth_blockNumber', []], ['eth_sendRawTransaction', ['0x01']],
+    ];
+    for (const [method, params] of refused) await expect(text(grant, rpc, jsonRpc(method, params))).rejects.toThrow();
+    await expect(text(grant, rpc, { method: 'POST', body: JSON.stringify({ method: 'eth_chainId' }) })).rejects.toThrow();
+    expect(h.fetcher).toHaveBeenCalledTimes(2);
+  });
+  it('copies the address binding and rejects malformed or missing bindings before egress', async () => {
+    const h = harness(); const request: NetworkAuthorizationRequest = { action: 'payment-key-export', category: 'rpc', endpoint: rpc, network: evm, scope: owner };
+    const mutable = { ...request }; const grant = h.authority.authorize(mutable); mutable.scope = token;
+    await expect(text(grant, rpc, jsonRpc('eth_getCode', [token, 'latest']))).rejects.toThrow();
+    expect(await text(grant, rpc, jsonRpc('eth_getCode', [owner, 'latest']))).toBe('ok');
+    for (const scope of [undefined, '', 'not-an-address']) {
+      const invalid = h.authorize({ action: 'payment-key-export', ...(scope === undefined ? {} : { scope }) });
+      await expect(text(invalid, rpc, jsonRpc('eth_chainId'))).rejects.toThrow();
+    }
+    expect(h.fetcher).toHaveBeenCalledTimes(1);
+  });
+  it('accepts the selected private scan endpoint, refuses a secondary/fallback endpoint, and never grants a direct exception', () => {
+    const h = harness();
+    h.authorize({ action: 'payment-key-export', scope: owner, endpoint: 'https://127.0.0.1:8545' }).assertCurrent();
+    for (const endpoint of ['http://localhost:8545', 'https://fallback.test/']) expect(() => h.authorize({ action: 'payment-key-export', scope: owner, endpoint })).toThrow();
+    expect(() => h.authorize({ action: 'payment-key-export', scope: owner, allowDirectOnce: true })).toThrow();
+    h.values.set(privacyKey, JSON.stringify({ transport: 'local-proxy', requireProxy: true, endpoints: { '84532': 'http://127.0.0.1:8545/private' } }));
+    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ ...DEFAULT_WEB_NETWORK_SELECTION, rpcMode: 'own-node', noticeAcknowledged: true }));
+    h.authorize({ action: 'payment-key-export', scope: owner, endpoint: 'http://127.0.0.1:8545/private' }).assertCurrent();
+    expect(() => h.authorize({ action: 'payment-key-export', scope: owner })).toThrow();
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+});
+
 describe('live settings, session and permissions', () => {
   it.each([SETTINGS_KEY, privacyKey, WEB_NETWORK_SELECTION_KEY, 'ghostpay.scanLanes.v1'])('refuses stale cached contexts after %s changes before the event', async (key) => {
     const h = harness(); const grant = h.authorize(); h.values.set(key, JSON.stringify(key === WEB_NETWORK_SELECTION_KEY ? { rpcMode: 'single' } : { endpoints: {} }));
