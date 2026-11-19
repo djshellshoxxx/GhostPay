@@ -8,7 +8,8 @@ import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession } from './session';
 import { directSweep, DirectSweepOutcomeUnknownError, relayedSweep, type SweepTarget } from './sweep';
 
-// Observe the actual signing and derivation boundaries while retaining their cryptographic implementations.
+// Observe actual signing and derivation while retaining their cryptographic implementations.
+// Assert call counts separately so a failure never asks the reporter to render secret arguments.
 vi.mock('@ghostpay/chain-adapters', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@ghostpay/chain-adapters')>();
   return { ...actual, signDigest: vi.fn(actual.signDigest), signPermit: vi.fn(actual.signPermit), signSweep: vi.fn(actual.signSweep) };
@@ -92,14 +93,14 @@ describe('Sweep helper review authority', () => {
   it('refuses a revoked direct review before deriving or signing a key', async () => {
     const h = directInput(); h.authority.revoke();
     await expect(directSweep(h.input)).rejects.toThrow('review replaced');
-    expect(deriveStealthSecret).not.toHaveBeenCalled(); expect(signDigest).not.toHaveBeenCalled();
+    expect(vi.mocked(deriveStealthSecret).mock.calls.length).toBe(0); expect(vi.mocked(signDigest).mock.calls.length).toBe(0);
     expect(h.rpc.calls).toHaveLength(0); expect(h.handoff).not.toHaveBeenCalled();
   });
 
   it.each(['eth_gasPrice', 'eth_getTransactionCount', 'eth_getBalance', 'eth_estimateGas', 'eth_call'])('refuses a changed direct review during %s before signing', async (pausedMethod) => {
     const h = directInput((method) => { if (method === pausedMethod) h.authority.revoke(); });
     await expect(directSweep(h.input)).rejects.toThrow('review replaced');
-    expect(signDigest).not.toHaveBeenCalled(); expect(h.handoff).not.toHaveBeenCalled();
+    expect(vi.mocked(signDigest).mock.calls.length).toBe(0); expect(h.handoff).not.toHaveBeenCalled();
     expect(h.rpc.calls.map((call) => call.method)).not.toContain('eth_sendRawTransaction');
     const secret = vi.mocked(deriveStealthSecret).mock.results[0]?.value as Uint8Array;
     expect(Array.from(secret).every((byte) => byte === 0)).toBe(true);
@@ -112,7 +113,7 @@ describe('Sweep helper review authority', () => {
       const signed = await actual.signDigest(...args); h.authority.revoke(); return signed;
     });
     await expect(directSweep(h.input)).rejects.toThrow('review replaced');
-    expect(signDigest).toHaveBeenCalledTimes(1); expect(h.handoff).not.toHaveBeenCalled();
+    expect(vi.mocked(signDigest).mock.calls.length).toBe(1); expect(h.handoff).not.toHaveBeenCalled();
     expect(h.rpc.calls.map((call) => call.method)).not.toContain('eth_sendRawTransaction');
   });
 
@@ -136,8 +137,8 @@ describe('Sweep helper review authority', () => {
   it('refuses a revoked relayed review before deriving or requesting signatures', async () => {
     const h = relayedInput(); h.authority.revoke();
     await expect(relayedSweep(h.input)).rejects.toThrow('review replaced');
-    expect(deriveStealthSecret).not.toHaveBeenCalled(); expect(signSweep).not.toHaveBeenCalled();
-    expect(signPermit).not.toHaveBeenCalled(); expect(h.rpc.calls).toHaveLength(0);
+    expect(vi.mocked(deriveStealthSecret).mock.calls.length).toBe(0); expect(vi.mocked(signSweep).mock.calls.length).toBe(0);
+    expect(vi.mocked(signPermit).mock.calls.length).toBe(0); expect(h.rpc.calls).toHaveLength(0);
     expect(h.handoff).not.toHaveBeenCalled(); expect(h.fetchFn).not.toHaveBeenCalled();
   });
 
@@ -148,14 +149,14 @@ describe('Sweep helper review authority', () => {
       const signed = await actual.signSweep(...args); h.authority.revoke(); return signed;
     });
     await expect(relayedSweep(h.input)).rejects.toThrow('review replaced');
-    expect(signSweep).toHaveBeenCalledTimes(1); expect(signPermit).not.toHaveBeenCalled();
+    expect(vi.mocked(signSweep).mock.calls.length).toBe(1); expect(vi.mocked(signPermit).mock.calls.length).toBe(0);
     expect(h.rpc.calls).toHaveLength(0); expect(h.handoff).not.toHaveBeenCalled(); expect(h.fetchFn).not.toHaveBeenCalled();
   });
 
   it('refuses a changed relayed review after permit RPC reads and before signing the permit', async () => {
     const h = relayedInput(() => { h.authority.revoke(); });
     await expect(relayedSweep(h.input)).rejects.toThrow('review replaced');
-    expect(signSweep).toHaveBeenCalledTimes(1); expect(signPermit).not.toHaveBeenCalled();
+    expect(vi.mocked(signSweep).mock.calls.length).toBe(1); expect(vi.mocked(signPermit).mock.calls.length).toBe(0);
     expect(h.handoff).not.toHaveBeenCalled(); expect(h.fetchFn).not.toHaveBeenCalled();
   });
 
@@ -166,14 +167,14 @@ describe('Sweep helper review authority', () => {
       const signed = await actual.signPermit(...args); h.authority.revoke(); return signed;
     });
     await expect(relayedSweep(h.input)).rejects.toThrow('review replaced');
-    expect(signPermit).toHaveBeenCalledTimes(1); expect(h.handoff).not.toHaveBeenCalled(); expect(h.fetchFn).not.toHaveBeenCalled();
+    expect(vi.mocked(signPermit).mock.calls.length).toBe(1); expect(h.handoff).not.toHaveBeenCalled(); expect(h.fetchFn).not.toHaveBeenCalled();
   });
 
   it('retains successful relayer handoff even if the review is replaced during the response', async () => {
     const h = relayedInput();
     h.fetchFn.mockImplementationOnce(() => { h.authority.revoke(); return Promise.resolve(new Response(JSON.stringify({ txHash: HASH }))); });
     await expect(relayedSweep(h.input)).resolves.toBe(HASH);
-    expect(signSweep).toHaveBeenCalledTimes(1); expect(signPermit).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(signSweep).mock.calls.length).toBe(1); expect(vi.mocked(signPermit).mock.calls.length).toBe(1);
     expect(h.handoff).toHaveBeenCalledTimes(1); expect(h.fetchFn).toHaveBeenCalledTimes(1);
   });
 });
