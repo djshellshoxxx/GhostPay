@@ -1,3 +1,17 @@
+# Scan cancellation assertion reconciliation — 2026-11-19
+
+Worker: `privacy_completion`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-scan-privacy-fixtures-20261119`.
+Base: `e76451ad56ba1634eed9d03468961900433fd130`.
+Owned paths: `apps/web/src/lib/scanPrivacy.authorization.test.ts`, this additive
+claim, and scoped scan-cancellation handoff/evidence.
+Acceptance: reproduce the four caller-cancellation failures; preserve the shared
+`scan-aborted` sentinel consumed by Scan and scheduler/clients tests; recover the
+existing assertion-only repair from `5c926889` if exact; retain all forbidden
+dispatch, bounded abort propagation, queued-window and post-jitter assertions.
+No production privacy/parser/authority, dependency, configuration or gate changes.
+Focused original-config execution and independent recovery-worker review required.
+
 # Idle regression type reconciliation — 2026-11-19
 
 Worker: `recovery_completion`, delegated by the feature-consolidation coordinator.
