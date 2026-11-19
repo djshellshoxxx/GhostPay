@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "20261119T073600Z-root",
   "token": "66f0140c-35fc-4c20-ac51-62c8ce5a6887",
   "generation": 1,
@@ -8,5 +8,67 @@
   "acquired_at": "2026-11-19T07:55:03.000Z",
   "heartbeat_at": "2026-11-19T07:55:03.000Z",
   "expires_at": "2026-11-19T08:55:03.000Z",
-  "transport": "authorized-github-connector"
+  "transport": "authorized-github-connector",
+  "released_at": "2026-11-19T08:16:59.000Z",
+  "cycle_result": {
+    "cycle_id": "20261119T073600Z",
+    "completed_at": "2026-11-19T08:16:59.000Z",
+    "outcome": "Two independently reviewed draft PRs published; required hosted qualification remains pending.",
+    "pull_requests": [
+      {
+        "number": 258,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/258",
+        "head": "84398a79e18673f3e371a405931bc464e1cca99a",
+        "tree": "47c9db00bb073b07f11e2334a767defdb1ee3d5f",
+        "change": "CameraImporter hidden-page cancellation and stale-result delivery guards",
+        "validation": "77 distinct importer tests pass; all 9 new regressions fail on base and pass on fix; independent rerun of 9 passes; scoped TypeScript and ESLint pass."
+      },
+      {
+        "number": 261,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/261",
+        "head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+        "tree": "6dce7646b42ae987a721ecb4a9ff486350ed05a7",
+        "change": "Durable integration lock, 10 real-Git concurrency regressions, cycle records and source census",
+        "validation": "10/10 lock tests pass locally and independently; two newly exposed review regressions were reproduced on old source and fixed."
+      }
+    ],
+    "code_merged_to_main_by_cycle": false,
+    "deployments": 0,
+    "releases": 0,
+    "branches_deleted": 0,
+    "last_observed_main": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+    "census": {
+      "captured_at": "2026-11-19T07:42:00.000Z",
+      "remote_branches": 265,
+      "open_pull_requests": 50,
+      "main_ancestors": 169,
+      "divergent_histories": 94,
+      "unrelated_gh_pages": 1,
+      "main": 1
+    },
+    "blockers": [
+      "Full hosted qualification is incomplete: PR258 Hosting kit attempt 1 failed on an Ubuntu nginx package HTTP404 before tests; one targeted retry was accepted and attempt2 queued. PR261 CI is pending. Local scoped passes are not full product qualification.",
+      "Whole-web typed lint exceeded local resource limits; the focused importer import closure and typed lint passed.",
+      "PR255 current ea47fa75eabb0be2045081ffeb120fc2bfae67ab Mythril job135396814239 completed and correctly failed on 11 findings (8 Low, 3 Medium); no timeout or setup failure.",
+      "Git CLI writes lack credentials here; connector atomic branch creation and guarded nonforce updates were independently reviewed, used, and read back."
+    ],
+    "next_actions": [
+      "Refresh current main and PR heads/checks; review and merge only independently qualified current candidates.",
+      "Preserve active ownership; PR239 and PR240 are distinct six-unique-commit histories; PR245 and PR247 heads are already ancestors of PR257.",
+      "Read latest docs/automation on PR261 if not yet merged; select the next unclaimed defect or missing implementation.",
+      "Treat automation/ghostpay-integration-lock as metadata only; never merge or delete it; use an observed-parent guarded transition for the next acquisition."
+    ],
+    "hosting_ci": {
+      "run_id": 44483607154,
+      "failed_job_id": 135421542144,
+      "failure": "Ubuntu nginx package HTTP404; apt exit100 before kit lint/typecheck/tests",
+      "source_workflow_unchanged": true,
+      "run_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "targeted_retries_requested": 1,
+      "retry_accepted": true,
+      "last_observed_attempt": 2,
+      "last_observed_status": "queued",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44483607154"
+    }
+  }
 }
