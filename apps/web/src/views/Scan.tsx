@@ -1,4 +1,5 @@
 import { findChain, manifestDigest, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
+import { WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -17,6 +18,7 @@ import { browserStorage, createWindowedScanClient, describeScanDisclosureMessage
 import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, SCAN_LANES_KEY, type AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
+import { subscribeAppLock } from '../lib/appLock';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { ScanStateError, type PrivateScanScope, type PrivateScanState, type PrivateScanVault } from '../lib/privateScanStore';
@@ -81,7 +83,7 @@ function privateScanError(error: unknown): ScanText {
 function scanPreferenceSnapshot(): string {
   try {
     const storage = browserStorage();
-    return JSON.stringify([SETTINGS_KEY, SCAN_PRIVACY_KEY, SCAN_LANES_KEY].map((key) => storage?.getItem(key) ?? null));
+    return JSON.stringify([SETTINGS_KEY, SCAN_PRIVACY_KEY, SCAN_LANES_KEY, WEB_NETWORK_SELECTION_KEY].map((key) => storage?.getItem(key) ?? null));
   } catch { return ''; }
 }
 
@@ -190,11 +192,21 @@ export function Scan(): ReactNode {
       setPrivateRevision((revision) => revision + 1);
     };
     const onStorage = (event: StorageEvent): void => {
-      if (event.key === null || [SETTINGS_KEY, SCAN_PRIVACY_KEY, SCAN_LANES_KEY].includes(event.key)) changed();
+      if (event.key === null || [SETTINGS_KEY, SCAN_PRIVACY_KEY, SCAN_LANES_KEY, WEB_NETWORK_SELECTION_KEY].includes(event.key)) changed();
     };
     window.addEventListener('storage', onStorage);
     const unsubscribe = subscribePrivateScanInvalidation(changed);
     return () => { window.removeEventListener('storage', onStorage); unsubscribe(); };
+  }, [privateMode]);
+
+  useEffect(() => {
+    if (!privateMode) return undefined;
+    return subscribeAppLock(() => {
+      // Stop an already-due timer synchronously, even when the sole seller-key copy must stay loaded.
+      autoTick.current = () => undefined;
+      setAutoRescan(false);
+      abort.current?.abort();
+    });
   }, [privateMode]);
 
   useEffect(() => {
@@ -632,7 +644,7 @@ export function Scan(): ReactNode {
     })();
   };
 
-  autoTick.current = () => { begin({ append: true }); };
+  autoTick.current = () => { if (autoRescan) begin({ append: true }); };
 
   const clearCheckpoint = (): void => {
     if (running || clearing || keyId === undefined) return;
