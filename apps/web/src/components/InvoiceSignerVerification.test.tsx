@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import * as pins from '../lib/invoiceSignerPins';
@@ -19,6 +19,18 @@ function enterPin(label: string, key = B): void {
 }
 
 describe('explicit signer pin controls', () => {
+  it.each(['unavailable', 'malformed-invoice'] as const)('announces %s politely without competing with the invoice rejection alert', (status) => {
+    render(<>
+      <InvoiceSignerVerification {...props()} status={status} />
+      <div role="alert">The invoice could not be opened. Nothing was sent.</div>
+    </>);
+    const liveStatus = screen.getByRole('status');
+    expect(liveStatus.getAttribute('aria-live')).toBe('polite');
+    expect(within(liveStatus).queryByRole('alert')).toBeNull();
+    expect(liveStatus.textContent).toMatch(status === 'unavailable' ? /Verification unavailable or interrupted/ : /Malformed invoice/);
+    expect(screen.getByRole('alert').textContent).toBe('The invoice could not be opened. Nothing was sent.');
+  });
+
   it('saves nothing before a second confirmation and selects the normalized local name', async () => {
     const save = vi.spyOn(pins, 'changeInvoiceSignerPin').mockResolvedValue('saved');
     const p = props(); render(<InvoiceSignerVerification {...p} />);

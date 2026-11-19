@@ -64,7 +64,7 @@ export function InvoiceSignerVerification(props: {
   return <section className="stack" aria-labelledby={heading}>
     <h3 id={heading}>{t('pay.signer.title')}</h3>
     {props.status !== undefined && <div role="status" aria-live="polite">
-      <Notice kind={props.status === 'valid-pinned' ? 'ok' : props.status === 'valid-unpinned' || props.status === 'checking' ? 'info' : 'error'}>
+      <Notice kind={props.status === 'valid-pinned' ? 'ok' : props.status === 'valid-unpinned' || props.status === 'checking' ? 'info' : 'warn'}>
         {t(INVOICE_VERIFICATION_MESSAGES[props.status])}
       </Notice>
     </div>}
