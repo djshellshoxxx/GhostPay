@@ -17,6 +17,8 @@ export type {
   ScanMode,
 } from './types.js';
 export { padWindow } from './window.js';
+export { padRange, fetchPadded, DEFAULT_MAX_PADDED_SPAN } from './padded.js';
+export type { PadOptions, FetchPaddedOptions } from './padded.js';
 export { parseAnnouncement, normalizeSet, setHash } from './validate.js';
 export { createRangeSource } from './range.js';
 export type { RangeSourceOptions } from './range.js';

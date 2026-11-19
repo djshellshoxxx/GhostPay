@@ -1,0 +1,301 @@
+{
+  "schema": 1,
+  "observed_at": "2026-11-19T10:14:10.591225+00:00",
+  "reviewer": "privacy_completion",
+  "source_head": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+  "source_tree": "c58843c86dae5164eab259d3440aba01406bd593",
+  "previous_candidate": "e74ddd26b75912d770e05d51f0b9229756adc649",
+  "reviewed_product": "0f8dca27613fe9952cdb772cb10d05ced0f2b455",
+  "worker_evidence_head": "09821dc69e505d544672746b2bfa8edc2643b3c6",
+  "upstream_head": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+  "verdict": "Accepted for integration source identity and the bounded sparse/decorated inert-array correction; no introduced source blocker found.",
+  "source_checks": [
+    {
+      "path": "packages/invoice-schema/src/json.ts",
+      "blob": "63e02aa59219f5ba4732c6cc0198e9c0466eaa48",
+      "sha256": "948ea28f70bff55601d292a73c97b6d92d0ca8b5ba0ec457ca75254a150861c8",
+      "equals_reviewed_product": true,
+      "working_file_matches_commit": true
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "blob": "f2b5ff6804784df1f153a60b0488f4b9b2c98f5f",
+      "sha256": "d7b6ee94c624d621db0fa62b4a3eba729e51dad2a9c67055364a4e76deec4778",
+      "equals_reviewed_product": true,
+      "working_file_matches_commit": true
+    }
+  ],
+  "upstream_executable_guard_unchanged": true,
+  "only_source_difference_from_upstream": "Single JSDoc literal-backslash-n replaced with real newline.",
+  "unchanged_configuration": [
+    {
+      "path": "packages/invoice-schema/package.json",
+      "blob": "92bceed2e93389bf7d0033909d6c9d1773d52ff4",
+      "unchanged_from_e74": true
+    },
+    {
+      "path": "packages/invoice-schema/vitest.config.ts",
+      "blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "unchanged_from_e74": true
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.json",
+      "blob": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "unchanged_from_e74": true
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.build.json",
+      "blob": "7cd92421109e2b1988a7e547ec0860610aa5460a",
+      "unchanged_from_e74": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "unchanged_from_e74": true
+    },
+    {
+      "path": "eslint.config.js",
+      "blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "unchanged_from_e74": true
+    },
+    {
+      "path": "package.json",
+      "blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "unchanged_from_e74": true
+    },
+    {
+      "path": "package-lock.json",
+      "blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "unchanged_from_e74": true
+    }
+  ],
+  "evidence_checks": [
+    {
+      "path": "docs/consolidation/canonical-array-20261119/evidence/upstream-regression-red.txt.gz",
+      "bytes": 732,
+      "sha256": "3c9305c4dbccc4b1eb5712fabdfbe0cdff56e34c5ca52b0d3ea53310f2d2506d",
+      "matches": true,
+      "uncompressed_bytes": 1499,
+      "uncompressed_sha256": "2ef387eabd9cebe064e391650c91261536489cdb67913059171c22b38ce085ec",
+      "lossless_hash_matches": true
+    },
+    {
+      "path": "docs/consolidation/canonical-array-20261119/evidence/focused-green.txt.gz",
+      "bytes": 456,
+      "sha256": "feb7da225ed227cf2ad6edb3623c2627d30e69a7bea0dac0bd676a420660b0d6",
+      "matches": true,
+      "uncompressed_bytes": 1305,
+      "uncompressed_sha256": "3aa96891972de2ce958ed86e6cdaf5cb8defb62a672121f3148f2a31558f80f4",
+      "lossless_hash_matches": true
+    },
+    {
+      "path": "docs/consolidation/canonical-array-20261119/evidence/typecheck.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "path": "docs/consolidation/canonical-array-20261119/evidence/lint.txt",
+      "bytes": 174,
+      "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "matches": true
+    },
+    {
+      "path": "docs/consolidation/canonical-array-20261119/evidence/build.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    }
+  ],
+  "all_worker_receipt_files_blob_identical": true,
+  "ancestry": [
+    {
+      "ancestor": "e74ddd26b75912d770e05d51f0b9229756adc649",
+      "retained": true
+    },
+    {
+      "ancestor": "0f8dca27613fe9952cdb772cb10d05ced0f2b455",
+      "retained": true
+    },
+    {
+      "ancestor": "09821dc69e505d544672746b2bfa8edc2643b3c6",
+      "retained": true
+    },
+    {
+      "ancestor": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+      "retained": true
+    }
+  ],
+  "registry": {
+    "all_prior_e74_bytes_retained_contiguously": true,
+    "combined_registry_equals_reviewed_worker": true,
+    "prior_bytes": 122698,
+    "combined_bytes": 125923,
+    "prior_headings": 94,
+    "combined_headings": 96
+  },
+  "scope": {
+    "only_non_documentation_changes": [
+      "packages/invoice-schema/src/json.test.ts",
+      "packages/invoice-schema/src/json.ts"
+    ],
+    "all_other_tracked_non_documentation_paths_unchanged": true
+  },
+  "semantic_review": {
+    "accepted_input_contract": "Ordinary inert dense arrays with exactly own0..length-1 indices plus intrinsiclength; existing supported values recurse unchanged. Empty, nested and frozen dense bytes are covered.",
+    "rejected_shapes": "Sparse arrays and extra enumerable/nonenumerable/symbol own properties; count-balanced hole+extra key is rejected by ordered-index comparison.",
+    "bounds_and_cost": "Ordinary array length has the ECMAScript array bound, so length+1 remains safely representable. Huge sparse logical lengths reject from actual own-key count without iterating missing indices. New enumeration is linear in actual own keys; no new global size/depth limit is introduced.",
+    "residual_limits": "Accessors, proxies, custom inherited map/species behavior, cycles and unbounded dense input sizes remain pre-existing limits. This is not general hostile-JavaScript-object sanitization.",
+    "signing_scope": "Invoice signers validate schema first; receipt signing reconstructs normalized fields. No signature bypass or key compromise was demonstrated."
+  },
+  "execution_attribution": {
+    "baseline": "Author original-config Vitest11 tests:10 passed/1 failed at original runtime; not five independently failed Vitest cases.",
+    "focused_green": "Author original-config JSON/schema/sign/receipt selection:4 files200 passed,3.53s.",
+    "static_and_build": "Author entire-package typecheck, typed lint and production build exited0. Reviewed records/logs, no independent execution by this audit.",
+    "full_package_coverage": "Not run by author; unchanged95/90/95/95 thresholds remain unqualified.",
+    "current_root_build": "Coordinator reported current production rebuild complete; this source audit does not independently qualify or assign a runtime version to that build."
+  },
+  "limits": [
+    "No tests, lint, typecheck or compiled-output validation run by this audit.",
+    "Focused author passes remain attached to the reviewed worker source; identical combined blobs do not invent a new combined-head execution.",
+    "Final consumer/browser/coverage/hosted qualification remains coordinator-owned."
+  ],
+  "lint_discovery": {
+    "source_head": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+    "source_tree": "c58843c86dae5164eab259d3440aba01406bd593",
+    "node": "v22.23.4",
+    "selected_count": 497,
+    "src_count": 455,
+    "e2e_count": 42,
+    "test_spec_count": 292,
+    "selection_sha256": "293c110b6816d6e1632bd141c25bba3e1611fc084ff065612e781bf55faa0eb4",
+    "selected_files_and_hashes_identical_to_e74": true,
+    "artifact_sha256": {
+      "web-lint-manifest.json": "2a31fbf503a8b6ba9149dfb6477d65606cfaa6a3b5caaf6268699881cf31d8a9",
+      "web-lint-manifest.mjs": "8be69d74da0dc8d2b8e6f3ea0011c2ea915ef2e930fe2ce5e5027f44b9934808",
+      "web-lint-files.txt": "293c110b6816d6e1632bd141c25bba3e1611fc084ff065612e781bf55faa0eb4",
+      "web-lint-partition-plan.md": "1b2d48a2797ac5e5f00cff3619ea6586f0b6e9dc461ab97a02a1ce53b547a0cc"
+    },
+    "qualification": "File/config discovery only. No lint or TypeScript program executed."
+  },
+  "lint_driver_path_refresh": {
+    "old_sha256": "c895b0c9e3cdb5ce82260b5113383a7789953317bedb935cb5c9cac48df53c67",
+    "new_sha256": "fb2ba508ef706d7815897684d5a9813753449f930f995784602b1f612d28f724",
+    "old_executable": "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "new_executable": "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "verified_version": "v22.23.4",
+    "only_change": "NODE executable-path constant; exact single-line byte substitution",
+    "diff": "--- reviewed-driver\n+++ restored-runtime-driver\n@@ -30,7 +30,7 @@\n EVIDENCE = REPO / 'docs/consolidation/feature-completion-20261119/evidence'\n MANIFEST = EVIDENCE / 'web-lint-manifest.json'\n MONOLITHIC = EVIDENCE / 'final-serial-web-lint.txt'\n-NODE = Path('/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node')\n+NODE = Path('/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node')\n NODE_FLAGS = ['--max-old-space-size=768', '--max-semi-space-size=32']\n CLI = ['../../node_modules/eslint/bin/eslint.js', '--config', '../../eslint.config.js']\n SELECTION_SHA = '293c110b6816d6e1632bd141c25bba3e1611fc084ff065612e781bf55faa0eb4'\n",
+    "independent_review": {
+      "reviewer": "/root/recovery_completion",
+      "verdict": "Confirmed exact path-only substitution; reversing the single replacement reproduces the previously reviewed driver SHA256.",
+      "current_sha256": "fb2ba508ef706d7815897684d5a9813753449f930f995784602b1f612d28f724",
+      "reviewer_execution": "Read-only byte/hash inspection; no driver or lint execution."
+    },
+    "metadata_validation": {
+      "observed_at": "2026-11-19T10:19:09.156938+00:00",
+      "command": [
+        "python3",
+        "/workspace/scratch/13855ecc035c/run-web-lint-partitions.py",
+        "--validate-only"
+      ],
+      "returncode": 0,
+      "artifact": "/workspace/scratch/13855ecc035c/lint-driver-final-metadata-validation.json",
+      "artifact_sha256": "243f16b6d25004b4cd3364a2f371bddc931ae2dab8507a6b3a5a4f2fb7815370",
+      "result": {
+        "mode": "validation-only",
+        "lint_executed": false,
+        "manifest_sha256": "2a31fbf503a8b6ba9149dfb6477d65606cfaa6a3b5caaf6268699881cf31d8a9",
+        "input_identity_sha256": "e3b1b089aa8cb19f2dd2f13e7f2bcd8894dd2184b946ae35481f53f158a16511",
+        "files": 497,
+        "partitions": [
+          {
+            "id": 1,
+            "files": 24
+          },
+          {
+            "id": 2,
+            "files": 24
+          },
+          {
+            "id": 3,
+            "files": 24
+          },
+          {
+            "id": 4,
+            "files": 24
+          },
+          {
+            "id": 5,
+            "files": 24
+          },
+          {
+            "id": 6,
+            "files": 24
+          },
+          {
+            "id": 7,
+            "files": 24
+          },
+          {
+            "id": 8,
+            "files": 24
+          },
+          {
+            "id": 9,
+            "files": 24
+          },
+          {
+            "id": 10,
+            "files": 24
+          },
+          {
+            "id": 11,
+            "files": 24
+          },
+          {
+            "id": 12,
+            "files": 24
+          },
+          {
+            "id": 13,
+            "files": 24
+          },
+          {
+            "id": 14,
+            "files": 24
+          },
+          {
+            "id": 15,
+            "files": 24
+          },
+          {
+            "id": 16,
+            "files": 24
+          },
+          {
+            "id": 17,
+            "files": 24
+          },
+          {
+            "id": 18,
+            "files": 24
+          },
+          {
+            "id": 19,
+            "files": 24
+          },
+          {
+            "id": 20,
+            "files": 24
+          },
+          {
+            "id": 21,
+            "files": 17
+          }
+        ]
+      },
+      "qualification": "Metadata/input hashing only; no ESLint child, lint result, TypeScript program or aggregate lint pass."
+    }
+  }
+}

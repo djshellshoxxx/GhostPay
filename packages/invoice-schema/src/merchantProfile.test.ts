@@ -45,6 +45,13 @@ describe('merchant profile', () => {
     expect(verifyMerchantProfile(JSON.stringify(good), NOW + 1000)).toEqual({ ok: false, reason: 'expired' });
     expect(verifyMerchantProfile(' '.repeat(MAX_PROFILE_BYTES + 1), NOW)).toEqual({ ok: false, reason: 'size' });
   });
+  it('fails closed when the verification clock is invalid', () => {
+    for (const clock of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -1, undefined]) {
+      expect(verifyMerchantProfile(good, clock as number)).toEqual({ ok: false, reason: 'format' });
+    }
+    expect(verifyMerchantProfile(good, NOW)).toEqual({ ok: true, profile: good });
+    expect(verifyMerchantProfile(good, NOW + 1000)).toEqual({ ok: false, reason: 'expired' });
+  });
   it('rejects unknown keys, bad origins, duplicate template ids, __proto__ and non-objects', () => {
     expect(verifyMerchantProfile(tampered({ extra: 1 }), NOW)).toEqual({ ok: false, reason: 'format' });
     expect(verifyMerchantProfile(tampered({ origins: ['https://shop.example/path'] }), NOW)).toEqual({ ok: false, reason: 'format' });

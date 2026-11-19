@@ -1,0 +1,337 @@
+{
+  "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+  "candidateSource": "e74ddd26b75912d770e05d51f0b9229756adc649",
+  "findingCount": 11,
+  "severityCounts": {
+    "Low": 8,
+    "Medium": 3
+  },
+  "findings": [
+    {
+      "analysisTarget": "GhostPaySweepRelayer",
+      "issueIndex": 1,
+      "title": "Dependence on predictable environment variable",
+      "swc-id": "116",
+      "severity": "Low",
+      "filename": "src/GhostPaySweepRelayer.sol",
+      "lineno": 83,
+      "code": "if (block.timestamp > s.deadline) revert Expired()",
+      "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+      "address": 785,
+      "sourceMap": "4414:50",
+      "contract": "GhostPaySweepRelayer",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/src/GhostPaySweepRelayer.sol",
+        "sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "EXP-1",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-expiry-dispositions.md",
+        "priorAuthoredAssessment": "Intended deadline behavior",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccount",
+      "issueIndex": 1,
+      "title": "Dependence on predictable environment variable",
+      "swc-id": "116",
+      "severity": "Low",
+      "filename": "src/PolicyAccount.sol",
+      "lineno": 161,
+      "code": "if (block.timestamp > w.deadline) revert Expired()",
+      "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+      "address": 1876,
+      "sourceMap": "8390:50",
+      "contract": "PolicyAccount",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/src/PolicyAccount.sol",
+        "sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "EXP-2",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-expiry-dispositions.md",
+        "priorAuthoredAssessment": "Intended deadline behavior",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccount",
+      "issueIndex": 2,
+      "title": "Dependence on predictable environment variable",
+      "swc-id": "116",
+      "severity": "Low",
+      "filename": "src/PolicyAccount.sol",
+      "lineno": 262,
+      "code": "if (block.timestamp > deadline) revert Expired()",
+      "function": "proposeDestination(address,uint256,uint256,bytes)",
+      "address": 5077,
+      "sourceMap": "12988:48",
+      "contract": "PolicyAccount",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/src/PolicyAccount.sol",
+        "sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "EXP-3",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-expiry-dispositions.md",
+        "priorAuthoredAssessment": "Intended deadline behavior",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccountFactory",
+      "issueIndex": 1,
+      "title": "Exception State",
+      "swc-id": "110",
+      "severity": "Low",
+      "function": "fallback",
+      "address": 30,
+      "sourceMap": "1864:8148:26:-:0",
+      "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+      "sourceBinding": {
+        "repoPath": null,
+        "reason": "The analyzer supplies no source filename or line for this compiler-generated/modelled fallback record."
+      },
+      "existingDisposition": {
+        "record": "R4",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "priorAuthoredAssessment": "Model artifact",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccountFactory",
+      "issueIndex": 2,
+      "title": "State access after external call",
+      "swc-id": "107",
+      "severity": "Medium",
+      "filename": "src/PolicyAccountFactory.sol",
+      "lineno": 117,
+      "code": "PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 999,
+      "sourceMap": "6237:81:26::1",
+      "contract": "PolicyAccountFactory",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/src/PolicyAccountFactory.sol",
+        "sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "R5",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "priorAuthoredAssessment": "Intended call and initialization behavior",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccountFactory",
+      "issueIndex": 3,
+      "title": "State access after external call",
+      "swc-id": "107",
+      "severity": "Low",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+      "lineno": 99,
+      "code": "_reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 1170,
+      "sourceMap": "3972:62",
+      "contract": "PolicyAccountFactory",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+        "sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "R6",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "priorAuthoredAssessment": "Guard-state access",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccountFactory",
+      "issueIndex": 4,
+      "title": "Multiple Calls in a Single Transaction",
+      "swc-id": "113",
+      "severity": "Low",
+      "filename": "src/PolicyAccountFactory.sol",
+      "lineno": 131,
+      "code": "token.balanceOf(FEE_RECIPIENT)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 1668,
+      "sourceMap": "7118:30:26",
+      "contract": "PolicyAccountFactory",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/src/PolicyAccountFactory.sol",
+        "sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "R7",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "priorAuthoredAssessment": "Intended fail-closed behavior; residual denial of service",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccountFactory",
+      "issueIndex": 5,
+      "title": "Multiple Calls in a Single Transaction",
+      "swc-id": "113",
+      "severity": "Low",
+      "filename": "src/PolicyAccountFactory.sol",
+      "lineno": 132,
+      "code": "token.allowance(msg.sender, address(this))",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 1781,
+      "sourceMap": "7184:42:26",
+      "contract": "PolicyAccountFactory",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/src/PolicyAccountFactory.sol",
+        "sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "R8",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "priorAuthoredAssessment": "Intended fail-closed behavior; residual denial of service",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccountFactory",
+      "issueIndex": 6,
+      "title": "State access after external call",
+      "swc-id": "107",
+      "severity": "Medium",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+      "lineno": 104,
+      "code": "create2(value, 0x09, 0x37, salt)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 2887,
+      "sourceMap": "5629:32",
+      "contract": "PolicyAccountFactory",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+        "sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "R9",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "priorAuthoredAssessment": "Intended CREATE2 behavior",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccountFactory",
+      "issueIndex": 7,
+      "title": "External Call To User-Supplied Address",
+      "swc-id": "107",
+      "severity": "Low",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lineno": 227,
+      "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 2978,
+      "sourceMap": "10660:45",
+      "contract": "PolicyAccountFactory",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "R10",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "priorAuthoredAssessment": "Immutable configured call target",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    },
+    {
+      "analysisTarget": "PolicyAccountFactory",
+      "issueIndex": 8,
+      "title": "Unchecked return value from external call.",
+      "swc-id": "104",
+      "severity": "Medium",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lineno": 227,
+      "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "address": 2978,
+      "sourceMap": "10660:45",
+      "contract": "PolicyAccountFactory",
+      "sourceBinding": {
+        "repoPath": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+        "candidateIdentical": true,
+        "reportedSnippetPresentAtReportedLine": true
+      },
+      "existingDisposition": {
+        "record": "R11",
+        "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "document": "docs/audits/mythril-14290880802-factory-dispositions.md",
+        "priorAuthoredAssessment": "Return checked; intended fee-waiver behavior",
+        "previouslyIndependentlyReviewed": true,
+        "activatedGateException": false,
+        "freshReviewDoesNotAdoptOrDismissFinding": true,
+        "note": "Prior documents concern artifact 14290880802. This review identifies corresponding rule/location/PC records in artifact 14509646188; it does not reexecute their counterexamples or approve the prior assessment."
+      }
+    }
+  ],
+  "disposition": "All 11 findings remain open at the strict gate. Prior authored/independently reviewed disposition documents exist, but no exception is activated; this evidence review adopts no dismissal or exception."
+}

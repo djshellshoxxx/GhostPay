@@ -1,5 +1,7 @@
 # Verification and Release Gates
 
+> **Historical source record.** The [Pages completion report — 2026-11-18](../handoffs/pages-completion-20261118/COMPLETION_REPORT.md) records the current consolidation, actual source-pinned execution and outstanding gates. Branch states, percentages and green results below remain tied to their original dates and commits; they do not qualify the later combined candidate.
+
 ## Pages IndexedDB recovery — rotation 139, exact-head GREEN after failed-job retry
 
 - **Source and requirement:** Static Pages-only [draft #177](https://github.com/djshellshoxxx/GhostPay/pull/177) at `17f681915f25441f5c38326ad718b8082495d52a`, stacked on #175. On unexpected `IDBDatabase.close`, the tag store must invalidate only its matching cached database handle and reopen for the next vault snapshot. Regression `apps/web/src/lib/idbStore.test.ts` was verified **RED** at test-only `017e824db6f5fb580f59e611502ad1eef55debfd` in [run #43805802989](https://github.com/djshellshoxxx/GhostPay/actions/runs/43805802989). The current source has the minimal `onclose` guard with unchanged assertions.

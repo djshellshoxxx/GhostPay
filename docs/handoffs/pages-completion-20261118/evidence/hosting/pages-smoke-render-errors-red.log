@@ -1,0 +1,111 @@
+✖ a caught root render error fails smoke at the walk checkpoint even if navigation remains usable (122.522499ms)
+✖ a uncaught root render error fails smoke at the initial checkpoint even if navigation remains usable (142.637788ms)
+✖ a recoverable root render error fails smoke at the invoice checkpoint even if navigation remains usable (142.243966ms)
+✖ render-error payload text never enters smoke failure output (128.416295ms)
+✔ unrelated console text is neither copied nor treated as a root render failure (184.243409ms)
+✔ non-error console messages do not enter the root-render failure collection (122.995926ms)
+✔ the existing pageerror failure gate remains active (108.452129ms)
+✔ the existing requestfailed failure gate remains active (116.641298ms)
+✔ the existing request failure gate remains active (117.913254ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 5
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1268.168131
+
+✖ failing tests:
+
+test at scripts/pages/smoke-render-errors.test.mjs:102:3
+✖ a caught root render error fails smoke at the walk checkpoint even if navigation remains usable (122.522499ms)
+  AssertionError [ERR_ASSERTION]: build-info: commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, manifests bbbbbbbbbbbbbbbb...
+  index.html ok; entry ./entry.js served as text/javascript
+  banner: GitHub Pages mirror
+  browser ok: navigation [Home, Seller keys, Create invoice, Pay, Scan and receive, Sweep, Public registry, Settings, About and privacy], visited 9 views and the fixture invoice, no page errors, no third-party requests
+  SMOKE PASS
+  
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4fa14be12559/recovery/scripts/pages/smoke-render-errors.test.mjs:105:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/pages/smoke-render-errors.test.mjs:102:3
+✖ a uncaught root render error fails smoke at the initial checkpoint even if navigation remains usable (142.637788ms)
+  AssertionError [ERR_ASSERTION]: build-info: commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, manifests bbbbbbbbbbbbbbbb...
+  index.html ok; entry ./entry.js served as text/javascript
+  banner: GitHub Pages mirror
+  browser ok: navigation [Home, Seller keys, Create invoice, Pay, Scan and receive, Sweep, Public registry, Settings, About and privacy], visited 9 views and the fixture invoice, no page errors, no third-party requests
+  SMOKE PASS
+  
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4fa14be12559/recovery/scripts/pages/smoke-render-errors.test.mjs:105:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/pages/smoke-render-errors.test.mjs:102:3
+✖ a recoverable root render error fails smoke at the invoice checkpoint even if navigation remains usable (142.243966ms)
+  AssertionError [ERR_ASSERTION]: build-info: commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, manifests bbbbbbbbbbbbbbbb...
+  index.html ok; entry ./entry.js served as text/javascript
+  banner: GitHub Pages mirror
+  browser ok: navigation [Home, Seller keys, Create invoice, Pay, Scan and receive, Sweep, Public registry, Settings, About and privacy], visited 9 views and the fixture invoice, no page errors, no third-party requests
+  SMOKE PASS
+  
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4fa14be12559/recovery/scripts/pages/smoke-render-errors.test.mjs:105:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/pages/smoke-render-errors.test.mjs:111:1
+✖ render-error payload text never enters smoke failure output (128.416295ms)
+  AssertionError [ERR_ASSERTION]: build-info: commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, manifests bbbbbbbbbbbbbbbb...
+  index.html ok; entry ./entry.js served as text/javascript
+  banner: GitHub Pages mirror
+  browser ok: navigation [Home, Seller keys, Create invoice, Pay, Scan and receive, Sweep, Public registry, Settings, About and privacy], visited 9 views and the fixture invoice, no page errors, no third-party requests
+  SMOKE PASS
+  
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4fa14be12559/recovery/scripts/pages/smoke-render-errors.test.mjs:113:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -2,7 +2,7 @@ import { validateRpcUrl } from '@ghostpay/chain-adapters';
 import { validateSettingsDelayRange } from '@ghostpay/qr-exchange';
 import { UserFacingError } from './errors';
 
-/** Non-secret preferences. RPC URLs are stored in plain text in this browser; the Settings page says so. */
+/** Non-secret preferences. RPC URLs are stored in plain text in this browser (unless marked session-only); the Settings page says so. */
 export interface Settings {
   readonly rpcUrls: Readonly<Record<string, string>>;
   /** Optional independent second provider per chain; its answers are compared with the primary at every scan checkpoint. */
@@ -30,13 +30,70 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
 
 export const SETTINGS_KEY = 'ghostpay.settings.v1';
 
-/** Validates a user-entered RPC URL (https/wss only, no credentials, no fragment). Returns the normalized URL. */
+/** Validates a user-entered RPC URL (TLS, or explicitly selected loopback HTTP; no userinfo or fragment). */
 export function checkRpcUrl(raw: string): string {
   try {
-    return validateRpcUrl(raw.trim());
+    return validateRpcUrl(raw.trim(), { allowInsecureLocalhost: true });
   } catch {
     throw new UserFacingError({ key: 'error.settings.rPCURLRejectedUseHttpsOrWssWithNoUsername' });
   }
+}
+
+const SECRET_QUERY_NAME = /^(?:key|apikey|api[-_]?key|token|access[-_]?token|auth|authorization|secret|password|passwd|jwt|sig|signature|project[-_]?id)$/i;
+const SECRET_PATH_CONTEXT = /^(?:v[0-9]+|key|keys|token|apikey|api[-_]?key|auth|rpc|api)$/i;
+const SECRET_PATH_LABEL = /^(?:key|keys|token|access[-_]?token|apikey|api[-_]?key|auth|authorization|secret|password|passwd|jwt)$/i;
+
+function tokenLike(v: string, min: number): boolean {
+  return v.length >= min && /^[A-Za-z0-9_+/=-]+$/.test(v) && /[0-9]/.test(v) && /[A-Za-z]/.test(v);
+}
+
+/**
+ * Heuristic: does this RPC URL appear to carry a provider key in its path or query (`/v2/<token>`, `?apikey=`, a long
+ * hex or base64 segment)? A hit means the key would sit in plain text in this browser and be shown on screen. False
+ * negatives are possible; this is a warning aid, not a guarantee.
+ */
+export function rpcUrlLooksSecret(raw: string): boolean {
+  let u: URL;
+  try {
+    u = new URL(raw.trim());
+  } catch {
+    return false;
+  }
+  for (const [name, value] of u.searchParams) {
+    if (value !== '' && (SECRET_QUERY_NAME.test(name) || tokenLike(value, 20))) return true;
+  }
+  const segments = u.pathname.split('/').filter((x) => x !== '').map((segment) => {
+    try { return decodeURIComponent(segment); } catch { return segment; }
+  });
+  return segments.some((seg, i) => {
+    if (/^(?:0x)?[0-9a-f]{32,}$/i.test(seg)) return true;
+    if (tokenLike(seg, 24)) return true;
+    const prev = i > 0 ? segments[i - 1] : undefined;
+    return prev !== undefined && (SECRET_PATH_LABEL.test(prev) || (SECRET_PATH_CONTEXT.test(prev) && tokenLike(seg, 12)));
+  });
+}
+
+/**
+ * Endpoints the user chose to keep for this page session only. Module memory, never written to storage: `saveSettings`
+ * omits an entry whose chain and URL match. Reloading the app drops them.
+ */
+export type RpcSlot = 'primary' | 'secondary';
+const sessionOnly = new Map<string, string>();
+const sessionKey = (slot: RpcSlot, chainId: string): string => `${slot}:${chainId}`;
+
+export function setRpcSessionOnly(slot: RpcSlot, chainId: string, url: string | undefined): void {
+  if (url === undefined || url.trim() === '') sessionOnly.delete(sessionKey(slot, chainId));
+  else sessionOnly.set(sessionKey(slot, chainId), checkRpcUrl(url));
+}
+
+export function isRpcSessionOnly(slot: RpcSlot, chainId: string, url: string): boolean {
+  const saved = sessionOnly.get(sessionKey(slot, chainId));
+  if (saved === undefined) return false;
+  try { return saved === checkRpcUrl(url); } catch { return false; }
+}
+
+export function clearRpcSessionOnly(): void {
+  sessionOnly.clear();
 }
 
 /** Validates a relayer base URL (https only, no credentials, no query or fragment). */
@@ -140,7 +197,10 @@ export function saveSettings(s: Settings, storage: Pick<Storage, 'setItem'> | un
     if (storage === undefined) return false;
     // Structural typing permits callers to carry extra fields. Never persist those fields or their
     // toJSON hooks: this storage boundary is deliberately separate from encrypted key backups.
-    storage.setItem(SETTINGS_KEY, JSON.stringify(sanitizeSettings(s)));
+    const clean = sanitizeSettings(s);
+    const strip = (slot: RpcSlot, map: Readonly<Record<string, string>>): Record<string, string> =>
+      Object.fromEntries(Object.entries(map).filter(([k, v]) => !isRpcSessionOnly(slot, k, v)));
+    storage.setItem(SETTINGS_KEY, JSON.stringify({ ...clean, rpcUrls: strip('primary', clean.rpcUrls), rpcUrlsSecondary: strip('secondary', clean.rpcUrlsSecondary) }));
     return true;
   } catch {
     return false;

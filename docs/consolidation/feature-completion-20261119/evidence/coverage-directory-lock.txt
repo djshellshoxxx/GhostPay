@@ -1,0 +1,25 @@
+{"command": ["../../node_modules/.bin/vitest", "run", "--coverage", "--coverage.processingConcurrency=1", "--maxWorkers=1", "--no-file-parallelism", "--reporter=verbose"], "node_options": "--max-old-space-size=768 --max-semi-space-size=32", "source": "e74ddd26b75912d770e05d51f0b9229756adc649", "coverage_thresholds": "unchanged from original vite.config.ts"}
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay/apps/web
+      Coverage enabled with v8
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: The coverage report directory "/workspace/scratch/13855ecc035c/GhostPay/apps/web/coverage" is already in use by another Vitest process (pid 5). Running coverage for multiple Vitest processes in the same directory at the same time is not supported, because they would delete each other's reports.
+Give each run its own "coverage.reportsDirectory" (e.g. --coverage.reportsDirectory=coverage-7) or run them sequentially.
+ ❯ ReportsDirectoryLock.inUseError ../../node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js:7513:26
+ ❯ ReportsDirectoryLock.acquire ../../node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js:7482:54
+ ❯ V8CoverageProvider.clean ../../node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js:7066:3
+ ❯ ../../node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js:13264:6
+ ❯ ../../node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js:13262:5
+ ❯ startVitest ../../node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js:14572:8
+ ❯ start ../../node_modules/vitest/dist/chunks/cac.BYbt0aJp.js:2382:15
+ ❯ CAC.run ../../node_modules/vitest/dist/chunks/cac.BYbt0aJp.js:2358:2
+
+
+
+
+
+RESOURCE_RESULT {"exit_code": 1, "wall_seconds": 1.053, "user_cpu_seconds": 0.970418, "system_cpu_seconds": 0.28242, "max_rss_kib": 121080}

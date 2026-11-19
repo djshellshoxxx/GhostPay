@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-19T10:13:25.599384+00:00",
+  "reviewer": "recovery_completion",
+  "repository": "djshellshoxxx/GhostPay",
+  "scope": "Independent read-only artifact, source/configuration binding and log review",
+  "comparisonSourceCommit": "e74ddd26b75912d770e05d51f0b9229756adc649",
+  "mythril": {
+    "pr": 255,
+    "head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "workflowRun": 44476066945,
+    "job": 135396814239,
+    "artifact": 14509646188,
+    "canonicalRunUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44476066945",
+    "artifactSha256": "f26634aa26eb718a808bb0cb755d30a29eaf3a2eb9eafa735de33f5b1c78e9e7",
+    "reportSha256": "4f6cc97b9c17d6ac60510d8545e8af8d4e63a0f1bcb70067f6ae00af62b07736",
+    "configSha256": "a027494042667ca625518aa93fb205b1c82ce497b81c172b3363c69e2b3c0ddc",
+    "sourceIdentity": "00753c458c25149f934f812f3b2ddea61bc3f561de0a21b6e0b99c10f17fb275",
+    "exactPrInputHashesVerified": 241,
+    "candidateIdenticalProjectSolidity": 10,
+    "candidateIdenticalVendorSolidity": 226,
+    "candidateIdenticalFoundryConfig": true,
+    "candidateToolingDifferent": 3,
+    "candidateToolingAbsent": 1,
+    "findingCount": 11,
+    "severityCounts": {
+      "Low": 8,
+      "Medium": 3
+    },
+    "strictGate": "FAILED",
+    "runnerExitCode": 1,
+    "openAtStrictGate": 11,
+    "existingDispositionDocuments": true,
+    "findingDispositionActivated": false,
+    "sourceBoundButNotCandidateToolingReplay": true,
+    "validationFile": "mythril-validation.json",
+    "findingsFile": "mythril-findings.json"
+  },
+  "codeql": {
+    "pr": 264,
+    "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "workflowRun": 44487024101,
+    "aggregateCheck": 135456052088,
+    "aggregateConclusion": "failure",
+    "highAlerts": 1,
+    "observedAggregateSummarySource": "../final-concurrent-pr-review.json",
+    "analysisJobsSuccessful": true,
+    "sarifUploaded": true,
+    "downloadableArtifactsReturned": 0,
+    "artifactListingFirstPageOnly": true,
+    "annotationRequestResult": "HTTP 400 INVALID_ARGUMENT: endpoint rejected by connector allowlist",
+    "alertIdentityRecovered": false,
+    "candidateApplicability": "UNKNOWN",
+    "generatedConfigContentRecovered": false,
+    "reviewFile": "codeql-review.json"
+  },
+  "executionBoundaries": {
+    "nativeAnalyzerExecuted": false,
+    "archiveMembersExecuted": false,
+    "contractTestsExecuted": false,
+    "productSourceChanged": false,
+    "exceptionActivated": false,
+    "findingDismissed": false,
+    "accessControlWorkaround": false,
+    "rootCommitCreated": false
+  },
+  "environmentInterruption": "Initial local verification process could not be created during temporary environment outage. Saved files survived; subsequent read-only validation completed.",
+  "artifactFiles": [
+    {
+      "path": "REVIEW.md",
+      "bytes": 11708,
+      "sha256": "46c766e224f66288af0302e39ead6e47ac3c6126f0f70ca1849e3114380c420e"
+    },
+    {
+      "path": "artifact-discovery.json",
+      "bytes": 5073,
+      "sha256": "4b54b0aaa8ae2cca67e0458b752e1fd67b669432598c78759987e7ee3910414e"
+    },
+    {
+      "path": "codeql-actions-job-135432925356.log",
+      "bytes": 121035,
+      "sha256": "8ba8d2bbd66373d1d67c39beb78e08db3e977acccbc46f2ef1a157019b9d0514"
+    },
+    {
+      "path": "codeql-javascript-job-135432925616.log",
+      "bytes": 1020785,
+      "sha256": "461e4cc77a6bab41d9e8e189022df6ef9e04c539fbfc71bf7ac7fcc49ca30a85"
+    },
+    {
+      "path": "codeql-log-transfer.json",
+      "bytes": 1211,
+      "sha256": "48300a4c9b14faab0acd63b06fa47e405a5fc776a34de9623e005eb08e67841a"
+    },
+    {
+      "path": "codeql-python-job-135432925095.log",
+      "bytes": 161726,
+      "sha256": "1af273cdb78a1507aefc1c8ff1010dd5b596081cd563ad230a5989b587e96a03"
+    },
+    {
+      "path": "codeql-review.json",
+      "bytes": 11914,
+      "sha256": "a489faa635dbfdfa7ccada8c138b4a482d4eea092795b1581434db107d430d83"
+    },
+    {
+      "path": "codeql-run-metadata.json",
+      "bytes": 452,
+      "sha256": "7e380230d97b3707a938a4d1d9ba110461dedf874629f31eddc6cff07e153468"
+    },
+    {
+      "path": "mythril-14509646188.zip",
+      "bytes": 54042,
+      "sha256": "f26634aa26eb718a808bb0cb755d30a29eaf3a2eb9eafa735de33f5b1c78e9e7"
+    },
+    {
+      "path": "mythril-extracted/metadata.json",
+      "bytes": 532,
+      "sha256": "f55ac445cb0a7066955e3c9a267cc31a0f7d671e682eef708cac998b984d45ab"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/GhostPayPolicyRouter.completeness.json",
+      "bytes": 186,
+      "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/GhostPayPolicyRouter.stderr.log",
+      "bytes": 353,
+      "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/GhostPayRouter.completeness.json",
+      "bytes": 186,
+      "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/GhostPayRouter.stderr.log",
+      "bytes": 353,
+      "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/GhostPaySweepRelayer.completeness.json",
+      "bytes": 186,
+      "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/GhostPaySweepRelayer.stderr.log",
+      "bytes": 353,
+      "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/PolicyAccount.completeness.json",
+      "bytes": 186,
+      "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/PolicyAccount.stderr.log",
+      "bytes": 353,
+      "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/PolicyAccountFactory.completeness.json",
+      "bytes": 186,
+      "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/PolicyAccountFactory.stderr.log",
+      "bytes": 353,
+      "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/config.json",
+      "bytes": 208,
+      "sha256": "a027494042667ca625518aa93fb205b1c82ce497b81c172b3363c69e2b3c0ddc"
+    },
+    {
+      "path": "mythril-extracted/mythril-evidence/manifest.json",
+      "bytes": 58696,
+      "sha256": "9a3d55cb24a62bc60d37e3b6edb4efa4e4c1c86dd1a79c14df057038cb842457"
+    },
+    {
+      "path": "mythril-findings.json",
+      "bytes": 16389,
+      "sha256": "c219c748713d157f8f035c3057e8ca60e9a8f03ef0e6827d9466e763260b5bd9"
+    },
+    {
+      "path": "mythril-source-bindings.json",
+      "bytes": 109423,
+      "sha256": "ce8be098fff700475a8e78715f1a14415327a051da8192dccc4cc514ed4ab37a"
+    },
+    {
+      "path": "mythril-validation.json",
+      "bytes": 6535,
+      "sha256": "c188ffb4f49305bd1f9a400561536c83992294c7b8dac642c3b286d15d37d5c3"
+    },
+    {
+      "path": "prior-dispositions/TIMING_ASSUMPTIONS.md",
+      "bytes": 7014,
+      "sha256": "73d266508f2ec4b58545d516f73f3eb1403a84f562abf9f32cd4c43b05ce8b3d"
+    },
+    {
+      "path": "prior-dispositions/mythril-14290880802-expiry-dispositions.md",
+      "bytes": 18228,
+      "sha256": "ddc02027b00ebad7f01a240748bfc75540add5a909fc1a478924666aabba92be"
+    },
+    {
+      "path": "prior-dispositions/mythril-14290880802-factory-dispositions.md",
+      "bytes": 23102,
+      "sha256": "dc73969936e1267f3823ee99365cba0dec9a95d5640776a28f9a7a9ed91c612a"
+    },
+    {
+      "path": "prior-dispositions/mythril-closure-factory-20261118.md",
+      "bytes": 13220,
+      "sha256": "a0840d4f00a8035d9cd041d7c4abf89524358ba2ac0d95381328c848f2aa492e"
+    },
+    {
+      "path": "prior-dispositions.json",
+      "bytes": 1222,
+      "sha256": "4f8882e5d0eed482f2b9a72abb023e092be5a61280dd44722e67f663d66b3940"
+    }
+  ]
+}

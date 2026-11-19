@@ -1,0 +1,1255 @@
+{
+  "schemaVersion": 1,
+  "analyzer": "mythril",
+  "completed": true,
+  "sourceCommit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+  "sourceRoot": "/home/runner/work/GhostPay/GhostPay",
+  "startedAt": "2026-11-19T07:08:46.859137+00:00",
+  "sourceFiles": [
+    {
+      "path": ".github/workflows/contract-analysis.yml",
+      "sha256": "7737bc99c2eaf723ab375712c816fa14bd06d78b176f8191a642d1c52253ba8e"
+    },
+    {
+      "path": "packages/contracts/foundry.toml",
+      "sha256": "07fb03295f899933c3a6e85e3cb080184f6d3f7f5f089c9528891fa2b9191f8c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/AccessControl.sol",
+      "sha256": "97abba9ae4ee97f16f17b7b688d90f6f1195b79edfba344eacc58406e088b51e"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/IAccessControl.sol",
+      "sha256": "140304b7e99d517c57a13f391dfd3b550ca633a507f7b2af130f391b6cd89cc5"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/Ownable.sol",
+      "sha256": "38578bd71c0a909840e67202db527cc6b4e6b437e0f39f0c909da32c1e30cb81"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/Ownable2Step.sol",
+      "sha256": "c75345d7b9feef17ae29f2a800ca2f65f8021cf80436a41d6ec00f57f5180f36"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/extensions/AccessControlDefaultAdminRules.sol",
+      "sha256": "cc0b38f69eeab2f55a7f65d6ea8a513c879cdc9d8b8dea82f5d378036712029c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/extensions/AccessControlEnumerable.sol",
+      "sha256": "d7a894aae10cd580aa37969cf9df5837e1acbc1f0e58caef96dc2995102b3bc2"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/extensions/IAccessControlDefaultAdminRules.sol",
+      "sha256": "cfcb24ffcd5901a1f4293356f35ea01388f8b82f994a7a0f2a7187d651095c99"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/extensions/IAccessControlEnumerable.sol",
+      "sha256": "e0f69ae5acc588f27b8eba7f5a625f01409be5bb4a08e825774ccee32efc0ff9"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/manager/AccessManaged.sol",
+      "sha256": "e5c9b2d8c676a69a12e054a0f5bdea62bd577bfc0831bd89ecc72e11ed157c91"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/manager/AccessManager.sol",
+      "sha256": "f731720ea832da3c2a3a0f50907edbd503035bb764dddcd265a89067edde7ff3"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/manager/AuthorityUtils.sol",
+      "sha256": "d6d1da9c9278375b89aa4bae804f0ac36778badb8451b5fe77029a2d861135f6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/manager/IAccessManaged.sol",
+      "sha256": "2ef4db4c7c678372fe79af348ce3d60d4cf7136d195daf7a9bc2e434ffcbaacd"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/manager/IAccessManager.sol",
+      "sha256": "d4efe804c460c8cce4d76c777b512e88ff200e14f9c8be884cd5f69cc0d12e35"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/access/manager/IAuthority.sol",
+      "sha256": "68428ead009a99c5270e2a0a93e4d2756b6f332ee14027963cc7bb06cd67a29a"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/account/Account.sol",
+      "sha256": "0c9f690efb4f556e3464f0f513b83c4dd9c5c7789cb511a600a2cf9acdf9b9cd"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/account/extensions/draft-AccountERC7579.sol",
+      "sha256": "85e3cf337feee14be728eb0e69d8b6060c70d31082aefa58bb01d11c535d8b67"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/account/extensions/draft-AccountERC7579Hooked.sol",
+      "sha256": "ab37869d828716c99f46bec4d06a8381b11d83e289593813741d144e90c0780c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/account/extensions/draft-ERC7821.sol",
+      "sha256": "968f7584d0b018047a078582f0e96ce2956b430e8a0763aa0b3cfb62923e56fc"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/account/utils/EIP7702Utils.sol",
+      "sha256": "8a02fac3a7b98cbf0d5bbd4025b1c543b80ba1b952e6ddf0c7b4731069b6d1c5"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/account/utils/draft-ERC4337Utils.sol",
+      "sha256": "aece100f9118d4969b470f596890b6d0ee96c357270fcb7cceff0c2d6c7708e6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/account/utils/draft-ERC7579Utils.sol",
+      "sha256": "f595aa6842abee05be73a3c32b3851ab5268b88a5b26f7f9f18777a84d79ca73"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/crosschain/CrosschainLinked.sol",
+      "sha256": "b69f1652a23b02c9a9d463219e53c0b9e14f35c2de5d398de6a950cf3832ee13"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/crosschain/ERC7786Recipient.sol",
+      "sha256": "c258cb7808fe2b44b8fd4168b2ba4ed1c43f8c5947ef10021e2aa2dc37624db4"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/crosschain/bridges/BridgeERC20.sol",
+      "sha256": "238a68629f454f3bef1f988bb364e94850dbbae536410499422fd7427ee7beff"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/crosschain/bridges/BridgeERC7802.sol",
+      "sha256": "4988680aa64fb8025d8cd9c0870d477e71abf82f0cd9be00b99a0c5476a371a4"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/crosschain/bridges/abstract/BridgeFungible.sol",
+      "sha256": "f579c0a2d68c9eb9fb76a3fbd50fb0c56342b4b2c5d424ffb47f2f5e499ed53e"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/finance/VestingWallet.sol",
+      "sha256": "c795793ef77d7f0e4a42b8e20c6ddd2be510171b831b4959a36f02c479124001"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/finance/VestingWalletCliff.sol",
+      "sha256": "14981dea962b6c81e253295b702f2a461d7db60ae93715b293e95028d51b81f9"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/Governor.sol",
+      "sha256": "5f5f32a24526b656aa5027b48842f18f3607822e0d27bb252feed107a7b3785c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/IGovernor.sol",
+      "sha256": "ea8b9d1d3e9c267ec3c14b0f237e4f74fc307517051657977f9858468d0e02a0"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/TimelockController.sol",
+      "sha256": "50265193f9ded275033a7b87cd4f6d883f77154b000bf1c5ca7b805052b855c4"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorCountingFractional.sol",
+      "sha256": "b4f872b9559fd97d98f868b1ea77ed18d9f27efb70e70686e8af581992d716fc"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorCountingOverridable.sol",
+      "sha256": "abe4d4e13e4e846084d99e90d7cb132e4fc4cf085e1225074f6c2ee907339218"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorCountingSimple.sol",
+      "sha256": "7b57caea0515e9121f2f2d64229b588609caab302eac01909c9d8361ae212554"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorNoncesKeyed.sol",
+      "sha256": "8a550740cad348a89ea76c81f8d3563ffdb0db21cb9b94ed9cb43edfc84ed21f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorPreventLateQuorum.sol",
+      "sha256": "d50cf5e957c3ea9ff12992261eedd7231add05fb446277c39e72cda3288e3a9d"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorProposalGuardian.sol",
+      "sha256": "c0c7cb61e6e18cbea5603174073223f472cf85c4357ce24fc7481cc978193cdf"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorSequentialProposalId.sol",
+      "sha256": "8397bb8b90c99aa36fd1e5b1e993245db9d77fa24056a38cf642357ea160f36b"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorSettings.sol",
+      "sha256": "bff3837e8deb8411352a71e43a0706d266b3dce29ef6fb5ce810af87eae3dbf7"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorStorage.sol",
+      "sha256": "c009ee20fc762dcf6b05403a4c7b938544936dfbbb551ea06e521bc9d832115d"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorSuperQuorum.sol",
+      "sha256": "ebdadba6f3d385914f8e572452e46347addd4be748587446cacd466eb58b1c68"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorTimelockAccess.sol",
+      "sha256": "a06730f1dc404e5c2b74ce2c60f7a37388e343f1a5ca29b817cdacfd2d340584"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorTimelockCompound.sol",
+      "sha256": "06bdaa86a565dc50759278b716972268a90ee1f0ce1eff7f6f2734a176e06991"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorTimelockControl.sol",
+      "sha256": "8acda7f5ee65953c090702eb64ad1c98b22ec62d26c2e10f84ad42b04203dc00"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorVotes.sol",
+      "sha256": "7df898e3e295914434fde0a7dbc890a5539fe2b61f2cbce6540d69014d416bcf"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorVotesQuorumFraction.sol",
+      "sha256": "d81807c0d95701ea5b27c9c5800e8b716106d477a996004f6394fee207cf9337"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/extensions/GovernorVotesSuperQuorumFraction.sol",
+      "sha256": "06e78dadf94da3829f6fe56ddceb5d1dd44c0f38c8b0d1a14ec8a06ed13ac35a"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/utils/IVotes.sol",
+      "sha256": "059fcf54ee8e21e9dac976491d7d7441049ce12e351a8c66b894846243b60a0b"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/utils/Votes.sol",
+      "sha256": "8ba04ef5d879df0eac088ee30f38798e15c447423b52b539820d1f17217fe3b8"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/governance/utils/VotesExtended.sol",
+      "sha256": "4544701a31274525919859afba5b9be505b59d9db2bb4c8b61030c54fa52c1f2"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1155.sol",
+      "sha256": "4a472558a19793bd1ec0f09fd47c84774dfefbd15f9ba79f627de73629ab4df1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1155MetadataURI.sol",
+      "sha256": "bf8de067ebb7ec329c05c593f006ba6fbee9dbe9ed00dcd1e15852653c3ca5ec"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1155Receiver.sol",
+      "sha256": "825aed7cb9f35079f4b12ada24b5cfee5e6a0bdceab0ae6fc3794d69e3d322e5"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1271.sol",
+      "sha256": "2d17bba201aa2f9c55e317315b872272a60361848dfceb6b1e77081265c79a27"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1363.sol",
+      "sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1363Receiver.sol",
+      "sha256": "39ebf8824bcd8d671abcc1afdd971cf63204b81318b83e0e4bbddebe256c6ff2"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1363Spender.sol",
+      "sha256": "594582216b8d5e0a5ff75d215f03ff8d1ad4fae69b069f04bec51ea6b605a9d1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
+      "sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1820Implementer.sol",
+      "sha256": "99459de7cc9e3387a01835c34a6b5122163f20dbf19d4b1c4eb34489fe25c0c4"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1820Registry.sol",
+      "sha256": "d5c38c7fc97a0fc4c62cbe1987146e5a5ddfe84288dc84626f8affa41ef3d847"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC1967.sol",
+      "sha256": "c4e901318ab6d4963582c62c62ce988a34c68dbae71846b67decacde79e9a317"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol",
+      "sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC20Metadata.sol",
+      "sha256": "0ef8d844d8e066abd5c0d8cc1c550c89f2628a4ea9c9bb16c7593d4207800ca8"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC2309.sol",
+      "sha256": "a497c9e32f721912861542cc2a1c9b7b1bf566c8dafe430af5c06167a8222eb7"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC2612.sol",
+      "sha256": "7ebb71cd1a464a22ce7a4cdce29115d6569546fff8d5299ca3f2f7ba72b8e540"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol",
+      "sha256": "ea5f52ef580b9cb7c97091fd8164ec3ff211f5bdec359d18191eac4fcf7fcf76"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC3156.sol",
+      "sha256": "9fbd10c6970c328f348c9a86604bdad336743caeda2547f94b6a86d8a906c961"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC3156FlashBorrower.sol",
+      "sha256": "e4c78842b24628897539e92fbfbb9e82cda8e39c6e63edc0f43e5e1a58e9f952"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC3156FlashLender.sol",
+      "sha256": "61927aea23d3ceb7f366f4436b38c26706058729434af3df339fa165c6187d72"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC4626.sol",
+      "sha256": "a43d346b74ce2cfa871ce3386aaaf6aec719e205e7c8148efc1c95612fc7b8eb"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC4906.sol",
+      "sha256": "2b14563481c355e6a84127f0ee528d3e3b80fcdd76ff840660784c2445fcc0ae"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC5267.sol",
+      "sha256": "f89772d2d4fafcbef8b73bb10ee9a3373edec2eedb2f1b302320915b351dc3d1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC5313.sol",
+      "sha256": "9c99e3d0f9a47337d59b7e245819b07860e329789aafb5d1275ffd27491686f0"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC5805.sol",
+      "sha256": "2b1e317a9ad0303948d00cfee78c42f99f7558c8d2002a7c63f04d2b70324cac"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC6372.sol",
+      "sha256": "b82e19cde1eaa6c179ac49ba38db89d8cf291522e3c7b90cc2dd327df2e6cc4d"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC6909.sol",
+      "sha256": "92e08355231442117efbbe59d0e6021fa20cf01696b80bf64a9811869fd0271d"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC721.sol",
+      "sha256": "4e4412e3eb28d5d2055e7b0e8153a2ab4d143f94e125a03a1b3d655ea7ed0002"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC721Enumerable.sol",
+      "sha256": "3c85a8e58edeeb5efcec3d274a25324c025d276fbc8d3d27d5ef4641fc1ca3c0"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC721Metadata.sol",
+      "sha256": "a8c823f1cee29f7169ded5e4a9204805343fd73d2fdbacf62d2d227f66abd960"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC721Receiver.sol",
+      "sha256": "875a2b4aaba1fe08770657ed44fcc4754a8f1ffed954eb06462dfe3b44338614"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC7751.sol",
+      "sha256": "7eb72765cde6f7232fe1149cfaa51b6404520280902f6940693c42674941ac83"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC777.sol",
+      "sha256": "9ed85c11bc308eeb33977efc9068fa948f952252982628c3729dae36c33684ab"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC777Recipient.sol",
+      "sha256": "48473616ccf361df33723be1aab911bb41ab481dd9f2c3b4d2323bbba2523299"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC777Sender.sol",
+      "sha256": "4ddc762186f658ea0a53496300c830c98f4a915c0a52afe5ddbc793ac3697ef1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/IERC7913.sol",
+      "sha256": "f66aad4249885b0f11369bfa825dded60aa4baa0d76d9becdac9daa48c350350"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/draft-IERC1822.sol",
+      "sha256": "73653312bc2eda0ec231553a5295242eaef2d4f46a023532d45fe76cbd0f565f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/draft-IERC4337.sol",
+      "sha256": "b0061e69e8761cc3fdca7066066f792c054db34660be05d9712d94871fd4795b"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/draft-IERC6093.sol",
+      "sha256": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/draft-IERC7579.sol",
+      "sha256": "b507137c764032dc447815526d91a6ec2d47c83472745ea6613843b5f4ed2996"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/draft-IERC7674.sol",
+      "sha256": "5e4dab6f3e075df9a22ca7d99c407e813b3444e69b23be10fcf92be1de0fee05"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/draft-IERC7786.sol",
+      "sha256": "90b2bdf1062ce58479d22e8c6c32db6aa59deeccf3c41b133c6651f09815b450"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/draft-IERC7802.sol",
+      "sha256": "f710e268850d13695d0cbb01a3ec8490e704d4a9a98bf889ac7b4427e87eb687"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/interfaces/draft-IERC7821.sol",
+      "sha256": "809a971f062b7961518c410357d2cfa234ee3e07b08eca863c6aff5c54b85de1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/metatx/ERC2771Context.sol",
+      "sha256": "6f0bf2dfc6aead1ea285c982b1f526e5837b47295950f430c9373508ccfd0698"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/metatx/ERC2771Forwarder.sol",
+      "sha256": "d9e48734cd956b2ab2e28382f289517fb58481d27379c0a337fff29cde2d62ea"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+      "sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol",
+      "sha256": "41a3040398d53999dea3251ff8906e11ec1a699362a1d8f4a55bfc7709cc00f3"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Utils.sol",
+      "sha256": "a89ba2032ab25959c6fde1e508ebf8f966ff632703d3ef79684f578a8fa8033f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Proxy.sol",
+      "sha256": "fa8aae37b2939371fcbce48b814c0d5c7e57e3e267f348459f29941937746c98"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/beacon/BeaconProxy.sol",
+      "sha256": "220626a31d80fb0d7a625f0c9ac741d40cd9f3c98ef74eb5b3dd43d224701282"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/beacon/IBeacon.sol",
+      "sha256": "c1c9726bbb0ec4c540c7c98059dcded69a8586b46c168036672381033ee76239"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/beacon/UpgradeableBeacon.sol",
+      "sha256": "26dda9d5bb961b3df26602d49f9f5a0647cfdb78b63cc253aed8527030a64f25"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/transparent/ProxyAdmin.sol",
+      "sha256": "4da9a90b1c8b45fdab7d73d8cf81f51cf7d990657ee4e3f943492c3bf0e4c2f1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/transparent/TransparentUpgradeableProxy.sol",
+      "sha256": "58c759fe76057e1cefa8909b446357aae5cac8a8ba7e6401650208d1b0481508"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/utils/Initializable.sol",
+      "sha256": "f527a063813c2bf60c153fb08e38539578935402894fcc36fac42324ca325d3b"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol",
+      "sha256": "b5af3bfd79a32c6da2d09b0be38d9b63dcd0d159a1a4a0198431fd00acc1fd52"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/ERC1155.sol",
+      "sha256": "35ad182b74ce08152cde00fd41226850c635e1b9445f3a9d7b4888f2ba55717e"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol",
+      "sha256": "62760e5ca354484140a29dddfa03b576c2e9e3adea6eb021eb28b394c085f3e4"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol",
+      "sha256": "3df310870e0187a59020ea48e910ed2693778b1f758b57b97a47365d74b92af5"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/extensions/ERC1155Burnable.sol",
+      "sha256": "c58c02c83ea3c6bc8aaa98a8aa5e4eace719c423ad2701788012f035a2180dd6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/extensions/ERC1155Pausable.sol",
+      "sha256": "eb3c9c1fb492ab948d0c147c2affd12d5b6c606a86d95142f7f7efaefc5373e4"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/extensions/ERC1155Supply.sol",
+      "sha256": "506b378ec77d928b398f393591c076db3e92478a2b6846fae87cb50ee3cc7a34"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol",
+      "sha256": "33bd6fdf59a907e9311b436426b0baa894dd4a0165f0a2c9d6b1fc0447263347"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol",
+      "sha256": "d5a148ccf8ac24f69f734cb2bcfba55ecc1d24209bf7aaa022cf3bde4bbe274f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/utils/ERC1155Holder.sol",
+      "sha256": "ee184c9620ae770a9ccf9d21d1e6fd1177eed668f4e92707b51e9ef36d7c9469"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC1155/utils/ERC1155Utils.sol",
+      "sha256": "8d75a5dd3db8f1c85362ef688d6f3cf5b2892dc62424bfe35678a49ce0d87956"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+      "sha256": "50f34ae16a067a41c2c1091445d11d63788e54c717677cb6d6b0e4cdea2ad21d"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+      "sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC1363.sol",
+      "sha256": "4ab0473a77a4bbcc4bbb8a22e2f2c56a451e85aa7014b7f4fb61e98373ca31a9"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Burnable.sol",
+      "sha256": "2e6108a11184dd0caab3f3ef31bd15fed1bc7e4c781a55bc867ccedd8474565c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Capped.sol",
+      "sha256": "2403fec28c40f964320bfb4a025b12392ce240c732f648f9080e3521418ffea1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Crosschain.sol",
+      "sha256": "ec2237b1f8feec1205a035bb8a43e4c876bac678a6fe894e51e2530e39613a6a"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20FlashMint.sol",
+      "sha256": "acff73eeb3147a569a2eaa1f5c5a8c2fd1bd51c5528a3ce01561312e708b500d"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Pausable.sol",
+      "sha256": "12919f23b3b408e67b3b9c9543e37b7474e314d8f1c596472fd9201d9990a278"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Permit.sol",
+      "sha256": "53584e84cd4851447b3149219f8c1b41397f7c753f85da07eda7f17ac6846e47"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Votes.sol",
+      "sha256": "9e9b494831630db53ffd1d0bce7fe22d606ce9263fc8d4d1983d235261e918e9"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Wrapper.sol",
+      "sha256": "0e4c44404eaa4b412a1ec57c20a97e9bcd6cbc8b9313e9e43415c64d1d7575c8"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC4626.sol",
+      "sha256": "0296031843c461548414c71b73aca0077c829cc6729e61170b244f16ea271fb9"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+      "sha256": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol",
+      "sha256": "c302edfbf7f396e1130be81278c5c994543868f0f5bf0c0fb3f557e166d8d3f2"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-ERC20Bridgeable.sol",
+      "sha256": "6cc20d017e037dfbe92542dd0136c15ed1c19809591d3f34c1f73f9f8fe434e6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/draft-ERC20TemporaryApproval.sol",
+      "sha256": "3f14e8e359e07a1407659201abc760461fe7d2335bec5c3733e7e7d7672b5536"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/ERC1363Utils.sol",
+      "sha256": "17ed0dad7ec114eab7f188a8e5a410b37a43f556eb3893191f63da826052f860"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC6909/ERC6909.sol",
+      "sha256": "4fcbf3da03f0b84c7a99df1308ce93745e92ab6dd11c0dfddcd1a1f5a7b5b63c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC6909/extensions/ERC6909ContentURI.sol",
+      "sha256": "c207cd9a7ae5edc9ef5e20b59a7519e39c0319c8eb957806a5b40bfd1e76b692"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC6909/extensions/ERC6909Metadata.sol",
+      "sha256": "a708c5eabb119ad8e8636adfeecb7a4b68f4dec3ac49a524998b3d23f98a7322"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC6909/extensions/ERC6909TokenSupply.sol",
+      "sha256": "2400c7750524a40d9e3ff84d86b40707bc8af5dd42bbe6ad7e8ff88f617ea3d1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol",
+      "sha256": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol",
+      "sha256": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol",
+      "sha256": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Burnable.sol",
+      "sha256": "2d19ad1769de94d561d31b0713a073bcbd3eac4fef568c0e71f5b1a860619aa0"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Consecutive.sol",
+      "sha256": "9d5f256e8513886359ee7569c98a3eacabe12a41b944f7e505034289540e8f74"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Enumerable.sol",
+      "sha256": "c157a005de76d220cc1108441ff6cbc62e4fc6ffadb7e8002992b57f3b4fd552"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Pausable.sol",
+      "sha256": "dcd393061afac5cc964c93aca6612e262d9cd5a792b237cca33a2834b4e1e8dd"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Royalty.sol",
+      "sha256": "de8bed7f9d3c9fa450f61df1c83a0ecc3433d5505ea7c4df2d13e959c8365343"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+      "sha256": "665ae4728cfc066d61fc73f1e9b87279f70e4333d926b3ca750240d13fa7f9f0"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Votes.sol",
+      "sha256": "82ecd33cf7dd63cf8018e4af53791b967a813978c8979ddff449ff6cbc7aebf5"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Wrapper.sol",
+      "sha256": "d1795982c65a93e2c87565397951426c7a44eb1ec7dff3184341b428ea896bdc"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol",
+      "sha256": "03c8c0b9ebbe6fe0a682332d9f980723996a1856ff0a767378eae95288069649"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+      "sha256": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/utils/ERC721Holder.sol",
+      "sha256": "2d50f70b857cae57572c0139e3d9d84cbe3edcc18492581af36befa15c36cb3f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC721/utils/ERC721Utils.sol",
+      "sha256": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/token/common/ERC2981.sol",
+      "sha256": "bac8f7ccae3c561a105a18cd1600ade43bb8856f9b7c9e0acc98d950af9ffa81"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Address.sol",
+      "sha256": "73e54e15285455f0e01e136c3663732641537614723ae5dbd820eb3cb036b1fd"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Arrays.sol",
+      "sha256": "d0a51abdcac27c02821939ed07419b88950bac4117ee75e105010674ef6593c0"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Base58.sol",
+      "sha256": "41bacd6166c1980671d8bdef3c7560a255aa84c2465308f407c321801df8865c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Base64.sol",
+      "sha256": "1c143572893f50f04fe8e507d89f9997cd3242102ba4200c8de0803ecbaf8cec"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Blockhash.sol",
+      "sha256": "558cae851261e33e7272037d547b40b891bb8c55dd99caa5acdb6566b79b6712"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Bytes.sol",
+      "sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/CAIP10.sol",
+      "sha256": "5a1b57f39ae27e7da01e3c647964a38e516581b0505cf358c99aebe6eeb4d437"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/CAIP2.sol",
+      "sha256": "cbf5e18e186a00400705880a4125d7e4534cdcefc484f96a33bd4b355bded8f6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Calldata.sol",
+      "sha256": "f400ffb13072d2cbe1de51c78e4fc38d1c29e2b1d7cb0b53c2641bed0effa4d6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Comparators.sol",
+      "sha256": "52fb1c8f57967d42a3214bde4a8a414ab25c2e3a844d00e171ca56487024e009"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Context.sol",
+      "sha256": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Create2.sol",
+      "sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Errors.sol",
+      "sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/LowLevelCall.sol",
+      "sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Memory.sol",
+      "sha256": "7163c8f867f59e7af3702695b3a4e54eb7564850ff4c80ac90065e406fe7fe83"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Multicall.sol",
+      "sha256": "bb203e6a32bb3f377e6b0c8269642ca2816f815deb4a533f35ef42eef0beda5c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Nonces.sol",
+      "sha256": "9b4cbb85d1f5053c744e83302538eb643a713ffd14bc37665b224f1c66529339"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/NoncesKeyed.sol",
+      "sha256": "ec835ccacbd09964b5ec4f46da1069e4bd6b943e5c7966ba6a4baad642ff62b1"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Packing.sol",
+      "sha256": "766829f6d9758a1318dd009143912d7aa6bbafa4f4b2a137c94d7f81a73b38ac"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Panic.sol",
+      "sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Pausable.sol",
+      "sha256": "2c26130748f06552c65ca74d89eaf78c9324a3cbac3ba6fdbadaa8beba0cb0b4"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/RLP.sol",
+      "sha256": "9812ff4e2b646e42fdbe6016f57f351403aa396ffb222aaefd3b584252cd45e7"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+      "sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuardTransient.sol",
+      "sha256": "cff7c20aed945d939b764d876adbd42e1b7725d62d5b1f2bd303db237567b575"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/RelayedCall.sol",
+      "sha256": "63a730f559baa9b16658494870407dfbb255ed2c7f4ea6999f612c1be356ff90"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/ShortStrings.sol",
+      "sha256": "1cfa08d3c551e9ec0b9cd249b09987f04e7e90f352e1a5e3b0d6a3bc426b3de7"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/SlotDerivation.sol",
+      "sha256": "f8e5f2c672918a21720ce3b5e2637c6366aa0652d085c0478fc0d0d6edb76386"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/StorageSlot.sol",
+      "sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/Strings.sol",
+      "sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/TransientSlot.sol",
+      "sha256": "ea92f361d697ba8b1fbd322b4d84b989998862c21fbebfa4b45289dc94a9eea2"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol",
+      "sha256": "ba7c2d314fcd61c9783e0b3f0c664d004b76b408fda6a84edc8267d17c5012d6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+      "sha256": "2845caaaf70757b6cce612ae4ffbec2c382cb3d1cb9765c98fa649c0f5f1c794"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/Hashes.sol",
+      "sha256": "ecdbce11c5ecdf32b306e26b8ab1b878327c08154b4ccd04518b6b64b298cf31"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol",
+      "sha256": "fd5635e85da7518bf1a153eaa99d3fad8bb6700f9d5d9cb70ddde75935cb122c"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/MessageHashUtils.sol",
+      "sha256": "538a0d7c4f0ec5a8562f58561890f7b49d14580674ecf58bc5f505b45c73df65"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/P256.sol",
+      "sha256": "0d7bb2f2b5e0ceb0e1a28523ee179c1aee5980cb793df739dd9ccf87170dffe2"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/RSA.sol",
+      "sha256": "036c1fab2a132d7acb7fa0873812f2ad22c873d2efc91032b8ac7a1fda5ff476"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/SignatureChecker.sol",
+      "sha256": "acc520422fac0a9edb85d7268085a63219a0db9e4406cd155d5c74c94e35f590"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/TrieProof.sol",
+      "sha256": "57a80f93aaab4b7348aa3f9c8cd45c5085f495c4da655f1adaf26fcb24a7c0bc"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/WebAuthn.sol",
+      "sha256": "b0291b551fcc38e468ae0bab750fe9f1aba33dfd563dc75eb3d17f17532c0e78"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/draft-ERC7739Utils.sol",
+      "sha256": "e3a2a7ae79126e1f64605753901751b6d5ebe6c6336e567e5ba7e9fe30121f72"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/AbstractSigner.sol",
+      "sha256": "1119a95e6a2b709a6961fc9d5aa0a3d43249857d2edd05a174e191c573329111"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/MultiSignerERC7913.sol",
+      "sha256": "ce6e9bb2732ef0769350e48dba6f982fd98a27d98cc7ca50f51fd7732dde2a9f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/MultiSignerERC7913Weighted.sol",
+      "sha256": "3ff83c3c739a4f42172e133783b3a0f3206b6183791af9123920e34b1d35f82f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/SignerECDSA.sol",
+      "sha256": "f7d1dfe2512a72f21d53a818963aebbd9017b41cdde7dcb6dc566adfec273044"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/SignerEIP7702.sol",
+      "sha256": "ba7615fd7eae8191759bfd34af99c573ca468ba88dd1dc8657fd74fb9235fa76"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/SignerERC7913.sol",
+      "sha256": "de875f910e523a88cbb3f0851f6b1b958de52b52ae262cd74efc9d9923448b94"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/SignerP256.sol",
+      "sha256": "680777935eacce18916de879ce37d8c7592b35ada18ff701d94a0945589a3a74"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/SignerRSA.sol",
+      "sha256": "35d55e0adc031d49ac802949cf933f6cbef8e9a43ebb6770a49a3d96656ae4b5"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/SignerWebAuthn.sol",
+      "sha256": "f00f8cb5fa111fdeb3c42c6eb90ad7deabef312df3e9ca23c06483803ab2aba8"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/signers/draft-ERC7739.sol",
+      "sha256": "fb3e370a0eb733cf6a63df53ef0c438538d7684178bdbb17f43f44b4e19178ab"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/verifiers/ERC7913P256Verifier.sol",
+      "sha256": "5f9d91e2faed416e04d1e90f6441fa0c46ea46a036010b298fa3fb4b97de6321"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/verifiers/ERC7913RSAVerifier.sol",
+      "sha256": "483db930bf09137ea172b886e294f32adf6e50927bafc4905ac9a1c06225549d"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/cryptography/verifiers/ERC7913WebAuthnVerifier.sol",
+      "sha256": "49ea2f4f767d6f9b4a48caaabae5ef93c374021b78017538447b62ffae8f8fb9"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/draft-InteroperableAddress.sol",
+      "sha256": "8c1fa73e7e1c31a10bff4c97bb789e598437d7a93eb7c3a16b5567aa3cfa5961"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol",
+      "sha256": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/introspection/ERC165Checker.sol",
+      "sha256": "b42cd10397f404b8383363f646c21d59ff4decc7bca3de8c5b84773806605e14"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+      "sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/math/Math.sol",
+      "sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/math/SafeCast.sol",
+      "sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/math/SignedMath.sol",
+      "sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/Accumulators.sol",
+      "sha256": "ab7f58adc5094589406064b930a3bbc582a97c66f64b0e9d82400e94f995396f"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/BitMaps.sol",
+      "sha256": "12d7dd76e44e30d2d076df04f970a272969f30c2a2d240a89b6e2cac3f3e7c55"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/Checkpoints.sol",
+      "sha256": "e8efef277044b66b660e7888e0f7093022e4a437e2d95a82ffc590e6699abd94"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/CircularBuffer.sol",
+      "sha256": "a249655074bfac879dd3d907955467e35d6b16f4ba6551878e92e104a79ccf1b"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/DoubleEndedQueue.sol",
+      "sha256": "d4f645a8d40f1d89d07d02e8a392fc9b0e89b7d4141e94b8cb8e62322ff75636"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/EnumerableMap.sol",
+      "sha256": "c9f5ada92b8bdf4a4441a1358a6d51a3c6a98eedfe9ff06bbdc02b778d104b26"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/EnumerableSet.sol",
+      "sha256": "76c7af99039281b3075780b21b4e2f6be0166d09f89c24171b4bed3b1961c810"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/Heap.sol",
+      "sha256": "6199f2afb6d500419686f0db53f02dd7ad5263b89767cf80dbcf0700a449fc21"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/structs/MerkleTree.sol",
+      "sha256": "e2350ba1cba5998b64877e60a2fd089e61d598c93f6897e735b28bcd1e7700b6"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/types/Time.sol",
+      "sha256": "8085f943150cce1a10aa843f83519960c3010efe5792a9ee58f87c1993d33472"
+    },
+    {
+      "path": "packages/contracts/lib/openzeppelin-contracts/contracts/vendor/compound/ICompoundTimelock.sol",
+      "sha256": "b1062b283d59aea38dbecafabe94dedb7152b89ae001f85b35f86b3817929c4c"
+    },
+    {
+      "path": "packages/contracts/scripts/capture-mythril-evidence.py",
+      "sha256": "e2b878c4912ec467194688350bb7039ab34c98c502632dfb479e182e7d81b25f"
+    },
+    {
+      "path": "packages/contracts/scripts/mythril-compat.py",
+      "sha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd"
+    },
+    {
+      "path": "packages/contracts/scripts/run-mythril.sh",
+      "sha256": "cb89ec12f0333a8df2caeec67653f8f80753a4fb815f3166ac879dd67f76a425"
+    },
+    {
+      "path": "packages/contracts/src/GhostPayPolicyRouter.sol",
+      "sha256": "2799f00d68b53d606fa1a146899fe29d056a87bb390d9c2badadc6c8c4ce2a37"
+    },
+    {
+      "path": "packages/contracts/src/GhostPayRouter.sol",
+      "sha256": "cc2fbfcc6c221ace6e7b888ca9bb3ca7886d0898dc33d40804dd3839067bffc8"
+    },
+    {
+      "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a"
+    },
+    {
+      "path": "packages/contracts/src/PolicyAccount.sol",
+      "sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9"
+    },
+    {
+      "path": "packages/contracts/src/PolicyAccountFactory.sol",
+      "sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IERC5564Announcer.sol",
+      "sha256": "398af64980d0f52d8a445a83ca3d2a22f73203821554185e1bf118775671968f"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPayPolicyRouter.sol",
+      "sha256": "e6f9977e522e18f956d06005d40da7530c016ae059ec4d6c189a3d47aba91db5"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPayRouter.sol",
+      "sha256": "0d9baf16716fc8edbd801af57b9ce08010d8737e415a4ce3bb764f0e4c6425ca"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPaySweepRelayer.sol",
+      "sha256": "db744507d3d1b063f23e9d0e5bc5504410e67f054869acf0f8ba039958fcffd8"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IPolicyAccount.sol",
+      "sha256": "d4275113091d25c54a79fc5948f00a3df7466b27347661aa93d00b97b5282874"
+    }
+  ],
+  "sourceIdentity": "00753c458c25149f934f812f3b2ddea61bc3f561de0a21b6e0b99c10f17fb275",
+  "configuration": {
+    "compilerVersion": "0.8.28",
+    "optimizerEnabled": true,
+    "optimizerRuns": 200,
+    "evmVersion": "cancun",
+    "transactionDepth": 3,
+    "executionTimeoutSeconds": 900,
+    "modules": "default",
+    "remappings": [
+      "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+    ]
+  },
+  "configSha256": "a027494042667ca625518aa93fb205b1c82ce497b81c172b3363c69e2b3c0ddc",
+  "configPath": "/tmp/tmp.USijYoulbu",
+  "tools": {
+    "mythril": {
+      "argv": [
+        "myth",
+        "version"
+      ],
+      "exitCode": 0,
+      "stdout": "Mythril version v0.24.8\n",
+      "stderr": "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n  import pkg_resources\n",
+      "executableSha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd"
+    },
+    "solc": {
+      "argv": [
+        "solc",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n",
+      "stderr": "",
+      "executableSha256": "f2a4e30a36695957d14aadf89872975477169592b90a0f2e907fa34e4892906c"
+    },
+    "mythrilCompiler": {
+      "argv": [
+        "/home/runner/.solcx/solc-v0.8.28",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n",
+      "stderr": "",
+      "executableSha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+      "selection": "solcx.install.get_executable(0.8.28)",
+      "executablePath": "/home/runner/.solcx/solc-v0.8.28",
+      "resolverSha256": "29b79866cb7a3eddd905e7c7559715cd79f216b7de37a0343fe8499b978fd79c",
+      "mythrilSelectorSha256": "5215779807038fbe8db229a2a759293e476ce2831afc783e7a7028a0d5e1fa86"
+    }
+  },
+  "analyses": [
+    {
+      "target": "GhostPayRouter",
+      "sourceFile": "packages/contracts/src/GhostPayRouter.sol",
+      "argv": [
+        "analyze",
+        "src/GhostPayRouter.sol",
+        "--solv",
+        "0.8.28",
+        "--solc-json",
+        "config.json",
+        "--execution-timeout",
+        "900",
+        "-t",
+        "3",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "compiler": {
+        "argv": [
+          "/home/runner/.solcx/solc-v0.8.28",
+          "--version"
+        ],
+        "exitCode": 0,
+        "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n",
+        "stderr": "",
+        "executableSha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+        "selection": "solcx.install.get_executable(0.8.28)",
+        "executablePath": "/home/runner/.solcx/solc-v0.8.28",
+        "resolverSha256": "29b79866cb7a3eddd905e7c7559715cd79f216b7de37a0343fe8499b978fd79c",
+        "mythrilSelectorSha256": "5215779807038fbe8db229a2a759293e476ce2831afc783e7a7028a0d5e1fa86"
+      },
+      "completeness": {
+        "path": "GhostPayRouter.completeness.json",
+        "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+      },
+      "stdout": {
+        "path": "GhostPayRouter.stdout.json",
+        "sha256": "8e0e13688f5b10060dc34ec868bbdcf9cd72e01f93b0ca447c33ff4e87b6be8a"
+      },
+      "stderr": {
+        "path": "GhostPayRouter.stderr.log",
+        "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+      }
+    },
+    {
+      "target": "GhostPaySweepRelayer",
+      "sourceFile": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "argv": [
+        "analyze",
+        "src/GhostPaySweepRelayer.sol",
+        "--solv",
+        "0.8.28",
+        "--solc-json",
+        "config.json",
+        "--execution-timeout",
+        "900",
+        "-t",
+        "3",
+        "-o",
+        "json"
+      ],
+      "exitCode": 1,
+      "compiler": {
+        "argv": [
+          "/home/runner/.solcx/solc-v0.8.28",
+          "--version"
+        ],
+        "exitCode": 0,
+        "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n",
+        "stderr": "",
+        "executableSha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+        "selection": "solcx.install.get_executable(0.8.28)",
+        "executablePath": "/home/runner/.solcx/solc-v0.8.28",
+        "resolverSha256": "29b79866cb7a3eddd905e7c7559715cd79f216b7de37a0343fe8499b978fd79c",
+        "mythrilSelectorSha256": "5215779807038fbe8db229a2a759293e476ce2831afc783e7a7028a0d5e1fa86"
+      },
+      "completeness": {
+        "path": "GhostPaySweepRelayer.completeness.json",
+        "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+      },
+      "stdout": {
+        "path": "GhostPaySweepRelayer.stdout.json",
+        "sha256": "e7abeab7e68c308a883003a7521b53dba53ad8b1063be8ace9871d120586bba0"
+      },
+      "stderr": {
+        "path": "GhostPaySweepRelayer.stderr.log",
+        "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+      }
+    },
+    {
+      "target": "GhostPayPolicyRouter",
+      "sourceFile": "packages/contracts/src/GhostPayPolicyRouter.sol",
+      "argv": [
+        "analyze",
+        "src/GhostPayPolicyRouter.sol",
+        "--solv",
+        "0.8.28",
+        "--solc-json",
+        "config.json",
+        "--execution-timeout",
+        "900",
+        "-t",
+        "3",
+        "-o",
+        "json"
+      ],
+      "exitCode": 0,
+      "compiler": {
+        "argv": [
+          "/home/runner/.solcx/solc-v0.8.28",
+          "--version"
+        ],
+        "exitCode": 0,
+        "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n",
+        "stderr": "",
+        "executableSha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+        "selection": "solcx.install.get_executable(0.8.28)",
+        "executablePath": "/home/runner/.solcx/solc-v0.8.28",
+        "resolverSha256": "29b79866cb7a3eddd905e7c7559715cd79f216b7de37a0343fe8499b978fd79c",
+        "mythrilSelectorSha256": "5215779807038fbe8db229a2a759293e476ce2831afc783e7a7028a0d5e1fa86"
+      },
+      "completeness": {
+        "path": "GhostPayPolicyRouter.completeness.json",
+        "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+      },
+      "stdout": {
+        "path": "GhostPayPolicyRouter.stdout.json",
+        "sha256": "8e0e13688f5b10060dc34ec868bbdcf9cd72e01f93b0ca447c33ff4e87b6be8a"
+      },
+      "stderr": {
+        "path": "GhostPayPolicyRouter.stderr.log",
+        "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+      }
+    },
+    {
+      "target": "PolicyAccount",
+      "sourceFile": "packages/contracts/src/PolicyAccount.sol",
+      "argv": [
+        "analyze",
+        "src/PolicyAccount.sol",
+        "--solv",
+        "0.8.28",
+        "--solc-json",
+        "config.json",
+        "--execution-timeout",
+        "900",
+        "-t",
+        "3",
+        "-o",
+        "json"
+      ],
+      "exitCode": 1,
+      "compiler": {
+        "argv": [
+          "/home/runner/.solcx/solc-v0.8.28",
+          "--version"
+        ],
+        "exitCode": 0,
+        "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n",
+        "stderr": "",
+        "executableSha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+        "selection": "solcx.install.get_executable(0.8.28)",
+        "executablePath": "/home/runner/.solcx/solc-v0.8.28",
+        "resolverSha256": "29b79866cb7a3eddd905e7c7559715cd79f216b7de37a0343fe8499b978fd79c",
+        "mythrilSelectorSha256": "5215779807038fbe8db229a2a759293e476ce2831afc783e7a7028a0d5e1fa86"
+      },
+      "completeness": {
+        "path": "PolicyAccount.completeness.json",
+        "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+      },
+      "stdout": {
+        "path": "PolicyAccount.stdout.json",
+        "sha256": "196261724b53b8642c17c6df6cea345dda80829776b9620454ade6b7040dd191"
+      },
+      "stderr": {
+        "path": "PolicyAccount.stderr.log",
+        "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+      }
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "sourceFile": "packages/contracts/src/PolicyAccountFactory.sol",
+      "argv": [
+        "analyze",
+        "src/PolicyAccountFactory.sol",
+        "--solv",
+        "0.8.28",
+        "--solc-json",
+        "config.json",
+        "--execution-timeout",
+        "900",
+        "-t",
+        "3",
+        "-o",
+        "json"
+      ],
+      "exitCode": 1,
+      "compiler": {
+        "argv": [
+          "/home/runner/.solcx/solc-v0.8.28",
+          "--version"
+        ],
+        "exitCode": 0,
+        "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n",
+        "stderr": "",
+        "executableSha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+        "selection": "solcx.install.get_executable(0.8.28)",
+        "executablePath": "/home/runner/.solcx/solc-v0.8.28",
+        "resolverSha256": "29b79866cb7a3eddd905e7c7559715cd79f216b7de37a0343fe8499b978fd79c",
+        "mythrilSelectorSha256": "5215779807038fbe8db229a2a759293e476ce2831afc783e7a7028a0d5e1fa86"
+      },
+      "completeness": {
+        "path": "PolicyAccountFactory.completeness.json",
+        "sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a"
+      },
+      "stdout": {
+        "path": "PolicyAccountFactory.stdout.json",
+        "sha256": "1a540e3d3dfbcb3a5995c0ba90a5e3c4122052ebbec2fa03421e2aa4759c8f4e"
+      },
+      "stderr": {
+        "path": "PolicyAccountFactory.stderr.log",
+        "sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2"
+      }
+    }
+  ],
+  "runnerExitCode": 1,
+  "completedAt": "2026-11-19T07:56:46.789430+00:00",
+  "sourceUnchanged": true
+}

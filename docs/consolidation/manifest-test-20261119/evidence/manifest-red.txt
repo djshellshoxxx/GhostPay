@@ -1,0 +1,31 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-btc/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/lib/manifest.test.ts (14 tests | 1 failed) 121ms
+   ❯ manifest trust (strict bundled path only) (8)
+     × exports no runtime-fetch or unsigned-dev manifest loader 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/manifest.test.ts > manifest trust (strict bundled path only) > exports no runtime-fetch or unsigned-dev manifest loader
+TypeError: stripComments is not a function
+ ❯ src/lib/manifest.test.ts:20:20
+     18|     const mod = (await import('./manifest')) as Record<string, unknown…
+     19|     expect(Object.keys(mod).sort()).toEqual(['loadBundledManifest', 'v…
+     20|     const source = stripComments(readFileSync(fileURLToPath(new URL('.…
+       |                    ^
+     21|     for (const forbidden of [/\bfetch\b/, /deployments\//, /verifyText…
+     22|       expect(source, String(forbidden)).not.toMatch(forbidden);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  00:26:26
+   Duration  6.94s (import 66%, transform 32%, tests 2%)
+

@@ -1,0 +1,17 @@
+{"command": ["../../node_modules/.bin/vitest", "run", "--coverage=false", "--maxWorkers=1", "--no-file-parallelism", "--reporter=verbose", "src/lib/scannerCore.fuzz.test.ts"], "node_options": "--max-old-space-size=768 --max-semi-space-size=32", "source": "74e3111f994481e7c9201ddb0494cf4a8405eadd"}
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay/apps/web
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/lib/scannerCore.fuzz.test.ts > scanner malformed-wire acceptance corpus > processes one million generated wire logs without throwing or matching another owner 155316ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  01:16:04
+   Duration  156.18s (tests 100%)
+
+
+RESOURCE_RESULT {"exit_code": 0, "wall_seconds": 156.84, "user_cpu_seconds": 168.280465, "system_cpu_seconds": 1.584153, "max_rss_kib": 226080}

@@ -191,7 +191,7 @@ describe('homoglyphs and hostile input', () => {
       expect(amt(s)).toBe('non-ascii');
   });
   it('rejects invisible characters', () => {
-    for (const s of ['1​ usdc', '1 usdc‮', '1\tusdc', '1\nusdc', '\u00001 usdc', '1 usdc'])
+    for (const s of ['1​ usdc', '1 usdc\u202e', '1\tusdc', '1\nusdc', '\u00001 usdc', '1 usdc'])
       expect(amt(s)).toBe('invisible-char');
   });
   it('rejects negatives, zero, overflow, excess precision, bad types, size', () => {

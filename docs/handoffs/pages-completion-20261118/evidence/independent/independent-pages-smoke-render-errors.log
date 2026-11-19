@@ -1,0 +1,17 @@
+✔ a caught root render error fails smoke at the walk checkpoint even if navigation remains usable (111.020963ms)
+✔ a uncaught root render error fails smoke at the initial checkpoint even if navigation remains usable (119.197285ms)
+✔ a recoverable root render error fails smoke at the invoice checkpoint even if navigation remains usable (156.447443ms)
+✔ render-error payload text never enters smoke failure output (167.428281ms)
+✔ unrelated console text is neither copied nor treated as a root render failure (108.769383ms)
+✔ non-error console messages do not enter the root-render failure collection (99.944986ms)
+✔ the existing pageerror failure gate remains active (97.398677ms)
+✔ the existing requestfailed failure gate remains active (92.793826ms)
+✔ the existing request failure gate remains active (226.39428ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1269.155528

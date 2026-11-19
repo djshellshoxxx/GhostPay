@@ -1,0 +1,34 @@
+(node:34) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+<--- Last few GCs --->
+
+[47:0xd5cf000]    47573 ms: Mark-Compact 764.5 (784.5) -> 762.5 (783.5) MB, pooled: 2 MB, 386.58 / 0.00 ms  (average mu = 0.085, current mu = 0.035) allocation failure; scavenge might not succeed
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0xe48bbe node::OOMErrorHandler(char const*, v8::OOMDetails const&) [node]
+ 2: 0x1248d00 v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [node]
+ 3: 0x1248fd7 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [node]
+ 4: 0x1477ee5  [node]
+ 5: 0x1477f13  [node]
+ 6: 0x1490fea  [node]
+ 7: 0x14941b8  [node]
+ 8: 0x1cfcc61  [node]
+Aborted
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 134
+npm error path /workspace/scratch/13855ecc035c/GhostPay/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/13855ecc035c/GhostPay/apps/web
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit

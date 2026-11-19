@@ -71,7 +71,30 @@ export {
   validateRpcMode,
 } from './settings.js';
 export type { RpcMode, ScanMode, Env, Role, NetworkSettings, ValidateSettingsOptions, RpcModeOptions } from './settings.js';
-export { PROFILE_LABELS, SCAN_MODE_LABELS, RPC_MODE_LABELS, FIRST_USE_NOTICE, TOR_BROWSER_NOTICE, COMMON_NOT_HIDDEN } from './claims.js';
-export type { ProfileLabel } from './claims.js';
+export {
+  PROFILE_LABELS,
+  PROFILE_VERIFICATION,
+  SCAN_MODE_LABELS,
+  RPC_MODE_LABELS,
+  FIRST_USE_NOTICE,
+  TOR_BROWSER_NOTICE,
+  UNVERIFIED_NOTICE,
+  COMMON_NOT_HIDDEN,
+} from './claims.js';
+export type { ProfileLabel, ProfileVerification } from './claims.js';
+export {
+  WEB_SELECTABLE_PROFILES,
+  WEB_RPC_MODES,
+  WEB_NETWORK_SELECTION_KEY,
+  DEFAULT_WEB_NETWORK_SELECTION,
+  parseWebNetworkSelection,
+  isNonDefaultSelection,
+  firstUseNotices,
+  effectiveSelection,
+  profileForPurpose,
+  checkOwnNodeRpcUrl,
+} from './selection.js';
+export type { WebProfileId, WebRpcMode, WebNetworkSelection } from './selection.js';
+
 export { parseTargetUrl } from './url.js';
 export type { Target, TargetUrlOptions } from './url.js';

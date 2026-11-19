@@ -15,7 +15,7 @@ import { describe, expect, it } from 'vitest';
 import { checkAnnouncementDeep } from './deepscan.js';
 import { FAKE, SEPOLIA, USDC_SEPOLIA } from './fixtures.testutil.js';
 import { ANNOUNCEMENT_TOPIC, type ScannedAnnouncement } from './logs.js';
-import { dedupeClaims, verifyClaimedPayment, verifyPaymentByTxHash, type ClaimedPayment } from './payments.js';
+import { dedupeClaims, fetchRouterEvidence, selectEvidenceTargets, verifyClaimedPayment, verifyPaymentByTxHash, type ClaimedPayment } from './payments.js';
 import { createClient, type RpcClient } from './rpc.js';
 import { fakeTransport, noSleep } from './rpc.testutil.js';
 import type { Address, Hex } from './types.js';
@@ -461,6 +461,105 @@ describe('verifyClaimedPayment', () => {
       const noTx = make({ token: 'native', tx: null }).claim;
       expect((await verifyClaimedPayment(base(await node({ balance: 0n, ...nativeOk(noTx) }), noTx))).status).toBe('unverified-claim');
     });
+  });
+});
+
+describe('TM12: bulk router evidence', () => {
+  const seq = (values: number[]) => { let k = 0; return () => values[k++ % values.length] as number; };
+  const decoy = (n: number, block = 100n): ScannedAnnouncement => ({
+    ...make().claim.announcement, blockNumber: block, transactionHash: `0x${n.toString(16).padStart(64, '0')}`, id: `${BLOCK_HASH}:${String(n)}`, logIndex: n,
+  });
+  /** Counts every request a client sends after construction, with the transaction hash when there is one. */
+  function counted(client: RpcClient): { client: RpcClient; log: string[] } {
+    const log: string[] = [];
+    return {
+      log,
+      client: {
+        chainId: client.chainId,
+        request: (m, p) => { log.push(`${m}:${String(p[0])}`); return client.request(m, p); },
+        blockNumber: () => { log.push('eth_blockNumber'); return client.blockNumber(); },
+        getBlock: (n) => { log.push(`eth_getBlockByNumber:${String(n)}`); return client.getBlock(n); },
+        getLogs: (f) => { log.push('eth_getLogs'); return client.getLogs(f); },
+      },
+    };
+  }
+
+  it('keeps every matched transaction, fills the batch with other router transactions up to the cap, and shuffles', () => {
+    const { claim } = make();
+    const others = [1, 2, 3, 4, 5].map((n) => decoy(n));
+    const nonRouter = { ...decoy(9), caller: FAKE.announcer };
+    const noTx = make({ tx: null }).claim.announcement;
+    const page = [...others, claim.announcement, others[0]!, nonRouter, noTx];
+    const all = selectEvidenceTargets({ announcements: page, router: FAKE.router, include: [claim.announcement], maxTransactions: 50, random: seq([0.3, 0.7, 0.1]) });
+    expect(all.map((t) => t.transactionHash).sort()).toEqual([TX, ...others.map((a) => a.transactionHash!)].map((h) => h.toLowerCase()).sort());
+    const capped = selectEvidenceTargets({ announcements: page, router: FAKE.router, include: [claim.announcement], maxTransactions: 3, random: seq([0.9, 0.2, 0.5]) });
+    expect(capped).toHaveLength(3);
+    expect(capped.map((t) => t.transactionHash)).toContain(TX.toLowerCase());
+    expect(capped.every((t) => t.transactionHash !== nonRouter.transactionHash)).toBe(true);
+    // The matched transaction is not always first: the order is random.
+    const firsts = new Set([0, 0.25, 0.5, 0.75, 0.99].map((r) => selectEvidenceTargets({ announcements: page, router: FAKE.router, include: [claim.announcement], maxTransactions: 50, random: () => r })[0]?.transactionHash));
+    expect(firsts.size).toBeGreaterThan(1);
+    // A matched transaction is kept even beyond the cap; a nonsense cap is clamped.
+    expect(selectEvidenceTargets({ announcements: page, router: FAKE.router, include: [claim.announcement, others[1]!], maxTransactions: 1 })).toHaveLength(2);
+    expect(selectEvidenceTargets({ announcements: page, router: FAKE.router, include: [], maxTransactions: Number.NaN })).toHaveLength(1);
+    expect(selectEvidenceTargets({ announcements: [], router: FAKE.router, include: [], maxTransactions: 10 })).toEqual([]);
+  });
+
+  it('verifies a matched claim from the batch without any request of its own, at a bounded, reported cost', async () => {
+    const { claim } = make();
+    const { client, log } = counted(await node({ claim, transferLogs: [transferLog(claim)] }));
+    const page = [claim.announcement, decoy(1), decoy(2, 101n), decoy(3, 101n)];
+    const targets = selectEvidenceTargets({ announcements: page, router: FAKE.router, include: [claim.announcement], maxTransactions: 10 });
+    const batch = await fetchRouterEvidence(client, targets, 2);
+    // 1 head + 2 x 2 blocks (before and after) + 2 x 4 transactions.
+    expect(batch.requests).toBe(1 + 2 * 2 + 2 * 4);
+    expect(log).toHaveLength(batch.requests);
+    const receipts = log.filter((l) => l.startsWith('eth_getTransactionReceipt:'));
+    expect(receipts).toHaveLength(4);
+    expect(receipts).toContain(`eth_getTransactionReceipt:${TX.toLowerCase()}`);
+    log.length = 0;
+    const v = await verifyClaimedPayment({ ...base(client, claim), evidence: batch });
+    expect(v.status).toBe('received');
+    expect(v.evidence).toEqual(['router-caller', 'block-hash', 'receipt', 'transfer-log']);
+    expect(v.confirmations).toBe(51n);
+    expect(log).toEqual([]);
+    // Same result as the per-match path.
+    const live = await verifyClaimedPayment(base(await node({ claim, transferLogs: [transferLog(claim)] }), claim));
+    expect(live.evidenceId).toBe(v.evidenceId);
+    expect(live.evidenceBinding).toBe(v.evidenceBinding);
+  });
+
+  it('never falls back to a lone request: missing, failed or orphaned batch entries stay unverified', async () => {
+    const { claim } = make();
+    const { client, log } = counted(await node({ claim, transferLogs: [transferLog(claim)] }));
+    const others = await fetchRouterEvidence(client, selectEvidenceTargets({ announcements: [decoy(1)], router: FAKE.router, include: [], maxTransactions: 5 }));
+    log.length = 0;
+    const missing = await verifyClaimedPayment({ ...base(client, claim), evidence: others });
+    expect(missing.status).toBe('unverified-claim');
+    expect(missing.reason).toBe('Your RPC could not confirm this payment.');
+    expect(log).toEqual([]);
+    const down = await fetchRouterEvidence(await node({ claim, failAll: true }), [{ transactionHash: TX, blockNumber: 100n }]);
+    expect(down.head).toBeUndefined();
+    expect(down.transactions.size).toBe(0);
+    expect((await verifyClaimedPayment({ ...base(client, claim), evidence: down })).status).toBe('unverified-claim');
+    const reorged = await fetchRouterEvidence(await node({ claim, transferLogs: [transferLog(claim)], reorgAfterEvidence: true }), [{ transactionHash: TX, blockNumber: 100n }]);
+    expect((await verifyClaimedPayment({ ...base(client, claim), evidence: reorged })).status).toBe('unverified-claim');
+    const foreign = { ...(await fetchRouterEvidence(client, [{ transactionHash: TX, blockNumber: 100n }])), chainId: 1 };
+    expect((await verifyClaimedPayment({ ...base(client, claim), evidence: foreign })).status).toBe('unverified-claim');
+  });
+
+  it('reads the second provider from its own batch too', async () => {
+    const { claim } = make();
+    const primary = counted(await node({ claim, transferLogs: [transferLog(claim)] }));
+    const secondary = counted(await node({ claim, transferLogs: [transferLog(claim)] }));
+    const targets = selectEvidenceTargets({ announcements: [claim.announcement, decoy(1)], router: FAKE.router, include: [claim.announcement], maxTransactions: 4 });
+    const evidence = await fetchRouterEvidence(primary.client, targets);
+    const secondaryEvidence = await fetchRouterEvidence(secondary.client, targets);
+    primary.log.length = 0;
+    secondary.log.length = 0;
+    const v = await verifyClaimedPayment({ ...base(primary.client, claim), secondaryClient: secondary.client, evidence, secondaryEvidence });
+    expect(v.status).toBe('received');
+    expect([...primary.log, ...secondary.log]).toEqual([]);
   });
 });
 

@@ -1,0 +1,15 @@
+{
+  "apps/web/src/lib/networkAuthorization.ts": "1482558abb68fe1551b90c301677713de1599260a20f81b2662bc84caab35aa1",
+  "apps/web/src/lib/networkAuthorization.test.ts": "1d2f1a9a14042ad6a20c7ef7c418643fdac15d77039db553abdd1af3b0edbd49",
+  "apps/web/src/lib/networkAuthorization.profileConsistency.test.ts": "c238a9fbe73603f4fd5a27db9e213e6b37e30f0329498b7eff8eb4eb737c6ae4",
+  "apps/web/src/views/Settings.tsx": "fc55b8b3ce79e9aa9a29267ca4ebb19b324a01bc1a8c04ba15ed29b1e4e5d634",
+  "apps/web/src/views/Settings.test.tsx": "9f7d1892594f42f33f143fcd2d661fe24bb5121e828f2261e7470c1010185aeb",
+  "apps/web/src/views/Scan.tsx": "3329ba66438b022e75c1750bf9d9d75a83c47866587b7fe6491c00273d8c0451",
+  "apps/web/src/views/Scan.privateCheckpoint.test.tsx": "c6dc00c341515413a7cfac3324615fdfdf90c181694e441e03b8da66ceecb558",
+  "apps/web/src/lib/privateScanPerformance.nocov.test.ts": "fb97ebd968a2f5c837270ce8bb4d203f08c858000f7e77664ca968b3847c9b55",
+  "apps/web/scripts/apply-csp.mjs": "914a80cab61dbe0a3f203a6cd2b6b305de63ebe224a0dd2979c969e52dea7139",
+  "apps/web/scripts/apply-csp.d.mts": "80305a634d1cbe1863d35b4e46df6243ff2fbaaafe35e0f2563e5475b0ee65b5",
+  "apps/web/scripts/scan-bundle.mjs": "5fb3017bcf62f924ab1461f05ab16a4bdf74bc8edcd4451f511a8a2987481c8f",
+  "apps/web/scripts/scan-bundle.d.mts": "5e0891d404cabf0196a1fb6545f878d132e2a7f695cbd69202f82f6dd98a74ea",
+  "scripts/tests/privacy-csp-bundle.test.mjs": "0d184d94dd418d5b897e1436815f1e1859c152ab3cc888dd5e6e45dd442418a8"
+}

@@ -1,0 +1,8 @@
+$ /usr/bin/chromium --version
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=384", "pages_node_cap": false}
+/usr/bin/chromium: 9: [: 5225713664: unexpected operator
+Chromium 156.0.8078.79 built on Debian GNU/Linux 13 (trixie)
+
+EXIT_CODE=0
+SECONDS=0.058

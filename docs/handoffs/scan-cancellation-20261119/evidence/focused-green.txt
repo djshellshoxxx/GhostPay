@@ -1,0 +1,8 @@
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  01:03:40
+   Duration  2.10s (import 64%, transform 34%, tests 1%, worker 1%)

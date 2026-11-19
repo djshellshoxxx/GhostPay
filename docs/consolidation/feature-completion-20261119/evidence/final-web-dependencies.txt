@@ -1,0 +1,48 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pir-two-server@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/policy-scheme@0.1.0 build
+> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+
+(node:27) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/scan-source@0.1.0 build
+> npm run build -w @ghostpay/pir-two-server --if-present && tsc -p tsconfig.build.json
+
+(node:57) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pir-two-server@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/solana-stealth@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/tron-adapter@0.1.0 build
+> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json
+
+(node:96) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/tx-review@0.1.0 build
+> tsc -p tsconfig.build.json
+

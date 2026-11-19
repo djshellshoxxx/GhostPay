@@ -5,7 +5,7 @@
 #
 # Usage:  scripts/pre-deploy-check.sh router|policy
 #   router: FEE_RECIPIENT [ANNOUNCER] [ALLOW_CUSTOM_ANNOUNCER=1] [EXPECTED_ANNOUNCER_CODEHASH]
-#   policy: FEE_RECIPIENT FEE_TOKEN FLAT_FEE MAX_FLAT_FEE
+#   policy: FEE_RECIPIENT FEE_TOKEN FLAT_FEE MAX_FLAT_FEE [FEE_TOKEN_FREEZE_ACK=<FEE_TOKEN> when fee != 0]
 #   both:   [ALLOWED_CHAIN_IDS=1,8453] [ALLOW_LOCAL=1] [RPC_URL] [SENDER=<broadcaster address>]
 #   DRY_RUN=1 additionally runs `forge script` WITHOUT --broadcast (needs RPC_URL).
 # Exit status 0 = all checks passed, 1 = at least one check failed.
@@ -80,6 +80,14 @@ else
       bad "FLAT_FEE ($FLAT_FEE) exceeds MAX_FLAT_FEE ($MAX_FLAT_FEE)"
     else ok "FLAT_FEE <= MAX_FLAT_FEE"; fi
   fi
+  # Residual N1 (SEC-E2-01): a fee-charging factory freezes counterfactual funds if its fee token is upgradeable,
+  # has a fee switch or can make its views revert. DeployPolicy refuses FLAT_FEE != 0 unless FEE_TOKEN_FREEZE_ACK
+  # names exactly FEE_TOKEN; this mirrors that check.
+  if [[ "${FLAT_FEE:-}" =~ ^[0-9]+$ && -n "${FLAT_FEE#"${FLAT_FEE%%[!0]*}"}" ]]; then
+    if [[ -z "${FEE_TOKEN_FREEZE_ACK:-}" ]]; then bad "FLAT_FEE != 0 needs FEE_TOKEN_FREEZE_ACK=<FEE_TOKEN> (non-upgradeable, no fee switch; else use FLAT_FEE=0)"
+    elif ! is_addr "$FEE_TOKEN_FREEZE_ACK" || [[ "$(lower "$FEE_TOKEN_FREEZE_ACK")" != "$(lower "${FEE_TOKEN:-}")" ]]; then bad "FEE_TOKEN_FREEZE_ACK does not name FEE_TOKEN"
+    else warn "FEE_TOKEN_FREEZE_ACK set: the operator states FEE_TOKEN is non-upgradeable with no fee switch, pause or blacklist"; fi
+  elif [[ "${FLAT_FEE:-}" =~ ^0+$ ]]; then ok "FLAT_FEE is 0: no fee token call is made by the factory"; fi
 fi
 
 if [[ -n "${RPC_URL:-}" ]]; then

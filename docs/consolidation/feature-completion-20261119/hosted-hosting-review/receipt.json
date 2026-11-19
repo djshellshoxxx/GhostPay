@@ -1,0 +1,507 @@
+{
+  "schema_version": 1,
+  "reviewer": "branch_recon",
+  "observed_at": "2026-11-19T10:54:57Z",
+  "repository": "djshellshoxxx/GhostPay",
+  "pull_request": 267,
+  "conclusion": "The focused timestamp repair's hosted nginx/configuration/differential gate executed and passed. The same hosting workflow's focused web build, packaging and Chromium CSP smoke also passed. Whole PR CI and broad feature qualification are not claimed.",
+  "source_binding": {
+    "pr_head": "c3a693e87053fbe91219f8edfe159a5ec0a37a34",
+    "pr_tree": "7cfbb2835be8a3c58ccd5dd549fbb2ecabcccfac",
+    "checkout_commit": "d97980dd98aa4ba0cb21dccdccf58f5949c63371",
+    "checkout_parents": [
+      "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "c3a693e87053fbe91219f8edfe159a5ec0a37a34"
+    ],
+    "checkout_tree": "7cfbb2835be8a3c58ccd5dd549fbb2ecabcccfac",
+    "checkout_tree_equals_pr_tree": true,
+    "main_base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "kit_tree": "3295a7030121f51b1286ffc96b3a6480aa319aa7",
+    "tree_path": [
+      {
+        "path": "",
+        "tree": "7cfbb2835be8a3c58ccd5dd549fbb2ecabcccfac"
+      },
+      {
+        "path": "tools",
+        "tree": "30ccee9d5c371e378cf4fbd1eca8c75e6419c769"
+      },
+      {
+        "path": "tools/portable-hosting-kit",
+        "tree": "3295a7030121f51b1286ffc96b3a6480aa319aa7"
+      }
+    ],
+    "proof": "Raw logs show checkout of refs/remotes/pull/267/merge and git log -1 d97980dd. Native Git Data reads independently prove both parent SHAs and exact full-tree equality to the reviewed c3a693e8 head. The tools/kit subtree was traversed from that root tree.",
+    "files": [
+      {
+        "path": "tools/portable-hosting-kit/eslint.config.mjs",
+        "blob": "c582c87d8383e5bef509125255913116d098ac95",
+        "bytes": 1488,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/eslint.config.mjs"
+      },
+      {
+        "path": "tools/portable-hosting-kit/package.json",
+        "blob": "b454b1bdd1a93499d0a2e45b8cc782fb1ad85916",
+        "bytes": 776,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/package.json"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+        "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+        "bytes": 7110,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/src/profiles/static-export.mjs"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/browser/chromium.test.mjs",
+        "blob": "ddcb63f2e7871dd84fa5853a663708d3a2338864",
+        "bytes": 5028,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/test/browser/chromium.test.mjs"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+        "blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+        "bytes": 8309,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/test/profiles/compare.mjs"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+        "blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f",
+        "bytes": 8040,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/test/profiles/differential.test.mjs"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+        "blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+        "bytes": 8394,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/test/profiles/static-export.test.mjs"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+        "blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+        "bytes": 9073,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/test/serve/helpers.mjs"
+      },
+      {
+        "path": "tools/portable-hosting-kit/tsconfig.json",
+        "blob": "267122e4936d9b7810873ab52cf0496d20ba2d65",
+        "bytes": 465,
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/tools/portable-hosting-kit/tsconfig.json"
+      }
+    ]
+  },
+  "workflow": {
+    "run_id": 44497615337,
+    "attempt": 1,
+    "name": "Hosting kit",
+    "path": ".github/workflows/hosting-kit.yml",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "c3a693e87053fbe91219f8edfe159a5ec0a37a34",
+    "started_at": "2026-11-19T09:34:10Z",
+    "updated_at": "2026-11-19T10:36:04Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44497615337",
+    "permissions": "contents: read",
+    "node": "22.23.4",
+    "npm": "10.9.9",
+    "runner": "ubuntu-latest (workflow selector)",
+    "installation": "npm ci --ignore-scripts; native nginx/tor/i2pd installed with policy-rc.d preventing package-service startup. Tests start their own loopback instances."
+  },
+  "kit": {
+    "job_id": 135468723862,
+    "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44497615337/job/135468723862",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-11-19T10:25:45Z",
+    "completed_at": "2026-11-19T10:29:06Z",
+    "command": "npm test -> node --test --test-concurrency=4 \"test/**/*.test.mjs\"",
+    "environment": {
+      "HK_DOCKER_TESTS": "1"
+    },
+    "tap": {
+      "tests": 302,
+      "suites": 3,
+      "pass": 296,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0,
+      "duration_ms": 10544.597915
+    },
+    "lint": {
+      "command": "npm run lint -> eslint --config eslint.config.mjs .",
+      "conclusion": "success"
+    },
+    "typecheck": {
+      "command": "npm run typecheck -> tsc -p tsconfig.json",
+      "conclusion": "success"
+    },
+    "build": "The kit has no separate build script; its JavaScript source is linted, typechecked and executed. The sibling job's real web build is recorded separately.",
+    "executed_native_checks": [
+      "container nginx.conf passes nginx -t",
+      "nginx -t accepts generated configs for root, subpath, IPv6, unix socket and GhostPay headers",
+      "root preview/nginx status, kit-header, ETag, Last-Modified and response-body differential matrix",
+      "root normative-semantics checks",
+      "subpath preview/nginx status, kit-header, ETag, Last-Modified and response-body differential matrix",
+      "subpath normative-semantics checks",
+      "Docker container HTTP headers, full nginx differential matrix and runtime hardening",
+      "tor --verify-config for generated torrc configurations"
+    ],
+    "executed_timestamp_regressions": [
+      "submillisecond second boundary under www/",
+      "epoch under www/",
+      "pre-epoch under www/",
+      "submillisecond second boundary under www/mirror/app/",
+      "epoch under www/mirror/app/",
+      "pre-epoch under www/mirror/app/"
+    ],
+    "deterministic_differential_control": {
+      "fixture": "assets/font.woff2",
+      "mtime_seconds_string": "1795078174.9996",
+      "source": "test/profiles/differential.test.mjs:41-43",
+      "validators": [
+        "etag",
+        "last-modified"
+      ],
+      "assertions": "compareServers must return zero mismatches; test requires observed statuses200,301,304,400,404,405,412. Request cases include GET assets/font.woff2. Existing CONNECT compatibility exception is unrelated and unchanged.",
+      "source_review_limit": "Source was read at the exact head; no tests or servers were executed by this review."
+    },
+    "skips": [
+      {
+        "line": 429,
+        "test": "ok 17 - i2pd parses the generated tunnel file (no-network namespace, temp datadir, killed immediately)",
+        "reason": "cannot create a network namespace (unshare -n); refusing to start i2pd with network access"
+      },
+      {
+        "line": 441,
+        "test": "ok 19 - Java I2P runtime validation",
+        "reason": "Java I2P is not installed in this environment and has no non-activating config check; the i2ptunnel.config.d format is validated against the official spec and i2p.i2p source only (see i2p.test.mjs)"
+      },
+      {
+        "line": 537,
+        "test": "ok 35 - demo and GhostPay render in Chromium under their CSP (preview, root and subpath)",
+        "reason": "set HK_BROWSER_TESTS=1 (needs a Playwright Chromium build)"
+      },
+      {
+        "line": 597,
+        "test": "ok 45 - kit onion validation agrees with @ghostpay/net-transport",
+        "reason": "packages/net-transport/dist not built (npm run build -w @ghostpay/net-transport)"
+      },
+      {
+        "line": 1695,
+        "test": "ok 228 - real GhostPay apps/web/dist: validate, package, verify, preview",
+        "reason": "apps/web/dist not built"
+      },
+      {
+        "line": 1878,
+        "test": "ok 251 - runs fully unprivileged (as nobody) from a writable runtime directory",
+        "reason": "needs root to switch to an unprivileged user"
+      }
+    ],
+    "demo": {
+      "commands": [
+        "node bin/ghostpay-host.mjs demo --out \"$RUNNER_TEMP/hk-demo\"",
+        "node bin/ghostpay-host.mjs verify \"$RUNNER_TEMP/hk-demo/demo-site.zip\""
+      ],
+      "conclusion": "success",
+      "files": 10,
+      "content_digest": "sha256:0665db8a049b292491a5b44a5cca4a4ba2a66b8273356c165ddb49a234d54c32",
+      "note": "Exact demo archive/digest values are retained in the raw log. Verification establishes internal content/manifest consistency; independent publisher authenticity is not established.",
+      "archive_sha256": "3fdbc20dfca1af0909df38e6657b4eae052e0fa2d8fc8d3d5ee6309efa5af9b8"
+    },
+    "evidence": [
+      {
+        "line": 423,
+        "text": "ok 16 - tor --verify-config accepts every generated torrc and creates no directories or keys"
+      },
+      {
+        "line": 1785,
+        "text": "ok 243 - container nginx.conf passes nginx -t"
+      },
+      {
+        "line": 1792,
+        "text": "    ok 1 - headers over HTTP from the running container"
+      },
+      {
+        "line": 1798,
+        "text": "    ok 2 - preview and the containerized nginx agree on the full request matrix"
+      },
+      {
+        "line": 1804,
+        "text": "    ok 3 - runtime hardening as configured"
+      },
+      {
+        "line": 1817,
+        "text": "    ok 1 - root: preview and nginx agree on status, kit headers, validators and bodies"
+      },
+      {
+        "line": 1823,
+        "text": "    ok 2 - root: spot checks against the normative semantics"
+      },
+      {
+        "line": 1836,
+        "text": "    ok 1 - subpath: preview and nginx agree on status, kit headers, validators and bodies"
+      },
+      {
+        "line": 1842,
+        "text": "    ok 2 - subpath: spot checks against the normative semantics"
+      },
+      {
+        "line": 1872,
+        "text": "ok 250 - nginx -t accepts generated configs (root, subpath, IPv6, unix socket, GhostPay _headers)"
+      },
+      {
+        "line": 1908,
+        "text": "ok 256 - preserves submillisecond second boundary source timestamp under www/"
+      },
+      {
+        "line": 1914,
+        "text": "ok 257 - preserves epoch source timestamp under www/"
+      },
+      {
+        "line": 1920,
+        "text": "ok 258 - preserves pre-epoch source timestamp under www/"
+      },
+      {
+        "line": 1932,
+        "text": "ok 260 - preserves submillisecond second boundary source timestamp under www/mirror/app/"
+      },
+      {
+        "line": 1938,
+        "text": "ok 261 - preserves epoch source timestamp under www/mirror/app/"
+      },
+      {
+        "line": 1944,
+        "text": "ok 262 - preserves pre-epoch source timestamp under www/mirror/app/"
+      },
+      {
+        "line": 2166,
+        "text": "# tests 302"
+      },
+      {
+        "line": 2167,
+        "text": "# suites 3"
+      },
+      {
+        "line": 2168,
+        "text": "# pass 296"
+      },
+      {
+        "line": 2169,
+        "text": "# fail 0"
+      },
+      {
+        "line": 2170,
+        "text": "# cancelled 0"
+      },
+      {
+        "line": 2171,
+        "text": "# skipped 6"
+      },
+      {
+        "line": 2172,
+        "text": "# todo 0"
+      },
+      {
+        "line": 2173,
+        "text": "# duration_ms 10544.597915"
+      }
+    ]
+  },
+  "qualify_web": {
+    "job_id": 135468724333,
+    "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44497615337/job/135468724333",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-11-19T10:35:07Z",
+    "completed_at": "2026-11-19T10:36:03Z",
+    "commands": [
+      "npm run build --workspace @ghostpay/web",
+      "node bin/ghostpay-host.mjs validate ../../apps/web/dist",
+      "node bin/ghostpay-host.mjs package ../../apps/web/dist --out <runner-temp>/ghostpay-web.zip --label ci-<checkout> --git-dir ../.. --license-file ../../THIRD_PARTY.md",
+      "node bin/ghostpay-host.mjs verify <runner-temp>/ghostpay-web.zip",
+      "HK_BROWSER_TESTS=1 node --test test/browser/chromium.test.mjs"
+    ],
+    "build": {
+      "typescript_no_emit": "success",
+      "vite_build": "success",
+      "vite_version": "8.3.5",
+      "bundler_reported_ms": 834,
+      "modules_transformed": 1063,
+      "bundle_scan": "passed",
+      "scanned_files": 19,
+      "library_build": "setup-node-libs build step was cache-skipped; this review does not claim a fresh library compilation.",
+      "warnings": "Existing successful-build warnings remain in raw log; no zero-warning claim."
+    },
+    "archive": {
+      "files": 19,
+      "uncompressed_bytes": 2991356,
+      "archive_sha256": "d5b8406c745d4252b4316727f536af4baf1d28327de42b82019ffc8e7067fdbd",
+      "content_digest": "sha256:5d77f152bbde98e39349677bddb52269e291a33daba7ab37d4f470c795066479",
+      "verification": "Internal consistency passed; independent publisher authenticity not established."
+    },
+    "chromium": {
+      "tap": {
+        "tests": 1,
+        "suites": 0,
+        "pass": 1,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "duration_ms": 5615.622201
+      },
+      "browser": "Chrome for Testing156.0.8078.4, Playwright Chromium1248",
+      "scope": "Ordinary headless Chromium: demo root/subpath/deep-link pages and real focused-main GhostPay render under their CSP without asserted console/CSP/same-origin-request failures.",
+      "does_not_cover": [
+        "Tor Browser",
+        "live I2P",
+        "wallet acceptance",
+        "the broad9b8 feature candidate"
+      ]
+    },
+    "evidence": [
+      {
+        "line": 127,
+        "text": "HEAD is now at d97980d Merge c3a693e87053fbe91219f8edfe159a5ec0a37a34 into 14ded337a10c140d7a9f9a9238ec038587d925bb"
+      },
+      {
+        "line": 245,
+        "text": "> tsc -p tsconfig.json --noEmit && vite build"
+      },
+      {
+        "line": 276,
+        "text": "\u001b[32m\u2713 built in 834ms\u001b[39m"
+      },
+      {
+        "line": 281,
+        "text": "Bundle scan passed: 19 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON."
+      },
+      {
+        "line": 289,
+        "text": "OK: 19 files, 2991356 bytes, entrypoint index.html, headers from site"
+      },
+      {
+        "line": 291,
+        "text": "packaged 19 files"
+      },
+      {
+        "line": 293,
+        "text": "  archive sha256 d5b8406c745d4252b4316727f536af4baf1d28327de42b82019ffc8e7067fdbd  (also in ghostpay-web.zip.sha256)"
+      },
+      {
+        "line": 294,
+        "text": "  content digest sha256:5d77f152bbde98e39349677bddb52269e291a33daba7ab37d4f470c795066479"
+      },
+      {
+        "line": 295,
+        "text": "Publish the content digest and archive sha256 through a channel independent of the download location."
+      },
+      {
+        "line": 297,
+        "text": "  content digest sha256:5d77f152bbde98e39349677bddb52269e291a33daba7ab37d4f470c795066479"
+      },
+      {
+        "line": 298,
+        "text": "  archive sha256 d5b8406c745d4252b4316727f536af4baf1d28327de42b82019ffc8e7067fdbd"
+      },
+      {
+        "line": 524,
+        "text": "ok 1 - demo and GhostPay render in Chromium under their CSP (preview, root and subpath)"
+      },
+      {
+        "line": 530,
+        "text": "# tests 1"
+      },
+      {
+        "line": 531,
+        "text": "# suites 0"
+      },
+      {
+        "line": 532,
+        "text": "# pass 1"
+      },
+      {
+        "line": 533,
+        "text": "# fail 0"
+      },
+      {
+        "line": 534,
+        "text": "# cancelled 0"
+      },
+      {
+        "line": 535,
+        "text": "# skipped 0"
+      },
+      {
+        "line": 536,
+        "text": "# todo 0"
+      },
+      {
+        "line": 537,
+        "text": "# duration_ms 5615.622201"
+      }
+    ]
+  },
+  "overall_pr_snapshot": {
+    "observed_at": "2026-11-19T10:50:56Z",
+    "head": "c3a693e87053fbe91219f8edfe159a5ec0a37a34",
+    "draft": true,
+    "mergeable": true,
+    "mergeable_state": "unstable",
+    "check_counts": {
+      "success": 8,
+      "queued": 20
+    },
+    "fully_qualified": false,
+    "reason": "20 checks remained queued in this snapshot. Passing Hosting kit workflow does not complete all PR CI."
+  },
+  "limitations": [
+    "This is a read-only review of existing GitHub-hosted execution. No nginx, Docker, browser, Node test, build or analyzer was run locally for this task.",
+    "The296/6 kit run is distinct from the coordinator's later local286/13 run; counts and skipped work must not be combined or relabeled.",
+    "Six skips remain explicit in the kit job. The sibling job separately executed its own Chromium smoke and real web artifact handling; this does not erase the original kit skips.",
+    "Full checkout-tree equality binds evidence to focused PR267 head c3a693e8. It does not transfer focused-main app/browser qualification to the broader9b8 feature source.",
+    "No full-suite coverage measurement, Tor Browser/I2P/wallet acceptance, deployment, independent publisher authentication or whole-PR success is claimed.",
+    "Raw files preserve the decoded GitHub log text exactly, including initial BOM, timestamps, ANSI escapes and whitespace. SHA256 records describe those UTF-8 bytes and their deterministic gzip archives, not an upstream zip container.",
+    "The initially requested incorrect differential source path returned404; the correct immutable source was then located through the pinned kit Git tree and inspected.",
+    "Main subsequently advanced through a separate externally merged PR; this receipt does not approve merging the focused candidate against a changed base. The source-bound hosted results remain those of c3a693e8 with main14ded."
+  ],
+  "sources": [
+    "https://github.com/djshellshoxxx/GhostPay/actions/runs/44497615337",
+    "https://github.com/djshellshoxxx/GhostPay/actions/runs/44497615337/job/135468723862",
+    "https://github.com/djshellshoxxx/GhostPay/actions/runs/44497615337/job/135468724333",
+    "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/d97980dd98aa4ba0cb21dccdccf58f5949c63371",
+    "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/c3a693e87053fbe91219f8edfe159a5ec0a37a34",
+    "https://github.com/djshellshoxxx/GhostPay/blob/c3a693e87053fbe91219f8edfe159a5ec0a37a34/.github/workflows/hosting-kit.yml"
+  ],
+  "artifacts": [
+    {
+      "path": "kit-job-135468723862.txt.gz",
+      "bytes": 29627,
+      "sha256": "44aa2d76ad7092e84bc8a1bd97302dcb738c72c7ec8f57fa2f0009a7e52404e1",
+      "rawBytes": 144404,
+      "rawSha256": "8ccdb4c9242b875e75b619333a612f30d9bc1a0e4b097704e8143785f6fc8f34",
+      "gzipMtime": 0,
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "qualify-web-job-135468724333.txt.gz",
+      "bytes": 11909,
+      "sha256": "6866ac7ac0fd43f8c4a09edda286f859ab8843b0a465cb51aa3643a4185acf2a",
+      "rawBytes": 52458,
+      "rawSha256": "aecca227ce21ebe076563ff3c7a840dbdc116f72c0d365a174c04859f4f3de06",
+      "gzipMtime": 0,
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "hosting-kit-workflow.txt",
+      "bytes": 4262,
+      "sha256": "6b7cb206d38f7696d626745bc401c3e23f6a4d53896e21eea53e6387f66b0341"
+    },
+    {
+      "path": "native-metadata.json",
+      "bytes": 22711,
+      "sha256": "f8593d464438481a45f74f2aa613fbf516441386f2f2a87007aba1bc2438cba4"
+    }
+  ]
+}

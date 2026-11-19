@@ -24,13 +24,16 @@ describe('Solana scan pending-secret cleanup', () => {
   beforeEach(() => { observed.tweaks.length = 0; });
   afterEach(() => { for (const tweak of observed.tweaks) tweak.fill(0); });
 
-  it('wipes the current derived tweak if the balance request fails before it is retained', async () => {
+  it('never asks for a balance during the scan, so a failing balance method cannot reach it and the tweak is kept for the sweep', async () => {
     const wallet = walletA();
     const chain = mockChain('localnet', wallet);
     chain.failMethod = 'getBalance';
-    await expect(scanForPayments({ rpc: createRpc('http://127.0.0.1:8899', chain.fetchFn), wallet, fromSlot: 0n })).rejects.toMatchObject({ code: 'TRANSPORT_FAILURE' });
+    const result = await scanForPayments({ rpc: createRpc('http://127.0.0.1:8899', chain.fetchFn), wallet, fromSlot: 0n });
+    expect(chain.calls).not.toContain('getBalance');
+    expect(result.found).toHaveLength(1);
     expect(observed.tweaks).toHaveLength(1);
-    expect(observed.tweaks[0]?.every((byte) => byte === 0)).toBe(true);
+    expect(observed.tweaks[0]?.every((byte) => byte === 0)).toBe(false);
+    result.found[0]?.tweak.fill(0);
   });
 
   it('wipes the current derived tweak if the progress consumer throws', async () => {
@@ -47,7 +50,7 @@ describe('Solana scan pending-secret cleanup', () => {
     expect(observed.tweaks[0]?.every((byte) => byte === 0)).toBe(true);
   });
 
-  it('wipes a duplicate-address tweak while retaining only one funded address', async () => {
+  it('wipes a duplicate-address tweak while retaining only one address', async () => {
     const wallet = walletA();
     const chain = mockChain('localnet', wallet);
     const rpc = createRpc('http://127.0.0.1:8899', async (url, init) => {
@@ -68,7 +71,7 @@ describe('Solana scan pending-secret cleanup', () => {
     });
     const result = await scanForPayments({ rpc, wallet, fromSlot: 0n });
     expect(result.found).toHaveLength(1);
-    expect(chain.calls.filter((method) => method === 'getBalance')).toHaveLength(1);
+    expect(chain.calls.filter((method) => method === 'getBalance')).toHaveLength(0);
     expect(observed.tweaks).toHaveLength(2);
     expect(observed.tweaks[1]?.every((byte) => byte === 0)).toBe(true);
     result.found[0]?.tweak.fill(0);

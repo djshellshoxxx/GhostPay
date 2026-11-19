@@ -1,0 +1,58 @@
+{
+  "baseCommit": "e76451ad56ba1634eed9d03468961900433fd130",
+  "reviewedCommit": "7eb078e817fe76c1f22e84cbb1bb75be71090ccc",
+  "node": "v24.22.3",
+  "vitest": "5.1.0",
+  "configuration": "original apps/web/vite.config.ts; coverage disabled for the focused diagnostic; one worker; 384 MiB heap; no additional source aliases",
+  "source": {
+    "apps/web/src/components/TagArchive.test.tsx": {
+      "baseSha256": "dda13e158cf3a8ea1d7656b7dc4460a5919598697789e38a5aeb120e479bcab8",
+      "reviewedSha256": "27100043ccb339081537381a3b5dd8fbb083b2d704317127a2177d65666c122e",
+      "unchanged": false
+    },
+    "apps/web/src/components/TagArchive.tsx": {
+      "baseSha256": "df61502b21c04da8ef0da97df302f39fff31f6044905f2e7ab3db7b6b200fa54",
+      "reviewedSha256": "df61502b21c04da8ef0da97df302f39fff31f6044905f2e7ab3db7b6b200fa54",
+      "unchanged": true
+    },
+    "apps/web/src/AppShell.tsx": {
+      "baseSha256": "9a9716abdc2c891e494337c8b0ffcbf228a9659205b185af45115c9ee7cb6198",
+      "reviewedSha256": "9a9716abdc2c891e494337c8b0ffcbf228a9659205b185af45115c9ee7cb6198",
+      "unchanged": true
+    },
+    "apps/web/src/views/SellerKeys.tsx": {
+      "baseSha256": "b04ddedc01dc0ae240c2a47dfe2e67fc09bad9bb3f6a0e8735a9e0ab764e18a6",
+      "reviewedSha256": "b04ddedc01dc0ae240c2a47dfe2e67fc09bad9bb3f6a0e8735a9e0ab764e18a6",
+      "unchanged": true
+    },
+    "apps/web/src/lib/session.ts": {
+      "baseSha256": "1c847443c605a270cddea3f7c07dc62dd2e65bfc20a12ee936206aaa59479672",
+      "reviewedSha256": "1c847443c605a270cddea3f7c07dc62dd2e65bfc20a12ee936206aaa59479672",
+      "unchanged": true
+    },
+    "apps/web/src/lib/appLock.ts": {
+      "baseSha256": "f85028ff41196dad041df83f76eab979f4911fff3a874d3aeeba7f6c5e6298ee",
+      "reviewedSha256": "f85028ff41196dad041df83f76eab979f4911fff3a874d3aeeba7f6c5e6298ee",
+      "unchanged": true
+    },
+    "apps/web/vite.config.ts": {
+      "baseSha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+      "reviewedSha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+      "unchanged": true
+    }
+  },
+  "logs": {
+    "red": {
+      "path": "evidence/tag-archive-idle-red.log.gz",
+      "rawBytes": 8925,
+      "rawSha256": "9f4453f4b1f81ec93b4850a80f8486439c74312fad6bf146c721ef087344bc4e",
+      "gzipSha256": "3aa94dc7ac783fd1e6db2cf3e8ab0d5678e3797b4a3ff359d1c577c9929e36b3"
+    },
+    "green": {
+      "path": "evidence/tag-archive-idle-green.log.gz",
+      "rawBytes": 237,
+      "rawSha256": "fa44a80eba152bd1d8a0bef16ba04ca144fc855bbb7af9b81b75a7013d841457",
+      "gzipSha256": "76aad3f13a38a3b5b56a7d390ac3ca27c15d6c7ad8724c1220f56dadfc940c0a"
+    }
+  }
+}

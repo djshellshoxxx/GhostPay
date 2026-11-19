@@ -1,0 +1,408 @@
+﻿2026-11-18T13:56:45.5480595Z Current runner version: '2.338.2'
+2026-11-18T13:56:45.5501454Z ##[group]Runner Image Provisioner
+2026-11-18T13:56:45.5502230Z Hosted Compute Agent
+2026-11-18T13:56:45.5502719Z Version: 20261103.629
+2026-11-18T13:56:45.5503349Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T13:56:45.5503953Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T13:56:45.5504488Z Worker ID: {7c6e0497-9867-4721-9afa-e8f7315471b7}
+2026-11-18T13:56:45.5505115Z Region: centralus
+2026-11-18T13:56:45.5505589Z Cloud: Azure
+2026-11-18T13:56:45.5506109Z ##[endgroup]
+2026-11-18T13:56:45.5507203Z ##[group]Operating System
+2026-11-18T13:56:45.5507710Z Ubuntu
+2026-11-18T13:56:45.5508201Z 26.04.1
+2026-11-18T13:56:45.5508634Z LTS
+2026-11-18T13:56:45.5509159Z ##[endgroup]
+2026-11-18T13:56:45.5509841Z ##[group]Runner Image
+2026-11-18T13:56:45.5510410Z Image: ubuntu-26.04
+2026-11-18T13:56:45.5510923Z Version: 20261111.196.1
+2026-11-18T13:56:45.5511993Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T13:56:45.5513604Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T13:56:45.5514418Z ##[endgroup]
+2026-11-18T13:56:45.5515387Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T13:56:45.5517204Z Contents: read
+2026-11-18T13:56:45.5517869Z Metadata: read
+2026-11-18T13:56:45.5518361Z ##[endgroup]
+2026-11-18T13:56:45.5520754Z Secret source: Actions
+2026-11-18T13:56:45.5521900Z Cache mode: write
+2026-11-18T13:56:45.5522724Z Prepare workflow directory
+2026-11-18T13:56:45.5974722Z Prepare all required actions
+2026-11-18T13:56:45.6013563Z Getting action download info
+2026-11-18T13:56:45.8121471Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T13:56:45.9643970Z Download action repository 'actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1' (SHA:ece7cb06caefa5fff74198d8649806c4678c61a1)
+2026-11-18T13:56:46.1080886Z Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-11-18T13:56:46.2563465Z Uses: djshellshoxxx/GhostPay/.github/workflows/contract-analysis.yml@refs/heads/main (dfc75ef2087fa6463ae59e0818abec01796c578d)
+2026-11-18T13:56:46.2567205Z Complete job name: contract-analysis / mythril
+2026-11-18T13:56:46.3204870Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T13:56:46.3205685Z with:
+2026-11-18T13:56:46.3206077Z   ref: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:46.3206562Z   persist-credentials: false
+2026-11-18T13:56:46.3206984Z   repository: djshellshoxxx/GhostPay
+2026-11-18T13:56:46.3210393Z   token: ***
+2026-11-18T13:56:46.3210745Z   ssh-strict: true
+2026-11-18T13:56:46.3211097Z   ssh-user: git
+2026-11-18T13:56:46.3211433Z   clean: true
+2026-11-18T13:56:46.3211787Z   sparse-checkout-cone-mode: true
+2026-11-18T13:56:46.3212206Z   fetch-depth: 1
+2026-11-18T13:56:46.3212552Z   fetch-tags: false
+2026-11-18T13:56:46.3212931Z   show-progress: true
+2026-11-18T13:56:46.3213291Z   lfs: false
+2026-11-18T13:56:46.3213631Z   submodules: false
+2026-11-18T13:56:46.3213997Z   set-safe-directory: true
+2026-11-18T13:56:46.3214395Z   allow-unsafe-pr-checkout: false
+2026-11-18T13:56:46.3214959Z env:
+2026-11-18T13:56:46.3215284Z   ANALYZER: mythril
+2026-11-18T13:56:46.3215674Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T13:56:46.3216241Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T13:56:46.3216939Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:46.3217439Z ##[endgroup]
+2026-11-18T13:56:46.5912303Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T13:56:46.5914624Z ##[group]Getting Git version info
+2026-11-18T13:56:46.5915586Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T13:56:46.5917071Z [command]/usr/bin/git version
+2026-11-18T13:56:46.5941989Z git version 2.56.1
+2026-11-18T13:56:46.5959548Z ##[endgroup]
+2026-11-18T13:56:46.5975588Z Temporarily overriding HOME='/home/runner/work/_temp/cb7cd2af-4b76-4270-b82b-2bc948a73bd3' before making global git config changes
+2026-11-18T13:56:46.5980369Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T13:56:46.5981857Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T13:56:46.6040801Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T13:56:46.6044673Z ##[group]Determining repository object format
+2026-11-18T13:56:46.6046450Z ##[endgroup]
+2026-11-18T13:56:46.6047688Z ##[group]Initializing the repository
+2026-11-18T13:56:46.6050141Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T13:56:46.6136420Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T13:56:46.6138073Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T13:56:46.6139203Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T13:56:46.6140720Z hint: call:
+2026-11-18T13:56:46.6141450Z hint:
+2026-11-18T13:56:46.6142390Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T13:56:46.6143749Z hint:
+2026-11-18T13:56:46.6144841Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T13:56:46.6146407Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T13:56:46.6147751Z hint:
+2026-11-18T13:56:46.6149514Z hint: 	git branch -m <name>
+2026-11-18T13:56:46.6151660Z hint:
+2026-11-18T13:56:46.6152917Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T13:56:46.6154735Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T13:56:46.6162087Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T13:56:46.6246341Z ##[endgroup]
+2026-11-18T13:56:46.6252104Z ##[group]Disabling automatic garbage collection
+2026-11-18T13:56:46.6253192Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T13:56:46.6255181Z ##[endgroup]
+2026-11-18T13:56:46.6256310Z ##[group]Setting up auth
+2026-11-18T13:56:46.6257011Z Removing SSH command configuration
+2026-11-18T13:56:46.6258712Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T13:56:46.6291302Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T13:56:46.6655070Z Removing HTTP extra header
+2026-11-18T13:56:46.6659566Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T13:56:46.6690200Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T13:56:46.6928845Z Removing includeIf entries pointing to credentials config files
+2026-11-18T13:56:46.6933642Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T13:56:46.6971709Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T13:56:46.7219717Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T13:56:46.7262586Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config
+2026-11-18T13:56:46.7291375Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config
+2026-11-18T13:56:46.7922244Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config
+2026-11-18T13:56:46.7954717Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config
+2026-11-18T13:56:46.7982740Z ##[endgroup]
+2026-11-18T13:56:46.7983822Z ##[group]Fetching the repository
+2026-11-18T13:56:46.7989294Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:47.8135477Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T13:56:47.8137370Z  * branch            dfc75ef2087fa6463ae59e0818abec01796c578d -> FETCH_HEAD
+2026-11-18T13:56:47.8142609Z [command]/usr/bin/git rev-parse --verify --quiet dfc75ef2087fa6463ae59e0818abec01796c578d^{object}
+2026-11-18T13:56:47.8166119Z dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:47.8171442Z ##[endgroup]
+2026-11-18T13:56:47.8172865Z ##[group]Determining the checkout info
+2026-11-18T13:56:47.8174429Z ##[endgroup]
+2026-11-18T13:56:47.8175433Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T13:56:47.8220278Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T13:56:47.8249323Z ##[group]Checking out the ref
+2026-11-18T13:56:47.8251737Z [command]/usr/bin/git checkout --progress --force dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:48.0473469Z Note: switching to 'dfc75ef2087fa6463ae59e0818abec01796c578d'.
+2026-11-18T13:56:48.0473879Z 
+2026-11-18T13:56:48.0474143Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T13:56:48.0474615Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T13:56:48.0475046Z state without impacting any branches by switching back to a branch.
+2026-11-18T13:56:48.0475290Z 
+2026-11-18T13:56:48.0475466Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T13:56:48.0475921Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T13:56:48.0476179Z 
+2026-11-18T13:56:48.0476299Z   git switch -c <new-branch-name>
+2026-11-18T13:56:48.0476491Z 
+2026-11-18T13:56:48.0476619Z Or undo this operation with:
+2026-11-18T13:56:48.0476791Z 
+2026-11-18T13:56:48.0477176Z   git switch -
+2026-11-18T13:56:48.0477307Z 
+2026-11-18T13:56:48.0477495Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T13:56:48.0477758Z 
+2026-11-18T13:56:48.0477976Z HEAD is now at dfc75ef Merge PR #206: reviewed agent tooling on consolidated main
+2026-11-18T13:56:48.0491221Z ##[endgroup]
+2026-11-18T13:56:48.0534865Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T13:56:48.0558567Z dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:48.0566157Z ##[group]Removing auth
+2026-11-18T13:56:48.0566522Z Removing SSH command configuration
+2026-11-18T13:56:48.0569887Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T13:56:48.0597525Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T13:56:48.0840892Z Removing HTTP extra header
+2026-11-18T13:56:48.0844139Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T13:56:48.0873576Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T13:56:48.1105189Z Removing includeIf entries pointing to credentials config files
+2026-11-18T13:56:48.1108350Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T13:56:48.1130046Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T13:56:48.1131051Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T13:56:48.1131413Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T13:56:48.1131741Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T13:56:48.1138993Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T13:56:48.1161224Z /home/runner/work/_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config
+2026-11-18T13:56:48.1168666Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-a5fd24f4\-70ae\-4f21\-84e0\-2075c294c780\.config
+2026-11-18T13:56:48.1199777Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T13:56:48.1224491Z /home/runner/work/_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config
+2026-11-18T13:56:48.1231833Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-a5fd24f4\-70ae\-4f21\-84e0\-2075c294c780\.config
+2026-11-18T13:56:48.1510963Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T13:56:48.1532943Z /github/runner_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config
+2026-11-18T13:56:48.1539395Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-a5fd24f4\-70ae\-4f21\-84e0\-2075c294c780\.config
+2026-11-18T13:56:48.1571266Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T13:56:48.1592384Z /github/runner_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config
+2026-11-18T13:56:48.1598367Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-a5fd24f4\-70ae\-4f21\-84e0\-2075c294c780\.config
+2026-11-18T13:56:48.1629471Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T13:56:48.1866640Z Removing credentials config '/home/runner/work/_temp/git-credentials-a5fd24f4-70ae-4f21-84e0-2075c294c780.config'
+2026-11-18T13:56:48.1875028Z ##[endgroup]
+2026-11-18T13:56:48.2183329Z Prepare all required actions
+2026-11-18T13:56:48.2183796Z Getting action download info
+2026-11-18T13:56:48.3232867Z Download action repository 'foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf' (SHA:dba66c27052e63476d886f22216e119ba7e615bf)
+2026-11-18T13:56:48.8195666Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-11-18T13:56:48.9867735Z ##[group]Run ./.github/actions/setup-forge
+2026-11-18T13:56:48.9867968Z with:
+2026-11-18T13:56:48.9868150Z   cache-name: mythril
+2026-11-18T13:56:48.9868330Z env:
+2026-11-18T13:56:48.9868480Z   ANALYZER: mythril
+2026-11-18T13:56:48.9868655Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T13:56:48.9868962Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T13:56:48.9869340Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:48.9869742Z ##[endgroup]
+2026-11-18T13:56:48.9918021Z ##[start-action display=Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf;id=__self.__foundry-rs_foundry-toolchain]
+2026-11-18T13:56:48.9971790Z ##[group]Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf
+2026-11-18T13:56:48.9972112Z with:
+2026-11-18T13:56:48.9972270Z   version: v1.8.5
+2026-11-18T13:56:48.9972440Z   network: ethereum
+2026-11-18T13:56:48.9972604Z   cache: true
+2026-11-18T13:56:48.9972832Z   cache-key: analysis-dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:48.9973117Z   cache-restore-keys: analysis-
+2026-11-18T13:56:48.9973462Z env:
+2026-11-18T13:56:48.9973616Z   ANALYZER: mythril
+2026-11-18T13:56:48.9973787Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T13:56:48.9974084Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T13:56:48.9974454Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:48.9974704Z ##[endgroup]
+2026-11-18T13:56:49.1004772Z Installing Foundry (version: v1.8.5)
+2026-11-18T13:56:49.1006996Z Downloading foundryup installer from foundry-rs/foundryup@a27902ef04dcb43061fabf343365cb5afc95fc48...
+2026-11-18T13:56:49.1538697Z Running foundryup installer...
+2026-11-18T13:56:49.7801277Z Running: foundryup --install 1.8.5
+2026-11-18T13:56:52.6423580Z Added /home/runner/.foundry/bin to PATH
+2026-11-18T13:56:52.6424320Z Primary key: linux-foundry-chain-fork-analysis-dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:52.6429480Z Restore keys: linux-foundry-chain-fork-analysis-
+2026-11-18T13:56:52.7591416Z Cache not found
+2026-11-18T13:56:52.7591660Z Running: forge --version
+2026-11-18T13:56:52.7653331Z forge Version: 1.8.5
+2026-11-18T13:56:52.7653704Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T13:56:52.7654144Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T13:56:52.7654415Z Build Profile: dist
+2026-11-18T13:56:52.7658939Z Running: cast --version
+2026-11-18T13:56:52.7742907Z cast Version: 1.8.5
+2026-11-18T13:56:52.7743288Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T13:56:52.7743727Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T13:56:52.7743996Z Build Profile: dist
+2026-11-18T13:56:52.7751098Z Running: anvil --version
+2026-11-18T13:56:52.7786509Z anvil Version: 1.8.5
+2026-11-18T13:56:52.7786933Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T13:56:52.7787473Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T13:56:52.7787939Z Build Profile: dist
+2026-11-18T13:56:52.7800676Z Running: chisel --version
+2026-11-18T13:56:52.7826376Z chisel Version: 1.8.5
+2026-11-18T13:56:52.7826707Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T13:56:52.7827137Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T13:56:52.7827430Z Build Profile: dist
+2026-11-18T13:56:52.7928294Z ##[end-action id=__self.__foundry-rs_foundry-toolchain;outcome=success;conclusion=success;duration_ms=3800]
+2026-11-18T13:56:52.7932343Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.__actions_cache]
+2026-11-18T13:56:52.7977940Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-11-18T13:56:52.7978218Z with:
+2026-11-18T13:56:52.7978384Z   path: ~/.svm
+2026-11-18T13:56:52.7978561Z   key: svm-Linux-0.8.28
+2026-11-18T13:56:52.7978766Z   enableCrossOsArchive: false
+2026-11-18T13:56:52.7978968Z   fail-on-cache-miss: false
+2026-11-18T13:56:52.7979157Z   lookup-only: false
+2026-11-18T13:56:52.7979331Z   save-always: false
+2026-11-18T13:56:52.7979499Z env:
+2026-11-18T13:56:52.7979883Z   ANALYZER: mythril
+2026-11-18T13:56:52.7980054Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T13:56:52.7980346Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T13:56:52.7980713Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:52.7980970Z ##[endgroup]
+2026-11-18T13:56:53.0600674Z Cache hit for: svm-Linux-0.8.28
+2026-11-18T13:56:53.8045674Z Received 5503463 of 5503463 (100.0%), 9.4 MBs/sec
+2026-11-18T13:56:53.8046094Z Cache Size: ~5 MB (5503463 B)
+2026-11-18T13:56:53.8069038Z [command]/usr/bin/tar -xf /home/runner/work/_temp/a14a58c2-5a90-4060-bde3-3456e9850852/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T13:56:53.8346493Z Cache restored successfully
+2026-11-18T13:56:53.8467565Z Cache restored from key: svm-Linux-0.8.28
+2026-11-18T13:56:53.8546853Z ##[end-action id=__self.__actions_cache;outcome=success;conclusion=success;duration_ms=1061]
+2026-11-18T13:56:53.8549314Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.__actions_cache_2]
+2026-11-18T13:56:54.0670167Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-11-18T13:56:54.0670465Z with:
+2026-11-18T13:56:54.0670682Z   path: packages/contracts/out
+packages/contracts/cache
+
+2026-11-18T13:56:54.0671108Z   key: forge-mythril-Linux-95cbb56779fe2e473d03a3f67af5797bea6be3d9eb69477cc587aa5308537132
+2026-11-18T13:56:54.0671514Z   restore-keys: forge-mythril-Linux-
+
+2026-11-18T13:56:54.0671753Z   enableCrossOsArchive: false
+2026-11-18T13:56:54.0671962Z   fail-on-cache-miss: false
+2026-11-18T13:56:54.0672167Z   lookup-only: false
+2026-11-18T13:56:54.0672354Z   save-always: false
+2026-11-18T13:56:54.0672521Z env:
+2026-11-18T13:56:54.0672674Z   ANALYZER: mythril
+2026-11-18T13:56:54.0672856Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T13:56:54.0673150Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T13:56:54.0673524Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:54.0673790Z ##[endgroup]
+2026-11-18T13:56:54.3164320Z Cache not found for input keys: forge-mythril-Linux-95cbb56779fe2e473d03a3f67af5797bea6be3d9eb69477cc587aa5308537132, forge-mythril-Linux-
+2026-11-18T13:56:54.3230635Z ##[end-action id=__self.__actions_cache_2;outcome=success;conclusion=success;duration_ms=468]
+2026-11-18T13:56:54.3314080Z ##[group]Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+2026-11-18T13:56:54.3314394Z with:
+2026-11-18T13:56:54.3314569Z   python-version: 3.12
+2026-11-18T13:56:54.3314757Z   check-latest: false
+2026-11-18T13:56:54.3316839Z   token: ***
+2026-11-18T13:56:54.3317024Z   update-environment: true
+2026-11-18T13:56:54.3317231Z   allow-prereleases: false
+2026-11-18T13:56:54.3317426Z   freethreaded: false
+2026-11-18T13:56:54.3317594Z env:
+2026-11-18T13:56:54.3317745Z   ANALYZER: mythril
+2026-11-18T13:56:54.3317918Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T13:56:54.3318215Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T13:56:54.3318598Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:54.3318852Z ##[endgroup]
+2026-11-18T13:56:54.4343292Z ##[group]Installed versions
+2026-11-18T13:56:54.4424053Z Successfully set up CPython (3.12.16)
+2026-11-18T13:56:54.4424624Z ##[endgroup]
+2026-11-18T13:56:54.4523297Z ##[group]Run set -euo pipefail
+2026-11-18T13:56:54.4523595Z [36;1mset -euo pipefail[0m
+2026-11-18T13:56:54.4523983Z [36;1mpython3 -m pip install --quiet 'mythril==0.24.8' 'solc-select==1.2.0' 'setuptools<81'[0m
+2026-11-18T13:56:54.4524417Z [36;1mmkdir -p "$RUNNER_TEMP/ghostpay-analysis-bin"[0m
+2026-11-18T13:56:54.4524870Z [36;1minstall -m 755 packages/contracts/scripts/mythril-compat.py "$RUNNER_TEMP/ghostpay-analysis-bin/myth"[0m
+2026-11-18T13:56:54.4525347Z [36;1mecho "$RUNNER_TEMP/ghostpay-analysis-bin" >> "$GITHUB_PATH"[0m
+2026-11-18T13:56:54.4525699Z [36;1m"$RUNNER_TEMP/ghostpay-analysis-bin/myth" version[0m
+2026-11-18T13:56:54.4525991Z [36;1msolc-select install 0.8.28[0m
+2026-11-18T13:56:54.4526210Z [36;1msolc-select use 0.8.28[0m
+2026-11-18T13:56:54.4584578Z shell: /usr/bin/bash -e {0}
+2026-11-18T13:56:54.4584805Z env:
+2026-11-18T13:56:54.4584971Z   ANALYZER: mythril
+2026-11-18T13:56:54.4585167Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T13:56:54.4585527Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T13:56:54.4585908Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:56:54.4586225Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T13:56:54.4586571Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-18T13:56:54.4586919Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T13:56:54.4587229Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T13:56:54.4587535Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T13:56:54.4587847Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-18T13:56:54.4588304Z ##[endgroup]
+2026-11-18T13:57:32.3724498Z /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+2026-11-18T13:57:32.3725482Z   import pkg_resources
+2026-11-18T13:57:34.1784056Z Mythril version v0.24.8
+2026-11-18T13:57:35.1196388Z Installing solc '0.8.28'...
+2026-11-18T13:57:35.1196760Z Version '0.8.28' installed.
+2026-11-18T13:57:35.2559105Z Switched global version to 0.8.28
+2026-11-18T13:57:35.2788391Z ##[group]Run set -euo pipefail
+2026-11-18T13:57:35.2788676Z [36;1mset -euo pipefail[0m
+2026-11-18T13:57:35.2788948Z [36;1mmkdir -p "$RUNNER_TEMP/ghostpay-contract-analysis"[0m
+2026-11-18T13:57:35.2789228Z [36;1mstatus=0[0m
+2026-11-18T13:57:35.2789850Z [36;1mbash "scripts/run-${ANALYZER}.sh" > "$RUNNER_TEMP/ghostpay-contract-analysis/report.log" 2>&1 || status=$?[0m
+2026-11-18T13:57:35.2790426Z [36;1mprintf '%s\n' "$status" > "$RUNNER_TEMP/ghostpay-contract-analysis/exit-code.txt"[0m
+2026-11-18T13:57:35.2790760Z [36;1mexit "$status"[0m
+2026-11-18T13:57:35.2836175Z shell: /usr/bin/bash -e {0}
+2026-11-18T13:57:35.2836388Z env:
+2026-11-18T13:57:35.2836552Z   ANALYZER: mythril
+2026-11-18T13:57:35.2836739Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T13:57:35.2837057Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T13:57:35.2837446Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T13:57:35.2837803Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T13:57:35.2838142Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-18T13:57:35.2838476Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T13:57:35.2838784Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T13:57:35.2839088Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T13:57:35.2839387Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-18T13:57:35.2839745Z ##[endgroup]
+2026-11-18T14:46:25.8354016Z ##[error]Process completed with exit code 1.
+2026-11-18T14:46:25.8398470Z ##[group]Run python3 packages/contracts/scripts/collect-analysis-report.py "$RUNNER_TEMP/ghostpay-contract-analysis" "$RUNNER_TEMP/ghostpay-contract-analysis-artifact"
+2026-11-18T14:46:25.8399416Z [36;1mpython3 packages/contracts/scripts/collect-analysis-report.py "$RUNNER_TEMP/ghostpay-contract-analysis" "$RUNNER_TEMP/ghostpay-contract-analysis-artifact"[0m
+2026-11-18T14:46:25.8444244Z shell: /usr/bin/bash -e {0}
+2026-11-18T14:46:25.8444464Z env:
+2026-11-18T14:46:25.8444635Z   ANALYZER: mythril
+2026-11-18T14:46:25.8444829Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T14:46:25.8445131Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T14:46:25.8445530Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T14:46:25.8445842Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T14:46:25.8446172Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-18T14:46:25.8446539Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T14:46:25.8446838Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T14:46:25.8447168Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T14:46:25.8447470Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-18T14:46:25.8447731Z   ANALYSIS_OUTCOME: failure
+2026-11-18T14:46:25.8447918Z ##[endgroup]
+2026-11-18T14:46:25.8873743Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+2026-11-18T14:46:25.8874066Z with:
+2026-11-18T14:46:25.8874346Z   name: contract-analysis-mythril-dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T14:46:25.8874758Z   path: /home/runner/work/_temp/ghostpay-contract-analysis-artifact
+2026-11-18T14:46:25.8875231Z   if-no-files-found: error
+2026-11-18T14:46:25.8875429Z   retention-days: 14
+2026-11-18T14:46:25.8875619Z   compression-level: 6
+2026-11-18T14:46:25.8875820Z   overwrite: false
+2026-11-18T14:46:25.8876010Z   include-hidden-files: false
+2026-11-18T14:46:25.8876216Z   archive: true
+2026-11-18T14:46:25.8876386Z env:
+2026-11-18T14:46:25.8876555Z   ANALYZER: mythril
+2026-11-18T14:46:25.8876734Z   ECHIDNA_VERSION: 2.2.7
+2026-11-18T14:46:25.8877034Z   ECHIDNA_SHA256: d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314
+2026-11-18T14:46:25.8885887Z   REQUESTED_COMMIT: dfc75ef2087fa6463ae59e0818abec01796c578d
+2026-11-18T14:46:25.8886295Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T14:46:25.8886650Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-18T14:46:25.8886991Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T14:46:25.8887303Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T14:46:25.8887609Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-18T14:46:25.8887907Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-18T14:46:25.8888168Z ##[endgroup]
+2026-11-18T14:46:26.0056136Z With the provided path, there will be 2 files uploaded
+2026-11-18T14:46:26.0060309Z Artifact name is valid!
+2026-11-18T14:46:26.0060868Z Root directory input is valid!
+2026-11-18T14:46:26.2910957Z Uploading artifact: contract-analysis-mythril-dfc75ef2087fa6463ae59e0818abec01796c578d.zip
+2026-11-18T14:46:26.2939752Z Beginning upload of artifact content to blob storage
+2026-11-18T14:46:26.5039506Z Uploaded bytes 17233
+2026-11-18T14:46:26.5469441Z Finished uploading artifact content to blob storage!
+2026-11-18T14:46:26.5470254Z SHA256 digest of uploaded artifact is e998907946a170b95509e51f94013daf34377b6b02195c21c763605f2f4a3130
+2026-11-18T14:46:26.5470658Z Finalizing artifact upload
+2026-11-18T14:46:27.0666399Z Artifact contract-analysis-mythril-dfc75ef2087fa6463ae59e0818abec01796c578d successfully finalized. Artifact ID 14437897350
+2026-11-18T14:46:27.0667354Z Artifact contract-analysis-mythril-dfc75ef2087fa6463ae59e0818abec01796c578d has been successfully uploaded! Final size is 17233 bytes. Artifact ID is 14437897350
+2026-11-18T14:46:27.0669791Z Artifact download URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44297673763/artifacts/14437897350
+2026-11-18T14:46:27.0842533Z Post job cleanup.
+2026-11-18T14:46:27.0846269Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__dad28697-17aa-4a41-9162-8267d0b5a515.__actions_cache_2]
+2026-11-18T14:46:27.0849185Z ##[end-action id=__dad28697-17aa-4a41-9162-8267d0b5a515.__actions_cache_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T14:46:27.0851331Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__dad28697-17aa-4a41-9162-8267d0b5a515.__actions_cache]
+2026-11-18T14:46:27.0853075Z ##[end-action id=__dad28697-17aa-4a41-9162-8267d0b5a515.__actions_cache;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T14:46:27.0854861Z ##[start-action display=Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf;id=__dad28697-17aa-4a41-9162-8267d0b5a515.__foundry-rs_foundry-toolchain]
+2026-11-18T14:46:27.0856603Z ##[end-action id=__dad28697-17aa-4a41-9162-8267d0b5a515.__foundry-rs_foundry-toolchain;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T14:46:27.0908274Z Post job cleanup.
+2026-11-18T14:46:27.1601965Z [command]/usr/bin/git version
+2026-11-18T14:46:27.1642180Z git version 2.56.1
+2026-11-18T14:46:27.1669429Z Temporarily overriding HOME='/home/runner/work/_temp/1348e78c-f5f8-4f90-8f81-2b704fd84dde' before making global git config changes
+2026-11-18T14:46:27.1670646Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T14:46:27.1673347Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T14:46:27.1703942Z Removing SSH command configuration
+2026-11-18T14:46:27.1709436Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T14:46:27.1755236Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T14:46:27.2018820Z Removing HTTP extra header
+2026-11-18T14:46:27.2024445Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T14:46:27.2060172Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T14:46:27.2324881Z Removing includeIf entries pointing to credentials config files
+2026-11-18T14:46:27.2331607Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T14:46:27.2393730Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T14:46:27.2765453Z Cleaning up orphan processes
+

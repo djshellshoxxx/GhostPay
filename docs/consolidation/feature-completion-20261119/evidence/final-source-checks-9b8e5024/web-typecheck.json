@@ -1,0 +1,22 @@
+{
+  "label": "web-typecheck",
+  "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "exit_code": 0,
+  "wall_seconds": 109.097,
+  "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+  "argv": [
+    "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/typescript/bin/tsc",
+    "-p",
+    "tsconfig.json",
+    "--noEmit"
+  ],
+  "node": "22.23.4",
+  "node_options": "--max-old-space-size=1536",
+  "log": "web-typecheck.txt",
+  "post_source_validation_error": null,
+  "qualification": "PASSED",
+  "bytes": 536,
+  "sha256": "9e82a9b068098465939a3b14135d9d0d5d86f2b983955fdfad979719432b03f9"
+}

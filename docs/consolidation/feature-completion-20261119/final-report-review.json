@@ -1,0 +1,488 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-11-19T11:18:08.597021+00:00",
+  "reviewer": "/root/privacy_completion",
+  "scope": "Final prose/qualification/receipt/hash/link consistency, with two coordinator-authorized prose corrections. Per-feature implementation reviews and command execution remain separately attributed.",
+  "verdict": "No material reporting-consistency blocker in this exact source-pinned snapshot. Outstanding qualification gates remain unqualified.",
+  "reviewed_prose": [
+    {
+      "path": "RESULTS.md",
+      "bytes": 43304,
+      "sha256": "535e46c37ec60664ecfdce994504c1dde263443f29d88c1eee77c34e0bdd8f9a"
+    },
+    {
+      "path": "FEATURE_MATRIX.md",
+      "bytes": 19283,
+      "sha256": "7669e2ede7a4af812db66efa7c1c98a27e6b427d9d6962caa2d6fb6c643eb53a"
+    },
+    {
+      "path": "INDEPENDENT_REVIEWS.md",
+      "bytes": 62415,
+      "sha256": "5aabc64e6d5f9485b13b53a7c6d9c5184bbd92212535a7d2671feea52e6ef4e7"
+    }
+  ],
+  "authorized_prose_corrections": [
+    {
+      "path": "FEATURE_MATRIX.md",
+      "before_sha256": "82cacc3fdadacbfa55cc86e181a0df281249b312ac015adb4e618ede19c58b5e",
+      "change": "Use completed tense for the strict-profile parser and recovered-key correction; preserve all source/results statements."
+    },
+    {
+      "path": "INDEPENDENT_REVIEWS.md",
+      "before_sha256": "3b91accf2803e32b2e9bf0563f9faf5a91ed83e77b9ca96d7f42252b46e830ba",
+      "change": "Connect the historical pending ten-file replay to its terminal 96 passed / 1 failed result at 74e3111f, preserving the failed-command and broader-gate limits."
+    }
+  ],
+  "source_identity": {
+    "tested_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+    "tested_published": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+    "reconciled_local": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+    "reconciled_published": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+    "shared_entire_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+    "local_changed_paths": [],
+    "published_changed_paths": [],
+    "proof": "final-main-reconciliation-review.json",
+    "execution_binding": "All actual final commands remain pinned to 9b8/155d. The ancestry-only 3ce8/c7 merge has no newly executed result."
+  },
+  "qualification": {
+    "path": "QUALIFICATION.json",
+    "sha256": "0c77b248803e233f699f2c89020e3daf9cf87ea2a8828445ab569336909e0e4f",
+    "records_reviewed": 33,
+    "unique_record_ids": 33,
+    "actual_final_command_receipts_matched": 10,
+    "matched_final_receipt_ids": [
+      "final-source-full-build",
+      "final-source-full-csp",
+      "final-source-full-scan",
+      "final-source-hosting-kit",
+      "final-source-lean-boundary",
+      "final-source-lean-build",
+      "final-source-lean-csp",
+      "final-source-lean-scan",
+      "final-source-web-nocov",
+      "final-source-web-typecheck"
+    ],
+    "all_recorded_evidence_paths_exist": true,
+    "unqualified_gates_preserved": [
+      "Whole-final-source ordinary web unit/coverage aggregate and original 90/85/90/90 thresholds",
+      "Whole-final-source typed web lint; original full and unchanged-web-scope partition trials terminated",
+      "All-workspace clean installation/build/test gate",
+      "Final exact-head hosted full/lean browser, Pages/native/regtest and security gates",
+      "Full invoice-schema package coverage 95/90/95/95 (focused 208 and static/build checks passed)",
+      "Strict contract findings and required 0.8.28 native qualification; separate CodeQL 264 alert applicability unknown"
+    ],
+    "aggregate_pass_claimed": false
+  },
+  "retained_artifact_verification": {
+    "directory": "evidence/final-source-checks-9b8e5024",
+    "count": 24,
+    "method": "Byte comparison against preserved scratch originals plus SHA256/size verification; command receipts match the qualification records.",
+    "files": [
+      {
+        "path": "evidence/final-source-checks-9b8e5024/full-artifact-manifest.json",
+        "bytes": 3349,
+        "sha256": "d36eee0f0a7a6c482be7ffbcbd723311e7c3837087105d806644170adf22d926",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/full-artifact-manifest.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/full-build.json",
+        "bytes": 728,
+        "sha256": "e21b0c74ac3a20b8ebefb13ae650193ab7a22bc042e5d28739d8e398a2131a14",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/full-build.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/full-build.txt",
+        "bytes": 2833,
+        "sha256": "7efc51586a7a5b4dbf349bafda8388e405b7cfe8d131bcfe868a4269be042411",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/full-build.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/full-csp.json",
+        "bytes": 696,
+        "sha256": "98c6510279dd1636ff9487c456cda9705bbbefa536eb7bdab3608f365effe40c",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/full-csp.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/full-csp.txt",
+        "bytes": 750,
+        "sha256": "8d5a3d7296dd2e45c603a09945adf6f0ff6f274eb9d36936226153657a51dc9f",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/full-csp.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/full-scan.json",
+        "bytes": 700,
+        "sha256": "db3f01015e78c8555f7865f95ebadf8418154aedda1c45a5b4bb30b5adde1632",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/full-scan.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/full-scan.txt",
+        "bytes": 832,
+        "sha256": "6dd9dcf3c21b50d892c826bc3ec5c4f4a22e082f2257fc62ae5457225ede8c27",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/full-scan.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/hosting-kit.json",
+        "bytes": 762,
+        "sha256": "64cb06d6d345c3222715cf70f47d8372aa2495b5840de613b6167cbe308412bc",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/hosting-kit.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/hosting-kit.txt",
+        "bytes": 67413,
+        "sha256": "9d4652dbf5dc37d25f17d2892fb990e2051e1f5f51447f025223364b7cef3ac8",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/hosting-kit.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-artifact-manifest.json",
+        "bytes": 3032,
+        "sha256": "558800937dbf75fe6dc44d63a52d08be0964a40b859a5e579cdc8f578962e31e",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-artifact-manifest.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-boundary.json",
+        "bytes": 1061,
+        "sha256": "afe636225c3589a12bb320958bdf6802e96571122400b9ab2144072993504bff",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-boundary.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-boundary.txt",
+        "bytes": 1070,
+        "sha256": "73e4d9c87142fd7e8222d955a5d3462fc511eba1ef79329b25cbae2fbc9e9f0a",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-boundary.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-build.json",
+        "bytes": 728,
+        "sha256": "66a1d207e14848bce646176ceb29dd14ede464f10a28f067cbaa8baf4afece98",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-build.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-build.txt",
+        "bytes": 2779,
+        "sha256": "cede84156e60dadf95df5bd0593791f27fb3aa9849990414ece4f4247da66d37",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-build.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-csp.json",
+        "bytes": 696,
+        "sha256": "3c247640558a5268c861177923c8efdcd25db85f292f04daeb3980237f376ee7",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-csp.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-csp.txt",
+        "bytes": 751,
+        "sha256": "d0610f9e138281f95c075566f50a74b0508fc8b1070d8ebd0ad0623596e4175f",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-csp.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-module-report.json",
+        "bytes": 107621,
+        "sha256": "5232bcb6378254f100de6b15a87f8959668e206fa17b49a614d43fd1565e401c",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-module-report.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-scan.json",
+        "bytes": 700,
+        "sha256": "7b316695d3d197a8a36472bfc357a4f472884f866bb1601956640dba09e1e2c9",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-scan.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/lean-scan.txt",
+        "bytes": 832,
+        "sha256": "19fe4c39d31526c52c1806d4fbbb755f8f9cf2a4e7036b5f3c4a5fc65fbf18aa",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/lean-scan.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/run-final-source-checks.py",
+        "bytes": 7164,
+        "sha256": "54365703eb0344750c3c3edf12cfe6a81718cbd16b8d254ef6879c3a779fbf6b",
+        "raw_original": "/workspace/scratch/13855ecc035c/run-final-source-checks.py",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/web-nocov.json",
+        "bytes": 849,
+        "sha256": "484129b555ce10d4f4869e3a9e9aebe727f3896b34b8e4877968bb2579fb6edd",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/web-nocov.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/web-nocov.txt",
+        "bytes": 3876,
+        "sha256": "0221b97bf2a4a759ad20564f0181855ab7f4e4f5124f1073cc20ac8ed566982e",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/web-nocov.txt",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/web-typecheck.json",
+        "bytes": 747,
+        "sha256": "6a587472ecd2b679885489f3c7e8cffd01259342fd473273310ccd18315a9535",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/web-typecheck.json",
+        "exact_copy": true
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/web-typecheck.txt",
+        "bytes": 536,
+        "sha256": "9e82a9b068098465939a3b14135d9d0d5d86f2b983955fdfad979719432b03f9",
+        "raw_original": "/workspace/scratch/13855ecc035c/final-source-checks-9b8e5024/web-typecheck.txt",
+        "exact_copy": true
+      }
+    ]
+  },
+  "local_markdown_links": {
+    "count": 39,
+    "all_resolve": true,
+    "links": [
+      {
+        "document": "RESULTS.md",
+        "target": "QUALIFICATION.json"
+      },
+      {
+        "document": "RESULTS.md",
+        "target": "main-257-promotion-review.json"
+      },
+      {
+        "document": "RESULTS.md",
+        "target": "security-artifact-review/REVIEW.md"
+      },
+      {
+        "document": "RESULTS.md",
+        "target": "hosted-hosting-review/receipt.json"
+      },
+      {
+        "document": "RESULTS.md",
+        "target": "superseded-security-pr-review.json"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "main-257-promotion-review.json"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "final-main-reconciliation-review.json"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "RESULTS.md"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "hosted-hosting-review/receipt.json"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "final-canonical-source-review.json"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "final-merchant-source-review.json"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "security-artifact-review/REVIEW.md"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "QUALIFICATION.json"
+      },
+      {
+        "document": "FEATURE_MATRIX.md",
+        "target": "RESULTS.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "evidence/privacy-independent-csp-review.txt"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../../handoffs/privacy-master-followup-20261119/"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../../handoffs/recovered-key-authority-20261119/REVIEW.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../../handoffs/settings-exchange-20261119/REVIEW.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../../handoffs/scan-cancellation-20261119/REVIEW.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../tron-integration-20261119/QUALIFICATION.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../../handoffs/tag-archive-idle-20261119/REVIEW.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../hosting-timestamp-20261119/QUALIFICATION.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../hosting-timestamp-20261119/receipt.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../../handoffs/camera-visibility-integration-20261119/REVIEW.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../../handoffs/camera-visibility-integration-20261119/EVIDENCE.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "final-canonical-source-review.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../canonical-array-20261119/QUALIFICATION.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "QUALIFICATION.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "final-merchant-source-review.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "../merchant-clock-20261119/QUALIFICATION.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "security-artifact-review/REVIEW.md"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "security-artifact-review/receipt.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "evidence/web-lint-partitions-3ab/INDEPENDENT_REVIEW.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "evidence/final-source-checks-harness-review.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "final-build-input-review.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "hosted-hosting-review/receipt.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "main-257-promotion-review.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "final-main-reconciliation-review.json"
+      },
+      {
+        "document": "INDEPENDENT_REVIEWS.md",
+        "target": "QUALIFICATION.json"
+      }
+    ]
+  },
+  "explicitly_cited_hashes": {
+    "count": 8,
+    "all_match": true,
+    "files": [
+      {
+        "path": "evidence/final-source-checks-harness-review.json",
+        "bytes": 2676,
+        "sha256": "3fc71d44cad184ec1ff7d36ebc60b0444a2fa68b5110f34a031426e72aa55e9a"
+      },
+      {
+        "path": "evidence/final-source-checks-9b8e5024/run-final-source-checks.py",
+        "bytes": 7164,
+        "sha256": "54365703eb0344750c3c3edf12cfe6a81718cbd16b8d254ef6879c3a779fbf6b"
+      },
+      {
+        "path": "final-build-input-review.json",
+        "bytes": 265933,
+        "sha256": "3701ecdc76e25071c3f967336265be65c74c4cfec88ee9072a828521bf6d695a"
+      },
+      {
+        "path": "security-artifact-review/receipt.json",
+        "bytes": 8203,
+        "sha256": "db3ed95e2dd3e9a10c6f68ae81d1768456a034b1405e42b2a81b736f5a9cff69"
+      },
+      {
+        "path": "hosted-hosting-review/receipt.json",
+        "bytes": 20678,
+        "sha256": "47b2d991298afd594effe59a5ea802673b5e6db350a589cd11b5af153d8c0da3"
+      },
+      {
+        "path": "evidence/privacy-independent-csp-review.txt",
+        "bytes": 10673,
+        "sha256": "7aff73a2b1046e20542c6ec43843d09e541c3a573b573ab785903921d513c205"
+      },
+      {
+        "path": "evidence/web-lint-partitions-3ab/INDEPENDENT_REVIEW.json",
+        "bytes": 8443,
+        "sha256": "256b531fb958b7199dd9bce1766209cfc475670e5928d408c56cf48edb26004c"
+      },
+      {
+        "path": "final-main-reconciliation-review.json",
+        "bytes": 8105,
+        "sha256": "63184976dcc72eab17ff24a693dfbff52a2b16964110179158be122f81084dba"
+      }
+    ]
+  },
+  "count_and_attribution_review": [
+    "Canonical 200 and merchant 208 are overlapping selections; their totals are not added.",
+    "Recovery replays and focused/runtime selections retain implementing-worker versus independent-review attribution.",
+    "Author hosting 285 passed / 14 skipped, final local 286 passed / 13 skipped, and focused hosted 296 passed / 6 skipped retain separate source and environment bindings.",
+    "Focused hosted nginx/Docker/Chromium evidence is not transferred to the broader application tree.",
+    "113 Actions uses references and 40 Solidity files are scope counts, not additional unit tests.",
+    "Partial coverage log lines, killed lint attempts and discovery manifests do not become completed test/lint/coverage results.",
+    "External main promotion and automatic merged-PR dispositions remain separately attributed; no broad candidate promotion or release is claimed."
+  ],
+  "execution": {
+    "tests_rerun": false,
+    "lint_rerun": false,
+    "typecheck_rerun": false,
+    "build_rerun": false,
+    "hosted_or_native_jobs_rerun": false,
+    "activities": "Read existing files and Git metadata, compare/hash artifacts, validate local links, and make the two authorized documentation corrections."
+  },
+  "write_scope": [
+    "FEATURE_MATRIX.md",
+    "INDEPENDENT_REVIEWS.md",
+    "final-report-review.json"
+  ],
+  "lint_manifest_unchanged_sha256": "2c56938927e85393167a3d44108063f01ecbe64b9749a0f6224d16bbff468d5b",
+  "limits": [
+    "This review is pinned to the document hashes and source refs above; future source or report changes need their own binding.",
+    "The newly assigned export-client investigation and any resulting runtime repair are outside this snapshot and receive no qualification from it.",
+    "No full-suite, whole-workspace, exact-head hosted, native contract, deployment or release pass is inferred.",
+    "No commit, publication, branch merge or manifest update was performed by this task."
+  ]
+}

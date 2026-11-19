@@ -1,0 +1,188 @@
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-recovery/apps/web
+
+ ❯ src/lib/paymentKeyExport.expiry.test.ts (6 tests | 5 failed) 27212ms
+   ❯ recovered key authority at synchronous and asynchronous idle boundaries (6)
+     × refuses and disposes an expired raw-payment loan before returning private-key text, without a browser event 826ms
+     × preserves the loaded wallet when a recovered master install observes expiration before replacement 490ms
+     × refuses an old recovered payment after a different wallet is installed without React lifecycle subscribers 419ms
+     × disposes single keys when decryption finishes after expiry, before any result is handed to the caller 5317ms
+     × disposes master keys when decryption finishes after expiry, before any result is handed to the caller 19942ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/paymentKeyExport.expiry.test.ts > recovered key authority at synchronous and asynchronous idle boundaries > refuses and disposes an expired raw-payment loan before returning private-key text, without a browser event
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/lib/paymentKeyExport.expiry.test.ts:37:51
+     35|     if (opened.kind !== 'keypair') throw new Error('payment fixture re…
+     36|     expireOnNextBoundary();
+     37|     expect(() => opened.keys.rawKeyFile(0, true)).toThrow(/changed dur…
+       |                                                   ^
+     38|     expect(opened.keys.disposed).toBe(true);
+     39|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/lib/paymentKeyExport.expiry.test.ts > recovered key authority at synchronous and asynchronous idle boundaries > preserves the loaded wallet when a recovered master install observes expiration before replacement
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/lib/paymentKeyExport.expiry.test.ts:46:41
+     44|     if (opened.kind !== 'master') throw new Error('master fixture requ…
+     45|     expireOnNextBoundary();
+     46|     expect(() => opened.keys.install()).toThrow(/changed during this a…
+       |                                         ^
+     47|     expect(getSessionPublic()).toBe(original);
+     48|     expect(opened.keys.disposed).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/lib/paymentKeyExport.expiry.test.ts > recovered key authority at synchronous and asynchronous idle boundaries > refuses an old recovered payment after a different wallet is installed without React lifecycle subscribers
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ src/lib/paymentKeyExport.expiry.test.ts:55:51
+     53|     if (opened.kind !== 'keypair') throw new Error('payment fixture re…
+     54|     generateSession();
+     55|     expect(() => opened.keys.rawKeyFile(0, true)).toThrow(/changed dur…
+       |                                                   ^
+     56|     expect(opened.keys.disposed).toBe(true);
+     57|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/lib/paymentKeyExport.expiry.test.ts > recovered key authority at synchronous and asynchronous idle boundaries > disposes single keys when decryption finishes after expiry, before any result is handed to the caller
+AssertionError: promise resolved "{ kind: 'keypair', …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "keys": RecoveredPaymentKeys {
++     "header": {
++       "chainId": 11155111,
++       "cipher": {
++         "iv": "0x020202020202020202020202",
++         "name": "AES-256-GCM",
++         "tagLength": 128,
++       },
++       "count": 1,
++       "format": "ghostpay-stealth-keypair-v1",
++       "kdf": {
++         "N": 16384,
++         "dkLen": 32,
++         "name": "scrypt",
++         "p": 1,
++         "r": 8,
++         "salt": "0x01010101010101010101010101010101",
++       },
++       "payments": [
++         {
++           "announcement": {
++             "blockHash": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
++             "blockNumber": "6000001",
++             "logIndex": 3,
++             "transactionHash": "0xb1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
++           },
++           "chainId": 11155111,
++           "ephemeralPublicKey": "0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1",
++           "exportedAt": "2026-11-18T00:00:00Z",
++           "format": "ghostpay-stealth-public-v1",
++           "publicKey": {
++             "encoding": "secp256k1-compressed",
++             "value": "0x02a2a582c7f89476beb6de1d8b5f6329b7dfdc6e224f251215f5875450a7cc80fb",
++           },
++           "schemeId": 1,
++           "stealthAddress": "0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9",
++           "version": 1,
++           "viewTag": "0x20",
++         },
++       ],
++       "scope": "single",
++       "version": 1,
++     },
++   },
++   "kind": "keypair",
+  }
+
+ ❯ src/lib/paymentKeyExport.expiry.test.ts:82:31
+     80|       });
+     81|     }
+     82|     await expect(open(format)).rejects.toThrow(/changed during this ac…
+       |                               ^
+     83|     expect(boxes.length).toBeGreaterThan(0);
+     84|     expect(boxes.every((box) => box.disposed)).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/lib/paymentKeyExport.expiry.test.ts > recovered key authority at synchronous and asynchronous idle boundaries > disposes master keys when decryption finishes after expiry, before any result is handed to the caller
+AssertionError: promise resolved "{ kind: 'master', …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "keys": RecoveredMasterKeys {
++     "header": {
++       "cipher": {
++         "iv": "0x040404040404040404040404",
++         "name": "AES-256-GCM",
++         "tagLength": 128,
++       },
++       "derivation": "eip5564-scheme1-adr0001",
++       "exportedAt": "2026-11-18T00:00:00Z",
++       "format": "ghostpay-stealth-master-v1",
++       "kdf": {
++         "N": 16384,
++         "dkLen": 32,
++         "name": "scrypt",
++         "p": 1,
++         "r": 8,
++         "salt": "0x03030303030303030303030303030303",
++       },
++       "metaAddress": "st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
++       "schemeId": 1,
++       "spendingPublicKey": "0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
++       "version": 1,
++       "viewingPublicKey": "0x02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
++     },
++   },
++   "kind": "master",
+  }
+
+ ❯ src/lib/paymentKeyExport.expiry.test.ts:82:31
+     80|       });
+     81|     }
+     82|     await expect(open(format)).rejects.toThrow(/changed during this ac…
+       |                               ^
+     83|     expect(boxes.length).toBeGreaterThan(0);
+     84|     expect(boxes.every((box) => box.disposed)).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  00:01:26
+   Duration  110.14s (transform 68%, tests 25%, import 7%)

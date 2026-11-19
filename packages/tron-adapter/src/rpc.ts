@@ -192,11 +192,13 @@ export async function getBlockRange(rpc: TronRpc, from: bigint, to: bigint, sign
   if (from < 0n || to < from || to > BigInt(Number.MAX_SAFE_INTEGER)) return fail('INVALID_INPUT');
   const resp = asRecord(await rpc.post('/wallet/getblockbylimitnext', { startNum: Number(from), endNum: Number(to) + 1 }, signal));
   const list = resp['block'];
-  if (list === undefined) return [];
-  if (!Array.isArray(list)) return fail('INVALID_RESPONSE');
-  const blocks = list.map(parseBlock).filter((b) => b.number >= from && b.number <= to);
-  for (let i = 1; i < blocks.length; i++) {
-    if ((blocks[i] as TronBlock).number <= (blocks[i - 1] as TronBlock).number) return fail('INVALID_RESPONSE');
+  if (list !== undefined && !Array.isArray(list)) return fail('INVALID_RESPONSE');
+  const blocks = ((list as unknown[] | undefined) ?? []).map(parseBlock).filter((b) => b.number >= from && b.number <= to);
+  // Completeness: the range must be contiguous and whole. A silently short answer would let the scan skip blocks
+  // (and their payments) and move on.
+  if (BigInt(blocks.length) !== to - from + 1n) return fail('INVALID_RESPONSE');
+  for (let i = 0; i < blocks.length; i++) {
+    if ((blocks[i] as TronBlock).number !== from + BigInt(i)) return fail('INVALID_RESPONSE');
   }
   return blocks;
 }

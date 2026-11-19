@@ -1,0 +1,14 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/GhostPay/apps/web
+
+
+ Test Files  9 passed (9)
+      Tests  135 passed (135)
+   Start at  06:14:23
+   Duration  11.94s (import 38%, transform 29%, environment 20%, tests 12%)
+
+     Import  419 modules were evaluated 569 times · 4.20s total, 38% of tracked time
+             ~1.11s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

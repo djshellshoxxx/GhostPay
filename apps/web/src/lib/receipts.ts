@@ -14,6 +14,7 @@ import {
 } from '@ghostpay/invoice-schema';
 import { checkAnnouncement, encodeMetaAddress, type StealthKeySet } from '@ghostpay/core-crypto';
 import { grossForNet, routerSplit } from '@ghostpay/chain-adapters';
+import type { ReceiptPayload } from '@ghostpay/invoice-schema';
 import type { ScanMatch } from './scanClient';
 
 export {
@@ -70,6 +71,18 @@ export const signReceipt: typeof sharedSignReceipt = (...args) => localized(() =
 export const bindReceiptToInvoice: typeof sharedBindReceiptToInvoice = (...args) => localized(() => sharedBindReceiptToInvoice(...args));
 export const parseVerifiedReceipt: typeof sharedParseVerifiedReceipt = (...args) => localized(() => sharedParseVerifiedReceipt(...args));
 export const receiptJson: typeof sharedReceiptJson = (...args) => localized(() => sharedReceiptJson(...args));
+
+/**
+ * Facts to sign for a receipt. The one-time address is left out unless the issuer explicitly opts in, because a
+ * receipt already links the signing key to the payment; the address would add an on-chain pointer to it.
+ */
+export function receiptSigningFields(
+  facts: { readonly invoiceDigest: string; readonly chainId: number; readonly txHash: string; readonly stealthAddress: string; readonly asset: string; readonly amountMinorUnits: string; readonly issuedAt: number },
+  options: { readonly includeAddress?: boolean } = {},
+): Omit<ReceiptPayload, 'signerPublicKey' | 'version'> {
+  const { stealthAddress, ...rest } = facts;
+  return options.includeAddress === true ? { ...rest, stealthAddress: stealthAddress.toLowerCase() } : rest;
+}
 
 /** Read a signed invoice locally. A URL is never opened or fetched. */
 export function receiptInvoiceFragment(text: string): string {

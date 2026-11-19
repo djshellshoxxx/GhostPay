@@ -1,0 +1,823 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "branch_recon",
+  "startedAtUtc": "2026-11-19T09:13:05.404323+00:00",
+  "finishedAtUtc": "2026-11-19T09:13:06.092503+00:00",
+  "baseCommit": "e76451ad56ba1634eed9d03468961900433fd130",
+  "reviewedCommit": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+  "method": "Read-only Git tree/blob comparisons, exact worker-blob reconciliation, claim preservation, byte hashing of previously source-verified runtime JS and retained artifact metadata/files. No builds, typecheck, test execution, process control or source/configuration mutation. Only this delegated audit JSON is written.",
+  "checks": {
+    "exactFourWorkerContributions": true,
+    "exactFiveTestAndFixtureBlobs": true,
+    "noOtherTrackedSourceChanges": true,
+    "noUncommittedSourceChanges": true,
+    "allPriorClaimsPreserved": true,
+    "allFourNewWorkerClaimsPreserved": true,
+    "allBuildConfigurationChecksUnchanged": true,
+    "allRuntimeWebSourceFilesUnchanged": true,
+    "all18RuntimePackageTreesUnchanged": true,
+    "all254VerifiedRuntimeJavaScriptOutputsUnchanged": true,
+    "changedFixtureHasOnlyTestImporters": true,
+    "artifactsRemainPinnedToBase": true,
+    "retainedLeanArtifactHashesMatch": true
+  },
+  "passed": true,
+  "counts": {
+    "changedTrackedPaths": 22,
+    "changedAssertionTestFiles": 4,
+    "changedSharedTestFixtures": 1,
+    "changedDocumentationPaths": 17,
+    "workerIntegrations": 4,
+    "exactWorkerTestAndFixtureBlobs": 5,
+    "webRuntimeSourceFilesCompared": 175,
+    "configurationAndManifestFilesCompared": 288,
+    "runtimeWorkspacePackages": 18,
+    "runtimeJavaScriptOutputs": 254,
+    "registryPriorHeadings": 87,
+    "registryCurrentHeadings": 91,
+    "registryAddedLines": 70,
+    "registryRemovedLines": 0
+  },
+  "changedTrackedPaths": [
+    {
+      "path": "apps/web/src/components/TagArchive.test.tsx",
+      "base": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "01beb3c0c5cf3142ad957a9e1209f15871062082"
+      },
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "d5c0ec5f453dbc5d094885c8ad8301a6016631ab"
+      }
+    },
+    {
+      "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+      "base": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "4488defa3a426c29a9e837790495faec25e30a3c"
+      },
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "74b972118ab907bf40196f9f6a9f4d7de780162b"
+      }
+    },
+    {
+      "path": "apps/web/src/features/tron/fixtures.testutil.ts",
+      "base": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "b90d124cd2c5543fa09304eabcd948e70a4e2659"
+      },
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "0843eafc6fabeccb6b1264407cd5dbc3d5c90470"
+      }
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+      "base": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "354f8adca9a850f83f31eefe3598c8c430b85cb9"
+      },
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "7cdb7bf627b2624005f1ba8e3d0ee8bc12e6df3c"
+      }
+    },
+    {
+      "path": "apps/web/src/views/Settings.exchange.test.tsx",
+      "base": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "bc1344d8bc56fba59d9f126646cf9505973f0601"
+      },
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "6094ae5931e43d72b3fad9ade002275afaace426"
+      }
+    },
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "base": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "d2ba2c3fad52dcda62d17251a27ef7b58529d758"
+      },
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "a8a84cbc9434abc27a3bc7a093ab3ad50cefbffe"
+      }
+    },
+    {
+      "path": "docs/consolidation/tron-integration-20261119/QUALIFICATION.md",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "55c4ed5c3ffdcbc2555cd027d1eefc0c150ef684"
+      }
+    },
+    {
+      "path": "docs/consolidation/tron-integration-20261119/evidence/build-input-copy.json",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "9ade3ddda96ca98edba2ace6f6099c69add88df7"
+      }
+    },
+    {
+      "path": "docs/consolidation/tron-integration-20261119/evidence/chain-red.log",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "2828a8d428053ff25d1b4351f9f03317d1faef80"
+      }
+    },
+    {
+      "path": "docs/consolidation/tron-integration-20261119/evidence/focused-green.log",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "c0ffe169ad93185c7e72a6e365d3900e21545e25"
+      }
+    },
+    {
+      "path": "docs/handoffs/scan-cancellation-20261119/REVIEW.md",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "2c34cc2ef75f63a9059ec61c1e67fd66a139584d"
+      }
+    },
+    {
+      "path": "docs/handoffs/scan-cancellation-20261119/evidence/baseline.txt",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "2ecc512b42a0fa9505dbd9758b587ac638efe21e"
+      }
+    },
+    {
+      "path": "docs/handoffs/scan-cancellation-20261119/evidence/focused-green.txt",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "7aa801f6049b02c00dfb07e496911b65ddf1ddb0"
+      }
+    },
+    {
+      "path": "docs/handoffs/scan-cancellation-20261119/evidence/source-sha256.json",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "884b41e7f00b7552005d439e8cd1e718b9af7514"
+      }
+    },
+    {
+      "path": "docs/handoffs/settings-exchange-20261119/REVIEW.md",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "3ee064e786f7e154c4e5006f78e405a3e03f8fd2"
+      }
+    },
+    {
+      "path": "docs/handoffs/settings-exchange-20261119/evidence/baseline.txt",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "f4a0c69d5a6823304cbff3aecaac4912cced7cf1"
+      }
+    },
+    {
+      "path": "docs/handoffs/settings-exchange-20261119/evidence/focused-green.txt",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "6e49b51b103508734ca227ef3c9e773ed2ec6179"
+      }
+    },
+    {
+      "path": "docs/handoffs/settings-exchange-20261119/evidence/source-sha256.json",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "c3e29689c0e4e747533c4669fcdb83fcde80ec7c"
+      }
+    },
+    {
+      "path": "docs/handoffs/tag-archive-idle-20261119/REVIEW.md",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "30d6db17c5f7f4b2073776a953f987dd034da588"
+      }
+    },
+    {
+      "path": "docs/handoffs/tag-archive-idle-20261119/SOURCE_AND_EVIDENCE.json",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "9b5caa147b7481467acd931c0c35eb7f1b1026ca"
+      }
+    },
+    {
+      "path": "docs/handoffs/tag-archive-idle-20261119/evidence/tag-archive-idle-green.log.gz",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "7322971d1c361c74118e3fd175a70ffe10c80c2d"
+      }
+    },
+    {
+      "path": "docs/handoffs/tag-archive-idle-20261119/evidence/tag-archive-idle-red.log.gz",
+      "base": null,
+      "reviewed": {
+        "mode": "100644",
+        "type": "blob",
+        "gitObject": "b35aa41a6f77e887bad01b08abe49dbc653d75af"
+      }
+    }
+  ],
+  "workerContributions": [
+    {
+      "name": "Settings exchange disclosure",
+      "worker": "privacy_completion",
+      "implementationCommit": "83bc4f52767d88e6896d986a29f6d3495e8c22c4",
+      "workerHead": "fed63bf0c3816e125afe77166857aff6298266da",
+      "mergeCommit": "dc8ff082123613bbf146d0214eac91a1ef53c747",
+      "paths": [
+        "apps/web/src/views/Settings.exchange.test.tsx"
+      ],
+      "claimHeading": "# Settings exchange disclosure assertion reconciliation \u2014 2026-11-19",
+      "testBlobs": [
+        {
+          "path": "apps/web/src/views/Settings.exchange.test.tsx",
+          "kind": "test",
+          "baseGitBlob": "bc1344d8bc56fba59d9f126646cf9505973f0601",
+          "implementationGitBlob": "6094ae5931e43d72b3fad9ade002275afaace426",
+          "workerHeadGitBlob": "6094ae5931e43d72b3fad9ade002275afaace426",
+          "integratedGitBlob": "6094ae5931e43d72b3fad9ade002275afaace426",
+          "integratedSha256": "56b755ad257993c3c6779409aeee25addc62a907c9f61e219fb40a8bf7cc189a",
+          "exactWorkerBlobPreserved": true,
+          "worktreeMatchesReviewedBlob": true
+        }
+      ],
+      "workerHeadIsMergeSecondParent": true
+    },
+    {
+      "name": "Scan cancellation sentinel",
+      "worker": "privacy_completion",
+      "implementationCommit": "9ae57de3ef8a432c1592ddfb496de8b0fd0a6fee",
+      "workerHead": "618a0fe4b5c62b1b67400cc23736c4f0ac839be9",
+      "mergeCommit": "ff7cef7cb5919f1193a3a15b71f2a8f428b3e767",
+      "paths": [
+        "apps/web/src/lib/scanPrivacy.authorization.test.ts"
+      ],
+      "claimHeading": "# Scan cancellation assertion reconciliation \u2014 2026-11-19",
+      "testBlobs": [
+        {
+          "path": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+          "kind": "test",
+          "baseGitBlob": "354f8adca9a850f83f31eefe3598c8c430b85cb9",
+          "implementationGitBlob": "7cdb7bf627b2624005f1ba8e3d0ee8bc12e6df3c",
+          "workerHeadGitBlob": "7cdb7bf627b2624005f1ba8e3d0ee8bc12e6df3c",
+          "integratedGitBlob": "7cdb7bf627b2624005f1ba8e3d0ee8bc12e6df3c",
+          "integratedSha256": "27ce74ac23b8b0544b075718ef5d3cbe609fbf6bdb0368bab634a9043b3e4394",
+          "exactWorkerBlobPreserved": true,
+          "worktreeMatchesReviewedBlob": true
+        }
+      ],
+      "workerHeadIsMergeSecondParent": true
+    },
+    {
+      "name": "TRON complete node fixture",
+      "worker": "branch_recon",
+      "implementationCommit": "5b85a0e542cb067d595de89c6b1a0c6445aec7aa",
+      "workerHead": "14775e840faf7e6f9e280845f54761f5ca342447",
+      "mergeCommit": "e0b10ec869d8935f428bef3e4211fe78796b10df",
+      "paths": [
+        "apps/web/src/features/tron/chain.hardening.test.ts",
+        "apps/web/src/features/tron/fixtures.testutil.ts"
+      ],
+      "claimHeading": "# TRON integration failure repair \u2014 2026-11-19 UTC (ACTIVE)",
+      "testBlobs": [
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "kind": "test",
+          "baseGitBlob": "4488defa3a426c29a9e837790495faec25e30a3c",
+          "implementationGitBlob": "74b972118ab907bf40196f9f6a9f4d7de780162b",
+          "workerHeadGitBlob": "74b972118ab907bf40196f9f6a9f4d7de780162b",
+          "integratedGitBlob": "74b972118ab907bf40196f9f6a9f4d7de780162b",
+          "integratedSha256": "f9ab7c72801e16cb55b41b84983f1c093b3027e1f6d574ce353dc74df22d68b2",
+          "exactWorkerBlobPreserved": true,
+          "worktreeMatchesReviewedBlob": true
+        },
+        {
+          "path": "apps/web/src/features/tron/fixtures.testutil.ts",
+          "kind": "shared-test-fixture",
+          "baseGitBlob": "b90d124cd2c5543fa09304eabcd948e70a4e2659",
+          "implementationGitBlob": "0843eafc6fabeccb6b1264407cd5dbc3d5c90470",
+          "workerHeadGitBlob": "0843eafc6fabeccb6b1264407cd5dbc3d5c90470",
+          "integratedGitBlob": "0843eafc6fabeccb6b1264407cd5dbc3d5c90470",
+          "integratedSha256": "318c5fcd894f67d894ea1b9e378598fb980d913e3fbb4ba5808a75d97d23cddc",
+          "exactWorkerBlobPreserved": true,
+          "worktreeMatchesReviewedBlob": true
+        }
+      ],
+      "workerHeadIsMergeSecondParent": true
+    },
+    {
+      "name": "Tag archive idle boundary",
+      "worker": "recovery_completion",
+      "implementationCommit": "7eb078e817fe76c1f22e84cbb1bb75be71090ccc",
+      "workerHead": "b9d77b033e3ca1397e9168282c73a439c897734b",
+      "mergeCommit": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+      "paths": [
+        "apps/web/src/components/TagArchive.test.tsx"
+      ],
+      "claimHeading": "# Tag archive idle regression reconciliation \u2014 2026-11-19",
+      "testBlobs": [
+        {
+          "path": "apps/web/src/components/TagArchive.test.tsx",
+          "kind": "test",
+          "baseGitBlob": "01beb3c0c5cf3142ad957a9e1209f15871062082",
+          "implementationGitBlob": "d5c0ec5f453dbc5d094885c8ad8301a6016631ab",
+          "workerHeadGitBlob": "d5c0ec5f453dbc5d094885c8ad8301a6016631ab",
+          "integratedGitBlob": "d5c0ec5f453dbc5d094885c8ad8301a6016631ab",
+          "integratedSha256": "27100043ccb339081537381a3b5dd8fbb083b2d704317127a2177d65666c122e",
+          "exactWorkerBlobPreserved": true,
+          "worktreeMatchesReviewedBlob": true
+        }
+      ],
+      "workerHeadIsMergeSecondParent": true
+    }
+  ],
+  "activeWorkRegistry": {
+    "baseSha256": "71b024e653cb569602cf8444269309e691ba1569ed5a3abe14ab1992cc03cd16",
+    "integratedSha256": "8654196c1d6e2ffdaa2722419b9c79602264d8724ab1bdcbc3afadc90c930edd",
+    "entireBaseTextPreservedVerbatim": true,
+    "baseHeadingCount": 87,
+    "integratedHeadingCount": 91,
+    "addedLines": 70,
+    "removedLines": 0,
+    "newClaimCount": 4,
+    "newClaims": [
+      {
+        "heading": "# Settings exchange disclosure assertion reconciliation \u2014 2026-11-19",
+        "workerHead": "fed63bf0c3816e125afe77166857aff6298266da",
+        "workerBlockSha256": "f2e9cd9f24140294ebe528f163368499b8d59a668f1f57d0db1566ff7822cdb1",
+        "integratedBlockSha256": "f2e9cd9f24140294ebe528f163368499b8d59a668f1f57d0db1566ff7822cdb1",
+        "workerClaimContentPreserved": true,
+        "comparison": "Exact section content, ignoring boundary blank lines only."
+      },
+      {
+        "heading": "# Scan cancellation assertion reconciliation \u2014 2026-11-19",
+        "workerHead": "618a0fe4b5c62b1b67400cc23736c4f0ac839be9",
+        "workerBlockSha256": "b5361d52626289c175acee268522bcf41089bd43470b671a67a8b47261e45f92",
+        "integratedBlockSha256": "b5361d52626289c175acee268522bcf41089bd43470b671a67a8b47261e45f92",
+        "workerClaimContentPreserved": true,
+        "comparison": "Exact section content, ignoring boundary blank lines only."
+      },
+      {
+        "heading": "# TRON integration failure repair \u2014 2026-11-19 UTC (ACTIVE)",
+        "workerHead": "14775e840faf7e6f9e280845f54761f5ca342447",
+        "workerBlockSha256": "508a260540ee1f54b6ed3c33b207895f141561bfa0d02fdc569141fd77119862",
+        "integratedBlockSha256": "508a260540ee1f54b6ed3c33b207895f141561bfa0d02fdc569141fd77119862",
+        "workerClaimContentPreserved": true,
+        "comparison": "Exact section content, ignoring boundary blank lines only."
+      },
+      {
+        "heading": "# Tag archive idle regression reconciliation \u2014 2026-11-19",
+        "workerHead": "b9d77b033e3ca1397e9168282c73a439c897734b",
+        "workerBlockSha256": "8d19695a76e3fba50aca22f628463aeba80a16cb77d88325e32b333275e38029",
+        "integratedBlockSha256": "8d19695a76e3fba50aca22f628463aeba80a16cb77d88325e32b333275e38029",
+        "workerClaimContentPreserved": true,
+        "comparison": "Exact section content, ignoring boundary blank lines only."
+      }
+    ]
+  },
+  "configurationChecks": [
+    {
+      "path": "package.json",
+      "baseGitBlob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "reviewedGitBlob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "baseGitBlob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "reviewedGitBlob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "unchanged": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "baseGitBlob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "reviewedGitBlob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "unchanged": true
+    },
+    {
+      "path": "eslint.config.js",
+      "baseGitBlob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "reviewedGitBlob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/package.json",
+      "baseGitBlob": "a61b1551353e02de0bc2e2775d1e45cec1cd72fd",
+      "reviewedGitBlob": "a61b1551353e02de0bc2e2775d1e45cec1cd72fd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "baseGitBlob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "reviewedGitBlob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "baseGitBlob": "6500e86eb5839bfa98d0193c88615e7a3c13039d",
+      "reviewedGitBlob": "6500e86eb5839bfa98d0193c88615e7a3c13039d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/vitest.nocov.config.ts",
+      "baseGitBlob": "294c480e9bb915656cd8f525110d9f18b60727e0",
+      "reviewedGitBlob": "294c480e9bb915656cd8f525110d9f18b60727e0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "baseGitBlob": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31",
+      "reviewedGitBlob": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/index.html",
+      "baseGitBlob": "15804d1deb7013314f68d359e4ef9ab04dbbbc1e",
+      "reviewedGitBlob": "15804d1deb7013314f68d359e4ef9ab04dbbbc1e",
+      "unchanged": true
+    }
+  ],
+  "unchangedSourceAndBuildScopes": [
+    {
+      "path": "apps/web/scripts",
+      "baseTree": "aa4f13834f795b56ab80dd1656468fe85d92c736",
+      "reviewedTree": "aa4f13834f795b56ab80dd1656468fe85d92c736",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/locales",
+      "baseTree": "6dca4935168044ace30d6ebda307a7c5c64df7c3",
+      "reviewedTree": "6dca4935168044ace30d6ebda307a7c5c64df7c3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/public",
+      "baseTree": "f4827e59be82f7906cd71e63630466b298ba8d7d",
+      "reviewedTree": "f4827e59be82f7906cd71e63630466b298ba8d7d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/deployments",
+      "baseTree": "cb063e0872cf1cd01f07c73cf9fb15e45490cde9",
+      "reviewedTree": "cb063e0872cf1cd01f07c73cf9fb15e45490cde9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/e2e",
+      "baseTree": "f66cbe0de82da3228212d1a68c7047dbdaf44d05",
+      "reviewedTree": "f66cbe0de82da3228212d1a68c7047dbdaf44d05",
+      "unchanged": true
+    },
+    {
+      "path": "scripts",
+      "baseTree": "0964d7c2a451034b89b4c09115176825a744746b",
+      "reviewedTree": "0964d7c2a451034b89b4c09115176825a744746b",
+      "unchanged": true
+    },
+    {
+      "path": ".github",
+      "baseTree": "77fcd55b47efc1a65364c0d9cfd9b3a430edd7ee",
+      "reviewedTree": "77fcd55b47efc1a65364c0d9cfd9b3a430edd7ee",
+      "unchanged": true
+    },
+    {
+      "path": "packages",
+      "baseTree": "bdeee4fbc4739f452cef8b97733ba0c521c9ce58",
+      "reviewedTree": "bdeee4fbc4739f452cef8b97733ba0c521c9ce58",
+      "unchanged": true
+    }
+  ],
+  "runtimePackages": [
+    {
+      "package": "@ghostpay/address-safety",
+      "path": "packages/address-safety",
+      "baseTree": "5ba0c53c1a3a1576125e0e743f54987153594b07",
+      "reviewedTree": "5ba0c53c1a3a1576125e0e743f54987153594b07",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 6,
+      "recordedDistInputsSha256": "f4fa99aa1d0e0f6bae535ef0df03d4ac682c5075224b2500f005ed7afbb4d165",
+      "currentDistInputsSha256": "f4fa99aa1d0e0f6bae535ef0df03d4ac682c5075224b2500f005ed7afbb4d165",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/btc-silent-payments",
+      "path": "packages/btc-silent-payments",
+      "baseTree": "66d641d5a7f9b024858ec659b1582bad7c344fdc",
+      "reviewedTree": "66d641d5a7f9b024858ec659b1582bad7c344fdc",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 34,
+      "recordedDistInputsSha256": "e090901e590ac3cc1d8d8edc0befb38fd4d27c42b66d6c564bfc066bfe5f01eb",
+      "currentDistInputsSha256": "e090901e590ac3cc1d8d8edc0befb38fd4d27c42b66d6c564bfc066bfe5f01eb",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/chain-adapters",
+      "path": "packages/chain-adapters",
+      "baseTree": "888a615f8a6b1a1c0736ae08bf6edca069099859",
+      "reviewedTree": "888a615f8a6b1a1c0736ae08bf6edca069099859",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 31,
+      "recordedDistInputsSha256": "e1fbc9c29c8bfacb54eb47c3c5ebc4bcd8da01eee50a3cb63664ca7fbcbaebe6",
+      "currentDistInputsSha256": "e1fbc9c29c8bfacb54eb47c3c5ebc4bcd8da01eee50a3cb63664ca7fbcbaebe6",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/core-crypto",
+      "path": "packages/core-crypto",
+      "baseTree": "d50ffb1e8afe32101c27f08e40c6cd1c67264a84",
+      "reviewedTree": "d50ffb1e8afe32101c27f08e40c6cd1c67264a84",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 8,
+      "recordedDistInputsSha256": "b73d704e725da53dcb94f5250c6f2321ef2a653afdf27920f15e0f01b91ce29b",
+      "currentDistInputsSha256": "b73d704e725da53dcb94f5250c6f2321ef2a653afdf27920f15e0f01b91ce29b",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/hygiene",
+      "path": "packages/hygiene",
+      "baseTree": "f29d07964ffc2976e3b9fb51ed6e48ebff1c839f",
+      "reviewedTree": "f29d07964ffc2976e3b9fb51ed6e48ebff1c839f",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 12,
+      "recordedDistInputsSha256": "cce1a4f65824c21e25fe9c42ed5425ca3d57c9c5628c89a558f74204e21eb93a",
+      "currentDistInputsSha256": "cce1a4f65824c21e25fe9c42ed5425ca3d57c9c5628c89a558f74204e21eb93a",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/invoice-schema",
+      "path": "packages/invoice-schema",
+      "baseTree": "212c7d8c70878e260ae1abbdcbb10c869f83669f",
+      "reviewedTree": "212c7d8c70878e260ae1abbdcbb10c869f83669f",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 11,
+      "recordedDistInputsSha256": "83b7fb701f1bf13f27f9b224c263c9f5fc2479f38f255ccf243f7f20532bde7f",
+      "currentDistInputsSha256": "83b7fb701f1bf13f27f9b224c263c9f5fc2479f38f255ccf243f7f20532bde7f",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/metadata-hardening",
+      "path": "packages/metadata-hardening",
+      "baseTree": "2236feb35194b6a060bf808f5bd5cb139b94d5e4",
+      "reviewedTree": "2236feb35194b6a060bf808f5bd5cb139b94d5e4",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 13,
+      "recordedDistInputsSha256": "b3dbdff7e93347b13995cf78164edabdae0b546635d1b7a896a4510b69d731ee",
+      "currentDistInputsSha256": "b3dbdff7e93347b13995cf78164edabdae0b546635d1b7a896a4510b69d731ee",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/net-transport",
+      "path": "packages/net-transport",
+      "baseTree": "51efb5fdfdb0352c7ee5fcb32460123b73ca57c3",
+      "reviewedTree": "51efb5fdfdb0352c7ee5fcb32460123b73ca57c3",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 21,
+      "recordedDistInputsSha256": "a94d7b63b7542764f111e291a3afd4470f4a76d25953dc11bff57b2a39a2c69a",
+      "currentDistInputsSha256": "a94d7b63b7542764f111e291a3afd4470f4a76d25953dc11bff57b2a39a2c69a",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/payment-uri",
+      "path": "packages/payment-uri",
+      "baseTree": "55c27a9fac61782febee14c1bdd647d64c4cf076",
+      "reviewedTree": "55c27a9fac61782febee14c1bdd647d64c4cf076",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 14,
+      "recordedDistInputsSha256": "5eafb45d67bee6dfeeb5dbba56f012dcb115fc8c4f6d21511ccbbc06bb88aea4",
+      "currentDistInputsSha256": "5eafb45d67bee6dfeeb5dbba56f012dcb115fc8c4f6d21511ccbbc06bb88aea4",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/policy-scheme",
+      "path": "packages/policy-scheme",
+      "baseTree": "a450484e21d8ca858dddd30801f1fbc2132472c2",
+      "reviewedTree": "a450484e21d8ca858dddd30801f1fbc2132472c2",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 15,
+      "recordedDistInputsSha256": "df9317c7fb8d6211294070d9fb0e83123e22ad5c5cd8334e53fadd89e7ec9673",
+      "currentDistInputsSha256": "df9317c7fb8d6211294070d9fb0e83123e22ad5c5cd8334e53fadd89e7ec9673",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/qr-exchange",
+      "path": "packages/qr-exchange",
+      "baseTree": "785fa9383652d8059eb83c3e605ab4f2de70452f",
+      "reviewedTree": "785fa9383652d8059eb83c3e605ab4f2de70452f",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 10,
+      "recordedDistInputsSha256": "f00647e28386530ada182d5133f2e44b05aaa5957aa90336df57c700e317d929",
+      "currentDistInputsSha256": "f00647e28386530ada182d5133f2e44b05aaa5957aa90336df57c700e317d929",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/scan-source",
+      "path": "packages/scan-source",
+      "baseTree": "c254e30dfc95920fa8ea0878bf6357b2977e105e",
+      "reviewedTree": "c254e30dfc95920fa8ea0878bf6357b2977e105e",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 15,
+      "recordedDistInputsSha256": "d1de1c98b6191e568bd150023d9267807ef36017f0692755cf2f6763595c07c9",
+      "currentDistInputsSha256": "d1de1c98b6191e568bd150023d9267807ef36017f0692755cf2f6763595c07c9",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/secret-box",
+      "path": "packages/secret-box",
+      "baseTree": "d60343b97bc6d852d14806dd694e83e30ee15d9b",
+      "reviewedTree": "d60343b97bc6d852d14806dd694e83e30ee15d9b",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 3,
+      "recordedDistInputsSha256": "dea0105241e3e48886ddb436c30cc1f31e61c9cd34697898b4a395c7e1961903",
+      "currentDistInputsSha256": "dea0105241e3e48886ddb436c30cc1f31e61c9cd34697898b4a395c7e1961903",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/solana-stealth",
+      "path": "packages/solana-stealth",
+      "baseTree": "0a606970a17fcce7b29df4840faade1d75a912d3",
+      "reviewedTree": "0a606970a17fcce7b29df4840faade1d75a912d3",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 15,
+      "recordedDistInputsSha256": "2ba1bf5afb0e9da481837bfcc57cd4088836e6d67393dafdaa12fcfa6587048c",
+      "currentDistInputsSha256": "2ba1bf5afb0e9da481837bfcc57cd4088836e6d67393dafdaa12fcfa6587048c",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/tron-adapter",
+      "path": "packages/tron-adapter",
+      "baseTree": "1e569801c9d71138edeac57cd39b02aece79c349",
+      "reviewedTree": "1e569801c9d71138edeac57cd39b02aece79c349",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 10,
+      "recordedDistInputsSha256": "b8cf396ad471059122a6dbf3a289813899dda45f8f06576cbe41a64bc78f915d",
+      "currentDistInputsSha256": "b8cf396ad471059122a6dbf3a289813899dda45f8f06576cbe41a64bc78f915d",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/tx-review",
+      "path": "packages/tx-review",
+      "baseTree": "669528afe5d104e0c6e400d61083fa51b21c6a5e",
+      "reviewedTree": "669528afe5d104e0c6e400d61083fa51b21c6a5e",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 5,
+      "recordedDistInputsSha256": "0daa5487eae1588bae38490c279f39315cdeffe48e949fa978895c09eaf9def3",
+      "currentDistInputsSha256": "0daa5487eae1588bae38490c279f39315cdeffe48e949fa978895c09eaf9def3",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/ux-vault",
+      "path": "packages/ux-vault",
+      "baseTree": "c39fa17985fcff4d060c9c416a7d287706485c39",
+      "reviewedTree": "c39fa17985fcff4d060c9c416a7d287706485c39",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 19,
+      "recordedDistInputsSha256": "758ec19fd6740bc7616ffd5dd893671445694db154e8b52eb3234a5652b1fe9f",
+      "currentDistInputsSha256": "758ec19fd6740bc7616ffd5dd893671445694db154e8b52eb3234a5652b1fe9f",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    },
+    {
+      "package": "@ghostpay/pir-two-server",
+      "path": "packages/pir-two-server",
+      "baseTree": "d83018a4b74733606eafb2689e3dacff025246e8",
+      "reviewedTree": "d83018a4b74733606eafb2689e3dacff025246e8",
+      "entirePackageTrackedTreeUnchanged": true,
+      "runtimeJavaScriptFiles": 12,
+      "recordedDistInputsSha256": "fe3a1acd15db949f8912a6f91ec8222c889242c728755a77a334d79ad914df89",
+      "currentDistInputsSha256": "fe3a1acd15db949f8912a6f91ec8222c889242c728755a77a334d79ad914df89",
+      "distBytesUnchangedSinceVerifiedSourceComparison": true,
+      "sourceMatchedJavaScriptAtBase": true
+    }
+  ],
+  "sharedFixtureImporters": [
+    {
+      "path": "apps/web/src/features/chainViews.i18n.test.tsx",
+      "specifier": "./tron/fixtures.testutil",
+      "testOnly": true
+    },
+    {
+      "path": "apps/web/src/features/tron/TronView.lock.test.tsx",
+      "specifier": "./fixtures.testutil",
+      "testOnly": true
+    },
+    {
+      "path": "apps/web/src/features/tron/TronView.privacy.test.tsx",
+      "specifier": "./fixtures.testutil",
+      "testOnly": true
+    },
+    {
+      "path": "apps/web/src/features/tron/TronView.test.tsx",
+      "specifier": "./fixtures.testutil",
+      "testOnly": true
+    },
+    {
+      "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+      "specifier": "./fixtures.testutil",
+      "testOnly": true
+    }
+  ],
+  "workingTree": {
+    "trackedPendingDocumentationPaths": [
+      "docs/consolidation/feature-completion-20261119/FEATURE_MATRIX.md"
+    ],
+    "nonDocumentationTrackedOrUntrackedChanges": []
+  },
+  "artifactEvidence": {
+    "buildInfoCommit": "e76451ad56ba1634eed9d03468961900433fd130",
+    "buildInfoSha256": "53bf8e4a638f9d6bde4e03a1de6d7fb6db2b5b82d8590b7de89ed0ba63c09fdb",
+    "profiles": [
+      {
+        "profile": "full",
+        "manifestPath": "docs/consolidation/feature-completion-20261119/evidence/full-artifact-manifest.json",
+        "manifestSha256": "b4ffb8c3a3eec7cfe77155784ea0c9d64d9ed871e7ccc088752bca36ea67872f",
+        "manifestSource": "e76451ad56ba1634eed9d03468961900433fd130",
+        "manifestFileCount": 19,
+        "manifestSourceMatchesBase": true,
+        "recordedBuildInfoSha256": "53bf8e4a638f9d6bde4e03a1de6d7fb6db2b5b82d8590b7de89ed0ba63c09fdb",
+        "recordedBuildInfoMatchesRetainedMetadata": true,
+        "runtimeSourceEquivalentAtReviewedHead": true,
+        "newBuildAtReviewedHead": false,
+        "verificationScope": "Retained full artifact manifest and matching build-info hash; the live dist directory contains lean output, so this review did not rehash all full-profile binary files."
+      },
+      {
+        "profile": "lean",
+        "manifestPath": "docs/consolidation/feature-completion-20261119/evidence/lean-artifact-manifest.json",
+        "manifestSha256": "ae68b5b733bb3d154dff8daf322c7a2be15a488ef55beba91c8f294045278c8d",
+        "manifestSource": "e76451ad56ba1634eed9d03468961900433fd130",
+        "manifestFileCount": 17,
+        "manifestSourceMatchesBase": true,
+        "recordedBuildInfoSha256": "53bf8e4a638f9d6bde4e03a1de6d7fb6db2b5b82d8590b7de89ed0ba63c09fdb",
+        "recordedBuildInfoMatchesRetainedMetadata": true,
+        "runtimeSourceEquivalentAtReviewedHead": true,
+        "newBuildAtReviewedHead": false,
+        "retainedArtifactPath": "apps/web/dist",
+        "allRetainedArtifactBytesMatchManifest": true,
+        "mismatchedFiles": [],
+        "unexpectedFiles": [],
+        "missingFiles": []
+      }
+    ],
+    "interpretation": "The prior full/lean artifacts remain runtime evidence for byte-identical production and package inputs at the reviewed commit. GP_COMMIT and retained build metadata identify the base commit e764, not the reviewed commit74e311. This is source-equivalence evidence, not a new build at74e311. Changed test sources still require their own type/lint/test qualification; this audit does not transfer the base full-test, coverage or build-gate result to the reviewed head."
+  }
+}

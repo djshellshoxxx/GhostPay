@@ -1,0 +1,147 @@
+{
+  "current_input_identity_verified": true,
+  "current_input_verification_error": null,
+  "error_count": null,
+  "exact_complete_file_union": false,
+  "expected_files": 497,
+  "expected_partitions": 21,
+  "known_counts": {},
+  "manifest_sha256": "2a31fbf503a8b6ba9149dfb6477d65606cfaa6a3b5caaf6268699881cf31d8a9",
+  "partitions": [
+    {
+      "id": 1,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-001/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 2,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-002/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 3,
+      "reason": "Blocked: Attempt originally failed input/JSON validation",
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/receipt.json",
+      "resource_usage": {
+        "block_inputs": 15508712,
+        "block_outputs": 16,
+        "involuntary_context_switches": 48274,
+        "major_page_faults": 2411,
+        "max_rss_kib": 404932,
+        "minor_page_faults": 115185,
+        "rss_scope": "this child; Linux wait4 ru_maxrss",
+        "system_seconds": 28.951536,
+        "user_seconds": 12.36965,
+        "voluntary_context_switches": 14436
+      },
+      "result_json": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/eslint.json",
+      "returncode": -9,
+      "shell_exit_code": 137,
+      "status": "BLOCKED_RECEIPT",
+      "stderr": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/stderr.txt",
+      "stdout": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-003/stdout.txt"
+    },
+    {
+      "id": 4,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-004/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 5,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-005/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 6,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-006/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 7,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-007/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 8,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-008/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 9,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-009/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 10,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-010/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 11,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-011/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 12,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-012/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 13,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-013/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 14,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-014/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 15,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-015/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 16,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-016/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 17,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-017/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 18,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-018/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 19,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-019/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 20,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-020/receipt.json",
+      "status": "UNEXECUTED"
+    },
+    {
+      "id": 21,
+      "receipt": "/workspace/scratch/13855ecc035c/web-lint-partitions/partition-021/receipt.json",
+      "status": "UNEXECUTED"
+    }
+  ],
+  "prior_monolithic_command_exit_code": 137,
+  "prior_monolithic_log": {
+    "bytes": 875,
+    "path": "/workspace/scratch/13855ecc035c/GhostPay/docs/consolidation/feature-completion-20261119/evidence/final-serial-web-lint.txt",
+    "sha256": "06b8f674561c1c89c32080d86de079adec6b09b00819261ec94e43ad63ae32d9"
+  },
+  "processed_files": 0,
+  "qualification": "BLOCKED_OR_FAILED",
+  "source_head": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+  "successful_files": 0,
+  "updated_at": "2026-11-19T10:20:29.716100+00:00",
+  "warning_count": null
+}

@@ -35,6 +35,8 @@ COPY --from=build --chown=nonroot:nonroot /repo/packages/core-crypto/package.jso
 COPY --from=build --chown=nonroot:nonroot /repo/packages/core-crypto/dist /repo/packages/core-crypto/dist
 COPY --from=build --chown=nonroot:nonroot /repo/packages/invoice-schema/package.json /repo/packages/invoice-schema/package.json
 COPY --from=build --chown=nonroot:nonroot /repo/packages/invoice-schema/dist /repo/packages/invoice-schema/dist
+COPY --from=build --chown=nonroot:nonroot /repo/packages/metadata-hardening/package.json /repo/packages/metadata-hardening/package.json
+COPY --from=build --chown=nonroot:nonroot /repo/packages/metadata-hardening/dist /repo/packages/metadata-hardening/dist
 COPY --from=build --chown=nonroot:nonroot /repo/apps/relayer/package.json /repo/apps/relayer/package.json
 COPY --from=build --chown=nonroot:nonroot /repo/apps/relayer/dist /repo/apps/relayer/dist
 # Writable by the runtime uid (65532); a named volume mounted here inherits this ownership.

@@ -1,0 +1,1077 @@
+{
+  "pr": 242,
+  "head": "ab4e0da2cfe2a18adac0424896fba0b40fac81a8",
+  "merged_main": "e454de6abfefda70d82784fafc1d8949b277c334",
+  "note": "Actual job log excerpts. Counts describe recorded suite executions; repeated OS, smoke, coverage and package jobs must not be summed as unique tests. Applies to focused PR242 only, not later combined candidates.",
+  "jobs": [
+    {
+      "id": 135382243526,
+      "name": "ts-test (web)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243526",
+      "summaries": [
+        {
+          "line": 2379,
+          "text": "Test Files  200 passed | 1 skipped (201)"
+        },
+        {
+          "line": 2380,
+          "text": "Tests  2796 passed | 1 skipped (2797)"
+        },
+        {
+          "line": 2567,
+          "text": "Test Files  3 passed (3)"
+        },
+        {
+          "line": 2568,
+          "text": "Tests  3 passed (3)"
+        }
+      ],
+      "tool_metadata": {},
+      "log_file": "pr242-logs/135382243526.log",
+      "log_bytes": 264397,
+      "log_sha256": "f617ebe3fb35ccf4aef33fb677cc92071b8da33dce35c07fc8d834bd289b65e4"
+    },
+    {
+      "id": 135382243475,
+      "name": "ts-test (core-crypto)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243475",
+      "summaries": [
+        {
+          "line": 366,
+          "text": "Test Files  9 passed (9)"
+        },
+        {
+          "line": 367,
+          "text": "Tests  75 passed (75)"
+        }
+      ],
+      "tool_metadata": {},
+      "log_file": "pr242-logs/135382243475.log",
+      "log_bytes": 35347,
+      "log_sha256": "d1ca4c2636c63ac706cc4d8354911d594ffc7281b6899571d469dc6d343ab452"
+    },
+    {
+      "id": 135382243535,
+      "name": "ts-test (btc-silent-payments)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243535",
+      "summaries": [
+        {
+          "line": 401,
+          "text": "Test Files  32 passed (32)"
+        },
+        {
+          "line": 402,
+          "text": "Tests  559 passed (559)"
+        }
+      ],
+      "tool_metadata": {},
+      "log_file": "pr242-logs/135382243535.log",
+      "log_bytes": 42853,
+      "log_sha256": "14498b27569c49b84d805b4ecdfce6731db84b74255c395f419149932eaa87bd"
+    },
+    {
+      "id": 135382243470,
+      "name": "ts-test (confidential-contracts)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243470",
+      "summaries": [
+        {
+          "line": 413,
+          "text": "46 passing (2m)"
+        }
+      ],
+      "tool_metadata": {},
+      "log_file": "pr242-logs/135382243470.log",
+      "log_bytes": 38695,
+      "log_sha256": "132e69b3384df5b1801f605c49b4ef31aa04a7518c077ca3690dcb94ecd15da5"
+    },
+    {
+      "id": 135382243277,
+      "name": "ts-test-relayer",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243277",
+      "summaries": [
+        {
+          "line": 469,
+          "text": "Test Files  18 passed (18)"
+        },
+        {
+          "line": 470,
+          "text": "Tests  475 passed (475)"
+        }
+      ],
+      "tool_metadata": {},
+      "log_file": "pr242-logs/135382243277.log",
+      "log_bytes": 49120,
+      "log_sha256": "2beaa5df9fdacfea9cf69442d9158e61a35e5b19c43dfd1d319a59406790c006"
+    },
+    {
+      "id": 135382243359,
+      "name": "contracts-test",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243359",
+      "summaries": [
+        {
+          "line": 1131,
+          "text": "Ran 34 test suites in 47.75s (195.38s CPU time): 490 tests passed, 0 failed, 0 skipped (490 total tests)"
+        }
+      ],
+      "tool_metadata": {},
+      "log_file": "pr242-logs/135382243359.log",
+      "log_bytes": 112200,
+      "log_sha256": "28056b1644760eea7ec84f24a4bf4164b17282a91f4eb0c6981f4641128f8a67"
+    },
+    {
+      "id": 135382243479,
+      "name": "ts-test (rest-0)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243479",
+      "summaries": [
+        {
+          "line": 776,
+          "scope": "> @ghostpay/policy-scheme@0.1.0 test",
+          "text": "Test Files  6 passed (6)"
+        },
+        {
+          "line": 777,
+          "scope": "> @ghostpay/policy-scheme@0.1.0 test",
+          "text": "Tests  95 passed (95)"
+        },
+        {
+          "line": 811,
+          "scope": "> @ghostpay/address-safety@0.1.0 test",
+          "text": "Test Files  4 passed (4)"
+        },
+        {
+          "line": 812,
+          "scope": "> @ghostpay/address-safety@0.1.0 test",
+          "text": "Tests  76 passed (76)"
+        },
+        {
+          "line": 848,
+          "scope": "> @ghostpay/btc-payjoin@0.1.0 test",
+          "text": "Test Files  10 passed (10)"
+        },
+        {
+          "line": 849,
+          "scope": "> @ghostpay/btc-payjoin@0.1.0 test",
+          "text": "Tests  158 passed (158)"
+        },
+        {
+          "line": 912,
+          "scope": "> @ghostpay/chain-solana@0.1.0 test",
+          "text": "Test Files  10 passed (10)"
+        },
+        {
+          "line": 913,
+          "scope": "> @ghostpay/chain-solana@0.1.0 test",
+          "text": "Tests  97 passed (97)"
+        },
+        {
+          "line": 951,
+          "scope": "> @ghostpay/confidential-amounts@0.1.0 test",
+          "text": "Test Files  7 passed (7)"
+        },
+        {
+          "line": 952,
+          "scope": "> @ghostpay/confidential-amounts@0.1.0 test",
+          "text": "Tests  88 passed (88)"
+        },
+        {
+          "line": 1001,
+          "scope": "> @ghostpay/external-pools-privacypools@0.1.0 test",
+          "text": "Test Files  7 passed | 1 skipped (8)"
+        },
+        {
+          "line": 1002,
+          "scope": "> @ghostpay/external-pools-privacypools@0.1.0 test",
+          "text": "Tests  73 passed | 4 skipped (77)"
+        },
+        {
+          "line": 1035,
+          "scope": "> @ghostpay/hygiene@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1036,
+          "scope": "> @ghostpay/hygiene@0.1.0 test",
+          "text": "Tests  142 passed (142)"
+        },
+        {
+          "line": 1076,
+          "scope": "> @ghostpay/merchant-billing@0.1.0 test",
+          "text": "Test Files  10 passed (10)"
+        },
+        {
+          "line": 1077,
+          "scope": "> @ghostpay/merchant-billing@0.1.0 test",
+          "text": "Tests  275 passed (275)"
+        },
+        {
+          "line": 1115,
+          "scope": "> @ghostpay/merchant-multisig@0.1.0 test",
+          "text": "Test Files  6 passed (6)"
+        },
+        {
+          "line": 1116,
+          "scope": "> @ghostpay/merchant-multisig@0.1.0 test",
+          "text": "Tests  92 passed (92)"
+        },
+        {
+          "line": 1165,
+          "scope": "> @ghostpay/net-transport@0.1.0 test",
+          "text": "Test Files  6 passed (6)"
+        },
+        {
+          "line": 1166,
+          "scope": "> @ghostpay/net-transport@0.1.0 test",
+          "text": "Tests  193 passed (193)"
+        },
+        {
+          "line": 1207,
+          "scope": "> @ghostpay/payment-uri@0.1.0 test",
+          "text": "Test Files  3 passed (3)"
+        },
+        {
+          "line": 1208,
+          "scope": "> @ghostpay/payment-uri@0.1.0 test",
+          "text": "Tests  199 passed (199)"
+        },
+        {
+          "line": 1255,
+          "scope": "> @ghostpay/pool-relayer@0.1.0 test",
+          "text": "Test Files  5 passed | 2 skipped (7)"
+        },
+        {
+          "line": 1256,
+          "scope": "> @ghostpay/pool-relayer@0.1.0 test",
+          "text": "Tests  43 passed | 9 skipped (52)"
+        },
+        {
+          "line": 1296,
+          "scope": "> @ghostpay/privacy-profiles@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1297,
+          "scope": "> @ghostpay/privacy-profiles@0.1.0 test",
+          "text": "Tests  176 passed (176)"
+        },
+        {
+          "line": 1336,
+          "scope": "> @ghostpay/sandbox@0.1.0 test",
+          "text": "Test Files  9 passed (9)"
+        },
+        {
+          "line": 1337,
+          "scope": "> @ghostpay/sandbox@0.1.0 test",
+          "text": "Tests  95 passed (95)"
+        },
+        {
+          "line": 1372,
+          "scope": "> @ghostpay/secret-box@0.1.0 test",
+          "text": "Test Files  3 passed (3)"
+        },
+        {
+          "line": 1373,
+          "scope": "> @ghostpay/secret-box@0.1.0 test",
+          "text": "Tests  47 passed (47)"
+        },
+        {
+          "line": 1401,
+          "scope": "> @ghostpay/tx-review@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1402,
+          "scope": "> @ghostpay/tx-review@0.1.0 test",
+          "text": "Tests  160 passed (160)"
+        },
+        {
+          "line": 1433,
+          "scope": "> @ghostpay/ux-export@0.1.0 test",
+          "text": "Test Files  6 passed (6)"
+        },
+        {
+          "line": 1434,
+          "scope": "> @ghostpay/ux-export@0.1.0 test",
+          "text": "Tests  134 passed (134)"
+        },
+        {
+          "line": 1467,
+          "scope": "> @ghostpay/ux-flow@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1468,
+          "scope": "> @ghostpay/ux-flow@0.1.0 test",
+          "text": "Tests  91 passed (91)"
+        },
+        {
+          "line": 1502,
+          "scope": "> @ghostpay/ux-intake@0.1.0 test",
+          "text": "Test Files  6 passed (6)"
+        },
+        {
+          "line": 1503,
+          "scope": "> @ghostpay/ux-intake@0.1.0 test",
+          "text": "Tests  77 passed (77)"
+        },
+        {
+          "line": 1535,
+          "scope": "> @ghostpay/ux-presets@0.1.0 test",
+          "text": "Test Files  4 passed (4)"
+        },
+        {
+          "line": 1536,
+          "scope": "> @ghostpay/ux-presets@0.1.0 test",
+          "text": "Tests  57 passed (57)"
+        },
+        {
+          "line": 1561,
+          "scope": "> @ghostpay/ux-sandbox@0.1.0 test",
+          "text": "Test Files  1 passed (1)"
+        },
+        {
+          "line": 1562,
+          "scope": "> @ghostpay/ux-sandbox@0.1.0 test",
+          "text": "Tests  2 passed (2)"
+        },
+        {
+          "line": 2992,
+          "scope": "Repository Node script suite after workspace tests",
+          "text": "# tests 236"
+        },
+        {
+          "line": 2994,
+          "scope": "Repository Node script suite after workspace tests",
+          "text": "# pass 236"
+        },
+        {
+          "line": 2995,
+          "scope": "Repository Node script suite after workspace tests",
+          "text": "# fail 0"
+        },
+        {
+          "line": 2997,
+          "scope": "Repository Node script suite after workspace tests",
+          "text": "# skipped 0"
+        }
+      ],
+      "log_file": "pr242-logs/135382243479.log",
+      "log_bytes": 224004,
+      "log_sha256": "2e0bbdfb25eddfd73f10fccbd6bb145ac067cda99b9e4d54547bbffc25c89e45"
+    },
+    {
+      "id": 135382243544,
+      "name": "ts-test (rest-1)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243544",
+      "summaries": [
+        {
+          "line": 493,
+          "scope": "> @ghostpay/chain-adapters@0.1.0 test",
+          "text": "Test Files  26 passed (26)"
+        },
+        {
+          "line": 494,
+          "scope": "> @ghostpay/chain-adapters@0.1.0 test",
+          "text": "Tests  573 passed (573)"
+        },
+        {
+          "line": 557,
+          "scope": "> @ghostpay/amount-blur@0.1.0 test",
+          "text": "Test Files  8 passed (8)"
+        },
+        {
+          "line": 558,
+          "scope": "> @ghostpay/amount-blur@0.1.0 test",
+          "text": "Tests  96 passed (96)"
+        },
+        {
+          "line": 593,
+          "scope": "> @ghostpay/chain-tron@0.1.0 test",
+          "text": "Test Files  4 passed (4)"
+        },
+        {
+          "line": 594,
+          "scope": "> @ghostpay/chain-tron@0.1.0 test",
+          "text": "Tests  42 passed (42)"
+        },
+        {
+          "line": 624,
+          "scope": "> @ghostpay/donation@0.1.0 test",
+          "text": "Test Files  6 passed (6)"
+        },
+        {
+          "line": 625,
+          "scope": "> @ghostpay/donation@0.1.0 test",
+          "text": "Tests  68 passed (68)"
+        },
+        {
+          "line": 657,
+          "scope": "> @ghostpay/external-pools-railgun@0.1.0 test",
+          "text": "Test Files  3 passed | 1 skipped (4)"
+        },
+        {
+          "line": 658,
+          "scope": "> @ghostpay/external-pools-railgun@0.1.0 test",
+          "text": "Tests  20 passed | 1 skipped (21)"
+        },
+        {
+          "line": 693,
+          "scope": "> @ghostpay/i18n@0.1.0 test",
+          "text": "Test Files  12 passed (12)"
+        },
+        {
+          "line": 694,
+          "scope": "> @ghostpay/i18n@0.1.0 test",
+          "text": "Tests  215 passed (215)"
+        },
+        {
+          "line": 746,
+          "scope": "> @ghostpay/merchant-hooks@0.1.0 test",
+          "text": "Test Files  2 passed (2)"
+        },
+        {
+          "line": 747,
+          "scope": "> @ghostpay/merchant-hooks@0.1.0 test",
+          "text": "Tests  35 passed (35)"
+        },
+        {
+          "line": 784,
+          "scope": "> @ghostpay/metadata-hardening@0.1.0 test",
+          "text": "Test Files  10 passed (10)"
+        },
+        {
+          "line": 785,
+          "scope": "> @ghostpay/metadata-hardening@0.1.0 test",
+          "text": "Tests  115 passed (115)"
+        },
+        {
+          "line": 829,
+          "scope": "> @ghostpay/ops-monitor@0.1.0 test",
+          "text": "Test Files  8 passed (8)"
+        },
+        {
+          "line": 830,
+          "scope": "> @ghostpay/ops-monitor@0.1.0 test",
+          "text": "Tests  113 passed (113)"
+        },
+        {
+          "line": 874,
+          "scope": "> @ghostpay/pir-two-server@0.1.0 test",
+          "text": "Test Files  4 passed (4)"
+        },
+        {
+          "line": 875,
+          "scope": "> @ghostpay/pir-two-server@0.1.0 test",
+          "text": "Tests  60 passed (60)"
+        },
+        {
+          "line": 924,
+          "scope": "> @ghostpay/pool-circuits@0.1.0 test",
+          "text": "Test Files  3 passed | 2 skipped (5)"
+        },
+        {
+          "line": 925,
+          "scope": "> @ghostpay/pool-circuits@0.1.0 test",
+          "text": "Tests  18 passed | 59 skipped (77)"
+        },
+        {
+          "line": 955,
+          "scope": "> @ghostpay/pool-sdk@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 956,
+          "scope": "> @ghostpay/pool-sdk@0.1.0 test",
+          "text": "Tests  47 passed (47)"
+        },
+        {
+          "line": 1009,
+          "scope": "> @ghostpay/qr-exchange@0.1.0 test",
+          "text": "Test Files  7 passed (7)"
+        },
+        {
+          "line": 1010,
+          "scope": "> @ghostpay/qr-exchange@0.1.0 test",
+          "text": "Tests  233 passed (233)"
+        },
+        {
+          "line": 1052,
+          "scope": "> @ghostpay/scan-source@0.1.0 test",
+          "text": "Test Files  6 passed (6)"
+        },
+        {
+          "line": 1053,
+          "scope": "> @ghostpay/scan-source@0.1.0 test",
+          "text": "Tests  57 passed (57)"
+        },
+        {
+          "line": 1096,
+          "scope": "> @ghostpay/solana-stealth@0.1.0 test",
+          "text": "Test Files  7 passed (7)"
+        },
+        {
+          "line": 1097,
+          "scope": "> @ghostpay/solana-stealth@0.1.0 test",
+          "text": "Tests  136 passed (136)"
+        },
+        {
+          "line": 1133,
+          "scope": "> @ghostpay/ux-connect@0.1.0 test",
+          "text": "Test Files  4 passed (4)"
+        },
+        {
+          "line": 1134,
+          "scope": "> @ghostpay/ux-connect@0.1.0 test",
+          "text": "Tests  129 passed (129)"
+        },
+        {
+          "line": 1160,
+          "scope": "> @ghostpay/ux-fees@0.1.0 test",
+          "text": "Test Files  3 passed (3)"
+        },
+        {
+          "line": 1161,
+          "scope": "> @ghostpay/ux-fees@0.1.0 test",
+          "text": "Tests  50 passed (50)"
+        },
+        {
+          "line": 1188,
+          "scope": "> @ghostpay/ux-guide@0.1.0 test",
+          "text": "Test Files  3 passed (3)"
+        },
+        {
+          "line": 1189,
+          "scope": "> @ghostpay/ux-guide@0.1.0 test",
+          "text": "Tests  62 passed (62)"
+        },
+        {
+          "line": 1218,
+          "scope": "> @ghostpay/ux-links@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1219,
+          "scope": "> @ghostpay/ux-links@0.1.0 test",
+          "text": "Tests  49 passed (49)"
+        },
+        {
+          "line": 1251,
+          "scope": "> @ghostpay/ux-privacy@0.1.0 test",
+          "text": "Test Files  2 passed (2)"
+        },
+        {
+          "line": 1252,
+          "scope": "> @ghostpay/ux-privacy@0.1.0 test",
+          "text": "Tests  33 passed (33)"
+        },
+        {
+          "line": 1279,
+          "scope": "> @ghostpay/ux-schedule@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1280,
+          "scope": "> @ghostpay/ux-schedule@0.1.0 test",
+          "text": "Tests  133 passed (133)"
+        }
+      ],
+      "log_file": "pr242-logs/135382243544.log",
+      "log_bytes": 121323,
+      "log_sha256": "c9d5b24be9aa1e962fc3ba99ef6eca9ec91e949b99dd9a83a352005ec4380700"
+    },
+    {
+      "id": 135382243629,
+      "name": "ts-test (rest-2)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243629",
+      "summaries": [
+        {
+          "line": 367,
+          "scope": "> @ghostpay/btc-family@0.1.0 test",
+          "text": "Test Files  9 passed (9)"
+        },
+        {
+          "line": 368,
+          "scope": "> @ghostpay/btc-family@0.1.0 test",
+          "text": "Tests  162 passed (162)"
+        },
+        {
+          "line": 409,
+          "scope": "> @ghostpay/chain-evm-extra@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 410,
+          "scope": "> @ghostpay/chain-evm-extra@0.1.0 test",
+          "text": "Tests  44 passed (44)"
+        },
+        {
+          "line": 593,
+          "scope": "> @ghostpay/cli@0.1.0 test",
+          "text": "Test Files  37 passed (37)"
+        },
+        {
+          "line": 594,
+          "scope": "> @ghostpay/cli@0.1.0 test",
+          "text": "Tests  570 passed (570)"
+        },
+        {
+          "line": 685,
+          "scope": "> @ghostpay/external-pools@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 686,
+          "scope": "> @ghostpay/external-pools@0.1.0 test",
+          "text": "Tests  93 passed | 1 skipped (94)"
+        },
+        {
+          "line": 740,
+          "scope": "> @ghostpay/hops@0.1.0 test",
+          "text": "Test Files  8 passed (8)"
+        },
+        {
+          "line": 741,
+          "scope": "> @ghostpay/hops@0.1.0 test",
+          "text": "Tests  57 passed (57)"
+        },
+        {
+          "line": 833,
+          "scope": "> @ghostpay/invoice-schema@0.1.0 test",
+          "text": "Test Files  13 passed (13)"
+        },
+        {
+          "line": 834,
+          "scope": "> @ghostpay/invoice-schema@0.1.0 test",
+          "text": "Tests  728 passed (728)"
+        },
+        {
+          "line": 864,
+          "scope": "> @ghostpay/merchant-ledger@0.1.0 test",
+          "text": "Test Files  1 passed (1)"
+        },
+        {
+          "line": 865,
+          "scope": "> @ghostpay/merchant-ledger@0.1.0 test",
+          "text": "Tests  27 passed (27)"
+        },
+        {
+          "line": 895,
+          "scope": "> @ghostpay/net-harness@0.1.0 test",
+          "text": "Test Files  1 passed (1)"
+        },
+        {
+          "line": 896,
+          "scope": "> @ghostpay/net-harness@0.1.0 test",
+          "text": "Tests  27 passed (27)"
+        },
+        {
+          "line": 940,
+          "scope": "> @ghostpay/payer-sponsor@0.1.0 test",
+          "text": "Test Files  13 passed | 1 skipped (14)"
+        },
+        {
+          "line": 941,
+          "scope": "> @ghostpay/payer-sponsor@0.1.0 test",
+          "text": "Tests  135 passed | 4 skipped (139)"
+        },
+        {
+          "line": 996,
+          "scope": "> @ghostpay/plugin-api@0.1.0 test",
+          "text": "Test Files  4 passed (4)"
+        },
+        {
+          "line": 997,
+          "scope": "> @ghostpay/plugin-api@0.1.0 test",
+          "text": "Tests  45 passed (45)"
+        },
+        {
+          "line": 1023,
+          "scope": "> @ghostpay/pool-prover@0.1.0 test",
+          "text": "Test Files  1 passed (1)"
+        },
+        {
+          "line": 1024,
+          "scope": "> @ghostpay/pool-prover@0.1.0 test",
+          "text": "Tests  8 passed (8)"
+        },
+        {
+          "line": 1069,
+          "scope": "> @ghostpay/privacy-pipeline@0.1.0 test",
+          "text": "Test Files  12 passed (12)"
+        },
+        {
+          "line": 1070,
+          "scope": "> @ghostpay/privacy-pipeline@0.1.0 test",
+          "text": "Tests  747 passed (747)"
+        },
+        {
+          "line": 1116,
+          "scope": "> @ghostpay/relayer-guard@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1117,
+          "scope": "> @ghostpay/relayer-guard@0.1.0 test",
+          "text": "Tests  167 passed (167)"
+        },
+        {
+          "line": 1152,
+          "scope": "> @ghostpay/sdk@0.1.0 test",
+          "text": "Test Files  8 passed (8)"
+        },
+        {
+          "line": 1153,
+          "scope": "> @ghostpay/sdk@0.1.0 test",
+          "text": "Tests  54 passed (54)"
+        },
+        {
+          "line": 1192,
+          "scope": "> @ghostpay/tron-adapter@0.1.0 test",
+          "text": "Test Files  9 passed (9)"
+        },
+        {
+          "line": 1193,
+          "scope": "> @ghostpay/tron-adapter@0.1.0 test",
+          "text": "Tests  103 passed (103)"
+        },
+        {
+          "line": 1235,
+          "scope": "> @ghostpay/ux-core@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1236,
+          "scope": "> @ghostpay/ux-core@0.1.0 test",
+          "text": "Tests  119 passed (119)"
+        },
+        {
+          "line": 1261,
+          "scope": "> @ghostpay/ux-fiat@0.1.0 test",
+          "text": "Test Files  1 passed (1)"
+        },
+        {
+          "line": 1262,
+          "scope": "> @ghostpay/ux-fiat@0.1.0 test",
+          "text": "Tests  48 passed (48)"
+        },
+        {
+          "line": 1288,
+          "scope": "> @ghostpay/ux-i18n@0.1.0 test",
+          "text": "Test Files  1 passed (1)"
+        },
+        {
+          "line": 1289,
+          "scope": "> @ghostpay/ux-i18n@0.1.0 test",
+          "text": "Tests  2 passed (2)"
+        },
+        {
+          "line": 1315,
+          "scope": "> @ghostpay/ux-notify@0.1.0 test",
+          "text": "Test Files  5 passed (5)"
+        },
+        {
+          "line": 1316,
+          "scope": "> @ghostpay/ux-notify@0.1.0 test",
+          "text": "Tests  79 passed (79)"
+        },
+        {
+          "line": 1344,
+          "scope": "> @ghostpay/ux-receipts@0.1.0 test",
+          "text": "Test Files  2 passed (2)"
+        },
+        {
+          "line": 1345,
+          "scope": "> @ghostpay/ux-receipts@0.1.0 test",
+          "text": "Tests  117 passed (117)"
+        },
+        {
+          "line": 1443,
+          "scope": "> @ghostpay/ux-vault@0.1.0 test",
+          "text": "Test Files  7 passed (7)"
+        },
+        {
+          "line": 1444,
+          "scope": "> @ghostpay/ux-vault@0.1.0 test",
+          "text": "Tests  284 passed (284)"
+        }
+      ],
+      "log_file": "pr242-logs/135382243629.log",
+      "log_bytes": 153704,
+      "log_sha256": "cd558b673a248d82a7da6ce4245fc53fc3a30dca093aca71c25befe321f6b48d"
+    },
+    {
+      "id": 135382243418,
+      "name": "e2e (full)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243418",
+      "summaries": [
+        {
+          "line": 882,
+          "scope": "> @ghostpay/web@0.1.0 test:e2e",
+          "text": "82 passed (3.4m)"
+        }
+      ],
+      "log_file": "pr242-logs/135382243418.log",
+      "playwright_counts": [
+        {
+          "line": 881,
+          "text": "1 skipped"
+        },
+        {
+          "line": 882,
+          "text": "82 passed (3.4m)"
+        }
+      ],
+      "log_bytes": 129112,
+      "log_sha256": "588ca74b0fe28a52afeedfe62dcbb4c4f5b84705a9de8d9be676279fb888dce6"
+    },
+    {
+      "id": 135382243406,
+      "name": "e2e (lean)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243406",
+      "summaries": [
+        {
+          "line": 870,
+          "scope": "> @ghostpay/web@0.1.0 test:e2e",
+          "text": "70 passed (2.5m)"
+        }
+      ],
+      "log_file": "pr242-logs/135382243406.log",
+      "playwright_counts": [
+        {
+          "line": 869,
+          "text": "3 skipped"
+        },
+        {
+          "line": 870,
+          "text": "70 passed (2.5m)"
+        }
+      ],
+      "log_bytes": 182687,
+      "log_sha256": "c9659e45875983d6e05caa7ad00051ab5e1604b156a02788517bca86177924e7"
+    },
+    {
+      "id": 135382243417,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243417",
+      "summaries": [
+        {
+          "line": 432,
+          "scope": "",
+          "text": "Ran 12 test suites in 66.28s (174.70s CPU time): 86 tests passed, 0 failed, 0 skipped (86 total tests)"
+        }
+      ],
+      "log_file": "pr242-logs/135382243417.log",
+      "log_bytes": 42808,
+      "log_sha256": "9ec822c1c5ba6c7007a4a07a5727e75c7cb24376ad9f68c4a8c7c9cf6add8613"
+    },
+    {
+      "id": 135382243386,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454978/job/135382243386",
+      "summaries": [
+        {
+          "line": 457,
+          "scope": "",
+          "text": "Ran 7 test suites in 16.64s (58.95s CPU time): 109 tests passed, 0 failed, 0 skipped (109 total tests)"
+        }
+      ],
+      "log_file": "pr242-logs/135382243386.log",
+      "log_bytes": 48994,
+      "log_sha256": "c7416ebe601319e2069cfd1128c043a823d13f50a7a5b97389ce4c9278c92a1a"
+    },
+    {
+      "id": 135381673749,
+      "name": "CLI (ubuntu-24.04)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454900/job/135381673749",
+      "summaries": [
+        {
+          "line": 210,
+          "scope": "",
+          "text": "# tests 1"
+        },
+        {
+          "line": 212,
+          "scope": "",
+          "text": "# pass 1"
+        },
+        {
+          "line": 213,
+          "scope": "",
+          "text": "# fail 0"
+        },
+        {
+          "line": 215,
+          "scope": "",
+          "text": "# skipped 0"
+        },
+        {
+          "line": 479,
+          "scope": "> @ghostpay/cli@0.1.0 test",
+          "text": "Test Files  37 passed (37)"
+        },
+        {
+          "line": 480,
+          "scope": "> @ghostpay/cli@0.1.0 test",
+          "text": "Tests  570 passed (570)"
+        },
+        {
+          "line": 665,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# tests 21"
+        },
+        {
+          "line": 667,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# pass 21"
+        },
+        {
+          "line": 668,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# fail 0"
+        },
+        {
+          "line": 670,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# skipped 0"
+        }
+      ],
+      "log_file": "pr242-logs/135381673749.log",
+      "log_bytes": 63630,
+      "log_sha256": "3119fb1e73ccb00a1c7db46b8959af8251592c297939e5a917178bdf62537ec6"
+    },
+    {
+      "id": 135381673602,
+      "name": "CLI (windows-latest)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454900/job/135381673602",
+      "summaries": [
+        {
+          "line": 206,
+          "scope": "",
+          "text": "# tests 1"
+        },
+        {
+          "line": 208,
+          "scope": "",
+          "text": "# pass 1"
+        },
+        {
+          "line": 209,
+          "scope": "",
+          "text": "# fail 0"
+        },
+        {
+          "line": 211,
+          "scope": "",
+          "text": "# skipped 0"
+        },
+        {
+          "line": 477,
+          "scope": "> @ghostpay/cli@0.1.0 test",
+          "text": "Test Files  37 passed (37)"
+        },
+        {
+          "line": 478,
+          "scope": "> @ghostpay/cli@0.1.0 test",
+          "text": "Tests  568 passed | 2 skipped (570)"
+        },
+        {
+          "line": 663,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# tests 21"
+        },
+        {
+          "line": 665,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# pass 21"
+        },
+        {
+          "line": 666,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# fail 0"
+        },
+        {
+          "line": 668,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# skipped 0"
+        }
+      ],
+      "log_file": "pr242-logs/135381673602.log",
+      "log_bytes": 64543,
+      "log_sha256": "a4ad90bfea50fb809a5197f0341bd6fb9ba272c21fd40557b3e3f2273656cc7b"
+    },
+    {
+      "id": 135381673393,
+      "name": "CLI (macos-latest)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471454900/job/135381673393",
+      "summaries": [
+        {
+          "line": 185,
+          "scope": "",
+          "text": "# tests 1"
+        },
+        {
+          "line": 187,
+          "scope": "",
+          "text": "# pass 1"
+        },
+        {
+          "line": 188,
+          "scope": "",
+          "text": "# fail 0"
+        },
+        {
+          "line": 190,
+          "scope": "",
+          "text": "# skipped 0"
+        },
+        {
+          "line": 454,
+          "scope": "> @ghostpay/cli@0.1.0 test",
+          "text": "Test Files  37 passed (37)"
+        },
+        {
+          "line": 455,
+          "scope": "> @ghostpay/cli@0.1.0 test",
+          "text": "Tests  570 passed (570)"
+        },
+        {
+          "line": 640,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# tests 21"
+        },
+        {
+          "line": 642,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# pass 21"
+        },
+        {
+          "line": 643,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# fail 0"
+        },
+        {
+          "line": 645,
+          "scope": "> @ghostpay/cli@0.1.0 test:compiled",
+          "text": "# skipped 0"
+        }
+      ],
+      "log_file": "pr242-logs/135381673393.log",
+      "log_bytes": 65188,
+      "log_sha256": "6850b9b1e148597748428ca2df9bc0ce32b43dfc0d6c92b97e4c2d64e2fa5871"
+    },
+    {
+      "id": 135381674043,
+      "name": "beta acceptance (lib + cli + browser on anvil)",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44471455250/job/135381674043",
+      "summaries": [
+        {
+          "line": 1118,
+          "scope": "",
+          "text": "3 passed (29.5s)"
+        }
+      ],
+      "log_file": "pr242-logs/135381674043.log",
+      "log_bytes": 91849,
+      "log_sha256": "ad8902c46cdd9b8b9d35b58a4f1f83a450efa8198124b1c4e64c4d803e074d55"
+    }
+  ]
+}

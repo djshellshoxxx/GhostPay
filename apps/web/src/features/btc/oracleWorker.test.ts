@@ -21,7 +21,7 @@ describe('selected oracle through the production worker bridge', () => {
   });
   it.each(['http', 'grpc'] as const)('light %s verifies exact matched outputs without downloading full blocks', async (kind) => {
     const f = await oracleFixture();
-    const result = await scanForPaymentsInWorker({ ...f, oracle: { kind, url: 'https://oracle.test', mode: 'light' } }, f.factory, f.fetchFn);
+    const result = await scanForPaymentsInWorker({ ...f, providerSpentCheck: true, oracle: { kind, url: 'https://oracle.test', mode: 'light' } }, f.factory, f.fetchFn);
     expect(result.found).toHaveLength(1);
     expect(f.chain.requests.some((path) => path.includes('/txs/'))).toBe(false);
     expect(f.chain.requests.filter((path) => path.endsWith('/merkle-proof'))).toHaveLength(1);
@@ -32,23 +32,23 @@ describe('selected oracle through the production worker bridge', () => {
     const f = await oracleFixture(); const commits: number[] = [];
     f.controls.badProof = bad === 'proof'; f.controls.badRaw = bad === 'raw';
     if (bad === 'amount') f.controls.edit = (b) => ({ ...b, outputs: { ...b.outputs, outputs: b.outputs.outputs.map((o) => ({ ...o, amountSats: o.amountSats! + 1n })) } });
-    await expect(scanForPaymentsInWorker({ ...f, oracle: { kind: 'http', url: 'https://oracle.test', mode: 'light' },
+    await expect(scanForPaymentsInWorker({ ...f, providerSpentCheck: true, oracle: { kind: 'http', url: 'https://oracle.test', mode: 'light' },
       resumeState: createScanState('regtest', 1), onState: (s) => { commits.push(s.lastHeight); } }, f.factory, f.fetchFn)).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
     expect(commits).toEqual([1, 2]);
   });
   it('checks no-match blocks against the second oracle and refuses omitted data', async () => {
     const f = await oracleFixture();
     f.controls.edit = (b, origin) => origin.includes('second') && b.tweaks.height === 1 ? { ...b, tweaks: { ...b.tweaks, tweaks: [] } } : b;
-    await expect(scanForPaymentsInWorker({ ...f, oracle: { kind: 'http', url: 'https://oracle.test', mode: 'light', second: { kind: 'http', url: 'https://second.test' } } }, f.factory, f.fetchFn))
+    await expect(scanForPaymentsInWorker({ ...f, providerSpentCheck: true, oracle: { kind: 'http', url: 'https://oracle.test', mode: 'light', second: { kind: 'http', url: 'https://second.test' } } }, f.factory, f.fetchFn))
       .rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
     expect(f.chain.requests.some((path) => path.endsWith('/merkle-proof'))).toBe(false);
   });
   it('revalidates restored light matches and cannot use a saved match as spend authority', async () => {
     const f = await oracleFixture(); const oracle = { kind: 'http' as const, url: 'https://oracle.test', mode: 'light' as const };
     let saved: ScanState = createScanState('regtest', 1);
-    const first = await scanForPaymentsInWorker({ ...f, oracle, resumeState: saved, onState: (s) => { saved = s; } }, f.factory, f.fetchFn); wipeFound(first.found);
+    const first = await scanForPaymentsInWorker({ ...f, providerSpentCheck: true, oracle, resumeState: saved, onState: (s) => { saved = s; } }, f.factory, f.fetchFn); wipeFound(first.found);
     f.controls.badProof = true;
-    await expect(scanForPaymentsInWorker({ ...f, oracle, resumeState: saved }, f.factory, f.fetchFn)).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    await expect(scanForPaymentsInWorker({ ...f, providerSpentCheck: true, oracle, resumeState: saved }, f.factory, f.fetchFn)).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
   });
   it.each(['network', 'capability'])('rejects incompatible %s before oracle block reads', async (bad) => {
     const f = await oracleFixture(); f.controls.network = bad === 'network' ? 'testnet' : 'regtest'; f.controls.full = bad !== 'capability';

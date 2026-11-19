@@ -1,0 +1,14 @@
+✔ network inventory has unique complete records and references existing sources and tests (14.641928ms)
+✔ every explicit production web network reference is represented in the inventory (1245.229981ms)
+✔ shipped SDK and transport boundaries are represented, with library-only adapters distinguished (0.477976ms)
+✔ inventory detector recognizes calls and aliases without flagging type declarations or comments (2.785684ms)
+✔ reference counts detect new dispatchers inside known modules as well as new files (0.792076ms)
+✔ inventoried authorization actions exist and local/external operations gain no implicit grant (13.99261ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2570.032587

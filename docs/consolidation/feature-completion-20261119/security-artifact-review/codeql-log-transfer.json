@@ -1,0 +1,32 @@
+[
+  {
+    "path": "codeql-javascript-job-135432925616.log",
+    "connectorCharacterCount": 1020783,
+    "connectorUtf8Bytes": 1020785,
+    "connectorEndedWithLf": true,
+    "containsNul": false,
+    "method": "Native github_fetch_workflow_job_logs structuredContent.content saved as UTF-8 text",
+    "sha256": "461e4cc77a6bab41d9e8e189022df6ef9e04c539fbfc71bf7ac7fcc49ca30a85",
+    "savedBytes": 1020785
+  },
+  {
+    "path": "codeql-actions-job-135432925356.log",
+    "connectorCharacterCount": 121033,
+    "connectorUtf8Bytes": 121035,
+    "connectorEndedWithLf": true,
+    "containsNul": false,
+    "method": "Native github_fetch_workflow_job_logs structuredContent.content saved as UTF-8 text",
+    "sha256": "8ba8d2bbd66373d1d67c39beb78e08db3e977acccbc46f2ef1a157019b9d0514",
+    "savedBytes": 121035
+  },
+  {
+    "path": "codeql-python-job-135432925095.log",
+    "connectorCharacterCount": 161724,
+    "connectorUtf8Bytes": 161726,
+    "connectorEndedWithLf": true,
+    "containsNul": false,
+    "method": "Native github_fetch_workflow_job_logs structuredContent.content saved as UTF-8 text",
+    "sha256": "1af273cdb78a1507aefc1c8ff1010dd5b596081cd563ad230a5989b587e96a03",
+    "savedBytes": 161726
+  }
+]

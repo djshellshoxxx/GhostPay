@@ -1,0 +1,39 @@
+✖ apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list (2.081113ms)
+✔ apps/relayer workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list (45.108019ms)
+✔ core web flow sources never reach deferred BTC/Solana/TRON/registry code (87.959862ms)
+✔ only the app shell mounts the deferred views (29.809684ms)
+✔ network inventory has unique complete records and references existing sources and tests (8.321057ms)
+✔ every explicit production web network reference is represented in the inventory (824.422049ms)
+✔ shipped SDK and transport boundaries are represented, with library-only adapters distinguished (0.824146ms)
+✔ inventory detector recognizes calls and aliases without flagging type declarations or comments (1.389857ms)
+✔ reference counts detect new dispatchers inside known modules as well as new files (0.740158ms)
+✔ inventoried authorization actions exist and local/external operations gain no implicit grant (7.672612ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2305.612785
+
+✖ failing tests:
+
+test at scripts/tests/lean-core-reachability.test.mjs:83:1
+✖ apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list (2.081113ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/13855ecc035c/GhostPay/scripts/tests/lean-core-reachability.test.mjs:84:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

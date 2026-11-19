@@ -1,0 +1,141 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-btc/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/features/tron/chain.hardening.test.ts (31 tests | 7 failed) 323ms
+   ❯ TRON untrusted-node and wallet boundaries (18)
+     × refuses an omitted genesis and case-insensitive mainnet identity 16ms
+   ❯ TRON scan and sweep hardening (13)
+     × makes no balance or memo request while scanning; one address is read when its sweep is reviewed (TM13) 18ms
+     × rejects a funding transaction substituted between the scan and the memo lookup at review time 17ms
+     × refuses an unreadable announcement even when the raw transaction hash still matches the lookup 16ms
+     × deduplicates a valid payment repeated by the node 15ms
+     × reserves the activation cost, refuses fee-only balances, and rejects an unrelated wallet key 15ms
+     × refuses to derive and sign after cancellation even when a node ignores AbortSignal 15ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/tron/chain.hardening.test.ts > TRON untrusted-node and wallet boundaries > refuses an omitted genesis and case-insensitive mainnet identity
+AssertionError: expected [Function] to throw error matching /first block/ but got 'RPC returned an invalid response'
+
+- Expected:
+/first block/
+
++ Received:
+"RPC returned an invalid response"
+
+ ❯ src/features/tron/chain.hardening.test.ts:25:53
+     23| describe('TRON untrusted-node and wallet boundaries', () => {
+     24|   it('refuses an omitted genesis and case-insensitive mainnet identity…
+     25|     await expect(checkNetwork(reply({ block: [] }))).rejects.toThrow(/…
+       |                                                     ^
+     26|     const chain = mockTron(walletA());
+     27|     chain.genesis = MAINNET_GENESIS.toUpperCase();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > makes no balance or memo request while scanning; one address is read when its sweep is reviewed (TM13)
+TronAdapterError: RPC returned an invalid response
+ ❯ fail ../../packages/tron-adapter/src/errors.ts:49:9
+ ❯ getBlockRange ../../packages/tron-adapter/src/rpc.ts:199:56
+ ❯ scanTron ../../packages/tron-adapter/src/scan.ts:153:25
+ ❯ scanForPayments src/features/tron/scan.ts:52:20
+     50|   const seen = new Set<string>();
+     51|   let tokenCount = 0;
+     52|   for await (const d of scanTron(rpc, {
+       |                    ^
+     53|     fromBlock,
+     54|     toBlock,
+ ❯ src/features/tron/chain.hardening.test.ts:115:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > rejects a funding transaction substituted between the scan and the memo lookup at review time
+TronAdapterError: RPC returned an invalid response
+ ❯ fail ../../packages/tron-adapter/src/errors.ts:49:9
+ ❯ getBlockRange ../../packages/tron-adapter/src/rpc.ts:199:56
+ ❯ scanTron ../../packages/tron-adapter/src/scan.ts:153:25
+ ❯ scanForPayments src/features/tron/scan.ts:52:20
+     50|   const seen = new Set<string>();
+     51|   let tokenCount = 0;
+     52|   for await (const d of scanTron(rpc, {
+       |                    ^
+     53|     fromBlock,
+     54|     toBlock,
+ ❯ src/features/tron/chain.hardening.test.ts:147:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > refuses an unreadable announcement even when the raw transaction hash still matches the lookup
+TronAdapterError: RPC returned an invalid response
+ ❯ fail ../../packages/tron-adapter/src/errors.ts:49:9
+ ❯ getBlockRange ../../packages/tron-adapter/src/rpc.ts:199:56
+ ❯ scanTron ../../packages/tron-adapter/src/scan.ts:153:25
+ ❯ scanForPayments src/features/tron/scan.ts:52:20
+     50|   const seen = new Set<string>();
+     51|   let tokenCount = 0;
+     52|   for await (const d of scanTron(rpc, {
+       |                    ^
+     53|     fromBlock,
+     54|     toBlock,
+ ❯ src/features/tron/chain.hardening.test.ts:156:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > deduplicates a valid payment repeated by the node
+TronAdapterError: RPC returned an invalid response
+ ❯ fail ../../packages/tron-adapter/src/errors.ts:49:9
+ ❯ getBlockRange ../../packages/tron-adapter/src/rpc.ts:199:56
+ ❯ scanTron ../../packages/tron-adapter/src/scan.ts:153:25
+ ❯ scanForPayments src/features/tron/scan.ts:52:20
+     50|   const seen = new Set<string>();
+     51|   let tokenCount = 0;
+     52|   for await (const d of scanTron(rpc, {
+       |                    ^
+     53|     fromBlock,
+     54|     toBlock,
+ ❯ src/features/tron/chain.hardening.test.ts:174:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > reserves the activation cost, refuses fee-only balances, and rejects an unrelated wallet key
+TronAdapterError: RPC returned an invalid response
+ ❯ fail ../../packages/tron-adapter/src/errors.ts:49:9
+ ❯ getBlockRange ../../packages/tron-adapter/src/rpc.ts:199:56
+ ❯ scanTron ../../packages/tron-adapter/src/scan.ts:153:25
+ ❯ scanForPayments src/features/tron/scan.ts:52:20
+     50|   const seen = new Set<string>();
+     51|   let tokenCount = 0;
+     52|   for await (const d of scanTron(rpc, {
+       |                    ^
+     53|     fromBlock,
+     54|     toBlock,
+ ❯ src/features/tron/chain.hardening.test.ts:188:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/features/tron/chain.hardening.test.ts > TRON scan and sweep hardening > refuses to derive and sign after cancellation even when a node ignores AbortSignal
+TronAdapterError: RPC returned an invalid response
+ ❯ fail ../../packages/tron-adapter/src/errors.ts:49:9
+ ❯ getBlockRange ../../packages/tron-adapter/src/rpc.ts:199:56
+ ❯ scanTron ../../packages/tron-adapter/src/scan.ts:153:25
+ ❯ scanForPayments src/features/tron/scan.ts:52:20
+     50|   const seen = new Set<string>();
+     51|   let tokenCount = 0;
+     52|   for await (const d of scanTron(rpc, {
+       |                    ^
+     53|     fromBlock,
+     54|     toBlock,
+ ❯ src/features/tron/chain.hardening.test.ts:208:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 24 passed (31)
+   Start at  01:01:45
+   Duration  2.95s (import 55%, transform 32%, tests 13%)
+

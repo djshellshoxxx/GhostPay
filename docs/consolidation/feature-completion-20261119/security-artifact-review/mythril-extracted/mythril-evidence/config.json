@@ -1,0 +1,2 @@
+{"remappings": ["@openzeppelin/contracts/=/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/"],
+ "optimizer": {"enabled": true, "runs": 200}, "evmVersion": "cancun"}

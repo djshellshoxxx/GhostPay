@@ -6,10 +6,11 @@ import {
   decodeScheme2MetaAddress,
   deriveScheme2Payment,
   type Address,
+  type DecodedPolicyPayment,
   type PolicyPayment,
   type Scheme2Payment,
 } from '@ghostpay/policy-scheme';
-import { encodeFunctionData, getAddress, isAddress } from 'viem/utils';
+import { bytesToHex, encodeFunctionData, getAddress, isAddress } from 'viem/utils';
 import { UserFacingError } from '../../lib/errors';
 import type { TxRequest } from '../../lib/wallet';
 import type { PolicyChainDeployment } from './chain';
@@ -34,6 +35,23 @@ export interface PreparedPolicyPayment {
   readonly token: Address | 'native';
   /** Payee meta-address as entered (trimmed); part of the duplicate-attempt scope, which must survive re-review. */
   readonly metaAddress: string;
+}
+
+/**
+ * Whether decoded router calldata pays exactly this derived payment: the method, the account, owner and policy hash,
+ * the ephemeral key R, and the metadata (as built, and starting with the derivation's view tag). The router accepts
+ * any valid R and view tag with the same owner and policy hash, but the payee's scan derives the account from R and
+ * filters by the view tag, so a call with another R or tag pays funds no scan ever finds.
+ */
+export function paysDerivedPayment(decoded: DecodedPolicyPayment, payment: Scheme2Payment, built: PolicyPayment): boolean {
+  const metadata = decoded.metadata.toLowerCase();
+  return decoded.method === built.method
+    && decoded.stealth === payment.accountAddress
+    && decoded.owner === payment.ownerAddress
+    && decoded.policyHash === payment.policyHash
+    && decoded.ephemeralPublicKey.toLowerCase() === bytesToHex(payment.ephemeralPublicKey).toLowerCase()
+    && metadata === built.metadata.toLowerCase()
+    && metadata.startsWith(bytesToHex(payment.metadataPrefix).toLowerCase());
 }
 
 /**
@@ -64,7 +82,7 @@ export function preparePolicyPayment(input: PolicyPayInput): PreparedPolicyPayme
     now: input.nowSec,
   });
   const decoded = decodePolicyPaymentCalldata(built.tx.data, input.deployment);
-  if (decoded.stealth !== payment.accountAddress || decoded.owner !== payment.ownerAddress || decoded.policyHash !== payment.policyHash || built.tx.to !== input.deployment.router) {
+  if (!paysDerivedPayment(decoded, payment, built) || built.tx.to !== input.deployment.router) {
     throw new UserFacingError('The prepared payment failed its self-check. Nothing was sent.');
   }
   const approval = token === 'native' ? undefined : { to: token, value: 0n, data: encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [input.deployment.router, input.gross] }) };

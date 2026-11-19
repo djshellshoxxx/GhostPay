@@ -1,0 +1,35 @@
+{
+  "node": {
+    "command": [
+      "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "v22.23.5\n"
+  },
+  "npm": {
+    "command": [
+      "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+      "/home/agent/.npm/_npx/c3b7dd07abd2a8cc/node_modules/npm/bin/npm-cli.js",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "11.21.2\n(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+  },
+  "forge": {
+    "command": [
+      "/workspace/scratch/4fa14be12559/toolchain-probe/bin/forge",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "forge Version: 1.8.5\nCommit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f\nBuild Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)\nBuild Profile: dist\n"
+  },
+  "solc": {
+    "command": [
+      "/workspace/scratch/4fa14be12559/toolchain-probe/bin/solc",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n"
+  }
+}

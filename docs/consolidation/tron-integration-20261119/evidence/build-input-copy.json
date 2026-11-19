@@ -1,0 +1,113 @@
+{
+  "base": "e76451ad56ba1634eed9d03468961900433fd130",
+  "results": [
+    {
+      "package": "@ghostpay/address-safety",
+      "sourceConfigManifestFilesMatched": 13,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/address-safety",
+      "copiedDistFiles": 18
+    },
+    {
+      "package": "@ghostpay/btc-silent-payments",
+      "sourceConfigManifestFilesMatched": 74,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/btc-silent-payments",
+      "copiedDistFiles": 102
+    },
+    {
+      "package": "@ghostpay/chain-adapters",
+      "sourceConfigManifestFilesMatched": 63,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/chain-adapters",
+      "copiedDistFiles": 93
+    },
+    {
+      "package": "@ghostpay/core-crypto",
+      "sourceConfigManifestFilesMatched": 23,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/core-crypto",
+      "copiedDistFiles": 24
+    },
+    {
+      "package": "@ghostpay/hygiene",
+      "sourceConfigManifestFilesMatched": 21,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/hygiene",
+      "copiedDistFiles": 36
+    },
+    {
+      "package": "@ghostpay/invoice-schema",
+      "sourceConfigManifestFilesMatched": 30,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/invoice-schema",
+      "copiedDistFiles": 33
+    },
+    {
+      "package": "@ghostpay/metadata-hardening",
+      "sourceConfigManifestFilesMatched": 27,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/metadata-hardening",
+      "copiedDistFiles": 39
+    },
+    {
+      "package": "@ghostpay/net-transport",
+      "sourceConfigManifestFilesMatched": 32,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/net-transport",
+      "copiedDistFiles": 63
+    },
+    {
+      "package": "@ghostpay/payment-uri",
+      "sourceConfigManifestFilesMatched": 21,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/payment-uri",
+      "copiedDistFiles": 42
+    },
+    {
+      "package": "@ghostpay/policy-scheme",
+      "sourceConfigManifestFilesMatched": 25,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/policy-scheme",
+      "copiedDistFiles": 45
+    },
+    {
+      "package": "@ghostpay/qr-exchange",
+      "sourceConfigManifestFilesMatched": 20,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/qr-exchange",
+      "copiedDistFiles": 30
+    },
+    {
+      "package": "@ghostpay/scan-source",
+      "sourceConfigManifestFilesMatched": 25,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/scan-source",
+      "copiedDistFiles": 45
+    },
+    {
+      "package": "@ghostpay/secret-box",
+      "sourceConfigManifestFilesMatched": 9,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/secret-box",
+      "copiedDistFiles": 9
+    },
+    {
+      "package": "@ghostpay/solana-stealth",
+      "sourceConfigManifestFilesMatched": 27,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/solana-stealth",
+      "copiedDistFiles": 45
+    },
+    {
+      "package": "@ghostpay/tron-adapter",
+      "sourceConfigManifestFilesMatched": 23,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/tron-adapter",
+      "copiedDistFiles": 30
+    },
+    {
+      "package": "@ghostpay/tx-review",
+      "sourceConfigManifestFilesMatched": 14,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/tx-review",
+      "copiedDistFiles": 15
+    },
+    {
+      "package": "@ghostpay/ux-vault",
+      "sourceConfigManifestFilesMatched": 33,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/ux-vault",
+      "copiedDistFiles": 57
+    },
+    {
+      "package": "@ghostpay/pir-two-server",
+      "sourceConfigManifestFilesMatched": 19,
+      "sourceRoot": "/workspace/scratch/13855ecc035c/GhostPay/packages/pir-two-server",
+      "copiedDistFiles": 36
+    }
+  ]
+}

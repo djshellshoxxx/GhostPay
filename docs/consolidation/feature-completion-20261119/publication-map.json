@@ -1,0 +1,328 @@
+{
+  "runtime_local_commit": "e76451ad56ba1634eed9d03468961900433fd130",
+  "runtime_published_commit": "66d0e38f432ed9fd7b750d046d8b8ce9a2cef178",
+  "runtime_tree": "63484889edf158f322a2d14474de2e58512beb1f",
+  "note": "Git Data publication preserves exact file blobs, trees and ordered source parents. Original remote commits such as #258 retain their identities; local-only commit IDs differ through publication metadata. This map covers the recorded source checkpoints before final reporting commits.",
+  "commits": [
+    {
+      "local": "99cd33bb7584cac1119cc4c86c7efead66224662",
+      "published": "cb6a53372d0ecd3ee22df8dad5285e1af6b1a257"
+    },
+    {
+      "local": "f2a70ef904f2b52043b17015db85f4cda16c5b70",
+      "published": "b9a6eb3482d331cfca40fd0168733616cd02cfe5"
+    },
+    {
+      "local": "23d66c80005a62cd1f1778f10cb9d34ef97618c6",
+      "published": "5c146c5d3442c6ed840176272c41f113b1e302b3"
+    },
+    {
+      "local": "39083b787a8c548e806f8f0d1388281888b84f38",
+      "published": "3295a9dd37f25697300441fb2bbc62047a0ccc1e"
+    },
+    {
+      "local": "bd52aad024e29f3d0f3d0559bd835e2ff956d8ce",
+      "published": "5e1c6aa641a355ab3e97cb5a345c7201e115f1ae"
+    },
+    {
+      "local": "66e707d0676caa26e074c7e5e9f5db0285f6ca62",
+      "published": "6f17d937853b0a753fc55c348f48b2d30801a969"
+    },
+    {
+      "local": "3b625b9c75d8cc479ec0355a4a32ea8d80c5c414",
+      "published": "29af6982d6ed269ec3c7ca6cd66d58daff92a20a"
+    },
+    {
+      "local": "7ee45dd9ee8d4fdea33d8444ea9e99bfcad73a6a",
+      "published": "73f93c55c028fee761d0836fc9f9000164c83c0a"
+    },
+    {
+      "local": "783500e4ba59ad1b3e7d1b62c0ea87e6493ec5eb",
+      "published": "b9ed2be82ff5e6d666f8ea27dc002dd9f69cf63a"
+    },
+    {
+      "local": "bdf6589f0dd07d9ab1935489c72160e1d99f2c82",
+      "published": "70fdbf8b2ae419a6bd66cc0aa9f75eba1a8ac50d"
+    },
+    {
+      "local": "16e0a4688e40e281d606ecbcf0c67577ac46120e",
+      "published": "061691a283751fd071e32eacbfcf2beee1437d36"
+    },
+    {
+      "local": "dd6b9dec6be7e9eea78069597602b5772dc8ae5f",
+      "published": "12e343f8a2649f56f01348ef00fedde5a4a119a4"
+    },
+    {
+      "local": "471bfc50addc3b420d601a2654b68a1aa217096d",
+      "published": "b2bb23c466baa0fb8c9cfaf4816ad058fcc8358b"
+    },
+    {
+      "local": "9f84bfc4a5a4103f85abf7b1568af6b349b1b9d1",
+      "published": "3464761abc264a01e8cd5a8d64d8a1229aaddd86"
+    },
+    {
+      "local": "df06544c82afa7357b393025204c30da08ecb800",
+      "published": "218b76d34aed87baaa9cfea0864196b5a1875d8c"
+    },
+    {
+      "local": "78b16292449461a3149a4f95c79faf1f156bfc47",
+      "published": "590eadbc660a4be5d2c3c3c44136279bf3b45245"
+    },
+    {
+      "local": "1aaa29322933469dc02776a639d58c526077f0e7",
+      "published": "f39dcfab7ab22d4cb476f7d9aeef4526ef4ba183"
+    },
+    {
+      "local": "a956acb2dab0f2043a2964028d9b1b30b3454445",
+      "published": "7d898a7b82c6e1f702ebecbbe9c5b88a2a37d394"
+    },
+    {
+      "local": "9bf5d713c21c2d8e9f76be07c10ca7dbae6ddfbd",
+      "published": "b1757f5b797e05ec9549cf0fe897615196c02a1d"
+    },
+    {
+      "local": "bc69f6ab08781fa8f9a6ac4b66fd02a9e3486d90",
+      "published": "0ab3ea85984b6fcb27191420bd36bcbd775c8855"
+    },
+    {
+      "local": "7ffb97af3a5b28cedc65dd6ed36204cf3e7e4352",
+      "published": "e4baab3398f326294b206ab78ce9203d6ed1608d"
+    },
+    {
+      "local": "894ffc813cc13553f6e9b9dae9d4d41e7f356c12",
+      "published": "8e65ca2dd78d83a0193eb6eca33d2b538eb54cb2"
+    },
+    {
+      "local": "e741aa8e8228a2099ee5abe3fd73aa14ffb011b8",
+      "published": "0fc147d3381aa4c5c2aa9ecc9ca123e034afce5d"
+    },
+    {
+      "local": "bd6ecf78ac85bbfa4018cfec6b5749c8653dc442",
+      "published": "01d0898bdebedd9b201d55f17fbf07b1980f1415"
+    },
+    {
+      "local": "cae9be35a006cdbf91113396bb9a86b85fc458a3",
+      "published": "42f39032f8923f1a84e7bd32214f92022e0dd760"
+    },
+    {
+      "local": "5dd63d651384a4712615e237bb09da3afcd40afb",
+      "published": "20aac7e165ab237024de35b25563791a30c109c3"
+    },
+    {
+      "local": "92c9835acdc1716abea4e8ce3b44a123054e771f",
+      "published": "58c9046cf57d9ad17b7e9784c50ab486936837a3"
+    },
+    {
+      "local": "b8d89574c64c8ec8ab2a35218f7d5871beb3921f",
+      "published": "92c29e874b3903a20eca52c57d8ef05f588537ac"
+    },
+    {
+      "local": "8cdbfa3572fb427fd1129bac74ade5bbbd9cc6e3",
+      "published": "9a384d0402bc40bcbc60e98e10023b688cfec922"
+    },
+    {
+      "local": "6745c732b00a773ead9a5cace3b086923c3e1b4d",
+      "published": "df81fc6f197fb47e7c15e4b9001a349cc51cfc95"
+    },
+    {
+      "local": "fee5001e6cd5f8f4f6fc72b501cdf26aace31804",
+      "published": "91853efdcc8e8be02c9465ef919a457d8516b84d"
+    },
+    {
+      "local": "c4cade4640e57565e33f73413ddeff598952d372",
+      "published": "af74a0f4c64c7a97c6809a29b57ec0ee18291e0a"
+    },
+    {
+      "local": "791486769a77db42d1f7b661bf9e162043e3b427",
+      "published": "41f496b6bbc61d9a4f89fdb81c2eb9316a460402"
+    },
+    {
+      "local": "2fa8b4c0650630dd9113146a11330e6702a28dab",
+      "published": "cbff3cbc8b60e4fd73716e26084d59283eaa1035"
+    },
+    {
+      "local": "091b77e19e51cfce90a32ab66b1821658e77413c",
+      "published": "542a7d799e8a08017e8a0949ae02218d01903eef"
+    },
+    {
+      "local": "9bc9f1a19abedfc667db7931c9892d6cee1190d0",
+      "published": "e4419964bb2c9193f8dd777e1a6c8568ad8ae302"
+    },
+    {
+      "local": "30611eee4685df63a31bc9e633ca08563998c267",
+      "published": "4f2f0c401e91ee0c7a538356cc15b9ab992240c4"
+    },
+    {
+      "local": "e76451ad56ba1634eed9d03468961900433fd130",
+      "published": "66d0e38f432ed9fd7b750d046d8b8ce9a2cef178"
+    },
+    {
+      "local": "7204788f0e16d898e3d6ce5f069b213ab5bc1c14",
+      "published": "980d1971af20a943700b7cd42dbb449d486fb65e"
+    },
+    {
+      "local": "83bc4f52767d88e6896d986a29f6d3495e8c22c4",
+      "published": "6becc79ecdc2fc26f23e7049d6e4d64531ef1751"
+    },
+    {
+      "local": "fed63bf0c3816e125afe77166857aff6298266da",
+      "published": "bf6b5b1af49df8e7cb55bc96292b4ead41d6f38b"
+    },
+    {
+      "local": "dc8ff082123613bbf146d0214eac91a1ef53c747",
+      "published": "9d127edb0de3618eab7088c0c460b8b2de928949"
+    },
+    {
+      "local": "22cad8f890bae8159fdc423e48c2930e50407ae9",
+      "published": "9015f961b00d4190f036110f9b57cc4e64d116b3"
+    },
+    {
+      "local": "9ae57de3ef8a432c1592ddfb496de8b0fd0a6fee",
+      "published": "a6287fa42a8b1cc997c7d6a8911e938b66e42393"
+    },
+    {
+      "local": "618a0fe4b5c62b1b67400cc23736c4f0ac839be9",
+      "published": "b669e396eba00e54e641c864ba1281e9b1ecf9b3"
+    },
+    {
+      "local": "ff7cef7cb5919f1193a3a15b71f2a8f428b3e767",
+      "published": "d63571892e28970a04708fe2baf7a60a1a853515"
+    },
+    {
+      "local": "21366d25e89154db01d18e5420f63496d7154924",
+      "published": "a66d3e3b05610ea1ac9390058a91f3ddf90ef18d"
+    },
+    {
+      "local": "5b85a0e542cb067d595de89c6b1a0c6445aec7aa",
+      "published": "a3442053ffe7d94238f0877cea5b429381ecfbd7"
+    },
+    {
+      "local": "14775e840faf7e6f9e280845f54761f5ca342447",
+      "published": "d667bd3c244b44d2fb6f2fc43682452b0feaf962"
+    },
+    {
+      "local": "e0b10ec869d8935f428bef3e4211fe78796b10df",
+      "published": "8d2680f2837172d4a18337c30ab7163898df5e43"
+    },
+    {
+      "local": "7eb078e817fe76c1f22e84cbb1bb75be71090ccc",
+      "published": "e2c4da23a177093f22f8542533227251eefb25d4"
+    },
+    {
+      "local": "b9d77b033e3ca1397e9168282c73a439c897734b",
+      "published": "1a35212f5045481cd9a4c52bb912df316fcd60ca"
+    },
+    {
+      "local": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+      "published": "320ace50e1b6ad51a1fb34dea72168d4c2282e9e"
+    },
+    {
+      "local": "84398a79e18673f3e371a405931bc464e1cca99a",
+      "published": "84398a79e18673f3e371a405931bc464e1cca99a"
+    },
+    {
+      "local": "c000076c0bd206efcea884a86d0fcde5e287b5be",
+      "published": "e75852342d28ac6362ebd91620031f107dfe7329"
+    },
+    {
+      "local": "38fe7fdaf151ef433be9721af8fea7cbcdea89c4",
+      "published": "b18f6e11301b2da76d296772f48166b08b3f3f37"
+    },
+    {
+      "local": "545d6056a2b9d1d68ba1956852ef19f39ba22c49",
+      "published": "f26253d68a95dda1c923fdc0ebd4a5ea7c60a414"
+    },
+    {
+      "local": "0d5e34add6ddfebc98c59de8a53c4149aac04338",
+      "published": "92f1febe34dde391faca2e89b262ea9f419191ef"
+    },
+    {
+      "local": "622510c997d81272daace149f14c82d96c040405",
+      "published": "26061ee2ca5e48391b954ad8505f222242e5e2c9"
+    },
+    {
+      "local": "52c9d7738949e473cd77b2213a038ba07f41238e",
+      "published": "6eab9ecf7469a66f0af9362440d2d8fac012a796"
+    },
+    {
+      "local": "f0fe867d8bb257ecabb4cf36898962acb72839dc",
+      "published": "9315197562540f68968aff2b37ae48507375134e"
+    },
+    {
+      "local": "2777aeea2bd0563c66994bdee6bc8dac6347110f",
+      "published": "575f5b3e50628f077c640e17a833bead3ec1aee8"
+    },
+    {
+      "local": "e74ddd26b75912d770e05d51f0b9229756adc649",
+      "published": "c40b7581b9b996f33612186bc91960c65273cb64"
+    },
+    {
+      "local": "1dcda830bc1696e5dd6467559d371de76fd42ae5",
+      "published": "22a33ce9c8e847a5b7489a99584850510649740f"
+    },
+    {
+      "local": "f4464e57bc6743800c2564ddb71bb5b06f64eb35",
+      "published": "99077c7d191e973c38767cf2e9c09a45cb780ed6"
+    },
+    {
+      "local": "db555cb9892076d30d297fa090d3a8114d9242c6",
+      "published": "c3a693e87053fbe91219f8edfe159a5ec0a37a34"
+    },
+    {
+      "local": "3c58321cda36cc7b5729cfea22c4043cde11974c",
+      "published": "80b62b1d49269d19add7b2351c6a96206d9711ef"
+    },
+    {
+      "local": "7b2642768f9e4d2a3c631e47dbf6a4153d30d3c9",
+      "published": "362476b5cebe14b9890ac5c52880cbbad38ec10a"
+    },
+    {
+      "local": "0f8dca27613fe9952cdb772cb10d05ced0f2b455",
+      "published": "39ea1c518e98e9d33382fdf9fc3165cd125c56c0"
+    },
+    {
+      "local": "09821dc69e505d544672746b2bfa8edc2643b3c6",
+      "published": "37f0d46f2f53d17ee777d9c40113f60189b6da21"
+    },
+    {
+      "local": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+      "published": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0"
+    },
+    {
+      "local": "35658b7ff7ffe509c1a7b0a20b1e670cb43b14f3",
+      "published": "347cdf081e777294f7166bea8ec424e766e9f1de"
+    },
+    {
+      "local": "c4a6e5eab6f2ae4ae644433e557676cfb223c5a8",
+      "published": "5d0f1f9396a89c5fda5c4c880dbff273ccadf2eb"
+    },
+    {
+      "local": "2afa8ffe22bebfd448b749fd60e0f96d96c9f14f",
+      "published": "ac8d2646d507036f0713a4afd4769d81ada644e3"
+    },
+    {
+      "local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "published": "155d009160a6e5b2c24a91705c72fc8cca6ce815"
+    },
+    {
+      "local": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+      "published": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a"
+    }
+  ],
+  "test_local_commit": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+  "test_published_commit": "320ace50e1b6ad51a1fb34dea72168d4c2282e9e",
+  "test_tree": "2720f19049e5c0c4e8a717cba708709267f7729e",
+  "final_source_local_commit": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "final_source_published_commit": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "final_source_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+  "focused_hosting_local_commit": "db555cb9892076d30d297fa090d3a8114d9242c6",
+  "focused_hosting_published_commit": "c3a693e87053fbe91219f8edfe159a5ec0a37a34",
+  "focused_hosting_tree": "7cfbb2835be8a3c58ccd5dd549fbb2ecabcccfac",
+  "focused_hosting_pr": 267,
+  "canonical_local_commit": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+  "canonical_published_commit": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+  "canonical_tree": "c58843c86dae5164eab259d3440aba01406bd593",
+  "main_reconciled_local_commit": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+  "main_reconciled_published_commit": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+  "main_reconciled_tree": "e585d1dec43844bd18167f213c246994ea6c4397"
+}

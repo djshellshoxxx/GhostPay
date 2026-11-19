@@ -159,6 +159,8 @@ async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: bool
   if (opts.wrongTag === true) await user.click(screen.getByLabelText('Deep scan (also check wrong view tags)'));
   await user.click(screen.getByRole('button', { name: 'Start scan' }));
   await user.click(await screen.findByRole('button', { name: 'Sweep this payment' }));
+  // TM1: the balance is read only on an explicit click.
+  await user.click(await screen.findByRole('button', { name: 'Read balance from the Settings RPC' }));
   return user;
 }
 
@@ -170,6 +172,52 @@ describe('Sweep', () => {
     expect(screen.getByText('Choose a payment to sweep from Scan and receive.')).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Go to Scan and receive' }));
     expect(screen.getByRole('heading', { level: 2, name: 'Scan and receive' })).toBeTruthy();
+  });
+
+  it('TM1/TM7: reads no balance before the click; warns (without blocking) about a reused destination and records one after a sweep', async () => {
+    const sink: RawSink = { calls: [] };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    sweepLib.recordSweepDestination(window.localStorage, 84532, DEST, '0x2222222222222222222222222222222222222222');
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    expect(screen.getByText(/used earlier in this session/)).toBeTruthy();
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await waitFor(() => { expect((sink.calls ?? []).includes('eth_sendRawTransaction')).toBe(true); });
+    await waitFor(() => { expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toHaveLength(2); });
+    expect(window.localStorage.getItem(sweepLib.DEST_LEDGER_KEY)).toBeNull();
+  });
+
+  it('TM7: a sweep completed after app lock does not restore the cleared address links', async () => {
+    let release: () => void = () => undefined;
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    let reached: () => void = () => undefined;
+    const beforeCompletion = new Promise<void>((resolve) => { reached = resolve; });
+    const original = sweepLib.directSweep;
+    const wrapper = vi.spyOn(sweepLib, 'directSweep').mockImplementation(async (...args: Parameters<typeof original>) => {
+      const result = await original(...args);
+      reached();
+      await held;
+      return result;
+    });
+    try {
+      const sink: RawSink = { calls: [] };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await user.click(screen.getByLabelText(/Directly/));
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await beforeCompletion;
+      expect(sink.calls).toContain('eth_sendRawTransaction');
+      act(() => { notifyAppLock('idle'); });
+      await act(async () => { release(); await held; });
+      expect(await screen.findByText('Submitted')).toBeTruthy();
+      expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toEqual([]);
+      expect(window.localStorage.getItem(sweepLib.DEST_LEDGER_KEY)).toBeNull();
+    } finally {
+      release();
+      wrapper.mockRestore();
+    }
   });
 
   it('accepts a pasted destination only after the chain and address checks pass', async () => {
@@ -382,6 +430,7 @@ describe('Sweep', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
     await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await user.click(await screen.findByRole('button', { name: 'Read balance from the Settings RPC' }));
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
@@ -411,6 +460,7 @@ describe('Sweep', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
     await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await user.click(await screen.findByRole('button', { name: 'Read balance from the Settings RPC' }));
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
@@ -454,6 +504,7 @@ describe('Sweep', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
     await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await user.click(await screen.findByRole('button', { name: 'Read balance from the Settings RPC' }));
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
@@ -575,6 +626,7 @@ describe('Sweep', () => {
       const nav = within(screen.getByRole('navigation', { name: 'Main' }));
       await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
       await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await user.click(await screen.findByRole('button', { name: 'Read balance from the Settings RPC' }));
       await screen.findByText('5 USDC');
       await user.click(screen.getByLabelText(/Directly/));
       expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
@@ -647,6 +699,7 @@ describe('Sweep', () => {
       const nav = within(screen.getByRole('navigation', { name: 'Main' }));
       await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
       await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await user.click(await screen.findByRole('button', { name: 'Read balance from the Settings RPC' }));
       await screen.findByText('5 USDC');
       await user.click(screen.getByLabelText(/Directly/));
       expect(screen.getByText('Outcome unknown')).toBeTruthy();
@@ -828,6 +881,7 @@ describe('Sweep', () => {
       const nav = within(screen.getByRole('navigation', { name: 'Main' }));
       await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
       await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await user.click(await screen.findByRole('button', { name: 'Read balance from the Settings RPC' }));
       await screen.findByText('5 USDC');
       expect(screen.getByText('Outcome unknown')).toBeTruthy();
       expect(await directDisabled(user)).toBe(true);
@@ -973,6 +1027,7 @@ describe('L1-02: the vault step-up belongs to the loaded keys', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
     await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await user.click(await screen.findByRole('button', { name: 'Read balance from the Settings RPC' }));
     await screen.findByText('5 USDC');
     expect(screen.getByLabelText('Vault passphrase (required for each sweep action)')).toBeTruthy();
     await user.click(screen.getByLabelText(/Directly/));

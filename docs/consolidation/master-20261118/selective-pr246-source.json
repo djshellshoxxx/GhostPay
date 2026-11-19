@@ -1,0 +1,44 @@
+{
+  "source_pr": 246,
+  "source_head": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+  "base": "8d511e52",
+  "files": [
+    {
+      "path": "packages/confidential-contracts/contracts/GhostPayConfidentialRouter.sol",
+      "source_blob": "ad92a40d46fa130f80a7d355aa5ee147a2823512",
+      "ported_blob": "ad92a40d46fa130f80a7d355aa5ee147a2823512"
+    },
+    {
+      "path": "packages/confidential-contracts/contracts/mocks/ReturnBombStealth.sol",
+      "source_blob": "6f5a0663505db2cadefdd1c57cc48b0c9cbd8586",
+      "ported_blob": "6f5a0663505db2cadefdd1c57cc48b0c9cbd8586"
+    },
+    {
+      "path": "packages/confidential-contracts/test/router.test.ts",
+      "source_blob": "05c3cd83dd9fe2691ee2aad0e72afc55502f6c89",
+      "ported_blob": "05c3cd83dd9fe2691ee2aad0e72afc55502f6c89"
+    },
+    {
+      "path": "packages/contracts/scripts/pre-deploy-check.sh",
+      "source_blob": "eb882038fe26a25cd117cbb67292c606fdec1a8d",
+      "ported_blob": "eb882038fe26a25cd117cbb67292c606fdec1a8d"
+    },
+    {
+      "path": "scripts/tests/policy-predeploy.test.mjs",
+      "source_blob": "c8911d80b1851299c4af00b310cde2239695bc14",
+      "ported_blob": "c8911d80b1851299c4af00b310cde2239695bc14"
+    }
+  ],
+  "executed": {
+    "command": "node --test scripts/tests/policy-predeploy.test.mjs",
+    "node": "24.22.3",
+    "passed": 22,
+    "failed": 0,
+    "skipped": 0
+  },
+  "not_executed": [
+    "confidential contract suite",
+    "combined hosted qualification"
+  ],
+  "authority": "No deployment or fee-token policy decision; strict existing analyzer findings remain unresolved."
+}

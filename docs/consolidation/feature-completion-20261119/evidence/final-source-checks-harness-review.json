@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-11-19T10:49:11.600478+00:00",
+  "reviewer": "recovery_completion",
+  "scope": "Read-only review of temporary orchestration; no harness, test, lint, compiler or build execution by reviewer",
+  "path": "/workspace/scratch/13855ecc035c/run-final-source-checks.py",
+  "sha256": "54365703eb0344750c3c3edf12cfe6a81718cbd16b8d254ef6879c3a779fbf6b",
+  "bytes": 7164,
+  "previous_reviewed_sha256": "cfbbe813045678681b1c63425769743717a96ea1637288dd4dce57fa415f769f",
+  "only_changes": [
+    {
+      "current": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "previous": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+      "occurrences": 1
+    },
+    {
+      "current": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "previous": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+      "occurrences": 1
+    },
+    {
+      "current": "final-source-checks-9b8e5024",
+      "previous": "final-source-checks-3ab1c3f7",
+      "occurrences": 1
+    }
+  ],
+  "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "shared_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+  "local_and_published_ancestors_verified": [
+    "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "84398a79e18673f3e371a405931bc464e1cca99a",
+    "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+    "ddfc8cfafa44b09103ced821f160c1d37fdfe552"
+  ],
+  "mechanism_review": {
+    "original_tsc_project_and_nocov_selector_preserved": true,
+    "original_vite_csp_and_scanner_argv_preserved": true,
+    "commands_serial": true,
+    "pre_and_post_git_source_validation": true,
+    "published_tree_equality_required": true,
+    "nonignored_untracked_source_rejected": true,
+    "actual_child_exit_retained": true,
+    "post_validation_failure_blocks_qualification_before_receipt": true,
+    "logs_receipts_manifests_and_lean_report_exclusive": true,
+    "artifact_source_checked_before_publication": true,
+    "vite_postbuild_scope_explicit": true,
+    "missing_matching_typecheck_fails_build_phase": true
+  },
+  "verdict": "No remaining introduced source blocker in the reviewed serial orchestration.",
+  "execution_attribution": "Coordinator executed checks; reviewer only read script, Git objects and receipts.",
+  "limits": [
+    "Installed dependencies and generated workspace inputs are qualified by the separate compiled-input comparison, not the Git-source guard alone.",
+    "No coverage, lint or application qualification follows from source review of this harness.",
+    "Fresh output-directory absence before launch was reported by coordinator; not independently observed before launch by this reviewer."
+  ]
+}

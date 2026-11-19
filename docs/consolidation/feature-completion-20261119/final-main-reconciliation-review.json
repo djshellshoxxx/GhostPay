@@ -1,0 +1,185 @@
+{
+  "schema": 1,
+  "observed_at": "2026-11-19T11:01:54.678295+00:00",
+  "reviewer": "/root/privacy_completion",
+  "verdict": "Reconciliation adds current main ancestry with zero changes to the entire committed tested tree. No new test execution is claimed.",
+  "tested_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+  "tested_published": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+  "reconciled_local": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+  "reconciled_published": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+  "observed_main": "8f56376427c96881f49590920ff0bf8543ec81b4",
+  "original_pr257_head": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+  "shared_entire_tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+  "git_refs": [
+    {
+      "sha": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+      "parents": [
+        "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+        "2afa8ffe22bebfd448b749fd60e0f96d96c9f14f"
+      ]
+    },
+    {
+      "sha": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+      "parents": [
+        "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+        "ac8d2646d507036f0713a4afd4769d81ada644e3"
+      ]
+    },
+    {
+      "sha": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+      "tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+      "parents": [
+        "9b8e502498388405d5f03da170e7c51574bc06a6",
+        "8f56376427c96881f49590920ff0bf8543ec81b4"
+      ]
+    },
+    {
+      "sha": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+      "parents": [
+        "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+        "8f56376427c96881f49590920ff0bf8543ec81b4"
+      ]
+    },
+    {
+      "sha": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "tree": "21ae3aa7b070aa8921d4360debb15add03d5c194",
+      "parents": [
+        "14ded337a10c140d7a9f9a9238ec038587d925bb",
+        "4f14d6f167c788f5ae2d019bc8482027495f3c6c"
+      ]
+    },
+    {
+      "sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "tree": "fd873be04d7b54523d0f905d53239570e540663a",
+      "parents": [
+        "cfc4a66a49811dfc0f0f58b6e512d1b3098f1304"
+      ]
+    }
+  ],
+  "local_changed_paths": [],
+  "published_changed_paths": [],
+  "verified_ancestry": [
+    {
+      "ancestor": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "descendant": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "git_merge_base_exit_code": 0
+    },
+    {
+      "ancestor": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "descendant": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+      "git_merge_base_exit_code": 0
+    },
+    {
+      "ancestor": "9b8e502498388405d5f03da170e7c51574bc06a6",
+      "descendant": "3ce8cad3b0f793733a98b73007d2afdea97b9aa6",
+      "git_merge_base_exit_code": 0
+    },
+    {
+      "ancestor": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "descendant": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "git_merge_base_exit_code": 0
+    },
+    {
+      "ancestor": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+      "descendant": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "git_merge_base_exit_code": 0
+    }
+  ],
+  "native_observations": {
+    "main": {
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches/main",
+      "sha": "8f56376427c96881f49590920ff0bf8543ec81b4"
+    },
+    "pr257": {
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls/257",
+      "merged": true,
+      "state": "closed",
+      "head": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "merge_commit": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "merged_at": "2026-11-19T10:52:59Z"
+    },
+    "published_commit": {
+      "url": "https://github.com/djshellshoxxx/GhostPay/commit/c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "sha": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "tree": "e585d1dec43844bd18167f213c246994ea6c4397",
+      "parents": [
+        "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+        "8f56376427c96881f49590920ff0bf8543ec81b4"
+      ]
+    }
+  },
+  "main_promotion_attribution": "Concurrent coordinator merged PR257 to main. This reviewer did not perform that promotion or the candidate reconciliation.",
+  "retained_hosted_observation": {
+    "evidence": "main-257-promotion-review.json",
+    "sha256": "f540a984ee64a51674dbea4961c6e6b6ec66ed6271169de2f14df5ecc86cc5c3",
+    "head": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+    "completed_checks": 39,
+    "success": 36,
+    "skipped": 3,
+    "commit_statuses": [
+      {
+        "context": "security/snyk (djshellshoxxx)",
+        "state": "success",
+        "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/c0ff24bc-7f60-4b88-a304-8ffd4973d750"
+      }
+    ],
+    "review_scope": "Reviewer checked all recorded check heads/statuses and independently fetched PR merge, main ref and published reconciliation metadata. Did not independently rerun or requalify hosted jobs."
+  },
+  "publication_map": {
+    "recorded_mapping_count": 76,
+    "tested_pair_verified": true,
+    "reconciled_pair_verified": true
+  },
+  "qualification": {
+    "sha256_at_review": "0c77b248803e233f699f2c89020e3daf9cf87ea2a8828445ab569336909e0e4f",
+    "records": 33,
+    "original_test_source_pins_retained": true,
+    "main_reconciliation_metadata_consistent": true,
+    "additional_original_repository_checks": [
+      {
+        "id": "final-source-secret-scan",
+        "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+        "command": "bash scripts/scan-secrets.sh",
+        "recorded_exit_code": 0,
+        "evidence": "evidence/final-source-secret-scan.txt",
+        "bytes": 50,
+        "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+        "output": "OK: no committed env files or key material found.\n",
+        "execution_attribution": "Coordinator terminal outcome; reviewer read evidence only."
+      },
+      {
+        "id": "final-source-actions-pins",
+        "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+        "command": "bash scripts/check-actions-pinned.sh",
+        "recorded_exit_code": 0,
+        "evidence": "evidence/final-source-actions-pins.txt",
+        "bytes": 85,
+        "sha256": "b4b3abbf4e91b91dbe3fb369fb57d0acdf796404eebf31f131a98e6a49eac791",
+        "output": "OK: 113 'uses:' reference(s) checked, all pinned to full SHAs with version comments.\n",
+        "execution_attribution": "Coordinator terminal outcome; reviewer read evidence only."
+      },
+      {
+        "id": "final-source-tx-origin",
+        "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+        "command": "node scripts/check-tx-origin.mjs .",
+        "recorded_exit_code": 0,
+        "evidence": "evidence/final-source-tx-origin.txt",
+        "bytes": 222,
+        "sha256": "dcb6fcfde194b15d1cb536afde40b33c9e314aa849cb762b2799f513ed2ae5fe",
+        "output": "(node:3) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nOK: no tx.origin in 40 Solidity source file(s).\n",
+        "execution_attribution": "Coordinator terminal outcome; reviewer read evidence only."
+      }
+    ],
+    "count_semantics": "113 is the number of GitHub Actions uses references; 40 is the number of Solidity source files. These are not additional unit-test counts."
+  },
+  "limits": [
+    "This is committed-tree identity, ancestry and reporting review, with no lint, tests, typecheck, build or command replay.",
+    "Existing results remain attached to their actual 9b8/155d source pins. The 3ce8/c7e09 ancestry-only merge has no newly executed check result.",
+    "PR #257 hosted statuses apply to original head 4f14; they do not qualify the broader candidate or replace its outstanding exact-head gates.",
+    "The existing whole-web coverage, typed lint, all-workspace, hosted/native/security and invoice-package coverage limitations remain unchanged.",
+    "Main-ref and hosted-status observations are point-in-time records."
+  ]
+}

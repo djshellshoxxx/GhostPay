@@ -106,6 +106,18 @@ learns confirmed spends without asking a server per outpoint (mempool spends sta
 `syncHeaderChainFromSources` returns a `SourceAgreement` per source (`behindBy`, `lighter`, `conflicting`) and can fail
 closed with `requireAgreement`; disagreement, not withholding, is what it can show.
 
+`ScanStateMatch.spentCheckedThrough` optionally records continuous, complete input coverage from discovery through
+one height/hash. Version-1 history without it remains readable but carries no evidence of unspentness. `resumeScan`
+advances it only across contiguous completed blocks from a source implementing `getSpends`; mode gaps cannot be
+bridged by a later block. Direct `recordScannedBlock` callers must pass the sixth `localSpendsComplete` argument
+only after complete input validation. Reorganizations clamp coverage and clear orphaned spends; malformed and
+duplicate persisted identities are rejected. With an explicit `hashAt`, reconciliation also checks historical
+discovery/spend/coverage hashes outside the recent window, caching each height once. The implicit provider-backed
+fallback keeps its bounded recent-block lookup behavior. Missing or conflicting historical evidence is invalidated,
+and evidence-only repairs also report `rolledBack` so callers persist the corrected state. Applications must still
+require coverage through their sampled tip (or a separately authorized provider result) before offering a candidate
+for spending. See the [Bitcoin spent-status guide](../../docs/user/bitcoin-spent-status.md).
+
 ## Security notes
 
 - **Not constant-time.** JavaScript offers no constant-time guarantee; zeroization is best-effort. Do signing-grade

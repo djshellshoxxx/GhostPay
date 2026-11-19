@@ -9,6 +9,7 @@
       "@ghostpay/relayer-guard/secrets": ["../../packages/relayer-guard/src/secrets.ts"],
       "@ghostpay/relayer-guard": ["../../packages/relayer-guard/src/index.ts"],
       "@ghostpay/core-crypto": ["../../packages/core-crypto/src/index.ts"],
+      "@ghostpay/metadata-hardening": ["../../packages/metadata-hardening/src/index.ts"],
       "@ghostpay/invoice-schema": ["../../packages/invoice-schema/src/index.ts"]
     }
   },

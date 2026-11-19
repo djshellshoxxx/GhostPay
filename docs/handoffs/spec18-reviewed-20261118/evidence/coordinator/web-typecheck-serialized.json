@@ -1,0 +1,17 @@
+{
+  "source": "7c1e710a0a4bd38928b3b74814ba4b0ec4865305",
+  "tree": "097c86d693f96d2836ae018d9e72c628407fd1fe",
+  "command": [
+    "../../node_modules/.bin/tsc",
+    "-p",
+    "tsconfig.json",
+    "--noEmit"
+  ],
+  "cwd": "/workspace/scratch/a264c19c9f94/GhostPay/apps/web",
+  "node": "v22.23.5",
+  "heap_mib": 768,
+  "started_utc": "2026-11-18T23:09:41.792358+00:00",
+  "exit_code": -6,
+  "seconds": 17.996,
+  "max_rss_kib": 882500
+}

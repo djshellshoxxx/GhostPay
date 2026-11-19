@@ -208,7 +208,7 @@ describe('analysis and serialisation', () => {
       expect(p.endsWith(']')).toBe(true);
     }
     expect(xa).toContain('Þáý');
-    expect(xb).toContain('‫');
+    expect(xb).toContain('\u202b');
     const plain = 'Hello world, this is a message';
     expect([...pseudolocalize(plain, 'XA')].length).toBeGreaterThanOrEqual(plain.length * 1.4);
     expect(partsToString(formatToParts(parseMessage(pseudolocalize("Don't {x}", 'XA')), { x: 'Z' }, { locale: 'en' }))).toContain("'");

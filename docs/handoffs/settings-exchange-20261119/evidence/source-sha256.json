@@ -1,0 +1,26 @@
+{
+  "base_sha": "e76451ad56ba1634eed9d03468961900433fd130",
+  "implementation_sha": "83bc4f52767d88e6896d986a29f6d3495e8c22c4",
+  "files": [
+    {
+      "file": "apps/web/src/views/Settings.exchange.test.tsx",
+      "sha256": "56b755ad257993c3c6779409aeee25addc62a907c9f61e219fb40a8bf7cc189a",
+      "unchanged_from_base": false
+    },
+    {
+      "file": "apps/web/src/views/Settings.tsx",
+      "sha256": "fc55b8b3ce79e9aa9a29267ca4ebb19b324a01bc1a8c04ba15ed29b1e4e5d634",
+      "unchanged_from_base": true
+    },
+    {
+      "file": "apps/web/src/lib/settingsExchange.ts",
+      "sha256": "6e217e0b531274297e76af9697cd50ff60cf80b636edcaa19f9464bf58e6d9e6",
+      "unchanged_from_base": true
+    },
+    {
+      "file": "apps/web/locales/en.json",
+      "sha256": "ecfb7e88ed54d5a0412a58faaace2be2ebe017f5b04f052b0495fa59b2d42511",
+      "unchanged_from_base": true
+    }
+  ]
+}
