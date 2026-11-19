@@ -15,9 +15,9 @@ this claim only in `docs/ai/ACTIVE_WORK.md`. All seven abbreviated filenames are
 Acceptance: preserve the observed 278-branch / 267-PR census with exact source heads and explicit
 dispositions; distinguish later observations, verified ancestry, inherited source review and unrun gates;
 record independent recovery and candidate findings without turning them into release qualification;
-publish reviewable documentation from the pinned main tree. The local environment became unavailable,
-so reconstruct from retained connector responses and source-pinned repository evidence; never depend on
-unreachable scratch files or claim that they were recovered. No application, dependency, workflow,
+publish reviewable documentation from the pinned main tree. The local environment became temporarily unavailable during the task, then resumed. The original
+census JSON was successfully reread and cross-checked with GitHub metadata before publication. Retained
+connector responses and source-pinned repository evidence remain explicit provenance; no missing data is invented. No application, dependency, workflow,
 security-gate, deployment or integration-lock mutation belongs to this branch.
 
 Write ownership is sequential: branch_scout publishes the census, then ceases all writes and supplies
