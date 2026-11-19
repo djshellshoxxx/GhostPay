@@ -1,0 +1,316 @@
+Job: 135215459722 (ts-test (web))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44421229393/job/135215459722
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135215459722/logs
+Fetched at: 2026-11-18T23:42:34.380Z
+Job API conclusion: failure
+Published head: d46b8d8253a8f9c18ff21327ef115c3c748a75ec
+Checked-out commit(s): c93b35b7630bd96e7686573576db8fbad49eb6d7
+Decoded raw log SHA256: b6704a6b9f700050ba6f05bc4b3df16b6dd1ed8142f5ada1d34e06d4ad5c7ed2
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L129: 2026-11-18T23:32:22.6350347Z ##[endgroup]
+L130: 2026-11-18T23:32:22.6394937Z [command]/usr/bin/git log -1 --format=%H
+L131: 2026-11-18T23:32:22.6419164Z c93b35b7630bd96e7686573576db8fbad49eb6d7
+L132: 2026-11-18T23:32:22.6428754Z ##[group]Removing auth
+[omitted]
+L170: 2026-11-18T23:32:23.1247893Z with:
+L171: 2026-11-18T23:32:23.1248227Z   node-version: 22
+L172: 2026-11-18T23:32:23.1248429Z   cache: npm
+[omitted]
+L178: 2026-11-18T23:32:23.2949743Z ##[group]Environment details
+L179: 2026-11-18T23:32:23.5597558Z node: v22.23.4
+L180: 2026-11-18T23:32:23.5597875Z npm: 10.9.9
+[omitted]
+L194: 2026-11-18T23:32:26.1288450Z ##[group]Run npm ci --ignore-scripts
+L195: 2026-11-18T23:32:26.1288678Z npm ci --ignore-scripts
+[omitted]
+L448: 2026-11-18T23:32:54.2657623Z > @ghostpay/web@0.1.0 test
+L449: 2026-11-18T23:32:54.2658183Z > vitest run --coverage && vitest run --config vitest.nocov.config.ts
+L450: 2026-11-18T23:32:54.2658361Z 
+L451: 2026-11-18T23:32:54.5451966Z 
+L452: 2026-11-18T23:32:54.5454147Z  RUN  v5.1.0 /home/runner/work/GhostPay/GhostPay/apps/web
+L453: 2026-11-18T23:32:54.5454944Z       Coverage enabled with v8
+L454: 2026-11-18T23:32:54.5455207Z 
+L455: 2026-11-18T23:32:57.6131537Z  ✓ src/lib/sweep.test.ts (102 tests) 1504ms
+L456: 2026-11-18T23:33:00.2028689Z  ✓ src/lib/scanClient.test.ts (92 tests) 4368ms
+[omitted]
+L661: 2026-11-18T23:34:45.5321162Z  ✓ src/components/StealthExportRecovery.test.tsx (16 tests) 26918ms
+L662: 2026-11-18T23:34:45.5322322Z    ✓ Open a stealth key export (spec 18 flow 4) (10)
+L663: 2026-11-18T23:34:45.5323220Z      ✓ lists verified payment keys in a fresh session with no keys, and downloads one raw key only after a second confirmation 1132ms
+L664: 2026-11-18T23:34:45.5324207Z      ✓ refuses a wrong passphrase and a foreign file atomically and clears the passphrase 1250ms
+L665: 2026-11-18T23:34:45.5325075Z      ✓ loads master keys through the hex-import path with a generated signing key 1095ms
+L666: 2026-11-18T23:34:45.5326050Z      ✓ asks before master keys replace loaded keys that have no backup, and says when they are loaded already 2362ms
+L667: 2026-11-18T23:34:45.5327104Z      ✓ requires fresh confirmation even when the loaded keys have a proven copy, and a key change closes the export 2163ms
+L668: 2026-11-18T23:34:45.5328244Z      ✓ does not apply a cancelled master-load request to an export opened later 3450ms
+L669: 2026-11-18T23:34:45.5329193Z      ✓ requires the sole-copy warning again when another tab deletes the vault after replacement review 1668ms
+L670: 2026-11-18T23:34:45.5330048Z      ✓ does not show a stale replacement confirmation on a later export 2679ms
+L671: 2026-11-18T23:34:45.5330804Z      ✓ the idle lock wipes opened keys and a cancelled open shows nothing 2426ms
+L672: 2026-11-18T23:34:45.5331378Z    ✓ verify an existing backup without importing (4)
+L673: 2026-11-18T23:34:45.5332079Z      ✓ verifies an archive without holding raw keys or changing the loaded wallet 1124ms
+L674: 2026-11-18T23:34:45.5332968Z      ✓ verifies master spending authority in an empty session without loading it or claiming a signing-key backup 1094ms
+L675: 2026-11-18T23:34:45.5333857Z      ✓ refuses public records and wrong passwords without marking the selected file verified 813ms
+L676: 2026-11-18T23:34:45.5334637Z      ✓ cannot apply a delayed verification to another selected file 923ms
+L677: 2026-11-18T23:34:45.5335218Z    ✓ Master stealth key backup (spec 18 flow 3) (2)
+L678: 2026-11-18T23:34:45.5336046Z      ✓ exports the spending and viewing keys after re-authentication with a keystore file, never the signing key 3884ms
+L679: 2026-11-18T23:34:45.5337044Z      ✓ refuses without a vault, clears the passphrases, and cancels on the idle lock 812ms
+[omitted]
+L721: 2026-11-18T23:35:40.7991695Z  ✓ src/lib/paymentKeyExport.test.ts (29 tests) 75481ms
+L722: 2026-11-18T23:35:40.7992465Z    ✓ public record export (2)
+L723: 2026-11-18T23:35:40.7993205Z      ✓ reproduces the reference public record byte for byte and holds no secret 1052ms
+L724: 2026-11-18T23:35:40.7994290Z      ✓ needs loaded keys and refuses another seller, another scheme, an unknown chain or a relabelled address 1058ms
+L725: 2026-11-18T23:35:40.7995033Z    ✓ single encrypted keypair (7)
+L726: 2026-11-18T23:35:40.7995888Z      ✓ re-authenticates, checks eth_getCode at latest through the given RPC, and seals exactly the derived key 2954ms
+L727: 2026-11-18T23:35:40.7996979Z      ✓ exports a deep-scan payment whose announced view tag differs (ownership is the derived address) 2884ms
+L728: 2026-11-18T23:35:40.7998186Z      ✓ refuses an address with code, a failed or malformed code check, a missing RPC and an RPC of another chain 8304ms
+L729: 2026-11-18T23:35:40.7999135Z      ✓ checks the new passphrase and the credential before any request 1919ms
+L730: 2026-11-18T23:35:40.8000122Z      ✓ discards the result and wipes the key when the keys are wiped while the file is being sealed 2723ms
+L731: 2026-11-18T23:35:40.8001192Z      ✓ discards the result of a cancelled operation, also when the cancellation lands during the code check 2929ms
+L732: 2026-11-18T23:35:40.8002198Z      ✓ refuses keys replaced during re-authentication without contacting the RPC 1765ms
+L733: 2026-11-18T23:35:40.8002822Z    ✓ raw private key (2)
+L734: 2026-11-18T23:35:40.8003556Z      ✓ needs the explicit second confirmation, then yields exactly the section-6 text 1601ms
+L735: 2026-11-18T23:35:40.8004292Z      ✓ refuses a contract account 1810ms
+L736: 2026-11-18T23:35:40.8004767Z    ✓ payment key archive (6)
+L737: 2026-11-18T23:35:40.8005507Z      ✓ deduplicates replays to the earliest locator, sorts by address and refuses conflicts 972ms
+L738: 2026-11-18T23:35:40.8006548Z      ✓ describes the count and chain before confirming, and refuses mixed chains, no payments and too many 699ms
+L739: 2026-11-18T23:35:40.8007597Z      ✓ resolves same-locator replay metadata deterministically regardless of scan input order 816ms
+L740: 2026-11-18T23:35:40.8008709Z      ✓ exports every distinct payment once, checks each address once and never includes master keys 3858ms
+L741: 2026-11-18T23:35:40.8009690Z      ✓ refuses the whole archive when one address has code, and wipes every derived key 2992ms
+L742: 2026-11-18T23:35:40.8010489Z      ✓ keeps the single scope to exactly one payment 2883ms
+L743: 2026-11-18T23:35:40.8011002Z    ✓ master backup (2)
+L744: 2026-11-18T23:35:40.8011702Z      ✓ holds exactly the loaded spending and viewing keys and never the signing key 4109ms
+L745: 2026-11-18T23:35:40.8012969Z      ✓ refuses without a valid credential and discards a backup sealed after the keys changed 2722ms
+L746: 2026-11-18T23:35:40.8013863Z    ✓ opening an export (recovery) (6)
+L747: 2026-11-18T23:35:40.8015233Z      ✓ wipes the decrypted payment scalars after boxing while keeping each boxed key usable 1852ms
+L748: 2026-11-18T23:35:40.8016180Z      ✓ disposes partial master boxes and wipes source scalars if boxing the second key fails 1587ms
+L749: 2026-11-18T23:35:40.8017019Z      ✓ opens every reference file in a session with no keys loaded 2658ms
+L750: 2026-11-18T23:35:40.8018008Z      ✓ loads master keys through the hex-import path with a new signing key and recovers the payment omitted from the archive 2787ms
+L751: 2026-11-18T23:35:40.8019288Z      ✓ applies an explicit chain constraint to public records and rejects chain-neutral master backups before decryption 922ms
+L752: 2026-11-18T23:35:40.8020341Z      ✓ fails closed on every reference refusal, a foreign file, an oversized file and a cancelled open 10082ms
+L753: 2026-11-18T23:35:40.8020759Z    ✓ verifying an export without importing (4)
+L754: 2026-11-18T23:35:40.8021253Z      ✓ checks payment and master keys, disposes every key box, and leaves the current wallet and custody unchanged 2429ms
+L755: 2026-11-18T23:35:40.8021841Z      ✓ never verifies a public record, wrong password, corrupt file or wrong chain as a backup 1825ms
+L756: 2026-11-18T23:35:40.8022558Z      ✓ disposes keys and refuses a verification result after the wallet changes during decryption 1462ms
+L757: 2026-11-18T23:35:40.8023417Z      ✓ never reports success when cancellation arrives during decryption 1824ms
+[omitted]
+L784: 2026-11-18T23:35:53.1063265Z  ✓ src/components/StealthExportPayment.test.tsx (12 tests) 30008ms
+L785: 2026-11-18T23:35:53.1064050Z    ✓ Payment details (spec 18 flow 1) (9)
+L786: 2026-11-18T23:35:53.1064753Z      ✓ derives, downloads and reveals nothing until asked, and labels ownership apart from payment status 1148ms
+L787: 2026-11-18T23:35:53.1065485Z      ✓ downloads the public record without re-authentication or any request 898ms
+L788: 2026-11-18T23:35:53.1066247Z      ✓ exports the encrypted keypair after the vault step-up and the address check, then clears every passphrase 3596ms
+L789: 2026-11-18T23:35:53.1066958Z      ✓ refuses a mismatched new passphrase and a weak one before any work 1027ms
+L790: 2026-11-18T23:35:53.1067683Z      ✓ a wrong vault passphrase or a contract address refuses, clears the passphrases and downloads nothing 2863ms
+L791: 2026-11-18T23:35:53.1068625Z      ✓ the raw key needs the second confirmation, is downloaded only and never shown 2195ms
+L792: 2026-11-18T23:35:53.1069491Z      ✓ a blocked download reports it, re-enables the form and clears the passphrases 2654ms
+L793: 2026-11-18T23:35:53.1070075Z      ✓ the idle lock, a chain switch and closing the panel cancel a running export: nothing is downloaded 4162ms
+L794: 2026-11-18T23:35:53.1070601Z      ✓ a key change during an export cancels it and clears the fields 2417ms
+L795: 2026-11-18T23:35:53.1070984Z    ✓ Export all payment keys (spec 18 flow 2) (3)
+L796: 2026-11-18T23:35:53.1071443Z      ✓ shows the distinct count and chain before confirming and exports one encrypted archive 3959ms
+L797: 2026-11-18T23:35:53.1072294Z      ✓ shows a conflict instead of a form, closes on a chain switch and accepts a keystore file as the credential 4013ms
+L798: 2026-11-18T23:35:53.1073004Z      ✓ refuses a keystore credential without a file, and says when there is nothing to export 1073ms
+[omitted]
+L1368: 2026-11-18T23:38:46.9697106Z  ✓ src/components/StealthExportVerification.test.tsx (12 tests) 4493ms
+L1369: 2026-11-18T23:38:46.9737781Z    ✓ saved Spec 18 export verification (12)
+L1370: 2026-11-18T23:38:46.9765017Z      ✓ requires retention confirmation and a saved file, authenticates its keys, and never changes seller custody 1475ms
+L1371: 2026-11-18T23:38:46.9769350Z      ✓ a wrong password cannot mark the saved file verified 1102ms
+L1372: 2026-11-18T23:38:49.4340174Z  ✓ src/components/StealthExportSelection.test.tsx (7 tests) 2704ms
+L1373: 2026-11-18T23:38:49.4349680Z    ✓ export consent and results follow the selected inputs (7)
+L1374: 2026-11-18T23:38:49.4350396Z      ✓ a changed payment closes raw-key confirmation on the same chain 347ms
+L1375: 2026-11-18T23:38:49.4351173Z      ✓ discards an in-flight encrypted payment after the payment changes 486ms
+L1376: 2026-11-18T23:38:49.4351890Z      ✓ discards an in-flight encrypted payment after the rpc changes 466ms
+L1377: 2026-11-18T23:38:49.4352647Z      ✓ discards an in-flight encrypted payment after the announcement changes 422ms
+L1378: 2026-11-18T23:38:49.4353490Z      ✓ new same-chain scan results cancel the old archive before download 391ms
+L1379: 2026-11-18T23:38:49.4354473Z      ✓ an equivalent rerender preserves the export and reveals retention controls only after a download starts 396ms
+[omitted]
+L1546: 2026-11-18T23:39:05.0338880Z  ❯ src/views/SellerKeys.stealthExport.test.tsx (4 tests | 1 failed) 11567ms
+L1547: 2026-11-18T23:39:05.0339971Z    ❯ Seller keys: spec 18 master backup and recovery (4)
+L1548: 2026-11-18T23:39:05.0341304Z      ✓ offers recovery in a fresh session with no keys, and the master backup only once keys are loaded 1684ms
+L1549: 2026-11-18T23:39:05.0342490Z      ✓ downloads the master backup after the vault step-up 4820ms
+L1550: 2026-11-18T23:39:05.0343403Z      ✓ loading master keys over unsaved keys asks first, like unlocking a vault 1704ms
+L1551: 2026-11-18T23:39:05.0369247Z      × loads master keys over keys whose saved vault still holds them without asking 3357ms
+L1552: 2026-11-18T23:39:05.0373726Z stderr | src/views/Scan.i18n.test.tsx > Scan localization (neutral vs critical) > renders a scan error that settles after a language change in the current language, not the one at start
+L1553: 2026-11-18T23:39:05.0374853Z [i18n] fallback: common.notice.error (es)
+L1554: 2026-11-18T23:39:05.0375205Z 
+L1555: 2026-11-18T23:39:05.0843699Z stderr | src/views/Scan.i18n.test.tsx > Scan localization (neutral vs critical) > renders a scan error that settles after a language change in the current language, not the one at start
+L1556: 2026-11-18T23:39:05.0844598Z [i18n] fallback: app.shell.tagline (es)
+L1557: 2026-11-18T23:39:05.0844834Z [i18n] fallback: app.nav.seller (es)
+L1558: 2026-11-18T23:39:05.0845037Z [i18n] fallback: app.nav.btc (es)
+L1559: 2026-11-18T23:39:05.0845231Z [i18n] fallback: app.nav.solana (es)
+L1560: 2026-11-18T23:39:05.0845425Z [i18n] fallback: app.nav.tron (es)
+L1561: 2026-11-18T23:39:05.0845622Z [i18n] fallback: app.nav.registry (es)
+L1562: 2026-11-18T23:39:05.0845812Z [i18n] fallback: app.nav.about (es)
+L1563: 2026-11-18T23:39:05.0846007Z [i18n] fallback: app.backup.title (es)
+L1564: 2026-11-18T23:39:05.0846196Z [i18n] fallback: app.backup.body (es)
+L1565: 2026-11-18T23:39:05.0846395Z [i18n] fallback: app.shell.footer (es)
+L1566: 2026-11-18T23:39:05.0846613Z [i18n] fallback: merchantProfile.load.title (es)
+L1567: 2026-11-18T23:39:05.0846844Z [i18n] fallback: merchantProfile.load.url (es)
+L1568: 2026-11-18T23:39:05.0847087Z [i18n] fallback: merchantProfile.load.privacy (es)
+L1569: 2026-11-18T23:39:05.0847332Z [i18n] fallback: merchantProfile.load.action (es)
+L1570: 2026-11-18T23:39:05.0847555Z [i18n] fallback: common.notice.warn (es)
+L1571: 2026-11-18T23:39:05.0847747Z [i18n] fallback: scan.intro (es)
+L1572: 2026-11-18T23:39:05.0847946Z [i18n] fallback: scan.rpcPrivacy.title (es)
+L1573: 2026-11-18T23:39:05.0848595Z [i18n] fallback: scan.rpcPrivacy.body (es)
+L1574: 2026-11-18T23:39:05.0848814Z [i18n] fallback: scan.providerSeesPayments (es)
+L1575: 2026-11-18T23:39:05.0849047Z [i18n] fallback: scan.disclosure.summary (es)
+L1576: 2026-11-18T23:39:05.0849335Z [i18n] fallback: scanPrivacy.disclosure.rpcParty (es)
+L1577: 2026-11-18T23:39:05.0849701Z [i18n] fallback: scanPrivacy.disclosure.ipDirect (es)
+L1578: 2026-11-18T23:39:05.0850089Z [i18n] fallback: scanPrivacy.disclosure.windowsFixed (es)
+L1579: 2026-11-18T23:39:05.0850448Z [i18n] fallback: scanPrivacy.disclosure.logsRpc (es)
+L1580: 2026-11-18T23:39:05.0850688Z [i18n] fallback: scanPrivacy.disclosure.rpc (es)
+L1581: 2026-11-18T23:39:05.0850950Z [i18n] fallback: scanPrivacy.disclosure.sweepParty (es)
+L1582: 2026-11-18T23:39:05.0851314Z [i18n] fallback: scanPrivacy.disclosure.sweepOnRequest (es)
+L1583: 2026-11-18T23:39:05.0851597Z [i18n] fallback: scanPrivacy.disclosure.everyoneParty (es)
+L1584: 2026-11-18T23:39:05.0851858Z [i18n] fallback: scanPrivacy.disclosure.everyone (es)
+L1585: 2026-11-18T23:39:05.0852090Z [i18n] fallback: scan.disclosure.hint (es)
+L1586: 2026-11-18T23:39:05.0852295Z [i18n] fallback: scan.autoRescan.hint (es)
+L1587: 2026-11-18T23:39:05.0852500Z [i18n] fallback: common.notice.error (es)
+L1588: 2026-11-18T23:39:05.0852812Z [i18n] fallback: scan.matches.none (es)
+L1589: 2026-11-18T23:39:05.0853311Z [i18n] fallback: ledger.ui.selectedObservationsAreEncryptedOnThisDeviceWithYourViewing (es)
+L1590: 2026-11-18T23:39:05.0853807Z [i18n] fallback: ledger.ui.invalidationHistoryIsBoundedIfItReachesCapacityTheEncrypted (es)
+L1591: 2026-11-18T23:39:05.0854181Z [i18n] fallback: ledger.ui.unlockEncryptedReconciliationVault (es)
+L1592: 2026-11-18T23:39:05.0854878Z [i18n] fallback: ledger.ui.legacyDataIsUntrustedAndMayHaveBeenEditedIt (es)
+L1593: 2026-11-18T23:39:05.0855194Z [i18n] fallback: ledger.ui.readUntrustedLegacyRecords (es)
+L1594: 2026-11-18T23:39:05.0855589Z [i18n] fallback: ledger.ui.exportUntrustedLegacyPlaintext (es)
+L1595: 2026-11-18T23:39:05.0855881Z [i18n] fallback: ledger.ui.deleteLegacyPlaintextRecords (es)
+L1596: 2026-11-18T23:39:05.0856112Z [i18n] fallback: scan.tags.hint (es)
+L1597: 2026-11-18T23:39:05.0856311Z [i18n] fallback: scan.tags.deleteAll (es)
+L1598: 2026-11-18T23:39:05.0856431Z 
+[omitted]
+L1663: 2026-11-18T23:39:24.4407146Z  ✓ src/AppShell.beforeUnload.test.tsx (6 tests) 3209ms
+L1664: 2026-11-18T23:39:24.4449669Z    ✓ AppShell beforeunload guard (SEC-40) (6)
+L1665: 2026-11-18T23:39:24.4450789Z      ✓ protects the only key copy when another tab deletes the saved vault without notifying this tab 954ms
+L1666: 2026-11-18T23:39:24.4479868Z      ✓ uses current external-copy verification even when the cached vault backup summary does not change 1990ms
+[omitted]
+L1735: 2026-11-18T23:39:44.5160018Z  ↓ src/features/btc/regtest.e2e.test.ts (1 test | 1 skipped)
+[omitted]
+L2245: 2026-11-18T23:41:08.8470026Z ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+L2246: 2026-11-18T23:41:08.8470246Z 
+L2247: 2026-11-18T23:41:08.8472811Z  FAIL  src/views/SellerKeys.stealthExport.test.tsx > Seller keys: spec 18 master backup and recovery > loads master keys over keys whose saved vault still holds them without asking
+L2248: 2026-11-18T23:41:08.8477329Z AssertionError: expected 'st:eth:0x035e85e278f90c3730233097cbac…' to be 'st:eth:0x034f355bdcb7cc0af728ef3cceb9…' // Object.is equality
+L2249: 2026-11-18T23:41:08.8477774Z 
+L2250: 2026-11-18T23:41:08.8477888Z Ignored nodes: comments, script, style
+L2251: 2026-11-18T23:41:08.8478300Z <html>
+L2252: 2026-11-18T23:41:08.8478467Z   <head />
+L2253: 2026-11-18T23:41:08.8478625Z   <body>
+L2254: 2026-11-18T23:41:08.8478773Z     <div>
+L2255: 2026-11-18T23:41:08.8478914Z       <a
+[omitted]
+L2447: 2026-11-18T23:41:08.8535087Z  ❯ src/views/SellerKeys.stealthExport.test.tsx:100:67
+L2448: 2026-11-18T23:41:08.8535485Z      98|     await user.click(within(panel).getByRole('button', { name: 'Open e…
+L2449: 2026-11-18T23:41:08.8535856Z      99|     await user.click(await within(panel).findByRole('button', { name: …
+L2450: 2026-11-18T23:41:08.8536225Z     100|     await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe…
+L2451: 2026-11-18T23:41:08.8536569Z        |                                                                   ^
+L2452: 2026-11-18T23:41:08.8536909Z     101|     expect(screen.queryByText('The keys loaded now have no verified ba…
+L2453: 2026-11-18T23:41:08.8537182Z     102|   });
+L2454: 2026-11-18T23:41:08.8537763Z  ❯ runWithExpensiveErrorDiagnosticsDisabled ../../node_modules/@testing-library/dom/dist/config.js:47:12
+L2455: 2026-11-18T23:41:08.8538481Z  ❯ checkCallback ../../node_modules/@testing-library/dom/dist/wait-for.js:124:77
+L2456: 2026-11-18T23:41:08.8539008Z  ❯ Timeout.checkRealTimersCallback ../../node_modules/@testing-library/dom/dist/wait-for.js:118:16
+L2457: 2026-11-18T23:41:08.8539258Z 
+L2458: 2026-11-18T23:41:08.8539410Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+L2459: 2026-11-18T23:41:08.8539531Z 
+L2460: 2026-11-18T23:41:08.8539547Z 
+L2461: 2026-11-18T23:41:08.8539887Z  Test Files  1 failed | 218 passed | 1 skipped (220)
+L2462: 2026-11-18T23:41:08.8554039Z       Tests  1 failed | 2993 passed | 1 skipped (2995)
+L2463: 2026-11-18T23:41:08.8554566Z    Start at  23:32:54
+L2464: 2026-11-18T23:41:08.8558951Z    Duration  494.29s (tests 86%, import 9%, environment 4%, transform 1%)
+L2465: 2026-11-18T23:41:08.8569760Z 
+L2466: 2026-11-18T23:41:08.8570301Z     Isolate  220 workers spawned · ~346ms startup each (spawn + environment, per file)
+L2467: 2026-11-18T23:41:08.8570887Z              at least ~25.00s faster with isolate: false — reuses workers across files instead of one per file
+L2468: 2026-11-18T23:41:08.8571149Z 
+L2469: 2026-11-18T23:41:08.8599167Z 
+L2470: 2026-11-18T23:41:08.8641217Z ##[error]AssertionError: expected 'st:eth:0x035e85e278f90c3730233097cbac…' to be 'st:eth:0x034f355bdcb7cc0af728ef3cceb9…' // Object.is equality
+L2471: 
+L2472: Ignored nodes: comments, script, style
+L2473: <html>
+L2474:   <head />
+L2475:   <body>
+L2476:     <div>
+L2477:       <a
+L2478:         class="skip"
+L2479:         href="#main"
+L2480:       >
+L2481:         Skip to content
+L2482:       </a>
+L2483:       <header
+L2484:         class="site-header"
+L2485:       >
+L2486:         <h1>
+L2487:           GhostPay
+L2488:         </h1>
+L2489:         <p
+L2490:           class="tagline"
+L2491:         >
+L2492:           Stealth-address payments. Everything runs in your browser. Unaudited software.
+L2493:         </p>
+L2494:         <nav
+L2495:           aria-label="Main"
+L2496:         >
+L2497:           <ul
+L2498:             class="nav"
+L2499:           >
+L2500:             <li>
+L2501:               <button
+L2502:                 class="nav-btn"
+L2503:                 data-view="home"
+L2504:                 type="button"
+L2505:               >
+L2506:                 Home
+L2507:               </button>
+L2508:             </li>
+L2509:             <li>
+L2510:               <button
+L2511:                 aria-current="page"
+L2512:                 class="nav-btn"
+L2513:                 data-view="seller"
+L2514:                 type="button"
+L2515:               >
+L2516:                 Seller keys
+L2517:               </button>
+L2518:             </li>
+L2519:             <li>
+L2520:               <button
+L2521:                 class="nav-btn"
+L2522:                 data-view="create"
+L2523:                 type="button"
+L2524:               >
+L2525:                 Create invoice
+L2526:               </button>
+L2527:             </li>
+L2528:             <li>
+L2529:               <button
+L2530:                 class="nav-btn"
+L2531:                 data-view="pay"
+L2532:                 type="button"
+L2533:               >
+L2534:                 Pay
+L2535:               </button>
+L2536:             </li>
+L2537:             <li>
+L2538:               <button
+L2539:                 class="nav-btn"
+L2540:                 data-view="scan"
+L2541:                 type="button"
+L2542:               >
+L2543:                 Scan and receive
+L2544:               </button>
+L2545:             </li>
+L2546:             <li>
+[omitted]
+L2642:               id="_r_3c_-hint"
+L2643:             >
+L2644: 
+L2645: 2026-11-18T23:41:08.9551279Z npm error Lifecycle script `test` failed with error:
+L2646: 2026-11-18T23:41:08.9551649Z npm error code 1
+L2647: 2026-11-18T23:41:08.9551939Z npm error path /home/runner/work/GhostPay/GhostPay/apps/web
+L2648: 2026-11-18T23:41:08.9552202Z npm error workspace @ghostpay/web@0.1.0
+L2649: 2026-11-18T23:41:08.9552476Z npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+L2650: 2026-11-18T23:41:08.9552712Z npm error command failed
+L2651: 2026-11-18T23:41:08.9553060Z npm error command sh -c vitest run --coverage && vitest run --config vitest.nocov.config.ts
+L2652: 2026-11-18T23:41:08.9611987Z ##[error]Process completed with exit code 1.
+L2653: 2026-11-18T23:41:08.9697351Z Post job cleanup.
+L2654: 2026-11-18T23:41:08.9700372Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__0e6cbd0d-6146-451d-b1e3-f7b5aca6da4d.libs]
+L2655: 2026-11-18T23:41:08.9701850Z ##[end-action id=__0e6cbd0d-6146-451d-b1e3-f7b5aca6da4d.libs;outcome=skipped;conclusion=skipped;duration_ms=0]
+L2656: 2026-11-18T23:41:08.9703074Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__0e6cbd0d-6146-451d-b1e3-f7b5aca6da4d.__actions_setup-node]
+L2657: 2026-11-18T23:41:08.9704312Z ##[end-action id=__0e6cbd0d-6146-451d-b1e3-f7b5aca6da4d.__actions_setup-node;outcome=skipped;conclusion=skipped;duration_ms=0]
+L2658: 2026-11-18T23:41:08.9745191Z Post job cleanup.
+L2659: 2026-11-18T23:41:09.0376406Z [command]/usr/bin/git version

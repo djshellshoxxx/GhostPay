@@ -1,0 +1,142 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/af37e06cf64c/GhostPay/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Sourcemap for "/tmp/ghostpay-spec18-build/tx-review/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tx-review/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tx-review/decode.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/tx-review/review.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/address-safety/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/address-safety/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/address-safety/address.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/address-safety/meta.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/address-safety/text.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/address-safety/token.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/decimal.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/text.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/query.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/recipient.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/addresses.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/eip681.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/eip3770.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/bitcoin.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/solana.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/tron.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/invoice-link.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/payment-uri/parse.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/browser.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/guard.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/onion.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/fetchTransport.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/fetchAdapter.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/claims.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/selection.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/settings.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/net-transport/profile.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/guard.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/types.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/window.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/padded.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/validate.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/range.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/indexer.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/pir2.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/guard.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/rand.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/xor.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/pages.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/manifest.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/server.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/http.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/client.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/pir-two-server/honesty.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/light.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/quorum.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/create.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/scan-source/claims.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/errors.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/testnet.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/destination.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/addr.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/ledger.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/consolidation.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/verify.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/buffer.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/guard.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/options.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/hygiene/hop-source.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/index.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/guard.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/derive.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/tags.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/amounts.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/gas.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/release.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/scan.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/invoice.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/direct.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/web.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/btc.js" points to missing source files
+Sourcemap for "/tmp/ghostpay-spec18-build/metadata-hardening/catalogue.js" points to missing source files
+ ❯ src/AppShell.beforeUnload.test.tsx (6 tests | 2 failed) 240ms
+   ❯ AppShell beforeunload guard (SEC-40) (6)
+     × protects the only key copy when another tab deletes the saved vault without notifying this tab 77ms
+     × uses current external-copy verification even when the cached vault backup summary does not change 61ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/AppShell.beforeUnload.test.tsx > AppShell beforeunload guard (SEC-40) > protects the only key copy when another tab deletes the saved vault without notifying this tab
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/AppShell.beforeUnload.test.tsx:67:28
+     65|     expect(await store.get()).toBeUndefined();
+     66|     expect(getSessionBackup()).toBe(cached);
+     67|     expect(leavePrompts()).toBe(true);
+       |                            ^
+     68|   });
+     69|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/AppShell.beforeUnload.test.tsx > AppShell beforeunload guard (SEC-40) > uses current external-copy verification even when the cached vault backup summary does not change
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/AppShell.beforeUnload.test.tsx:77:28
+     75|     expect(saved).toBeDefined();
+     76|     const cached = getSessionBackup();
+     77|     expect(leavePrompts()).toBe(true);
+       |                            ^
+     78|
+     79|     await act(async () => { await verifyDownloadedBackup(saved!, PASS)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  15:00:28
+   Duration  2.50s (transform 39%, environment 26%, import 25%, tests 10%)
+

@@ -1,0 +1,225 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/af37e06cf64c/GhostPay/apps/web
+
+(node:40) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/components/StealthExportVerification.test.tsx (13 tests | 1 failed | 12 skipped) 1297ms
+   ❯ saved Spec 18 export verification (13)
+     × refuses BOM-prefixed saved bytes even when File.text normalizes them to the generated ciphertext 1296ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > refuses BOM-prefixed saved bytes even when File.text normalizes them to the generated ciphertext
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_0_"[39m
+      [33mclass[39m=[32m"stack"[39m
+      [33mdata-testid[39m=[32m"stealth-export-verification"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mid[39m=[32m"_r_0_"[39m
+      [36m>[39m
+        [0mKeep and verify this backup[0m
+      [36m</h4>[39m
+      [36m<p[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33mdata-testid[39m=[32m"stealth-export-backup-state"[39m
+        [33mrole[39m=[32m"status"[39m
+      [36m>[39m
+        [0mSaved backup verified. This exact exported file decrypted successfully and its keys match their public identities.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"hint"[39m
+      [36m>[39m
+        [0mVerification applies only to this file. It does not mark the complete seller keystore as backed up.[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"check"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33mid[39m=[32m"_r_1_"[39m
+          [33mtype[39m=[32m"checkbox"[39m
+        [36m/>[39m
+        [36m<label[39m
+          [33mfor[39m=[32m"_r_1_"[39m
+        [36m>[39m
+          [0mI saved this backup file and kept its passphrase separately.[0m
+        [36m</label>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33mautocomplete[39m=[32m"off"[39m
+        [33mclass[39m=[32m"stack"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_2_"[39m
+          [36m>[39m
+            [0mSaved backup file[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33maccept[39m=[32m"application/json,.json"[39m
+            [33mid[39m=[32m"_r_2_"[39m
+            [33mtype[39m=[32m"file"[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hint"[39m
+          [36m>[39m
+            [0mSelected file[0m
+            [0m: [0m
+            [36m<bdi>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"isolate"[39m
+              [36m>[39m
+                [0mghostpay-stealth-keypair.json[0m
+              [36m</span>[39m
+            [36m</bdi>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_3_"[39m
+          [36m>[39m
+            [0mPassphrase of the saved backup[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mid[39m=[32m"_r_3_"[39m
+            [33mtype[39m=[32m"password"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mVerify the saved backup[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_0_"[39m
+      [33mclass[39m=[32m"stack"[39m
+      [33mdata-testid[39m=[32m"stealth-export-verification"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mid[39m=[32m"_r_0_"[39m
+      [36m>[39m
+        [0mKeep and verify this backup[0m
+      [36m</h4>[39m
+      [36m<p[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33mdata-testid[39m=[32m"stealth-export-backup-state"[39m
+        [33mrole[39m=[32m"status"[39m
+      [36m>[39m
+        [0mSaved backup verified. This exact exported file decrypted successfully and its keys match their public identities.[0m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"hint"[39m
+      [36m>[39m
+        [0mVerification applies only to this file. It does not mark the complete seller keystore as backed up.[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"check"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33mid[39m=[32m"_r_1_"[39m
+          [33mtype[39m=[32m"checkbox"[39m
+        [36m/>[39m
+        [36m<label[39m
+          [33mfor[39m=[32m"_r_1_"[39m
+        [36m>[39m
+          [0mI saved this backup file and kept its passphrase separately.[0m
+        [36m</label>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33mautocomplete[39m=[32m"off"[39m
+        [33mclass[39m=[32m"stack"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_2_"[39m
+          [36m>[39m
+            [0mSaved backup file[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33maccept[39m=[32m"application/json,.json"[39m
+            [33mid[39m=[32m"_r_2_"[39m
+            [33mtype[39m=[32m"file"[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hint"[39m
+          [36m>[39m
+            [0mSelected file[0m
+            [0m: [0m
+            [36m<bdi>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"isolate"[39m
+              [36m>[39m
+                [0mghostpay-stealth-keypair.json[0m
+              [36m</span>[39m
+            [36m</bdi>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_3_"[39m
+          [36m>[39m
+            [0mPassphrase of the saved backup[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mid[39m=[32m"_r_3_"[39m
+            [33mtype[39m=[32m"password"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mVerify the saved backup[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper ../../../../4fa14be12559/GhostPay/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../../../4fa14be12559/GhostPay/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/StealthExportVerification.test.tsx:83:26
+     81|     await user.type(screen.getByLabelText('Passphrase of the saved bac…
+     82|     await user.click(submit());
+     83|     expect((await screen.findByRole('alert')).textContent).toContain('…
+       |                          ^
+     84|     expect(verify).not.toHaveBeenCalled();
+     85|     expect(announce).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 skipped (13)
+   Start at  15:53:28
+   Duration  2.79s (tests 49%, environment 27%, import 15%, transform 9%)
+

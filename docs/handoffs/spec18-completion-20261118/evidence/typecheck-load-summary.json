@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "apps/web/tsconfig.json",
+    "--noEmit",
+    "--listFilesOnly"
+  ],
+  "heap_mib": 768,
+  "exit_code": 0,
+  "seconds": 3.207,
+  "peak_rss_kib": 566260,
+  "peak_hwm_kib": 566260,
+  "stdout_lines": 3128,
+  "stderr_bytes": 0,
+  "last_sample": {
+    "seconds": 3.006,
+    "VmSize": 1571536,
+    "VmHWM": 566260,
+    "VmRSS": 566260
+  }
+}

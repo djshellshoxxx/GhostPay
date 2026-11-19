@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/components/StealthExportRecovery.test.tsx",
+    "--coverage=false",
+    "--maxWorkers=1"
+  ],
+  "node": "22.23.5",
+  "NODE_OPTIONS": "--max-old-space-size=768",
+  "exit_code": 0,
+  "seconds": 6.492,
+  "log": "/tmp/ghostpay-spec18-bom-recovery-green.log",
+  "log_sha256": "1693c54610b2db699e8ceae8da1dd6b13e6c8d2638997f0e7ae0742d807b4826",
+  "source_sha256_before": {
+    "src/components/StealthExportRecovery.tsx": "126519cbdb8e09d0949fc7f8ecf66ca29dd6bf51ba148d1016df287145736a59",
+    "src/components/StealthExportRecovery.test.tsx": "e70bf5140566e406625fb955e5921fb5a55140294128ff9a129cdf1922baed07"
+  },
+  "source_sha256_after": {
+    "src/components/StealthExportRecovery.tsx": "126519cbdb8e09d0949fc7f8ecf66ca29dd6bf51ba148d1016df287145736a59",
+    "src/components/StealthExportRecovery.test.tsx": "e70bf5140566e406625fb955e5921fb5a55140294128ff9a129cdf1922baed07"
+  },
+  "scope": "Complete StealthExportRecovery.test.tsx; original16 plus actual raw-BOM Open/Verify cases; no filter."
+}

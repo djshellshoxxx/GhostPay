@@ -1,0 +1,23 @@
+{
+  "observed_at": "2026-11-19T00:31:46.123Z",
+  "main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "base_pr": {
+    "number": 238,
+    "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "branch": "integration/ghostpay-pages-completion-20261118",
+    "state": "open",
+    "merged": false
+  },
+  "feature_pr": {
+    "number": 240,
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/240",
+    "head": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+    "branch": "chatgpt/spec18-recovery-completion-20261118",
+    "base": "integration/ghostpay-pages-completion-20261118",
+    "draft": true,
+    "state": "open",
+    "merged": false,
+    "mergeable": true
+  },
+  "scope": "Read-only preflight before documentation-only delivery. The final documentation commit cannot embed its own SHA; the PR body records its exact published identity."
+}

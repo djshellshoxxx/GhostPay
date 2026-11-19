@@ -1,0 +1,34 @@
+{
+  "kind": "actual execution result retained from tool transcript",
+  "finding": "R-08",
+  "severity": "medium",
+  "boundary": "Saved-file portability / false verification; not a cryptographic authentication failure.",
+  "cwd": "/workspace/scratch/af37e06cf64c/GhostPay",
+  "command": "NODE_OPTIONS=--max-old-space-size=512 /workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node --input-type=module <<'NODE'\nimport assert from 'node:assert/strict';\nimport fs from 'node:fs';\nimport { tmpdir } from 'node:os';\nimport path from 'node:path';\nimport { spawnSync } from 'node:child_process';\nimport { createStealthExportApi } from './packages/ux-vault/dist/portable.js';\nconst vectors = JSON.parse(fs.readFileSync('./test-vectors/stealth-export.json', 'utf8'));\nconst original = vectors.files.single.text;\nconst originalBytes = Buffer.from(original, 'utf8');\nconst modifiedBytes = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), originalBytes]);\nconst file = new File([modifiedBytes], 'ghostpay-stealth-keypair.json', {type:'application/json'});\nconst decoded = await file.text();\nconst api = createStealthExportApi();\nconst opened = await api.decryptPaymentKeys(decoded, vectors.passphrase);\nconst report = {\n node:process.version,\n originalBytes:originalBytes.length,\n savedBytes:file.size,\n byteEqual:modifiedBytes.equals(originalBytes),\n fileTextEqualToGenerated:decoded===original,\n detectedAfterFileText:api.detectStealthExportFormat(decoded),\n authenticatedKeyCount:opened.payments.length,\n rawUtf8TextFormat:api.detectStealthExportFormat(modifiedBytes.toString('utf8'))??null,\n latin1Format:api.detectStealthExportFormat(modifiedBytes.toString('latin1'))??null,\n};\nfor (const payment of opened.payments) payment.secret.fill(0);\nconst temp=fs.mkdtempSync(path.join(tmpdir(),'spec18-bom-check-'));\ntry {\n const saved=path.join(temp,'ghostpay-stealth-keypair.json');\n fs.writeFileSync(saved, modifiedBytes);\n const child=spawnSync(process.execPath,['scripts/recovery/stealth-export-recover.mjs',saved],{cwd:process.cwd(),input:vectors.passphrase+'\\n',encoding:'utf8',timeout:10000});\n report.standaloneExit=child.status;\n report.standaloneStdoutEmpty=child.stdout==='';\n report.standaloneStderr=child.stderr.trim();\n assert.equal(report.fileTextEqualToGenerated,true);\n assert.equal(report.authenticatedKeyCount,1);\n assert.equal(report.standaloneExit,1);\n console.log(JSON.stringify(report,null,2));\n} finally {\n fs.rmSync(temp,{recursive:true,force:true});\n}\nNODE",
+  "exitCode": 0,
+  "elapsedSeconds": 0.558322128,
+  "fixture": "test-vectors/stealth-export.json: files.single.text and synthetic passphrase",
+  "report": {
+    "node": "v22.23.5",
+    "originalBytes": 1420,
+    "savedBytes": 1423,
+    "byteEqual": false,
+    "fileTextEqualToGenerated": true,
+    "detectedAfterFileText": "keypair",
+    "authenticatedKeyCount": 1,
+    "rawUtf8TextFormat": null,
+    "latin1Format": null,
+    "standaloneExit": 1,
+    "standaloneStdoutEmpty": true,
+    "standaloneStderr": "(node:17) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\nerror: invalidFile: the file is not a valid stealth export"
+  },
+  "scope": [
+    "Executed native Node 22 File.text() on actual bytes, not a mocked text method.",
+    "Executed the actual built ux-vault codec on the normalized text and wiped returned synthetic key buffers.",
+    "Executed the actual standalone recovery CLI against a temporary file containing the original BOM-prefixed bytes; temporary file was removed in finally.",
+    "Source inspection of StealthExportVerification.tsx found File.text() followed only by decoded text equality and verifyStealthExport; no mounted component or browser run was performed by this reproduction.",
+    "Normative format section 1.1 rejects all non-ASCII characters, including the BOM; normalization is not allowed by the format."
+  ],
+  "proposedClosure": "Keep strict formats. General Spec18 file paths require File.size === decoded text.length before parsing; retained-export tracker requires saved File.size === generated ASCII text.length plus exact decoded text equality. Check operation identity after the await before reporting an error.",
+  "restrictions": "No real credentials, funds or user data used; no repository source edited; no broad tests executed."
+}

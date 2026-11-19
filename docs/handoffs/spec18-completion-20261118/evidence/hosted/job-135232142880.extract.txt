@@ -1,0 +1,96 @@
+Job: 135232142880 (e2e (full))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273430/job/135232142880
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135232142880/logs
+Fetched at: 2026-11-19T00:24:22.005Z
+Job API conclusion: failure
+Published head: 032c42fc3d5e52d8428a7907775835b5d1ed3704
+Checked-out commit(s): b53f116b825d7cf6e85681fc835aec18ef7add75
+Decoded raw log SHA256: ddd10a5c01f47f54cf5553f70755a0e96e178c57b8f79f9246af25a8b7cb3dec
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L130: 2026-11-19T00:12:23.3953597Z ##[endgroup]
+L131: 2026-11-19T00:12:23.4023602Z [command]/usr/bin/git log -1 --format=%H
+L132: 2026-11-19T00:12:23.4054560Z b53f116b825d7cf6e85681fc835aec18ef7add75
+L133: 2026-11-19T00:12:23.4067410Z ##[group]Removing auth
+[omitted]
+L171: 2026-11-19T00:12:23.8937498Z with:
+L172: 2026-11-19T00:12:23.8937714Z   node-version: 22
+L173: 2026-11-19T00:12:23.8937941Z   cache: npm
+[omitted]
+L179: 2026-11-19T00:12:24.1210761Z ##[group]Environment details
+L180: 2026-11-19T00:12:24.4816231Z node: v22.23.4
+L181: 2026-11-19T00:12:24.4816938Z npm: 10.9.9
+[omitted]
+L195: 2026-11-19T00:12:26.3958155Z ##[group]Run npm ci --ignore-scripts
+L196: 2026-11-19T00:12:26.3958617Z npm ci --ignore-scripts
+[omitted]
+L438: 2026-11-19T00:12:54.9158856Z ##[group]Run npm run test:e2e --workspace @ghostpay/web
+L439: 2026-11-19T00:12:54.9159413Z npm run test:e2e --workspace @ghostpay/web
+[omitted]
+L446: 2026-11-19T00:12:55.0761619Z > playwright test
+L447: 2026-11-19T00:12:55.0761879Z 
+[omitted]
+L481: 2026-11-19T00:13:53.2244000Z   ✓  17 [desktop] › e2e/backup-panel.spec.ts:10:3 › combined backup panel › shows honest per-item status and marks each item done only after its export (3.3s)
+L482: 2026-11-19T00:13:53.2252618Z   -  18 [desktop] › e2e/backup-panel.spec.ts:60:3 › lean profile › keeps the key backup and has no tag archive item or combined panel
+[omitted]
+L492: 2026-11-19T00:14:08.0754531Z   ✓  26 [desktop] › e2e/core-journey.spec.ts:474:1 › core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore (7.1s)
+L493: 2026-11-19T00:14:09.7362965Z   ✓  27 [desktop] › e2e/core-journey.spec.ts:601:1 › invoice expiry is refused at the final pay guard: nothing reaches the wallet (1.7s)
+L494: 2026-11-19T00:14:14.3028767Z   ✓  28 [desktop] › e2e/core-journey.spec.ts:623:1 › stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results (4.6s)
+L495: 2026-11-19T00:14:17.1498178Z   ✓  29 [desktop] › e2e/core-journey.spec.ts:667:1 › verified keystore reimports the same keys after a manual wipe without a pending sweep (2.8s)
+L496: 2026-11-19T00:14:21.4258616Z   ✓  30 [desktop] › e2e/core-journey.spec.ts:681:1 › reorg: the payment block is replaced mid-scan, the scan withdraws the match, invalidates the saved observation and offers no receipt (4.3s)
+L497: 2026-11-19T00:14:24.3386200Z   ✓  31 [desktop] › e2e/core-journey.spec.ts:722:1 › unknown and late outcomes are shown honestly: no false success, pending until final (2.9s)
+[omitted]
+L528: 2026-11-19T00:15:18.9620370Z   ✓  59 [desktop] › e2e/stealth-export.spec.ts:71:1 › payment details: public record holds no key; encrypted keypair after vault re-auth; raw key only after the second confirmation (6.2s)
+L529: 2026-11-19T00:15:23.3908602Z   ✓  60 [desktop] › e2e/stealth-export.spec.ts:168:1 › keys without a vault: secret exports are refused until the keystore backup file and its passphrase are given (4.4s)
+L530: 2026-11-19T00:15:24.3464563Z   ✓  61 [desktop] › e2e/stealth-export.spec.ts:209:1 › a fresh browser with no keys opens an encrypted keypair file and validates its address; a wrong passphrase shows nothing (949ms)
+L531: 2026-11-19T00:15:25.3542473Z   ✓  62 [desktop] › e2e/stealth-export.spec.ts:252:1 › narrow-viewport verification-only flow rejects malformed and public files, authenticates a backup, and installs no wallet (996ms)
+L532: 2026-11-19T00:15:26.9752323Z   ✓  63 [desktop] › e2e/stealth-export.spec.ts:295:1 › a fresh browser restores master spending authority and replacing a saved wallet still requires fresh consent (1.6s)
+L533: 2026-11-19T00:15:27.6007978Z   ✓  64 [desktop] › e2e/stealth-export.spec.ts:317:1 › keyboard navigation opens the saved-file chooser and verifies a backup without importing (613ms)
+L534: 2026-11-19T00:15:35.8788403Z   ✓  65 [desktop] › e2e/stealth-export.spec.ts:341:1 › secret-leak guard: no exported private key in requests, console, URL/history, storage, IndexedDB or clipboard (8.3s)
+L535: 2026-11-19T00:15:45.0236999Z   ✓  66 [desktop] › e2e/stealth-export.spec.ts:404:1 › the idle lock while the export is still deriving and encrypting discards the result: no download, keys stay loaded (9.1s)
+L536: 2026-11-19T00:16:08.5263799Z   ✓  67 [desktop] › e2e/stealth-export.spec.ts:451:1 › wiping the keys while the master backup KDF runs discards the result: no download (23.5s)
+[omitted]
+L538: 2026-11-19T00:16:14.1473007Z   ✓  68 [desktop] › e2e/sweep.spec.ts:54:3 › actual direct sweep journals before success handoff and refuses a duplicate through reload (5.6s)
+[omitted]
+L540: 2026-11-19T00:16:20.5924917Z   ✓  69 [desktop] › e2e/sweep.spec.ts:54:3 › actual direct sweep journals before unknown handoff and refuses a duplicate through reload (6.4s)
+[omitted]
+L575: 2026-11-19T00:17:25.5513343Z 
+L576: 2026-11-19T00:17:25.5513777Z     Error: page.goto: net::ERR_ABORTED at about:blank
+L577: 2026-11-19T00:17:25.5514428Z     Call log:
+L578: 2026-11-19T00:17:25.5515065Z       - navigating to "about:blank", waiting until "load"
+L579: 2026-11-19T00:17:25.5516155Z 
+L580: 2026-11-19T00:17:25.5516167Z 
+L581: 2026-11-19T00:17:25.5516399Z        at helpers.ts:56
+L582: 2026-11-19T00:17:25.5516733Z 
+L583: 2026-11-19T00:17:25.5517419Z       54 | /** A genuine fresh page load of `url` (as when following a link), not a same-document hash change. */
+L584: 2026-11-19T00:17:25.5518752Z       55 | export async function openFresh(page: Page, url: string): Promise<void> {
+L585: 2026-11-19T00:17:25.5537515Z     > 56 |   await page.goto('about:blank');
+L586: 2026-11-19T00:17:25.5538087Z          |              ^
+L587: 2026-11-19T00:17:25.5538564Z       57 |   await page.goto(url);
+L588: 2026-11-19T00:17:25.5538995Z       58 | }
+[omitted]
+L590: 2026-11-19T00:17:25.5539983Z         at openFresh (/home/runner/work/GhostPay/GhostPay/apps/web/e2e/helpers.ts:56:14)
+L591: 2026-11-19T00:17:25.5540950Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/app.spec.ts:125:9
+L592: 2026-11-19T00:17:25.5541442Z 
+L593: 2026-11-19T00:17:25.5542195Z     Error Context: test-results/app-hostile-text-in-line-items-and-memo-is-rendered-inert-desktop/error-context.md
+L594: 2026-11-19T00:17:25.5542779Z 
+L595: 2026-11-19T00:17:25.5542885Z   1 failed
+L596: 2026-11-19T00:17:25.5543535Z     [desktop] › e2e/app.spec.ts:115:1 › hostile text in line items and memo is rendered inert ──────
+L597: 2026-11-19T00:17:25.5544083Z   1 skipped
+L598: 2026-11-19T00:17:25.5544313Z   86 passed (4.5m)
+L599: 2026-11-19T00:17:25.5746775Z npm error Lifecycle script `test:e2e` failed with error:
+L600: 2026-11-19T00:17:25.5747732Z npm error code 1
+L601: 2026-11-19T00:17:25.5748805Z npm error path /home/runner/work/GhostPay/GhostPay/apps/web
+L602: 2026-11-19T00:17:25.5749683Z npm error workspace @ghostpay/web@0.1.0
+L603: 2026-11-19T00:17:25.5750645Z npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+L604: 2026-11-19T00:17:25.5751385Z npm error command failed
+L605: 2026-11-19T00:17:25.5752078Z npm error command sh -c playwright test
+L606: 2026-11-19T00:17:25.5848964Z ##[error]Process completed with exit code 1.
+L607: 2026-11-19T00:17:25.5941764Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+L608: 2026-11-19T00:17:25.5942298Z with:
+L609: 2026-11-19T00:17:25.5942575Z   name: playwright-test-results-full
+L610: 2026-11-19T00:17:25.5942931Z   path: apps/web/test-results
+L611: 2026-11-19T00:17:25.5943255Z   if-no-files-found: ignore
+L612: 2026-11-19T00:17:25.5943558Z   retention-days: 7
+L613: 2026-11-19T00:17:25.5943831Z   compression-level: 6

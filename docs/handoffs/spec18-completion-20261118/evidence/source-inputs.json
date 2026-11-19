@@ -1,0 +1,22 @@
+{
+  "apps": "571091947ec1c29539fd5bd4578bc347ac12e3de",
+  "application_source_including_tests": "2652494fe99a43ee3f4ddc95c25adda4578c9dce",
+  "e2e": "b1a96e6a7565e2cb546f0b4bb305ad5013d91146",
+  "packages": "0c10c41d6596a39cca2e4dff467a2ac9bf334223",
+  "scripts": "4e29048da04083255678561e803d378754972ae5",
+  "lockfile": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+  "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "local_implementation": "eb9e244232a6b7002e7dfc7085041cbf4177a566",
+  "published_implementation": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+  "synthetic_test_merge": "b53f116b825d7cf6e85681fc835aec18ef7add75",
+  "complete_implementation_tree": "631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5",
+  "last_followup_changed_paths": [
+    "apps/web/e2e/stealth-export.spec.ts",
+    "apps/web/src/components/StealthExportRecovery.test.tsx",
+    "apps/web/src/components/StealthExportRecovery.tsx",
+    "apps/web/src/components/StealthExportVerification.test.tsx",
+    "apps/web/src/components/StealthExportVerification.tsx",
+    "apps/web/src/views/SellerKeys.stealthExport.test.tsx"
+  ],
+  "last_followup_scope": "Strict ASCII byte validation in portable backup opening/verification, actual-byte unit/browser regressions, and Testing Library option correction."
+}

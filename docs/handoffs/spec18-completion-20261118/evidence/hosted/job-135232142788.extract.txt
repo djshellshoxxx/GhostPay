@@ -1,0 +1,63 @@
+Job: 135232142788 (ts-check)
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273430/job/135232142788
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135232142788/logs
+Fetched at: 2026-11-19T00:10:48.608Z
+Job API conclusion: success
+Published head: 032c42fc3d5e52d8428a7907775835b5d1ed3704
+Checked-out commit(s): b53f116b825d7cf6e85681fc835aec18ef7add75
+Decoded raw log SHA256: 7ba0013870ea1cad935e135e4f25c6310fb4023ab3c50dc82997f837a7fbf734
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L128: 2026-11-19T00:08:01.8847165Z ##[endgroup]
+L129: 2026-11-19T00:08:01.8896417Z [command]/usr/bin/git log -1 --format=%H
+L130: 2026-11-19T00:08:01.8916941Z b53f116b825d7cf6e85681fc835aec18ef7add75
+L131: 2026-11-19T00:08:01.8922775Z ##[group]Removing auth
+[omitted]
+L169: 2026-11-19T00:08:02.4661950Z with:
+L170: 2026-11-19T00:08:02.4662190Z   node-version: 22
+L171: 2026-11-19T00:08:02.4662410Z   cache: npm
+[omitted]
+L177: 2026-11-19T00:08:05.4430692Z ##[group]Environment details
+L178: 2026-11-19T00:08:08.8413154Z node: v22.23.4
+L179: 2026-11-19T00:08:08.8413469Z npm: 10.9.9
+[omitted]
+L197: 2026-11-19T00:08:15.9957743Z ##[group]Run npm ci --ignore-scripts
+L198: 2026-11-19T00:08:15.9958161Z npm ci --ignore-scripts
+[omitted]
+L244: 2026-11-19T00:08:28.0044040Z ##[group]Run npm ls --all --omit=dev > /dev/null
+L245: 2026-11-19T00:08:28.0044447Z npm ls --all --omit=dev > /dev/null
+[omitted]
+L248: 2026-11-19T00:08:28.4868874Z ##[group]Run npm run build
+L249: 2026-11-19T00:08:28.4869342Z npm run build
+[omitted]
+L589: 2026-11-19T00:09:56.5084650Z > @ghostpay/web@0.1.0 build
+L590: 2026-11-19T00:09:56.5085254Z > tsc -p tsconfig.json --noEmit && vite build
+L591: 2026-11-19T00:09:56.5085544Z 
+[omitted]
+L623: 2026-11-19T00:10:10.3797897Z > @ghostpay/web@0.1.0 postbuild
+L624: 2026-11-19T00:10:10.3798447Z > node scripts/apply-csp.mjs && node scripts/scan-bundle.mjs
+L625: 2026-11-19T00:10:10.3798696Z 
+[omitted]
+L837: 2026-11-19T00:10:10.9540105Z # tests 33
+L838: 2026-11-19T00:10:10.9540475Z # suites 0
+L839: 2026-11-19T00:10:10.9541078Z # pass 33
+L840: 2026-11-19T00:10:10.9541360Z # fail 0
+L841: 2026-11-19T00:10:10.9541697Z # cancelled 0
+L842: 2026-11-19T00:10:10.9542029Z # skipped 0
+L843: 2026-11-19T00:10:10.9542363Z # todo 0
+L844: 2026-11-19T00:10:10.9542728Z # duration_ms 70.589409
+L845: 2026-11-19T00:10:10.9599872Z ##[group]Run node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs
+[omitted]
+L876: 2026-11-19T00:10:11.0572851Z # tests 4
+L877: 2026-11-19T00:10:11.0573111Z # suites 0
+L878: 2026-11-19T00:10:11.0573408Z # pass 4
+L879: 2026-11-19T00:10:11.0574031Z # fail 0
+L880: 2026-11-19T00:10:11.0574268Z # cancelled 0
+L881: 2026-11-19T00:10:11.0574489Z # skipped 0
+L882: 2026-11-19T00:10:11.0574722Z # todo 0
+L883: 2026-11-19T00:10:11.0574936Z # duration_ms 68.564668
+L884: 2026-11-19T00:10:11.0644843Z ##[group]Run node scripts/i18n/check.mjs
+[omitted]
+L1452: 2026-11-19T00:10:11.3776053Z ##[group]Run npm audit --omit=dev --audit-level=high
+L1453: 2026-11-19T00:10:11.3776370Z npm audit --omit=dev --audit-level=high

@@ -1,0 +1,49 @@
+{
+  "evidence_kind": "transcript_derived_result_record",
+  "raw_log_available": false,
+  "new_execution_performed_to_create_record": false,
+  "source": {
+    "branch": "chatgpt/spec18-recovery-completion-20261118",
+    "base_commit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "tested_source": "Uncommitted implementation working tree; exact complete-tree identity was not recorded for these invocations.",
+    "later_change": "Five test-only TS2339 errors were subsequently corrected using explicit instanceof narrowing around Vitest mock.instances. Disposal assertions were preserved. These original runs do not qualify that later test-source revision or the final whole-web candidate."
+  },
+  "runtime": {
+    "node_version": "v22.23.5",
+    "node_path": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node"
+  },
+  "results": [
+    {
+      "kind": "focused_tests",
+      "working_directory": "/workspace/scratch/af37e06cf64c/GhostPay/apps/web",
+      "command": "PATH=/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin:$PATH NODE_OPTIONS=--max-old-space-size=768 ../../node_modules/.bin/vitest run src/lib/paymentKeyExport.test.ts src/components/StealthExportRecovery.test.tsx --coverage=false --maxWorkers=1",
+      "tool_session_id": 22799,
+      "tool_exit_code": 0,
+      "test_files_passed": 2,
+      "tests_passed": 45,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "reported_duration_seconds": 9.57,
+      "per_file_reported_counts": {
+        "src/lib/paymentKeyExport.test.ts": 29,
+        "src/components/StealthExportRecovery.test.tsx": 16
+      },
+      "transcribed_summary": [
+        "Test Files  2 passed (2)",
+        "Tests  45 passed (45)",
+        "Duration  9.57s"
+      ]
+    },
+    {
+      "kind": "scoped_typed_lint",
+      "working_directory": "/workspace/scratch/af37e06cf64c/GhostPay",
+      "command": "PATH=/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin:$PATH NODE_OPTIONS=--max-old-space-size=2048 node_modules/.bin/eslint --config eslint.config.js apps/web/src/components/StealthExportRecovery.tsx apps/web/src/components/StealthExportRecovery.test.tsx apps/web/src/lib/paymentKeyExport.ts apps/web/src/lib/paymentKeyExport.test.ts",
+      "tool_session_id": 15509,
+      "tool_exit_code": 0,
+      "source_diagnostics_reported": 0,
+      "raw_output_note": "The launch returned only the environment HTTP-proxy experimental warning; the completion returned exit0 with no additional output. No raw file log was saved."
+    }
+  ],
+  "earlier_attempts": "An earlier scoped lint found one unbound-method test reference, which was fixed; a subsequent attempt exited137 before the final successful isolated lint run.",
+  "qualification_limit": "This record preserves observed tool outcomes, not independently retained stdout. Use source-pinned hosted whole-web results for acceptance of the final published candidate."
+}

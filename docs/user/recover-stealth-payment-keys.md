@@ -7,14 +7,16 @@
 
 ## Status
 
-Current source and executed checks are recorded in the [recovery integration handoff](../handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md).
+Current source, executed checks and remaining acceptance limits are recorded in the
+[Spec 18 completion report](../handoffs/spec18-completion-20261118/COMPLETION_REPORT.md) and
+[hosted validation record](../handoffs/spec18-completion-20261118/HOSTED_VALIDATION.md).
 
 | Path | Status |
 |---|---|
 | Reference recovery script (`scripts/recovery/stealth-export-recover.mjs`) | Implemented; tested against the reference vectors and against files freshly written by the GhostPay codec |
 | Raw private key in an independent EVM wallet tool | Passed with workflow-pinned Foundry 1.8.5 `cast` and Anvil (`scripts/recovery/raw-key-anvil.test.mjs`): the synthetic key reproduced its address and signed a successful transfer on a loopback chain. No public network or real funds. |
 | Recovery outside a GhostPay checkout | Passed in fresh Node 22.23.5 processes with only the script, its two noble dependencies and test exports readable. All five file types opened; archive and master recovery reproduced the expected private keys. |
-| Loading an export in a freshly opened GhostPay page | Implemented and covered by local UI regressions; actual desktop and mobile browser acceptance is **pending**. jsdom tests do not qualify a browser. |
+| Loading an export in a freshly opened GhostPay page | All nine Spec 18 journeys passed in both full and lean desktop Chromium builds at published source `032c42fc`. This includes fresh recovery, saved-file byte validation, replacement consent and keyboard controls. The verification-only flow also passed at a 390-by-844 viewport; this is not a physical mobile-device test. See the [hosted record](../handoffs/spec18-completion-20261118/HOSTED_VALIDATION.md). |
 | Import into third-party wallets, hardware wallets or phones | **Pending: not exercised.** No wallet, device or browser beyond the rows above has been tested |
 
 ## Which file do I have?
@@ -67,8 +69,9 @@ that boundary. Encrypting the private-key body protects its stored key material 
 
 1. Work offline if you can: disconnect the network, or use a machine you trust that is not shared.
 2. Copy the export file to that machine. Keep the original where it was.
-3. Have the passphrase ready. Wrong passphrase and a modified file give the **same** error on purpose, so the error
-   cannot tell you which one happened.
+3. Have the passphrase ready. For an otherwise structurally valid encrypted file, a wrong passphrase and failed
+   authentication give the **same** error. Malformed, oversized or unsupported files can be refused earlier with a
+   format or size error.
 4. Decide where any revealed key will go *before* you reveal it. Do not put it in a notes app, cloud folder, chat or
    clipboard manager.
 
@@ -78,6 +81,17 @@ Open **Seller keys**, then **Open a stealth key export**. The app accepts an enc
 installation, site, host or account: GhostPay is a static page and does no server-side recovery. Use a new browser
 profile, open a GhostPay build you trust (one you built or verified yourself is best), load the file and enter the passphrase. The
 page checks every key against its address before showing anything, and a file with any problem is refused as a whole.
+
+Choose **Open export** to review the recovered material. For a payment-key file, check the displayed chain and each
+address. Each payment has its own raw-key download, which needs a second explicit confirmation; opening the file
+does not replace your currently loaded wallet.
+
+For a master backup, choose **Load these spending and viewing keys** after reviewing its meta-address. If a different
+wallet is already loaded, choose **Replace the loaded keys** only after reviewing the replacement prompt. This fresh
+confirmation is required even when the existing wallet has a saved backup. **Cancel** keeps the original keys loaded.
+If the local vault disappears while you review the prompt, the app shows the stronger sole-copy warning and requires
+confirmation again. Restoring the master pair creates a new invoice-signing key; it does not recover the old signing
+key that this format omits.
 
 ### Verify a backup without replacing your keys
 
@@ -99,8 +113,9 @@ after moving storage. Payment-key archives recover only their listed addresses. 
 spending and viewing keys, but never the invoice-signing key. Keep the older full seller keystore backup if you need
 to preserve that signing key; verifying a Spec 18 file does not waive full-session backup safeguards.
 
-Status: this in-app import has not yet passed its desktop and mobile browser acceptance. Until that is recorded, use
-Option B to check a file independently.
+The in-app recovery journeys passed in desktop Chromium under both build profiles; the narrow-viewport verification
+check also passed. Physical mobile browsers, other browser engines and wallet devices remain untested. Option B
+provides the separately implemented recovery path without loading the GhostPay website.
 
 ## Option B: the reference recovery script
 
@@ -192,10 +207,12 @@ key: `0x` and 64 lowercase hex digits. It is **not** a seed phrase or recovery p
 
 What this does **not** do:
 
-- A general wallet cannot find your other stealth payments. Each one-time address needs its own key, and only
-  scheme-compatible tooling (GhostPay or the reference script with the master pair) can find and derive them.
-- The key controls a plain EOA only. It cannot authorize funds held by a contract account, an ERC-4337 account, an
-  EIP-7702 delegation or a GhostPay policy account. GhostPay refuses to export keys for those.
+- A general wallet cannot find your other stealth payments. Each one-time address needs its own key. Use a
+  scheme-compatible scanner to find announcements; GhostPay or the reference script with the master pair can then
+  derive the corresponding keys. The reference script does not discover announcements itself.
+- This recovery workflow supports plain EOAs. ERC-4337, EIP-7702 and policy/contract-account recovery are outside its
+  supported scope. GhostPay refuses secret payment exports when the payment address has code; possession of a raw
+  key does not establish that this workflow can recover an account of those types.
 - External wallet and device acceptance is **pending: not exercised**. The only independent tool tested is Foundry
   `cast` on a local test chain.
 

@@ -1,0 +1,53 @@
+Job: 135223398721 (e2e (full))
+Job URL: https://github.com/djshellshoxxx/GhostPay/actions/runs/44423422185/job/135223398721
+Source API: https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135223398721/logs
+Fetched at: 2026-11-18T23:54:36.736Z
+Job API conclusion: failure
+Published head: f72c198b2a6a75be889e9810a37721da116deba1
+Checked-out commit(s): 5565efdf0b8b64646949520c422c9c908182f931
+Decoded raw log SHA256: c33fff7dc8c23aef98af2136caf921d2fa4e6601167092aa06a3808cc1b5a2ca
+EXCERPT: ANSI stripped; original log line numbers retained; omitted spans marked.
+
+[omitted]
+L130: 2026-11-18T23:52:51.8771631Z ##[endgroup]
+L131: 2026-11-18T23:52:51.8810739Z [command]/usr/bin/git log -1 --format=%H
+L132: 2026-11-18T23:52:51.8835108Z 5565efdf0b8b64646949520c422c9c908182f931
+L133: 2026-11-18T23:52:51.8843943Z ##[group]Removing auth
+[omitted]
+L171: 2026-11-18T23:52:52.6564471Z with:
+L172: 2026-11-18T23:52:52.6565141Z   node-version: 22
+L173: 2026-11-18T23:52:52.6565852Z   cache: npm
+[omitted]
+L179: 2026-11-18T23:52:52.8373202Z ##[group]Environment details
+L180: 2026-11-18T23:52:53.1105642Z node: v22.23.4
+L181: 2026-11-18T23:52:53.1106365Z npm: 10.9.9
+[omitted]
+L194: 2026-11-18T23:52:54.8105215Z ##[group]Run npm ci --ignore-scripts
+L195: 2026-11-18T23:52:54.8105591Z npm ci --ignore-scripts
+[omitted]
+L437: 2026-11-18T23:53:20.6861662Z ##[group]Run npm run test:e2e --workspace @ghostpay/web
+L438: 2026-11-18T23:53:20.6862033Z npm run test:e2e --workspace @ghostpay/web
+[omitted]
+L445: 2026-11-18T23:53:20.8018268Z > playwright test
+L446: 2026-11-18T23:53:20.8018459Z 
+[omitted]
+L451: 2026-11-18T23:53:36.8328515Z [WebServer] npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+L452: 2026-11-18T23:53:36.8329097Z [WebServer] npm error command failed
+L453: 2026-11-18T23:53:36.8329690Z [WebServer] npm error command sh -c tsc -p tsconfig.json --noEmit && vite build
+L454: 2026-11-18T23:53:36.8571585Z Error: Process from config.webServer was not able to start. Exit code: 2
+L455: 2026-11-18T23:53:36.8579225Z 
+L456: 2026-11-18T23:53:36.8789367Z npm error Lifecycle script `test:e2e` failed with error:
+L457: 2026-11-18T23:53:36.8789877Z npm error code 1
+L458: 2026-11-18T23:53:36.8790421Z npm error path /home/runner/work/GhostPay/GhostPay/apps/web
+L459: 2026-11-18T23:53:36.8790951Z npm error workspace @ghostpay/web@0.1.0
+L460: 2026-11-18T23:53:36.8791540Z npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+L461: 2026-11-18T23:53:36.8792028Z npm error command failed
+L462: 2026-11-18T23:53:36.8792597Z npm error command sh -c playwright test
+L463: 2026-11-18T23:53:36.8853509Z ##[error]Process completed with exit code 1.
+L464: 2026-11-18T23:53:36.9351020Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+L465: 2026-11-18T23:53:36.9351352Z with:
+L466: 2026-11-18T23:53:36.9351547Z   name: playwright-test-results-full
+L467: 2026-11-18T23:53:36.9351796Z   path: apps/web/test-results
+L468: 2026-11-18T23:53:36.9352021Z   if-no-files-found: ignore
+L469: 2026-11-18T23:53:36.9352228Z   retention-days: 7
+L470: 2026-11-18T23:53:36.9352538Z   compression-level: 6

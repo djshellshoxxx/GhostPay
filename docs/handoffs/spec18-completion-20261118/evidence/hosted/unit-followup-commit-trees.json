@@ -1,0 +1,85 @@
+{
+  "published": {
+    "d": {
+      "sha": "f72c198b2a6a75be889e9810a37721da116deba1",
+      "node_id": "C_kwDOVR5mTNoAKGY3MmMxOThiMmE2YTc1YmU4ODllOTgxMGEzNzcyMWRhMTE2ZGViYTE",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/f72c198b2a6a75be889e9810a37721da116deba1",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/f72c198b2a6a75be889e9810a37721da116deba1",
+      "author": {
+        "name": "sheldon",
+        "email": "127660907+djshellshoxxx@users.noreply.github.com",
+        "date": "2026-11-18T23:45:14Z"
+      },
+      "committer": {
+        "name": "sheldon",
+        "email": "127660907+djshellshoxxx@users.noreply.github.com",
+        "date": "2026-11-18T23:45:14Z"
+      },
+      "tree": {
+        "sha": "f0a30cf70ee02856c0c9f5dcb0d04fd7697b33b6",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/f0a30cf70ee02856c0c9f5dcb0d04fd7697b33b6"
+      },
+      "message": "test(recovery): require fresh consent in seller wallet restore journey\n\nOriginal-Local-Commit: a5b3fd123a86d6f5c52b9311a1707a009d3002b7\nOriginal-Author: Codex <codex@openai.com> 2026-11-18T15:44:31-08:00\nOriginal-Parent: 02ccc5e1d341b0d1ff404f66ae6b5fc1005f71b2\nExact-Tree: f0a30cf70ee02856c0c9f5dcb0d04fd7697b33b6\nPublished through the authenticated GitHub Git Data API; original source tree preserved.",
+      "parents": [
+        {
+          "sha": "d46b8d8253a8f9c18ff21327ef115c3c748a75ec",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/d46b8d8253a8f9c18ff21327ef115c3c748a75ec",
+          "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/d46b8d8253a8f9c18ff21327ef115c3c748a75ec"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/f72c198b2a6a75be889e9810a37721da116deba1",
+    "at": "2026-11-18T23:45:39.268Z"
+  },
+  "merge": {
+    "d": {
+      "sha": "5565efdf0b8b64646949520c422c9c908182f931",
+      "node_id": "C_kwDOVR5mTNoAKDU1NjVlZmRmMGI4YjY0NjQ2OTQ5NTIwYzQyMmM5YzkwODE4MmY5MzE",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/5565efdf0b8b64646949520c422c9c908182f931",
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/5565efdf0b8b64646949520c422c9c908182f931",
+      "author": {
+        "name": "sheldon",
+        "email": "127660907+djshellshoxxx@users.noreply.github.com",
+        "date": "2026-11-18T23:45:19Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-11-18T23:45:19Z"
+      },
+      "tree": {
+        "sha": "f0a30cf70ee02856c0c9f5dcb0d04fd7697b33b6",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/f0a30cf70ee02856c0c9f5dcb0d04fd7697b33b6"
+      },
+      "message": "Merge f72c198b2a6a75be889e9810a37721da116deba1 into 198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "parents": [
+        {
+          "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/198aa5baff22272453733a0f3dcfcac0e0994eec",
+          "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/198aa5baff22272453733a0f3dcfcac0e0994eec"
+        },
+        {
+          "sha": "f72c198b2a6a75be889e9810a37721da116deba1",
+          "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/f72c198b2a6a75be889e9810a37721da116deba1",
+          "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/f72c198b2a6a75be889e9810a37721da116deba1"
+        }
+      ],
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq/jiPCRC1aQ7uu5UhlAAA3WEQACQ+Nn1+eanJJ1h4ws6lHHBR\n3gbM0naw3918ayZi1SBCvcS4/hTpq7NIqHQFnmQzDFdv4tHnPTfzZKkKrBL2xS0W\nhfT566rouljyEsfrxwjQJS313dIM1E7qfkAYWzvFsicWfIs2W7nQwBeMhgJXyqDQ\nAMp4XTXZa61Ewi3GGt57BIxaxVGbnocs7rJqWkTxjEqhavpywHGFaRwpV6xaVt/q\nspQnhDyUjZ73IJklO7tDBrtbd1QFS4g5/NvQbPeUD258RyeuQZ8DO85bRPpjDlc1\npzZGVWAcPMO7dwzfby00cwLhFWHc1ZPW5qtDwMFPO6Qwgzle5Dsks7VkzTsGB8CX\nUKvLVqCoATtKHhdXwav3qOa9QMrn5tFqKjUuwgp4nmhjyzBBYsWMOo0ywJ4GAL09\n5/C99xQsRZzxsgH19xUcCwPkhaPW+oIpFzgDJjX4acQfso0PgzRAvX3AfaEe3AEO\n4JrbUzqLkpvqKY6kkkAab/mb0A61msP2/PyADwsbhJn+khFBfcPEsnpuDXK0cxK9\nXRbwaokHurEbkxPfCyy+uDlgSYCbfL6Tpk10WGcvS8C5+NiBMLetcwICex8PWLS6\n7w6dME33ZMujm99mDn53RB2PAL2AeGSfocHkma8yjj3NM4F9mE52T0QK8TbJfu7Y\nW8uRKbKGqRBAFky85VNo\n=yeMH\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree f0a30cf70ee02856c0c9f5dcb0d04fd7697b33b6\nparent 198aa5baff22272453733a0f3dcfcac0e0994eec\nparent f72c198b2a6a75be889e9810a37721da116deba1\nauthor sheldon <127660907+djshellshoxxx@users.noreply.github.com> 1795045519 +0000\ncommitter GitHub <noreply@github.com> 1795045519 +0000\n\nMerge f72c198b2a6a75be889e9810a37721da116deba1 into 198aa5baff22272453733a0f3dcfcac0e0994eec\n",
+        "verified_at": "2026-11-18T23:45:20Z"
+      }
+    },
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/5565efdf0b8b64646949520c422c9c908182f931",
+    "at": "2026-11-18T23:45:53.487Z"
+  }
+}

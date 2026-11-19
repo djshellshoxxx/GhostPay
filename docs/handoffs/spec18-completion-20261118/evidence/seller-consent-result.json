@@ -1,0 +1,13 @@
+{
+  "command": "NODE_OPTIONS=--max-old-space-size=768 ../../node_modules/.bin/vitest run src/views/SellerKeys.stealthExport.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism",
+  "cwd": "apps/web",
+  "node": "22.23.5",
+  "exit_code": 0,
+  "tests_passed": 4,
+  "test_files_passed": 1,
+  "duration_seconds": 4.37,
+  "local_source": "a5b3fd123a86d6f5c52b9311a1707a009d3002b7",
+  "published_source": "f72c198b2a6a75be889e9810a37721da116deba1",
+  "raw_log": "seller-consent.log",
+  "review": "Independent crypto worker source review: fresh consent, Cancel preservation, fresh second prompt, original success assertions retained; no runtime/timeouts/skips/gates changed."
+}

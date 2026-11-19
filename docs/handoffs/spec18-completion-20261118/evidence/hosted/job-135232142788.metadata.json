@@ -1,0 +1,93 @@
+{
+  "job": {
+    "id": 135232142788,
+    "name": "ts-check",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+    "started_at": "2026-11-19T00:07:50Z",
+    "completed_at": "2026-11-19T00:10:16Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44425273430/job/135232142788"
+  },
+  "fetched_at": "2026-11-19T00:10:48.608Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135232142788/logs",
+  "decoded_log_sha256": "7ba0013870ea1cad935e135e4f25c6310fb4023ab3c50dc82997f837a7fbf734",
+  "decoded_log_bytes": 125324,
+  "compressed_log_bytes": 20235,
+  "compressed_log_sha256": "677484a0c203e7ab8587100e183a74120af2be24acfba3545f119fcc0aa78cc4",
+  "log_file": "job-135232142788.log.gz",
+  "checkout_shas": [
+    "b53f116b825d7cf6e85681fc835aec18ef7add75"
+  ],
+  "selected_browser_cases": [],
+  "skipped_cases": [],
+  "summary_lines": [
+    {
+      "line": 837,
+      "text": "2026-11-19T00:10:10.9540105Z # tests 33"
+    },
+    {
+      "line": 838,
+      "text": "2026-11-19T00:10:10.9540475Z # suites 0"
+    },
+    {
+      "line": 839,
+      "text": "2026-11-19T00:10:10.9541078Z # pass 33"
+    },
+    {
+      "line": 840,
+      "text": "2026-11-19T00:10:10.9541360Z # fail 0"
+    },
+    {
+      "line": 841,
+      "text": "2026-11-19T00:10:10.9541697Z # cancelled 0"
+    },
+    {
+      "line": 842,
+      "text": "2026-11-19T00:10:10.9542029Z # skipped 0"
+    },
+    {
+      "line": 843,
+      "text": "2026-11-19T00:10:10.9542363Z # todo 0"
+    },
+    {
+      "line": 844,
+      "text": "2026-11-19T00:10:10.9542728Z # duration_ms 70.589409"
+    },
+    {
+      "line": 876,
+      "text": "2026-11-19T00:10:11.0572851Z # tests 4"
+    },
+    {
+      "line": 877,
+      "text": "2026-11-19T00:10:11.0573111Z # suites 0"
+    },
+    {
+      "line": 878,
+      "text": "2026-11-19T00:10:11.0573408Z # pass 4"
+    },
+    {
+      "line": 879,
+      "text": "2026-11-19T00:10:11.0574031Z # fail 0"
+    },
+    {
+      "line": 880,
+      "text": "2026-11-19T00:10:11.0574268Z # cancelled 0"
+    },
+    {
+      "line": 881,
+      "text": "2026-11-19T00:10:11.0574489Z # skipped 0"
+    },
+    {
+      "line": 882,
+      "text": "2026-11-19T00:10:11.0574722Z # todo 0"
+    },
+    {
+      "line": 883,
+      "text": "2026-11-19T00:10:11.0574936Z # duration_ms 68.564668"
+    }
+  ],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135232142788.extract.txt",
+  "extract_sha256": "637ce4487d0d29403f31507676f8dca4844f3b1fd57532ca42a11ee50fd3c602"
+}

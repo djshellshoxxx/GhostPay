@@ -1,0 +1,37 @@
+{
+  "source": "eb9e244232a6b7002e7dfc7085041cbf4177a566",
+  "published": "032c42fc3d5e52d8428a7907775835b5d1ed3704",
+  "node": "22.23.5",
+  "tracker_red": {
+    "exit_code": 1,
+    "failed": 1,
+    "filtered": 12,
+    "log": "bom-tracker-red.log",
+    "failure": "Actual BOM-prefixed file rendered Saved backup verified; expected refusal absent."
+  },
+  "tracker_and_seller_green": {
+    "exit_code": 0,
+    "passed": 17,
+    "skipped": 0,
+    "duration_seconds": 6.11,
+    "log": "bom-tracker-green.log"
+  },
+  "recovery_green": {
+    "exit_code": 0,
+    "passed": 18,
+    "skipped": 0,
+    "duration_seconds": 6.06,
+    "log": "bom-recovery-green.log"
+  },
+  "six_file_typed_lint": {
+    "exit_code": 0,
+    "command": "NODE_OPTIONS=--max-old-space-size=1024 node_modules/.bin/eslint apps/web/src/components/StealthExportVerification.tsx apps/web/src/components/StealthExportVerification.test.tsx apps/web/src/components/StealthExportRecovery.tsx apps/web/src/components/StealthExportRecovery.test.tsx apps/web/src/views/SellerKeys.stealthExport.test.tsx apps/web/e2e/stealth-export.spec.ts",
+    "log": "bom-lint.log"
+  },
+  "full_web_typecheck": {
+    "exit_code": 137,
+    "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/tsc -p tsconfig.json --noEmit",
+    "observation": "Shell reported Killed; empty diagnostic file; termination cause not instrumented on this invocation. No pass claimed."
+  },
+  "independent_review": "Both crypto and reconnaissance reviewers inspected source and red/green execution evidence; no remaining source blocker in this follow-up. Hosted qualification still required."
+}

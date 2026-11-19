@@ -1,0 +1,213 @@
+{
+  "job": {
+    "id": 135215459690,
+    "name": "e2e (full)",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "d46b8d8253a8f9c18ff21327ef115c3c748a75ec",
+    "started_at": "2026-11-18T23:32:08Z",
+    "completed_at": "2026-11-18T23:37:35Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44421229393/job/135215459690"
+  },
+  "fetched_at": "2026-11-18T23:38:24.908Z",
+  "source_api": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/jobs/135215459690/logs",
+  "decoded_log_sha256": "261c0f278780ad8f3f685e0b1d13396b893a611e0550b1ecbe90771b71dddd89",
+  "decoded_log_bytes": 109668,
+  "compressed_log_bytes": 18097,
+  "compressed_log_sha256": "aa14090c7f64fd6e538e55aaaf568ce375c6ba111acfd08cce84ef5bb4d2c211",
+  "log_file": "job-135215459690.log.gz",
+  "checkout_shas": [
+    "c93b35b7630bd96e7686573576db8fbad49eb6d7"
+  ],
+  "selected_browser_cases": [
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/backup-panel.spec.ts:10:3",
+      "title": "combined backup panel \u203a shows honest per-item status and marks each item done only after its export",
+      "duration": "3.2s",
+      "raw_line": "2026-11-18T23:34:08.2373827Z   \u2713  17 [desktop] \u203a e2e/backup-panel.spec.ts:10:3 \u203a combined backup panel \u203a shows honest per-item status and marks each item done only after its export (3.2s)",
+      "line": 487
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/core-journey.spec.ts:474:1",
+      "title": "core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore",
+      "duration": "6.9s",
+      "raw_line": "2026-11-18T23:34:22.3295067Z   \u2713  26 [desktop] \u203a e2e/core-journey.spec.ts:474:1 \u203a core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore (6.9s)",
+      "line": 498
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/core-journey.spec.ts:601:1",
+      "title": "invoice expiry is refused at the final pay guard: nothing reaches the wallet",
+      "duration": "1.6s",
+      "raw_line": "2026-11-18T23:34:23.9481178Z   \u2713  27 [desktop] \u203a e2e/core-journey.spec.ts:601:1 \u203a invoice expiry is refused at the final pay guard: nothing reaches the wallet (1.6s)",
+      "line": 499
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/core-journey.spec.ts:623:1",
+      "title": "stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results",
+      "duration": "4.4s",
+      "raw_line": "2026-11-18T23:34:28.3989463Z   \u2713  28 [desktop] \u203a e2e/core-journey.spec.ts:623:1 \u203a stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results (4.4s)",
+      "line": 500
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/core-journey.spec.ts:667:1",
+      "title": "verified keystore reimports the same keys after a manual wipe without a pending sweep",
+      "duration": "2.8s",
+      "raw_line": "2026-11-18T23:34:31.1684750Z   \u2713  29 [desktop] \u203a e2e/core-journey.spec.ts:667:1 \u203a verified keystore reimports the same keys after a manual wipe without a pending sweep (2.8s)",
+      "line": 501
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/core-journey.spec.ts:681:1",
+      "title": "reorg: the payment block is replaced mid-scan, the scan withdraws the match, invalidates the saved observation and offers no receipt",
+      "duration": "4.2s",
+      "raw_line": "2026-11-18T23:34:35.3412426Z   \u2713  30 [desktop] \u203a e2e/core-journey.spec.ts:681:1 \u203a reorg: the payment block is replaced mid-scan, the scan withdraws the match, invalidates the saved observation and offers no receipt (4.2s)",
+      "line": 502
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/core-journey.spec.ts:722:1",
+      "title": "unknown and late outcomes are shown honestly: no false success, pending until final",
+      "duration": "2.4s",
+      "raw_line": "2026-11-18T23:34:37.7352640Z   \u2713  31 [desktop] \u203a e2e/core-journey.spec.ts:722:1 \u203a unknown and late outcomes are shown honestly: no false success, pending until final (2.4s)",
+      "line": 503
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:71:1",
+      "title": "payment details: public record holds no key; encrypted keypair after vault re-auth; raw key only after the second confirmation",
+      "duration": "6.0s",
+      "raw_line": "2026-11-18T23:35:31.1563660Z   \u2713  59 [desktop] \u203a e2e/stealth-export.spec.ts:71:1 \u203a payment details: public record holds no key; encrypted keypair after vault re-auth; raw key only after the second confirmation (6.0s)",
+      "line": 534
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:162:1",
+      "title": "keys without a vault: secret exports are refused until the keystore backup file and its passphrase are given",
+      "duration": "4.3s",
+      "raw_line": "2026-11-18T23:35:35.4488962Z   \u2713  60 [desktop] \u203a e2e/stealth-export.spec.ts:162:1 \u203a keys without a vault: secret exports are refused until the keystore backup file and its passphrase are given (4.3s)",
+      "line": 535
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:203:1",
+      "title": "a fresh browser with no keys opens an encrypted keypair file and validates its address; a wrong passphrase shows nothing",
+      "duration": "916ms",
+      "raw_line": "2026-11-18T23:35:36.3730604Z   \u2713  61 [desktop] \u203a e2e/stealth-export.spec.ts:203:1 \u203a a fresh browser with no keys opens an encrypted keypair file and validates its address; a wrong passphrase shows nothing (916ms)",
+      "line": 536
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:246:1",
+      "title": "narrow-viewport verification-only flow rejects malformed and public files, authenticates a backup, and installs no wallet",
+      "duration": "827ms",
+      "raw_line": "2026-11-18T23:35:37.2102834Z   \u2713  62 [desktop] \u203a e2e/stealth-export.spec.ts:246:1 \u203a narrow-viewport verification-only flow rejects malformed and public files, authenticates a backup, and installs no wallet (827ms)",
+      "line": 537
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:285:1",
+      "title": "a fresh browser restores master spending authority and replacing a saved wallet still requires fresh consent",
+      "duration": "1.5s",
+      "raw_line": "2026-11-18T23:35:38.7674243Z   \u2713  63 [desktop] \u203a e2e/stealth-export.spec.ts:285:1 \u203a a fresh browser restores master spending authority and replacing a saved wallet still requires fresh consent (1.5s)",
+      "line": 538
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:307:1",
+      "title": "keyboard navigation opens the saved-file chooser and verifies a backup without importing",
+      "duration": "535ms",
+      "raw_line": "2026-11-18T23:35:39.3136572Z   \u2713  64 [desktop] \u203a e2e/stealth-export.spec.ts:307:1 \u203a keyboard navigation opens the saved-file chooser and verifies a backup without importing (535ms)",
+      "line": 539
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:331:1",
+      "title": "secret-leak guard: no exported private key in requests, console, URL/history, storage, IndexedDB or clipboard",
+      "duration": "8.0s",
+      "raw_line": "2026-11-18T23:35:47.3705848Z   \u2713  65 [desktop] \u203a e2e/stealth-export.spec.ts:331:1 \u203a secret-leak guard: no exported private key in requests, console, URL/history, storage, IndexedDB or clipboard (8.0s)",
+      "line": 540
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:394:1",
+      "title": "the idle lock while the export is still deriving and encrypting discards the result: no download, keys stay loaded",
+      "duration": "9.0s",
+      "raw_line": "2026-11-18T23:35:56.3997979Z   \u2713  66 [desktop] \u203a e2e/stealth-export.spec.ts:394:1 \u203a the idle lock while the export is still deriving and encrypting discards the result: no download, keys stay loaded (9.0s)",
+      "line": 541
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/stealth-export.spec.ts:441:1",
+      "title": "wiping the keys while the master backup KDF runs discards the result: no download",
+      "duration": "20.4s",
+      "raw_line": "2026-11-18T23:36:16.8539010Z   \u2713  67 [desktop] \u203a e2e/stealth-export.spec.ts:441:1 \u203a wiping the keys while the master backup KDF runs discards the result: no download (20.4s)",
+      "line": 542
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/sweep.spec.ts:54:3",
+      "title": "actual direct sweep journals before success handoff and refuses a duplicate through reload",
+      "duration": "5.4s",
+      "raw_line": "2026-11-18T23:36:22.2932733Z   \u2713  68 [desktop] \u203a e2e/sweep.spec.ts:54:3 \u203a actual direct sweep journals before success handoff and refuses a duplicate through reload (5.4s)",
+      "line": 544
+    },
+    {
+      "status": "passed",
+      "project": "desktop",
+      "location": "e2e/sweep.spec.ts:54:3",
+      "title": "actual direct sweep journals before unknown handoff and refuses a duplicate through reload",
+      "duration": "5.5s",
+      "raw_line": "2026-11-18T23:36:27.8339884Z   \u2713  69 [desktop] \u203a e2e/sweep.spec.ts:54:3 \u203a actual direct sweep journals before unknown handoff and refuses a duplicate through reload (5.5s)",
+      "line": 546
+    }
+  ],
+  "summary_lines": [
+    {
+      "line": 601,
+      "text": "2026-11-18T23:37:30.3165152Z   1 failed"
+    },
+    {
+      "line": 603,
+      "text": "2026-11-18T23:37:30.3167008Z   1 skipped"
+    },
+    {
+      "line": 604,
+      "text": "2026-11-18T23:37:30.3167371Z   86 passed (4.3m)"
+    }
+  ],
+  "extraction": "Selected exact log lines with original 1-based line numbers; ANSI escape sequences removed only in the readable excerpt. Raw decoded UTF-8 is preserved unchanged in gzip.",
+  "extract_file": "job-135215459690.extract.txt",
+  "extract_sha256": "d1666ed058b61b72b3d8bf10c7061f466adce437833b7011ea6c95f509e87cd9",
+  "skipped_browser_cases": [
+    {
+      "status": "skipped",
+      "project": "desktop",
+      "location": "e2e/backup-panel.spec.ts:60:3",
+      "title": "lean profile \u203a keeps the key backup and has no tag archive item or combined panel",
+      "raw_line": "2026-11-18T23:34:08.2383158Z   -  18 [desktop] \u203a e2e/backup-panel.spec.ts:60:3 \u203a lean profile \u203a keeps the key backup and has no tag archive item or combined panel",
+      "line": 488
+    }
+  ]
+}

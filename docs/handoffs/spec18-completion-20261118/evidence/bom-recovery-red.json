@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/components/StealthExportRecovery.test.tsx",
+    "--coverage=false",
+    "--maxWorkers=1",
+    "-t",
+    "rejects actual UTF-8 BOM bytes"
+  ],
+  "node": "22.23.5",
+  "NODE_OPTIONS": "--max-old-space-size=768",
+  "exit_code": 1,
+  "seconds": 1.994,
+  "log": "/tmp/ghostpay-spec18-bom-recovery-red.log",
+  "scope": "Current recovery implementation without BOM guard; only actual-BOM regression cases selected."
+}

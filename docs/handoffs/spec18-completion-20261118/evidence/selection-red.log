@@ -1,0 +1,132 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /tmp/ghostpay-spec18-selection-baseline-198aa5ba/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/components/StealthExportSelection.test.tsx (7 tests | 6 failed | 1 skipped) 1302ms
+   ❯ export consent and results follow the selected inputs (7)
+     × a changed payment closes raw-key confirmation on the same chain 234ms
+     × a changed rpc closes raw-key confirmation on the same chain 97ms
+     × discards an in-flight encrypted payment after the payment changes 278ms
+     × discards an in-flight encrypted payment after the rpc changes 240ms
+     × discards an in-flight encrypted payment after the announcement changes 209ms
+     × new same-chain scan results cancel the old archive before download 243ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > a changed payment closes raw-key confirmation on the same chain
+ FAIL  src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > a changed rpc closes raw-key confirmation on the same chain
+AssertionError: expected <div tabindex="-1" …(2)>…(3)</div> to be null
+
+- Expected:
+null
+
++ Received:
+<div
+  aria-label="Download a plain-text private key?"
+  role="group"
+  tabindex="-1"
+>
+  <div
+    class="notice notice-warn"
+    role="note"
+  >
+    <strong
+      class="notice-title"
+    >
+      <span
+        aria-hidden="true"
+      >
+        ⚠
+         
+      </span>
+      Download a plain-text private key?
+      <span
+        class="sr-only"
+      >
+        :
+      </span>
+    </strong>
+    <div>
+      The file holds this payment’s private key unencrypted. Anyone who gets it can spend funds at this address, now and in the future. Anyone who also has your private viewing key and this payment’s public announcement can reconstruct your master spending key and spend your other discoverable scheme-1 payments. Browser downloads can leave copies on disk, in backups and in search indexes. This is a single EVM private key, not a seed or recovery phrase; by itself, it controls this address and does not discover other stealth payments.
+    </div>
+  </div>
+  <button
+    class="btn btn-danger"
+    data-testid="stealth-export-raw-confirm"
+    type="button"
+  >
+    Download the private key
+  </button>
+   
+  <button
+    class="btn"
+    type="button"
+  >
+    Cancel
+  </button>
+</div>
+
+ ❯ src/components/StealthExportSelection.test.tsx:40:89
+     38|     expect(screen.getByRole('group', { name: 'Download a plain-text pr…
+     39|     view.rerender(<StealthExportPayment match={change === 'payment' ? …
+     40|     expect(screen.queryByRole('group', { name: 'Download a plain-text …
+       |                                                                                         ^
+     41|     expect(screen.getByLabelText<HTMLInputElement>('Passphrase of your…
+     42|     expect(downloads.files).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > discards an in-flight encrypted payment after the payment changes
+ FAIL  src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > discards an in-flight encrypted payment after the rpc changes
+ FAIL  src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > discards an in-flight encrypted payment after the announcement changes
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/StealthExportSelection.test.tsx:53:125
+     51|     await fill(user); await user.click(screen.getByRole('button', { na…
+     52|     await waitFor(() => { expect(exportSpy).toHaveBeenCalledOnce(); });
+     53|     expect(screen.getByLabelText<HTMLInputElement>('New passphrase for…
+       |                                                                                                                             ^
+     54|     expect(screen.getByLabelText<HTMLInputElement>('Repeat the export …
+     55|     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sugg…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/components/StealthExportSelection.test.tsx > export consent and results follow the selected inputs > new same-chain scan results cancel the old archive before download
+AssertionError: expected [ { …(2) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "blob": Blob {},
++     "filename": "ghostpay-stealth-keypair.json",
++   },
++ ]
+
+ ❯ src/components/StealthExportSelection.test.tsx:74:29
+     72|     view.rerender(<StealthExportArchive matches={[vectorMatch('a1'), v…
+     73|     await act(async () => { pending.resolve(file); await pending.promi…
+     74|     expect(downloads.files).toEqual([]);
+       |                             ^
+     75|     expect(announce).not.toHaveBeenCalled();
+     76|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 1 skipped (7)
+   Start at  15:08:26
+   Duration  3.44s (tests 40%, environment 23%, transform 21%, import 16%)
+
