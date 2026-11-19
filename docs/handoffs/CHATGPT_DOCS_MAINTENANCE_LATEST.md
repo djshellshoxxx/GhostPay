@@ -1,5 +1,29 @@
 # GhostPay ChatGPT documentation-maintenance ledger
 
+## Consolidation checkpoint — 18 November 2026 Pacific / 19 November UTC
+
+This checkpoint supersedes the operational status of the historical rotations below.
+The inspected main is [`ffd982a7aea2856c186b40ef236a39720a1b81f5`](https://github.com/djshellshoxxx/GhostPay/commit/ffd982a7aea2856c186b40ef236a39720a1b81f5).
+PR #241 transport isolation, PR #237 beta-log retention, PR #242 selected Pages
+integration and PR #214 audit evidence are already merged. The earlier `dfc75ef`
+main and #241-unmerged descriptions remain historical observations, not current guidance.
+
+This isolated documentation branch merges #215 at `362dfa999a96dc615a1d146b4f37f8325268a595` without rewriting that source
+branch. Both PR #215 and #216 source heads are retained in the ancestry of
+`integration/ghostpay-docs-recovery-20261119`. Older #139/#140/#153 evidence missing
+from those ledgers is preserved in the dated
+[documentation recovery archive](docs-recovery-20261119/README.md).
+See the [repository status snapshot](../wiki/Current-Status.md) for exact source
+identities, unfinished recovery/security work and the distinction between scoped
+checks and release qualification.
+
+Resume from live main and the active ownership registry, not an older rotation's
+pending-action paragraph. This documentation worker has not merged its candidate
+to main, published the live Wiki or deployed a site. Fresh candidate qualification
+and coordinator review remain required; no application tests were run in this lane.
+
+## Historical rotation evidence
+
 ## November 19, 2026 UTC — rotation 207: source-pinned receipt/invoice trust boundaries and Wiki link validation
 
 - **Preflight:** Checked merged [zero-Codex continuation](../CHATGPT_ZERO_CODEX_CONTINUATION.md), `AGENTS.md`, `docs/ai/WORKFLOW.md`, prior automation rotation 206 and its three exact-head scoped CI runs, `main` `dfc75ef2087fa6463ae59e0818abec01796c578d`, recent commits, owner registry, active PRs and CI. Previous audit #214 [44460457160](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460457160), docs #215 [44460540316](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460540316), handoff #216 [44460617232](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460617232) each **passed the scoped documentation CI**, not application/release qualification. Owner [#238](https://github.com/djshellshoxxx/GhostPay/pull/238) at `198aa5ba` still failed app/Mythril; [#239](https://github.com/djshellshoxxx/GhostPay/pull/239)/[#240](https://github.com/djshellshoxxx/GhostPay/pull/240) app failed; independent [#241](https://github.com/djshellshoxxx/GhostPay/pull/241) app 24/24 passed but remains unmerged. No concurrent production ownership intruded.
@@ -12,7 +36,7 @@
 
 - **Evidence preflight:** Prior rotation 205 [audit scoped CI 44453734719](https://github.com/djshellshoxxx/GhostPay/actions/runs/44453734719), [docs scoped CI 44453835016](https://github.com/djshellshoxxx/GhostPay/actions/runs/44453835016), and [handoff scoped CI 44453933787](https://github.com/djshellshoxxx/GhostPay/actions/runs/44453933787) all completed successful, four applicable jobs per workflow with 12 expected skips. Current default `main` is `dfc75ef2087fa6463ae59e0818abec01796c578d`; its [24/24 application CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/44292693611) passed, not a product release or third-party security clearance. Owner integration [#238](https://github.com/djshellshoxxx/GhostPay/pull/238) remains exact-head app/Mythril failed; recovery [#239](https://github.com/djshellshoxxx/GhostPay/pull/239)/[#240](https://github.com/djshellshoxxx/GhostPay/pull/240) remain app failed; network-isolation [#241](https://github.com/djshellshoxxx/GhostPay/pull/241) individually app-green and unmerged. No current application branch modified.
 - **Documents actually changed:** `docs/wiki/User-Guide.md` on this isolated docs branch in commit **`d207a1fac420197a5ad5f77dd0269cba252b0938`**. Added user-facing, source-pinned explanation of `A256GCM-PW` invoice-link unlock separate from the encrypted seller backup; header is unauthenticated before decrypt, signed invoice authentication differs from independently trusted seller pin, and wallet/chain payment verification is a separate step. Explained NFKC/length policy, generic wrong-password error and absence of custodial recovery; the text is limited to what source and tests implement. New [invoice passphrase implementation](https://github.com/djshellshoxxx/GhostPay/blob/dfc75ef2087fa6463ae59e0818abec01796c578d/packages/invoice-schema/src/passphrase.ts), [envelope parser](https://github.com/djshellshoxxx/GhostPay/blob/dfc75ef2087fa6463ae59e0818abec01796c578d/packages/invoice-schema/src/envelope.ts), [Pay UI](https://github.com/djshellshoxxx/GhostPay/blob/dfc75ef2087fa6463ae59e0818abec01796c578d/apps/web/src/views/Pay.tsx), and [regression tests](https://github.com/djshellshoxxx/GhostPay/blob/dfc75ef2087fa6463ae59e0818abec01796c578d/packages/invoice-schema/src/passphrase.test.ts) URLs were grounded by fetching exact current-main source. **Tests inspected, not run** in this docs phase.
-- **Link and ownership checks:** Four new GitHub source/test links are source-pinned; no new relative Markdown links were introduced. The prior complete [Wiki link inventory](docs/wiki/Verification-and-Release-Gates.md) checked nine Wiki source pages, 50 relative links, 12 existing targets, 0 missing; that prior scan was **not repeated** this rotation. Current Home and Sidebar source have prominent separate User Guide and Developer Guide links; live GitHub Wiki **not published**. Owner #238 and docs #215 both change `docs/wiki/Verification-and-Release-Gates.md`, and owner #223/#238 change README. Neither shared file was edited; do not assume merge compatibility without owner review. No requirement, protocol, fee policy, security rating or cryptographic change.
+- **Link and ownership checks:** Four new GitHub source/test links are source-pinned; no new relative Markdown links were introduced. The prior complete [Wiki link inventory](../wiki/Verification-and-Release-Gates.md) checked nine Wiki source pages, 50 relative links, 12 existing targets, 0 missing; that prior scan was **not repeated** this rotation. Current Home and Sidebar source have prominent separate User Guide and Developer Guide links; live GitHub Wiki **not published**. Owner #238 and docs #215 both change `docs/wiki/Verification-and-Release-Gates.md`, and owner #223/#238 change README. Neither shared file was edited; do not assume merge compatibility without owner review. No requirement, protocol, fee policy, security rating or cryptographic change.
 - **CI and next:** [Wiki source commit CI 44460462114](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460462114) initially **QUEUED** at first inspection; its exact outcome must be checked again. This ledger update creates a subsequent docs-head CI and is not itself independently qualified until that check finishes. Publish/check the *live* Wiki only after an authorized publishing path and explicit permission; do not claim current live pages updated. Next docs pass: resolve changed-file overlap with #238 via owner reconciliation, and check README/current-status after its owner updates. No Codex, paid API, separate concurrent third worker, non-Pages implementation, release, deployment or real funds.
 
 

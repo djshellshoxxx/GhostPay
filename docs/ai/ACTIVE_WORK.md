@@ -499,7 +499,8 @@ Branch: `integration/ghostpay-docs-recovery-20261119`.
 Base: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (main after PR #214).
 Owned paths: `docs/wiki/**`, `docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md`,
 `docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md`,
-`docs/handoffs/docs-recovery-20261119/**`, and this claim only.
+`docs/handoffs/docs-recovery-20261119/**`, the QR precedence paragraph in
+`docs/design/qr-colors.md` (coordinator-approved recovery from #140), and this claim only.
 The coordinator owns `docs/maintenance/**`; existing producer branches remain unchanged.
 
 Acceptance: merge exact PR #215 and #216 source heads into this isolated branch while
@@ -510,3 +511,8 @@ historical provenance, branch ancestry, absence of runtime/workflow changes and 
 diff formatting. Runtime tests are not claimed for this documentation-only change.
 No remote publication, merge to main, deployment or live Wiki publication is performed
 by this worker. The coordinator reviews and qualifies the completed candidate.
+
+Status: local documentation integration and historical extraction completed. Both
+source heads are retained by normal merges; no source-owner branch was updated.
+The recovery report and `verification.json` record static checks. Publication,
+independent review, applicable CI and main integration remain coordinator-owned.

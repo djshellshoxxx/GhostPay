@@ -1,5 +1,29 @@
 # ChatGPT zero-Codex continuation — GhostPay
 
+## Consolidation checkpoint — 18 November 2026 Pacific / 19 November UTC
+
+This checkpoint supersedes the operational status of the historical rotations below.
+The inspected main is [`ffd982a7aea2856c186b40ef236a39720a1b81f5`](https://github.com/djshellshoxxx/GhostPay/commit/ffd982a7aea2856c186b40ef236a39720a1b81f5).
+PR #241 transport isolation, PR #237 beta-log retention, PR #242 selected Pages
+integration and PR #214 audit evidence are already merged. The earlier `dfc75ef`
+main and #241-unmerged descriptions remain historical observations, not current guidance.
+
+This isolated documentation branch merges #216 at `bb193849a5688bb604e3e32dc83e1647e37fe447` without rewriting that source
+branch. Both PR #215 and #216 source heads are retained in the ancestry of
+`integration/ghostpay-docs-recovery-20261119`. Older #139/#140/#153 evidence missing
+from those ledgers is preserved in the dated
+[documentation recovery archive](docs-recovery-20261119/README.md).
+See the [repository status snapshot](../wiki/Current-Status.md) for exact source
+identities, unfinished recovery/security work and the distinction between scoped
+checks and release qualification.
+
+Resume from live main and the active ownership registry, not an older rotation's
+pending-action paragraph. This documentation worker has not merged its candidate
+to main, published the live Wiki or deployed a site. Fresh candidate qualification
+and coordinator review remain required; no application tests were run in this lane.
+
+## Historical rotation evidence
+
 ## November 19, 2026 UTC — rotation 207: source-export audit, Wiki trust boundaries, owner-controlled production deferral
 
 - **Starting evidence:** Read preceding automation rotation 206, the merged `docs/CHATGPT_ZERO_CODEX_CONTINUATION.md` (PR #101 merged), `AGENTS.md`, `docs/ai/WORKFLOW.md`, this source-pinned handoff, `docs/ai/ACTIVE_WORK.md`, main commits, active draft PRs, and precise workflow runs. Current `main` **`dfc75ef2087fa6463ae59e0818abec01796c578d`** unchanged, [application CI 44292693611](https://github.com/djshellshoxxx/GhostPay/actions/runs/44292693611) **24/24 passed**, not release or security clearance. Prior #214 `ff4b6dd91ad892f282174a96ac13f0e5d8861d5a` [scoped CI 44460457160](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460457160), #215 `4b8118c72d71501835ffa69c9c613e2d1005e39b` [scoped CI 44460540316](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460540316) and #216 `4b3b9f9545ee2465a2dc899e177c0fb89b72e380` [scoped CI 44460617232](https://github.com/djshellshoxxx/GhostPay/actions/runs/44460617232) all completed successful. Checked GitHub Actions **for their exact SHAs**, not inherited checks.

@@ -1,0 +1,1086 @@
+{
+  "recorded_date": "2026-11-18 Pacific / 2026-11-19 UTC",
+  "main_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+  "comparison_commit": "562c219123de64a8089c95af1393ce955b0d4ff2",
+  "method": "Retain every level-two Markdown section (including the preamble) from the older branch-owned documentation files when its stripped source text is not a substring of the merged PR215/PR216 comparison file. Preserve original section text except that relative inline Markdown links resolve to the original source commit. No old patch is applied to live guidance.",
+  "sources": [
+    {
+      "pr": 139,
+      "commit": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "merge_base": "e802d5c1ff131762477b485af3046446e8576be5",
+      "archive": "archive/pr139-historical-evidence.md",
+      "files": [
+        {
+          "path": "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md",
+          "source_blob": "5d67342f6a9273313c1f1e7b854dd77ae5df6fd8",
+          "source_sha256": "7a4262f1073ceda59830b815f03f6ddb081e560a8510f9462b6e7393b7e21b28",
+          "comparison_sha256": "25844abeb31d642eb2dc8f53eaa37a463a7905e0a99321d601d0541e48d0cd84",
+          "source_section_count": 151,
+          "archived_section_count": 42,
+          "sections": [
+            {
+              "heading": "## November 18, 2026 UTC — rotation 184: invoice-to-payment reconciliation matching boundary (READ-ONLY)",
+              "start_line": 3,
+              "end_line": 9,
+              "source_sha256": "d67ae2140d92960197838a755b49a286ba2cc590a4364f3312a0568b4d115b04"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 183: Pages error-message and localization trust boundary (READ-ONLY)",
+              "start_line": 10,
+              "end_line": 18,
+              "source_sha256": "cf9e4ae849f1c191b35b3229828189251b7bfdb1c4a3ae20226e004c1538581e"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 182: public seller-pairing input and QR classification (READ-ONLY)",
+              "start_line": 19,
+              "end_line": 26,
+              "source_sha256": "a3c98b7896fdb3259abf1f821b9667c75e1d2d66931dd5e3a4c89835c3d57ae6"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 181: dormant merchant embed host boundary (READ-ONLY)",
+              "start_line": 27,
+              "end_line": 34,
+              "source_sha256": "20d6a19c256065f367bc3198c57d2069581495aaf5cb21ef6d3d53667dba4e98"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 180: Pages multipart QR display/assembly boundary (READ-ONLY)",
+              "start_line": 35,
+              "end_line": 41,
+              "source_sha256": "dc315e78e6f5e5e07565d3b9d54c74ce5ada10187130e3cfb62e429b3c373527"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 179: untrusted invoice display-text boundary (READ-ONLY)",
+              "start_line": 42,
+              "end_line": 49,
+              "source_sha256": "e9298a000354d7e82731ca565b20ebf63e2cab839077f69e0ff4c28cf4b6a275"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 178: Pages public meta-address QR trust boundary (READ-ONLY)",
+              "start_line": 50,
+              "end_line": 58,
+              "source_sha256": "771ded007b60fb85d54525594822a2733a8d5d45286e555d0db818b74637fbc9"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 177: Pages app-lock notification and typed secret clearing (READ-ONLY)",
+              "start_line": 59,
+              "end_line": 66,
+              "source_sha256": "2930927ae6faba887a7bd7fa1736e887013e336c18006cba98d0b83567239765"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 176: tab-local wallet attempt journal boundary (READ-ONLY)",
+              "start_line": 67,
+              "end_line": 75,
+              "source_sha256": "db1493204132146e11c59f44cb0360b0b46827a8f0b9b88f47baaa1bcf4db503"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 175: static Pages legacy reconciliation boundary (READ-ONLY)",
+              "start_line": 76,
+              "end_line": 83,
+              "source_sha256": "37fad6630260610e06d32a5b877b1368c47fcd0afb47b9bc822bc55cbe8478d9"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 174: static Pages relayer-client trust and sweep handoff (READ-ONLY)",
+              "start_line": 84,
+              "end_line": 91,
+              "source_sha256": "d9e88f9cc418af9e1c2b501c0e7bf594b618a633167d834b0ae7c81361127a18"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 173: static Pages scan-privacy transport and source boundary (READ-ONLY)",
+              "start_line": 92,
+              "end_line": 100,
+              "source_sha256": "7ae879e2a487f090ab21782adaa4ab4898d2982a5bd728f29d9c65a9c2168020"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 172: lean transaction-review policy and simulation (READ-ONLY)",
+              "start_line": 101,
+              "end_line": 108,
+              "source_sha256": "0ac35d4432da10f778cce8d9e08a7da52315ddc9a30d59e7f2e1dffe52260a60"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 171: lean browser settings persistence and endpoint validation (READ-ONLY)",
+              "start_line": 109,
+              "end_line": 116,
+              "source_sha256": "57b9f9dad00e02bd83fa2667fb8d71183f4917b484e06c54e922a9ba1f28ee60"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 170: lean wallet authority and receipt boundary (READ-ONLY)",
+              "start_line": 117,
+              "end_line": 123,
+              "source_sha256": "d6881e773226af17d7d8ba984ec971100518d182ebf5c9e433c7f51894b33fb0"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 169: lean seller-session key custody (READ-ONLY)",
+              "start_line": 124,
+              "end_line": 130,
+              "source_sha256": "93300a0b2e1fee7d3962740e1159c4a0d9b844d7572076f666b4fff57b79e124"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 168: announcement-delay scheduling trust boundary (READ-ONLY)",
+              "start_line": 131,
+              "end_line": 138,
+              "source_sha256": "8b29d16527f8dcc6f67fab612a4fa39da1d28fb3f9eb5a43cd1f3004b2a8fa9b"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 167: QR palette mathematics (READ-ONLY)",
+              "start_line": 139,
+              "end_line": 146,
+              "source_sha256": "ced88eff0275ddd1c37ae26b947db0283e3f012e37ffda76e83dc66f1701cc5f"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 166: lean source-English translator and fallback boundary (READ-ONLY)",
+              "start_line": 147,
+              "end_line": 155,
+              "source_sha256": "5c79a16963cd4773043aaf5957f3bbe063c38f5d228e864a86a986b118729b3a"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 165: bundled Pages deployment manifest trust boundary (READ-ONLY)",
+              "start_line": 156,
+              "end_line": 163,
+              "source_sha256": "d8c2bf06f8cbd39b19198084c03571cdb1589fea37c6d79e839fd04ba3ba4dc0"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 164: lean invoice-text rendering (READ-ONLY)",
+              "start_line": 164,
+              "end_line": 171,
+              "source_sha256": "e745d3c1949c0a267c77acbe910c661e66a373ad358a4ccacbfffde762063676"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 163: lean invoice-bound receipt verification (READ-ONLY)",
+              "start_line": 172,
+              "end_line": 180,
+              "source_sha256": "75320c16c77a186893f21f9a196f8d36386d544cf2b1acfe4a3b4909beeead4e"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 162: lean seller invoice-builder boundary (READ-ONLY)",
+              "start_line": 181,
+              "end_line": 188,
+              "source_sha256": "21c0c07a5211249b65b9601ceb4490b2293e961ff2bb21e8d92187095b230a3d"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 161: lean payment outcome presentation boundary (READ-ONLY)",
+              "start_line": 189,
+              "end_line": 196,
+              "source_sha256": "037fb6f1760494d16515caed95428d697baf4c7a270d290fc0be8abc07a9d62f"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 160: lean Pages sweep-lock state (READ-ONLY)",
+              "start_line": 197,
+              "end_line": 210,
+              "source_sha256": "7259d2a2e10bcce342050b69043e682630f53b9e8af3c565f7d64df04de31de5"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 159: backup-checklist status and custody boundaries (READ-ONLY SOURCE AUDIT)",
+              "start_line": 211,
+              "end_line": 218,
+              "source_sha256": "1cf912b37ab079153893571257711c9291a2684e6b6639828111b45c29a8a6d2"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 158: language registry / locale matching (READ-ONLY AUDIT)",
+              "start_line": 219,
+              "end_line": 226,
+              "source_sha256": "822f9af705564aba38231372b3ca3011921f2684e15a147c7538c317685ef374"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 157: English source-catalog import boundary (READ-ONLY AUDIT)",
+              "start_line": 227,
+              "end_line": 235,
+              "source_sha256": "1333ce06bac070f6b545b1c75c3e68a2f4cebf41dc26469c7494c7aa96436574"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 154: archive download cleanup on blocked click (READ-ONLY AUDIT)",
+              "start_line": 236,
+              "end_line": 244,
+              "source_sha256": "0bf2823573ec6a745fafb70e68d0d33df21d7b03ad2ee446859cc8c67273bc40"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 153: rich-message tag renderer own-property boundary (READ-ONLY AUDIT)",
+              "start_line": 245,
+              "end_line": 254,
+              "source_sha256": "f0a4abc6d11bac62d980d37c2ce4a6c84e43e6bb1a579bcad015ce3b0ccd0720"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 152: Pages localization entry exports and safe rich-text boundary (READ-ONLY AUDIT)",
+              "start_line": 255,
+              "end_line": 263,
+              "source_sha256": "52f0ace9b9132f6cf0811cbdc18e97494f51a81577fb48090713354dd0d0bced"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 151: static Pages entrypoint/profile boundary (READ-ONLY AUDIT)",
+              "start_line": 264,
+              "end_line": 271,
+              "source_sha256": "ed7cd8b6d83aaba4680f0fd5b99607fba41dc3c86dfbaea7b06415958a1719a2"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 150: Pages QR-kind sensitivity precedence (READ-ONLY AUDIT)",
+              "start_line": 272,
+              "end_line": 279,
+              "source_sha256": "b051fc068395c106eee1b5a4b37e3dc40271bb77f180b9cb93aed9d013d474bf"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 149: Pages device-settings QR exchange preview/apply boundary (READ-ONLY AUDIT)",
+              "start_line": 280,
+              "end_line": 287,
+              "source_sha256": "3c8653ae34ffbf6d1973b925bb1b294dae273234b3c37a921636caef56db62d2"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 148: Pages lazy catalog loading and English fallback (READ-ONLY AUDIT)",
+              "start_line": 288,
+              "end_line": 294,
+              "source_sha256": "3e2e3ff827261912d285ce9f8bd2edbd921b58906386fb10a5f6da9fb90c82c7"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 147: Pages translator fallback and review boundary (READ-ONLY AUDIT)",
+              "start_line": 295,
+              "end_line": 301,
+              "source_sha256": "4e2c9e427e39be0152a5b012e99a1b2e8a59e9e721b0d3f36d377ba56a670702"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 146: static Pages localization-provider lifecycle (READ-ONLY AUDIT)",
+              "start_line": 302,
+              "end_line": 308,
+              "source_sha256": "3ed396812489074aac75a2f2afb096cc154bc9a68c0f194f792e2b38613aefe1"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 145: Pages RichText formatter boundary (READ-ONLY AUDIT)",
+              "start_line": 309,
+              "end_line": 316,
+              "source_sha256": "74acdd66a4701e580e0e4735b7f9d79bd9843f109d97e21f39ca404ff6d27483"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 144: Pages render-error fallback and privacy boundary (READ-ONLY AUDIT)",
+              "start_line": 317,
+              "end_line": 323,
+              "source_sha256": "cc7a9f60c35e601511a386d3356f02ae3211268487adbe0cacbea70c33cca217"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 143: Pages QR rendering and SVG export trust boundary (READ-ONLY AUDIT)",
+              "start_line": 324,
+              "end_line": 330,
+              "source_sha256": "7e688429aefc887ed99563c909af7360a33ebc46f9b0e7c000a3b482753518fd"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 142: Pages contextual-help dismissal and accessible descriptions (READ-ONLY AUDIT)",
+              "start_line": 331,
+              "end_line": 337,
+              "source_sha256": "f26674e31551817cdb35c4636cf73510306ff58f70da1bd207943de83af2f722"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 141: Pages manifest warning and trust boundary (READ-ONLY AUDIT)",
+              "start_line": 338,
+              "end_line": 344,
+              "source_sha256": "4974ec00e09d99191606312ecc02a67090ef3e820750fce1f593f62e3ded80b7"
+            }
+          ]
+        }
+      ],
+      "archive_sha256": "6e6db24630d851d8dd8cdd5dece7d0c1afd82ab051fae6b8c245bb3f7a3e62a1",
+      "archive_bytes": 147945
+    },
+    {
+      "pr": 140,
+      "commit": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "merge_base": "17158f4c62f8f968853c3ffdd0cb3572455038f5",
+      "archive": "archive/pr140-historical-evidence.md",
+      "files": [
+        {
+          "path": "README.md",
+          "source_blob": "bd883313120ff84cf5405807d7b6a074b04b0c92",
+          "source_sha256": "9a1ff5d800658ec7bd7123de7ce036e4c48eb93cc4f678d0516a84ffdc118197",
+          "comparison_sha256": "e40a2640c22955ed3b7ad9ecf3b2020bcd19dd272436f78753ce030cd77bc024",
+          "source_section_count": 10,
+          "archived_section_count": 2,
+          "sections": [
+            {
+              "heading": "## Status (read this first)",
+              "start_line": 9,
+              "end_line": 101,
+              "source_sha256": "c669c49ee75e1a679d105663ba8cc415055cf87e41e8cd5529d5b642a25bf727"
+            },
+            {
+              "heading": "## Build and test",
+              "start_line": 146,
+              "end_line": 219,
+              "source_sha256": "2ea2eceb9d0fa36eec0fda0191768c5029dd0498fd26e492a9bd94c969d37e64"
+            }
+          ]
+        },
+        {
+          "path": "docs/design/qr-colors.md",
+          "source_blob": "42ac665977e388dd4e910b0f368259e24eab28ba",
+          "source_sha256": "a8c9a3dc2d2b661a7863064b9b21658612afc12502dc4e333ffaa261e6543804",
+          "comparison_sha256": "b9de61741911000e82602a767c7879e69a7504b97f3cf522c53b8d08e3403b1f",
+          "source_section_count": 6,
+          "archived_section_count": 1,
+          "sections": [
+            {
+              "heading": "## Kinds",
+              "start_line": 5,
+              "end_line": 17,
+              "source_sha256": "d7e7b6044c00d5dd3d7c47f126f42327d087deb8f585a98a5c94fdba1ce1cb15"
+            }
+          ]
+        },
+        {
+          "path": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+          "source_blob": "f09202c7274e3b41c5b8dfec1c90438fc21d6073",
+          "source_sha256": "f9f220f6d17803313313aea7e561e3a7604dc0e3d78242c9c552d8dcda381b18",
+          "comparison_sha256": "ad336b33726fa054e2b34fa7655d681fb3b340639dc85c1cf81dceef63807c4e",
+          "source_section_count": 147,
+          "archived_section_count": 41,
+          "sections": [
+            {
+              "heading": "## November 18, 2026 UTC — rotation 184: source-pinned Wiki qualification update (docs only)",
+              "start_line": 3,
+              "end_line": 11,
+              "source_sha256": "ad870bf0daa0932ca5e2b7d4600faaa5f2b2bdc675d09a4cac14d4b306fd62c4"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 183: corrected promotion-packet status and exact-head documentation checkpoint (docs-only)",
+              "start_line": 12,
+              "end_line": 21,
+              "source_sha256": "cf5a70b0e9acee1906b827de939001a70cb5c6f2cc4906cba034933afc5c2afa"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 182: owner candidate gate reconciliation and source-pinned documentation drift (docs-only)",
+              "start_line": 22,
+              "end_line": 30,
+              "source_sha256": "efb4b6470f239e0bf9a81535d0318414a768353198fdc077a8d0c2e4489cdb07"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 181: exact-head CI and Wiki navigation/link audit (docs-only)",
+              "start_line": 31,
+              "end_line": 38,
+              "source_sha256": "9cc24649ae9c3db8fc6dab41e5db121d7711cc506da03c0186200bb2500636ff"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 180: exact #202 CI failure, owner conflict avoidance and Wiki source synchronization",
+              "start_line": 39,
+              "end_line": 46,
+              "source_sha256": "3e8068798010a84593ddbdc2322de031d1798485384ff3f69114c47262268f05"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 179: Pages-only keystore control; source-pinned docs/Wiki checkpoint",
+              "start_line": 47,
+              "end_line": 54,
+              "source_sha256": "b4fb548d70b84f1eda7e5b0d80f04359a84e018a28eb4162f4c96cd5abcf58f0"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 178: exact-head #201 E2E failure now final; Wiki status corrected",
+              "start_line": 55,
+              "end_line": 63,
+              "source_sha256": "33ebd2831dfa8862627588fb59a0207f410a3b8bc7fb7515f140ec8710ee4cee"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 177: #201 confirmed RED and Pages fix pending CI; Wiki source status repaired",
+              "start_line": 64,
+              "end_line": 71,
+              "source_sha256": "9137172d81c4409a85bee98e299f6b30899d727a4791b8be64012bfb0d506091"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 176: #200 GREEN; #201 test-only queued; Wiki source maintained",
+              "start_line": 72,
+              "end_line": 79,
+              "source_sha256": "8264ad7f6bac16a69e506c7a7b53342ab9b5202d03479c46f6d500ccacebb40b"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 175: #199 GREEN and #200 pending keyboard focus; Wiki source synchronized",
+              "start_line": 80,
+              "end_line": 87,
+              "source_sha256": "66cb62e9711c062a15d6f4d50f7ade9f069476b604b6077f857462752e99904c"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 174: #199 test-only navigation guardrails; release and live Wiki blocked",
+              "start_line": 88,
+              "end_line": 95,
+              "source_sha256": "9c3958d1c8a924258e4902eebeb6147e228996b35856f17cf240e4694ac2508f"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 173: #198 exact-head GREEN; release/Wiki still blocked",
+              "start_line": 96,
+              "end_line": 104,
+              "source_sha256": "87a4a97d095fcadc271ee0dec48f741aeb04bfbbc867aff7f31f6c2fe201843c"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 172: verified #198 RED → corrected head CI pending",
+              "start_line": 105,
+              "end_line": 112,
+              "source_sha256": "e2d49c0f1547a30b3463bb18dc716f895458e7e9fc5aa2bdff8a9de0a75415e5"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 171: isolate #198 pending privacy-toggle test from qualified #197",
+              "start_line": 113,
+              "end_line": 120,
+              "source_sha256": "499120548ad790dc57727a10726c76e1e8f0faa7ceefb4c0a6aab196e481dd87"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 170: qualify Pages #197 and synchronize status",
+              "start_line": 121,
+              "end_line": 127,
+              "source_sha256": "27f26afa6711803fffd81375e5ad0940f94629e3a9a37d4d5a4b7e099e516bbf"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 169: #197 RED and corrected head pending; source Wiki synchronized",
+              "start_line": 128,
+              "end_line": 134,
+              "source_sha256": "73ba9a38cca1c609bebd9d5e86ef4250e08e836a0287603cc6246e26cc9104c8"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 168: #196 24/24 CI verified, docs status synchronized",
+              "start_line": 135,
+              "end_line": 142,
+              "source_sha256": "058b726a17667cc0c162082e70fd61cda1c17c9c95db2fbef4b1faa003039f63"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 167: README correction, Pages URL-privacy traceability",
+              "start_line": 143,
+              "end_line": 149,
+              "source_sha256": "d0021061a27777c21ea69c79bdfb0620b133093368c45d29bc7320530cfdc1cc"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 166: Pages manifest CI qualification and Wiki status sync",
+              "start_line": 150,
+              "end_line": 155,
+              "source_sha256": "8efd1ad655afbdde5456e319e1c28f0dca6001adc317304cd7e5b9378ac000d1"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 165: stale Codebase Map corrected; manifest acceptance tests tracked",
+              "start_line": 156,
+              "end_line": 163,
+              "source_sha256": "a1dd22bb512031dfbad68947693c08891d80553cd29d413e024b93fe7ed950dc"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 164: Pay Pages-only 24/24 GREEN source and Wiki guide corrections",
+              "start_line": 164,
+              "end_line": 172,
+              "source_sha256": "57cfbce49d73765020b2f3186bf8dab6c83123863f357f95406ecc2b9afaa319"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 163: Pay inherited renderer verified RED and Pages GREEN pending",
+              "start_line": 173,
+              "end_line": 181,
+              "source_sha256": "f00d17ab98cc3023b528367d4e567b98343ab8f61101b17cd996c80a008a381a"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 162: distinguish second Pay selector failure from renderer RED",
+              "start_line": 182,
+              "end_line": 190,
+              "source_sha256": "d083cc4449bdb133d138091f593ab2bf7f950486a571ee5e6a55567e278f2196"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 161: Pay test-harness failure distinguished from renderer RED",
+              "start_line": 191,
+              "end_line": 198,
+              "source_sha256": "a22adf9d35c085e1ea2d091d53ff090edf22f262f529d9b5fc98478893d60f88"
+            },
+            {
+              "heading": "## November 17, 2026 UTC — rotation 160: current Pages candidate in both top-level guides",
+              "start_line": 199,
+              "end_line": 212,
+              "source_sha256": "e47fc9aba638b88969d87d11ecb48c13d6a3e5567ea3d2afe514bd7e12f2dbcb"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 159: qualify renderer fix; label TagArchive RED as pending",
+              "start_line": 213,
+              "end_line": 221,
+              "source_sha256": "bede6ee8659f66f461e372eed255bfa0eabe1a587ac415fdabe33bc1335922bf"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 158: confirmed Pages renderer RED and corrected-head qualification pending",
+              "start_line": 222,
+              "end_line": 228,
+              "source_sha256": "688e45eee8c4df24fa45b4c42ea3f2ca7a3fe5aec323574986fc78e4ef234523"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 157: current-owner CI status and Pages-only test-first work",
+              "start_line": 229,
+              "end_line": 237,
+              "source_sha256": "7c5f2b4b766a96f12853f03c5daf1773f232063054ae7d79cd8920f252dacd4f"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 154: owner CI qualification drift and wiki navigation recheck",
+              "start_line": 238,
+              "end_line": 245,
+              "source_sha256": "6bbff8945c9be8e992499407e1f65d4ab075424650258a37a036d463d121a922"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 153: exact-head consolidation qualification drift",
+              "start_line": 246,
+              "end_line": 254,
+              "source_sha256": "51dce90686ab7baf648942c5c4bbeb7f60fd371bb0ebae79eb37e2f01fcfa9c9"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 152: correct superseded owner-CI statuses in Pages source map",
+              "start_line": 255,
+              "end_line": 263,
+              "source_sha256": "b34c1e81cbca22d4bca954f8e56f028bafc70355f4fe1c642cfafe4951ab045c"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 151: refresh static Pages Codebase Map source identity",
+              "start_line": 264,
+              "end_line": 271,
+              "source_sha256": "3e4f84d52f025337a8a8a79edfb4887a941e39b1dc4db2125db0c5d6432ec75f"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 150: correct bearer-sensitive QR design guidance",
+              "start_line": 272,
+              "end_line": 279,
+              "source_sha256": "56b5bae09ce033762074030146a2eb164c4b45f8ed9ecff32189a31180042f5d"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 149: README current-status correction and Wiki link check",
+              "start_line": 280,
+              "end_line": 288,
+              "source_sha256": "f63df9a8ddf8091e2236ae6fb5e1c68a8260cf7d2f80144dab8c6734904eb321"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 148: owner #182 application i18n regressions pinned to Wiki source",
+              "start_line": 289,
+              "end_line": 295,
+              "source_sha256": "c84166a29617c7fc4c60ed9f9d7eb79bfb9ccd6df800defe51f35af413b269e4"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 147: pin owner #182 exact-head status without granting Pages release",
+              "start_line": 296,
+              "end_line": 302,
+              "source_sha256": "7ed0c573cb997184bc83a4a3485389ae2b3b7715ec90742d47e165bc6aac7369"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 146: document Pages localization and security-text review gate",
+              "start_line": 303,
+              "end_line": 310,
+              "source_sha256": "a38c00664e1b2192bc6dd363d54193dff8bfb5cc706e718cdd2c67b039ccec0e"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 145: synchronize top-level Wiki qualification",
+              "start_line": 311,
+              "end_line": 318,
+              "source_sha256": "3b0c21e6bf8332a39536a50e7cba5707350f980fee9f201db06a0c33ce4278e5"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 144: maintenance CI reconciliation and audit disclosure caveat",
+              "start_line": 319,
+              "end_line": 325,
+              "source_sha256": "901e061950597bca88c8cbb1e6e745a8eaeee43aeae1230bebab1a4efeb34a83"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 143: #178 corrected-head application GREEN, release still blocked",
+              "start_line": 326,
+              "end_line": 333,
+              "source_sha256": "d0312d39d05a08a2d26569d4e00a73bb92f3c8f55ed8ee2b3a71c6538c975dc6"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 141: source-pinned download cleanup RED and pending GREEN",
+              "start_line": 334,
+              "end_line": 341,
+              "source_sha256": "aaaac5b257a5355d13e66856aa5cf16e5e98cf4ec233c6ab6ed1a780944d9df0"
+            }
+          ]
+        },
+        {
+          "path": "docs/wiki/Codebase-Map.md",
+          "source_blob": "290def1b8b91a32d720cad111d6dc1a0c99df1dd",
+          "source_sha256": "1ccad88465c269426baaedae2e97ac1ef64886bf165718472ddd9a05eda51169",
+          "comparison_sha256": "32550dce70e817d1329c732c7375481255b655dc92da65e4df8c466e2e1fe3bc",
+          "source_section_count": 5,
+          "archived_section_count": 3,
+          "sections": [
+            {
+              "heading": "## Current individually CI-qualified Pages-only head (November 17, 2026; unmerged #200)",
+              "start_line": 5,
+              "end_line": 14,
+              "source_sha256": "bf7f3ce17f45f6ea547c4d7d84dc2d380e877c070b7b08aaa0f0ce270d26a687"
+            },
+            {
+              "heading": "## Historical static Pages candidate (November 16, 2026; unmerged #178)",
+              "start_line": 15,
+              "end_line": 24,
+              "source_sha256": "1e12ad87db792c8e3a1b6dc10fbc6c56176e6bf629afb8282550ae4bf16f3702"
+            },
+            {
+              "heading": "## Historical static Pages testnet source map (November 15, 2026; draft #172)",
+              "start_line": 25,
+              "end_line": 41,
+              "source_sha256": "da77051773d668e45b9fbca47a06a3c5344c9680b9d242919a9b2559b3779e80"
+            }
+          ]
+        },
+        {
+          "path": "docs/wiki/Developer-Guide.md",
+          "source_blob": "7d283e308bad50e22db39be4f4d50ab04bd960d3",
+          "source_sha256": "f145028961402adac87a75c8b491674d6ecbb41cc48223ce40489184b2e9471b",
+          "comparison_sha256": "3a68bda283b582922e023bed8404aff49c2cefcef83acda7f178da1bc8862f44",
+          "source_section_count": 9,
+          "archived_section_count": 2,
+          "sections": [
+            {
+              "heading": "# Developer Guide",
+              "start_line": 1,
+              "end_line": 22,
+              "source_sha256": "5333ddd97886c6bade149f11d252ed4b8c6ee88a47d843ae7d9af37aebe106d1"
+            },
+            {
+              "heading": "## Localization and approval-text integrity",
+              "start_line": 86,
+              "end_line": 91,
+              "source_sha256": "7a50afde5871c72d683c23d65ee486f6f7b5a43bd52e2b59938f121b74272a11"
+            }
+          ]
+        },
+        {
+          "path": "docs/wiki/Home.md",
+          "source_blob": "a4fa1f34cd5116d1c07363f31c0d1a0ea01f2528",
+          "source_sha256": "046a4859cc4338ca1057576790fe473a4b245220ad95b63f13aceaf885bcf2f6",
+          "comparison_sha256": "1bef9fdd523fe220054c421285ed3680b27f33224fe89a9b9fa2ef12ac75ed94",
+          "source_section_count": 6,
+          "archived_section_count": 1,
+          "sections": [
+            {
+              "heading": "# GhostPay Wiki",
+              "start_line": 1,
+              "end_line": 26,
+              "source_sha256": "a9a2ef0041efff33ac21811e765c29ef6e8c588561fa09fbb7743275afed0ab5"
+            }
+          ]
+        },
+        {
+          "path": "docs/wiki/User-Guide.md",
+          "source_blob": "7fa8aa74bd998f6fc7dbcbe2d964af42000cc106",
+          "source_sha256": "2dc5599d445b454db073750631e4682c02f97841ec0095b34a455fb4b5134f04",
+          "comparison_sha256": "3bb72eab54cb5e70a2efc5a83435db9fc21f9893ecddee4b3eeebde3ced7cf3e",
+          "source_section_count": 8,
+          "archived_section_count": 1,
+          "sections": [
+            {
+              "heading": "# User Guide — static Pages client (draft)",
+              "start_line": 1,
+              "end_line": 23,
+              "source_sha256": "2bd0fe343e71e3a039a31d102937ff601ee77dd1242d55431ed4e374f16a6c4c"
+            }
+          ]
+        },
+        {
+          "path": "docs/wiki/Verification-and-Release-Gates.md",
+          "source_blob": "fddff2c0f20297a4f0db64b34a9568026c5f1551",
+          "source_sha256": "6ff507caeed4d9aa8f81ca237df9217907f8771fabb5ea3c9c2d441fb75f0009",
+          "comparison_sha256": "b24d76bc1751a079e6fd7c04c0b7ff6cf383a5012898d2859b85e29ac8dfa6e9",
+          "source_section_count": 54,
+          "archived_section_count": 24,
+          "sections": [
+            {
+              "heading": "## Rotation 184 — owner consolidation remains draft; Mythril / exact-head CI not cleared (November 18, 2026 UTC)",
+              "start_line": 3,
+              "end_line": 9,
+              "source_sha256": "cc8baf231fa53d354a452c468def14a58892034d1174cf56a1c6f7f948b7cac8"
+            },
+            {
+              "heading": "## Rotation 180 — #202 control fails in lean and full E2E; owner reimport lane active (November 18, 2026 UTC)",
+              "start_line": 10,
+              "end_line": 16,
+              "source_sha256": "944778184b6ac475be7cf4e6ecd42ce1ee7283fd4bf5ec740adfa665b514a607"
+            },
+            {
+              "heading": "## Rotation 179 — #202 Pages-only keystore control awaiting exact-head qualification (November 18, 2026 UTC)",
+              "start_line": 17,
+              "end_line": 23,
+              "source_sha256": "e3df1250a7307d7e1d14e7438f825278e58cfffce483849ff2bc898698bfa096"
+            },
+            {
+              "heading": "## Rotation 178 — #201 exact-head application CI FAILED despite same-view focus unit GREEN (November 18, 2026 UTC)",
+              "start_line": 24,
+              "end_line": 31,
+              "source_sha256": "7d80c8d9295672936be76c559847000fa46f147daf29ac68d5c4da6d857c0dfb"
+            },
+            {
+              "heading": "## Rotation 177 — #201 confirmed RED and minimal Pages correction pending GREEN (November 17, 2026 UTC)",
+              "start_line": 32,
+              "end_line": 39,
+              "source_sha256": "ba1a32fd80e00f949248165ae248945313fbb74adfa05365a05bc5bb0b108f80"
+            },
+            {
+              "heading": "## Rotation 176 — Pages #200 exact-head GREEN; same-view invoice focus #201 pending (November 17, 2026 UTC)",
+              "start_line": 40,
+              "end_line": 46,
+              "source_sha256": "e4a72d14fe0407b233f2b93f55ba5d5e3a8bf743726a7dc186502800433ff8f8"
+            },
+            {
+              "heading": "## Rotation 175 — Pages #199 individually GREEN; #200 keyboard focus test pending (November 17, 2026 UTC)",
+              "start_line": 47,
+              "end_line": 52,
+              "source_sha256": "79cd4c658e32034f1a35401e81f54faf2b2105d47357a0ec7e319aa3237778d9"
+            },
+            {
+              "heading": "## Rotation 174 — static Pages navigation exceptions test-only (November 17, 2026 UTC)",
+              "start_line": 53,
+              "end_line": 58,
+              "source_sha256": "349609f0d4917d0066014ffa3424f553aada9ccbe2c85ea9a0f54ea5b2537666"
+            },
+            {
+              "heading": "## Rotation 173 — #198 static Pages-only privacy fix exact-head GREEN (November 17, 2026 UTC)",
+              "start_line": 59,
+              "end_line": 65,
+              "source_sha256": "e9d0738f6128a440430655571756fea7e62a64236c97c9fcc97532e641916246"
+            },
+            {
+              "heading": "## Rotation 172 — #198 Pages privacy setting RED confirmed; minimal fix pending exact-head GREEN (November 17, 2026 UTC)",
+              "start_line": 66,
+              "end_line": 71,
+              "source_sha256": "67bb775253c49ae9b6eb52a8e8347deb0c49ae0579d7e5a89ef9205bb7488fcf"
+            },
+            {
+              "heading": "## Rotation 171 — #198 Pages privacy-preference transition test pending (November 17, 2026 UTC)",
+              "start_line": 72,
+              "end_line": 77,
+              "source_sha256": "f881729177e06da52925ffd60d51f4d692eea04ba76c59c5b9837d235b8315c7"
+            },
+            {
+              "heading": "## Rotation 170 — #197 Pages fragment history-state RED→GREEN exact-head qualified (November 17, 2026 UTC)",
+              "start_line": 78,
+              "end_line": 83,
+              "source_sha256": "83de3313cf6cb9f2a775adda98cd804f5cf875d561bfa71079ca6d703db4ef59"
+            },
+            {
+              "heading": "## Rotation 169 — #197 navigation-state RED confirmed; minimal Pages fix pending GREEN (November 17, 2026 UTC)",
+              "start_line": 84,
+              "end_line": 90,
+              "source_sha256": "8a0699b5b0064ed02dda7b5ff078862118f9767d0ebca29723a58257196a1ab8"
+            },
+            {
+              "heading": "## Rotation 168 — #196 URL privacy accepted; #197 navigation state test-only pending (November 17, 2026 UTC)",
+              "start_line": 91,
+              "end_line": 97,
+              "source_sha256": "f5361ad2c06836d38ff3747ae197c4da3e72db7425c6f26d1c2d47be5443dcc4"
+            },
+            {
+              "heading": "## Rotation 167 — lean Pages invoice-fragment privacy acceptance pending (November 17, 2026 UTC)",
+              "start_line": 98,
+              "end_line": 104,
+              "source_sha256": "858a7ad9dd7e004aee196d6cb837087a353d02f2586e00624a9de5cb4be80d33"
+            },
+            {
+              "heading": "## Rotation 166 — bundled manifest acceptance tests exact-head GREEN (November 17, 2026 UTC)",
+              "start_line": 105,
+              "end_line": 109,
+              "source_sha256": "f34126c5a939d816d47537331a9d7327dde0f0db776ea3e667fd45becf56650f"
+            },
+            {
+              "heading": "## Rotation 165 — bundled Pages manifest security acceptance tests pending (2026-11-17 UTC)",
+              "start_line": 110,
+              "end_line": 117,
+              "source_sha256": "17285dec2247ab313ae6a738a753d8711cf7869174390446f69c1027c5dc5039"
+            },
+            {
+              "heading": "## Rotation 164 — Pay Pages-only exact-head RED→GREEN verified (2026-11-17 UTC)",
+              "start_line": 118,
+              "end_line": 124,
+              "source_sha256": "96163175aa46c73fdafe76627dd135f7ec1fcb0552e71303eb9c5dd4a3bf5a99"
+            },
+            {
+              "heading": "## Rotation 163 — Pay inherited-tag RED reproduced, guard under qualification (2026-11-17 UTC)",
+              "start_line": 125,
+              "end_line": 132,
+              "source_sha256": "b508b4456a575ac712fd87c31330d3e49d4a1589d6973c45f434f6caecc43433"
+            },
+            {
+              "heading": "## Rotation 162 — second Pay regression selector correction (2026-11-17 UTC)",
+              "start_line": 133,
+              "end_line": 139,
+              "source_sha256": "d17771bd73c1a5865763b203ec6ded01cad599ec367a54aaa0a7979cdba22a00"
+            },
+            {
+              "heading": "## Rotation 161 — Pay inherited-tag regression harness correction (2026-11-17 UTC)",
+              "start_line": 140,
+              "end_line": 146,
+              "source_sha256": "2c82e9683f06c48a13591773051c764049328223ae0b22c19f54d71c00c1a31b"
+            },
+            {
+              "heading": "## Rotation 148 — owner #182 exact-head application CI failure (2026-11-16 UTC)",
+              "start_line": 147,
+              "end_line": 152,
+              "source_sha256": "3205825e384923769d233a17f153397aba17869128c78b88e5422bf969c2bdeb"
+            },
+            {
+              "heading": "## Rotation 147 — owner-source CI boundary and Pages-only acceptance status (2026-11-16 UTC)",
+              "start_line": 153,
+              "end_line": 158,
+              "source_sha256": "1e9057a096586879384ccdfccd02f7de3bd191af9bd0e64c874d2fd85c88ac55"
+            },
+            {
+              "heading": "## Pages blocked-download resource cleanup — rotation 143 (RED→GREEN at exact draft head)",
+              "start_line": 159,
+              "end_line": 164,
+              "source_sha256": "1e6f3b761424ddea548d37fa2dc0fa45d491f6d7007391400fedd253ddbc12b9"
+            }
+          ]
+        }
+      ],
+      "archive_sha256": "1f461f37af2e73c725c29654b91b38bdf724f768ee9ef93232629e72f2aaa5ee",
+      "archive_bytes": 284143
+    },
+    {
+      "pr": 153,
+      "commit": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "merge_base": "85f525165d6c94c3c6b908930df712e9e7ac66f7",
+      "archive": "archive/pr153-historical-evidence.md",
+      "files": [
+        {
+          "path": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+          "source_blob": "3701d254854e3cbf3a7437fc1e07b9485eb83f85",
+          "source_sha256": "aa9d3314e023dd0ba3a589b19c1e0b968c362bce63673ae6a8253e661ace10c0",
+          "comparison_sha256": "647108909f36b3c9c8c3ea63b539f4573d611d0db2dd1873a81c5211472bd405",
+          "source_section_count": 119,
+          "archived_section_count": 41,
+          "sections": [
+            {
+              "heading": "## November 18, 2026 UTC — rotation 184: prior isolated CI green; owner integration pending; separate reconciliation audit and Wiki status repair",
+              "start_line": 3,
+              "end_line": 10,
+              "source_sha256": "529073168018f87be004bfa16d17214c828fa7c8542fef6beec7fa3720e30a6d"
+            },
+            {
+              "heading": "## November 18, 2026 UTC — rotation 183: owner #203 exact-head application CI GREEN; Mythril IN_PROGRESS; primary overlap deferred",
+              "start_line": 11,
+              "end_line": 19,
+              "source_sha256": "e26c7607c8f5999304079adebbbc349f3443a45aef6b1acf9c035d1a5ff5d044"
+            },
+            {
+              "heading": "## 2026-11-18 UTC — rotation 182: owner #203 app CI GREEN but Mythril contract gate RED; no overlapping Pages code; separate audit/docs evidence",
+              "start_line": 20,
+              "end_line": 27,
+              "source_sha256": "a53ab33f867fb2265d44625d25a835d67c2c0ec9303c2a77513eb35618256ff4"
+            },
+            {
+              "heading": "## 2026-11-18 UTC — rotation 181: consolidated owner CI still active; no overlapping Pages code; separate audit/docs checkpoints",
+              "start_line": 28,
+              "end_line": 35,
+              "source_sha256": "16ece6352b101d2e9c3a2c98a5cc5bfdaf107db2037816f9cbf42ade06a7eb9a"
+            },
+            {
+              "heading": "## 2026-11-18 UTC — rotation 180: #202 diagnostic CI FAILED 22/24; owner overlap → production deferred",
+              "start_line": 36,
+              "end_line": 43,
+              "source_sha256": "a4978b8999c0355847f9a87d6ab10c31431ad4870c73afd49636e7c2935ee0ac"
+            },
+            {
+              "heading": "## 2026-11-18 UTC — rotation 179: isolate keystore reimport via Pages-only E2E control; no production fix",
+              "start_line": 44,
+              "end_line": 51,
+              "source_sha256": "dde63dcf0ee2f17c5cb850e1891d71dcda1fdc15d97c28eb365c06b6f3ddb5d7"
+            },
+            {
+              "heading": "## 2026-11-18 UTC — rotation 178: #201 exact-head CI failed 1/24; artifact inspected, no source change",
+              "start_line": 52,
+              "end_line": 61,
+              "source_sha256": "3631fa8cccd6f860381e9c3df0f53f56d1d64f5d41a0737724015f12f2e21e7b"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 177: #201 test-first RED confirmed, minimal Pages focus fix committed; corrected CI **not GREEN**",
+              "start_line": 62,
+              "end_line": 70,
+              "source_sha256": "a1fd057c722c5c34058ed869d7c24609b7b34663b92aa1afda85f2ed1af98b6f"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 176: #200 24/24 GREEN; new same-view focus #201 test-only pending; separate audit/docs completed",
+              "start_line": 71,
+              "end_line": 79,
+              "source_sha256": "2f34e543ce1d50d86d71a14a61dcb3d1cc0065d5c0d67e8cb2098a76dd11f414"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 175: #199 24/24 GREEN, #200 Pages accessibility tests queued; audit/docs rotated",
+              "start_line": 80,
+              "end_line": 87,
+              "source_sha256": "fe52b983d519de69a2303e7fe66480cd6f670199720d7655f0a801ae534cc3e9"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 174: #199 Pages navigation exception tests queued, isolated audit/docs updated",
+              "start_line": 88,
+              "end_line": 96,
+              "source_sha256": "727e35d9cb376fa8b0819d5758a4c39cc5269848f678a7813fd3f62add0762ba"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 173: #198 corrected Pages head 24/24 GREEN; audit/docs refreshed",
+              "start_line": 97,
+              "end_line": 106,
+              "source_sha256": "cea5388705bf850ea9fc7a5006a3adfeb996e0439aeb457c0b8110fe443c2064"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 172: #198 reproduced RED, minimal Pages fix committed, exact-head GREEN pending",
+              "start_line": 107,
+              "end_line": 115,
+              "source_sha256": "57042e7b822914be2f6d0a38c85a15418a9f9793b4c96a509248526a4a586f9b"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 171: #198 privacy-toggle test-only draft; exact-head CI pending",
+              "start_line": 116,
+              "end_line": 123,
+              "source_sha256": "6492adb7011347cce35678874cac28b5e97d1c5fd3a8a412be6d2906848136a5"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 170: #197 exact-head 24/24 GREEN, wallet audit and Wiki documentation qualified",
+              "start_line": 124,
+              "end_line": 131,
+              "source_sha256": "82848d7b0af43f25583fdbd6273f5956e9feb3882a304ce4aa90edda4a1eddc5"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 169: #197 intended RED verified; state-preserving fix committed, exact-head GREEN pending",
+              "start_line": 132,
+              "end_line": 140,
+              "source_sha256": "deafca015a0713fb59f3e3fbb2980f365b4d576b0f7de95bcdabcae2cc123394"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 168: #196 24/24 GREEN, #197 test-first navigation state RED pending",
+              "start_line": 141,
+              "end_line": 151,
+              "source_sha256": "7af10205cd8ebd0173c60d24554b7b6d39eb3cdc6378ae629eba7dd0cec6e5a1"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 167: Pages invoice-fragment privacy tests opened; qualification pending",
+              "start_line": 152,
+              "end_line": 159,
+              "source_sha256": "45e9e5eedbe50dd0a812c74f425776851ad121c7c01c7536ef4150e9db605a59"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 166: test-only #195 exact-head CI GREEN; independent audit/docs phases",
+              "start_line": 160,
+              "end_line": 167,
+              "source_sha256": "16645cffadc4d8f5e86fae75b5feb8370a4ae6858da8880061320bad59e79e8c"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 165: Pages manifest security acceptance tests; audit and docs isolated",
+              "start_line": 168,
+              "end_line": 176,
+              "source_sha256": "017a1333480f8950303fd20e97422751a4d3a4b6c6ce1d758a1b61f82ebab2ba"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 164: Pay Pages RED→GREEN 24/24 exact-head qualification; isolated audit and docs",
+              "start_line": 177,
+              "end_line": 185,
+              "source_sha256": "cee728a88136a835af2ddfb651701b64ebadae26c5ae51933778351d7182881d"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 163: lean Pay inherited-tag RED verified, minimal production fix awaiting GREEN",
+              "start_line": 186,
+              "end_line": 195,
+              "source_sha256": "0bbf134d8dfdd4541b52fb9c83da9ec17057ae8a463be5b396af672537c5d9cd"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 162: Pay Spanish connect selector corrected; intended RED still pending",
+              "start_line": 196,
+              "end_line": 205,
+              "source_sha256": "a18059581909e5fcb9e7260b5de360d09599fdfe99d2191cb27df4ab76eee264"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 161: Pay selector harness corrected, renderer RED still pending",
+              "start_line": 206,
+              "end_line": 214,
+              "source_sha256": "cc188416eaecc3def525816bf161adc705086621873d4d9fab161f2c0b32f96c"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 160: test-first lean Pay inherited-tag regression, RED pending",
+              "start_line": 215,
+              "end_line": 229,
+              "source_sha256": "ddf528d3da7b8f9ad09ba2ca5d609e67a32589bf0219914e617f4f1503259c74"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 159: renderer #192 GREEN; TagArchive #193 test-only RED pending",
+              "start_line": 230,
+              "end_line": 238,
+              "source_sha256": "5a7c81e5605276c113f105188a5992bfa534f14744b2186cb5e52eabd6436432"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 158: inherited-renderer RED verified, minimal Pages correction, GREEN pending",
+              "start_line": 239,
+              "end_line": 246,
+              "source_sha256": "666c1400f878460672735a5d95ef80cbcd182597e1ad30d52d86ed0713dc0c47"
+            },
+            {
+              "heading": "## 2026-11-17 UTC — rotation 157: owner app CI completed; independent Pages renderer test-first RED candidate",
+              "start_line": 247,
+              "end_line": 256,
+              "source_sha256": "5e5fe8a43ccfb8f5287fa4ad0d6e5858cf57f1e421ca120b6770d7ae873ecc05"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 154: owner consolidated head queued; read-only TagArchive finding and Wiki CI-status correction",
+              "start_line": 257,
+              "end_line": 264,
+              "source_sha256": "242a07c65261f6c86092b3f8250b9008ea8bf32c36936b753b000d20b00ae896"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 153: newer owner head still running; Pages audit conditional renderer defect and Wiki drift correction",
+              "start_line": 265,
+              "end_line": 273,
+              "source_sha256": "068969ec582a2d49821e19a4c900abfad0a328c3c0f776f0904ed947b808ef1d"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 152: owner #187 exact-head failure; isolated i18n audit and Wiki status repair",
+              "start_line": 274,
+              "end_line": 282,
+              "source_sha256": "179f22a4e1726350f25df18a141164a3b0f1f9b3c3cfaef3c79e08adac228e5b"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 151: owner #182 new CI in flight; Pages audit and Wiki source map corrected",
+              "start_line": 283,
+              "end_line": 290,
+              "source_sha256": "4dad8bf23933dbfcadb4f9eda5a78be10906baa92a352033d010b6a3c2468a57"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 150: owner integration held; QR bearer-warning documentation corrected",
+              "start_line": 291,
+              "end_line": 298,
+              "source_sha256": "2b17294e12d0e7c973c63521837208116e8c4ceec330faa07a6d52d5d5494c09"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 149: Pages integration held, settings-exchange audit and README status correction",
+              "start_line": 299,
+              "end_line": 307,
+              "source_sha256": "5f4e3390e9c9ef573822d09374886e257ad77335674c739a507a8e4a5ca8baa7"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 148: owner #182 i18n application gate RED; isolated Pages untouched; audit and Wiki source updated",
+              "start_line": 308,
+              "end_line": 315,
+              "source_sha256": "1da35967c61505328570610ea24a146bb28f87715baf99170f1b3fb6262265e1"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 147: owner #182 exact-head CI hold, translator audit, Wiki release-gate source correction",
+              "start_line": 316,
+              "end_line": 323,
+              "source_sha256": "3f92c7166f1ef18e527c159e0b12dd901d17f210b5348ab903dcfe834759bd9c"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 146: Pages integration deferred; localization audit and Wiki developer guidance",
+              "start_line": 324,
+              "end_line": 331,
+              "source_sha256": "cf509cf4f1535d81dc320229ba7781a443246bbc28e796610045b61445697656"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 145: #178 qualified, rich-text audit and Wiki status repaired",
+              "start_line": 332,
+              "end_line": 340,
+              "source_sha256": "2c3b53bf66454f3eedf11b99ca6e8a9fd45aa7e27e9ab07807102be02eb67861"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 144: qualified #178 held for owner integration; sequential audit/docs ledgers",
+              "start_line": 341,
+              "end_line": 348,
+              "source_sha256": "f4691b7eed58b4197e3fbc2f94a8bd91aeac47773f6372996f0a8299098ec538"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 143: qualify exact-head #178, update audit/docs; no owner integration",
+              "start_line": 349,
+              "end_line": 357,
+              "source_sha256": "80b3e0c01835db0e9c630fa4c2b59687998722e7ffff9a0a499bd43fb10da994"
+            },
+            {
+              "heading": "## 2026-11-16 UTC — rotation 141: download cleanup RED confirmed, minimal fix committed; GREEN pending",
+              "start_line": 358,
+              "end_line": 366,
+              "source_sha256": "cd56807c3349dc4e91509356d77065d8c9fa87ae43ca8320cbd9626db309b36c"
+            }
+          ]
+        }
+      ],
+      "archive_sha256": "b3dcf975460f160a678eea9741504e77622d6eed2991e3c73668eb43ee15e989",
+      "archive_bytes": 227554
+    }
+  ]
+}

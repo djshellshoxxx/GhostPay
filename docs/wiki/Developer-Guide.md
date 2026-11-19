@@ -1,8 +1,10 @@
 # Developer Guide
 
+> **Consolidation snapshot — 18 November 2026 Pacific / 19 November UTC:** Inspected main is [`ffd982a7`](https://github.com/djshellshoxxx/GhostPay/commit/ffd982a7aea2856c186b40ef236a39720a1b81f5). [PR #241](https://github.com/djshellshoxxx/GhostPay/pull/241) and [PR #242](https://github.com/djshellshoxxx/GhostPay/pull/242) are already merged. Read the [repository status snapshot](Current-Status.md) for the source-pinned integration and verification boundaries. It supersedes earlier status notes below; dated observations remain historical evidence.
+
 [Home](Home.md) · [User Guide](User-Guide.md) · [Verification and Release Gates](Verification-and-Release-Gates.md)
 
-**Current status — 18 November 2026 UTC (source-pinned; not a release).** Current `main` is [`dfc75ef2087fa6463ae59e0818abec01796c578d`](https://github.com/djshellshoxxx/GhostPay/commit/dfc75ef2087fa6463ae59e0818abec01796c578d), after the separately merged [PR #206](https://github.com/djshellshoxxx/GhostPay/pull/206). Its exact-head [application CI #44292693611](https://github.com/djshellshoxxx/GhostPay/actions/runs/44292693611) completed **24/24 jobs successfully**, and [code scanning #44292692960](https://github.com/djshellshoxxx/GhostPay/actions/runs/44292692960) completed **3/3 analyses successfully**. These are automated checks, **not** independent SonarCloud clearance, a resolved Mythril finding or approval for deployment. The earlier PR #203 [contract-analysis run](https://github.com/djshellshoxxx/GhostPay/actions/runs/44248573915) failed, and its disposition remains required. Separately owned [draft consolidation #238](https://github.com/djshellshoxxx/GhostPay/pull/238) at `198aa5baff22272453733a0f3dcfcac0e0994eec` is **not merged or fully qualified**: Pages, beta, CLI, hosting and integration workflows succeeded, but exact-head [application CI #44342340615](https://github.com/djshellshoxxx/GhostPay/actions/runs/44342340615) **failed (18/24 jobs successful; 6 failed)** across unit tests, lint, both browser profiles and aggregate TypeScript. Exact-head [contract analysis #44342340082](https://github.com/djshellshoxxx/GhostPay/actions/runs/44342340082) **failed** its Mythril job. These are open, separately owned qualification blockers, not failures of the unchanged `main` commit. Full/lean browser acceptance, signed testnet manifests, external-wallet payment-to-recovery, independent security review and explicit release permission remain open. Only the static Pages client is in active development; non-Pages services and CLI/native/server/relayer work are paused. No main merge by this workstream, deployment, live GitHub Wiki publication, real funds or release. Older source-pinned branch evidence below is historical, not current-main qualification.
+**Historical status — 18 November 2026 UTC (superseded; source-pinned).** Current `main` is [`dfc75ef2087fa6463ae59e0818abec01796c578d`](https://github.com/djshellshoxxx/GhostPay/commit/dfc75ef2087fa6463ae59e0818abec01796c578d), after the separately merged [PR #206](https://github.com/djshellshoxxx/GhostPay/pull/206). Its exact-head [application CI #44292693611](https://github.com/djshellshoxxx/GhostPay/actions/runs/44292693611) completed **24/24 jobs successfully**, and [code scanning #44292692960](https://github.com/djshellshoxxx/GhostPay/actions/runs/44292692960) completed **3/3 analyses successfully**. These are automated checks, **not** independent SonarCloud clearance, a resolved Mythril finding or approval for deployment. The earlier PR #203 [contract-analysis run](https://github.com/djshellshoxxx/GhostPay/actions/runs/44248573915) failed, and its disposition remains required. Separately owned [draft consolidation #238](https://github.com/djshellshoxxx/GhostPay/pull/238) at `198aa5baff22272453733a0f3dcfcac0e0994eec` is **not merged or fully qualified**: Pages, beta, CLI, hosting and integration workflows succeeded, but exact-head [application CI #44342340615](https://github.com/djshellshoxxx/GhostPay/actions/runs/44342340615) **failed (18/24 jobs successful; 6 failed)** across unit tests, lint, both browser profiles and aggregate TypeScript. Exact-head [contract analysis #44342340082](https://github.com/djshellshoxxx/GhostPay/actions/runs/44342340082) **failed** its Mythril job. These are open, separately owned qualification blockers, not failures of the unchanged `main` commit. Full/lean browser acceptance, signed testnet manifests, external-wallet payment-to-recovery, independent security review and explicit release permission remain open. Only the static Pages client is in active development; non-Pages services and CLI/native/server/relayer work are paused. No main merge by this workstream, deployment, live GitHub Wiki publication, real funds or release. Older source-pinned branch evidence below is historical, not current-main qualification.
 
 
 ## Invoice and quote expiry: Pages trust boundary (source-pinned)
@@ -81,6 +83,30 @@ This command is documentation, **not a claim it was executed for this wiki updat
 | `apps/relayer`, `packages/cli`, non-EVM and full-profile packages | Preserved but **not active Pages work**, not included as served functions |
 
 Read types and tests before altering any public interface. Browser wallet approval, authenticated invoice documents, RPC response authenticity, finality, release-signing keys and operator deployment policy are distinct trust boundaries. Never conflate a seller-signed receipt with settled chain payment, or a displayed SHA-256 with authenticated release provenance. Do not alter cryptographic protocol or financial policy without approved ADR/spec changes and independent review.
+
+## Localization and approval-text integrity
+
+The Pages UI selects language through `apps/web/src/i18n/context.tsx`, `storage.ts`
+and `languages.ts`. Its catalog loader uses same-origin build chunks, with bundled
+English available on the first render and when loading a catalog fails. The provider
+ignores a result after its effect has been cancelled, including a superseded locale
+request. A failed local-storage write does not prevent an in-session language choice.
+These behaviors are visible in the
+[provider at the inspected main](https://github.com/djshellshoxxx/GhostPay/blob/ffd982a7aea2856c186b40ef236a39720a1b81f5/apps/web/src/i18n/context.tsx)
+and its [existing tests](https://github.com/djshellshoxxx/GhostPay/blob/ffd982a7aea2856c186b40ef236a39720a1b81f5/apps/web/src/i18n/context.test.tsx).
+This documentation recovery inspected those sources; it did not execute a new
+rapid-switch, browser, accessibility or native-language acceptance test.
+
+Sensitive approval wording follows the
+[reviewed-locale registry](https://github.com/djshellshoxxx/GhostPay/blob/ffd982a7aea2856c186b40ef236a39720a1b81f5/apps/web/src/i18n/languages.ts).
+At this source, `REVIEWED_LOCALES` is empty. Non-English catalogs are machine drafts;
+their metadata alone does not approve security-sensitive translations. The
+[translator](https://github.com/djshellshoxxx/GhostPay/blob/ffd982a7aea2856c186b40ef236a39720a1b81f5/apps/web/src/i18n/translator.ts)
+falls back to the English source for sensitive keys when the selected locale is not
+reviewed. Follow `scripts/i18n/check.mjs` and the repository's native-speaker review
+process before changing the registry. This restores the useful guidance from
+[PR #140](https://github.com/djshellshoxxx/GhostPay/pull/140) against the inspected
+main without reviving that branch's old release status.
 
 ## Lean-profile containment and build verification
 

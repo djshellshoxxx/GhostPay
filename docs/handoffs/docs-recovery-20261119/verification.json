@@ -1,0 +1,50 @@
+{
+  "main_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+  "source_comparison": "562c219123de64a8089c95af1393ce955b0d4ff2",
+  "verification_scope": "Static documentation checks; no application, browser, contract or security analyzer execution. Link validation covers relative inline Markdown file targets, not remote URLs or fragment anchors.",
+  "provenance": {
+    "source_files": 10,
+    "archived_sections": 158,
+    "errors": []
+  },
+  "relative_links": {
+    "markdown_files": 17,
+    "checked": 122,
+    "missing_targets": []
+  },
+  "ancestry": {
+    "ffd982a7aea2856c186b40ef236a39720a1b81f5": true,
+    "362dfa999a96dc615a1d146b4f37f8325268a595": true,
+    "bb193849a5688bb604e3e32dc83e1647e37fe447": true
+  },
+  "scope": {
+    "changed_paths": [
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/design/qr-colors.md",
+      "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+      "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+      "docs/handoffs/docs-recovery-20261119/README.md",
+      "docs/handoffs/docs-recovery-20261119/archive/pr139-historical-evidence.md",
+      "docs/handoffs/docs-recovery-20261119/archive/pr140-historical-evidence.md",
+      "docs/handoffs/docs-recovery-20261119/archive/pr153-historical-evidence.md",
+      "docs/handoffs/docs-recovery-20261119/provenance.json",
+      "docs/handoffs/docs-recovery-20261119/verification.json",
+      "docs/wiki/Architecture-and-Design-Rationale.md",
+      "docs/wiki/Codebase-Map.md",
+      "docs/wiki/Current-Status.md",
+      "docs/wiki/Developer-Guide.md",
+      "docs/wiki/Home.md",
+      "docs/wiki/QR-and-Devices.md",
+      "docs/wiki/User-Guide.md",
+      "docs/wiki/Verification-and-Release-Gates.md",
+      "docs/wiki/_Sidebar.md"
+    ],
+    "unexpected_non_documentation_paths": []
+  },
+  "historical_qr_paragraph_exact": true,
+  "staged_diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "status": "passed"
+}

@@ -1,8 +1,10 @@
 # Verification and Release Gates
 
-## Current Pages release qualification — 18 November 2026 Pacific / 19 November UTC
+> **Consolidation snapshot — 18 November 2026 Pacific / 19 November UTC:** Inspected main is [`ffd982a7`](https://github.com/djshellshoxxx/GhostPay/commit/ffd982a7aea2856c186b40ef236a39720a1b81f5). [PR #241](https://github.com/djshellshoxxx/GhostPay/pull/241) and [PR #242](https://github.com/djshellshoxxx/GhostPay/pull/242) are already merged. Read the [repository status snapshot](Current-Status.md) for the source-pinned integration and verification boundaries. It supersedes earlier status notes below; dated observations remain historical evidence.
 
-This section supersedes the *status*, not the source-pinned historical evidence, of older Pages candidates below. **No production release is authorized.**
+## Historical Pages release qualification — 18 November 2026 Pacific / 19 November UTC
+
+This is the preserved qualification snapshot from PR #215. The [repository status snapshot](Current-Status.md) now supersedes its branch status; its original workflow evidence keeps its original source identity.
 
 | Source / PR | Exact head | Evidence | Disposition |
 | --- | --- | --- | --- |
