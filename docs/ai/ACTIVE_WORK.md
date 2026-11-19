@@ -1,3 +1,31 @@
+# Browser network isolation: unowned transport gaps — 2026-11-18
+
+Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
+Branch: `codex/ghostpay-browser-isolation-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (live `main`).
+Owned paths: `packages/net-transport/src/fetchTransport.ts`, `fetchAdapter.ts` and new focused
+transport isolation tests; `packages/solana-stealth/src/rpc.ts`, `packages/tron-adapter/src/rpc.ts`
+and new `rpc.isolation.test.ts` tests (chain adapter worker); `apps/web/src/lib/release.ts`, its
+focused tests, a new browser network isolation spec; new machine-readable egress inventory
+and scoped isolation documentation; new `scripts/tests/network-egress-inventory.test.mjs` and
+independently authored `scripts/tests/network-isolation-native.test.mjs` QA. Both chain RPC files were checked against all 39 open
+PRs, including new recovery #239 (`d2c64522`); no current PR changes either file.
+Acceptance: reproduce and fix unintended redirect egress, cancelled/stale request dispatch,
+unbounded transport failure and untrusted error disclosure in these paths; prove no fallback,
+bounded failure and fixed error messages with controlled fixtures and browser requests. Record
+source-pinned findings, exact checks and unresolved integration dependencies.
+Status: implemented and independently re-reviewed in draft PR #241. Hosted first-head typecheck,
+unit/integration suites and lean browser acceptance passed; 11 lint errors were corrected with their
+adversarial assertions preserved. Final-head checks and the separately owned policy integration are
+tracked in `docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md` and the PR.
+
+Active inputs remain read-only: privacy #222 (`2bc20982`), own-node #228 (`685fe1a3`), Sweep
+consent #231 (`d9ff3868`), browser fixtures #233 (`67cf835d`), integration #238 (`198aa5ba`),
+recovery/keypair exports and Mythril remediation. Their UI, service policy, settings, scan,
+Sweep, catalogs, consolidation ledgers and release gates are not owned by this task. The
+five lower-level transport files were compared against these heads and are unchanged; this
+lane extends existing adapters without a second policy engine. Recheck all heads before PR.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
