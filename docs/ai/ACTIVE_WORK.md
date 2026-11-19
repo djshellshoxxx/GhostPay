@@ -399,6 +399,26 @@ No deployment, release, branch deletion or shared-branch rewrite.
 
 
 
+## Sweep balance query consent — 2026-11-18
+
+Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-balance-consent-20261118`.
+Base: refreshed `main` at `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, necessary balance-query messages in
+`apps/web/locales/{en,es,ja,ar}.json` and their `apps/web/src/i18n/securityKeys.ts` classification, this claim,
+and `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`. The integration owner also approved explicit read-button
+clicks in the shared `Sweep.test.tsx` setup and existing `e2e/{sweep,core-journey,pages-devnet,devnet-journey}.spec.ts`
+sweep setup points; existing signing and payment assertions remain unchanged.
+Acceptance: opening Sweep never requests a balance; one explicit click makes one balance-read invocation;
+ordinary rerenders, errors and selection changes do not repeat it; changing the payment, asset, provider or session
+invalidates pending results and requires a new click. Preserve the required-private-path warning and the existing
+sweep controls. Disclose what the Settings RPC learns. Do not import #222's destination ledger or experimental features.
+Scope distinction: the existing RPC transport has its own bounded retries; this task does not claim to change that
+shared transport policy. Exact-head hosted CI and independent integration review remain required.
+
+Milestone: runtime repair `d03d529f5b785dcd129b302d122b191d3d066214` passes 120 focused tests, whole-web typecheck
+at a 1536 MiB heap cap, scoped lint and locale validation. Independent privacy review reports no remaining source
+blocker and independently passes 72 consent/signing tests. Final E2E setup additions are reviewed and linted only;
+browser execution and exact-head hosted CI remain required. See `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`.
 ## Beta acceptance log artifact capture — 2026-11-18
 
 Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
@@ -421,6 +441,21 @@ dependency, build, upload or rerun. Hosted artifact existence remains unverified
 precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
 limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
 
+## PR 231 standalone pre-merge disclosure repair — 2026-11-18
+
+Worker: ChatGPT pre-merge lead; independent CI/privacy review by ci_inventory.
+Branch: `repair/ghostpay-pr-231-20261118`.
+Source: #231 `d9ff386807de724eb1a1c4d400c882df0fc20bb7` (full head verified in the handoff).
+Target: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (main).
+Owned paths: `apps/web/src/lib/scanPrivacy.ts`, its existing `scanPrivacy.test.ts`
+regressions, `docs/consolidation/merge-readiness/PR231.md` and this claim.
+Acceptance: reproduce the two exact hosted disclosure-equivalence failures;
+extract only the scanPrivacy correction from `d6016a822f3bf238506ea5b426380bceb9d1ee83`;
+retain every balance-consent/session guard and disclosure assertion; verify the
+actual combined main/source tree. #222/#238 and their active source branches
+are read-only. All source commits remain ancestors. Both sides of the only
+merge conflict (independent ACTIVE_WORK claims) are retained. No contract,
+dependency, cryptographic or gate changes.
 
 ## Shared invoice signer-policy extraction — 2026-11-18
 
