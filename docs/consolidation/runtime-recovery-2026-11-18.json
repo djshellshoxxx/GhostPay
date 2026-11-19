@@ -1,0 +1,1330 @@
+{
+  "format": "ghostpay-runtime-recovery-v1",
+  "base": "c5f9b190935251c5274a434341f40db3c9175ef1",
+  "source_pr": 218,
+  "source_head": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+  "source_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+  "branch": "integration/ghostpay-runtime-recovery-20261118",
+  "claim_commit": "da3a8728d7284a02918c9ef178311596fa1321a0",
+  "recovery_method": "Scoped three-way source patch; config key conflict retains privacy and adds server. No stale branch merge.",
+  "source_commits": [
+    {
+      "commit": "86f7116a18ffd42153aabd3b3e71b9244df797e0",
+      "subject": "fix(relayer): a failing log sink never takes the process down",
+      "paths": [
+        "apps/relayer/DEVIATIONS.md",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/log.ts",
+        "apps/relayer/src/main.ts"
+      ]
+    },
+    {
+      "commit": "6abf7c324ddd1b2641d6a250e5be7204d0bb04dd",
+      "subject": "fix(cli): honour global switches only in flag positions (R11-1)",
+      "paths": [
+        "packages/cli/README.md",
+        "packages/cli/src/args.ts",
+        "packages/cli/src/global-switches.test.ts",
+        "packages/cli/src/run.ts"
+      ]
+    },
+    {
+      "commit": "0d387b42ba24e17c0d83f6de7c9eed02c78a57da",
+      "subject": "fix(cli): reconcile propose verifies only freshly observed records (R11-2)",
+      "paths": [
+        "packages/cli/README.md",
+        "packages/cli/src/commands/reconcile.ts",
+        "packages/cli/src/reconcile-stored-only.test.ts"
+      ]
+    },
+    {
+      "commit": "9334eb46fd34ce0a64671113fc26eee7fca1bd68",
+      "subject": "fix(cli): report malformed local observations as invalid input (R11-3)",
+      "paths": [
+        "packages/cli/src/observation-input.test.ts",
+        "packages/cli/src/payment-commands.test.ts",
+        "packages/cli/src/payment-input.ts"
+      ]
+    },
+    {
+      "commit": "15ade65a5d83a89f6eb108d45018495217238f12",
+      "subject": "fix(relayer): cap concurrent TCP connections per peer",
+      "paths": [
+        "apps/relayer/DEVIATIONS.md",
+        "apps/relayer/PRIVACY.md",
+        "apps/relayer/README.md",
+        "apps/relayer/relayer.config.example.json",
+        "apps/relayer/src/config.test.ts",
+        "apps/relayer/src/config.ts",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/harness.testutil.ts",
+        "apps/relayer/src/server.ts",
+        "docs/developer/api/apps.md",
+        "docs/operators/relayer-runbook.md"
+      ]
+    },
+    {
+      "commit": "b8e235d78ea49dcbec7aaf5545a74a4b0faf0435",
+      "subject": "fix(cli): do not echo link-like paths or raw catalog keys (R11-4)",
+      "paths": [
+        "packages/cli/README.md",
+        "packages/cli/src/commands/i18n.ts",
+        "packages/cli/src/ctx.ts",
+        "packages/cli/src/io.ts",
+        "packages/cli/src/untrusted-echo.test.ts"
+      ]
+    },
+    {
+      "commit": "c3d8a021906c0f6bad712826ad3f8bfdb3891dde",
+      "subject": "fix(relayer): per-client cap on lane slots, reserved before the first await",
+      "paths": [
+        "apps/relayer/DEVIATIONS.md",
+        "apps/relayer/PRIVACY.md",
+        "apps/relayer/README.md",
+        "apps/relayer/relayer.config.example.json",
+        "apps/relayer/src/api.test.ts",
+        "apps/relayer/src/config.test.ts",
+        "apps/relayer/src/config.ts",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/harness.testutil.ts",
+        "apps/relayer/src/lane.ts",
+        "apps/relayer/src/service.ts",
+        "apps/relayer/src/stress.test.ts",
+        "docs/developer/api/apps.md",
+        "docs/operators/relayer-runbook.md"
+      ]
+    },
+    {
+      "commit": "885ea53859be0054f9cee58ed6b68ba40742d105",
+      "subject": "fix(relayer): answer a malformed request target with 400 invalid_url",
+      "paths": [
+        "apps/relayer/README.md",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/server.ts"
+      ]
+    },
+    {
+      "commit": "f996a11550d752b834b66dd4cda2eae467c9a29b",
+      "subject": "fix(relayer): refuse high-S and non-27/28 sweep signatures before any RPC call",
+      "paths": [
+        "apps/relayer/README.md",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/service.ts",
+        "apps/relayer/src/validate.ts",
+        "docs/developer/api/apps.md"
+      ]
+    },
+    {
+      "commit": "3623bc299d32e6aea4e1f00f2adf7e1f1b9ed715",
+      "subject": "fix(relayer): quote-path gas price RPC failures feed the circuit breaker",
+      "paths": [
+        "apps/relayer/DEVIATIONS.md",
+        "apps/relayer/README.md",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/service.ts"
+      ]
+    },
+    {
+      "commit": "d7d25cbed26f271a2e015caddb2ea72b755b8505",
+      "subject": "fix(relayer): enforce header and request timeouts every second",
+      "paths": [
+        "apps/relayer/README.md",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/server.ts"
+      ]
+    },
+    {
+      "commit": "6bc4a4dbdd8fc907614d27298983e2b017cd4a06",
+      "subject": "fix(relayer): refuse a feeTo that differs from the manifest fee recipient",
+      "paths": [
+        "apps/relayer/DEVIATIONS.md",
+        "apps/relayer/README.md",
+        "apps/relayer/src/config.test.ts",
+        "apps/relayer/src/config.ts",
+        "docs/developer/api/apps.md",
+        "docs/operators/relayer-runbook.md"
+      ]
+    },
+    {
+      "commit": "d894106e382c143c511912cb443cb980f5cf9731",
+      "subject": "docs(relayer): record the unaccounted OP Stack L1 data fee (R07-4)",
+      "paths": [
+        "apps/relayer/DEVIATIONS.md"
+      ]
+    },
+    {
+      "commit": "964e703579b6a2c2697be6ff65d644158d68f472",
+      "subject": "fix(relayer-guard): per-group overflow buckets by default (M-3)",
+      "paths": [
+        "packages/relayer-guard/src/limiter.abuse.test.ts",
+        "packages/relayer-guard/src/limiter.test.ts",
+        "packages/relayer-guard/src/limiter.ts"
+      ]
+    },
+    {
+      "commit": "158bfdf89a03f1c0a98d92bff83995ceb6dc37a3",
+      "subject": "fix(cli): close the gaps an independent review found in R11-1, R11-2, R11-4",
+      "paths": [
+        "packages/cli/README.md",
+        "packages/cli/src/commands/reconcile.ts",
+        "packages/cli/src/global-switches.test.ts",
+        "packages/cli/src/io.ts",
+        "packages/cli/src/reconcile-stored-only.test.ts",
+        "packages/cli/src/run.ts",
+        "packages/cli/src/untrusted-echo.test.ts"
+      ]
+    },
+    {
+      "commit": "bb9db1290164280b9da57c5f6f96e3f85240edf3",
+      "subject": "fix(relayer-guard): bounded idle scan on eviction and stats() (L-8)",
+      "paths": [
+        "packages/relayer-guard/src/index.ts",
+        "packages/relayer-guard/src/limiter.abuse.test.ts",
+        "packages/relayer-guard/src/limiter.ts"
+      ]
+    },
+    {
+      "commit": "a831a45f234ce567b628205b8d6e5a658abcab37",
+      "subject": "docs(relayer-guard): document per-group overflow, idle scan and stats()",
+      "paths": [
+        "packages/relayer-guard/DEVIATIONS.md",
+        "packages/relayer-guard/README.md"
+      ]
+    },
+    {
+      "commit": "02648c9286ebb57e907b20fd9100f22e5105b1c6",
+      "subject": "style(relayer-guard): prettier format of the limiter abuse tests",
+      "paths": [
+        "packages/relayer-guard/src/limiter.abuse.test.ts"
+      ]
+    },
+    {
+      "commit": "1f866c99ea20b41546dbaa7972a95a0e2054d7d9",
+      "subject": "fix(relayer): only consecutive quote gas price failures open the breaker",
+      "paths": [
+        "apps/relayer/DEVIATIONS.md",
+        "apps/relayer/README.md",
+        "apps/relayer/src/hardening.test.ts",
+        "apps/relayer/src/service.ts"
+      ]
+    },
+    {
+      "commit": "23ce9902c1bf3c6432963f293d90b471c136bb9e",
+      "subject": "fix(relayer-guard): keep entries one resolution holds out of the idle scan",
+      "paths": [
+        "packages/relayer-guard/src/limiter.abuse.test.ts",
+        "packages/relayer-guard/src/limiter.ts"
+      ]
+    },
+    {
+      "commit": "8db74f4fa486f41fd7476723ba57b90f56ffa3bf",
+      "subject": "fix(web): treat the relayer's client_queue_full refusal as pre-broadcast",
+      "paths": [
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts"
+      ]
+    },
+    {
+      "commit": "7de6298f3ba1768beead89c78b8ee83e264d7947",
+      "subject": "docs(cli): list every kind of path value that error messages withhold",
+      "paths": [
+        "packages/cli/README.md"
+      ]
+    },
+    {
+      "commit": "8e76689793343ce34f8ae4a5e1910b191e4a2930",
+      "subject": "fix(devnet): pay the relayer fee to the manifest fee recipient in the library e2e",
+      "paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "scripts/devnet/e2e.mjs"
+      ]
+    }
+  ],
+  "invoice_test_only_sources": [
+    {
+      "commit": "55fa5f840a7ea737aa524820f14991fcd94f0a74",
+      "subject": "fix(invoice-schema): restore opt-in requirePinnedSigner / UntrustedSignerError (T-b85e0b59-2)",
+      "paths": [
+        "packages/invoice-schema/README.md",
+        "packages/invoice-schema/src/envelope.test.ts",
+        "packages/invoice-schema/src/envelope.ts",
+        "packages/invoice-schema/src/errors.ts"
+      ]
+    },
+    {
+      "commit": "ecf9108ef586d30f7697bf3e25115785574d5f28",
+      "subject": "fix(invoice-schema): requirePinnedSigner also rejects invalid signatures (INVALID_SIGNATURE)",
+      "paths": [
+        "packages/invoice-schema/README.md",
+        "packages/invoice-schema/src/envelope.test.ts",
+        "packages/invoice-schema/src/envelope.ts",
+        "packages/invoice-schema/src/errors.ts"
+      ]
+    }
+  ],
+  "invoice_test_cases": [
+    "public error exports and distinct inheritance",
+    "passphrase rejection message and serialized-error redaction",
+    "explicit false preserves invalid-signature review",
+    "strict malformed base64 retains Base64UrlError"
+  ],
+  "review_corrections": [
+    "hardening.test.ts admission-cleanup signature now uses v=27 so invalid r/s fails after reservation",
+    "DEVIATIONS item6 now documents early low-s/v27or28 rejection"
+  ],
+  "recovered_files": [
+    {
+      "path": "apps/relayer/DEVIATIONS.md",
+      "base": {
+        "git_blob": "909ad1f93f22e37f9a839a9357f11ffba05f3b55",
+        "sha256": "fd0abf2af35e2ff5944182d076d41a2fbbfcd4c4bb5e23aa2cc9ae5524e1a777"
+      },
+      "source": {
+        "git_blob": "7c88ae3035ee36327ea819f4351ad181294d3ad5",
+        "sha256": "02dfaa064041f882df7eb1b5a571b57bd76758c6ad9ee316d6cb64b179f30d5b"
+      },
+      "recovered": {
+        "git_blob": "6351d5764333325155f7f7d555633587a7b3bbd5",
+        "sha256": "46a9f39d998531ec6bffeee022cf9ec6a299dfb8604e4f7014a276371bc5b39a"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/relayer/PRIVACY.md",
+      "base": {
+        "git_blob": "a31d9d01c6c862f3419b508f8049122eb0c599da",
+        "sha256": "c275d5d21f7f20c9dc5453f1ac1cd446179bc642c5fa89746b7a2a1bf3e6691a"
+      },
+      "source": {
+        "git_blob": "e8cfd080dd9355ad03a7d5bbf3b571d74be2b3c4",
+        "sha256": "754b4d2aa2f333c1c1dc8aa89ec8a7e9519d7637d9bbd489f823671d54218ed8"
+      },
+      "recovered": {
+        "git_blob": "96ef6cbf9c2518bb96c22415c6fbcf2fc0a2f4c2",
+        "sha256": "cab9d5848e6748ea6cfd0f11e63ef01123062863a0f769cb75cc45e1bc742204"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/relayer/README.md",
+      "base": {
+        "git_blob": "240cccaf15d80ce02a90193db7d7ae2ad220663e",
+        "sha256": "37c001669f693913b0c7257ce1465f3c145d9feb0ac1fc8e11aa550000e3954a"
+      },
+      "source": {
+        "git_blob": "cb36662af7843eeb8426947a24500d7d7c94ecbe",
+        "sha256": "3296aecd3f1ae2b49349cfaae5d026f9371f28cdef745ea74d3d4491a59f2157"
+      },
+      "recovered": {
+        "git_blob": "2ea1ab9e65db770a56b83f6ddb9725fd4ef28480",
+        "sha256": "79d7dbccd6de824413fecf86d82df7cb9b8e7cbef41a496da0c0c90a01d08dfa"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/relayer/relayer.config.example.json",
+      "base": {
+        "git_blob": "f1e12f843fec324c48c93f29cc4c33ce8a4b058b",
+        "sha256": "eb6094ec4ad4aa0433c00d28de1f279ccb926c4ca0c9f23e9b20a915a1414cf9"
+      },
+      "source": {
+        "git_blob": "3e5cf5bbcc1698704cc554d56fc536121e9c0326",
+        "sha256": "23f1705f1cacc0bc3177e31eac23209ef9986f238f2896dd0761e0bae4919d77"
+      },
+      "recovered": {
+        "git_blob": "3e5cf5bbcc1698704cc554d56fc536121e9c0326",
+        "sha256": "23f1705f1cacc0bc3177e31eac23209ef9986f238f2896dd0761e0bae4919d77"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/relayer/src/api.test.ts",
+      "base": {
+        "git_blob": "705cad730c43bd43fd827b62d601c24b444291a7",
+        "sha256": "9e2965947598114a7f480d8c2da3fd69f0f404a694c5cfe63f0a12b045783867"
+      },
+      "source": {
+        "git_blob": "1cca3b929360d4d55835751c87115247559391bb",
+        "sha256": "1be809d61bedfca7a4cd94df6510879738cb4ddbe6d2c77979f97b512dff9f18"
+      },
+      "recovered": {
+        "git_blob": "1cca3b929360d4d55835751c87115247559391bb",
+        "sha256": "1be809d61bedfca7a4cd94df6510879738cb4ddbe6d2c77979f97b512dff9f18"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/relayer/src/config.test.ts",
+      "base": {
+        "git_blob": "bccfda45474af3daa6d28ab99a4114081f170adf",
+        "sha256": "977a39ee557fa0e9454beedf99ef5fd9e9b598f301e675f063104902982141c5"
+      },
+      "source": {
+        "git_blob": "ae6bbdf77f292c60cff16ac98ed8f0906bd71b20",
+        "sha256": "032153fd2ffc227067d5371afff727a273e11ff2edea991af99a4a371f6abea4"
+      },
+      "recovered": {
+        "git_blob": "ae6bbdf77f292c60cff16ac98ed8f0906bd71b20",
+        "sha256": "032153fd2ffc227067d5371afff727a273e11ff2edea991af99a4a371f6abea4"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/relayer/src/config.ts",
+      "base": {
+        "git_blob": "31e7d72408f6c74e550d2a70ac5e177412dc9b76",
+        "sha256": "56170daa2e7a5dee2361203c6c3e533636c0491db7a5ad578344a51e1898ec1b"
+      },
+      "source": {
+        "git_blob": "9196d0e8756b14d9983e5a820c665594f21beba4",
+        "sha256": "fc6610cc599a0c08b403f3bc21cef66252d4a38591848a2fc12194c7d9d9677e"
+      },
+      "recovered": {
+        "git_blob": "6800de3a2eca21495fea8d56ffdba9ef1ee34b5c",
+        "sha256": "e29b6d11f76c58b58bd1b36259c1e7c03612536df77d273886a9b394c0f21f29"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/relayer/src/hardening.test.ts",
+      "base": null,
+      "source": {
+        "git_blob": "86da44910a52658d9ef36faff6ab1e02b803cbf8",
+        "sha256": "136fec6fcc4f5944efab6e0d6ef8ceb0b041a4b8fdd332697c90dff6f4ad7f13"
+      },
+      "recovered": {
+        "git_blob": "fe8e316ad7684ebd84f4c199f8c75ff5c30cea49",
+        "sha256": "550824658a74f8502c4997961d86e09d319a0323cbc1bfbbb48af8792ee7686f"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/relayer/src/harness.testutil.ts",
+      "base": {
+        "git_blob": "3c432cb2baea5f62e06976b0a37ec2888f9bb8b0",
+        "sha256": "049d52e8531b7f2936734b12a4a0a20cc1e074cdd6cfb67732fa87592308f911"
+      },
+      "source": {
+        "git_blob": "7b2fbe7f7fa732ba7f1edbb3091694619e231985",
+        "sha256": "f2c06ae113cbe6548771327c9ae943136f7fb25d7c440d94c91c7d060043c0ca"
+      },
+      "recovered": {
+        "git_blob": "7b2fbe7f7fa732ba7f1edbb3091694619e231985",
+        "sha256": "f2c06ae113cbe6548771327c9ae943136f7fb25d7c440d94c91c7d060043c0ca"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/relayer/src/lane.ts",
+      "base": {
+        "git_blob": "6a68db1c9dc47464e0b42e7690ee00bd75da7359",
+        "sha256": "7b1cf976a4589d5644addb108d8a8d49f792fb6b8ec0ea10d950ef6987ed42bb"
+      },
+      "source": {
+        "git_blob": "ec73822ae52d7ea459db0ff07b609605e5cceebe",
+        "sha256": "571a889a078fb9505f241d1d90813773150522becd20449b849f155ede1325f8"
+      },
+      "recovered": {
+        "git_blob": "ec73822ae52d7ea459db0ff07b609605e5cceebe",
+        "sha256": "571a889a078fb9505f241d1d90813773150522becd20449b849f155ede1325f8"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/relayer/src/log.ts",
+      "base": {
+        "git_blob": "cdf8b7e65df5690a58165f59747a390fede79759",
+        "sha256": "b6b1815ee714772b829e504eab57a888b4d3c531b6c0b0d0f9dd0a83fae46542"
+      },
+      "source": {
+        "git_blob": "ceee271e0e9643a67ca71592abde934a8af269d3",
+        "sha256": "c42b590386ab2b57b904f67835c1adbf4b66183181b5aa834659208c77f92025"
+      },
+      "recovered": {
+        "git_blob": "aebf834a9a76e1727515e17084a6dc533e173c44",
+        "sha256": "031db38633d9860153c5c77f84674527ec899960ffb7f78b605266034c888e1a"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/relayer/src/main.ts",
+      "base": {
+        "git_blob": "c90aa553c168023d6b4052a6a8aed26f1e1bcc15",
+        "sha256": "c7d87f7f7bbcb6a02c10cee8b490c45fa3660d9f9f5ad22585161e79775af1f2"
+      },
+      "source": {
+        "git_blob": "817e8c27c8d197e681bbd5aed1471f2af543d9d7",
+        "sha256": "8b345094909a473b84306d94894d9c9870a86ae06c50b9f8b590046783b092c9"
+      },
+      "recovered": {
+        "git_blob": "817e8c27c8d197e681bbd5aed1471f2af543d9d7",
+        "sha256": "8b345094909a473b84306d94894d9c9870a86ae06c50b9f8b590046783b092c9"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/relayer/src/server.ts",
+      "base": {
+        "git_blob": "6295299c91323f0b44b6896a5f36ae618f07027d",
+        "sha256": "809144b141f40cf2ac9b75589d403e9d52cad50d8c3bee842a0610f9407921f0"
+      },
+      "source": {
+        "git_blob": "90a0b3fc6a31930df6e420d7ed36716a04e7f96f",
+        "sha256": "464c3ab6b5ba633692f5424d7f6406af8945146dc188ec273e479d73d714272d"
+      },
+      "recovered": {
+        "git_blob": "c99e9b66f88bc99b9b082c968c3023dbd7454a68",
+        "sha256": "01707b40781061c3420b6e12c535248f93bba4953ca6e0ddd579cdb3ea08dc4b"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/relayer/src/service.ts",
+      "base": {
+        "git_blob": "19e1d63e059db7b2bac9b6f863d3543c9032bee1",
+        "sha256": "9809e8be117da1152c6a5c4aa85d2159cac6cde2a6674629f0f5a614962f5914"
+      },
+      "source": {
+        "git_blob": "a7b3dfb5fc01b7cf7b8e7f9bc9dc58c7bd17b3ef",
+        "sha256": "90387e1882a7428826f01711baeb53a6cfa9f54d5a5caa06633795396e6fafc7"
+      },
+      "recovered": {
+        "git_blob": "a7b3dfb5fc01b7cf7b8e7f9bc9dc58c7bd17b3ef",
+        "sha256": "90387e1882a7428826f01711baeb53a6cfa9f54d5a5caa06633795396e6fafc7"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/relayer/src/stress.test.ts",
+      "base": {
+        "git_blob": "331298b9fa2a6367914e4b32cf2b6e0b7621f15d",
+        "sha256": "889f5719fa6185d95fbde59cdea8689b9826d8747de17cd95a7d20550fe6d3fc"
+      },
+      "source": {
+        "git_blob": "5c130662bbc4e4b975639d99fa46b6a378170cc5",
+        "sha256": "b4c02a193155f581617c6295ed0900326997e10113ac1aac6093e7d8c277023e"
+      },
+      "recovered": {
+        "git_blob": "5c130662bbc4e4b975639d99fa46b6a378170cc5",
+        "sha256": "b4c02a193155f581617c6295ed0900326997e10113ac1aac6093e7d8c277023e"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/relayer/src/validate.ts",
+      "base": {
+        "git_blob": "86fca2d61268c0a8da5ab392d2c114b9da46bf31",
+        "sha256": "a490d311113b3a325127bcbcab785077ea903131566e5aad57bfed3e5794d491"
+      },
+      "source": {
+        "git_blob": "5192ff6783dcfa91638cbdd928860abc1d3ba888",
+        "sha256": "72caa41502ed6a045fa1707bed09e5878449446c301f0f4530a74675599c1be9"
+      },
+      "recovered": {
+        "git_blob": "5192ff6783dcfa91638cbdd928860abc1d3ba888",
+        "sha256": "72caa41502ed6a045fa1707bed09e5878449446c301f0f4530a74675599c1be9"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.test.ts",
+      "base": {
+        "git_blob": "5a930b22aabe6c785795a55ed5c4326a2c254452",
+        "sha256": "2db6d3f63b40b8fab7cd282b00b98bbe2e10d71d5f12ac2f4636a153ccb65c01"
+      },
+      "source": {
+        "git_blob": "b0dfe490f3f16e910adb9d9a283dbb40b32dc92c",
+        "sha256": "364e2fc1119f6bf8c448895edf19770329562c0e98f1316eb22332ce41cb0f45"
+      },
+      "recovered": {
+        "git_blob": "f1ed967ab4397c50d15c9e566c47b63208dca9c0",
+        "sha256": "1903a04682031355164c15b276548c0c546179ae1ebda790452fa401d5390ea0"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.ts",
+      "base": {
+        "git_blob": "dca493b2c1b9bd9eadfb64cff2b8e56d2c9437d1",
+        "sha256": "c3de31626a19d1dc71c490a24361eb2ece6755e0d620c069a3518cbfbbd8ee09"
+      },
+      "source": {
+        "git_blob": "347972acfd16c78560ede02d06116d06a3c48230",
+        "sha256": "ec30436165b0a3c50c856564eef75e330087e13d77a6338bee6c424220aa8008"
+      },
+      "recovered": {
+        "git_blob": "005edbbed22ccd6a6fa11f490480c02ed77408a6",
+        "sha256": "38804fefaf72226f1fd843809dcb4ad073a6583ad3512e095d737f6ea6fbd2b3"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "packages/cli/README.md",
+      "base": {
+        "git_blob": "07586016458deb8c5dd2da899fd8c6577933110a",
+        "sha256": "f084acccbd60e796a832d7d932a8b9be130fccb688e08f12f1218b42d721df79"
+      },
+      "source": {
+        "git_blob": "66bd271753f3f3b7549529f477eb08a7eaf0a595",
+        "sha256": "4b9515ba312c6257b61754ff9a473902d833605728ccb75ab523d55029e06af6"
+      },
+      "recovered": {
+        "git_blob": "66bd271753f3f3b7549529f477eb08a7eaf0a595",
+        "sha256": "4b9515ba312c6257b61754ff9a473902d833605728ccb75ab523d55029e06af6"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/args.ts",
+      "base": {
+        "git_blob": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+        "sha256": "007355079ef7190079f1e253bc5efaf4f3f1e8aac217201b0fcf96e0eeea94b6"
+      },
+      "source": {
+        "git_blob": "f5cbc96a7cc97d172e124c7e76fd4e8024fb9f8b",
+        "sha256": "8ac74519a6be622f2ac977ab846f826e46369b25bee440ed1cef8309fd185d87"
+      },
+      "recovered": {
+        "git_blob": "f5cbc96a7cc97d172e124c7e76fd4e8024fb9f8b",
+        "sha256": "8ac74519a6be622f2ac977ab846f826e46369b25bee440ed1cef8309fd185d87"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/commands/i18n.ts",
+      "base": {
+        "git_blob": "dbd6e9aeb234f885780b4c0d33384ecc843ffe2e",
+        "sha256": "41f779dce20a6317392d4d2ac79c74c10fd2c6cd652ff3609bae39e825b7c6ce"
+      },
+      "source": {
+        "git_blob": "82bf08711b34949d87b4f888b56b3038674359e3",
+        "sha256": "d6920d718e75062ef9556846e1f8a5bf31dbbd4555f0b6397bf3121445238435"
+      },
+      "recovered": {
+        "git_blob": "82bf08711b34949d87b4f888b56b3038674359e3",
+        "sha256": "d6920d718e75062ef9556846e1f8a5bf31dbbd4555f0b6397bf3121445238435"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/commands/reconcile.ts",
+      "base": {
+        "git_blob": "39c94eb5215526a87da89551268c2c4ad11f2ab2",
+        "sha256": "58e08b9f9e24f81945bde90201612cc392c7d4241e1ae98b11a9723c9d1078ea"
+      },
+      "source": {
+        "git_blob": "4d6c65d8f7cf8a6402ba04994701e275f4d59614",
+        "sha256": "2a3810aab8a49596434c929d5d7dfdcd30c62f3f3f70c9ccd95767202d30baf3"
+      },
+      "recovered": {
+        "git_blob": "4d6c65d8f7cf8a6402ba04994701e275f4d59614",
+        "sha256": "2a3810aab8a49596434c929d5d7dfdcd30c62f3f3f70c9ccd95767202d30baf3"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/ctx.ts",
+      "base": {
+        "git_blob": "62afbe2573acb12cf78b435d44366128ac3f4387",
+        "sha256": "84ff067138b78c9aa9b2b0f81435dbf13dce2e611fcad32afaeab0a5b3dc85ec"
+      },
+      "source": {
+        "git_blob": "55aa94afaf1a272add5c6fe679645e1926246151",
+        "sha256": "7dc778de577c8fb5b925cd9286021222ce013e0a879d1ad4e3822b514fad33fa"
+      },
+      "recovered": {
+        "git_blob": "55aa94afaf1a272add5c6fe679645e1926246151",
+        "sha256": "7dc778de577c8fb5b925cd9286021222ce013e0a879d1ad4e3822b514fad33fa"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/global-switches.test.ts",
+      "base": null,
+      "source": {
+        "git_blob": "088cc1d4c3f7ea0d893e0f73a3a36aa69a41f887",
+        "sha256": "c56d039754e9a3c02844156666a6e2b4b63398711f20a41adc8747dd75cd537a"
+      },
+      "recovered": {
+        "git_blob": "088cc1d4c3f7ea0d893e0f73a3a36aa69a41f887",
+        "sha256": "c56d039754e9a3c02844156666a6e2b4b63398711f20a41adc8747dd75cd537a"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/io.ts",
+      "base": {
+        "git_blob": "0874fd8fd7826d0fa385910ed2d079b40cc9808c",
+        "sha256": "20eeeb12ea7c8c7389a82f34292b8f9faab5831e7fc9f6ed57589fa7bb11e40c"
+      },
+      "source": {
+        "git_blob": "5dd8d6ad5adeb4265aa04543bbaa9d1d33393dbc",
+        "sha256": "4c0fa8cc9aa9576c0678b4d02e3ea1232cfc4bf76236d3782f025379110a7862"
+      },
+      "recovered": {
+        "git_blob": "5dd8d6ad5adeb4265aa04543bbaa9d1d33393dbc",
+        "sha256": "4c0fa8cc9aa9576c0678b4d02e3ea1232cfc4bf76236d3782f025379110a7862"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/observation-input.test.ts",
+      "base": null,
+      "source": {
+        "git_blob": "19d547875eec56346999ed8cebad56ad66e9f7b0",
+        "sha256": "b04bb966b403fcb77307abf158d00bde8d6139a2946d50ed4cf91eab5bbe835a"
+      },
+      "recovered": {
+        "git_blob": "19d547875eec56346999ed8cebad56ad66e9f7b0",
+        "sha256": "b04bb966b403fcb77307abf158d00bde8d6139a2946d50ed4cf91eab5bbe835a"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/payment-commands.test.ts",
+      "base": {
+        "git_blob": "25b6c0011add0f148c535aa4121dc80ec8360e06",
+        "sha256": "45a731871b9be0e38d256c7c1aa6c2166b13c25f1caa5aa1a209b3a3d172fefa"
+      },
+      "source": {
+        "git_blob": "7648253b4632d184b4f673c8c927e7f721247f29",
+        "sha256": "b3d1f30df61af981d0c8ec555a2b4570e64d2517b3faef3d348cf3e7b128833f"
+      },
+      "recovered": {
+        "git_blob": "7648253b4632d184b4f673c8c927e7f721247f29",
+        "sha256": "b3d1f30df61af981d0c8ec555a2b4570e64d2517b3faef3d348cf3e7b128833f"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/payment-input.ts",
+      "base": {
+        "git_blob": "ae51e409bef2d4e8fc04b5f8a3e871e2d5e74bd7",
+        "sha256": "c5d6a005f8ceda6b23db3de486f6a9c8771b29770d63eab0833913814693f31f"
+      },
+      "source": {
+        "git_blob": "283cbe171cef4a3a92e39bdef4360ed790503873",
+        "sha256": "0022e4ae1054b22953e112f38a17fdde36709fc491409301c55b6392798d318a"
+      },
+      "recovered": {
+        "git_blob": "283cbe171cef4a3a92e39bdef4360ed790503873",
+        "sha256": "0022e4ae1054b22953e112f38a17fdde36709fc491409301c55b6392798d318a"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/reconcile-stored-only.test.ts",
+      "base": null,
+      "source": {
+        "git_blob": "1982a26a19b59923e0505d48445256453439e2ac",
+        "sha256": "e3d9e95bcf4ba6f3e1a9f6b2fb5cb630c76432242f40c2441c7725ec1e50ae50"
+      },
+      "recovered": {
+        "git_blob": "1982a26a19b59923e0505d48445256453439e2ac",
+        "sha256": "e3d9e95bcf4ba6f3e1a9f6b2fb5cb630c76432242f40c2441c7725ec1e50ae50"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/run.ts",
+      "base": {
+        "git_blob": "24d57c9964dbd2148461d374b3691b15accf3fe6",
+        "sha256": "6204aaf16e5a75ec834e19a048a242b73b0c6ccdb6f3a0f3ed620abf0a3c08a2"
+      },
+      "source": {
+        "git_blob": "f12b435a2db0d1337de751192e600f1ddc498790",
+        "sha256": "bad536ed7458b88b63fe60e8b4f3c588f36f4092df22e336210ae5de7caae277"
+      },
+      "recovered": {
+        "git_blob": "f12b435a2db0d1337de751192e600f1ddc498790",
+        "sha256": "bad536ed7458b88b63fe60e8b4f3c588f36f4092df22e336210ae5de7caae277"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/cli/src/untrusted-echo.test.ts",
+      "base": null,
+      "source": {
+        "git_blob": "efc757219c47aed430f52577b55e4ac6de9b83e9",
+        "sha256": "55192e20806f61f22e8549448d8d6b92902dbf4ce938e98c0434f1d212075197"
+      },
+      "recovered": {
+        "git_blob": "efc757219c47aed430f52577b55e4ac6de9b83e9",
+        "sha256": "55192e20806f61f22e8549448d8d6b92902dbf4ce938e98c0434f1d212075197"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/invoice-schema/src/pinnedSigner.test.ts",
+      "base": {
+        "git_blob": "6df3d196d0aaccfcd75ac59255279b07a50df9a0",
+        "sha256": "fe7e9ae73450bd7ec92e6c894e161fb46621ff88a3b52f1cfc0b2ba0a14900d1"
+      },
+      "source": null,
+      "recovered": {
+        "git_blob": "8fb998cadd79d1b94710170bee77467610086b80",
+        "sha256": "1ed44735c57134e8473c8c2bc078eb620d94cf6c49635c995f07f476b36f4825"
+      },
+      "matches_source": false
+    },
+    {
+      "path": "packages/relayer-guard/DEVIATIONS.md",
+      "base": {
+        "git_blob": "573b321ed34e91ca9d65a2c49d2e92bf49e396d1",
+        "sha256": "f6f41efbdc238d132e0449cd003d59f677492a9f275acef614845c603d58959a"
+      },
+      "source": {
+        "git_blob": "f463592d7ebc915413b2ce80a2b9d022080d6a10",
+        "sha256": "8a02e0a62797aff3286dc42f13b5d61dd76f1db6c020442dfa5a39ab3097b217"
+      },
+      "recovered": {
+        "git_blob": "f463592d7ebc915413b2ce80a2b9d022080d6a10",
+        "sha256": "8a02e0a62797aff3286dc42f13b5d61dd76f1db6c020442dfa5a39ab3097b217"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/relayer-guard/README.md",
+      "base": {
+        "git_blob": "b80f53d52273a5d8f1a60200247080ff0c198e56",
+        "sha256": "d7f080766fcbf38e228f3658315e592892a5e707dfc1e5c8dede00c9687a5c24"
+      },
+      "source": {
+        "git_blob": "648c762609818a2432cdc704ffad6d115963305f",
+        "sha256": "d0c54e0bd999166bae469125bcaf2cb06c58957170dd6fc6b493127c6a0a4e6d"
+      },
+      "recovered": {
+        "git_blob": "648c762609818a2432cdc704ffad6d115963305f",
+        "sha256": "d0c54e0bd999166bae469125bcaf2cb06c58957170dd6fc6b493127c6a0a4e6d"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/relayer-guard/src/index.ts",
+      "base": {
+        "git_blob": "8fc7aa2c00ecd15cb479482f39283a9be2607fcc",
+        "sha256": "2bb1d05e7854a2a4976a39921f1b701fdcaea703666f190cc9abe0df47adc2ad"
+      },
+      "source": {
+        "git_blob": "7713bd559eb6dcd4e8456b5b424bd78aa5701369",
+        "sha256": "761c6e8ba1cd0e77b1246f4e8edd50488300d9e78aab7e93c8aa38920bb04456"
+      },
+      "recovered": {
+        "git_blob": "7713bd559eb6dcd4e8456b5b424bd78aa5701369",
+        "sha256": "761c6e8ba1cd0e77b1246f4e8edd50488300d9e78aab7e93c8aa38920bb04456"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/relayer-guard/src/limiter.abuse.test.ts",
+      "base": null,
+      "source": {
+        "git_blob": "944162cb2dcea4f92ebadcba38956aacf1a17a0b",
+        "sha256": "54692dbcead63c00da004a91207a4d31500ae6678c8473cafa1eea9ec6e940c0"
+      },
+      "recovered": {
+        "git_blob": "944162cb2dcea4f92ebadcba38956aacf1a17a0b",
+        "sha256": "54692dbcead63c00da004a91207a4d31500ae6678c8473cafa1eea9ec6e940c0"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/relayer-guard/src/limiter.test.ts",
+      "base": {
+        "git_blob": "6162491efef724d34470293c9d697eac1f217322",
+        "sha256": "06b0b0b7d2bb57b0c66825a8078d1ba1abac70292f3d7b2668bcc4bc0ec4c5fc"
+      },
+      "source": {
+        "git_blob": "92fa969ed084c5f1155c42331f2aa678e2f2c1ea",
+        "sha256": "231675841c25b3a09d0c67a5e4f02c4f9ff51b2aceb1184d8f6e1fa605326ab2"
+      },
+      "recovered": {
+        "git_blob": "92fa969ed084c5f1155c42331f2aa678e2f2c1ea",
+        "sha256": "231675841c25b3a09d0c67a5e4f02c4f9ff51b2aceb1184d8f6e1fa605326ab2"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "packages/relayer-guard/src/limiter.ts",
+      "base": {
+        "git_blob": "33f8829cf3f34ef515b49d27fee4f7194e699282",
+        "sha256": "8e87715bca9ab597050f9658b2fab4caebfca5bab7ada250a0485e880ccb9d37"
+      },
+      "source": {
+        "git_blob": "79cf96b346911d45bad68ca0ce0930043ba260ff",
+        "sha256": "aa124e6b16f506c184e6495202746ece03433a559e016f5f1c08a4c3062077e2"
+      },
+      "recovered": {
+        "git_blob": "79cf96b346911d45bad68ca0ce0930043ba260ff",
+        "sha256": "aa124e6b16f506c184e6495202746ece03433a559e016f5f1c08a4c3062077e2"
+      },
+      "matches_source": true
+    },
+    {
+      "path": "scripts/devnet/e2e.mjs",
+      "base": {
+        "git_blob": "bbee25017bf3c58dcb6b20a96936fd3ed47dfc02",
+        "sha256": "f603dbb9abaabfcf254621494109260d60a7e6f7318ae3c24e85a7afe77b8f87"
+      },
+      "source": {
+        "git_blob": "9ed7ea1f19ecec563c01caef661b818eee77aa4e",
+        "sha256": "674bb4164edc57b34e98204ebfa284eba85a2d14fd38ba7bd5eb7f30179889a0"
+      },
+      "recovered": {
+        "git_blob": "9ed7ea1f19ecec563c01caef661b818eee77aa4e",
+        "sha256": "674bb4164edc57b34e98204ebfa284eba85a2d14fd38ba7bd5eb7f30179889a0"
+      },
+      "matches_source": true
+    }
+  ],
+  "preserved_base_files": [
+    {
+      "path": "apps/relayer/src/runtime.ts",
+      "git_blob": "df682d3acbc2ec51c4274b1f56c0e703f61a38ac",
+      "sha256": "7308a2b735950065a126c1c6c7d7853b56cfdfafd3971e323ff90ad4138d7b6f"
+    },
+    {
+      "path": "apps/relayer/src/privacy.test.ts",
+      "git_blob": "53e6c890c1d27aa4a6b9b99a60d8987b1263c570",
+      "sha256": "03c02ced19e1fed3796ef5aafe2bcefbd913cb1107f688896caa8e868072a338"
+    },
+    {
+      "path": "apps/relayer/package.json",
+      "git_blob": "98933cea02cb5087e86603f235bf27078763ada8",
+      "sha256": "67ba77e9fada1dcde9ebdc0d2a6e4d9196de04fd37c9d77ecaecb346d3f204ef"
+    },
+    {
+      "path": "apps/relayer/tsconfig.json",
+      "git_blob": "c589e6c7117d45e91e382b2e78a94f4103da86d9",
+      "sha256": "534152d3563d1107a45fa663879606c04558e333bb212af319102f8b78bd6545"
+    },
+    {
+      "path": "apps/relayer/vitest.config.ts",
+      "git_blob": "e5fa28f8ab593c7d3e792b5e7f1549747d32cac4",
+      "sha256": "d281e6d113d9b8a2e40f6572307b7f32b1e2401ae69cca1c9385235471e11e7b"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "git_blob": "1b8a12c0cc915e74918c62a77c2dd9318e0371fd",
+      "sha256": "e563b0072aca45724a021e62bebaa942cf268cf645b01d1ba47568b3f3ca815b"
+    },
+    {
+      "path": "packages/cli/src/receipt-parity.test.ts",
+      "git_blob": "0871cbfaab0dca9faf5fb662cc91d09e093c5fc9",
+      "sha256": "7adfc7df1d314fe8fbd4866721064b8dfa1ae3d2bc0d31aedadf4dfacd3dfd9f"
+    },
+    {
+      "path": "packages/relayer-guard/package.json",
+      "git_blob": "d6925f2149b17c7a90a2c664fb755ee67ff43fc7",
+      "sha256": "0f00154a3f637d2b6c1dd574ec2b0f13f56d66738bf0738a7e830dae0065d85b"
+    },
+    {
+      "path": "packages/invoice-schema/src/envelope.ts",
+      "git_blob": "9e6f5d8b80405d634252bf0b65a50d8610325f58",
+      "sha256": "fe9a123e3181605338d0587cc0c9ec0385303e34e784adf60287478f76f1c487"
+    },
+    {
+      "path": "packages/invoice-schema/src/errors.ts",
+      "git_blob": "a2fded81b112dc570571566e1c87bb6d78e292d4",
+      "sha256": "fb7837b9dcd9e3e2e31ece185c2e69c29916aa4b414fefccbd70fc6c769ad012"
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "git_blob": "92bceed2e93389bf7d0033909d6c9d1773d52ff4",
+      "sha256": "c32cad9520d1ad2a37cdbf6dd8c0703741780be4c0943e8ff102b97e8b2e3582"
+    },
+    {
+      "path": "packages/ux-core/src/errors.ts",
+      "git_blob": "8000ccac11046a646a3c9153a0da1cd7070fc8ab",
+      "sha256": "cf7999b49097d5c084038d207e57b8635ba6cadc85ed7bb4f054a9e5d78ebdf2"
+    },
+    {
+      "path": "packages/ux-core/src/errors.test.ts",
+      "git_blob": "e3398612a56c743aefabe1b6adda1f29aa4dd602",
+      "sha256": "fa291b9f474a3d602d0cec68d171b26b7f9e7c63bafd0f9dea4803b560493dbe"
+    },
+    {
+      "path": "package.json",
+      "git_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d"
+    },
+    {
+      "path": "package-lock.json",
+      "git_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2"
+    }
+  ],
+  "preserved_privacy_functions": [
+    {
+      "path": "apps/relayer/src/log.ts",
+      "function": "zeroLogLogger",
+      "sha256": "39012e3c62712087241c9b9ecff544bc9988bdb61067046b679d7ae7f7cb20ce",
+      "matches_base": true
+    },
+    {
+      "path": "apps/relayer/src/config.ts",
+      "function": "parsePrivacy",
+      "sha256": "5e1303326ab8ce75eab504a317e1503fde55272a3a29f4481a7a7580f09be2e6",
+      "matches_base": true
+    },
+    {
+      "path": "apps/relayer/src/server.ts",
+      "function": "unpadBody",
+      "sha256": "e13e51e1e3866308471f7640bd0164032b8578ce93d4ff705d670f5d40d39263",
+      "matches_base": true
+    }
+  ],
+  "source_211": {
+    "head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+    "base_for_comparison": "c5f9b190935251c5274a434341f40db3c9175ef1",
+    "groups": {
+      "policy_validation_authorized_next": [
+        {
+          "commit": "0c0bbaa26d6ccf9e3a4a0c079c28a75559238374",
+          "subject": "policy-scheme: decodePolicyPaymentCalldata checks encoding, R and metadata again",
+          "paths": [
+            "packages/policy-scheme/src/router.test.ts",
+            "packages/policy-scheme/src/router.ts"
+          ]
+        },
+        {
+          "commit": "6e27f497e3f526921b6f9ad3a98dc5cba87d82a2",
+          "subject": "policy-scheme: signPolicyTypedData refuses foreign typed data again",
+          "paths": [
+            "packages/policy-scheme/src/eip712.ts",
+            "packages/policy-scheme/src/negative.test.ts"
+          ]
+        },
+        {
+          "commit": "86fa1fef1aeff8c37b9b5f2fd2d926087256774f",
+          "subject": "policy-scheme: buildWithdrawTypedData recomputes the limit leaf again",
+          "paths": [
+            "packages/policy-scheme/src/eip712.ts",
+            "packages/policy-scheme/src/limits.ts",
+            "packages/policy-scheme/src/negative.test.ts"
+          ]
+        },
+        {
+          "commit": "ba877c31e0730f5838322828ec3c02194028375c",
+          "subject": "policy-scheme: getLimitProof recomputes the stored leaf of a restored tree",
+          "paths": [
+            "packages/policy-scheme/src/limits.ts",
+            "packages/policy-scheme/src/negative.test.ts"
+          ]
+        },
+        {
+          "commit": "1613308217adac75f7acf84b924b9ad4accdb41f",
+          "subject": "policy-scheme: checkScheme2Announcement copies the viewing secret after validation",
+          "paths": [
+            "packages/policy-scheme/src/derive.ts",
+            "packages/policy-scheme/src/negative.test.ts"
+          ]
+        },
+        {
+          "commit": "818aa34f4d3f927a88665f88018710a897cb41c3",
+          "subject": "policy-scheme: restore the README trust notes",
+          "paths": [
+            "packages/policy-scheme/README.md"
+          ]
+        },
+        {
+          "commit": "0dab0db44c349a45a19e20df9449c430d3bcedbe",
+          "subject": "Keep the send-guard swap tests self-consistent under the stricter decoder",
+          "paths": [
+            "apps/web/src/features/policy/send.test.ts"
+          ]
+        },
+        {
+          "commit": "ca2c6b75017504bee66c65e01653da21410f4a53",
+          "subject": "policy-scheme: signPolicyTypedData reads its input once and signs the recomputed digest",
+          "paths": [
+            "packages/policy-scheme/README.md",
+            "packages/policy-scheme/src/eip712.ts",
+            "packages/policy-scheme/src/negative.test.ts"
+          ]
+        },
+        {
+          "commit": "60f44acdc6eb9ae87ddae6488ea6feafd5618f05",
+          "subject": "web/policy: the send gate and the prepare self-check bind R and the metadata",
+          "paths": [
+            "apps/web/src/features/policy/pay.selfcheck.test.ts",
+            "apps/web/src/features/policy/pay.ts",
+            "apps/web/src/features/policy/send.test.ts",
+            "apps/web/src/features/policy/send.ts"
+          ]
+        }
+      ],
+      "policy_asset_coverage_and_disclosure_separate": [
+        {
+          "commit": "46ab81d2bc1060982867787d824ea2880d4899fa",
+          "subject": "Add policyCoversToken: which assets a scheme-2 policy can withdraw (SEC-11)",
+          "paths": [
+            "packages/policy-scheme/src/client.test.ts",
+            "packages/policy-scheme/src/index.ts",
+            "packages/policy-scheme/src/record.ts"
+          ]
+        },
+        {
+          "commit": "5f683cb833164d205f3d02cbc0c282af783ddeb5",
+          "subject": "Add English copy for scheme-2 asset coverage and the L2 delay note",
+          "paths": [
+            "apps/web/locales/en.json"
+          ]
+        },
+        {
+          "commit": "00f9134b88e213a4a11c6e06e4abf64ddabdfe68",
+          "subject": "Gate scheme-2 assets the payee policy can never withdraw (SEC-11)",
+          "paths": [
+            "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx",
+            "apps/web/src/features/policy/PolicyCreate.tsx",
+            "apps/web/src/features/policy/PolicyPay.tsx",
+            "apps/web/src/features/policy/create.ts",
+            "apps/web/src/features/policy/pay.ts",
+            "apps/web/src/features/policy/policy.logic.test.ts"
+          ]
+        },
+        {
+          "commit": "b542c839841f552686fd10f6e85273c170fc89b8",
+          "subject": "Note the unverified L2 cancel bound next to the policy delay (SEC-12/OD-11)",
+          "paths": [
+            "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx",
+            "apps/web/src/features/policy/PolicyCreate.tsx"
+          ]
+        },
+        {
+          "commit": "0f0063ed00c2a3d501b289ad3785b188d92f2e7a",
+          "subject": "Qualify the scheme-2 unlinkability claim; document coverage and L2 delay",
+          "paths": [
+            "docs/developer/api/policy-scheme.md"
+          ]
+        },
+        {
+          "commit": "001162ac6069cff3e3636ee131edabfe54ec8c5a",
+          "subject": "Classify the scheme-2 coverage strings as security copy and add them to es/ar/ja",
+          "paths": [
+            "apps/web/locales/ar.json",
+            "apps/web/locales/es.json",
+            "apps/web/locales/ja.json",
+            "apps/web/src/i18n/securityKeys.ts"
+          ]
+        },
+        {
+          "commit": "a08f47bb33ef59d9cffcdd348edfcc001ee5ba4e",
+          "subject": "Describe the shipped PolicyRef router ABI in the policy-scheme API doc",
+          "paths": [
+            "docs/developer/api/policy-scheme.md"
+          ]
+        },
+        {
+          "commit": "1f5c2d73df398ee866c9f80635ba7a9bb7967872",
+          "subject": "Prove the token's limits leaf before reporting scheme-2 coverage",
+          "paths": [
+            "docs/developer/api/policy-scheme.md",
+            "packages/policy-scheme/src/client.test.ts",
+            "packages/policy-scheme/src/record.ts"
+          ]
+        }
+      ],
+      "multichain_coordinated_recovery_separate": [
+        {
+          "commit": "e2427c20387aa2e228309c49a1558d3edc6583ce",
+          "subject": "Add TB-08 shared Solana and TRON meta-address vectors",
+          "paths": [
+            "packages/chain-solana/scripts/gen-meta-address-sol-tron-vectors.mjs",
+            "test-vectors/meta-address-sol-tron-v1.json"
+          ]
+        },
+        {
+          "commit": "179a5b433f35396ca4f0961c99226dbb38e4e4cd",
+          "subject": "chain-solana: adopt the ADR-0017 formats shipped by the web app (TB-08)",
+          "paths": [
+            "packages/chain-solana/DEVIATIONS.md",
+            "packages/chain-solana/README.md",
+            "packages/chain-solana/src/adapter.test.ts",
+            "packages/chain-solana/src/adapter.ts",
+            "packages/chain-solana/src/announcement.test.ts",
+            "packages/chain-solana/src/announcement.ts",
+            "packages/chain-solana/src/errors.ts",
+            "packages/chain-solana/src/hash.ts",
+            "packages/chain-solana/src/index.ts",
+            "packages/chain-solana/src/interop.test.ts",
+            "packages/chain-solana/src/keys.test.ts",
+            "packages/chain-solana/src/keys.ts",
+            "packages/chain-solana/src/properties.test.ts",
+            "packages/chain-solana/src/reference.testutil.ts",
+            "packages/chain-solana/src/stealth.test.ts",
+            "packages/chain-solana/src/stealth.ts",
+            "packages/chain-solana/src/vectors.test.ts",
+            "packages/chain-solana/test-vectors/self-generated-v1.json"
+          ]
+        },
+        {
+          "commit": "28ce8a0b6fe22458505da6a77ae7c7cf81db8864",
+          "subject": "chain-tron: adopt the ADR-0019 st:trx:0x meta-address and GPT1 memo (TB-08)",
+          "paths": [
+            "packages/chain-tron/DEVIATIONS.md",
+            "packages/chain-tron/README.md",
+            "packages/chain-tron/src/adapter.test.ts",
+            "packages/chain-tron/src/adapter.ts",
+            "packages/chain-tron/src/errors.ts",
+            "packages/chain-tron/src/index.ts",
+            "packages/chain-tron/src/interop.test.ts",
+            "packages/chain-tron/src/meta.test.ts",
+            "packages/chain-tron/src/meta.ts",
+            "packages/chain-tron/src/stealth.test.ts",
+            "packages/chain-tron/src/stealth.ts"
+          ]
+        },
+        {
+          "commit": "c3d7d70207f74df4a6857231647dcf1ab87122c5",
+          "subject": "Update the CLI chain-command fixtures to the ADR-0017 Solana formats",
+          "paths": [
+            "packages/cli/src/chain-commands.test.ts"
+          ]
+        },
+        {
+          "commit": "b9af22a9c85c6a8674d8ac72d7f038954ce713b9",
+          "subject": "chain-tron: fail closed in build() until the GPT1 memo can be bound",
+          "paths": [
+            "packages/chain-tron/src/adapter.test.ts",
+            "packages/chain-tron/src/adapter.ts"
+          ]
+        },
+        {
+          "commit": "67a3c3c0f305eb0f82414c3623300a81afd59cc3",
+          "subject": "cli: report the Solana recipient cluster and refuse mainnet",
+          "paths": [
+            "packages/cli/src/chain-commands.test.ts",
+            "packages/cli/src/commands/chain.ts"
+          ]
+        },
+        {
+          "commit": "b79bb24a81e254b3ca06501c8669c54403a19f0a",
+          "subject": "cli: surface LEGACY_META_ADDRESS instead of a generic INVALID_INPUT",
+          "paths": [
+            "packages/cli/src/chain-commands.test.ts",
+            "packages/cli/src/payment-context.ts"
+          ]
+        },
+        {
+          "commit": "90146562b7f7809746966edbedccb4a4e68e8a68",
+          "subject": "Document the fail-closed TRON build() and refresh chain-tron coverage",
+          "paths": [
+            "packages/chain-tron/README.md"
+          ]
+        }
+      ],
+      "backup_clipboard_removal_conflicts_with_current_confirmation_and_cleanup": [
+        {
+          "commit": "ea62d4739a90b34f0fd1c7645ab0bf2ba3640b05",
+          "subject": "Remove the clipboard path for BTC/Solana/TRON backup secrets (SEC-13 / OD-02)",
+          "paths": [
+            "apps/web/src/components/SecretBackup.test.tsx",
+            "apps/web/src/components/SecretBackup.tsx",
+            "apps/web/src/components/SecretBackup.views.test.tsx",
+            "apps/web/src/components/SharedComponents.i18n.test.tsx",
+            "apps/web/src/features/btc/BtcView.test.tsx",
+            "apps/web/src/features/btc/BtcView.tsx",
+            "apps/web/src/features/solana/SolanaView.test.tsx",
+            "apps/web/src/features/solana/SolanaView.tsx",
+            "apps/web/src/features/tron/TronView.test.tsx",
+            "apps/web/src/features/tron/TronView.tsx"
+          ]
+        },
+        {
+          "commit": "95f632b99cf84d75180c4fd82b99fd5ccc689cbf",
+          "subject": "Drop the backup-copy strings from en.json (SEC-13 / OD-02)",
+          "paths": [
+            "apps/web/locales/en.json"
+          ]
+        },
+        {
+          "commit": "8dd4f482652063ca0727871ebbc758dc1a150abb",
+          "subject": "Drop the removed backup-copy keys from es/ar/ja and the security-key classes",
+          "paths": [
+            "apps/web/locales/ar.json",
+            "apps/web/locales/es.json",
+            "apps/web/locales/ja.json",
+            "apps/web/src/i18n/securityKeys.ts",
+            "apps/web/src/lib/appLock.ts"
+          ]
+        },
+        {
+          "commit": "b01f45cd67d30e42ff966b05efb8fcc1025d6ebd",
+          "subject": "Describe the removed backup copy accurately in user and chain docs",
+          "paths": [
+            "apps/web/src/lib/appLock.ts",
+            "docs/chains/bitcoin.md",
+            "docs/user/bitcoin-silent-payments.md",
+            "docs/user/solana-payments.md",
+            "docs/user/tron-payments.md"
+          ]
+        }
+      ],
+      "superseded_checkpoint_v3_do_not_port": [
+        {
+          "commit": "5ba26cec43b88f218de75e8e49779bfeacec7333",
+          "subject": "Name scan checkpoint slots from the viewing key (SEC-22)",
+          "paths": [
+            "apps/web/src/lib/scanClient.test.ts",
+            "apps/web/src/lib/scanClient.ts",
+            "apps/web/src/lib/scanCursorSlot.test.ts",
+            "apps/web/src/lib/scanCursorSlot.ts",
+            "apps/web/src/lib/scannerCore.spam.nocov.test.ts"
+          ]
+        },
+        {
+          "commit": "9c6932486ed1aa1a3cf7892b19c032a77128cd47",
+          "subject": "Sweep legacy scan-cursor slots of every chain and key set (SEC-22 follow-up)",
+          "paths": [
+            "apps/web/src/lib/scanClient.ts",
+            "apps/web/src/lib/scanCursorSlot.test.ts",
+            "apps/web/src/lib/scanCursorSlot.ts"
+          ]
+        },
+        {
+          "commit": "84203f3ca7a9eeadf14debb4dfbc740cb9290c6d",
+          "subject": "Lend the viewing key once per scan-cursor slot, not on every render",
+          "paths": [
+            "apps/web/src/lib/scanClient.ts",
+            "apps/web/src/lib/scanCursorSlot.test.ts",
+            "apps/web/src/lib/scanCursorSlot.ts"
+          ]
+        },
+        {
+          "commit": "e516fa65e98f30e7c2bb6a1eab2e1564b0073ee6",
+          "subject": "Test that the lent viewing key is wiped when slot derivation throws",
+          "paths": [
+            "apps/web/src/lib/scanCursorSlot.test.ts"
+          ]
+        }
+      ],
+      "focus_regression_to_census_separately": [
+        {
+          "commit": "407868a1f3c5753786cad612636c079064d693ca",
+          "subject": "Pin in-view paste Read focus scope with a browser test (SEC-30/R-04)",
+          "paths": [
+            "apps/web/e2e/focus-scope.spec.ts"
+          ]
+        }
+      ]
+    }
+  },
+  "validation": {
+    "git_diff_cached_check": "passed",
+    "source_blob_receipts": "generated; equality assertions passed",
+    "unit_type_lint_browser_tests": "not run; coordinator prohibited further local installs/tests after repeated exit137 and reserved combined-tree hosted qualification"
+  },
+  "independent_review": {
+    "reviewer": "ci_release_audit",
+    "scope": "relayer admission/canonical validation/limiter/privacy union and web pre-broadcast classification",
+    "finding": "no blocking source defect; final blob-pinned receipt pending commit",
+    "test_execution": "none"
+  },
+  "pending": [
+    "final independent source receipt",
+    "hosted exact combined-tree install/build/lint/typecheck and original workspace coverage gates",
+    "paired web relayer contract tests",
+    "devnet lib and CLI acceptance; native timeout tests on supported Node22+"
+  ]
+}

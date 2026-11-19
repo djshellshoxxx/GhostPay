@@ -693,6 +693,10 @@ Branch: `integration/ghostpay-runtime-recovery-20261118`; base
 `c5f9b190935251c5274a434341f40db3c9175ef1`.
 Owned paths: `packages/cli/**`, `apps/relayer/**`, `packages/relayer-guard/**`,
 `apps/web/src/lib/relayerClient.ts` and its focused test; this claim and the scoped runtime recovery handoff.
+Scope addition approved by the coordinator: `scripts/devnet/e2e.mjs`, only the PR #218 companion that aligns
+the relayer fee recipient with the signed manifest while preserving the existing balance assertions.
+Further test-only scope: `packages/invoice-schema/src/pinnedSigner.test.ts`, preserving four unique #218
+regressions alongside the existing #234 tests. Invoice runtime and public behavior remain at the current base.
 Acceptance: recover useful CLI input/redaction and relayer admission/fee/logging/limiter fixes from PR #218
 `b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, preserving PR #222 request padding and privacy controls.
 Do not reapply invoice-schema #234, alter contract/policy/multichain behavior, change dependencies or weaken checks.

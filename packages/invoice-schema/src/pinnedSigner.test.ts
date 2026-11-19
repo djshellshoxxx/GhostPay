@@ -3,8 +3,11 @@ import { scrypt } from '@noble/hashes/scrypt.js';
 import { utf8ToBytes } from '@noble/hashes/utils.js';
 import { describe, expect, it } from 'vitest';
 import {
+  Base64UrlError,
   FRAGMENT_PREFIX,
+  InvalidSignatureError,
   InvoiceError,
+  UntrustedSignerError,
   canonicalize,
   decodeBase64Url,
   encodeBase64Url,
@@ -67,6 +70,51 @@ function tamperedPassphraseFragment(): string {
 }
 
 describe('opt-in trusted-signer parsing (restored from PR #218)', () => {
+  // Additional public-contract regressions preserved from PR #218's envelope.test.ts
+  // (55fa5f84 and ecf9108e); the runtime and the stronger #234 cases below are retained.
+  it('exports distinct stable error classes for unpinned and invalid signatures', () => {
+    const untrusted = new UntrustedSignerError();
+    expect(untrusted).toBeInstanceOf(InvoiceError);
+    expect(untrusted).toMatchObject({
+      name: 'UntrustedSignerError', code: 'UNTRUSTED_SIGNER', message: 'invoice signer is not pinned', path: undefined,
+    });
+    const invalid = new InvalidSignatureError();
+    expect(invalid).toBeInstanceOf(InvoiceError);
+    expect(invalid).not.toBeInstanceOf(UntrustedSignerError);
+    expect(invalid).toMatchObject({
+      name: 'InvalidSignatureError', code: 'INVALID_SIGNATURE', message: 'invoice signature is invalid', path: undefined,
+    });
+  });
+
+  it('keeps passphrase signer-rejection messages and serialized errors free of invoice and key material', async () => {
+    const memo = 'secret-memo-value';
+    const fragment = await encodeFragment(sampleSigned({ memo }), { passphrase: PASS, scryptN: 1 << 15 });
+    const error: unknown = await parseFragment(fragment, strict({ pinnedSigners: [OTHER_SIGNER], passphrase: PASS }))
+      .then(() => undefined, (reason: unknown) => reason);
+    expect(error).toBeInstanceOf(UntrustedSignerError);
+    const serialized = String((error as Error).message) + JSON.stringify(error);
+    for (const leak of [memo, SIGNER, OTHER_SIGNER, PASS, 'st:eth']) expect(serialized).not.toContain(leak);
+  });
+
+  it('explicit false preserves the invalid-signature review result with a pinned signer', async () => {
+    const envelope = envelopeOf(await encodeFragment(sampleSigned()));
+    envelope['sig'] = '1'.repeat(128);
+    const fragment = fragmentOf(envelope);
+    const options = { requirePinnedSigner: false, pinnedSigners: [SIGNER] };
+    const parsed = await parseFragment(fragment, options);
+    expect(parsed.trust).toBe('invalid-signature');
+    expect(parsed.verification).toEqual({ signatureValid: false, signerPinned: false });
+    expect(isTrustedSeller(parsed)).toBe(false);
+    expect(await openFragment(fragment, options)).toEqual({ status: 'ok', parsed });
+  });
+
+  it('strict parsing preserves the malformed-base64 error before any signer decision', async () => {
+    const fragment = `${FRAGMENT_PREFIX}!!!`;
+    const options = strict({ pinnedSigners: [SIGNER] });
+    await expect(parseFragment(fragment, options)).rejects.toBeInstanceOf(Base64UrlError);
+    await expect(openFragment(fragment, options)).rejects.toBeInstanceOf(Base64UrlError);
+  });
+
   it.each([false, true])('preserves default review results (encrypt=%s)', async (encrypt) => {
     const fragment = await encodeFragment(sampleSigned(), { encrypt });
     const optional = { pinnedSigners: [OTHER_SIGNER], requirePinnedSigner: false };

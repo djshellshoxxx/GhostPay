@@ -4,8 +4,13 @@ import { groupOfBucketKey } from './ip.js';
 /** Key used for every request that arrives while the table is full of active entries. */
 export const OVERFLOW_KEY = '\u0000overflow';
 
+/** How many of the oldest entries {@link BoundedTable} inspects for an idle one per insert (audit L-8). */
+const EVICT_SCAN = 8;
+
 /**
- * Insertion-ordered bounded map that never evicts an entry the caller still considers live.
+ * Recency-ordered bounded map that never evicts an entry the caller still considers live. When full, it evicts
+ * the least recently used idle entry among the {@link EVICT_SCAN} oldest, so one live entry at the front does not
+ * pin eviction while idle ones sit right behind it, and an insert does constant work.
  * @internal
  */
 class BoundedTable<V> {
@@ -40,19 +45,34 @@ class BoundedTable<V> {
     return this.groups.get(group) ?? 0;
   }
 
-  /** @returns Whether {@link insert} would succeed now. */
-  public canInsert(): boolean {
-    if (this.map.size < this.max) return true;
-    const oldest = this.map.values().next().value;
-    return oldest !== undefined && this.idle(oldest);
+  /**
+   * @param keep Keys the caller still holds (for example resolved earlier in the same operation); never chosen,
+   *   though they count towards the scan.
+   * @returns The key of the oldest idle entry among the {@link EVICT_SCAN} oldest, if any.
+   */
+  private evictable(keep?: ReadonlySet<string>): string | undefined {
+    let n = 0;
+    for (const [k, v] of this.map) {
+      if (n++ >= EVICT_SCAN) break;
+      if (keep?.has(k) !== true && this.idle(v)) return k;
+    }
+    return undefined;
   }
 
-  /** Inserts `key`, evicting the least-recently-used entry only if it is idle. @returns false if full. */
-  public insert(key: string, v: V, group: string): boolean {
-    if (!this.canInsert()) return false;
+  /** @returns Whether {@link insert} with the same `keep` would succeed now. */
+  public canInsert(keep?: ReadonlySet<string>): boolean {
+    return this.map.size < this.max || this.evictable(keep) !== undefined;
+  }
+
+  /**
+   * Inserts `key`, evicting an idle entry (not in `keep`) among the oldest ones if full.
+   * @returns false if there was no room.
+   */
+  public insert(key: string, v: V, group: string, keep?: ReadonlySet<string>): boolean {
     if (this.map.size >= this.max) {
-      const oldest = this.map.keys().next().value;
-      if (oldest !== undefined) this.remove(oldest);
+      const victim = this.evictable(keep);
+      if (victim === undefined) return false;
+      this.remove(victim);
     }
     this.map.set(key, v);
     this.keyGroups.set(key, group);
@@ -79,16 +99,32 @@ export interface TokenBucketOptions {
   /** Most distinct keys held, >= 1. */
   readonly maxKeys: number;
   /**
-   * Capacity of the shared overflow bucket used while the table is full of non-idle keys
+   * Capacity of each overflow bucket (per group and shared) used while the table is full of non-idle keys
    * (default `burst`).
    */
   readonly overflowBurst?: number;
   /** Maximum tracked keys per abuse group (default `max(1, ceil(maxKeys / 8))`). */
   readonly maxPerGroup?: number;
-  /** Maximum isolated overflow buckets before using the shared overflow bucket (default 0). */
+  /**
+   * Most per-group overflow buckets held, integer >= 0 (default 1024). While the key table is full, a newcomer is
+   * charged to its abuse group's own overflow bucket; only when this table is also full of live (not refilled)
+   * buckets does it share the one global overflow bucket. 0 keeps the single global bucket (audit M-3).
+   */
   readonly maxOverflowGroups?: number;
   /** Derives an abuse group from a key. Pass a privacy-preserving group explicitly to `take` when keys are hashed. */
   readonly groupOf?: (key: string) => string;
+}
+
+/** Counters of a {@link TokenBucketLimiter} for alerting; never a key, group or address. */
+export interface LimiterStats {
+  /** Requests charged to any overflow bucket since construction. A sustained rate means a flood or a small table. */
+  readonly overflowHits: number;
+  /** Of those, requests charged to the shared last-resort bucket (the overflow table was full too). */
+  readonly sharedOverflowHits: number;
+  /** Tracked keys (excluding overflow). */
+  readonly tableSize: number;
+  /** Per-group overflow buckets currently held. */
+  readonly overflowGroups: number;
 }
 
 /** Result of a limiter probe. */
@@ -96,7 +132,7 @@ export interface TakeResult {
   readonly ok: boolean;
   /** Milliseconds until `cost` tokens are available (0 when `ok`). */
   readonly retryAfterMs: number;
-  /** True when the request was charged to the shared overflow bucket. */
+  /** True when the request was charged to an overflow bucket (its group's own or the shared one). */
   readonly overflow: boolean;
 }
 
@@ -110,9 +146,12 @@ interface Bucket {
  *
  * Differences from `apps/relayer/src/limiter.ts` (haiku audit L6): elapsed time is clamped at 0 and
  * the default clock is monotonic, so a clock step never removes tokens; when the table is full, only
- * an idle (fully refilled) bucket is evicted, which loses nothing, and otherwise the newcomer shares
- * one overflow bucket, so an attacker with many keys cannot evict and thereby refill a victim's
- * drained bucket.
+ * an idle (fully refilled) bucket is evicted, which loses nothing, and otherwise the newcomer is charged to its
+ * abuse group's overflow bucket, so an attacker with many keys cannot evict and thereby refill a victim's
+ * drained bucket, and an attacker who fills the table does not drain the overflow of other groups (M-3).
+ *
+ * Memory: at most `maxKeys` key buckets (with their group counters), `maxOverflowGroups` group overflow
+ * buckets and one shared overflow bucket; groups are at most 256 characters.
  *
  * @security Keys should come from {@link bucketKey} (or an owner/destination address), optionally
  *   hashed. The limiter stores keys as given.
@@ -121,9 +160,10 @@ export class TokenBucketLimiter {
   private readonly table: BoundedTable<Bucket>;
   private readonly overflowBucket: Bucket;
   private readonly overflowBurst: number;
-  private readonly groupOverflow = new Map<string, Bucket>();
+  private readonly overflowTable: BoundedTable<Bucket>;
   private readonly maxPerGroup: number;
-  private readonly maxOverflowGroups: number;
+  private overflowHits = 0;
+  private sharedOverflowHits = 0;
 
   /**
    * @param opts Tunables (validated).
@@ -142,22 +182,36 @@ export class TokenBucketLimiter {
       'overflowBurst must be >= 1',
     );
     this.maxPerGroup = opts.maxPerGroup ?? Math.max(1, Math.ceil(opts.maxKeys / 8));
-    this.maxOverflowGroups = opts.maxOverflowGroups ?? 0;
+    const maxOverflowGroups = opts.maxOverflowGroups ?? 1024;
     requireConfig(
       Number.isInteger(this.maxPerGroup) && this.maxPerGroup >= 1,
       'maxPerGroup must be an integer >= 1',
     );
     requireConfig(
-      Number.isInteger(this.maxOverflowGroups) && this.maxOverflowGroups >= 0,
+      Number.isInteger(maxOverflowGroups) && maxOverflowGroups >= 0,
       'maxOverflowGroups must be an integer >= 0',
     );
     this.table = new BoundedTable(opts.maxKeys, (b) => this.refilled(b, opts.burst) >= opts.burst);
+    this.overflowTable = new BoundedTable(
+      maxOverflowGroups,
+      (b) => this.refilled(b, this.overflowBurst) >= this.overflowBurst,
+    );
     this.overflowBucket = { tokens: this.overflowBurst, last: now() };
   }
 
   /** Number of tracked keys (excluding overflow). */
   public get size(): number {
     return this.table.size;
+  }
+
+  /** Cheap counters for alerting on overflow (contain no key, group or address). */
+  public stats(): LimiterStats {
+    return {
+      overflowHits: this.overflowHits,
+      sharedOverflowHits: this.sharedOverflowHits,
+      tableSize: this.table.size,
+      overflowGroups: this.overflowTable.size,
+    };
   }
 
   /**
@@ -178,13 +232,10 @@ export class TokenBucketLimiter {
       if (this.table.groupSize(group) < this.maxPerGroup && this.table.insert(key, fresh, group))
         bucket = fresh;
       else {
-        bucket = this.groupOverflow.get(group);
-        if (bucket === undefined && this.groupOverflow.size < this.maxOverflowGroups) {
-          bucket = { tokens: this.overflowBurst, last: this.now() };
-          this.groupOverflow.set(group, bucket);
-        }
-        bucket ??= this.overflowBucket;
+        bucket = this.overflowFor(group);
         overflow = true;
+        this.overflowHits++;
+        if (bucket === this.overflowBucket) this.sharedOverflowHits++;
         cap = this.overflowBurst;
       }
     }
@@ -199,6 +250,14 @@ export class TokenBucketLimiter {
         ? Number.POSITIVE_INFINITY
         : Math.ceil(((cost - bucket.tokens) / this.opts.ratePerSecond) * 1000);
     return { ok: false, retryAfterMs, overflow };
+  }
+
+  /** The overflow bucket of `group`: its own while the overflow table has room, else the shared last resort. */
+  private overflowFor(group: string): Bucket {
+    const own = this.overflowTable.get(group);
+    if (own !== undefined) return own;
+    const fresh = { tokens: this.overflowBurst, last: this.now() };
+    return this.overflowTable.insert(group, fresh, '') ? fresh : this.overflowBucket;
   }
 
   private refilled(b: Bucket, cap: number): number {
@@ -388,6 +447,12 @@ export class LossBudget {
     const w = this.windowIndex();
     const entries = new Set<Spend>();
     const inserted: (() => void)[] = [];
+    // Keys this resolution already holds per table: a stale hit is idle, and evicting it for a later source would
+    // charge an orphaned entry and reset that key's spend (review R1).
+    const held = new Map<BoundedTable<Spend>, Set<string>>([
+      [this.keys, new Set()],
+      [this.groups, new Set()],
+    ]);
     let overflow = false;
     const pick = (
       table: BoundedTable<Spend>,
@@ -396,12 +461,17 @@ export class LossBudget {
       spill: Spend,
       partition: boolean,
     ): Spend => {
+      const keep = held.get(table) as Set<string>;
       const hit = create ? table.get(key) : table.peek(key);
-      if (hit !== undefined) return hit;
-      if ((!partition || table.groupSize(group) < this.maxPerGroup) && table.canInsert()) {
+      if (hit !== undefined) {
+        keep.add(key);
+        return hit;
+      }
+      if ((!partition || table.groupSize(group) < this.maxPerGroup) && table.canInsert(keep)) {
         const fresh = { window: w, spent: 0n, lost: 0n };
+        keep.add(key);
         if (create) {
-          table.insert(key, fresh, group);
+          table.insert(key, fresh, group, keep);
           inserted.push(() => table.remove(key));
         }
         return fresh;

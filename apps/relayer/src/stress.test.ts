@@ -49,7 +49,9 @@ describe('bounded sweep flood with the state journal', () => {
       fake,
       journal: new StateJournal(backend, () => NOW_MS),
       config: {
-        queue: { maxPending: 8, receiptTimeoutSeconds: 30 },
+        // 40 distinct clients (the harness peer is a trusted proxy here), so the global queue cap is what refuses.
+        trustedProxies: ['127.0.0.1'],
+        queue: { maxPending: 8, maxPerClient: 2, receiptTimeoutSeconds: 30 },
         chains: [{ ...chain, dailyBudgetWei: 10n ** 18n }],
         rateLimit: { ...testConfig().rateLimit, ipPerMinute: 10_000, ipBurst: 1000 },
         lossBudget: { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 10n ** 18n, maxKeys: 100 },
@@ -59,7 +61,7 @@ describe('bounded sweep flood with the state journal', () => {
       const keys = Array.from({ length: 40 }, (_, i) => `0x${(i + 1).toString(16).padStart(64, '0')}` as const);
       const bodies = await Promise.all(keys.map((k) => prepare(h, { ownerKey: k, nonce: 1n }).then((p) => p.body)));
       let refusedSoFar = 0;
-      const pending = bodies.map((b) => call(h, 'POST', '/v1/sweep', b).then((r) => {
+      const pending = bodies.map((b, i) => call(h, 'POST', '/v1/sweep', b, { 'x-forwarded-for': `198.51.${String(100 + (i >> 4))}.${String(i + 1)}` }).then((r) => {
         if (r.status !== 200) refusedSoFar += 1;
         return r;
       }));

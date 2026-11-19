@@ -24,13 +24,13 @@ import { DailyBudget } from './budget.js';
 import type { ChainClient, MinedReceipt, ReceiptSummary, SweepCall } from './chain.js';
 import type { ChainRuntimeConfig, RelayerConfig } from './config.js';
 import { RelayerError, SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
-import { ChainLane, NonceManager, type JobOutcome } from './lane.js';
+import { ChainLane, NonceManager, type JobOutcome, type LaneTicket } from './lane.js';
 import { KeyHasher, type RateLimiter } from './limiter.js';
 import type { Metrics } from './metrics.js';
 import { nullLogger, type Logger } from './log.js';
 import type { AllowedToken, GasPriceSource, TokenPriceSource } from './pricing.js';
 import { makeKeyring, signQuote, verifyQuote, type QuoteKeyring } from './quoteToken.js';
-import type { QuoteRequest, SweepRequest } from './validate.js';
+import { isCanonicalSignature, type QuoteRequest, type SweepRequest } from './validate.js';
 import { RevertRate } from './revertRate.js';
 import { MemoryStateBackend, StateError, StateJournal } from './stateStore.js';
 import type { SourceChecks } from './sourceChecks.js';
@@ -172,6 +172,8 @@ interface ChainRuntime {
   readonly budget: DailyBudget;
   readonly breaker: GuardedBreaker;
   lastBreakerState: BreakerState;
+  /** Consecutive failed quote-path gas price reads since the last good one (one number per chain). */
+  quoteRpcFailStreak: number;
   /** Sweeps whose receipt wait timed out, looked up again at the start of later jobs (L5-06), oldest first. */
   readonly pending: SentSweep[];
   readonly reverts: RevertRate;
@@ -257,6 +259,7 @@ export function revertToError(r: SimulationRevert): RelayerError {
  * Core relay logic, independent of HTTP: quoting, sweep validation and submission.
  *
  * @remarks Order of checks in {@link RelayerService.sweep}: cheap structural/policy checks first, then
+ * the client's lane ticket (taken synchronously before the first await, `client_queue_full`), then
  * signature recovery, then the owner rate limit (keyed only by an authenticated owner so nobody can
  * exhaust another owner's quota), the compliance gate, and finally the per-chain serial lane where
  * the simulation runs immediately before the send.
@@ -311,7 +314,7 @@ export class RelayerService {
       this.chains.set(cfg.chainId, {
         cfg,
         client,
-        lane: new ChainLane(d.config.queue.maxPending),
+        lane: new ChainLane(d.config.queue.maxPending, d.config.queue.maxPerClient),
         nonces: new NonceManager(() => client.getPendingNonce()),
         budget: new DailyBudget(cfg.dailyBudgetWei, this.now, stored.budget, mono),
         breaker: new GuardedBreaker(
@@ -328,6 +331,7 @@ export class RelayerService {
           mono,
         ),
         lastBreakerState: 'closed',
+        quoteRpcFailStreak: 0,
         pending: [],
         unknownSend: undefined,
         lastBalance: undefined,
@@ -572,6 +576,29 @@ export class RelayerService {
       if (e instanceof ChainAdapterError) throw new RelayerError(422, 'invalid_order');
       throw e;
     }
+    // Same rule as the contract's OpenZeppelin `ECDSA.recover`: a malleated twin (high s, or v 0/1) would recover the
+    // owner below and only fail in the simulation, costing RPC work and an owner strike for a third party's copy.
+    if (!isCanonicalSignature(req.sweepSig)) throw new RelayerError(422, 'invalid_signature');
+    // RL-02 / NC-04: the client's lane slot is taken here, synchronously and before the first await, and held until
+    // its job settles, so concurrent requests cannot all pass a check that is only counted later. Salted key only.
+    const ticket = rt.lane.reserve(ctx.clientKey === undefined ? undefined : this.hasher.hash(ctx.clientKey));
+    try {
+      return await this.admit(req, ctx, rt, typed, ticket);
+    } finally {
+      ticket.release(); // no-op once the job was submitted: the lane releases the slot when the job settles
+    }
+  }
+
+  /** Client and owner checks that await, then the lane; runs while the caller holds the client's lane ticket. */
+  private async admit(
+    req: SweepRequest,
+    ctx: RequestContext,
+    rt: ChainRuntime,
+    typed: ReturnType<typeof buildSweepTypedData>,
+    ticket: LaneTicket,
+  ): Promise<SweepResponse> {
+    const s = req.sweep;
+    const cfg = this.d.config;
     let recovered: Address;
     try {
       recovered = await recoverTypedDataAddress({
@@ -618,7 +645,7 @@ export class RelayerService {
       permit: req.permit,
     };
     try {
-      return await rt.lane.submit(() => this.runJob(rt, call, ctx, keys));
+      return await ticket.submit(() => this.runJob(rt, call, ctx, keys));
     } catch (e) {
       if (e instanceof RelayerError && OWNER_STRIKE_CODES.has(e.code)) this.strike(call);
       throw e;
@@ -630,6 +657,11 @@ export class RelayerService {
     if (call === undefined) return;
     this.failures.record(call.sweep.owner.toLowerCase(), call.sweep.destination.toLowerCase());
     this.d.metrics?.inc('relayer_owner_failures_total');
+  }
+
+  /** @returns Client keys holding a lane ticket on the chain (tests and diagnostics; no key is exposed). */
+  public heldClientSlots(chainId: number): number {
+    return this.chains.get(chainId)?.lane.heldClients ?? 0;
   }
 
   /** Stops admitting work and waits for every queued/in-flight transaction to settle. */
@@ -705,9 +737,30 @@ export class RelayerService {
       price = await this.d.gasPrices.getGasPrice(rt.cfg.chainId);
     } catch (e) {
       if (e instanceof RelayerError) throw e;
+      this.quoteRpcFailure(rt);
       throw new RelayerError(503, 'rpc_unavailable');
     }
+    rt.quoteRpcFailStreak = 0; // the RPC answered, whatever the cap says
     return this.capGasPrice(rt, price);
+  }
+
+  /**
+   * A failed quote-path gas price read is an operational failure like an in-lane one (L5-10), so an RPC outage that
+   * only quotes see (every sweep needs a fresh quote) still opens the breaker and degrades `/healthz`
+   * (LF-074edb61e-1). Quote reads are kept out of the breaker's count window: their successes would dilute send and
+   * receipt failures, and failures alone would pile up there with no time decay, so isolated blips hours apart
+   * would open it. Instead a run of `breaker.minSamples` consecutive failed reads, with no good read in between
+   * (a failure ratio of 1), opens a closed breaker. A quote never takes or settles the half-open probe, which stays
+   * for a sweep, and never re-opens an open breaker (its cooldown is not extended). One read serves every quote
+   * within `gas.quoteCacheSeconds`.
+   */
+  private quoteRpcFailure(rt: ChainRuntime): void {
+    rt.quoteRpcFailStreak += 1;
+    if (rt.quoteRpcFailStreak < this.d.config.breaker.minSamples) return;
+    rt.quoteRpcFailStreak = 0;
+    if (rt.breaker.state !== 'closed') return;
+    rt.breaker.trip();
+    this.noteBreaker(rt);
   }
 
   /** The configured gas price cap; refusing above it is neutral for the breaker (a spike, not an outage). */
