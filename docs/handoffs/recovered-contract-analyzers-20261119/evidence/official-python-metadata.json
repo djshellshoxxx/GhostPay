@@ -1,0 +1,61 @@
+[
+  {
+    "observed_at": "2026-11-19T13:26:13.698322+00:00",
+    "url": "https://pypi.org/pypi/slither-analyzer/0.11.6/json",
+    "name": "slither-analyzer",
+    "version": "0.11.6",
+    "requires_python": ">=3.10",
+    "classifiers": [
+      "Programming Language :: Python :: 3.10",
+      "Programming Language :: Python :: 3.11",
+      "Programming Language :: Python :: 3.12",
+      "Programming Language :: Python :: 3.13",
+      "Programming Language :: Python :: 3.14"
+    ],
+    "requires_dist": [
+      "crytic-compile<0.5.0,>=0.4.2",
+      "eth-abi>=5.0.1",
+      "eth-typing>=5.0.0",
+      "eth-utils>=5.0.0",
+      "packaging",
+      "prettytable>=3.10.2",
+      "pycryptodome>=3.4.6",
+      "web3<8,>=7.10",
+      "fasttext>=0.9.0; extra == \"simil\""
+    ],
+    "files": [
+      {
+        "filename": "slither_analyzer-0.11.6-py3-none-any.whl",
+        "size": 765009,
+        "sha256": "01f809198d3f171e2d768569c0054c96af5736614e183c64f42c9b51636c33c1"
+      },
+      {
+        "filename": "slither_analyzer-0.11.6.tar.gz",
+        "size": 15516372,
+        "sha256": "72aff6c1924a8641c1c8e4d84f9a4e6c97b5bfb3221bf71a11ffaee46d2f7da2"
+      }
+    ]
+  },
+  {
+    "observed_at": "2026-11-19T13:26:17.807824+00:00",
+    "url": "https://pypi.org/pypi/mythril/0.24.8/json",
+    "name": "mythril",
+    "version": "0.24.8",
+    "requires_python": ">=3.7.0",
+    "classifiers": [
+      "Programming Language :: Python :: 3.10",
+      "Programming Language :: Python :: 3.6",
+      "Programming Language :: Python :: 3.7",
+      "Programming Language :: Python :: 3.8",
+      "Programming Language :: Python :: 3.9"
+    ],
+    "requires_dist": null,
+    "files": [
+      {
+        "filename": "mythril-0.24.8.tar.gz",
+        "size": 4561643,
+        "sha256": "6631ffaad0342c9b2a6b82dbe12106ab38512be45b6c8e0a364e9d4cb146874a"
+      }
+    ]
+  }
+]

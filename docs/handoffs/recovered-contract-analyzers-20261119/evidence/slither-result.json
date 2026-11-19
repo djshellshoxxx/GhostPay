@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-11-19T13:29:13.686604+00:00",
+  "candidate": "e8680e138dcdd9d82737971cc55ad757a6640fbf",
+  "verdict": "PASS_EXISTING_SLITHER_GATE",
+  "contracts_analyzed": 34,
+  "detectors": 64,
+  "reported_results": 0,
+  "compile_and_analysis_exit_code": 0,
+  "compile_scope": "Unchanged production-only crytic-compile scope; all 36 recorded source inputs included; test and script compilation remains separate.",
+  "original_flags_preserved": [
+    "--filter-paths",
+    "lib|test|script",
+    "--fail-medium",
+    "--exclude-informational",
+    "--exclude-low"
+  ],
+  "new_suppressions_or_detector_exclusions": false,
+  "compiler": {
+    "version": "0.8.28",
+    "long_version": "0.8.28",
+    "settings": {
+      "remappings": [
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "useLiteralContent": false,
+        "bytecodeHash": "none",
+        "appendCBOR": false
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.object",
+            "evm.bytecode.sourceMap",
+            "evm.bytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.sourceMap",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "evmVersion": "cancun",
+      "viaIR": false,
+      "libraries": {}
+    }
+  },
+  "compiled_inputs": [
+    {
+      "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC1363.sol",
+      "compiled_sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "preserved_sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "current_sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "git_source_sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
+      "compiled_sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "preserved_sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "current_sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "git_source_sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol",
+      "compiled_sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "preserved_sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "current_sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "git_source_sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC5267.sol",
+      "compiled_sha256": "f89772d2d4fafcbef8b73bb10ee9a3373edec2eedb2f1b302320915b351dc3d1",
+      "preserved_sha256": "f89772d2d4fafcbef8b73bb10ee9a3373edec2eedb2f1b302320915b351dc3d1",
+      "current_sha256": "f89772d2d4fafcbef8b73bb10ee9a3373edec2eedb2f1b302320915b351dc3d1",
+      "git_source_sha256": "f89772d2d4fafcbef8b73bb10ee9a3373edec2eedb2f1b302320915b351dc3d1",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+      "compiled_sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "preserved_sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "current_sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "git_source_sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+      "compiled_sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "preserved_sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "current_sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "git_source_sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol",
+      "compiled_sha256": "c302edfbf7f396e1130be81278c5c994543868f0f5bf0c0fb3f557e166d8d3f2",
+      "preserved_sha256": "c302edfbf7f396e1130be81278c5c994543868f0f5bf0c0fb3f557e166d8d3f2",
+      "current_sha256": "c302edfbf7f396e1130be81278c5c994543868f0f5bf0c0fb3f557e166d8d3f2",
+      "git_source_sha256": "c302edfbf7f396e1130be81278c5c994543868f0f5bf0c0fb3f557e166d8d3f2",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "compiled_sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "preserved_sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "current_sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "git_source_sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Bytes.sol",
+      "compiled_sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "preserved_sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "current_sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "git_source_sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Create2.sol",
+      "compiled_sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "preserved_sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "current_sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "git_source_sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Errors.sol",
+      "compiled_sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "preserved_sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "current_sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "git_source_sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/LowLevelCall.sol",
+      "compiled_sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "preserved_sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "current_sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "git_source_sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Panic.sol",
+      "compiled_sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "preserved_sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "current_sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "git_source_sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+      "compiled_sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "preserved_sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "current_sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "git_source_sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/ShortStrings.sol",
+      "compiled_sha256": "1cfa08d3c551e9ec0b9cd249b09987f04e7e90f352e1a5e3b0d6a3bc426b3de7",
+      "preserved_sha256": "1cfa08d3c551e9ec0b9cd249b09987f04e7e90f352e1a5e3b0d6a3bc426b3de7",
+      "current_sha256": "1cfa08d3c551e9ec0b9cd249b09987f04e7e90f352e1a5e3b0d6a3bc426b3de7",
+      "git_source_sha256": "1cfa08d3c551e9ec0b9cd249b09987f04e7e90f352e1a5e3b0d6a3bc426b3de7",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/StorageSlot.sol",
+      "compiled_sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "preserved_sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "current_sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "git_source_sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/Strings.sol",
+      "compiled_sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "preserved_sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "current_sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "git_source_sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol",
+      "compiled_sha256": "ba7c2d314fcd61c9783e0b3f0c664d004b76b408fda6a84edc8267d17c5012d6",
+      "preserved_sha256": "ba7c2d314fcd61c9783e0b3f0c664d004b76b408fda6a84edc8267d17c5012d6",
+      "current_sha256": "ba7c2d314fcd61c9783e0b3f0c664d004b76b408fda6a84edc8267d17c5012d6",
+      "git_source_sha256": "ba7c2d314fcd61c9783e0b3f0c664d004b76b408fda6a84edc8267d17c5012d6",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+      "compiled_sha256": "2845caaaf70757b6cce612ae4ffbec2c382cb3d1cb9765c98fa649c0f5f1c794",
+      "preserved_sha256": "2845caaaf70757b6cce612ae4ffbec2c382cb3d1cb9765c98fa649c0f5f1c794",
+      "current_sha256": "2845caaaf70757b6cce612ae4ffbec2c382cb3d1cb9765c98fa649c0f5f1c794",
+      "git_source_sha256": "2845caaaf70757b6cce612ae4ffbec2c382cb3d1cb9765c98fa649c0f5f1c794",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/Hashes.sol",
+      "compiled_sha256": "ecdbce11c5ecdf32b306e26b8ab1b878327c08154b4ccd04518b6b64b298cf31",
+      "preserved_sha256": "ecdbce11c5ecdf32b306e26b8ab1b878327c08154b4ccd04518b6b64b298cf31",
+      "current_sha256": "ecdbce11c5ecdf32b306e26b8ab1b878327c08154b4ccd04518b6b64b298cf31",
+      "git_source_sha256": "ecdbce11c5ecdf32b306e26b8ab1b878327c08154b4ccd04518b6b64b298cf31",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol",
+      "compiled_sha256": "fd5635e85da7518bf1a153eaa99d3fad8bb6700f9d5d9cb70ddde75935cb122c",
+      "preserved_sha256": "fd5635e85da7518bf1a153eaa99d3fad8bb6700f9d5d9cb70ddde75935cb122c",
+      "current_sha256": "fd5635e85da7518bf1a153eaa99d3fad8bb6700f9d5d9cb70ddde75935cb122c",
+      "git_source_sha256": "fd5635e85da7518bf1a153eaa99d3fad8bb6700f9d5d9cb70ddde75935cb122c",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/MessageHashUtils.sol",
+      "compiled_sha256": "538a0d7c4f0ec5a8562f58561890f7b49d14580674ecf58bc5f505b45c73df65",
+      "preserved_sha256": "538a0d7c4f0ec5a8562f58561890f7b49d14580674ecf58bc5f505b45c73df65",
+      "current_sha256": "538a0d7c4f0ec5a8562f58561890f7b49d14580674ecf58bc5f505b45c73df65",
+      "git_source_sha256": "538a0d7c4f0ec5a8562f58561890f7b49d14580674ecf58bc5f505b45c73df65",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+      "compiled_sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "preserved_sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "current_sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "git_source_sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/math/Math.sol",
+      "compiled_sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "preserved_sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "current_sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "git_source_sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/math/SafeCast.sol",
+      "compiled_sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "preserved_sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "current_sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "git_source_sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "all_equal": true
+    },
+    {
+      "path": "lib/openzeppelin-contracts/contracts/utils/math/SignedMath.sol",
+      "compiled_sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "preserved_sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "current_sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "git_source_sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "all_equal": true
+    },
+    {
+      "path": "src/GhostPayPolicyRouter.sol",
+      "compiled_sha256": "2799f00d68b53d606fa1a146899fe29d056a87bb390d9c2badadc6c8c4ce2a37",
+      "preserved_sha256": "2799f00d68b53d606fa1a146899fe29d056a87bb390d9c2badadc6c8c4ce2a37",
+      "current_sha256": "2799f00d68b53d606fa1a146899fe29d056a87bb390d9c2badadc6c8c4ce2a37",
+      "git_source_sha256": "2799f00d68b53d606fa1a146899fe29d056a87bb390d9c2badadc6c8c4ce2a37",
+      "all_equal": true
+    },
+    {
+      "path": "src/GhostPayRouter.sol",
+      "compiled_sha256": "cc2fbfcc6c221ace6e7b888ca9bb3ca7886d0898dc33d40804dd3839067bffc8",
+      "preserved_sha256": "cc2fbfcc6c221ace6e7b888ca9bb3ca7886d0898dc33d40804dd3839067bffc8",
+      "current_sha256": "cc2fbfcc6c221ace6e7b888ca9bb3ca7886d0898dc33d40804dd3839067bffc8",
+      "git_source_sha256": "cc2fbfcc6c221ace6e7b888ca9bb3ca7886d0898dc33d40804dd3839067bffc8",
+      "all_equal": true
+    },
+    {
+      "path": "src/GhostPaySweepRelayer.sol",
+      "compiled_sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+      "preserved_sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+      "current_sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+      "git_source_sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+      "all_equal": true
+    },
+    {
+      "path": "src/PolicyAccount.sol",
+      "compiled_sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+      "preserved_sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+      "current_sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+      "git_source_sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+      "all_equal": true
+    },
+    {
+      "path": "src/PolicyAccountFactory.sol",
+      "compiled_sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+      "preserved_sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+      "current_sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+      "git_source_sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+      "all_equal": true
+    },
+    {
+      "path": "src/interfaces/IERC5564Announcer.sol",
+      "compiled_sha256": "398af64980d0f52d8a445a83ca3d2a22f73203821554185e1bf118775671968f",
+      "preserved_sha256": "398af64980d0f52d8a445a83ca3d2a22f73203821554185e1bf118775671968f",
+      "current_sha256": "398af64980d0f52d8a445a83ca3d2a22f73203821554185e1bf118775671968f",
+      "git_source_sha256": "398af64980d0f52d8a445a83ca3d2a22f73203821554185e1bf118775671968f",
+      "all_equal": true
+    },
+    {
+      "path": "src/interfaces/IGhostPayPolicyRouter.sol",
+      "compiled_sha256": "e6f9977e522e18f956d06005d40da7530c016ae059ec4d6c189a3d47aba91db5",
+      "preserved_sha256": "e6f9977e522e18f956d06005d40da7530c016ae059ec4d6c189a3d47aba91db5",
+      "current_sha256": "e6f9977e522e18f956d06005d40da7530c016ae059ec4d6c189a3d47aba91db5",
+      "git_source_sha256": "e6f9977e522e18f956d06005d40da7530c016ae059ec4d6c189a3d47aba91db5",
+      "all_equal": true
+    },
+    {
+      "path": "src/interfaces/IGhostPayRouter.sol",
+      "compiled_sha256": "0d9baf16716fc8edbd801af57b9ce08010d8737e415a4ce3bb764f0e4c6425ca",
+      "preserved_sha256": "0d9baf16716fc8edbd801af57b9ce08010d8737e415a4ce3bb764f0e4c6425ca",
+      "current_sha256": "0d9baf16716fc8edbd801af57b9ce08010d8737e415a4ce3bb764f0e4c6425ca",
+      "git_source_sha256": "0d9baf16716fc8edbd801af57b9ce08010d8737e415a4ce3bb764f0e4c6425ca",
+      "all_equal": true
+    },
+    {
+      "path": "src/interfaces/IGhostPaySweepRelayer.sol",
+      "compiled_sha256": "db744507d3d1b063f23e9d0e5bc5504410e67f054869acf0f8ba039958fcffd8",
+      "preserved_sha256": "db744507d3d1b063f23e9d0e5bc5504410e67f054869acf0f8ba039958fcffd8",
+      "current_sha256": "db744507d3d1b063f23e9d0e5bc5504410e67f054869acf0f8ba039958fcffd8",
+      "git_source_sha256": "db744507d3d1b063f23e9d0e5bc5504410e67f054869acf0f8ba039958fcffd8",
+      "all_equal": true
+    },
+    {
+      "path": "src/interfaces/IPolicyAccount.sol",
+      "compiled_sha256": "d4275113091d25c54a79fc5948f00a3df7466b27347661aa93d00b97b5282874",
+      "preserved_sha256": "d4275113091d25c54a79fc5948f00a3df7466b27347661aa93d00b97b5282874",
+      "current_sha256": "d4275113091d25c54a79fc5948f00a3df7466b27347661aa93d00b97b5282874",
+      "git_source_sha256": "d4275113091d25c54a79fc5948f00a3df7466b27347661aa93d00b97b5282874",
+      "all_equal": true
+    }
+  ],
+  "build_info": {
+    "path": "evidence/slither-build-info.json.gz",
+    "uncompressed_bytes": 4286117,
+    "uncompressed_sha256": "289347b167c4e96ecac1f0fa1a12f417c044e6db0cc64e2ad42e21944bd21cc6",
+    "gzip_bytes": 483146,
+    "gzip_sha256": "cbc6d3ec91feb657842036be3e5606b05640801fbd294643338d43cd403d9820"
+  },
+  "tool_binary_sha256": {
+    "/workspace/scratch/75c78c17e2fc/contract-tools/forge": "06c477aee83d0996e57aa92b0841fdf06382cb172fd69bbb88920bb0054dfd7f",
+    "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25"
+  },
+  "limits": [
+    "This is a fresh native Slither execution; earlier lost raw logs were not reused.",
+    "Zero reported results applies to the existing Medium/High gate; excluded Low/Informational classes were not qualified by this invocation.",
+    "This is not complete symbolic execution, Echidna qualification, external independent review, or a whole-release readiness verdict.",
+    "The analyzed production scope is byte-identical to the pinned candidate and preserved 36-input record, although other source paths and full candidate heads may advance."
+  ]
+}
