@@ -4,6 +4,11 @@ import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
+import { InvoiceSignerVerification } from '../components/InvoiceSignerVerification';
+import { getInvoiceSignerPinsSnapshot, useInvoiceSignerPins } from '../lib/invoiceSignerPins';
+import { invoiceVerificationFailure, invoiceVerificationStatus, unrecognizedInvoiceFragmentStatus, type InvoiceVerificationStatus } from '../lib/invoiceVerification';
+import { subscribeAppLock } from '../lib/appLock';
+import { loadSettings, SETTINGS_KEY } from '../lib/settings';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
@@ -39,7 +44,7 @@ import type { Translator } from '../i18n/translator';
 import { connectWallet, walletAttemptKey, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
 import { notifyEmbedDone } from '../lib/embedHost';
-import { captureSessionVersionGuard } from '../lib/session';
+import { captureSessionVersionGuard, subscribeSession } from '../lib/session';
 import { classifyQrText } from '../lib/qrClassify';
 import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
 
@@ -146,7 +151,15 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const latestT = useRef(t); latestT.current = t;
   const announce = (message: MessageDescriptor): void => { app.announce(displayMessage(message, latestT.current)); };
   const services = useServices();
-  const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
+  const [parsedResult, setParsedResult] = useState<{ readonly parsed: ParsedInvoice; readonly scope: object } | undefined>();
+  const signerPins = useInvoiceSignerPins();
+  const [signerSelection, setSignerSelection] = useState({ label: '', revision: 0 });
+  const selectedSigner = signerSelection.label;
+  const setSelectedSigner = (label: string): void => { setSignerSelection((previous) => ({ label, revision: previous.revision + 1 })); };
+  const [verificationFailureResult, setVerificationFailureResult] = useState<{ readonly status: InvoiceVerificationStatus; readonly scope: object } | undefined>();
+  const [verificationEpoch, setVerificationEpoch] = useState(0);
+  const liveVerificationEpoch = useRef(0);
+  const [legacyPins, setLegacyPins] = useState<{ readonly settingsPins: readonly string[]; readonly pins: readonly string[] } | undefined>();
   const [rejected, setRejected] = useState<DisplayMessage | undefined>(undefined);
   const [paste, setPaste] = useState('');
   const [invoiceQrPreview, setInvoiceQrPreview] = useState<InvoiceQrPreview | undefined>();
@@ -197,8 +210,31 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const flowRevision = useRef(0);
 
   const fragment = app.fragment;
-  const pinned = app.settings.pinnedSigners;
-  const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset, supportedOnly }), [fragment, pinned, app.session, invoiceQrReset, supportedOnly]);
+  const legacyPinned = legacyPins?.settingsPins === app.settings.pinnedSigners ? legacyPins.pins : app.settings.pinnedSigners;
+  const expectedSigner = selectedSigner === '' ? undefined : signerPins.pins.find((pin) => pin.label === selectedSigner)?.signer ?? '';
+  const pinned = useMemo(() => expectedSigner === undefined ? legacyPinned : expectedSigner === '' ? [] : [expectedSigner], [legacyPinned, expectedSigner]);
+  const identityScope = useMemo(() => ({ fragment, session: app.session, verificationEpoch, supportedOnly, selectionRevision: signerSelection.revision }), [fragment, app.session, verificationEpoch, supportedOnly, signerSelection.revision]);
+  const verificationScope = useMemo(() => ({ identityScope, pinned, signerPins, selectedSigner, assertSession: captureSessionVersionGuard() }), [identityScope, pinned, signerPins, selectedSigner]);
+  const currentVerificationScope = useRef(verificationScope); currentVerificationScope.current = verificationScope;
+  const verificationIsCurrent = (): boolean => {
+    if (currentVerificationScope.current !== verificationScope || liveVerificationEpoch.current !== verificationEpoch || getInvoiceSignerPinsSnapshot() !== signerPins) return false;
+    try { verificationScope.assertSession(); return true; } catch { return false; }
+  };
+  // Scope equality hides obsolete trust during render, before an effect or promise cleanup can run.
+  const parsed = parsedResult?.scope === verificationScope && liveVerificationEpoch.current === verificationEpoch ? parsedResult.parsed : undefined;
+  const setParsed = (value: ParsedInvoice | undefined): void => { setParsedResult(value === undefined ? undefined : { parsed: value, scope: verificationScope }); };
+  const verificationFailure = verificationFailureResult?.scope === verificationScope || (fragment === undefined && verificationFailureResult?.status === 'unavailable') ? verificationFailureResult?.status : undefined;
+  const setVerificationFailure = (status: InvoiceVerificationStatus | undefined): void => { setVerificationFailureResult(status === undefined ? undefined : { status, scope: verificationScope }); };
+  const signerStatus = parsed === undefined ? verificationFailure ?? (fragment === undefined ? undefined : needsPassphrase ? 'unavailable' : 'checking') : invoiceVerificationStatus(parsed, expectedSigner);
+  const signerBlocked = selectedSigner !== '' && signerStatus !== 'valid-pinned';
+  const invoiceQrScope = useMemo(() => ({ verificationScope, reset: invoiceQrReset }), [verificationScope, invoiceQrReset]);
+  useEffect(() => {
+    const changed = (event: StorageEvent): void => {
+      if (event.key === null || event.key === SETTINGS_KEY) setLegacyPins({ settingsPins: app.settings.pinnedSigners, pins: loadSettings().pinnedSigners });
+    };
+    window.addEventListener('storage', changed);
+    return () => { window.removeEventListener('storage', changed); };
+  }, [app.settings.pinnedSigners]);
   const currentInvoiceQrScope = useRef(invoiceQrScope); currentInvoiceQrScope.current = invoiceQrScope;
   const invalidateInvoiceQr = useCallback((): void => {
     invoiceQrRevision.current += 1;
@@ -231,10 +267,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const scope = invoiceQrScope;
     const assertSession = captureSessionVersionGuard();
     const current = (): boolean => {
-      if (!invoiceQrIsOpen() || signal.aborted || !invoiceQrMounted.current || invoiceQrRevision.current !== revision || currentInvoiceQrScope.current !== scope) return false;
+      if (!invoiceQrIsOpen() || signal.aborted || !invoiceQrMounted.current || invoiceQrRevision.current !== revision || currentInvoiceQrScope.current !== scope || !verificationIsCurrent()) return false;
       try { assertSession(); return true; } catch { return false; }
     };
-    if (!current()) return false;
+    if (!current() || !verificationIsCurrent()) return false;
     const candidate = invoiceQrFragment(text, services.baseUrl());
     if (candidate === undefined) {
       // Name another GhostPay QR family so the user can take it to the right screen; never act on it here.
@@ -270,7 +306,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const revision = flowRevision.current;
     const sessionGuard = captureSessionVersionGuard();
     const current = (): boolean => {
-      if (!live || flowRevision.current !== revision || latest.current.fragment !== fragment || latest.current.supportedOnly !== supportedOnly) return false;
+      if (!live || flowRevision.current !== revision || latest.current.fragment !== fragment || latest.current.supportedOnly !== supportedOnly || currentVerificationScope.current !== verificationScope || liveVerificationEpoch.current !== verificationEpoch || getInvoiceSignerPinsSnapshot() !== signerPins) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragment, revision); return false; }
     };
     receiptImportRevision.current += 1;
@@ -310,6 +346,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setPhase('input');
       return;
     }
+    setVerificationFailure(undefined);
+    setRejected(undefined);
     openFragment(fragment, { pinnedSigners: pinned }).then(
       (result) => {
         if (!current()) return;
@@ -335,13 +373,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         if (!current()) return;
         setParsed(undefined);
         setRejected(captureUserMessage(e));
+        setVerificationFailure(invoiceVerificationFailure(e));
         setPhase('input');
       },
     );
     return () => {
       live = false;
     };
-  }, [fragment, pinned, supportedOnly]);
+  }, [verificationScope]);
 
   const manifest = useManifest(parsed?.invoice.chainId);
   const nowSeconds = Math.floor(services.nowMs() / 1000);
@@ -358,10 +397,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // preparation, but must not clear the context that the submitted state, hash, receipt and proof are shown from.
   const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
   const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
+  const latest = useRef({ signerBlocked, verificationScope, parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
+  latest.current = { signerBlocked, verificationScope, parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
-  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
+  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly && verificationIsCurrent() && !latest.current.signerBlocked;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
     flowRevision.current += 1;
@@ -372,9 +411,34 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setUnlocking(false);
     setPhase('input');
     setRejected({ key: 'pay.error.sellerKeysChanged' });
+    setVerificationFailure('unavailable');
   };
 
+  useEffect(() => {
+    const invalidate = (sessionChanged: boolean): void => {
+      liveVerificationEpoch.current += 1;
+      flowRevision.current += 1;
+      receiptImportRevision.current += 1;
+      invoiceQrRevision.current += 1;
+      scheduler.current?.cancel();
+      setVerificationEpoch(liveVerificationEpoch.current);
+      app.setFragment(undefined);
+      setParsedResult(undefined);
+      setInvoicePassphrase('');
+      setPaste('');
+      setNeedsPassphrase(false);
+      setUnlocking(false);
+      setInvoiceQrPreview(undefined);
+      setVerificationFailure('unavailable');
+      setRejected(sessionChanged ? { key: 'pay.error.sellerKeysChanged' } : undefined);
+    };
+    const unLock = subscribeAppLock(() => { invalidate(false); });
+    const unSession = subscribeSession(() => { invalidate(true); });
+    return () => { unLock(); unSession(); };
+  }, [app.setFragment]);
+
   const assertCurrentInvoice = (revision: number, invoice: ParsedInvoice['invoice']): void => {
+    if (!verificationIsCurrent() || latest.current.signerBlocked) throw new UserFacingError({ key: 'pay.signer.policyBlocked' });
     if (!supportsInvoice(invoice, latest.current.supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
     if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice || latest.current.ctx?.review.invoice !== invoice) {
       throw new Error('The invoice changed. Review it again before continuing.');
@@ -382,11 +446,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   };
   const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
     const { parsed: p, manifest: m } = latest.current;
-    if (p === undefined || m === undefined || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
+    if (p === undefined || m === undefined || latest.current.signerBlocked || !verificationIsCurrent() || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
       setCtx(undefined);
       return undefined;
     }
-    const current = (): boolean => latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
+    const current = (): boolean => latest.current.parsed === p && latest.current.manifest === m && !latest.current.signerBlocked && verificationIsCurrent() && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -417,7 +481,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setCtxError(captureUserMessage(e));
       return undefined;
     }
-  }, [app, services]);
+  }, [app, services, verificationScope, signerBlocked]);
   const refreshRef = useRef(refreshContext);
   refreshRef.current = refreshContext;
   const reviewKey = review === undefined ? '' : review.blockers.join('|');
@@ -490,9 +554,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const f = extractFragment(paste);
     if (f === undefined) {
       setRejected({ key: 'pay.error.invoiceLink' });
+      setVerificationFailure(unrecognizedInvoiceFragmentStatus(paste));
       return;
     }
     setRejected(undefined);
+    setVerificationFailure(undefined);
     app.setFragment(f);
     setPaste('');
   };
@@ -504,10 +570,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const sessionGuard = captureSessionVersionGuard();
     const fragmentAtStart = fragment;
     const current = (): boolean => {
-      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly) return false;
+      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly || currentVerificationScope.current !== verificationScope || liveVerificationEpoch.current !== verificationEpoch || getInvoiceSignerPinsSnapshot() !== signerPins) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragmentAtStart, revision); return false; }
     };
     setUnlocking(true);
+    setVerificationFailure(undefined);
     setRejected(undefined);
     void openFragment(fragment, { pinnedSigners: pinned, passphrase: invoicePassphrase }).then(
       (result) => {
@@ -531,6 +598,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       (e: unknown) => {
         if (!current()) return;
         setRejected(captureUserMessage(e));
+        setVerificationFailure(invoiceVerificationFailure(e));
       },
     ).finally(() => { if (flowRevision.current === revision) setUnlocking(false); });
   };
@@ -607,7 +675,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   };
 
   const startWaiting = (): void => {
-    if (parsed === undefined) return;
+    if (parsed === undefined || signerBlocked || !verificationIsCurrent()) return;
     const revision = flowRevision.current;
     const invoice = parsed.invoice;
     setError(undefined);
@@ -660,6 +728,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   };
 
   const onContinue = (): void => {
+    if (signerBlocked || !verificationIsCurrent()) return;
     const revision = flowRevision.current;
     const invoice = parsed?.invoice;
     setError(undefined);
@@ -678,6 +747,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   };
 
   const onFindWallets = (): void => {
+    if (signerBlocked || !verificationIsCurrent()) return;
     const revision = flowRevision.current;
     void services.discoverWallets().then((found) => {
       if (flowRevision.current === revision) setWallets(found);
@@ -935,10 +1005,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setUseBuffer(false);
     setBufferQuote(undefined);
     setPhase('input');
+    setRejected(undefined);
+    setVerificationFailure(undefined);
   };
 
   /* ------------------------------- rendering ------------------------------- */
 
+  const signerPanel = <InvoiceSignerVerification snapshot={signerPins} selected={selectedSigner} onSelect={setSelectedSigner} parsed={parsed} status={signerStatus} scope={verificationScope} identityScope={identityScope} isCurrent={verificationIsCurrent} />;
   const buildRejection = parsed !== undefined && !supportsInvoice(parsed.invoice, supportedOnly) ? SUPPORTED_INVOICE_ERROR : undefined;
   const inputRejection = buildRejection ?? rejected;
   if (parsed === undefined || review === undefined || buildRejection !== undefined) {
@@ -946,6 +1019,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <section aria-labelledby="pay-h">
         <h2 id="pay-h">{t('pay.title.input')}</h2>
         <WalletAttempts />
+        {signerPanel}
         {previousBroadcast !== undefined && (
           <Notice kind="warn" title={t('pay.previous.title')}>
             {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
@@ -1013,6 +1087,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     <section aria-labelledby="pay-h">
       <h2 id="pay-h">{t('pay.title.review')}</h2>
       <WalletAttempts />
+      {signerPanel}
+      {signerBlocked && <Notice kind="error">{t('pay.signer.policyBlocked')}</Notice>}
       {previousBroadcast !== undefined && (
         <Notice kind="warn" title={t('pay.previous.title')}>
           {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
@@ -1315,7 +1391,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
       <div className="actions">
         {phase === 'review' && (
-          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={review.blockers.length > 0 || ctx === undefined}>
+          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={signerBlocked || review.blockers.length > 0 || ctx === undefined}>
             {useDelay ? t('pay.startDelay') : t('pay.continue')}
           </button>
         )}
