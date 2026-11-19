@@ -1783,3 +1783,11 @@ Worker: `/root/provenance`, delegated read-only review by the integration coordi
 Reviewed immutable source: security worker `ed95c5601b0ec127be56cad57fcb78d44954b2fb`; base published PR #278 `7b4c1554382b05ac3fab48527aadf596d6b1ff7b`.
 Owned changes: this additive registry note and `docs/handoffs/recovered-native-authority-review-20261119/` only. No implementation/test modifications or runtime test execution.
 Acceptance: compare recovered helper, component and adversarial tests with the retained independently reviewed final-02760 blob identities; inspect manifest expiry, one-time confirmation, session/scope/endpoint/replacement binding, signing boundaries and post-handoff outcomes. Report lost prior execution logs as unavailable and keep source review separate from new runtime/CI qualification.
+
+## 2026-11-19 — Final six-diagnostic web lint repair
+
+Worker: `/root/key_exports`, explicitly delegated by the final Pages coordinator after the complete original ESLint run.
+Branch: `repair/ghostpay-final-lint-20261119`; base `75cc6149e2fd560f26725e806b24f859f999d647`.
+Owned paths: `apps/web/src/features/btc/scan.spentness-completion.test.ts`, `apps/web/src/lib/defaultServices.privacySelection.test.ts`, `apps/web/src/lib/defaultServices.test.ts`, `apps/web/src/lib/sweep.nativeReview.test.ts`, `apps/web/src/lib/sweep.ts`, `apps/web/src/views/Settings.test.tsx`; this additive claim and scoped review/evidence handoff only.
+Acceptance: correct all six actual diagnostics without changing assertions, rules, coverage thresholds or configuration; retain asynchronous abort-fixture behavior; strictly validate the mock JSON-RPC body type; preserve assignment of the fee reserve on both native/ERC-20 branches. Run the affected original tests, original full web typecheck and original full ESLint under the coordinator-pinned Node 22 runtime, then obtain independent review and source preservation.
+Evidence baseline: original `eslint --config ../../eslint.config.js src e2e` completed at this exact base with six errors, zero warnings, exit 1, 93.20 seconds, maximum child RSS 1,690,568 KiB; source remained unchanged. This is a genuine lint failure, not an infrastructure skip. Root owns integration, Pages/full coverage and publication; security worker's QR work is disjoint.
