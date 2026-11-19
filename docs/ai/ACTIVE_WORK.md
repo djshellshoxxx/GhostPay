@@ -1,3 +1,22 @@
+# Bitcoin spent-output/private-scan completion — 2026-11-18
+
+Worker: ChatGPT coordinator and three independent engineering/review lanes.
+Branch: `chatgpt/btc-spent-private-scan-20261118`.
+Base: current main `dfc75ef2087fa6463ae59e0818abec01796c578d`, combined with unchanged PR #219
+`9617e8572f9bc414410bd937b0e7718d0c5bd55c` at `e27ce7f60fb0e21788f09df0f188b3b3490bcad2`.
+User explicitly authorizes continuation of #219 only; PR #238 overlaps BTC paths and remains a read-only
+comparison/dependency. PR #235 seller checkpoint architecture and other feature owners are out of scope.
+
+| Lane | Owned paths | Acceptance |
+| --- | --- | --- |
+| btc_state | `apps/web/src/features/btc/scan.ts`, Bitcoin scan/state regressions; `packages/btc-silent-payments/src/scan/{scanner,state,resume}*` as needed | Reproduce/fix incomplete evidence, historical, persisted-match and reorg defects; preserve status contract and bounded local scans; no provider checks without consent. |
+| btc_ui | `apps/web/src/features/btc/BtcView*`, `scanWorker*`, `scan.worker.ts`, Bitcoin e2e; BTC-only locale/security-key additions | Explicit/revocable consent, light-mode constraint, stale-session rejection, accurate unknown/incomplete UI and deterministic browser acceptance. |
+| btc_review | Read-only scanner/source/worker/privacy audit; `docs/handoffs/btc-spent-20261118/INDEPENDENT_REVIEW.md` | Independently identify/reproduce source defects and review final fixes, source-pin evidence; no external-audit claim. |
+| coordinator | Bitcoin Esplora/oracle/header source safeguards and regressions; `docs/ai/ACTIVE_WORK.md`, `docs/handoffs/btc-spent-20261118/*`, Spec 12/BTC deviations/user docs | Acceptance matrix, preserve #219 work, qualified integration, bounded validation and performance evidence, reviewable PR. |
+
+No main merge, deployment, publication, transaction signing/construction changes, unrelated dependencies,
+contracts, general checkpoint architecture, or broad consolidation. Tests retain all release gates.
+
 # Repository consolidation — 2026-11-18 (active)
 
 Status (coordinator update): every worker lane below has completed and been integrated after review; the worker
