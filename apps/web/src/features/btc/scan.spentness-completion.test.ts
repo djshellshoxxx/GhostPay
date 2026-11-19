@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { EsploraClient } from './esplora';
 import { appendBlocks, coinbase, forkChain, mockChain, paymentTx, SEED_B, spendTx, walletA } from './fixtures.testutil';
 import { EsploraHeaderSource, invalidateReorged, loadHeaderChain, MemoryHeaderStore, syncHeaders } from './headers';
-import { scanForPayments, wipeFound } from './scan';
+import { MAX_SCAN_MATCHES, scanForPayments, wipeFound } from './scan';
 import { oracleFixture } from './oracle.testutil';
 import { BtcScanVault } from './scanStore';
 import type { ReconciliationVaultStore } from '../../lib/reconciliationVault';
@@ -30,6 +30,16 @@ function spendFound(f: Awaited<ReturnType<typeof fixture>>, found: Awaited<Retur
 const queries = (f: Awaited<ReturnType<typeof fixture>>) => f.chain.requests.filter((r) => r.includes('/outspend/'));
 
 describe('Bitcoin spentness qualification regressions', () => {
+  it('rejects oversized resumed output metadata before requesting any source data', async () => {
+    const f = await fixture(); let saved = createScanState('regtest', 1);
+    const first = await scanForPayments({ ...f, fromHeight: 1, resumeState: saved, onState: (s) => { saved = s; } });
+    wipeFound(first.found);
+    const oversized = { ...saved, matches: Array.from({ length: MAX_SCAN_MATCHES + 1 }, (_, vout) => ({ ...saved.matches[0]!, vout })) };
+    f.chain.requests.length = 0;
+    await expect(scanForPayments({ ...f, fromHeight: 1, resumeState: oversized })).rejects.toMatchObject({ code: 'UNSUPPORTED' });
+    expect(f.chain.requests).toEqual([]);
+  });
+
   it('keeps a partial local range unknown until the rest of the chain has been scanned', async () => {
     const f = await fixture(); let saved = createScanState('regtest', 1);
     const partial = await scanForPayments({ ...f, fromHeight: 1, toHeight: 3, resumeState: saved, onState: (s) => { saved = s; } });

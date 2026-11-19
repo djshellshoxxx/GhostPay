@@ -79,7 +79,7 @@ export interface ScanResult {
   readonly found: readonly FoundPayment[];
   /** Detected outputs that were already spent (not offered for sweeping). */
   readonly spentCount: number;
-  /** Every scanned block, ascending: lets a later header sync find results from blocks that left the chain. */
+  /** Scanned blocks and retained spend-coverage anchors, ascending, for later chain invalidation. */
   readonly blocks: readonly { readonly height: number; readonly hash: string }[];
   /** The scanned blocks were checked against a validated header chain. */
   readonly headerAnchored: boolean;
@@ -113,6 +113,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   if (!Number.isInteger(fromHeight) || fromHeight < 0) throw new SilentPaymentError('INVALID_INPUT');
   if ((p.providerSpentCheck !== undefined && typeof p.providerSpentCheck !== 'boolean') ||
       (p.oracle?.mode === 'light' && p.providerSpentCheck !== true)) throw new SilentPaymentError('INVALID_INPUT');
+  if (p.resumeState !== undefined && p.resumeState.matches.length > MAX_SCAN_MATCHES) throw new SilentPaymentError('UNSUPPORTED');
   const esplora = new EsploraTweakSource(client, wallet.net);
   const lightHeaders = p.oracle?.mode === 'light' ? p.headers : undefined;
   if (p.oracle?.mode === 'light' && lightHeaders === undefined) throw new SilentPaymentError('INVALID_INPUT');
@@ -172,6 +173,8 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       if (r.txid === undefined || r.vout === undefined || r.amountSats === undefined) return;
       const id = `${r.txid}:${String(r.vout)}`;
       if (seen.has(id)) return;
+      // Several outputs can share one tweak buffer; output identities need an independent aggregate limit.
+      if (seen.size >= MAX_SCAN_MATCHES) throw new SilentPaymentError('UNSUPPORTED');
       seen.add(id);
       candidates.push({
         txid: r.txid, vout: r.vout, amountSats: r.amountSats, xOnlyPublicKey: r.xOnlyPublicKey,
