@@ -1,0 +1,351 @@
+{
+  "implementation": "8c81265de08b821e6062d02baa26ba3b80571f9f",
+  "implementation_tree": "ca90e6a8f2f654b99ef99092f23079ae7f0b7950",
+  "base": "736f1056537c79dbb0d2be3cd9cf071d0470bb24",
+  "claim": "325895d6aa8fe3559fa25de1f4f3d1c209c7844e",
+  "branch": "integration/ghostpay-multichain-recovery-20261119",
+  "source_pr": 211,
+  "original_pr_head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+  "selection": [
+    {
+      "source": "e2427c20387aa2e228309c49a1558d3edc6583ce",
+      "recovered": "7060943be540783ffaf4a0203d2a5c83d980742a",
+      "subject": "Add TB-08 shared Solana and TRON meta-address vectors"
+    },
+    {
+      "source": "179a5b433f35396ca4f0961c99226dbb38e4e4cd",
+      "recovered": "b46b886eb787e39aafcb8ebd339d09a8d6e56305",
+      "subject": "chain-solana: adopt the ADR-0017 formats shipped by the web app (TB-08)"
+    },
+    {
+      "source": "28ce8a0b6fe22458505da6a77ae7c7cf81db8864",
+      "recovered": "d664c48fbd449371e4d418e56306a7083136b66d",
+      "subject": "chain-tron: adopt the ADR-0019 st:trx:0x meta-address and GPT1 memo (TB-08)"
+    },
+    {
+      "source": "c3d7d70207f74df4a6857231647dcf1ab87122c5",
+      "recovered": "5d7ea8b3691ca94621d5ba2fbc2f7c4678076d8d",
+      "subject": "Update the CLI chain-command fixtures to the ADR-0017 Solana formats"
+    },
+    {
+      "source": "b9af22a9c85c6a8674d8ac72d7f038954ce713b9",
+      "recovered": "a8a7f9d9997e2c6fe5b6829176671144eead99da",
+      "subject": "chain-tron: fail closed in build() until the GPT1 memo can be bound"
+    },
+    {
+      "source": "67a3c3c0f305eb0f82414c3623300a81afd59cc3",
+      "recovered": "a156ee13f5a3bd3978b8e5eb8bcfca2485a0a1a1",
+      "subject": "cli: report the Solana recipient cluster and refuse mainnet"
+    },
+    {
+      "source": "b79bb24a81e254b3ca06501c8669c54403a19f0a",
+      "recovered": "45e257ec05b20651b276f711f560b3c9045fabd9",
+      "subject": "cli: surface LEGACY_META_ADDRESS instead of a generic INVALID_INPUT"
+    },
+    {
+      "source": "90146562b7f7809746966edbedccb4a4e68e8a68",
+      "recovered": "8c81265de08b821e6062d02baa26ba3b80571f9f",
+      "subject": "Document the fail-closed TRON build() and refresh chain-tron coverage"
+    }
+  ],
+  "selected_path_count": 34,
+  "blobs": [
+    {
+      "path": "packages/chain-solana/DEVIATIONS.md",
+      "recovered_blob": "d63dda0ada844150894b62bb5215cd00e3b1df3e",
+      "original_pr211_blob": "d63dda0ada844150894b62bb5215cd00e3b1df3e",
+      "exact_original": true,
+      "sha256": "6ed1d746cca8c1f704f8aee0f5fee5bf1f70b7831a0629645b07c856fdd9d8ab"
+    },
+    {
+      "path": "packages/chain-solana/README.md",
+      "recovered_blob": "43c0e49f3526da3ac13f1462ae12dae75d935bcf",
+      "original_pr211_blob": "43c0e49f3526da3ac13f1462ae12dae75d935bcf",
+      "exact_original": true,
+      "sha256": "c4b58a5868ed46a7a78e471253e95c27234548d3f5e0da68a43ca252e8b0cd22"
+    },
+    {
+      "path": "packages/chain-solana/scripts/gen-meta-address-sol-tron-vectors.mjs",
+      "recovered_blob": "aaaa0744c9bf79a44eec4873a816da7bafe782db",
+      "original_pr211_blob": "aaaa0744c9bf79a44eec4873a816da7bafe782db",
+      "exact_original": true,
+      "sha256": "9f0e72d780bbd7ec8b827473b403320f18a1eb01c74daa3deb2fb9b8df76d5b3"
+    },
+    {
+      "path": "packages/chain-solana/src/adapter.test.ts",
+      "recovered_blob": "2e08c10414bfbace71e52fcd3040e9b04e3d8e4e",
+      "original_pr211_blob": "2e08c10414bfbace71e52fcd3040e9b04e3d8e4e",
+      "exact_original": true,
+      "sha256": "622402e6ea41dc95fe60e33febab6e3a4cfd0cb8e1a45130a13948651190d82b"
+    },
+    {
+      "path": "packages/chain-solana/src/adapter.ts",
+      "recovered_blob": "c78f9e9cc396658d5464d324bdb1a5a8cfbca393",
+      "original_pr211_blob": "c78f9e9cc396658d5464d324bdb1a5a8cfbca393",
+      "exact_original": true,
+      "sha256": "de960a23f65de38566c1018cb4dbb7beb3a5fd58c0ac9f591ceb7a3880186806"
+    },
+    {
+      "path": "packages/chain-solana/src/announcement.test.ts",
+      "recovered_blob": "8be295d981c59181752bba8a08073a4bf533d19a",
+      "original_pr211_blob": "8be295d981c59181752bba8a08073a4bf533d19a",
+      "exact_original": true,
+      "sha256": "42019b769bfc6275d7ae646f938a1c269f87ca3a6213fb55e914521f399d67d7"
+    },
+    {
+      "path": "packages/chain-solana/src/announcement.ts",
+      "recovered_blob": "a296fddacf7b9c20d0b3115ef034172ad3b9e454",
+      "original_pr211_blob": "a296fddacf7b9c20d0b3115ef034172ad3b9e454",
+      "exact_original": true,
+      "sha256": "bf5af47ba8d0f8221448e996e8649b29351a0802a971d722140869b4f150db80"
+    },
+    {
+      "path": "packages/chain-solana/src/errors.ts",
+      "recovered_blob": "726e15616d200b0a754ce0699dc1b9205933c3c0",
+      "original_pr211_blob": "726e15616d200b0a754ce0699dc1b9205933c3c0",
+      "exact_original": true,
+      "sha256": "6ecb7914f239fa931b95837979bb1635ebd070422ac536d9752c4a901e0e6d51"
+    },
+    {
+      "path": "packages/chain-solana/src/hash.ts",
+      "recovered_blob": "30172f03249971641525b894530a5c35b5206c6c",
+      "original_pr211_blob": "30172f03249971641525b894530a5c35b5206c6c",
+      "exact_original": true,
+      "sha256": "9518e75c5449a831350d83564a6a6dfa0d8f2e68ac9bdc9582710d876c23ff90"
+    },
+    {
+      "path": "packages/chain-solana/src/index.ts",
+      "recovered_blob": "511a0ff44967382dc3799b5670ee4494d55c1b9f",
+      "original_pr211_blob": "511a0ff44967382dc3799b5670ee4494d55c1b9f",
+      "exact_original": true,
+      "sha256": "fac6fc17181a52be9340919d487c683ed464cd8f27aa1e913e9be78fb6ea627d"
+    },
+    {
+      "path": "packages/chain-solana/src/interop.test.ts",
+      "recovered_blob": "d9e09f1723b2e175c04577d75062aecd945093db",
+      "original_pr211_blob": "d9e09f1723b2e175c04577d75062aecd945093db",
+      "exact_original": true,
+      "sha256": "7c6427252e94411016d0b6499c869a0575734c30842efdf28e25a9bb7f522d90"
+    },
+    {
+      "path": "packages/chain-solana/src/keys.test.ts",
+      "recovered_blob": "21f362073a75ca1c811db593e932b4bb58429120",
+      "original_pr211_blob": "21f362073a75ca1c811db593e932b4bb58429120",
+      "exact_original": true,
+      "sha256": "84a4dbbe5051c795916f8e12b9eb1ba80659146ba5ff2e0a21559c95b36d1444"
+    },
+    {
+      "path": "packages/chain-solana/src/keys.ts",
+      "recovered_blob": "92dc2a8c03475e55004cac9989bc4e3e96550c91",
+      "original_pr211_blob": "92dc2a8c03475e55004cac9989bc4e3e96550c91",
+      "exact_original": true,
+      "sha256": "ce5a2b8b9e85987bf2f586d9ca06c175c617b46efd4e9005b77fd24e8242bbe5"
+    },
+    {
+      "path": "packages/chain-solana/src/properties.test.ts",
+      "recovered_blob": "39fd8208dfef8540f3e0690b16e56bdfcff31b1e",
+      "original_pr211_blob": "39fd8208dfef8540f3e0690b16e56bdfcff31b1e",
+      "exact_original": true,
+      "sha256": "ba76eae64e5e4ce9b01ec0e0eea1ac50b23b6e0a4fb90daf0b40fd0c57268482"
+    },
+    {
+      "path": "packages/chain-solana/src/reference.testutil.ts",
+      "recovered_blob": "8dafe2c58fad2bdf0a9a34ac2240ad5b3ffd3fbf",
+      "original_pr211_blob": "8dafe2c58fad2bdf0a9a34ac2240ad5b3ffd3fbf",
+      "exact_original": true,
+      "sha256": "0a150ec134907af24d5392d3777b356513e1aa2f265058762462eba7a268d8d6"
+    },
+    {
+      "path": "packages/chain-solana/src/stealth.test.ts",
+      "recovered_blob": "3ba194305893d7a2408ba1422125dd7a0cd41e25",
+      "original_pr211_blob": "3ba194305893d7a2408ba1422125dd7a0cd41e25",
+      "exact_original": true,
+      "sha256": "1567b11a7b35953a139a9e8cc7fd0bcc2683de1eeab5f575fb187ee89e4a55bc"
+    },
+    {
+      "path": "packages/chain-solana/src/stealth.ts",
+      "recovered_blob": "d0ebd5a39b03b652fdae99664aee9d497ec44a1d",
+      "original_pr211_blob": "d0ebd5a39b03b652fdae99664aee9d497ec44a1d",
+      "exact_original": true,
+      "sha256": "0f63e4d5db4a47b0d50a2a5852b6a062a999e4e5f5c5c7b2522832e32147ce7a"
+    },
+    {
+      "path": "packages/chain-solana/src/vectors.test.ts",
+      "recovered_blob": "79d9add4490c729c23bc137fea424f37ac928a13",
+      "original_pr211_blob": "79d9add4490c729c23bc137fea424f37ac928a13",
+      "exact_original": true,
+      "sha256": "2f7da94313611c1074093ebace3c18a4b7775858e9bb30eb64ab51d9897cc18d"
+    },
+    {
+      "path": "packages/chain-solana/test-vectors/self-generated-v1.json",
+      "recovered_blob": "f2b390d682db29b623a2937416b79bdc43061259",
+      "original_pr211_blob": "f2b390d682db29b623a2937416b79bdc43061259",
+      "exact_original": true,
+      "sha256": "7225dad38f6df20a4ee89d060a33aaae80adc8b27bf14db0823dadb52ed1229f"
+    },
+    {
+      "path": "packages/chain-tron/DEVIATIONS.md",
+      "recovered_blob": "a0b6f3122cf5c3dbb5e43747667304c4a2a75afd",
+      "original_pr211_blob": "a0b6f3122cf5c3dbb5e43747667304c4a2a75afd",
+      "exact_original": true,
+      "sha256": "6e6ecf43dcaf2f8ec6e36c203bc2277024db4518c0c3a82fa785c4336512405d"
+    },
+    {
+      "path": "packages/chain-tron/README.md",
+      "recovered_blob": "a0c6299f7c4d095fa692d53e318c1ee3b885b1f8",
+      "original_pr211_blob": "a0c6299f7c4d095fa692d53e318c1ee3b885b1f8",
+      "exact_original": true,
+      "sha256": "0241618282089abd1ebe20f8fbbc09a3a32fc87d8a4cf8230e9edcc5195ffb02"
+    },
+    {
+      "path": "packages/chain-tron/src/adapter.test.ts",
+      "recovered_blob": "a8374f6362279505986c657287c1daf75ad19831",
+      "original_pr211_blob": "a8374f6362279505986c657287c1daf75ad19831",
+      "exact_original": true,
+      "sha256": "237d35050901ffbe1f3ebd673448135fe9bfa8a1ec989e5a00af893a847f376b"
+    },
+    {
+      "path": "packages/chain-tron/src/adapter.ts",
+      "recovered_blob": "b7c54a84c8a99246637cea7a1ee0efe55da5da0e",
+      "original_pr211_blob": "b7c54a84c8a99246637cea7a1ee0efe55da5da0e",
+      "exact_original": true,
+      "sha256": "41704b32abc2c1948b5f349100ed72975b507dea62fff48871c8d275ac5b31fd"
+    },
+    {
+      "path": "packages/chain-tron/src/errors.ts",
+      "recovered_blob": "2515e41e404ddf062dd9a3955d60bbfa4acbfaf4",
+      "original_pr211_blob": "2515e41e404ddf062dd9a3955d60bbfa4acbfaf4",
+      "exact_original": true,
+      "sha256": "a7313049d92bf829e96faad0b28200cb8c7fcf707708b86f3c70cd23c2568c2a"
+    },
+    {
+      "path": "packages/chain-tron/src/index.ts",
+      "recovered_blob": "98a2145671cdf4f2516289462d26fbac74ec601c",
+      "original_pr211_blob": "98a2145671cdf4f2516289462d26fbac74ec601c",
+      "exact_original": true,
+      "sha256": "85cc12c8dad44ecce3e4997d16fa7ef5449f81bd6b719e7e0dd5aaaa105365a5"
+    },
+    {
+      "path": "packages/chain-tron/src/interop.test.ts",
+      "recovered_blob": "2ef35aa486389c3d47aee715a0b87b5a92e71b56",
+      "original_pr211_blob": "2ef35aa486389c3d47aee715a0b87b5a92e71b56",
+      "exact_original": true,
+      "sha256": "c8f5ebcdf27da35d30b4ce984727482d608f2608cf087a47f96a35f6d42cd281"
+    },
+    {
+      "path": "packages/chain-tron/src/meta.test.ts",
+      "recovered_blob": "49ab50b99171b1fed2c3bb689a08010532a5de22",
+      "original_pr211_blob": "49ab50b99171b1fed2c3bb689a08010532a5de22",
+      "exact_original": true,
+      "sha256": "da0fcbd36ce92d1753c6dd5e76fe14e886fef98602cdf7629515bcd18e5d1dc1"
+    },
+    {
+      "path": "packages/chain-tron/src/meta.ts",
+      "recovered_blob": "089efc6917e77539a0977ac7b2588082e40e57c6",
+      "original_pr211_blob": "089efc6917e77539a0977ac7b2588082e40e57c6",
+      "exact_original": true,
+      "sha256": "b9dec2332dfed20694902d48ef09084036b482d4c4502f77caea080317655805"
+    },
+    {
+      "path": "packages/chain-tron/src/stealth.test.ts",
+      "recovered_blob": "34b877e1a714db0cc2908626a04ef1142000af3c",
+      "original_pr211_blob": "34b877e1a714db0cc2908626a04ef1142000af3c",
+      "exact_original": true,
+      "sha256": "4cb832945a4333e3318a6f326c1ac2d07bcdf14a5d9d9e41789118d41b0b873a"
+    },
+    {
+      "path": "packages/chain-tron/src/stealth.ts",
+      "recovered_blob": "c1fa84344cd182056e968a596ff6ece90ea26548",
+      "original_pr211_blob": "c1fa84344cd182056e968a596ff6ece90ea26548",
+      "exact_original": true,
+      "sha256": "c80254ad4be103165ed22d82a16b311d3dcf3bde3d791eb1d31e62ed77dc9ac4"
+    },
+    {
+      "path": "packages/cli/src/chain-commands.test.ts",
+      "recovered_blob": "e4ea836a3d3bea0a1112d2575daa4372c296b7cd",
+      "original_pr211_blob": "e4ea836a3d3bea0a1112d2575daa4372c296b7cd",
+      "exact_original": true,
+      "sha256": "d2f1a43dbaa44e13fac03dd19637eaa754d18d0358bbb971aa67995517df0993"
+    },
+    {
+      "path": "packages/cli/src/commands/chain.ts",
+      "recovered_blob": "51e5df33aca5fa1c821c8e8f0bedbb30edfe8660",
+      "original_pr211_blob": "51e5df33aca5fa1c821c8e8f0bedbb30edfe8660",
+      "exact_original": true,
+      "sha256": "f2f2e1d9dfa0c95b1805c853126fe492c1c63bfb386ad347d0605a386612292c"
+    },
+    {
+      "path": "packages/cli/src/payment-context.ts",
+      "recovered_blob": "c62d2da45723579b9707427c77cc8b02faa2045e",
+      "original_pr211_blob": "c62d2da45723579b9707427c77cc8b02faa2045e",
+      "exact_original": true,
+      "sha256": "d23ae377328cb872c50815eb7cd74d872781ef876bd03e5c2b0a00644fece797"
+    },
+    {
+      "path": "test-vectors/meta-address-sol-tron-v1.json",
+      "recovered_blob": "4b6fa67b5f8ea71deb56b1e8dd786240bd03b508",
+      "original_pr211_blob": "4b6fa67b5f8ea71deb56b1e8dd786240bd03b508",
+      "exact_original": true,
+      "sha256": "aa69f1f9926257480b8e90d13ff6f0847059151ed5db94ae487e1782a75f15d2"
+    }
+  ],
+  "qualification": {
+    "test_total": 210,
+    "file_total": 18,
+    "tests": [
+      {
+        "scope": "chain-solana",
+        "file": "history-g5-solana.log",
+        "sha256": "e2295e23213e06f763864bc93edcfd3ed8b373067ce756592a002435d7baba92",
+        "bytes": 438,
+        "tests_passed": 111,
+        "files_passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "exit_code": 0
+      },
+      {
+        "scope": "chain-tron",
+        "file": "history-g5-tron.log",
+        "sha256": "3cb2b1ae7da5a5af823aab012cd2dce1293dfed744a5e4fe63e0ff4c5638af7c",
+        "bytes": 442,
+        "tests_passed": 54,
+        "files_passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "exit_code": 0
+      },
+      {
+        "scope": "cli chain-commands",
+        "file": "history-g5-cli.log",
+        "sha256": "691b176c45bf63615aa264ff08a87f896881dfd74a5f14ecfa1718338f1d4f26",
+        "bytes": 225,
+        "tests_passed": 45,
+        "files_passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "exit_code": 0
+      }
+    ],
+    "method": "Three serial Vitest invocations, one worker,768MB Node heap, coverage disabled; full source test selection for2 libraries and focused45-case CLI selection. All workspace packages are aliased to this worktree source.",
+    "node": "v24.22.3",
+    "dependencies": "Borrowed GhostPay-master/node_modules;8 relevant package versions checked against unchanged G5 lock and match. No clean install or rebuilt exports claim.",
+    "independent_review": "g5-multichain-independent-review.md at exact8c81265de08b821e6062d02baa26ba3b80571f9f; all34 original blobs exact;14 unchanged dependency/crypto/web boundary checks.",
+    "not_executed": [
+      "No local coverage instrumentation/threshold result",
+      "No full CLI suite",
+      "No G5-specific complete typecheck/lint/build",
+      "No native testnet transaction, mainnet use, browser suite or hosted combined gates",
+      "No fresh baseline RED run for G5 in this receipt; original vectors and tests are retained, current old/new source mismatch is directly reviewed."
+    ]
+  },
+  "scope": "Existing ADR0017/0019 library/CLI compatibility only. No manifest/lock,network enablement,new protocol,infrastructure,browser implementation or live deployment changes.",
+  "source_decisions": [
+    "Solana st:sol: cluster/checksum and gpst1 base58 memo exactly follow existing web formats; strict canonical prime-order/non-identity validation and KEY_REUSE rejection remain.",
+    "Solana ECDH/tweak/view-tag use current web ADR0017 formulas with no cofactor multiplication because points are strictly prime order; raw-scalar signing code is unchanged.",
+    "TRON st:trx:0x and GPT1 memo reuse core scheme1; old st:eth:0x is explicitly rejected.",
+    "TRON build() unconditionally throws MEMO_NOT_BOUND before any derivation or randomness, since this skeleton cannot bind memo into signed bytes.",
+    "CLI reports Solana cluster and rejects mainnet; legacy-address errors keep fixed value-free messages.",
+    "Generator derives expected vectors from existing web implementations, not the two libraries under test; differential tests compare both implementations."
+  ]
+}

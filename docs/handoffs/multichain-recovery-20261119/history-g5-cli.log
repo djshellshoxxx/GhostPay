@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-multichain-recovery/packages/cli
+
+
+ Test Files  1 passed (1)
+      Tests  45 passed (45)
+   Start at  23:52:31
+   Duration  18.88s (transform 67%, import 29%, tests 4%)
+
