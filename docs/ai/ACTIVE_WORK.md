@@ -1,3 +1,17 @@
+# Settings exchange disclosure assertion reconciliation — 2026-11-19
+
+Worker: `privacy_completion`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-settings-exchange-20261119`.
+Base: `e76451ad56ba1634eed9d03468961900433fd130`.
+Owned paths: `apps/web/src/views/Settings.exchange.test.tsx`, this additive claim,
+and the scoped settings-exchange handoff/evidence.
+Acceptance: reproduce the exact failing export selection case, distinguish missing
+runtime disclosure from obsolete test wording, preserve preferences-only defaults,
+explicit endpoint opt-in, exact listing, endpoint-path privacy and empty-section
+assertions, and execute the repaired focused suite. Reuse an existing repair if
+present. No runtime consent/export, locale, dependency, gate or threshold changes.
+Independent recovery-worker source review and combined qualification remain required.
+
 # Idle regression type reconciliation — 2026-11-19
 
 Worker: `recovery_completion`, delegated by the feature-consolidation coordinator.
