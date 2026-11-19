@@ -23,6 +23,17 @@ overlaps in that package were dependency manifests in #87, #210 and #238. This r
 changes only `socks5Server.ts`, its regression in `harness.test.ts`, and documentation.
 It changes no dependency, lockfile, network policy, test exclusion or security gate.
 
+### Main refresh after publication
+
+The coordinator published the scoped repair as PR #253, then requested reconciliation
+with newer main `e454de6abfefda70d82784fafc1d8949b277c334`. The merge simulation was clean,
+and merge `a7cb79c7b4f906230b59d499b5c9293afd75a05b` produced tree
+`7d7a3e58e910f337b1166163c11d8a922350f4cc` without manual conflict resolution. Net-harness
+source and its manifest remain byte-identical to the independently reviewed repair.
+The full 28-test net-harness suite was rerun with coverage after this merge: 28 passed,
+0 skipped, exit 0, with the same 96.16/90.62/96.96/99.12 coverage percentages below.
+This ancestry refresh does not qualify the broader dependency upgrade.
+
 ## Reproduced failure and correction
 
 The original [typecheck job](https://github.com/djshellshoxxx/GhostPay/actions/runs/44258519283/job/134650170554)
