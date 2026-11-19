@@ -1893,3 +1893,10 @@ Owned scope: existing browser acceptance under `apps/web/e2e/`, focused payment-
 Acceptance: run the original focused payment-export/private-checkpoint runtime regressions and browser journeys with their existing gates; establish reproducible failures before any repair; preserve assertions, timeouts, privacy controls and static EVM beta scope. Coordinate any shared production module edits before writing. Use the coordinator's pinned dependency/build preparation and report observed results, not inferred passes.
 Excluded: invoice-schema, buildProfile, scanSpam, merchantSignerPin and qrKinds source owned by the consolidation lane; contracts, fees, remote branch mutation, release and deployment.
 Status: claimed; source inspection in progress; no execution result asserted.
+
+# Independent QA verification generation 3 — 2026-11-19
+
+Worker: qa_review_gen3; branch `review/ghostpay-qa-gen3-20261119`; base `95f28a04`.
+Scope: independently inspect manifest-load generation binding and the three browser-fixture repairs; reproduce the original product regressions and fixed controls without changing assertions or thresholds.
+Owned paths: `docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/` and a separate reviewer-only manifest-boundary test if needed. Temporary baseline runtime substitution is confined to this worktree and restored byte-for-byte. No shared source or remote mutation.
+Acceptance: source-pinned RED/GREEN, service replacement/cancellation checks, exact fixture semantics review, and original typed lint. Real browser startup is blocked in this executor; hosted browser evidence remains required.
