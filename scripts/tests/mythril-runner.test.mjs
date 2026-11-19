@@ -9,9 +9,10 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const contracts = ['GhostPayRouter', 'GhostPaySweepRelayer', 'GhostPayPolicyRouter', 'PolicyAccount', 'PolicyAccountFactory'];
 const clean = JSON.stringify({ success: true, error: null, issues: [] });
+const complete = JSON.stringify({ schemaVersion: 1, instrumentationReady: true, reportCount: 1, executionTimeoutObserved: false, creationTimeoutObserved: false, exceptionCount: 0, errorLogObserved: false });
 
 // Exercise the real shell gate with an offline executable fixture, not symbolic analysis.
-function run(report = () => clean, exitCode = () => 0, timeout = '10') {
+function run(report = () => clean, exitCode = () => 0, timeout = '10', telemetry = () => complete) {
   const directory = mkdtempSync(join(tmpdir(), 'ghostpay-mythril-runner-'));
   try {
     const bin = join(directory, 'bin');
@@ -19,6 +20,7 @@ function run(report = () => clean, exitCode = () => 0, timeout = '10') {
     for (const name of contracts) {
       writeFileSync(join(directory, `${name}.json`), report(name));
       writeFileSync(join(directory, `${name}.exit`), String(exitCode(name)));
+      if (telemetry(name) !== null) writeFileSync(join(directory, `${name}.completeness`), telemetry(name));
     }
     writeFileSync(join(bin, 'myth'), `#!/usr/bin/env bash
 set -eu
@@ -26,6 +28,7 @@ contract="$(basename "$2" .sol)"
 printf '%s\\n' "$@" >"$MYTHRIL_FIXTURES/$contract.args"
 cat "$6" >"$MYTHRIL_FIXTURES/$contract.config"
 cat "$MYTHRIL_FIXTURES/$contract.json"
+if [[ -f "$MYTHRIL_FIXTURES/$contract.completeness" ]]; then cat "$MYTHRIL_FIXTURES/$contract.completeness" >"$MYTHRIL_COMPLETENESS_FILE"; fi
 exit "$(cat "$MYTHRIL_FIXTURES/$contract.exit")"
 `, { mode: 0o755 });
     const result = spawnSync('bash', ['packages/contracts/scripts/run-mythril.sh', ...(timeout === null ? [] : [timeout])], {
@@ -74,6 +77,9 @@ for (const [label, output] of [
   ['missing success', '{"error":null,"issues":[]}'],
   ['missing error field', '{"success":true,"issues":[]}'],
   ['error despite success flag', '{"success":true,"error":"compiler failed","issues":[]}'],
+  ['duplicate success key masking failure', '{"success":false,"success":true,"error":null,"issues":[]}'],
+  ['duplicate error key masking failure', '{"success":true,"error":"failed","error":null,"issues":[]}'],
+  ['duplicate nested issue key', '{"success":true,"error":null,"issues":[],"metadata":{"outcome":"failed","outcome":"ok"}}'],
   ['malformed JSON', '{"success":true,"error":null,"issues":[]'],
   ['empty output', ''],
   ['array report', '[]'],
@@ -100,3 +106,20 @@ test('rejects abnormal exits even with clean-looking output from the affected co
     }
   }
 });
+
+for (const [label, telemetry] of [
+  ['missing completeness', null], ['empty completeness', ''], ['malformed completeness', '{'],
+  ['duplicate completeness key', complete.replace('"reportCount":1', '"reportCount":0,"reportCount":1')],
+  ['internal execution timeout', complete.replace('"executionTimeoutObserved":false', '"executionTimeoutObserved":true')],
+  ['internal creation timeout', complete.replace('"creationTimeoutObserved":false', '"creationTimeoutObserved":true')],
+  ['hidden report exception', complete.replace('"exceptionCount":0', '"exceptionCount":1')],
+  ['logged error', complete.replace('"errorLogObserved":false', '"errorLogObserved":true')],
+  ['missing serialized report', complete.replace('"reportCount":1', '"reportCount":0')],
+]) {
+  test(`rejects ${label} even when the analyzer prints clean JSON and exits zero`, () => {
+    const result = run(undefined, undefined, '900', (name) => name === 'PolicyAccount' ? telemetry : complete);
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    assert.match(result.stdout, /::error::mythril: PolicyAccount reported issues or failed \(rc=0\)/);
+    assert.equal(result.invocations.length, contracts.length);
+  });
+}
