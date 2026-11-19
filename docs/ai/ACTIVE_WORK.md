@@ -763,3 +763,12 @@ checks with paired prepare/send regressions. Retain current experimental/disable
 contract runtime, dependency versions and v4 checkpoints. Separate asset-coverage UI and multichain format changes
 remain outside this group. No local test/install workload during coordinator's resource limit; hosted combined
 qualification and independent crypto/custody review remain required before promotion.
+
+# Master consolidation: unique PR246 security safeguards — 2026-11-18
+
+Coordinator owns the selective port of five reviewed paths from PR246
+`28edbcf55093a6d6056232fd59ef37a2ae832b9a`: confidential router native forwarding,
+ReturnBombStealth and its regression; deployment shell preflight and its offline tests.
+Preserve current CLI, TRON completeness, browser-warning assertion, dependency boundary
+review and all release/analyzer gates. Independent reviewer completed the exact source
+crosswalk before this claim. No deployment, fee-token policy approval or source-branch edits.
