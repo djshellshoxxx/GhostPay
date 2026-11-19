@@ -265,6 +265,73 @@ describe('live settings, session and permissions', () => {
   });
 });
 
+describe('network authorization clock validity', () => {
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -1])('refuses an invalid issuance clock %s without network access or retained timers', (invalid) => {
+    vi.useFakeTimers();
+    const h = harness({ nowMs: () => invalid });
+    expect(() => h.authorize()).toThrow();
+    expect(h.fetcher).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -1])('permanently revokes an issued grant on clock %s', async (invalid) => {
+    let now = 1000;
+    const h = harness({ nowMs: () => now });
+    const grant = h.authorize();
+    now = invalid;
+    expect(() => grant.assertCurrent()).toThrow();
+    expect(grant.signal.aborted).toBe(true);
+    now = 1000;
+    await expect(text(grant)).rejects.toThrow();
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+
+  it('rejects rollback from the latest observed clock before any new dispatch', async () => {
+    let now = 1000;
+    const h = harness({ nowMs: () => now });
+    const grant = h.authorize();
+    now = 1500;
+    grant.assertCurrent();
+    now = 1400;
+    await expect(text(grant)).rejects.toThrow();
+    expect(grant.signal.aborted).toBe(true);
+    expect(h.fetcher).not.toHaveBeenCalled();
+  });
+
+  it('rejects an invalid clock while a response header is pending and discards the late body', async () => {
+    let now = 1000;
+    const h = harness({ nowMs: () => now });
+    let resolve!: (response: Response) => void;
+    h.fetcher.mockImplementationOnce(() => new Promise<Response>((done) => { resolve = done; }));
+    const grant = h.authorize();
+    const pending = text(grant);
+    const rejected = expect(pending).rejects.toThrow();
+    now = Number.NaN;
+    const response = new Response('must never be released');
+    const cancel = vi.spyOn(response.body!, 'cancel');
+    resolve(response);
+    await rejected;
+    expect(grant.signal.aborted).toBe(true);
+    expect(cancel).toHaveBeenCalled();
+  });
+
+  it('rejects an invalid clock while reading a body without waiting for delayed timers', async () => {
+    let now = 1000;
+    const h = harness({ nowMs: () => now });
+    let control!: ReadableStreamDefaultController<Uint8Array>;
+    h.fetcher.mockResolvedValueOnce(new Response(new ReadableStream<Uint8Array>({ start(next) { control = next; } })));
+    const grant = h.authorize();
+    const response = await grant.fetchFn(rpc, jsonRpc());
+    const pending = response.text();
+    const rejected = expect(pending).rejects.toThrow();
+    now = Number.NaN;
+    control.enqueue(new TextEncoder().encode('must never be released'));
+    control.close();
+    await rejected;
+    expect(grant.signal.aborted).toBe(true);
+  });
+});
+
 describe('private-path and own-node policy on actual chain categories', () => {
   const refs: readonly [NetworkAction, BrowserNetworkRef][] = [
     ['scan', evm], ['btc-scan', { kind: 'btc', network: 'regtest' }], ['solana-scan', { kind: 'solana', network: 'devnet' }], ['tron-scan', { kind: 'tron', network: 'nile' }],
