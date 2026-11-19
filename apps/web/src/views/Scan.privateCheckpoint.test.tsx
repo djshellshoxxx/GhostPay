@@ -212,7 +212,7 @@ describe('private seller checkpoint UI', () => {
     const gate = new Promise<void>((resolve) => { release = resolve; });
     let waiting = false;
     const store: ReconciliationVaultStore = {
-      read: s.saved.store.read,
+      read: (key) => s.saved.store.read(key),
       compareAndSwap: async (key, expected, next, guard) => {
         // Gate the encrypted page commit, not the initial reservation before RPC creation.
         if (next.includes('"ciphertext"')) { waiting = true; await gate; }
