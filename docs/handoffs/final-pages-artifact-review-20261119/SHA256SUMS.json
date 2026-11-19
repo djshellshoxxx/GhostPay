@@ -1,0 +1,8 @@
+{
+  "QUALIFICATION.md": "dc54421c74e691b84b1696459ea89b68d277ee95a835c0bb313535cba8d20675",
+  "RESULTS.json": "c3f1ae62c9ceef181893f12b8e6937badf243c697d800dcf65c3bdd9c4639801",
+  "evidence/invoice-schema-source-comparison.json": "8dbe6b20b89e3ba1b09a55e59d089dad090b5baeb92c5d12727b4f3ffb4be990",
+  "evidence/original-verifier-tests.log.gz": "3dffaca81dc44674fec86a3ca4ee0df4972322703deb486726cb6a53fa64ca02",
+  "evidence/pages-tools-missing-dependencies.log.gz": "d421d9f23176e907e5fc4434886737ca4639b7dce25adc00428797ff3b176ee6",
+  "evidence/pages-tools-qualified.log.gz": "5b19fa25cc31564f1171b598d6eaba770a7c94621534fc194098c668bfa7fd41"
+}

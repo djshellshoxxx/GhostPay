@@ -1,0 +1,103 @@
+{
+  "format": "ghostpay-pages-artifact-independent-review/1",
+  "date": "2026-11-19",
+  "branch": "review/ghostpay-pages-artifact-20261119",
+  "reviewedPullRequest": 276,
+  "reviewedHead": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+  "independentTestCommit": "de5686afc0248a1a60cf4171ed79f9565eac1539",
+  "mergeBase": "8f56376427c96881f49590920ff0bf8543ec81b4",
+  "runtimeChangedFromReviewedHead": false,
+  "testsChangedFromReviewedHead": false,
+  "nodeVersion": "v24.22.3",
+  "checks": [
+    {
+      "command": "node --test scripts/pages/verify-pages-artifact.test.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "log": "evidence/original-verifier-tests.log.gz"
+    },
+    {
+      "command": "node --test scripts/pages/*.test.mjs",
+      "environment": "Initial isolated worktree had no node_modules tree.",
+      "status": "failed",
+      "exitCode": null,
+      "exitCodeNote": "Completion output was unavailable after session closure; test runner summary records five failures.",
+      "tests": 101,
+      "passed": 96,
+      "failed": 5,
+      "skipped": 0,
+      "cause": "Missing js-yaml, @playwright/test, and @ghostpay/invoice-schema modules.",
+      "log": "evidence/pages-tools-missing-dependencies.log.gz"
+    },
+    {
+      "command": "node --test scripts/pages/*.test.mjs",
+      "environment": "Read-only links to freshly installed root third-party dependencies; own invoice-schema workspace link; compiled output copied only after all 33 tracked invoice-schema files were byte-identical.",
+      "status": "passed",
+      "exitCode": 0,
+      "tests": 101,
+      "passed": 101,
+      "failed": 0,
+      "skipped": 0,
+      "log": "evidence/pages-tools-qualified.log.gz"
+    }
+  ],
+  "sourceFiles": {
+    "scripts/pages/verify-pages-artifact.mjs": {
+      "gitBlob": "b13870688d722fe5928ed192499ae76be55554ee",
+      "sha256": "6aabcae1dd74c70b0fd35cbbd9267fe1a44c3ecde41708bbfa886f6343d70f37"
+    },
+    "scripts/pages/verify-pages-artifact.test.mjs": {
+      "gitBlob": "341e14cfd555a8db44eba8861458b682dedd54ff",
+      "sha256": "70aa94e74304265f1e216f89e754cc514047ac13b2794a2d82e4b8ec606ba9c8"
+    },
+    "scripts/pages/verify-pages-site.mjs": {
+      "gitBlob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+      "sha256": "443cc9feb27faa65c3032c92a18a953933249f3b126707bd00570ef567abe7c0"
+    },
+    "scripts/pages/verify-pages-site.test.mjs": {
+      "gitBlob": "599c9cfb857fb98bb0a228a0f1bad1d4fcfccfc5",
+      "sha256": "3fcf236d7c74a5d00f1b1280cdd6d73cdcf5922edce53170702cc47df77a9faf"
+    },
+    "package.json": {
+      "gitBlob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d"
+    },
+    "package-lock.json": {
+      "gitBlob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2"
+    }
+  },
+  "logs": [
+    {
+      "path": "evidence/original-verifier-tests.log.gz",
+      "uncompressedSha256": "a5ab8486a6eab9ce79167b418043b0a75db1b6cef18419bd8fc9bc531769c0e9",
+      "uncompressedBytes": 611
+    },
+    {
+      "path": "evidence/pages-tools-missing-dependencies.log.gz",
+      "uncompressedSha256": "677ec69c98716297d867203974ea8a9b87ab546bc2aac595819690787dad47ba",
+      "uncompressedBytes": 15499
+    },
+    {
+      "path": "evidence/pages-tools-qualified.log.gz",
+      "uncompressedSha256": "dada9a4c4cb45129fe0324687c3ec0adb98651d003b548f7897716da16f65368",
+      "uncompressedBytes": 8067
+    }
+  ],
+  "independentReview": {
+    "verdict": "Suitable for integration with its existing trust assumptions.",
+    "newBlockingFindings": 0,
+    "originalAncestryPreserved": true,
+    "releaseReadinessClaimed": false,
+    "currentArtifactOrLiveDeploymentVerifiedByThisReview": false
+  },
+  "remainingGates": [
+    "Run the verifier against the final source-pinned artifact and independently trusted checksum manifest.",
+    "Retain and run the separate site-safety verifier and all existing release gates.",
+    "Current-source CI, dedicated-origin approval, deployment qualification, and external review remain the release coordinator's responsibility."
+  ]
+}
