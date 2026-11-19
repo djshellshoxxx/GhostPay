@@ -126,8 +126,11 @@ describe('canonicalize', () => {
   });
 
   it('rejects sparse or decorated arrays rather than silently altering signed JSON', () => {
-    const missingFirst = new Array<number>(1);
-    const missingMiddle = [1, , 3];
+    const missingFirst: number[] = [];
+    missingFirst.length = 1;
+    const missingMiddle = [1];
+    missingMiddle.length = 3;
+    missingMiddle[2] = 3;
     const extra = [1] as number[] & { extra?: number };
     extra.extra = 2;
     const nonenumerable = [1];
