@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SCAN_PRIVACY, MAX_BULK_EVIDENCE, clampBulkEvidence } from './scanPrivacy';
+import { DEFAULT_SCAN_PRIVACY, MAX_BULK_EVIDENCE, clampBulkEvidence, clampPadBlocks, sanitizeScanPrivacy } from './scanPrivacy';
 
 describe('bulkEvidence scan privacy setting (TM12)', () => {
   it('is off by default', () => {
@@ -14,5 +14,11 @@ describe('bulkEvidence scan privacy setting (TM12)', () => {
     expect(clampBulkEvidence(12.9)).toBe(12);
     expect(clampBulkEvidence(25)).toBe(25);
     expect(clampBulkEvidence(MAX_BULK_EVIDENCE + 1)).toBe(MAX_BULK_EVIDENCE);
+  });
+
+  it.each([Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NaN])('keeps invalid non-finite privacy options disabled (%s)', (invalid) => {
+    expect(clampBulkEvidence(invalid)).toBe(0);
+    expect(clampPadBlocks(invalid)).toBe(0);
+    expect(sanitizeScanPrivacy({ bulkEvidence: invalid, padBlocks: invalid })).toMatchObject({ bulkEvidence: 0, padBlocks: 0 });
   });
 });

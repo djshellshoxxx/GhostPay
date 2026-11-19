@@ -86,11 +86,11 @@ const PER_REQUEST_EVENTS: ReadonlySet<string> = new Set(['request']);
 
 /**
  * Zero-log mode (`privacy.zeroLog`, apps/relayer/PRIVACY.md): drops the per-request access line and strips `requestId`
- * from every other line, so no log line can be tied to one HTTP request or its timing. Operational events (startup,
- * breaker, state, receipt outcomes) stay, with chain id and error class only.
+ * from every other line. Operational events (startup, breaker, state, sweep submission and receipt outcomes) retain
+ * their timestamps and allowed chain/error fields, so timing and chain correlation remain possible.
  *
  * @remarks IP addresses, owners and destinations are never logged in either mode ({@link sanitizeFields}); this
- * removes the remaining per-request trail.
+ * removes access lines and explicit request identifiers, not all application or infrastructure logging.
  */
 export function zeroLogLogger(inner: Logger): Logger {
   return {

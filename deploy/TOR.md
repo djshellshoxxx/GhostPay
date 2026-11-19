@@ -73,3 +73,9 @@ Keep the UNTESTED banner until all of these pass on a real network and the resul
 2. Tor Browser loads `http://<addr>.onion/` and the page's integrity checks pass.
 3. With an `https://` testnet RPC configured, a scan completes from Tor Browser.
 4. `GET http://<addr>.onion/api/healthz` answers from Tor Browser.
+
+## Profile state and CSP acceptance (TM6/TM14)
+
+Network profile selection is a local preference, not a Tor connection. Malformed, incomplete, unreadable or unacknowledged saved profile settings now block new shared EVM RPC requests and require an explicit Settings repair; they do not silently select another provider. Fresh-install absence uses Direct, and deleting site data resets preferences. Already-dispatched traffic cannot be retracted. Browser/extension/host compromise is outside this preference guard. The shared EVM RPC profile guard does not cover separately configured scan endpoints/indexers, raw relayer fetch, or the Bitcoin, Solana and TRON adapters; their transport behavior is tracked separately under #241.
+
+The standard and Pages builders accept exact HTTPS/WSS origins through `GHOSTPAY_CONNECT_ORIGINS`; hosted builds should also use `GHOSTPAY_REQUIRE_TIGHT_CSP=1`. Matching nginx headers can be generated as described in [BUILD-WEB.md](BUILD-WEB.md). This does not add plain-HTTP onion/loopback origins to the CSP. HTTPS loopback still depends on browser certificate trust and network permissions. Tests against controlled fixtures do not verify real Tor routing, bootstrap, onion reachability, exit behavior, independent wallets or public RPC services. The UNTESTED status above remains.

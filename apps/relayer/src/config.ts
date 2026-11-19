@@ -54,7 +54,7 @@ export interface ChainRuntimeConfig {
  *   onion budget. Not tested against a real Tor in this repository (deploy/TOR.md).
  */
 export type IngressMode = 'direct' | 'trusted-proxy' | 'onion';
-/** Default `direct`: unpadded and padded bodies are accepted; `required` refuses unpadded ones (after the transition). */
+/** Default `optional`: unpadded and padded bodies are accepted; `required` refuses unpadded ones (after the transition). */
 export type BodyPaddingMode = 'optional' | 'required';
 
 /** Resolved `privacy` block. */
@@ -552,7 +552,7 @@ const LOOPBACK_HOSTS: ReadonlySet<string> = new Set(['127.0.0.1', '::1', 'localh
 function parsePrivacy(o: JsonObject, host: string, trustedProxies: readonly string[]): RelayerPrivacyConfig {
   const p = sub(o, 'privacy', '$', ['zeroLog', 'ingress', 'bodyPadding']);
   const zeroLog = boolOr(p, 'zeroLog', 'privacy', false);
-  const rawIngress = p['ingress'] ?? (trustedProxies.length > 0 ? 'trusted-proxy' : 'direct');
+  const rawIngress = p['ingress'] === undefined ? (trustedProxies.length > 0 ? 'trusted-proxy' : 'direct') : p['ingress'];
   if (rawIngress !== 'direct' && rawIngress !== 'trusted-proxy' && rawIngress !== 'onion') {
     return bad('privacy.ingress', 'must be direct, trusted-proxy or onion');
   }
@@ -563,7 +563,7 @@ function parsePrivacy(o: JsonObject, host: string, trustedProxies: readonly stri
     if (trustedProxies.length > 0) return bad('privacy.ingress', 'onion needs an empty trustedProxies');
     if (!LOOPBACK_HOSTS.has(host)) return bad('privacy.ingress', 'onion needs listen.host on loopback');
   }
-  const bodyPadding = p['bodyPadding'] ?? 'optional';
+  const bodyPadding = p['bodyPadding'] === undefined ? 'optional' : p['bodyPadding'];
   if (bodyPadding !== 'optional' && bodyPadding !== 'required') return bad('privacy.bodyPadding', 'must be optional or required');
   return { zeroLog, ingress: rawIngress, bodyPadding };
 }

@@ -304,7 +304,7 @@ describe('TM15 padded scan windows (padBlocks)', () => {
       s.setItem('ghostpay.scanPrivacy.v1', JSON.stringify({ padBlocks: stored }));
       expect(loadScanPrivacy(s).padBlocks).toBe(want);
     }
-    expect(clampPadBlocks(Number.POSITIVE_INFINITY)).toBe(MAX_PAD_BLOCKS);
+    expect(clampPadBlocks(Number.POSITIVE_INFINITY)).toBe(0);
     expect(planScan({ ...DEFAULT_SCAN_PRIVACY, padBlocks: 300 }, chain)).toMatchObject({ kind: 'ready', window: { padBlocks: 300 } });
     expect(planScan(DEFAULT_SCAN_PRIVACY, chain)).toMatchObject({ kind: 'ready', window: { padBlocks: 0 } });
   });

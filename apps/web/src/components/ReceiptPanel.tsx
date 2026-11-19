@@ -88,6 +88,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
     setInvoicePassphrase('');
     setInvoiceConsent(false);
     setSignConsent(false);
+    setIncludeAddress(false);
     setBoundInvoice(undefined);
     setReceiptBound(false);
     invoiceRevision.current++;

@@ -139,7 +139,7 @@ describe('apply-csp postbuild (tight connect-src)', () => {
   const dist = (): string => {
     const d = tmp();
     writeFileSync(join(d, '_headers'), `/*\n  Content-Security-Policy: ${csp(BROAD)}\n`);
-    writeFileSync(join(d, 'index.html'), `<meta content="${csp(BROAD)}">`);
+    writeFileSync(join(d, 'index.html'), `<html><head><meta http-equiv="Content-Security-Policy" content="${csp(BROAD)}"></head><body></body></html>`);
     return d;
   };
   it('rewrites _headers and the meta CSP, and the check passes', () => {
@@ -173,7 +173,7 @@ describe('apply-csp ignores comment lines that mention connect-src', () => {
     const d = mkdtempSync(join(tmpdir(), 'gp-csp-comment-'));
     const o = parseOrigins('https://rpc.example.org');
     writeFileSync(join(d, '_headers'), "# connect-src is broad (https: wss:) because ...\n/*\n  Content-Security-Policy: default-src 'self'; connect-src 'self' https://rpc.example.org; worker-src 'self'\n");
-    writeFileSync(join(d, 'index.html'), '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; connect-src \'self\' https://rpc.example.org; worker-src \'self\'">');
+    writeFileSync(join(d, 'index.html'), '<html><head><meta http-equiv="Content-Security-Policy" content="default-src \'self\'; connect-src \'self\' https://rpc.example.org; worker-src \'self\'"></head><body></body></html>');
     expect(checkCspDist(d, o)).toEqual([]);
     rmSync(d, { recursive: true, force: true });
   });

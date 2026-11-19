@@ -559,3 +559,70 @@ Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
 Owned paths: root/workspace package manifests, package-lock.json, dependency tooling regressions if a defect is reproduced, and a source-pinned dependency handoff. No application source, workflows, coverage configuration, contracts or deployment changes.
 Acceptance: integrate the exact paired #210 and #236 dependency revisions; clean installation; library and web builds; relevant original coverage-enabled suites, typechecks and lints; full and production dependency audits; preserve pending browser and hosted qualification honestly. No forced peers, casts, blanket overrides or weakened gates.
 Source candidates: #210 `4d19655a2e5d93ad9378803cd4163245168aca24`; #236 `defdaa308a2d05ab407af7e42f8dc457cf52d103`.
+# TM1–TM15 hardening completion — 2026-11-18
+
+Coordinator: ChatGPT root; reviewers: browser_privacy, metadata_privacy, relayer_chain_privacy, acceptance_review.
+Branch: `chatgpt/ghostpay-tm-hardening-20261118`.
+Base: `198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238), which already contains
+main `dfc75ef2087fa6463ae59e0818abec01796c578d` and PR #222
+`2bc2098298d90928eb1acafad969f28316bb05fc` as ancestors. [PR #249](https://github.com/djshellshoxxx/GhostPay/pull/249) is stacked
+on #238 so only the TM-specific continuation is proposed; existing integration is
+an input, not repeated repository consolidation.
+
+| Worker | Owned paths | TM acceptance |
+|---|---|---|
+| browser_privacy | `apps/web/src/lib/settings*.ts`, `apps/web/src/views/Settings*.tsx`; focused new privacy tests | TM4 session-only persistence/export boundaries; TM1/TM2/TM3/TM7/TM14 source review and bounded local selections. Final execution status is recorded per TM in the completion matrix, not implied by this claim. |
+| metadata_privacy | `apps/web/src/components/ReceiptPanel*.tsx`, `packages/scan-source/src/{padded,range}*.ts`, `apps/web/src/lib/scanPrivacy*.ts`, `apps/web/src/views/Scan{,.privacy.test}.tsx`; focused invoice/default acceptance tests | TM9 opt-in scoped to receipt identity; TM15 bounded/cancellable padding; TM8/TM10/TM12 source and test qualification while preserving checkpoint owner. |
+| relayer_chain_privacy | Existing TM11 relayer privacy source/tests/docs and TM13 BTC/Solana/TRON flow-specific tests; runtime only for a confirmed in-scope defect | Strict padding/ingress/zero-log behavior; chain-specific query consent and sign-time checks. |
+| acceptance_review | Read-only fourth-role review and acceptance-review report | Test coverage, active call paths, disclosure boundaries and independently reviewed corrections. |
+| coordinator | CSP scripts/tests and deployment documentation; privacy matrix/defaults tests; catalogs after coordination; qualification and review evidence | TM5 generated meta/header/nginx validation; TM6 accurate Tor guidance; all 15 dispositions, independent cross-review and exact-source qualification. |
+
+All 15 authoritative recommendations were read before product changes. Read-only
+source review preceded failing regressions for each confirmed defect.
+PR #241 owns general browser transports, #235 owns checkpoint architecture, #234
+owns pinned invoice signers, and #239/#240 own Spec 18. Those implementations are
+not independently redesigned. Main merges, deployment, release publication,
+contracts/Mythril, unrelated dependency upgrades and general consolidation are
+outside this task. Do not overwrite concurrent changes; recheck remote heads
+before publication. Final source and test evidence belong in
+`docs/handoffs/tm-hardening-20261118/`.
+
+TM acceptance fixture follow-up: browser_privacy owns only the hostile-text case in `apps/web/e2e/app.spec.ts`; the existing dialog listener must acknowledge one expected outgoing beforeunload prompt without suppressing invoice-origin dialogs. Runtime/key retention and global helpers stay unchanged. acceptance_review independently reviews the fixture delta; hosted full/lean execution remains required.
+
+## TM5 artifact-validation follow-up — 2026-11-19
+
+Worker: browser_privacy. Independent reviewer: acceptance_review. Coordinator:
+root, owning actual artifact generation, final source publication and hosted gates.
+Branch: `chatgpt/ghostpay-tm-hardening-20261118`; published input checkpoint
+`f0c15de9b381ac8a13ed3c76781d7fad8b236391`, PR #249.
+
+Owned paths: `apps/web/scripts/scan-bundle.mjs`, `apps/web/scripts/scan-bundle.d.mts`,
+`apps/web/scripts/apply-csp.mjs`, `apps/web/scripts/apply-csp.d.mts`, and
+`scripts/tests/privacy-csp-bundle.test.mjs`. No transport, runtime provider,
+dependency, workflow, checkpoint, contract or gate-policy ownership is added.
+
+Acceptance: actual full/lean tight-CSP outputs exposed the scanner rejecting
+configured HTTPS/WSS origins in the enforcing head policy after CSP application
+had passed. Permit only that exact validated `connect-src` source portion;
+preserve all generic host, resource, inline-code, worker-network and deployment
+checks elsewhere. Invalid configuration, inert/late/duplicate/malformed policy,
+mismatched headers, ambiguous source ranges and non-ASCII source separators must
+remain rejected without echoing credential-bearing configuration.
+
+Status: five-file correction independently source-reviewed with no remaining
+source blocker reported. The focused Node selection passed 79/79 after failing-first
+regressions; independent probes passed 56/56 (54 synthetic and two existing
+artifact scans). Fresh corrected full and lean Vite outputs each passed bundling,
+CSP application and unchanged `scan-dist`, six stages with exit 0. The artifact
+receipts pin the input checkpoint, all five changed source hashes and produced
+file inventories; build metadata remains `unknown`. These are isolated artifact
+checks, not a canonical TypeScript/npm build, full test suite, Chromium pass or
+release artifact. Final exact-source hosted qualification remains pending on
+[PR #249's checks](https://github.com/djshellshoxxx/GhostPay/pull/249/checks).
+
+Qualification documentation owner: metadata_privacy updates only
+`docs/threat-model/TM_HARDENING_COMPLETION_20261118.md` and this registry for this
+checkpoint. The matrix explicitly separates local targeted/artifact passes,
+source-only review, incomplete processes and outstanding acceptance for all 15
+recommendations. Root owns the qualification handoff, evidence publication and
+next exact-tree commit; no future commit SHA or unexecuted gate result is assumed.
