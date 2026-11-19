@@ -1,0 +1,3535 @@
+{
+  "schema_version": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "refs_observation_window_utc": [
+    "2026-11-19T11:38:40Z",
+    "2026-11-19T11:39:03Z"
+  ],
+  "snapshot": {
+    "prior_count": 287,
+    "count": 288,
+    "new_count": 1,
+    "advanced_count": 5,
+    "missing_prior_branches": [],
+    "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "raw_refs_sha256": "25618f24adc201aaf51e5ba94186b897cb5d5b41be8d140ebcc2b2ca3fab62da",
+    "tag_enumeration_exit": 0,
+    "tag_refs": 0
+  },
+  "branches": [
+    {
+      "name": "ai/agent-harness-20261113",
+      "sha": "15dc9c192c6086f2e51bcce68ca18ea483968b57",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/20261119T073600Z/bug/camera-visibility",
+      "sha": "84398a79e18673f3e371a405931bc464e1cca99a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/20261119T073600Z/coordinator/integration-lock",
+      "sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/20261119T083600Z/audit/merchant-clock",
+      "sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/20261119T083600Z/bug/json-canonical-array",
+      "sha": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "sha": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "sha": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/api-funded-ghostpay-cloud-20261103",
+      "sha": "29ce481d2d4a964f0acc42cc5233eb2d9c3e9482",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/ghostpay-integration-lock",
+      "sha": "aece22afb8d648182e8bdd439ec58a02cbf9de82",
+      "disposition": "Metadata-only generation3 renewal at the captured ref; subsequently explicitly released at6408563f55081ee941c2036086c025ebf63d2c96 and read back. Never merge control history into source."
+    },
+    {
+      "name": "automation/ghostpay-parallel-four-agents-20261103",
+      "sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/ghostpay-parallel-review-wave-20261103",
+      "sha": "03a3f5701c89e19667f309bb5f01bd36793a5474",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "automation/ghostpay-recurrent-backlog-20261103",
+      "sha": "5835736c12968231ac7b3152e394077bee453622",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "backup/codex-observed-pr37-915d710-20261028",
+      "sha": "915d71053e2335dfff638b729b160f9df3200c22",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "backup/pr30-before-consolidation-20261025",
+      "sha": "356fe5e44d42db1731d6b35794c6474afcc23037",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "backup/pr31-before-consolidation-20261025",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/btc-spent-private-scan-20261118",
+      "sha": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/btc-spent-qualification-20261119",
+      "sha": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/btc-spentness-private-scan-20261118",
+      "sha": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/consolidation-reconciliation-20261113",
+      "sha": "3cf3437a8d9dbe3ec1d9056adb73fb93f0f2929c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "sha": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-log-artifact-20261118",
+      "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-qualification-20261112",
+      "sha": "c11f905b362ae2b0734b4dc6ff348fe3c5e0fcfa",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-billing-horizon-port-20261112",
+      "sha": "eb21d57c8ad1550481d5d674fa6356ac98f146f0",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-cli-sentinel-port-20261112",
+      "sha": "3fd18ef4011b8d6e094ac49a13c0e6ccc2c0c9c9",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "sha": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-idle-lifecycle-20261119",
+      "sha": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
+      "sha": "d5fe06e7a7b383da1726c4d38165c824e996b9db",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-integration-matrix-20261112",
+      "sha": "1a5e815d8446f00a63f98de261081910c9c78ce6",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-invoice-validation-20261118",
+      "sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-merchant-csv-port-20261112",
+      "sha": "bbc7dda4ce275613296609a5001bac36c888229e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-onion-canonical-port-20261112",
+      "sha": "8277879eeaa003c31fd76b4f840b9628f4b02cf7",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-own-node-guard-20261118",
+      "sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+      "sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+      "disposition": "PR276 advanced only documentation/tests; original runtimeb1387068 is unchanged and both races plus encoding defects are repaired separately in277. Preserve the source branch and newer CLI control."
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+      "sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-client-hardening-20261115",
+      "sha": "f3872e90eb255b46a773d78f4f5adb6239db2b4f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-gp02-gp04-review-20261115",
+      "sha": "9b3a3070499a2a6d70349d540f7aaaed006426e9",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-idle-clock-20261118",
+      "sha": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-second-pass-notes-20261115",
+      "sha": "cf6a8d69620af6271e573a8b20fe1562e89ef81c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "sha": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "sha": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-recovery-review-20261118",
+      "sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-remaining-work-20261119",
+      "sha": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "sha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-sensitive-surface-audit-20261115",
+      "sha": "90a145740a163a9515e5c70e79be33610b67b293",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115",
+      "sha": "97a617b5b95f04a1e736c5c730c587ef0824d05a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "sha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-sonar-review-20261118",
+      "sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+      "sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-tm-hardening-20261118",
+      "sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-top-down-audit-20261115",
+      "sha": "775756931be4683f47e8af6b2ecf26f9458897d7",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-ux-clock-port-20261112",
+      "sha": "c3173f849ad6ce3d3e5a4c4b2a1efdb7d9c937df",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-ux-guide-port-20261112",
+      "sha": "f3a9b2389f8ba32f7a3cccce2cdabc186c23df1b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/ghostpay-viem-alignment-20261118",
+      "sha": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/pages-browser-fixes-combined-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/pages-release-gate-audit-20261114",
+      "sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/spec18-recovery-completion-20261118",
+      "sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex-continuation-spec-20261109",
+      "sha": "d15921981ecfe8342886c27c52af43c22c1c6205",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-main-20261118-r185",
+      "sha": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-secret-box-20261110",
+      "sha": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
+      "sha": "0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "sha": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-wiki-20261110",
+      "sha": "fa375dbc1f2416b27d75e44487e5a382f237b379",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "sha": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+      "sha": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "sha": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "sha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+      "sha": "5280569b7eaad9b4d996861410211cd40d005fdb",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "sha": "9732adb949cc7191beddcb986dff76e9f9534537",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "sha": "433307b869acf2d81b2d12b415631076a89f7213",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+      "sha": "81fd4c032e29a87ce509236a0398468022c23012",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "sha": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+      "sha": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "sha": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "sha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "sha": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+      "sha": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+      "sha": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+      "sha": "eece5aff554255ca6c02e53849403f66123b8e40",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "sha": "17f681915f25441f5c38326ad718b8082495d52a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+      "sha": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/qualify-98-20261110",
+      "sha": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+      "sha": "83d17adb4a07ff2120c6674a5128684e4f13776a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+      "sha": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+      "sha": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+      "sha": "bbe300b7fb21829350f66677d270a689f3a79ecf",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+      "sha": "0ab175e552485032672c59d9b38c733545c7c50f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "checkpoint/ghostpay-recovery-20261102",
+      "sha": "1dffa5a366fc88a4428823634f43247913048915",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "sha": "243d98d67c7cbcc854b2107da5461e4718cb6272",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/admiring-albattani-6kydor",
+      "sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/adoring-wozniak-850ue6",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-a4-btc-headersync",
+      "sha": "27d1580c5c535cef5ea44491716d0d86712df841",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-a5-announcer-budget",
+      "sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-a6-combined-backup",
+      "sha": "f5d219851a4715cb947eb224976f97a7bec49380",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-a7-policy-send-guard",
+      "sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-b1-core-journey",
+      "sha": "e0a499bdd95da4d9dd24a19a73fe9609e302b104",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-b2-lean-bound-receipts",
+      "sha": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-b3-sweep-permit-states",
+      "sha": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-b5-testnet-feeds",
+      "sha": "76199cdac3ee336e2751995d511111467141d943",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-c1-reconciliation-adr",
+      "sha": "1e87109119c1945ea81bfa7e29bc9d1663984bf7",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-c2-qr-pairing",
+      "sha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-c4-i18n-pay",
+      "sha": "e02d04c7540607624e4bf4627566a5e605242fe1",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-c4-i18n-scan",
+      "sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-c5-device-matrix",
+      "sha": "92af349a2e877d6cf94e7ed95a6466163a205089",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ar-c7-embed-iframe-e2e",
+      "sha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/consolidation-2026-11-04",
+      "sha": "a28ca06a83dc621a2bcb0eb0432889d7b4416285",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cool-albattani-xopr89",
+      "sha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-c2",
+      "sha": "b9cba0978cade31e15faa4067adae448e4dcbc04",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-c4",
+      "sha": "511c23bd925504b02d329e1c82bc30593d3ac496",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-c5",
+      "sha": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-w1",
+      "sha": "704e268bfa7df57964175f820f67400834bdce43",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-w10",
+      "sha": "391454b2609b97dd9e98f65df470dfb880e16142",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-w11",
+      "sha": "764020c208c144e165437e244b6a1bc43673dc5f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-w5",
+      "sha": "f030376a331445f5059061f24238acb5cf867b29",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-w6",
+      "sha": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-w7",
+      "sha": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-w8",
+      "sha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/cw-w9",
+      "sha": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/docs-screenshots",
+      "sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/docs-snapshot-1",
+      "sha": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/docs-snapshot-2",
+      "sha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/exciting-brown-7v69cr",
+      "sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/friendly-turing-1ui0on",
+      "sha": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "sha": "b6a0871d0618c5ee804947af22d21b794948fa3d",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-autonomous-prompt-scpgun",
+      "sha": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-completion-audit-ot5jjm",
+      "sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg",
+      "sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-security",
+      "sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/gifted-planck-115x2k",
+      "sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/gracious-heisenberg-97ji6q",
+      "sha": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/haiku-wave-2-handoff-qepfoe",
+      "sha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/happy-maxwell-onl4x5",
+      "sha": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/hopeful-bardeen-8ch6l8",
+      "sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/inspiring-fermat-vxv689",
+      "sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/kind-faraday-8qzf6e",
+      "sha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/laughing-bardeen-4t20ys",
+      "sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/lucid-meitner-apalzc",
+      "sha": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/nice-ritchie-8vivls",
+      "sha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/pages-site-1",
+      "sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/portable-hosting-kit",
+      "sha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-1",
+      "sha": "39cce4663d98c7da06775441a301040af51907ed",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-10",
+      "sha": "698404ca488c87347858105bda66be21bf428303",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-2",
+      "sha": "df150cbdb58203789f5afc3050e75d92c655fa49",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-3",
+      "sha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-4",
+      "sha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-5",
+      "sha": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-6",
+      "sha": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-7",
+      "sha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-8",
+      "sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/remote-extensions-9",
+      "sha": "f09decc278c2052c90dfa209a7098888c8d9877a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/sharp-bohr-uigfgh",
+      "sha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/vibrant-cori-scu18b",
+      "sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/vigilant-johnson-yjgq94",
+      "sha": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/wizardly-babbage-mfsdrl",
+      "sha": "ade77362de33156de849989e26206126f978bb8f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "claude/wonderful-thompson-ir89i9",
+      "sha": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-approval-gated-auto-integration-20261109",
+      "sha": "e36786bce4e752cb79d60bdca4b640e36ad45753",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-browser-isolation-20261118",
+      "sha": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-canonical-time-20261116",
+      "sha": "27852ba898968a08f7d7c448fac8b19058189281",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-caveman-completion-20261116",
+      "sha": "0c4c3c8d951a9d6e71affcdaa26478911c8037f1",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-caveman-followup-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-cloud-41868394956",
+      "sha": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-companion-merchant-20261109",
+      "sha": "b748ecdce06d2dfa911144814161c31a46a09e9b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-completion-20261116",
+      "sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-consolidation-20261030",
+      "sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-consolidation-audit-20261104",
+      "sha": "e2ac398c2c8943a244239b9d6ffa2181e13e7782",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-consolidation-followthrough-20261119",
+      "sha": "73545f63112910d46002718354ab5e99f8652e1f",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-consolidation-records-20261119",
+      "sha": "4552f55d8c9026f5dc0aa662ef167aefc46e37db",
+      "disposition": "PR273 completed and read back all eight records, retained recovery259 ancestry and current main, then registered final evidence scope. The containing follow-up commit appends these dated observations; it is documentation only."
+    },
+    {
+      "name": "codex/ghostpay-continuation-20261109",
+      "sha": "0a68a57b77a70d3bcf4635ccbc5190d735e71f40",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-export-authorization-20261119",
+      "sha": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-feature-consolidation-20261119",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "disposition": "PR262 two-commit156-path documentation/evidence tail only;155 additions plus one modified feature matrix. Runtime/tests/dependencies/workflows/claims unchanged. No new complete-green application or CodeQL attribution; see source-bound receipt."
+    },
+    {
+      "name": "codex/ghostpay-hosting-timestamp-main-20261119",
+      "sha": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+      "disposition": "PR267 reconciles main and claims while preserving all three previously reviewed hosting runtime/test blobs. Only those three files differ outside docs from current main. Exact new-head CI remains pending."
+    },
+    {
+      "name": "codex/ghostpay-integrate-product-cli-20261109",
+      "sha": "3ec039c554f7052b859975facb2b634a1763d5cf",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-mythril-recovery-20261116",
+      "sha": "ffd957e28f982f5c6d2dc00f51143766b2406773",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-observability-20261116",
+      "sha": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-ops-response-cap-20261116",
+      "sha": "73371b57040c61bdb480e724e8593313d95c6781",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-policy-localization-20261109",
+      "sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-private-scan-lint-20261119",
+      "sha": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-product-20261109",
+      "sha": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "sha": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-registry-recovery-20261116",
+      "sha": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-research-acceptance-tests-41750257638",
+      "sha": "57b414bfbc1fa9de9ef68675b9181b4c148f18e4",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-research-documentation-ux-41750257638",
+      "sha": "96fc22c42a704d1c590d56d624fff15a945c8231",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-research-release-qualification-41750257638",
+      "sha": "6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-research-security-review-41750257638",
+      "sha": "2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-resume-20261028",
+      "sha": "75400888c96b9bddb2a406dd8fd6d273521aebb2",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-security-audit-20261030",
+      "sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-spec09-matrix-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/ghostpay-unified-completion",
+      "sha": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/network-isolation-complete-20261119",
+      "sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/recovery-spec02-unqualified-20261116",
+      "sha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/seller-ledger-receipt-qr",
+      "sha": "bb011134c1bf9cd0e75090fec75d85235d637281",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "codex/setup-autonomous-agent-20261104",
+      "sha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "consolidation/ops-monitor-bounded-streams-20261116",
+      "sha": "d2e8689b038034233d6587cfca547bff3321fcde",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "consolidation/six-verified-boundaries-20261116",
+      "sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "dependabot/github_actions/actions-b9ade1236b",
+      "sha": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "sha": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "sha": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "docs/future-privacy-feature-specs-20261109",
+      "sha": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "docs/ghostpay-3q-stealth-keypair-export-20261116",
+      "sha": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "docs/ghostpay-deep-research-20261103",
+      "sha": "894dc868dc5d07102ecb7f6a1e251381d8127f61",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "docs/ghostpay-privacy-architecture-5a-5l-20261116",
+      "sha": "e05044d4209de7e9cc242c8a83e5fc2264663174",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "docs/lean-release-handoff-2026-10-24",
+      "sha": "2b032d77fef95d5eaa446a72fda2eef46e83bbcd",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "docs/readme-and-wiki",
+      "sha": "ab2b61687210f79fa5401c8a25fa9a96bcb1ca61",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "sha": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "fix/ghostpay-reconciliation-saturated-state-20261109",
+      "sha": "a864949d9ee48cb48a43710f5dbd382032ab8db9",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "fix/remediation-b16c7936-5ce634",
+      "sha": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "fix/remediation-f95457fd-22ecf9",
+      "sha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "gh-pages",
+      "sha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "ghostpay-cloud-recovery-2026-10-26",
+      "sha": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "ghostpay-local-lean-boundary-20261027",
+      "sha": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "ghostpay-offline-deps-2026-10-27",
+      "sha": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "ghostpay-sbom-repro-2026-10-27",
+      "sha": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "gpt/ghostpay-beta-spec-20261109",
+      "sha": "6697390ff482ba18985de075412ba542e38040ab",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "gpt/ghostpay-cli-completion-20261109",
+      "sha": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "gpt/ghostpay-product-completion-20261109",
+      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "haiku/ghostpay-h01-inventory-20261111",
+      "sha": "747239db1a9b641d761736062c64bfb766d363ed",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "haiku/l1-i18n-20261114",
+      "sha": "c6a9033449cd9717d022f1c37913f951b1baaa6e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "haiku/l2-pkg-20261114",
+      "sha": "0c8b111cbe899a49b3cb03dc32c375b36ca9768d",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "haiku/l3-ledger-20261114",
+      "sha": "8c91051b449248bfc822a6578a3815b3c9d83ce3",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/consolidated-2026-10-21",
+      "sha": "c206655ebfa747b3dd56b1dc9f4e7f16e641a833",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/consolidated-2026-11-14",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-accepted-20261102",
+      "sha": "f8193502e602c99bb24ff956f142671750b744a0",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-adapter-qualification-20261119",
+      "sha": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-docs-recovery-20261119",
+      "sha": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-historical-promotion-20261118",
+      "sha": "22af2074a086d9957a18e310ef8572b28d1facd0",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-historical-security-promotion-20261119",
+      "sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-idle-session-completion-20261119",
+      "sha": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-master-consolidation-20261118",
+      "sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-mythril-security-closure-20261118",
+      "sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-pages-completion-20261118",
+      "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-qualified-fixes-20261118",
+      "sha": "ab4e0da2cfe2a18adac0424896fba0b40fac81a8",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "integration/ghostpay-recovery-reconciled-20261119",
+      "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "main",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "maintenance/ghostpay-branch-audit-20261119",
+      "sha": "55e7799574d9ab978c24e48addf6792f84e76a56",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "nodata/doc-sweep-20261118",
+      "sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "nodata/eager-babbage-0w6sf6",
+      "sha": "2693b08ed4b1dae35fad604a2324b790f1eee5dc",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "nodata/jolly-rubin-u4zd45",
+      "sha": "1054daabc5cabe958466ec144582d76137b54910",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "nodata/wizardly-allen-qwol6u",
+      "sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "nodata/wonderful-darwin-kd1h22",
+      "sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "nodata/zealous-hopper-lr0nxe",
+      "sha": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "privacy/hardening-recommendations",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "repair/ghostpay-270-policy-fixture-20261119",
+      "sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "repair/ghostpay-276-artifact-races-20261119",
+      "sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+      "disposition": "PR277: four-file isolated repair of two filesystem races and two lossless-UTF8 boundaries; final original Node suite17/17 plus independent17/17, syntax/diff checks and exact published tree/blobs pass. Hosted checks and trusted real-artifact qualification remain pending; stacked on276, not merged."
+    },
+    {
+      "name": "repair/ghostpay-history-pool-values-20261118",
+      "sha": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "repair/ghostpay-history-scanner-20261118",
+      "sha": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "repair/ghostpay-pr-231-20261118",
+      "sha": "4085622463411d3ba27f4efb7b73a70575170535",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "repair/ghostpay-pr-87-20261119",
+      "sha": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "research/privacy-evidence-matrix-20261110",
+      "sha": "a0a2d1dfbbdb10d89ef1a6ca4557d286d0e3f49e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "review/ghostpay-sweep-quote-lifecycle-20261119",
+      "sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "security/mythril-full-remediation-20261118",
+      "sha": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "work/ghostpay-consolidation-review-20261025",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "work/ghostpay-pr26-qa-2026-10-24",
+      "sha": "77e7d7b6dd21da1995259c8950141db0d34bcb6e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    },
+    {
+      "name": "work/local-reconstruction-2026-10-24",
+      "sha": "bd320d530c725c0edc820b496ea298d741c7ba9e",
+      "disposition": "Unchanged from the separately dated287-head snapshot; retain its original census/addendum disposition, not a new semantic-review claim."
+    }
+  ],
+  "changes": [
+    {
+      "name": "automation/ghostpay-integration-lock",
+      "previous": "409799b04c736203a42353059a966fa9cb3c01c0",
+      "sha": "aece22afb8d648182e8bdd439ec58a02cbf9de82",
+      "change": "advanced",
+      "disposition": "Metadata-only generation3 renewal at the captured ref; subsequently explicitly released at6408563f55081ee941c2036086c025ebf63d2c96 and read back. Never merge control history into source."
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+      "previous": "52fe7da6b6a0b3fecc8040b5ef95cd30110721e5",
+      "sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+      "change": "advanced",
+      "disposition": "PR276 advanced only documentation/tests; original runtimeb1387068 is unchanged and both races plus encoding defects are repaired separately in277. Preserve the source branch and newer CLI control."
+    },
+    {
+      "name": "codex/ghostpay-consolidation-records-20261119",
+      "previous": "b05a71f2859adef19f51f89d1855535b0bb80b53",
+      "sha": "4552f55d8c9026f5dc0aa662ef167aefc46e37db",
+      "change": "advanced",
+      "disposition": "PR273 completed and read back all eight records, retained recovery259 ancestry and current main, then registered final evidence scope. The containing follow-up commit appends these dated observations; it is documentation only."
+    },
+    {
+      "name": "codex/ghostpay-feature-consolidation-20261119",
+      "previous": "ec81ab8e560a3786152d373a58a6dd422f92232b",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "change": "advanced",
+      "disposition": "PR262 two-commit156-path documentation/evidence tail only;155 additions plus one modified feature matrix. Runtime/tests/dependencies/workflows/claims unchanged. No new complete-green application or CodeQL attribution; see source-bound receipt."
+    },
+    {
+      "name": "codex/ghostpay-hosting-timestamp-main-20261119",
+      "previous": "c3a693e87053fbe91219f8edfe159a5ec0a37a34",
+      "sha": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+      "change": "advanced",
+      "disposition": "PR267 reconciles main and claims while preserving all three previously reviewed hosting runtime/test blobs. Only those three files differ outside docs from current main. Exact new-head CI remains pending."
+    },
+    {
+      "name": "repair/ghostpay-276-artifact-races-20261119",
+      "previous": null,
+      "sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+      "change": "new",
+      "disposition": "PR277: four-file isolated repair of two filesystem races and two lossless-UTF8 boundaries; final original Node suite17/17 plus independent17/17, syntax/diff checks and exact published tree/blobs pass. Hosted checks and trusted real-artifact qualification remain pending; stacked on276, not merged."
+    }
+  ],
+  "latest_checks": {
+    "observed_at_utc": "2026-11-19T11:41:37Z",
+    "checks": [
+      {
+        "pr": 271,
+        "sha": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+        "total": 13,
+        "counts": {
+          "queued": 11,
+          "skipped": 1,
+          "success": 1
+        },
+        "check_runs": [
+          {
+            "id": 135534306130,
+            "name": "integration (anvil + bitcoind regtest + solana-test-validator)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541719/job/135534306130",
+            "created_at": "2026-11-19T11:38:42Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513344454,
+            "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+            "status": "completed",
+            "conclusion": "skipped",
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541873/job/135513344454",
+            "created_at": "2026-11-19T10:58:27Z",
+            "completed_at": "2026-11-19T10:58:26Z"
+          },
+          {
+            "id": 135513343448,
+            "name": "Build and verify the Pages site",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541873/job/135513343448",
+            "created_at": "2026-11-19T10:58:27Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513342659,
+            "name": "Pages artifact on anvil (browser)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541873/job/135513342659",
+            "created_at": "2026-11-19T10:58:27Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513341214,
+            "name": "CLI (macos-latest)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541500/job/135513341214",
+            "created_at": "2026-11-19T10:58:26Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513340958,
+            "name": "CLI (windows-latest)",
+            "status": "completed",
+            "conclusion": "success",
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541500/job/135513340958",
+            "created_at": "2026-11-19T10:58:33Z",
+            "completed_at": "2026-11-19T11:06:05Z"
+          },
+          {
+            "id": 135513340794,
+            "name": "beta acceptance (lib + cli + browser on anvil)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541529/job/135513340794",
+            "created_at": "2026-11-19T10:58:26Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513340556,
+            "name": "qualify-ghostpay-web",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541638/job/135513340556",
+            "created_at": "2026-11-19T10:58:26Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513340520,
+            "name": "CLI (ubuntu-24.04)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541500/job/135513340520",
+            "created_at": "2026-11-19T10:58:26Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513340125,
+            "name": "kit",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510541638/job/135513340125",
+            "created_at": "2026-11-19T10:58:26Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513308020,
+            "name": "Analyze (python)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510532527/job/135513308020",
+            "created_at": "2026-11-19T10:58:22Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513307961,
+            "name": "Analyze (actions)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510532527/job/135513307961",
+            "created_at": "2026-11-19T10:58:22Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513307385,
+            "name": "Analyze (javascript-typescript)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510532527/job/135513307385",
+            "created_at": "2026-11-19T10:58:22Z",
+            "completed_at": null
+          }
+        ]
+      },
+      {
+        "pr": 272,
+        "sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+        "total": 15,
+        "counts": {
+          "queued": 11,
+          "skipped": 1,
+          "cancelled": 3
+        },
+        "check_runs": [
+          {
+            "id": 135513372281,
+            "name": "CLI (ubuntu-24.04)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549322/job/135513372281",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513372186,
+            "name": "CLI (windows-latest)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549322/job/135513372186",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513371892,
+            "name": "CLI (macos-latest)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549322/job/135513371892",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513369569,
+            "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+            "status": "completed",
+            "conclusion": "skipped",
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549223/job/135513369569",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": "2026-11-19T10:58:29Z"
+          },
+          {
+            "id": 135513368487,
+            "name": "Build and verify the Pages site",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549223/job/135513368487",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513367874,
+            "name": "Pages artifact on anvil (browser)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549223/job/135513367874",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513367549,
+            "name": "kit",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510548951/job/135513367549",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513367458,
+            "name": "beta acceptance (lib + cli + browser on anvil)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549587/job/135513367458",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513367127,
+            "name": "qualify-ghostpay-web",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510548951/job/135513367127",
+            "created_at": "2026-11-19T10:58:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513365905,
+            "name": "Analyze (javascript-typescript)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510546398/job/135513365905",
+            "created_at": "2026-11-19T10:58:29Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513365301,
+            "name": "Analyze (python)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510546398/job/135513365301",
+            "created_at": "2026-11-19T10:58:29Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513364869,
+            "name": "Analyze (actions)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510546398/job/135513364869",
+            "created_at": "2026-11-19T10:58:29Z",
+            "completed_at": null
+          },
+          {
+            "id": 135513360762,
+            "name": "CLI (windows-latest)",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549048/job/135513360762",
+            "created_at": "2026-11-19T10:58:29Z",
+            "completed_at": "2026-11-19T10:58:29Z"
+          },
+          {
+            "id": 135513360750,
+            "name": "CLI (macos-latest)",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549048/job/135513360750",
+            "created_at": "2026-11-19T10:58:29Z",
+            "completed_at": "2026-11-19T10:58:29Z"
+          },
+          {
+            "id": 135513360586,
+            "name": "CLI (ubuntu-24.04)",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549048/job/135513360586",
+            "created_at": "2026-11-19T10:58:29Z",
+            "completed_at": "2026-11-19T10:58:29Z"
+          }
+        ]
+      },
+      {
+        "pr": 273,
+        "sha": "4552f55d8c9026f5dc0aa662ef167aefc46e37db",
+        "total": 6,
+        "counts": {
+          "queued": 6
+        },
+        "check_runs": [
+          {
+            "id": 135534041605,
+            "name": "CLI (macos-latest)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516583812/job/135534041605",
+            "created_at": "2026-11-19T11:38:10Z",
+            "completed_at": null
+          },
+          {
+            "id": 135534041392,
+            "name": "CLI (ubuntu-24.04)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516583812/job/135534041392",
+            "created_at": "2026-11-19T11:38:10Z",
+            "completed_at": null
+          },
+          {
+            "id": 135534040998,
+            "name": "CLI (windows-latest)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516583812/job/135534040998",
+            "created_at": "2026-11-19T11:38:10Z",
+            "completed_at": null
+          },
+          {
+            "id": 135534010512,
+            "name": "Analyze (actions)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516574482/job/135534010512",
+            "created_at": "2026-11-19T11:38:06Z",
+            "completed_at": null
+          },
+          {
+            "id": 135534010462,
+            "name": "Analyze (javascript-typescript)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516574482/job/135534010462",
+            "created_at": "2026-11-19T11:38:06Z",
+            "completed_at": null
+          },
+          {
+            "id": 135534009986,
+            "name": "Analyze (python)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516574482/job/135534009986",
+            "created_at": "2026-11-19T11:38:06Z",
+            "completed_at": null
+          }
+        ]
+      },
+      {
+        "pr": 275,
+        "sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+        "total": 11,
+        "counts": {
+          "skipped": 1,
+          "queued": 10
+        },
+        "check_runs": [
+          {
+            "id": 135523084993,
+            "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+            "status": "completed",
+            "conclusion": "skipped",
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396651/job/135523084993",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": "2026-11-19T11:16:56Z"
+          },
+          {
+            "id": 135523083781,
+            "name": "changes",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396649/job/135523083781",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523083597,
+            "name": "CLI (macos-latest)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396592/job/135523083597",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523083433,
+            "name": "kit",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396635/job/135523083433",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523083303,
+            "name": "Build and verify the Pages site",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396651/job/135523083303",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523083275,
+            "name": "CLI (ubuntu-24.04)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396592/job/135523083275",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523083161,
+            "name": "secrets-and-egress",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396649/job/135523083161",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523083006,
+            "name": "qualify-ghostpay-web",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396635/job/135523083006",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523082920,
+            "name": "Pages artifact on anvil (browser)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396651/job/135523082920",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523082814,
+            "name": "CLI (windows-latest)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396592/job/135523082814",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          },
+          {
+            "id": 135523082170,
+            "name": "beta acceptance (lib + cli + browser on anvil)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44513396607/job/135523082170",
+            "created_at": "2026-11-19T11:16:57Z",
+            "completed_at": null
+          }
+        ]
+      },
+      {
+        "pr": 277,
+        "sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "total": 5,
+        "counts": {
+          "skipped": 1,
+          "queued": 4
+        },
+        "check_runs": [
+          {
+            "id": 135534213527,
+            "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+            "status": "completed",
+            "conclusion": "skipped",
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516634581/job/135534213527",
+            "created_at": "2026-11-19T11:38:31Z",
+            "completed_at": "2026-11-19T11:38:30Z"
+          },
+          {
+            "id": 135534211173,
+            "name": "Build and verify the Pages site",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516634581/job/135534211173",
+            "created_at": "2026-11-19T11:38:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135534211051,
+            "name": "secrets-and-egress",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516634489/job/135534211051",
+            "created_at": "2026-11-19T11:38:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135534210918,
+            "name": "Pages artifact on anvil (browser)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516634581/job/135534210918",
+            "created_at": "2026-11-19T11:38:30Z",
+            "completed_at": null
+          },
+          {
+            "id": 135534210698,
+            "name": "changes",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44516634489/job/135534210698",
+            "created_at": "2026-11-19T11:38:30Z",
+            "completed_at": null
+          }
+        ]
+      },
+      {
+        "pr": 267,
+        "sha": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+        "total": 5,
+        "counts": {
+          "queued": 5
+        },
+        "check_runs": [
+          {
+            "id": 135530125136,
+            "name": "qualify-ghostpay-web",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44515436386/job/135530125136",
+            "created_at": "2026-11-19T11:30:32Z",
+            "completed_at": null
+          },
+          {
+            "id": 135530124580,
+            "name": "kit",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44515436386/job/135530124580",
+            "created_at": "2026-11-19T11:30:32Z",
+            "completed_at": null
+          },
+          {
+            "id": 135530091818,
+            "name": "Analyze (javascript-typescript)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44515423887/job/135530091818",
+            "created_at": "2026-11-19T11:30:28Z",
+            "completed_at": null
+          },
+          {
+            "id": 135530091596,
+            "name": "Analyze (python)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44515423887/job/135530091596",
+            "created_at": "2026-11-19T11:30:28Z",
+            "completed_at": null
+          },
+          {
+            "id": 135530091150,
+            "name": "Analyze (actions)",
+            "status": "queued",
+            "conclusion": null,
+            "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44515423887/job/135530091150",
+            "created_at": "2026-11-19T11:30:28Z",
+            "completed_at": null
+          }
+        ]
+      }
+    ],
+    "lease": {
+      "acquisition_sha": "409799b04c736203a42353059a966fa9cb3c01c0",
+      "renewal_sha": "aece22afb8d648182e8bdd439ec58a02cbf9de82",
+      "release_sha": "6408563f55081ee941c2036086c025ebf63d2c96",
+      "release_tree": "3bc1fe6552340017a2a53d570f3369a582d79672",
+      "release_parent": "aece22afb8d648182e8bdd439ec58a02cbf9de82",
+      "release_at": "2026-11-19T11:41:48.000Z",
+      "owner": "20261119T105500Z-0bed53303053-root",
+      "generation": 3,
+      "verified": true
+    }
+  },
+  "artifact_repair": {
+    "head": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+    "tree": "3ccc9b1bab64e601fe1a2218161a9f882573c93b",
+    "parent": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+    "pr": "https://github.com/djshellshoxxx/GhostPay/pull/277",
+    "blobs": {
+      "scripts/pages/verify-pages-artifact.mjs": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "scripts/pages/verify-pages-artifact.test.mjs": "d827559a5db32969b955d4f299a65db420010824",
+      "docs/ai/ACTIVE_WORK.md": "b540cde123bc82d06f73582cb76da31c73477fc5",
+      "docs/handoffs/agents/PAGES_ARTIFACT_RACE_REPAIR_20261119.md": "dca4f5db71f483ea40ce72c1246184dce1bd0cfb"
+    },
+    "remoteByteReadback": true,
+    "otherParentTreeEntriesPreserved": true,
+    "node": "v24.22.3",
+    "coreRed": {
+      "pass": 6,
+      "fail": 2,
+      "skipped": 0
+    },
+    "rawFilenameRed": {
+      "pass": 15,
+      "fail": 1,
+      "skipped": 0
+    },
+    "manifestRed": {
+      "pass": 16,
+      "fail": 1,
+      "skipped": 0
+    },
+    "finalGreen": {
+      "pass": 17,
+      "fail": 0,
+      "skipped": 0
+    },
+    "independentFinalGreen": {
+      "pass": 17,
+      "fail": 0,
+      "skipped": 0
+    },
+    "syntaxChecks": "pass",
+    "diffCheck": "pass",
+    "notRun": [
+      "package lint",
+      "real Pages artifact verification",
+      "application build",
+      "browser acceptance"
+    ],
+    "initialHostedChecks": [
+      {
+        "checks": [
+          {
+            "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+            "status": "completed",
+            "conclusion": "skipped",
+            "head_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7"
+          },
+          {
+            "name": "Build and verify the Pages site",
+            "status": "queued",
+            "conclusion": null,
+            "head_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7"
+          },
+          {
+            "name": "secrets-and-egress",
+            "status": "queued",
+            "conclusion": null,
+            "head_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7"
+          },
+          {
+            "name": "Pages artifact on anvil (browser)",
+            "status": "queued",
+            "conclusion": null,
+            "head_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7"
+          },
+          {
+            "name": "changes",
+            "status": "queued",
+            "conclusion": null,
+            "head_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7"
+          }
+        ],
+        "total": 5
+      },
+      {
+        "combinedStatus": "success",
+        "statuses": [
+          {
+            "context": "security/snyk (djshellshoxxx)",
+            "state": "success"
+          }
+        ]
+      },
+      {
+        "head": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "base": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+        "draft": true,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "files": 4
+      }
+    ]
+  },
+  "pr262_late_evidence": {
+    "schema_version": 1,
+    "repository": "djshellshoxxx/GhostPay",
+    "review": "Bounded independent classification of only the new #262 tail; no tests, reruns, remote mutations, or broad census.",
+    "observation_window": {
+      "start": "2026-11-19T11:39:27Z",
+      "end": "2026-11-19T11:40:27Z"
+    },
+    "closure_refs_provenance": {
+      "coordinator_capture_window": "2026-11-19T11:38:40Z\u20132026-11-19T11:39:03Z",
+      "coordinator_reported_branch_count": 288,
+      "coordinator_reported_no_missing_from_prior_287": true,
+      "path": "/workspace/scratch/0bed53303053/closure-live-refs-20261119.txt",
+      "sha256": "25618f24adc201aaf51e5ba94186b897cb5d5b41be8d140ebcc2b2ca3fab62da",
+      "scope_note": "This receipt classifies #262 only; other branch additions/advances are separately tracked by the coordinator."
+    },
+    "pull_request": {
+      "number": 262,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/262",
+      "state": "open",
+      "draft": true,
+      "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "head_ref": "codex/ghostpay-feature-consolidation-20261119",
+      "base_ref": "main",
+      "base_sha_reported": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "mergeable": true,
+      "mergeable_state": "unstable"
+    },
+    "source_delta": {
+      "base": "ec81ab8e560a3786152d373a58a6dd422f92232b",
+      "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "head_tree": "2663ebd41834e603af86e3bdb995670ba5fa2007",
+      "ahead_by": 2,
+      "behind_by": 0,
+      "complete_compare_within_300_file_api_limit": true,
+      "url": "https://github.com/djshellshoxxx/GhostPay/compare/ec81ab8e560a3786152d373a58a6dd422f92232b...40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "changed_path_count": 156,
+      "modified_count": 1,
+      "added_count": 155,
+      "scope": "docs/consolidation/feature-completion-20261119/",
+      "modified_path": "docs/consolidation/feature-completion-20261119/FEATURE_MATRIX.md",
+      "non_documentation_changes": [],
+      "ownership_claim_changes": [],
+      "runtime_test_dependency_workflow_contract_changes": [],
+      "interpretation": "Documentation and retained evidence publication only. Runtime, tests used by application/package gates, dependencies, workflows, contracts, and ACTIVE_WORK claims are unchanged from ec81ab8e. Python/JavaScript files added under the evidence directory are retained historical harness data, not changes to the application gate entrypoints.",
+      "commits": [
+        {
+          "sha": "c76021075fddae972d704c3d342bb81db12481df",
+          "tree": "051b66e49a11f3bbdf86c3502b87e5500501a84c",
+          "parents": [
+            "ec81ab8e560a3786152d373a58a6dd422f92232b"
+          ],
+          "message": "docs: preserve source-pinned feature qualification and unresolved gates\n\nOriginal-Local-Commit: f6d5c8bce6ce83cd652ab4e0d37b93e5cf294e61\nVerified-Local-Tree: 051b66e49a11f3bbdf86c3502b87e5500501a84c\nPublished through the authorized Git Data connection; ordered source parents retained.",
+          "changed_paths": 148,
+          "non_documentation_changes": []
+        },
+        {
+          "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+          "tree": "2663ebd41834e603af86e3bdb995670ba5fa2007",
+          "parents": [
+            "c76021075fddae972d704c3d342bb81db12481df"
+          ],
+          "message": "docs: retain exact raw security logs referenced by the evidence manifest\n\nOriginal-Local-Commit: b951e2fa14bffe442b0d4e273f1658775ff2b8c6\nVerified-Local-Tree: 2663ebd41834e603af86e3bdb995670ba5fa2007\nPublished through the authorized Git Data connection; ordered source parents retained.",
+          "changed_paths": 8,
+          "non_documentation_changes": []
+        }
+      ],
+      "files": [
+        {
+          "path": "docs/consolidation/feature-completion-20261119/FEATURE_MATRIX.md",
+          "status": "modified"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/INDEPENDENT_REVIEWS.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/QUALIFICATION.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/RESULTS.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/build-input-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence-manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/audit-all.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/audit-production.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/cancellation-integration-tests.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/cancellation-lint-after.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-artifact-tests.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-btc-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-final-web-typecheck.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-full-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-full-web-tests.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-lean-boundary.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-lean-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-pool-helpers.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-repaired-web-unit.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-socks-harness.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-web-nocov.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/combined-web-typecheck.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/complete-web-coverage-replay.txt.gz",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/complete-web-unit-baseline.txt.gz",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/coverage-directory-lock.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-actions-pins.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-canonical-invoice-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-canonical-invoice-node22-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-chain-adapters-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-egress-refresh.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-full-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-fuzz-resource-replay.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-inventory-and-closure.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-invoice-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-lean-boundary.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-lean-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-merchant-invoice-node22-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-package-tooling.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-reconciled-web-typecheck.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-secret-scan.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-serial-web-lint.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-serial-web-typecheck.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-actions-pins.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-artifact-manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-build.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-csp.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-csp.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-scan.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-scan.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/hosting-kit.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/hosting-kit.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-artifact-manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-boundary.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-boundary.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-build.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-csp.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-csp.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-module-report.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-scan.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-scan.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/run-final-source-checks.py",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/web-nocov.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/web-nocov.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/web-typecheck.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/web-typecheck.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-harness-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-secret-scan.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-source-tx-origin.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-tooling-recheck.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-tooling.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-tx-origin.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-ux-vault-build.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/final-web-dependencies.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/full-artifact-manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/lean-artifact-manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/lean-module-report.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/pir-integration-tests.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/privacy-artifact-node.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/privacy-independent-csp-review.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/qualified-web-lint.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/qualified-web-typecheck.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/scanner-integration-tests.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-files.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-manifest.mjs",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partition-plan.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/INDEPENDENT_REVIEW.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/aggregate.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/driver.lock",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/final-serial-web-lint.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/partition-003/receipt.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/partition-003/started.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/partition-003/stderr.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/partition-003/stdout.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/run-web-lint-partitions.py",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/session.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/web-lint-files.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/web-lint-manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/web-lint-manifest.mjs",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/web-lint-partition-plan.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-build-input-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-canonical-source-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-concurrent-pr-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-coverage-behavior-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-gate-snapshot.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-main-reconciliation-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-merchant-source-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-pr-status.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-report-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/final-source-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/hosted-ci-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/hosted-hosting-review/README.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/hosted-hosting-review/hosting-kit-workflow.txt",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/hosted-hosting-review/kit-job-135468723862.txt.gz",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/hosted-hosting-review/native-metadata.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/hosted-hosting-review/qualify-web-job-135468724333.txt.gz",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/hosted-hosting-review/receipt.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/main-257-promotion-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/main-266-promotion-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/packet-publication-check.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/publication-map.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/REVIEW.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/artifact-discovery.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-actions-job-135432925356.log",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-javascript-job-135432925616.log",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-log-transfer.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-python-job-135432925095.log",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-run-metadata.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-14509646188.zip",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/metadata.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayPolicyRouter.completeness.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayPolicyRouter.stderr.log",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayRouter.completeness.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayRouter.stderr.log",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPaySweepRelayer.completeness.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPaySweepRelayer.stderr.log",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccount.completeness.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccount.stderr.log",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccountFactory.completeness.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccountFactory.stderr.log",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/config.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-findings.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-source-bindings.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-validation.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions/TIMING_ASSUMPTIONS.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions/mythril-14290880802-expiry-dispositions.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions/mythril-14290880802-factory-dispositions.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions/mythril-closure-factory-20261118.md",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/receipt.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/superseded-security-pr-review.json",
+          "status": "added"
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/test-reconciliation-review.json",
+          "status": "added"
+        }
+      ],
+      "last_commit_raw_evidence_files": [
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-actions-job-135432925356.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-javascript-job-135432925616.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-python-job-135432925095.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayPolicyRouter.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayRouter.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPaySweepRelayer.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccount.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccountFactory.stderr.log"
+      ]
+    },
+    "reviewed_summary_sources": [
+      {
+        "path": "docs/consolidation/feature-completion-20261119/FEATURE_MATRIX.md",
+        "blob_oid": "ea6d0afd16126ccec544b66c51eda0a71f1fad70",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/FEATURE_MATRIX.md"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/QUALIFICATION.json",
+        "blob_oid": "d1e966bf736483e5dda279db2ff1b8c6b6b7c456",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/QUALIFICATION.json"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/RESULTS.md",
+        "blob_oid": "785a372ea30b108facc07a27995171379a51e883",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/RESULTS.md"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/packet-publication-check.json",
+        "blob_oid": "0c5c991eac85d9c30e58205c17a9047b570c9a6a",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/packet-publication-check.json"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/final-gate-snapshot.json",
+        "blob_oid": "dcde4778b0250e0c83d0030f28ea6604411a1bfc",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/final-gate-snapshot.json"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/final-pr-status.json",
+        "blob_oid": "85d227036677ba730413bf2d8c145ca11ebc3145",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/final-pr-status.json"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/REVIEW.md",
+        "blob_oid": "cf8481ebed768bf8c9b5a41cff3f751b6affb82b",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/security-artifact-review/REVIEW.md"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-review.json",
+        "blob_oid": "1ea7788dd55b6eaeb05d946c24d7bad4bcc9c9ca",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-review.json"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/security-artifact-review/receipt.json",
+        "blob_oid": "85f55d61e06bf0ef9cfa096a15171a26baac2993",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/security-artifact-review/receipt.json"
+      },
+      {
+        "path": "docs/consolidation/feature-completion-20261119/final-report-review.json",
+        "blob_oid": "afde455674f979fa6eddb65e422bfd2015f1ce97",
+        "url": "https://github.com/djshellshoxxx/GhostPay/blob/40b64e8f3a0f34f7b19235ba4655ef918687f22e/docs/consolidation/feature-completion-20261119/final-report-review.json"
+      }
+    ],
+    "qualification_boundary": {
+      "new_application_source_qualified": false,
+      "new_runtime_test_execution_claimed_by_tail": false,
+      "packet_explicit_outcome": "RESULTS.md calls #262 a qualification candidate; reporting commits do not constitute new runtime test execution.",
+      "authoritative_command_record": "docs/consolidation/feature-completion-20261119/QUALIFICATION.json",
+      "final_reported_execution_source": {
+        "local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+        "published": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+        "shared_tree": "e585d1dec43844bd18167f213c246994ea6c4397"
+      },
+      "unqualified_gates": [
+        "Whole-final-source ordinary web unit/coverage aggregate and original90/85/90/90 thresholds",
+        "Whole-final-source typed web lint; original full and unchanged-web-scope partition trials terminated",
+        "All-workspace clean installation/build/test gate",
+        "Final exact-head hosted full/lean browser, Pages/native/regtest and security gates",
+        "Full invoice-schema package coverage95/90/95/95 (focused208 and static/build checks passed)",
+        "Strict contract findings and required0.8.28 native qualification; separateCodeQL264 alert applicability unknown"
+      ],
+      "complete_ordinary_unit_diagnostic": {
+        "id": "web-full-unit-diagnostic",
+        "status": "failed",
+        "exit_code": 1,
+        "source_local": "e76451ad56ba1634eed9d03468961900433fd130",
+        "node": "22.23.4",
+        "node_options": "--max-old-space-size=512 --max-semi-space-size=8",
+        "command": "vitest run --coverage=false --maxWorkers=2 --reporter=verbose",
+        "cwd": "apps/web",
+        "evidence": "evidence/complete-web-unit-baseline.txt.gz",
+        "files": {
+          "passed": 245,
+          "failed": 10,
+          "skipped": 2,
+          "total": 257
+        },
+        "tests": {
+          "passed": 3584,
+          "failed": 33,
+          "skipped": 13,
+          "total": 3630
+        },
+        "duration_seconds": 930.13,
+        "note": "Immutable-source complete ordinary unit selection. 31 failures were stale integration contracts; BTC initial scan and fuzz timing diagnosed separately."
+      },
+      "corrected_failed_files_replay": {
+        "id": "web-ten-failed-files-replay",
+        "status": "failed",
+        "exit_code": 1,
+        "source_local": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+        "node": "22.23.4",
+        "node_options": "--max-old-space-size=512 --max-semi-space-size=8",
+        "command": "vitest run --coverage=false --maxWorkers=1 --reporter=verbose src/views/Settings.exchange.test.tsx src/components/TagArchive.test.tsx src/features/chainViews.i18n.test.tsx src/features/tron/TronView.test.tsx src/features/tron/TronView.lock.test.tsx src/features/tron/TronView.privacy.test.tsx src/features/tron/chain.hardening.test.ts src/lib/scanPrivacy.authorization.test.ts src/features/btc/BtcView.persistence.test.tsx src/lib/scannerCore.fuzz.test.ts",
+        "cwd": "apps/web",
+        "evidence": "evidence/combined-repaired-web-unit.txt",
+        "files": {
+          "passed": 9,
+          "failed": 1,
+          "total": 10
+        },
+        "tests": {
+          "passed": 96,
+          "failed": 1,
+          "total": 97
+        },
+        "duration_seconds": 300.61,
+        "note": "All four repair groups and unchanged BTC persistence passed. Unchanged million-log fuzz exceeded its 180-second limit at 191.874 seconds."
+      },
+      "full_coverage_replay": {
+        "id": "web-coverage-combined-replay",
+        "status": "terminated-before-aggregate",
+        "source_local": "e74ddd26b75912d770e05d51f0b9229756adc649",
+        "child_exit_code": -9,
+        "exec_exit_code": 247,
+        "signal": "SIGKILL",
+        "node": "22.23.4",
+        "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+        "command": "vitest run --coverage --coverage.processingConcurrency=1 --coverage.reportsDirectory=/workspace/scratch/13855ecc035c/final-web-coverage-e74ddd26 --maxWorkers=1 --no-file-parallelism --reporter=verbose",
+        "cwd": "apps/web",
+        "evidence": "evidence/complete-web-coverage-replay.txt.gz",
+        "uncompressed_bytes": 150356,
+        "uncompressed_sha256": "a0a557cf33515d65d1e3da6a0c4aef15d40079d71ac9c1e9a0466a12b6171dcb",
+        "partial_log_counts_not_aggregate": {
+          "passing_case_lines": 882,
+          "failing_case_lines": 1
+        },
+        "wrapper_metrics": {
+          "exit_code": -9,
+          "wall_seconds": 2058.443,
+          "user_cpu_seconds": 2001.675482,
+          "system_cpu_seconds": 65.466295,
+          "max_rss_kib": 570916
+        },
+        "confirmed_failed_case": {
+          "file": "src/lib/scannerCore.fuzz.test.ts",
+          "duration_ms": 192246,
+          "unchanged_limit_ms": 180000
+        },
+        "note": "Killed before suite completion; no aggregate test totals, coverage reports, or threshold result. Exact cause of SIGKILL not established. Original thresholds90/85/90/90 and assertions unchanged. Installed reportOnFailure=false would skip coverage reporting/threshold evaluation after any test failure; see final-coverage-behavior-review.json. Prior directory-lock startup failed before assertions and is retained separately."
+      },
+      "failed_lint": [
+        {
+          "id": "web-lint-final-serial",
+          "status": "blocked",
+          "exit_code": 137,
+          "source_local": "74e3111f994481e7c9201ddb0494cf4a8405eadd",
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=1536",
+          "command": "npm run lint --workspace @ghostpay/web",
+          "evidence": "evidence/final-serial-web-lint.txt",
+          "note": "Original ESLint scope/configuration/rules; process killed even after competing heavy jobs stopped."
+        },
+        {
+          "id": "web-lint-partition-trial-3ab",
+          "status": "terminated-before-results",
+          "source_local": "3ab1c3f7efd2b9b65eb3db08a35748c9e515eb33",
+          "child_exit_code": -9,
+          "shell_exit_code": 137,
+          "driver_exit_code": 2,
+          "signal": "SIGKILL",
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "original_scope_files": 497,
+          "planned_partitions": 21,
+          "attempted_partition": 3,
+          "requested_files": 24,
+          "verified_files": 0,
+          "remaining_partitions_unexecuted": 20,
+          "error_count": null,
+          "warning_count": null,
+          "wall_seconds": 185.333358435,
+          "max_rss_kib": 404932,
+          "note": "Original cwd/config/rules and full typed input graph retained. Exact cause of SIGKILL unknown. No eslint.json was produced, so zero files have verifiable lint results. No remaining partition or retry was executed. The prior full-command exit137 remains separate.",
+          "evidence": "evidence/web-lint-partitions-3ab/",
+          "independent_review_sha256": "256b531fb958b7199dd9bce1766209cfc475670e5928d408c56cf48edb26004c"
+        }
+      ],
+      "scoped_passes_reported": [
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 4.368,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "../../node_modules/vite/bin/vite.js",
+            "build"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "full-build.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 2833,
+          "sha256": "7efc51586a7a5b4dbf349bafda8388e405b7cfe8d131bcfe868a4269be042411",
+          "id": "final-source-full-build",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/full-build.txt"
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 2.207,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "scripts/apply-csp.mjs"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "full-csp.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 750,
+          "sha256": "8d5a3d7296dd2e45c603a09945adf6f0ff6f274eb9d36936226153657a51dc9f",
+          "id": "final-source-full-csp",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/full-csp.txt"
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 4.411,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "scripts/scan-bundle.mjs"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "full-scan.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 832,
+          "sha256": "6dd9dcf3c21b50d892c826bc3ec5c4f4a22e082f2257fc62ae5457225ede8c27",
+          "id": "final-source-full-scan",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/full-scan.txt"
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 10.333,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/tools/portable-hosting-kit",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "--test",
+            "--test-concurrency=4",
+            "test/**/*.test.mjs"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "hosting-kit.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 67413,
+          "sha256": "9d4652dbf5dc37d25f17d2892fb990e2051e1f5f51447f025223364b7cef3ac8",
+          "id": "final-source-hosting-kit",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/hosting-kit.txt",
+          "tests": {
+            "passed": 286,
+            "failed": 0,
+            "skipped": 13,
+            "total": 299
+          },
+          "note": "Complete original kit selection with fresh root full web dist. Native nginx and other opt-in cases retain their actual skips. This is not an all-native-hosts qualification."
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 0.339,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "--input-type=module",
+            "-e",
+            "import{readFileSync}from'node:fs';import{checkLeanReport}from'../../scripts/pages/verify-pages-site.mjs';const r=JSON.parse(readFileSync('dist/ghostpay-lean-build.json','utf8'));const problems=checkLeanReport(r);console.log(JSON.stringify({chunks:r.chunks.length,workers:r.workers.length,problems}));if(problems.length)process.exitCode=1;"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "lean-boundary.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 1070,
+          "sha256": "73e4d9c87142fd7e8222d955a5d3462fc511eba1ef79329b25cbae2fbc9e9f0a",
+          "id": "final-source-lean-boundary",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/lean-boundary.txt"
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 2.678,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "../../node_modules/vite/bin/vite.js",
+            "build"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "lean-build.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 2779,
+          "sha256": "cede84156e60dadf95df5bd0593791f27fb3aa9849990414ece4f4247da66d37",
+          "id": "final-source-lean-build",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/lean-build.txt"
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 1.767,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "scripts/apply-csp.mjs"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "lean-csp.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 751,
+          "sha256": "d0610f9e138281f95c075566f50a74b0508fc8b1070d8ebd0ad0623596e4175f",
+          "id": "final-source-lean-csp",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/lean-csp.txt"
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 3.746,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "scripts/scan-bundle.mjs"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "lean-scan.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 832,
+          "sha256": "19fe4c39d31526c52c1806d4fbbb755f8f9cf2a4e7036b5f3c4a5fc65fbf18aa",
+          "id": "final-source-lean-scan",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/lean-scan.txt"
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 89.689,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "../../node_modules/vitest/vitest.mjs",
+            "run",
+            "--config",
+            "vitest.nocov.config.ts",
+            "--maxWorkers=1",
+            "--no-file-parallelism",
+            "--reporter=verbose"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=768 --max-semi-space-size=32",
+          "log": "web-nocov.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 3876,
+          "sha256": "0221b97bf2a4a759ad20564f0181855ab7f4e4f5124f1073cc20ac8ed566982e",
+          "id": "final-source-web-nocov",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/web-nocov.txt",
+          "tests": {
+            "passed": 4,
+            "total": 4
+          },
+          "files": {
+            "passed": 4,
+            "total": 4
+          },
+          "vitest_duration_seconds": 88.69
+        },
+        {
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "published_equivalent": "155d009160a6e5b2c24a91705c72fc8cca6ce815",
+          "exit_code": 0,
+          "wall_seconds": 109.097,
+          "cwd": "/workspace/scratch/13855ecc035c/GhostPay/apps/web",
+          "argv": [
+            "/workspace/scratch/13855ecc035c/runtime-npm-cache/_npx/361c55be1121897e/node_modules/node/bin/node",
+            "../../node_modules/typescript/bin/tsc",
+            "-p",
+            "tsconfig.json",
+            "--noEmit"
+          ],
+          "node": "22.23.4",
+          "node_options": "--max-old-space-size=1536",
+          "log": "web-typecheck.txt",
+          "post_source_validation_error": null,
+          "qualification": "PASSED",
+          "bytes": 536,
+          "sha256": "9e82a9b068098465939a3b14135d9d0d5d86f2b983955fdfad979719432b03f9",
+          "id": "final-source-web-typecheck",
+          "status": "passed",
+          "evidence": "evidence/final-source-checks-9b8e5024/web-typecheck.txt"
+        },
+        {
+          "id": "compiled-runtime-inputs-final",
+          "status": "passed",
+          "source_local": "9b8e502498388405d5f03da170e7c51574bc06a6",
+          "evidence": "final-build-input-review.json",
+          "workspaces": 18,
+          "javascript_files_matched": 254,
+          "without_per_line_whitespace_normalization_matched": 254,
+          "note": "Independent in-memory JS emission comparison, not semantic typecheck. Zero missing/extra/unhandled JS or emission diagnostics; source/config/dist stable; includes canonical-array and merchant-clock changes. Declaration files/maps not compared."
+        }
+      ],
+      "evidence_handling": "These are source-pinned external command reports newly published in Git, not executions or full raw-log validations by this reviewer. No aggregate pass is inferred from focused selections, builds, or source identity. Historical gate snapshots inside the packet are dated and not treated as current live state."
+    },
+    "security_summary": {
+      "newly_available_codeql_high_alert_attribution": false,
+      "codeql": {
+        "pr": 264,
+        "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+        "run_id": 44487024101,
+        "aggregate_check_id": 135456052088,
+        "aggregate_conclusion": "failure",
+        "alert_count": 1,
+        "severity": "high",
+        "applicability": "Unknown: available logs do not expose a confirmed alert rule ID, source location or dataflow. No claim it is fixed or novel in frozen candidate e74ddd26b75912d770e05d51f0b9229756adc649.",
+        "annotations_access": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "artifact_result": {
+          "artifacts": []
+        },
+        "analysis_jobs": [
+          {
+            "id": 135432925616,
+            "language": "javascript-typescript",
+            "sarif_uploaded": true,
+            "upload_completed": true,
+            "individual_success": true
+          },
+          {
+            "id": 135432925356,
+            "language": "actions",
+            "sarif_uploaded": true,
+            "upload_completed": true,
+            "individual_success": true
+          },
+          {
+            "id": 135432925095,
+            "language": "python",
+            "sarif_uploaded": true,
+            "upload_completed": true,
+            "individual_success": true
+          }
+        ],
+        "interpretation": "Three successful source-bound analysis/upload jobs do not identify or clear the high alert. No rule, source location, or result dataflow is newly available."
+      },
+      "distinct_mythril_evidence": {
+        "pr": 255,
+        "source": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+        "run": 44476066945,
+        "job": 135396814239,
+        "artifact": 14509646188,
+        "zip_sha256": "f26634aa26eb718a808bb0cb755d30a29eaf3a2eb9eafa735de33f5b1c78e9e7",
+        "report_sha256": "4f6cc97b9c17d6ac60510d8545e8af8d4e63a0f1bcb70067f6ae00af62b07736",
+        "report_bytes": 283170,
+        "reported_findings": {
+          "total": 11,
+          "Low": 8,
+          "Medium": 3
+        },
+        "frozen_comparison_target": "e74ddd26b75912d770e05d51f0b9229756adc649",
+        "reported_input_bindings": 241,
+        "reported_equal_production_solidity_files": 10,
+        "reported_equal_vendored_solidity_files": 226,
+        "gate": "strict exit 1; all eleven remain open; no finding exception activated",
+        "not_same_as_current_pr264_artifact": 14516957113,
+        "review_limit": "Read source-pinned summary and receipt only. This reviewer did not revalidate this separate #255 ZIP or all 241 input hashes in this tail review. The previously independently verified #264 artifact has ten findings, seven Low and three Medium; do not conflate reports."
+      }
+    },
+    "latest_head_checks": {
+      "total": 15,
+      "counts": {
+        "queued": 14,
+        "skipped": 1
+      },
+      "complete_page": true,
+      "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "api_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/40b64e8f3a0f34f7b19235ba4655ef918687f22e/check-runs?per_page=100",
+      "checks": [
+        {
+          "id": 135529470520,
+          "name": "integration (anvil + bitcoind regtest + solana-test-validator)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310076/job/135529470520"
+        },
+        {
+          "id": 135526223210,
+          "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310010/job/135526223210"
+        },
+        {
+          "id": 135526221567,
+          "name": "Build and verify the Pages site",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310010/job/135526221567"
+        },
+        {
+          "id": 135526221041,
+          "name": "Pages artifact on anvil (browser)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310010/job/135526221041"
+        },
+        {
+          "id": 135526221010,
+          "name": "mythril",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310028/job/135526221010"
+        },
+        {
+          "id": 135526220650,
+          "name": "CLI (macos-latest)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310236/job/135526220650"
+        },
+        {
+          "id": 135526220620,
+          "name": "CLI (windows-latest)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310236/job/135526220620"
+        },
+        {
+          "id": 135526220426,
+          "name": "echidna",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310028/job/135526220426"
+        },
+        {
+          "id": 135526220175,
+          "name": "CLI (ubuntu-24.04)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310236/job/135526220175"
+        },
+        {
+          "id": 135526219884,
+          "name": "qualify-ghostpay-web",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310031/job/135526219884"
+        },
+        {
+          "id": 135526219470,
+          "name": "kit",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310031/job/135526219470"
+        },
+        {
+          "id": 135526218951,
+          "name": "beta acceptance (lib + cli + browser on anvil)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514310073/job/135526218951"
+        },
+        {
+          "id": 135526201808,
+          "name": "Analyze (javascript-typescript)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514304220/job/135526201808"
+        },
+        {
+          "id": 135526201800,
+          "name": "Analyze (python)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514304220/job/135526201800"
+        },
+        {
+          "id": 135526201428,
+          "name": "Analyze (actions)",
+          "status": "queued",
+          "conclusion": null,
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44514304220/job/135526201428"
+        }
+      ],
+      "interpretation": "Fourteen queued and one skipped check; no complete GREEN claim. The skipped Pages release gate is an intentional deployment-dispatch condition per the source-pinned report. No full workflow-history rerun or formal review-history audit was performed."
+    },
+    "disposition": "Retain as external source-pinned documentation/evidence; #262 remains a draft, unqualified main-targeting integration candidate. The new tail supplies no new runtime repair, full-application GREEN result, or CodeQL high-alert attribution.",
+    "limits": [
+      "Complete comparison metadata and both direct parent links were read; all 156 paths are within the one evidence directory.",
+      "Selected summary/provenance documents were read. Bulk logs and every binary artifact were not independently revalidated; no inferred approval of all retained evidence.",
+      "No tests or analyzers were repeated, no branch or repository file was changed, and no merge/deployment occurred.",
+      "Qualification remains tied to the exact command source and current-head checks; documentation publication alone does not qualify the combined application."
+    ]
+  },
+  "lease_release": {
+    "acquisition_sha": "409799b04c736203a42353059a966fa9cb3c01c0",
+    "renewal_sha": "aece22afb8d648182e8bdd439ec58a02cbf9de82",
+    "release_sha": "6408563f55081ee941c2036086c025ebf63d2c96",
+    "release_tree": "3bc1fe6552340017a2a53d570f3369a582d79672",
+    "release_parent": "aece22afb8d648182e8bdd439ec58a02cbf9de82",
+    "release_at": "2026-11-19T11:41:48.000Z",
+    "owner": "20261119T105500Z-0bed53303053-root",
+    "generation": 3,
+    "verified": true
+  },
+  "publication_boundary": "This fixed ref snapshot precedes its own containing documentation commit and the separately recorded lock release. Those two coordinator transitions do not add branches or change application source. No additional main merge was performed.",
+  "remaining": "No fully complete exact-head CI candidate was observed. Main is not feature-complete or finally qualified. Core recovery/export/suspension, broad test failures, security attribution, native/browser/device/provider qualification and current-source fuzz campaigns remain explicit. No background continuation is promised."
+}

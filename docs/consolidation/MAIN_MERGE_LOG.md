@@ -54,3 +54,11 @@ Re-read live lease and main, current PR heads, reviews, check runs and legacy st
 ## Concurrent documentation-only main advance
 
 Before checkpoint publication, another writer merged #266, producing main c977b5d6723f6822c3b5d86cd6b231712c53c395, tree2634456ffa35681e799f71b72bb907f946a77618. Ordered parents are 8f56376427c96881f49590920ff0bf8543ec81b4 and75dc9d3b29e3449b56e13889496c3771ec7c2f93. GitHub comparison shows exactly ten added lines in docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md; application, dependency and workflow source is unchanged. This was not a merge operation issued by this run. Root re-read main and preserved the new audit content in the checkpoint candidate. The cooperative lock remained generation3/409799b0; it coordinates participants and does not prevent another writer from advancing a ref.
+
+## Closing integration record
+
+Latest re-read main remainsc977b5d6723f6822c3b5d86cd6b231712c53c395. This coordinator's only main merge operation was #257 to8f563764; the subsequent #266 documentation merge was another writer's action and is preserved. No other candidate completed its current CI gates, so #271/#272/#273/#275/#277 remain published candidates and #267 remains pending. No checks, protections or security thresholds were bypassed.
+
+Generation3 was acquired at409799b04c736203a42353059a966fa9cb3c01c0, renewed ataece22afb8d648182e8bdd439ec58a02cbf9de82, and explicitly released at6408563f55081ee941c2036086c025ebf63d2c96 on2026-11-19T11:41:48.000Z. Release tree3bc1fe6552340017a2a53d570f3369a582d79672 contains only integration-lock.json and has the renewal as its sole parent. Live ref, contents and ancestry were read back. This metadata history is not part of application main. Future shared integration requires a fresh lease acquisition from live state.
+
+The fixed closing census contains288 branches and no missing prior branches; successful final tag enumeration returned zero refs. No deployment, public release, real-funds transaction, tag publication or branch deletion was performed. Final records remain reviewable in #273; their publication does not imply a main merge.

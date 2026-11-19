@@ -44,3 +44,12 @@ For #259, its continuation ledger retains the entire current-main body/suffix an
 The fixed 278 dispositions are 172 ancestry-contained, 55 open-PR qualification candidates, 12 patch-equivalent, 25 retained historical, seven policy/rejection holds and seven individually classified coordination/evidence/contained/runtime/paused/deployment/baseline rows. Mechanical identity is not proof every historical behavior survived. No branch/tag deletion or force push occurred. The lock control history never enters application ancestry.
 
 Next action: finish exact-head qualification and follow REMAINING_WORK.md; retain all source provenance while integrating eligible batches.
+
+## Final recovery and publication addendum
+
+- #273 checkpoint64e192916d66500db8a47a251b4ab17c4d756906 / tree8923964e4dd7aeab68fc92c722cdd23d0e9a40fa was independently reviewed and read back. Its three parents preserve previous docs b05a71f2, main c977b5d6 and complete docs-only recovery #259 at4ff80733. All19 nonclaim recovery paths retain exact source blobs; every parent ownership claim survives. The34-path main difference contains33 documentation paths and the source-corrected adapter TODO only.
+- #277 at8cbae85c95fa707210704ee72bb4416b36e5a4d7 / tree3ccc9b1bab64e601fe1a2218161a9f882573c93b has sole parent #276 f39a9dd36c09f8b02d937c5f3d19676d334976d6. Exactly four paths change: verifier, tests, additive claim and handoff. All other parent entries/modes are preserved. Original #276 was not overwritten; its six original groups, including the added CLI control, remain.
+- The verifier now binds commit parsing to digest-matched bytes, validates regular descriptors and observed metadata/inventory consistency, and rejects lossy UTF-8 directory or manifest decoding. Final implementation and independent suites each pass17/17 with zero skips. Hosted CI and trusted real-artifact acceptance remain pending.
+- #267 at57dff1ad7706959bc78861fa4cf9af58952f4643 preserves all three reviewed hosting source/test blobs while reconciling current main and claims. #262 at40b64e8f3a0f34f7b19235ba4655ef918687f22e adds only156 documentation/evidence paths; no runtime repair was imported by that tail.
+
+[Final branch/source receipt](20261119-final-observations.json) and [dated eligibility inventory](20261119-eligibility-snapshot-1134.md) preserve the distinct observations. None of these publications is an additional main merge or release.

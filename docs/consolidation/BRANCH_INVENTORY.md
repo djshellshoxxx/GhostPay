@@ -608,3 +608,19 @@ The complete diff is ten added lines in `docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER
 These complete check-run pages exclude legacy combined statuses. Job matrices can expand later; re-read exact heads and latest attempts before integration. The companion JSON retains each job URL and the exact observation boundaries.
 
 Ref evidence: `final-live-refs-20261119.txt`, 26,590 bytes, SHA256 `a6ebc752024db49f86636a8dfd9eb3145643e53a1492c5283f1b0f0ee3bda342`. All work by this census reviewer was read-only; no remote/source mutation or duplicate #276 test run occurred.
+
+
+## Closing fixed snapshot — 2026-11-19 11:38:40–11:39:03 UTC
+
+Successful live enumeration found288 branches, exactly one more than the prior287. No prior branch disappeared. Current main remainsc977b5d6723f6822c3b5d86cd6b231712c53c395. Raw ref SHA-256:25618f24adc201aaf51e5ba94186b897cb5d5b41be8d140ebcc2b2ca3fab62da. Final tag enumeration succeeded with zero refs. Unchanged branches retain their earlier dispositions; this does not invent a new semantic review of every unchanged source.
+
+| New or advanced branch | Captured SHA | Disposition |
+|---|---|---|
+| automation/ghostpay-integration-lock | aece22afb8d648182e8bdd439ec58a02cbf9de82 | Metadata-only generation3 renewal at the captured ref; subsequently explicitly released at6408563f55081ee941c2036086c025ebf63d2c96 and read back. Never merge control history into source. |
+| chatgpt/ghostpay-pages-artifact-integrity-20261119 | f39a9dd36c09f8b02d937c5f3d19676d334976d6 | PR276 advanced only documentation/tests; original runtimeb1387068 is unchanged and both races plus encoding defects are repaired separately in277. Preserve the source branch and newer CLI control. |
+| codex/ghostpay-consolidation-records-20261119 | 4552f55d8c9026f5dc0aa662ef167aefc46e37db | PR273 completed and read back all eight records, retained recovery259 ancestry and current main, then registered final evidence scope. The containing follow-up commit appends these dated observations; it is documentation only. |
+| codex/ghostpay-feature-consolidation-20261119 | 40b64e8f3a0f34f7b19235ba4655ef918687f22e | PR262 two-commit156-path documentation/evidence tail only;155 additions plus one modified feature matrix. Runtime/tests/dependencies/workflows/claims unchanged. No new complete-green application or CodeQL attribution; see source-bound receipt. |
+| codex/ghostpay-hosting-timestamp-main-20261119 | 57dff1ad7706959bc78861fa4cf9af58952f4643 | PR267 reconciles main and claims while preserving all three previously reviewed hosting runtime/test blobs. Only those three files differ outside docs from current main. Exact new-head CI remains pending. |
+| repair/ghostpay-276-artifact-races-20261119 | 8cbae85c95fa707210704ee72bb4416b36e5a4d7 | PR277: four-file isolated repair of two filesystem races and two lossless-UTF8 boundaries; final original Node suite17/17 plus independent17/17, syntax/diff checks and exact published tree/blobs pass. Hosted checks and trusted real-artifact qualification remain pending; stacked on276, not merged. |
+
+[Full closing observations](20261119-final-observations.json) retain all288 refs, late #262 evidence boundaries, #277 exact-tree/test approval and the separate11:41 CI refresh. The captured documentation ref precedes this containing follow-up commit; the captured lock renewal precedes the verified release6408563f. Those explicit coordinator transitions add no branches and change no application source. Historical278/285/287 snapshots above remain unchanged.

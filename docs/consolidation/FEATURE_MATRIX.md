@@ -36,7 +36,7 @@ Complete means the stated bounded behavior is implemented and verified; Nearly c
 | Jitter expiry under wall-clock rollback | Unintegrated | #274 at a4c6f945adef0438bfd0b347fb7c11057e3973ce: independent original suite 13/13; same tests on baseline 11 pass/2 fail. Scoped lint was killed 137; main conflict and hosted gates remain. |
 | Accessibility, mobile files and screen readers | Partial | Existing fixes retained. Physical devices, camera, screen-reader and mobile import/download acceptance were not completed. Local Chromium cannot start its process socket. |
 | Internationalization | Partial | Catalog/key behavior retained. Changed #252 security copy deliberately remains English in ar/es/ja until native review. Historical #182 work is not fresh language acceptance. |
-| Independent Pages artifact verification helper | Broken / unintegrated | New #276 passes its original5 groups but independent interleavings expose mismatched hashed/parsed metadata and post-inventory symlink swaps. The isolated regression-backed follow-up remains active; no real artifact or workflow deployment is qualified here. |
+| Independent Pages artifact verification helper | Unintegrated; scoped repair verified | #277 at8cbae85c fixes two observed filesystem races and both invalid-UTF8 identity boundaries. Final original Node suite17/17 and independent17/17, syntax/diff and published-tree readback pass. Exact-head CI and a trusted real artifact remain pending; inputs and ancestors must stay private/stable through use. |
 | User/developer documentation | Nearly complete | This candidate completes the eight requested records, preserves #259 historical documentation and corrects stale source inventories. Product acceptance remains separate. |
 
 ## Deferred and externally blocked scope
@@ -55,3 +55,9 @@ Complete means the stated bounded behavior is implemented and verified; Nearly c
 The fixed census covers 278 branches and 267 PRs through #269. The later remote read found 285 branches and no lost original heads; addenda preserve the different observation times. GitHub search found one non-PR issue, #38; its body and two comments describe historical defects/fixes. TODO/FIXME, skipped/todo/expected-failure and not-implemented searches covered application, library, test and script paths; no literal stub search proves completeness.
 
 Main's older master completion ledger describes #203/7a620ff1 and earlier candidates. Its results remain historical. The stale chain-adapter checklist is corrected from nine configured testnet tokens/four feeds without inventing live verification. Explicit next action: qualify and integrate current #271/#272 and the documentation recovery, then reconcile the already-owned recovery/idle/export candidates with their combined guarantees intact.
+
+## Closing observation — 11:41 UTC
+
+The final fixed census has288 branches, with no prior branch missing. [Final observations](20261119-final-observations.json) disposition the new #277 branch and all five advanced refs. #267 at57dff1ad preserves its reviewed hosting source; #262 at40b64e8f adds only documentation/evidence. The latter packet contains failed and interrupted historical whole-suite attempts, not new complete application qualification.
+
+All eight records were published and read back in #273 at64e192916d66500db8a47a251b4ab17c4d756906. This follow-up preserves them and appends final evidence. Fresh checks still pending on #271/#272/#273/#275/#277/#267 prevent another main merge. The bounded #277 implementation is complete locally; integration and real-artifact acceptance are not.

@@ -93,3 +93,20 @@ Check matrices can expand after a queued changes job. Counts are snapshots, not 
 ## Superseded workflow cancellations inspected
 
 A later exact-source workflow read shows #272's cancelled CI/CLI/Pages/beta attempts have replacement runs on the same63ff40d5 source. Replacement CI44510549246 and CLI44510549322 are pending; Pages44510549223 and beta44510549587 are queued. The old CLI cancellations are historical, not an application failure. No duplicate rerun was launched; these replacement gates must still complete successfully.
+
+## Final source-bound results — 11:41 UTC
+
+| Check/source | Actual result | Qualification boundary |
+|---|---|---|
+| #277 final8cbae85c, Node24.22.3, original built-in command,128MiB | Implementation17pass/0fail/0skip; independent17/0/0; both syntax checks and diff check pass | Four-file source/tree readback exact; no hosted CI, package lint, application/browser or real-artifact pass inferred |
+| Original #276 plus two race regressions | 6pass/2fail/0skip | Both hooks reached the actual unsafe acceptance paths |
+| Pre-encoding repair067882fa plus final suite | Independent15pass/2fail/0skip | Both static directory/manifest aliases reproduced; staged implementer REDs15/1 and16/1 also retained |
+| #264 Mythril artifact14516957113 | Exact source/report hashes verified;10 findings:7Low/3Medium; strict exit1 | Five successful analyzer result objects are not a passing strict gate or proof of complete symbolic exploration |
+| Later #262 evidence packet | Complete historical unit diagnostic3584pass/33fail/13skip; repaired-file replay96pass/1fail; later coverage replay interrupted before aggregate | External source-bound results, not execution by this team; source identities and narrower final type/build passes remain separately recorded in the final receipt |
+| Main and current candidate CI | No additional fully complete GREEN candidate observed | Pending checks are not passes; cancelled/superseded attempts remain explicit |
+
+The [11:31–11:34 inventory](20261119-eligibility-snapshot-1134.md) retains148 check runs and55 workflow runs. A later11:41:37 refresh records #27111queued/1success/1skip; #27211queued/3historical CLI cancellations/1skip; #273 claim head4552f55d6queued; #27510queued/1skip; #2774queued/1skip; #2675queued. A subsequent documentation-only containing commit has its own new checks; these are fixed observations, not live status.
+
+#272 Hosting run44510549243 (#368) is cancelled, while44510548951 (#367) is queued with the identical head63ff40d5, base8f563764 and pull_request event. Both were created at10:58:28Z; the queued attempt was updated later. CI/CLI/Pages/Beta have higher-number same-head replacements, but this Hosting pair must not be described that way. No blind rerun was requested while an equivalent attempt remained queued.
+
+The executor restarted twice and lost temporary installs. Disk availability later fell to75MiB; only a verified disposable62MiB policy checkout was removed, retaining its already-published source pins and external evidence. Exact-lock policy setup remained blocked by prior SIGKILL/ENOSPC; no policy unit/type/lint/native pass was manufactured. Browser process-socket restrictions and unavailable native tools remain. These constraints prevented fresh broad qualification; they do not make unfinished tests or features complete.
