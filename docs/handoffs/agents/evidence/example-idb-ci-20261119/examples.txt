@@ -1,0 +1,391 @@
+(node:8) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:15) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: USD has two decimals
+ok 1 - USD has two decimals
+  ---
+  duration_ms: 1505.138221
+  type: 'test'
+  ...
+# Subtest: JPY has no minor units: 1500 yen is 1500, not 150000
+ok 2 - JPY has no minor units: 1500 yen is 1500, not 150000
+  ---
+  duration_ms: 2025.653012
+  type: 'test'
+  ...
+# Subtest: KWD is read with 2 decimals by the app: a needed third decimal is refused
+ok 3 - KWD is read with 2 decimals by the app: a needed third decimal is refused
+  ---
+  duration_ms: 1615.594453
+  type: 'test'
+  ...
+# Subtest: malformed amounts and currencies are refused
+ok 4 - malformed amounts and currencies are refused
+  ---
+  duration_ms: 3975.322557
+  type: 'test'
+  ...
+# (node:16) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: exponents
+ok 5 - exponents
+  ---
+  duration_ms: 1.390167
+  type: 'test'
+  ...
+# Subtest: conversion never rounds or rescales
+ok 6 - conversion never rounds or rescales
+  ---
+  duration_ms: 1.003582
+  type: 'test'
+  ...
+# Subtest: table equals the GhostPay app table
+ok 7 - table equals the GhostPay app table
+  ---
+  duration_ms: 7.473566
+  type: 'test'
+  ...
+# (node:22) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: queue, reopen, timelock, local execute and stale retries
+ok 8 - queue, reopen, timelock, local execute and stale retries
+  ---
+  duration_ms: 1109.815569
+  type: 'test'
+  ...
+# Subtest: two processes cannot queue or execute twice from the same revision
+ok 9 - two processes cannot queue or execute twice from the same revision
+  ---
+  duration_ms: 2152.603561
+  type: 'test'
+  ...
+# Subtest: retained lock after killed owner is never stolen based on age
+ok 10 - retained lock after killed owner is never stolen based on age
+  ---
+  duration_ms: 573.48845
+  type: 'test'
+  ...
+# Subtest: refuses corrupt, broad-readable and symlink snapshots
+ok 11 - refuses corrupt, broad-readable and symlink snapshots
+  ---
+  duration_ms: 118.295155
+  type: 'test'
+  ...
+# Subtest: refuses unsafe directories, replacement initialization and unknown actions
+ok 12 - refuses unsafe directories, replacement initialization and unknown actions
+  ---
+  duration_ms: 117.993504
+  type: 'test'
+  ...
+# Subtest: kill/restart at every snapshot persistence boundary preserves one state and retained lock
+ok 13 - kill/restart at every snapshot persistence boundary preserves one state and retained lock
+  ---
+  duration_ms: 6484.356373
+  type: 'test'
+  ...
+# Subtest: last safe revision remains readable and refuses overflow before commit
+ok 14 - last safe revision remains readable and refuses overflow before commit
+  ---
+  duration_ms: 48.971599
+  type: 'test'
+  ...
+# (node:23) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:23) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# Subtest: default refuses real payment authority, altered fixture evidence and malformed requests
+ok 15 - default refuses real payment authority, altered fixture evidence and malformed requests
+  ---
+  duration_ms: 35.602306
+  type: 'test'
+  ...
+# Subtest: restart preserves exact reservation and changed input cannot reuse confirmation
+ok 16 - restart preserves exact reservation and changed input cannot reuse confirmation
+  ---
+  duration_ms: 398.766395
+  type: 'test'
+  ...
+# Subtest: unknown outcome stays reserved and timeout never frees funds
+ok 17 - unknown outcome stays reserved and timeout never frees funds
+  ---
+  duration_ms: 116.205045
+  type: 'test'
+  ...
+# Subtest: approval/submission guards, duplicate transaction refusal and immutable terminal outcomes
+ok 18 - approval/submission guards, duplicate transaction refusal and immutable terminal outcomes
+  ---
+  duration_ms: 130.277402
+  type: 'test'
+  ...
+# Subtest: unsubmitted invalidation releases reservation but cannot reuse invalidated confirmation
+ok 19 - unsubmitted invalidation releases reservation but cannot reuse invalidated confirmation
+  ---
+  duration_ms: 30.44274
+  type: 'test'
+  ...
+# Subtest: batch identity binds source and exact amounts; per-item partial outcomes survive restart
+ok 20 - batch identity binds source and exact amounts; per-item partial outcomes survive restart
+  ---
+  duration_ms: 183.303127
+  type: 'test'
+  ...
+# Subtest: batch rejects duplicate destinations, formula labels and precision overflow
+ok 21 - batch rejects duplicate destinations, formula labels and precision overflow
+  ---
+  duration_ms: 4.275137
+  type: 'test'
+  ...
+# Subtest: parallel processes serialize cumulative bounds
+ok 22 - parallel processes serialize cumulative bounds
+  ---
+  duration_ms: 1000.675417
+  type: 'test'
+  ...
+# Subtest: SIGKILL before-commit recovers one consistent snapshot
+ok 23 - SIGKILL before-commit recovers one consistent snapshot
+  ---
+  duration_ms: 970.772365
+  type: 'test'
+  ...
+# Subtest: SIGKILL after-commit recovers one consistent snapshot
+ok 24 - SIGKILL after-commit recovers one consistent snapshot
+  ---
+  duration_ms: 818.121807
+  type: 'test'
+  ...
+# Subtest: corrupt persisted fields fail closed on reopen
+ok 25 - corrupt persisted fields fail closed on reopen
+  ---
+  duration_ms: 24.567342
+  type: 'test'
+  ...
+# Subtest: rejects broad permissions and symlink database targets
+ok 26 - rejects broad permissions and symlink database targets
+  ---
+  duration_ms: 2.12237
+  type: 'test'
+  ...
+# (node:29) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: reference host intersects grants, revokes contexts and requires downgrade acknowledgement
+ok 27 - reference host intersects grants, revokes contexts and requires downgrade acknowledgement
+  ---
+  duration_ms: 19.097043
+  type: 'test'
+  ...
+# Subtest: concurrent evaluations share one quota and keep every committed storage key indexed
+ok 28 - concurrent evaluations share one quota and keep every committed storage key indexed
+  ---
+  duration_ms: 50.470832
+  type: 'test'
+  ...
+# Subtest: required plugin failure blocks the host and redacts plugin error text
+ok 29 - required plugin failure blocks the host and redacts plugin error text
+  ---
+  duration_ms: 1.100884
+  type: 'test'
+  ...
+# (node:36) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# pos-terminal parity: ok
+# Subtest: examples/pos-terminal/parity.test.mjs
+ok 6 - examples/pos-terminal/parity.test.mjs
+  ---
+  duration_ms: 1230.520951
+  type: 'test'
+  ...
+# (node:37) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: kill/restart at state-open preserves committed issuance identity
+ok 31 - kill/restart at state-open preserves committed issuance identity
+  ---
+  duration_ms: 5296.885225
+  type: 'test'
+  ...
+# Subtest: kill/restart at state-partial preserves committed issuance identity
+ok 32 - kill/restart at state-partial preserves committed issuance identity
+  ---
+  duration_ms: 3928.397534
+  type: 'test'
+  ...
+# Subtest: kill/restart at state-write preserves committed issuance identity
+ok 33 - kill/restart at state-write preserves committed issuance identity
+  ---
+  duration_ms: 3212.670406
+  type: 'test'
+  ...
+# Subtest: kill/restart at state-fsync preserves committed issuance identity
+ok 34 - kill/restart at state-fsync preserves committed issuance identity
+  ---
+  duration_ms: 3814.431997
+  type: 'test'
+  ...
+# Subtest: kill/restart at state-rename preserves committed issuance identity
+ok 35 - kill/restart at state-rename preserves committed issuance identity
+  ---
+  duration_ms: 2702.497474
+  type: 'test'
+  ...
+# Subtest: kill/restart at outbox-open preserves committed issuance identity
+ok 36 - kill/restart at outbox-open preserves committed issuance identity
+  ---
+  duration_ms: 2211.046
+  type: 'test'
+  ...
+# Subtest: kill/restart at outbox-partial preserves committed issuance identity
+ok 37 - kill/restart at outbox-partial preserves committed issuance identity
+  ---
+  duration_ms: 2432.227487
+  type: 'test'
+  ...
+# Subtest: kill/restart at outbox-write preserves committed issuance identity
+ok 38 - kill/restart at outbox-write preserves committed issuance identity
+  ---
+  duration_ms: 2507.852895
+  type: 'test'
+  ...
+# Subtest: kill/restart at outbox-fsync preserves committed issuance identity
+ok 39 - kill/restart at outbox-fsync preserves committed issuance identity
+  ---
+  duration_ms: 2218.04064
+  type: 'test'
+  ...
+# Subtest: kill/restart at outbox-rename preserves committed issuance identity
+ok 40 - kill/restart at outbox-rename preserves committed issuance identity
+  ---
+  duration_ms: 2389.421446
+  type: 'test'
+  ...
+# Subtest: kill/restart at state-dir-before preserves committed issuance identity
+ok 41 - kill/restart at state-dir-before preserves committed issuance identity
+  ---
+  duration_ms: 2263.563203
+  type: 'test'
+  ...
+# Subtest: kill/restart at state-dir-after preserves committed issuance identity
+ok 42 - kill/restart at state-dir-after preserves committed issuance identity
+  ---
+  duration_ms: 3117.238917
+  type: 'test'
+  ...
+# Subtest: kill/restart at outbox-dir-before preserves committed issuance identity
+ok 43 - kill/restart at outbox-dir-before preserves committed issuance identity
+  ---
+  duration_ms: 2538.906121
+  type: 'test'
+  ...
+# Subtest: kill/restart at outbox-dir-after preserves committed issuance identity
+ok 44 - kill/restart at outbox-dir-after preserves committed issuance identity
+  ---
+  duration_ms: 2562.414781
+  type: 'test'
+  ...
+# Subtest: a live stale-looking lock refuses a competing process
+ok 45 - a live stale-looking lock refuses a competing process
+  ---
+  duration_ms: 1829.92611
+  type: 'test'
+  ...
+# Subtest: recovery repairs a truncated outbox without changing signed link or nonce
+ok 46 - recovery repairs a truncated outbox without changing signed link or nonce
+  ---
+  duration_ms: 1704.13837
+  type: 'test'
+  ...
+# Subtest: corrupt state refuses issuance and leaves committed projection untouched
+ok 47 - corrupt state refuses issuance and leaves committed projection untouched
+  ---
+  duration_ms: 1949.485781
+  type: 'test'
+  ...
+# Subtest: private files, symlinks, key mismatch, changed config, missing state and output alias are refused
+ok 48 - private files, symlinks, key mismatch, changed config, missing state and output alias are refused
+  ---
+  duration_ms: 5836.579276
+  type: 'test'
+  ...
+# Subtest: manual payment, pause/resume/cancel and reminders remain idempotent across restarts
+ok 49 - manual payment, pause/resume/cancel and reminders remain idempotent across restarts
+  ---
+  duration_ms: 6483.215991
+  type: 'test'
+  ...
+# Subtest: strict persisted fields and signature binding reject malformed state
+ok 50 - strict persisted fields and signature binding reject malformed state
+  ---
+  duration_ms: 1198.196103
+  type: 'test'
+  ...
+# Subtest: bounded descriptor read and atomic overwrite retain private permissions
+ok 51 - bounded descriptor read and atomic overwrite retain private permissions
+  ---
+  duration_ms: 721.251914
+  type: 'test'
+  ...
+# (node:48) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:48) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# Subtest: accept defaults the optional clock to current unix seconds
+ok 52 - accept defaults the optional clock to current unix seconds
+  ---
+  duration_ms: 43.851267
+  type: 'test'
+  ...
+# Subtest: durable nonce, body identity and completion survive reopen
+ok 53 - durable nonce, body identity and completion survive reopen
+  ---
+  duration_ms: 20.528908
+  type: 'test'
+  ...
+# Subtest: independent processes serialize claims and crash leaves unresolved work
+ok 54 - independent processes serialize claims and crash leaves unresolved work
+  ---
+  duration_ms: 1480.017095
+  type: 'test'
+  ...
+# Subtest: SIGKILL after-effect retains the correct recovery disposition
+ok 55 - SIGKILL after-effect retains the correct recovery disposition
+  ---
+  duration_ms: 632.100571
+  type: 'test'
+  ...
+# Subtest: SIGKILL after-completion retains the correct recovery disposition
+ok 56 - SIGKILL after-completion retains the correct recovery disposition
+  ---
+  duration_ms: 745.527669
+  type: 'test'
+  ...
+# Subtest: uncertain side effect stays reserved; bounded retry and storage fail closed
+ok 57 - uncertain side effect stays reserved; bounded retry and storage fail closed
+  ---
+  duration_ms: 44.006774
+  type: 'test'
+  ...
+# Subtest: nonce capacity, invalid body, invalid policy and corrupted database are refused
+ok 58 - nonce capacity, invalid body, invalid policy and corrupted database are refused
+  ---
+  duration_ms: 15.852248
+  type: 'test'
+  ...
+# Subtest: private descriptor-bound secret and state paths reject unsafe files
+ok 59 - private descriptor-bound secret and state paths reject unsafe files
+  ---
+  duration_ms: 3.557622
+  type: 'test'
+  ...
+# Subtest: HTTP durable handler exception never acknowledges completion or repeats effects
+ok 60 - HTTP durable handler exception never acknowledges completion or repeats effects
+  ---
+  duration_ms: 487.534368
+  type: 'test'
+  ...
+1..60
+# tests 60
+# suites 0
+# pass 60
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 62204.790825

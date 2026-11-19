@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T06:43:08.382149+00:00",
+  "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "historical_source_sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+  "historical_source_pr": 218,
+  "regression_sha": "cb0e2c220290f8c240ddfcc37f24814be597f75d",
+  "implementation_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+  "environment": {
+    "node": "24.22.3",
+    "npm": "11.9.0",
+    "vitest": "5.1.0",
+    "node_options": "--max-old-space-size=768",
+    "lock_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2",
+    "setup": "Offline npm ci exited137 before completion. Copied independent dependency trees from a completed local install with byte-identical package-lock; workspace links resolve within this worktree. Rebuilt CLI dependency closure successfully."
+  },
+  "tasks": [
+    {
+      "id": "R11-1",
+      "requirement": "Global help/version switches are recognized only in flag positions; option values cannot make a failed verification report ok:true.",
+      "status": "REVIEWED"
+    },
+    {
+      "id": "R11-2",
+      "requirement": "Only records freshly verified in the current run may be marked current or exported as a confirmable verified proposal.",
+      "status": "REVIEWED"
+    },
+    {
+      "id": "R11-3",
+      "requirement": "Malformed local payment observations fail as invalid input before RPC; they are not reported as network/internal failures.",
+      "status": "REVIEWED"
+    },
+    {
+      "id": "R11-4",
+      "requirement": "Untrusted links, sensitive path contents and control-bearing catalog keys are not printed raw in CLI errors or human output.",
+      "status": "REVIEWED"
+    }
+  ],
+  "checks": [
+    {
+      "name": "CLI regression baseline",
+      "source_sha": "cb0e2c220290f8c240ddfcc37f24814be597f75d",
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/global-switches.test.ts src/reconcile-stored-only.test.ts src/observation-input.test.ts src/untrusted-echo.test.ts --coverage=false --maxWorkers=1",
+      "cwd": "packages/cli",
+      "exit_code": 1,
+      "passed": 12,
+      "failed": 428,
+      "seconds": 77.89,
+      "log": "cli-red.log"
+    },
+    {
+      "name": "CLI regression corrected",
+      "source_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/global-switches.test.ts src/reconcile-stored-only.test.ts src/observation-input.test.ts src/untrusted-echo.test.ts --coverage=false --maxWorkers=1",
+      "cwd": "packages/cli",
+      "exit_code": 0,
+      "passed": 440,
+      "failed": 0,
+      "seconds": 56.58,
+      "log": "cli-green-focused.log"
+    },
+    {
+      "name": "CLI typecheck",
+      "source_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "command": "npm run typecheck -w @ghostpay/cli",
+      "exit_code": 0,
+      "seconds": 28.48,
+      "log": "cli-typecheck.log"
+    },
+    {
+      "name": "CLI dependency closure baseline build",
+      "source_sha": "cb0e2c220290f8c240ddfcc37f24814be597f75d",
+      "command": "npm run build:cli",
+      "exit_code": 0,
+      "log": "cli-base-build.log"
+    },
+    {
+      "name": "CLI initial lint",
+      "source_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "command": "npm run lint -w @ghostpay/cli",
+      "exit_code": 137,
+      "seconds": 22.572,
+      "log": "cli-lint.log",
+      "result": "Process killed; no ESLint source diagnostic. Serialized retry also exited 137."
+    },
+    {
+      "name": "Full CLI coverage, incomplete failed run",
+      "runtime_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "command": "npm test -w @ghostpay/cli -- --maxWorkers=1",
+      "node": "24.22.3",
+      "exit_code": 130,
+      "result": "Interrupted after the first suite reported 3 failed cases at the unchanged 60-second budget. No final coverage or whole-suite pass.",
+      "first_suite": "src/reconcile-command.test.ts",
+      "first_suite_tests": 26,
+      "first_suite_failed": 3,
+      "first_suite_milliseconds": 591032,
+      "failed_cases": [
+        {
+          "name": "rejects a reviewed record absent from current evidence and a changed provider endpoint",
+          "milliseconds": 62434
+        },
+        {
+          "name": "fails final review if observations change or canonical finality disappears during work",
+          "milliseconds": 60037
+        },
+        {
+          "name": "rejects wrong archive formats and seller scopes before changing any local state",
+          "milliseconds": 60062
+        }
+      ],
+      "log": "cli-full-partial.log"
+    },
+    {
+      "name": "CLI serialized lint retry",
+      "runtime_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "checkout_sha": "1ad4c9a35c17c71649fe52c8b3f83fe2e23f1f01",
+      "command": "npm run lint -w @ghostpay/cli",
+      "node": "24.22.3",
+      "exit_code": 137,
+      "seconds": 83.145,
+      "result": "Process killed; no ESLint source diagnostic.",
+      "log": "cli-lint-retry.log"
+    },
+    {
+      "name": "CLI corrected build",
+      "runtime_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "checkout_sha": "1ad4c9a35c17c71649fe52c8b3f83fe2e23f1f01",
+      "command": "npm run build -w @ghostpay/cli",
+      "node": "24.22.3",
+      "exit_code": 0,
+      "seconds": 17.839,
+      "build_stamp": {
+        "sourceRevision": "1ad4c9a35c17c71649fe52c8b3f83fe2e23f1f01",
+        "dirty": false
+      },
+      "log": "cli-build.log"
+    },
+    {
+      "name": "CLI compiled acceptance",
+      "runtime_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "checkout_sha": "1ad4c9a35c17c71649fe52c8b3f83fe2e23f1f01",
+      "command": "npm run test:compiled -w @ghostpay/cli",
+      "node": "24.22.3",
+      "exit_code": 1,
+      "seconds": 419.951,
+      "passed": 20,
+      "failed": 1,
+      "skipped": 0,
+      "result": "Final merchant-planning/diagnostics test failed because a merchant child was SIGKILLed; the helper retains its original 25000ms limit. No compiled gate pass.",
+      "log": "cli-compiled.log"
+    },
+    {
+      "name": "Exact failed compiled merchant group retry",
+      "runtime_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "checkout_sha": "1ad4c9a35c17c71649fe52c8b3f83fe2e23f1f01",
+      "command": "node --test --test-name-pattern=\"compiled merchant planning and diagnostics never imply payment or refund execution\" test/operators.test.mjs",
+      "cwd": "packages/cli",
+      "node": "22.23.4",
+      "exit_code": 1,
+      "seconds": 93.865,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "result": "The before hook failed when an invoice child was SIGKILLed under the original 25000ms limit. This retry does not clear the compiled gate. No further long local retry planned; hosted qualification is separate.",
+      "log": "cli-compiled-merchant-node22.log"
+    },
+    {
+      "name": "Exact three failed reconcile cases, Node22",
+      "runtime_sha": "8ab2ca330463abb58c813eb8cc0a94a8e5af28d4",
+      "checkout_sha": "e5c0f4cd327d7692030278f856f646cc3e181256",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/reconcile-command.test.ts",
+        "-t",
+        "rejects a reviewed record absent from current evidence and a changed provider endpoint|fails final review if observations change or canonical finality disappears during work|rejects wrong archive formats and seller scopes before changing any local state",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "packages/cli",
+      "node": "22.23.4",
+      "exit_code": 0,
+      "seconds": 24.302,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 23,
+      "result": "The three selected cases pass without a timeout change; the other 23 cases were deliberately unselected. Coverage disabled for this bounded behavioral retry. Does not establish full CLI coverage.",
+      "log": "cli-reconcile-failed-node22.log"
+    }
+  ],
+  "review": {
+    "reviewer": "root coordinator (separate agent from implementing workflow_fixes)",
+    "scope": "cb0e2c22..8ab2ca33 source diff",
+    "result": "No blocking source issue; flag-position parsing, current-verification per record and error redaction preserved. Focused GREEN considered sufficient for guarded integration; full/hosted qualification remains separate."
+  },
+  "preserved": [
+    "PR238 exact dependency alignment",
+    "PR238 receipt-parity optional stealth-address tests",
+    "all seven excluded feature workstreams",
+    "original coverage thresholds and CI commands"
+  ],
+  "integration": {
+    "destination": "remaining-work candidate based on PR238",
+    "status": "INTEGRATED BY COORDINATOR; LOCAL FULL GATES NOT PASSED",
+    "coordinator_checkpoint": "3ef2494d",
+    "main_merge_sha": null
+  },
+  "artifacts": [
+    {
+      "path": "cli-red.log",
+      "sha256": "4adc0969c2ee96c9cac1d53f5605386902a80caf199c12e9bc02b855e8e44f3f",
+      "bytes": 133265
+    },
+    {
+      "path": "cli-green-focused.log",
+      "sha256": "54a7f3641bb2f84de09d62ef088e38fc1f66d2f22cd05f66d85c12238bcf4373",
+      "bytes": 514
+    },
+    {
+      "path": "cli-typecheck.log",
+      "sha256": "64bf0290c1e72438ab152b2dfb07f510caf149c6d166f8b3f2b6c79f058bd19e",
+      "bytes": 165
+    },
+    {
+      "path": "cli-base-build.log",
+      "sha256": "9ad9dbf00dbf7798cdf6910ce1b61d906c980ce3e2c489fb4d0badf0b0815424",
+      "bytes": 3487
+    },
+    {
+      "path": "cli-lint.log",
+      "sha256": "a5f2b998e07c7ff7c3f583cf8a27a673ba43f633fa2931790860bc3d3800f16b",
+      "bytes": 546
+    },
+    {
+      "path": "cli-full-partial.log",
+      "sha256": "933fd40edbfc3eb67d1adc9655784a1c8ef2a743bc90ce48509a182741cf9c0e",
+      "bytes": 639
+    },
+    {
+      "path": "cli-lint-retry.log",
+      "sha256": "a5f2b998e07c7ff7c3f583cf8a27a673ba43f633fa2931790860bc3d3800f16b",
+      "bytes": 546
+    },
+    {
+      "path": "cli-build.log",
+      "sha256": "9c26c95cfb0ca0658ad257ad76e7e394156628afb6c8e15739b9dc6d97fc31a7",
+      "bytes": 182
+    },
+    {
+      "path": "cli-compiled.log",
+      "sha256": "2ca7aa5a5ee7c0079c4098548a4054dad1609c56cbcdfb80c2b727b8b0320b8c",
+      "bytes": 3888
+    },
+    {
+      "path": "cli-compiled-merchant-node22.log",
+      "sha256": "be3a536965602437719cff687fc021b16d776ee99846077d3c233412766fee39",
+      "bytes": 1539
+    },
+    {
+      "path": "cli-reconcile-failed-node22.log",
+      "sha256": "0a7c4c8a9e93b3c2357d0643eeb52ec1df5e2606a1dda303b392f9c39ee9944a",
+      "bytes": 577
+    }
+  ]
+}

@@ -1,0 +1,3448 @@
+{
+  "schema": "ghostpay-remaining-work-ledger/1",
+  "snapshot_utc": "2026-11-19T09:21:11.859589+00:00",
+  "workstream_started_local_date": "2026-11-18 America/Los_Angeles",
+  "repository": "https://github.com/djshellshoxxx/GhostPay",
+  "current_main_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+  "local_integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+  "previous_published_checkpoint_sha": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+  "publication_identity_note": "This generated ledger records its pre-publication source snapshot. The final PR246 description and terminal publication commit record the verified published head/tree; the generated file cannot contain its own publication commit SHA.",
+  "integration_pr": 246,
+  "parent_pr": 238,
+  "current_master_candidate_pr": 264,
+  "scope": "All inventoried unassigned work; seven feature streams excluded; no production deployment/release",
+  "counting_policy": "Tasks are normalized execution units; feature/security/PR rows are reference crosswalks and are not added to task totals. INTEGRATED means local candidate, not main. MERGED requires GitHub confirmation and main_merge_sha. Status buckets partition all task rows; newly_completed is a separate overlapping measure.",
+  "counts": {
+    "tasks": 87,
+    "statuses": {
+      "INTEGRATED": 50,
+      "MERGED": 1,
+      "BLOCKED": 12,
+      "SUPERSEDED": 11,
+      "REQUIRES OWNER DECISION": 13
+    },
+    "already_complete_at_start": 9,
+    "integrated_tasks": 50,
+    "superseded_total": 11,
+    "scope_reference_only": 2,
+    "newly_implemented_integrated": 51,
+    "main_merged": 1,
+    "historical_features": 194,
+    "historical_security_records": 49,
+    "prs": 264,
+    "open_prs": 59,
+    "github_confirmed_pr_merges": 63,
+    "closed_unmerged_prs": 142,
+    "non_pr_issues": 1,
+    "excluded_owner_streams": 7
+  },
+  "tasks": [
+    {
+      "task_id": "RW-FEE-ACK",
+      "requirement": "Require token-specific acknowledgement for fee-charging policy factories; reject trailing-newline bypass and misleading missing-fee diagnostics",
+      "classification": "Security remediation",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#217",
+        "SEC-07",
+        "N1"
+      ],
+      "related_prs": [
+        217
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "02a7e51fe9aa168b110b8610182e9225c175a5a2",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "22/22 shell;5/5 pinned deployment/checksum;445/445 non-fuzz snapshot;68 scoped security tests",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Require token-specific acknowledgement for fee-charging policy factories; reject trailing-newline bypass and misleading missing-fee diagnostics",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/POLICY_GUARD_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-CONFIDENTIAL-FORWARD",
+      "requirement": "Do not copy attacker-controlled returndata during confidential native forwarding",
+      "classification": "Security remediation",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#220",
+        "A3"
+      ],
+      "related_prs": [
+        220
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "0249b30c7c6c3bfeda45287f41d92f8d2152c96c",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Independent return-bomb RED with116145extra gas; same-address regression GREEN; full confidential-contracts hosted job PASS at exact 28edbcf checkpoint",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Do not copy attacker-controlled returndata during confidential native forwarding",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/CONFIDENTIAL_FORWARD_20261119.md",
+        "../remaining-20261119/HOSTED_CHECKPOINT_28EDBCF_20261119.json"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-CLI-ARGS",
+      "requirement": "Honor global CLI flags independently of argument position",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R11"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "5aa7808249523b34b0c309af20bd2c4deef19935",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "440/440 focused; compiled20/21 local then bounded3-case reconcile pass; all3 hosted OS jobs PASS at published28edbcf",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Honor global CLI flags independently of argument position",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-cli.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-CLI-RECONCILE",
+      "requirement": "Do not treat stale observations as currently verified or export-confirmable",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R11"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "5aa7808249523b34b0c309af20bd2c4deef19935",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "440/440 focused; compiled20/21 local then bounded3-case reconcile pass; all3 hosted OS jobs PASS at published28edbcf",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Do not treat stale observations as currently verified or export-confirmable",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-cli.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-CLI-INPUT",
+      "requirement": "Classify malformed CLI observations as fixed typed input errors",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R11"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "5aa7808249523b34b0c309af20bd2c4deef19935",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "440/440 focused; compiled20/21 local then bounded3-case reconcile pass; all3 hosted OS jobs PASS at published28edbcf",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Classify malformed CLI observations as fixed typed input errors",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-cli.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-CLI-REDACTION",
+      "requirement": "Redact bearer paths and escape terminal controls in CLI errors",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R11"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "5aa7808249523b34b0c309af20bd2c4deef19935",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "440/440 focused; compiled20/21 local then bounded3-case reconcile pass; all3 hosted OS jobs PASS at published28edbcf",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Redact bearer paths and escape terminal controls in CLI errors",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-cli.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-QUOTE",
+      "requirement": "Bound requested quote age by trusted heartbeat+300s and require valid Pay feed metadata",
+      "classification": "Confirmed defect",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218 historical recovery",
+        "F-WEB-02",
+        "365f017ac",
+        "7aee9060b"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "b340a5fe2d9a1debeacb3348b9232d1f3070e5a5",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED7library+8web failures;GREEN50library+138web; split-project lint and library tsc pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Bound requested quote age by trusted heartbeat+300s and require valid Pay feed metadata",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-quotes.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-PERMIT-NONCE",
+      "requirement": "Reject nonce RPC responses that are not exactly one ABI uint256 word",
+      "classification": "Confirmed defect",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "LF-65392fcef-3"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "6aa67b72da81cb9621ba6d3011bc8507bfadf7fb",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED4 malformed failures/3 controls;123 payment/exec checks pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reject nonce RPC responses that are not exactly one ABI uint256 word",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-pay-residuals.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-DELAY-LABEL",
+      "requirement": "Display fractional configured delay minutes accurately",
+      "classification": "Confirmed defect",
+      "priority": "P3",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "LF-65392fcef-4"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "ecb37255e6504d973471611ad201fbbe10a41d35",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Rendered90–150s baseline says2–3min;GREEN14 selected delay/buffer cases; scoped lint",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Display fractional configured delay minutes accurately",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-pay-residuals.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-POLICY-N09",
+      "requirement": "Validate policy inputs/proofs before secret copies and canonical calldata",
+      "classification": "Security remediation",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#211",
+        "F-AA-02",
+        "SEC-11"
+      ],
+      "related_prs": [
+        211
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "a5504f1b2bd12e39035c682f49bde9e1f321fc2b",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "REDN09/10:14fail;N11:4fail;asset library5fail/web6fail;GREEN118package incl7Anvil and121web;coverage/static pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Validate policy inputs/proofs before secret copies and canonical calldata",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/POLICY_CLIENT_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-POLICY-N10",
+      "requirement": "Reconstruct the permitted EIP-712 domain/types/message before policy signing",
+      "classification": "Security remediation",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#211",
+        "F-AA-02",
+        "SEC-11"
+      ],
+      "related_prs": [
+        211
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "a5504f1b2bd12e39035c682f49bde9e1f321fc2b",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "REDN09/10:14fail;N11:4fail;asset library5fail/web6fail;GREEN118package incl7Anvil and121web;coverage/static pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reconstruct the permitted EIP-712 domain/types/message before policy signing",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/POLICY_CLIENT_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-POLICY-N11",
+      "requirement": "Bind scheme-2 payment metadata/ephemeral point/view tag before wallet requests",
+      "classification": "Security remediation",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#211",
+        "F-AA-02",
+        "SEC-11"
+      ],
+      "related_prs": [
+        211
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "a5504f1b2bd12e39035c682f49bde9e1f321fc2b",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "REDN09/10:14fail;N11:4fail;asset library5fail/web6fail;GREEN118package incl7Anvil and121web;coverage/static pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Bind scheme-2 payment metadata/ephemeral point/view tag before wallet requests",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/POLICY_CLIENT_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-POLICY-ASSETS",
+      "requirement": "Block locally known policy assets without a valid withdrawal leaf",
+      "classification": "Security remediation",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#211",
+        "F-AA-02",
+        "SEC-11"
+      ],
+      "related_prs": [
+        211
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "a5504f1b2bd12e39035c682f49bde9e1f321fc2b",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "REDN09/10:14fail;N11:4fail;asset library5fail/web6fail;GREEN118package incl7Anvil and121web;coverage/static pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Block locally known policy assets without a valid withdrawal leaf",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/POLICY_CLIENT_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-POLICY-DELAY-COPY",
+      "requirement": "Disclose unverified L2 policy-delay assumptions without inventing chain limits",
+      "classification": "Documentation requirement",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "#211",
+        "SEC-12"
+      ],
+      "related_prs": [
+        211
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "a5504f1b2bd12e39035c682f49bde9e1f321fc2b",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Covered in policy121web selection;four catalogs and critical-key parity pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Disclose unverified L2 policy-delay assumptions without inventing chain limits",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/POLICY_CLIENT_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-LEDGER-TOLERANCE",
+      "requirement": "Require a counted payment before positive-due invoices can settle within tolerance",
+      "classification": "Confirmed defect",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "#220",
+        "D2",
+        "F-MER-02"
+      ],
+      "related_prs": [
+        220
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "457ea8a92fafc1520d0e24f6ab07953238d4bfe7",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED1fail27pass;GREEN28/28;coverage100/99.32/100/100;direct independent zero-due control;tsc/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Require a counted payment before positive-due invoices can settle within tolerance",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/LEDGER_TOLERANCE_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-MANIFEST-IMPLEMENTATION",
+      "requirement": "Verify the policy implementation runtime hash in verifyDeployment",
+      "classification": "Security remediation",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-DEP-02"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "343543bba22c16da40139bbad804e396e14e959f",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED3fail21pass;GREEN51deployment/verifier and final24/24;typed lint/tsc pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Verify the policy implementation runtime hash in verifyDeployment",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/DEPLOYMENT_VERIFIER_PARITY_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-POOL-SEED",
+      "requirement": "Bound seed-backup parsing/KDF work, authenticate v2 headers and preserve bounded v1 recovery",
+      "classification": "Security remediation",
+      "priority": "P0",
+      "estimated_complexity": "medium",
+      "sources": [
+        "SEC-16",
+        "PS-10",
+        "audit24 L8-07"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "cf8230a7df5d21ac405b30cd4a2d396b2b725392",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Final original-source RED22fail13pass;review found32byte compatibility bug;corrected82/82 fullcoverage and independent node:crypto interop;tsc/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Bound seed-backup parsing/KDF work, authenticate v2 headers and preserve bounded v1 recovery",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/POOL_SEED_SECURITY_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-PACKAGE-METADATA",
+      "requirement": "Align generated package graph and explicit pending owner-review closure metadata",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#238 failing rest-0",
+        "SEC-49"
+      ],
+      "related_prs": [
+        238
+      ],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "264cf86b59bc5663136af9cb16f8b5ad67620aea",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED13/16;GREEN16/16;coordinator closure4/4;existing reviews preserved",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Align generated package graph and explicit pending owner-review closure metadata",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/REMAINING_CI_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-CANCELLATION-FIXTURE",
+      "requirement": "Correct the async-without-await cancellation fixture without changing its assertion",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#238 ts-lint"
+      ],
+      "related_prs": [
+        238
+      ],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "264cf86b59bc5663136af9cb16f8b5ad67620aea",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Scoped lint+chain tsc+6cancellation tests pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Correct the async-without-await cancellation fixture without changing its assertion",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/REMAINING_CI_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-HOSTILE-TEXT-FIXTURE",
+      "requirement": "Accept only the legitimate beforeunload dialog in the inert-text browser regression",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#238 lean/full browser failure",
+        "SEC-40"
+      ],
+      "related_prs": [
+        238
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "7cfbd78f5302d56292855655cf587faaf15d5e7f",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Original five hostile-text assertions retained; independent source review PASS; exact published full and lean browser jobs PASS at 28edbcf",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Accept only the legitimate beforeunload dialog in the inert-text browser regression",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/HOSTED_CHECKPOINT_28EDBCF_20261119.json"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-BETA-LOGS",
+      "requirement": "Retain the existing hidden beta-acceptance log files in the restricted artifact",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#237"
+      ],
+      "related_prs": [
+        237
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "29checks+Snyk pass;actual5430byte artifact14436054417 verified;GitHub merge confirmation",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Retain the existing hidden beta-acceptance log files in the restricted artifact",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "MERGED",
+      "final_disposition": "MERGED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/BETA_LOG_ARTIFACT_20261118.md",
+        "../remaining-20261119/MERGE_CONFIRMATIONS_20261119.json"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-DEPENDENCIES",
+      "requirement": "Reconcile minor/patch dependency updates with viem and coverage-provider compatibility",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "medium",
+      "sources": [
+        "#210",
+        "#236",
+        "SEC-25"
+      ],
+      "related_prs": [
+        210,
+        236
+      ],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-dependency-reconcile-20261119",
+      "implementation_sha": "dbd638867051e5067c0139b516d47637c916f667",
+      "implementation_status": "Reconciled and published; fresh exact-head hosted qualification running",
+      "required_tests": "Fresh clean install; existing dependency-tooling 5/5; shared viem and actual coverage-provider resolution; official npm10 tree diagnostic PASS, executor npm11 diagnostic failure retained; 17low/zero production audit; fresh hosted matrix pending; initial hosting kit dependency-install job failed with Ubuntu mirror404 and only that job was retried",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reconcile minor/patch dependency updates with viem and coverage-provider compatibility",
+      "dependencies": [],
+      "security_review_status": "PASS (independent coordinator and workflow source reviews)",
+      "integration_destination": "PR #210 toward main",
+      "integration_branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "integration_sha": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "main_merge_sha": null,
+      "remaining_requirements": "Fresh hosted checks on published 3c95b2a before main merge",
+      "remaining_blocker": "Hosted qualification queued/running; hosting kit mirror404 retry outcome pending",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/MERGE_CONFIRMATIONS_20261119.json",
+        "../remaining-20261119/dependency-candidate-evidence/DEPENDENCY_RECONCILE_20261119.md",
+        "../remaining-20261119/dependency-candidate-evidence/publication.json"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-EXAMPLE-CI",
+      "requirement": "Run all existing merchant example tests and webhook selftest in CI",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-MER-06"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "d339ccf5b26800bde77acf1186fe9dcca042dd14",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "60/60 example tests and webhook selftest pass;all8 existing test files discovered",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Run all existing merchant example tests and webhook selftest in CI",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/EXAMPLE_IDB_CI_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-IDB-CI",
+      "requirement": "Wire existing two-tab IndexedDB browser acceptance into full-profile CI",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-WEB-09"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "d339ccf5b26800bde77acf1186fe9dcca042dd14",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Source-reviewed existing script;local Chromium fails socket EPERM/SIGABRT before app assertions;hosted step pending",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Wire existing two-tab IndexedDB browser acceptance into full-profile CI",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Actual browser execution is not established locally; require new hosted full-profile step",
+      "remaining_blocker": "Actual browser execution is not established locally; require new hosted full-profile step",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/EXAMPLE_IDB_CI_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-SLITHER-VISIBILITY",
+      "requirement": "Retain Low/Informational and ignored Slither findings beside the unchanged required gate",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#209 B4",
+        "SEC-17"
+      ],
+      "related_prs": [
+        209
+      ],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "52eb61dbee040df637c7c8326f17f81573f27d0d",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Pinned CLI flags verified;YAML/bash/action pins/secrets pass;original required command byte-preserved",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Retain Low/Informational and ignored Slither findings beside the unchanged required gate",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "New report has not yet run on hosted nightly;no finding waived",
+      "remaining_blocker": "New report has not yet run on hosted nightly;no finding waived",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/SLITHER_VISIBILITY_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-SELFHOST-PINS",
+      "requirement": "Pin nginx/Tor base image defaults and document actual HSTS/apt limits",
+      "classification": "Security remediation",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#209 B4",
+        "SEC-26",
+        "F-HOST-01"
+      ],
+      "related_prs": [
+        209
+      ],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "cebf2db0e869f3c1a0a3cd3580b5584a49622f2e",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Public tag/digest metadata revalidated;RED3 unpinned defaults;GREENselftest;header parity pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Pin nginx/Tor base image defaults and document actual HSTS/apt limits",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Live image/startup/TLS acceptance remains separate",
+      "remaining_blocker": "Live image/startup/TLS acceptance remains separate",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/SELFHOST_PINS_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-COMPOSE-CI",
+      "requirement": "Validate public Compose models with and without the onion profile",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-HOST-01"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "cebf2db0e869f3c1a0a3cd3580b5584a49622f2e",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Actual checksum-verified Compose5.8.0 default+onion config pass;explicit public env/empty Docker config/no env resolution",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Validate public Compose models with and without the onion profile",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final hosted step pending;no image lifecycle executed",
+      "remaining_blocker": "Final hosted step pending;no image lifecycle executed",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/SELFHOST_PINS_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-SDK-DOCS",
+      "requirement": "Document SDK exports, trust/expiry semantics and optional merchant boundary",
+      "classification": "Documentation requirement",
+      "priority": "P4",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-PROTO-12",
+        "invoice-verification-api R3"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "854fa4c777107a3966ada0252e6c80bb7796571c",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Source/API comparison and relative links pass;independent contract_security review PASS",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Document SDK exports, trust/expiry semantics and optional merchant boundary",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (contract_security, SECURITY_CROSS_REVIEW_20261119)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/SECURITY_CROSS_REVIEW_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-REGISTRY-DOCS",
+      "requirement": "Update ADR0018 for delegated library helpers and constrained ENS lookup",
+      "classification": "Documentation requirement",
+      "priority": "P4",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-CTR-04",
+        "F-WEB-14"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "854fa4c777107a3966ada0252e6c80bb7796571c",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Source comparison registryDelegation/registryEns/UI;independent contract_security review PASS",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Update ADR0018 for delegated library helpers and constrained ENS lookup",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (contract_security, SECURITY_CROSS_REVIEW_20261119)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/SECURITY_CROSS_REVIEW_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-DEPLOY-DOCS",
+      "requirement": "Correct deployment allowlist, matrix counts and signed-manifest instructions",
+      "classification": "Documentation requirement",
+      "priority": "P4",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-DEP-04",
+        "F-DEP-05"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "3db3c3597666ceb77862481ee8ed4a38a6d2ff81",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "14links+source matrix pass;strict release73unverified cells still fails",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Correct deployment allowlist, matrix counts and signed-manifest instructions",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/DEPLOYMENT_DOC_PARITY_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-EMBED-DOCS",
+      "requirement": "Correct the embed frame-ancestor header configuration path",
+      "classification": "Documentation requirement",
+      "priority": "P4",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-WEB-18"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "854fa4c777107a3966ada0252e6c80bb7796571c",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Actual header file exists;comment-only runtime-file delta",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Correct the embed frame-ancestor header configuration path",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (contract_security, SECURITY_CROSS_REVIEW_20261119)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/SECURITY_CROSS_REVIEW_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RPC-QUOTE-DOCS",
+      "requirement": "Document current RPC/quote, optional relayer feed, manifest and alert behavior",
+      "classification": "Documentation requirement",
+      "priority": "P4",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-19",
+        "F-WEB-02"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "b6cdbfd7f1049acb901221f355299e0b60251caf",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Compared directly against RPC/quote source;no transport or quote behavior edited here; final relayer README/DEVIATIONS compared with config, startup readback, package dependencies, alert sink and required-Anvil tests; independent backlog review",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "State HTTP-only default transport and trusted-heartbeat freshness limits",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (contract_security, SECURITY_CROSS_REVIEW_20261119)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/SECURITY_CROSS_REVIEW_20261119.md",
+        "../remaining-20261119/RELAYER_DOCUMENTATION_REVIEW_20261119.json"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-FOCUS-ACCEPTANCE",
+      "requirement": "Recover accepted in-view paste focus regression",
+      "classification": "Implemented but unverified",
+      "priority": "P3",
+      "estimated_complexity": "small",
+      "sources": [
+        "#211",
+        "407868a1",
+        "SEC-30"
+      ],
+      "related_prs": [
+        211
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "cbed997a1fd8398975feac8fa23f9162a65f7e73",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Historical exact test restored;Playwright discovery and typed lint pass;independent test-source review PASS",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Recover accepted in-view paste focus regression",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (contract_security, WEB_SCOPE_REVIEW_20261119)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Local Chromium socket restrictions;new hosted browser acceptance required",
+      "remaining_blocker": "Local Chromium socket restrictions;new hosted browser acceptance required",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/COMBINED_QUALIFICATION_20261119.md",
+        "../../handoffs/agents/WEB_SCOPE_REVIEW_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-LEAN-BUFFER",
+      "requirement": "Pin off-by-default v1 gas buffer and public-linkage disclosure in both profiles",
+      "classification": "Implemented but unverified",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-WEB-05"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "cbed997a1fd8398975feac8fa23f9162a65f7e73",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Both full/lean cases pass in111/111 combined web selection;typed lint and independent source review PASS",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Pin off-by-default v1 gas buffer and public-linkage disclosure in both profiles",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (contract_security, WEB_SCOPE_REVIEW_20261119)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Actual OP chain fees and real-wallet acceptance remain separate",
+      "remaining_blocker": "Actual OP chain fees and real-wallet acceptance remain separate",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/COMBINED_QUALIFICATION_20261119.md",
+        "../../handoffs/agents/WEB_SCOPE_REVIEW_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-ADMISSION",
+      "requirement": "Reserve per-client lane capacity before asynchronous admission and bound per-peer sockets",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R07",
+        "F-RLY-01",
+        "F-RLY-04"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "26cbbb6672ce6cb0c0ab7809bd62f00405c62814",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "518/518 required-Anvil relayer;183/183 guard;35pool+34web consumers;build/typecheck/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reserve per-client lane capacity before asynchronous admission and bound per-peer sockets",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Exact combined hosted gates pending",
+      "remaining_blocker": "Exact combined hosted gates pending",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-relayer.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-SIGNATURE",
+      "requirement": "Reject noncanonical sweep signatures before costly owner/RPC work",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R07",
+        "F-RLY-01",
+        "F-RLY-04"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "26cbbb6672ce6cb0c0ab7809bd62f00405c62814",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "518/518 required-Anvil relayer;183/183 guard;35pool+34web consumers;build/typecheck/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reject noncanonical sweep signatures before costly owner/RPC work",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Exact combined hosted gates pending",
+      "remaining_blocker": "Exact combined hosted gates pending",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-relayer.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-BREAKER",
+      "requirement": "Open quote RPC outage breaker without consuming sweep probe state",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R07",
+        "F-RLY-01",
+        "F-RLY-04"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "26cbbb6672ce6cb0c0ab7809bd62f00405c62814",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "518/518 required-Anvil relayer;183/183 guard;35pool+34web consumers;build/typecheck/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Open quote RPC outage breaker without consuming sweep probe state",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Exact combined hosted gates pending",
+      "remaining_blocker": "Exact combined hosted gates pending",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-relayer.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-LOGGING",
+      "requirement": "Contain stdout and log-sink failures and return fixed malformed-URL errors",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R07",
+        "F-RLY-01",
+        "F-RLY-04"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "26cbbb6672ce6cb0c0ab7809bd62f00405c62814",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "518/518 required-Anvil relayer;183/183 guard;35pool+34web consumers;build/typecheck/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Contain stdout and log-sink failures and return fixed malformed-URL errors",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Exact combined hosted gates pending",
+      "remaining_blocker": "Exact combined hosted gates pending",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-relayer.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-FEE-RECIPIENT",
+      "requirement": "Reject relayer fee recipients inconsistent with the verified manifest",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R07",
+        "F-RLY-01",
+        "F-RLY-04"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "26cbbb6672ce6cb0c0ab7809bd62f00405c62814",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "518/518 required-Anvil relayer;183/183 guard;35pool+34web consumers;build/typecheck/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reject relayer fee recipients inconsistent with the verified manifest",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Exact combined hosted gates pending",
+      "remaining_blocker": "Exact combined hosted gates pending",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-relayer.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-LIMITER",
+      "requirement": "Preserve live loss reservations and bounded fair overflow buckets",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R07",
+        "F-RLY-01",
+        "F-RLY-04"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "26cbbb6672ce6cb0c0ab7809bd62f00405c62814",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "518/518 required-Anvil relayer;183/183 guard;35pool+34web consumers;build/typecheck/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve live loss reservations and bounded fair overflow buckets",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Exact combined hosted gates pending",
+      "remaining_blocker": "Exact combined hosted gates pending",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-relayer.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-CLIENT-429",
+      "requirement": "Classify pre-broadcast client_queue_full refusals honestly",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#218",
+        "R07",
+        "F-RLY-01",
+        "F-RLY-04"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "26cbbb6672ce6cb0c0ab7809bd62f00405c62814",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "518/518 required-Anvil relayer;183/183 guard;35pool+34web consumers;build/typecheck/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Classify pre-broadcast client_queue_full refusals honestly",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Exact combined hosted gates pending",
+      "remaining_blocker": "Exact combined hosted gates pending",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-relayer.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-SOL-COMPAT",
+      "requirement": "Recover coherent Solana CLI derivation/domain/address compatibility",
+      "classification": "Confirmed defect",
+      "priority": "P0",
+      "estimated_complexity": "medium",
+      "sources": [
+        "#211",
+        "F-SOL-02",
+        "ADR0017"
+      ],
+      "related_prs": [
+        211
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "081d621409dfa941b7dd7e94cd913e4a9d7bb7d1",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED8Sol+8CLI failures;GREEN111Sol/45CLI;coverage99.41/98.99/98.41/99.64;build/fulltsc/lint;web-only vector payload regenerated",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Recover coherent Solana CLI derivation/domain/address compatibility",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent root source review)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Real-chain acceptance and independent cryptographic audit remain separate",
+      "remaining_blocker": "Real-chain acceptance and independent cryptographic audit remain separate",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-compat.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-TRON-COMPAT",
+      "requirement": "Recover coherent TRON CLI address format and memo-binding refusal",
+      "classification": "Confirmed defect",
+      "priority": "P0",
+      "estimated_complexity": "medium",
+      "sources": [
+        "#211",
+        "F-TRX-02",
+        "TB08"
+      ],
+      "related_prs": [
+        211
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "59a1d1e35f6ef02725ab8070f86a974f5859139f",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED3format/2memo failures;GREEN57TRON/45CLI;coverage100% allfour;build/fulltsc/lint;no payment returned withoutboundmemo",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Recover coherent TRON CLI address format and memo-binding refusal",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent root source review)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Builder remains explicitly unsupported for transaction production until it can bind the existing memo requirement;no silent payable skeleton",
+      "remaining_blocker": "Builder remains explicitly unsupported for transaction production until it can bind the existing memo requirement;no silent payable skeleton",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-compat.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-OP-RELAYER-FEES",
+      "requirement": "Include OP L1 and operator fees in quote, admission, reserves and settlement",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "medium",
+      "sources": [
+        "#218 R07-4",
+        "apps/relayer/DEVIATIONS.md"
+      ],
+      "related_prs": [
+        218
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "14fe39603d5c1169b50aa2e852f48f1fb38c0e2f",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Corrected baseline15fail/1control;OP targeted38/38;full556/556 with unchanged coverage at pre-status6d23e5b6;later final97/97 includes receipt status, chain, restart and requiredAnvil;final build/lint pass;full worker typecheck SIGKILL retained",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Include OP L1 and operator fees in quote, admission, reserves and settlement",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (root and independent contract_security)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Public OP-chain fee acceptance and exact resulting-head hosted qualification remain open",
+      "remaining_blocker": "Public OP-chain fee acceptance and exact resulting-head hosted qualification remain open",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-op-fees.md",
+        "../../handoffs/agents/OP_FEE_SOURCE_REVIEW_20261119.md",
+        "../remaining-20261119/COMBINED_RELAYER_READBACK_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-BUFFERED-SWEEP-ACCEPTANCE",
+      "requirement": "Demonstrate actual Anvil token payment plus gas-buffer-funded direct sweep",
+      "classification": "Implemented but unverified",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-CTR-06",
+        "spec13"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "3bc87393f9aa10cabaa6d25dd63428ba9e629f8e",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "REQUIRE_ANVIL=1 native4/4zero skips;before-funding insufficient-funds control;exact payment/announcement/sweep balance/gas/nonce conservation;tsc/lint pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Demonstrate actual Anvil token payment plus gas-buffer-funded direct sweep",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent root source review)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "This is local compiled-contract acceptance,not actual OP fee or live-wallet qualification",
+      "remaining_blocker": "This is local compiled-contract acceptance,not actual OP fee or live-wallet qualification",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/BUFFERED_SWEEP_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-STATIC-HELPERS",
+      "requirement": "Preserve static path, symlink containment and malformed-request repairs",
+      "classification": "Superseded or already complete",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#224",
+        "#226"
+      ],
+      "related_prs": [
+        224,
+        226
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Eight existing static-helper regressions pass;current source retains narrower symlink correction",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve static path, symlink containment and malformed-request repairs",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-BIDI-DOWNLOAD",
+      "requirement": "Preserve inert bidi/download/input handling already recovered by integration",
+      "classification": "Superseded or already complete",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#224",
+        "SEC-28"
+      ],
+      "related_prs": [
+        224
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Source present;combined browser qualification remains required",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve inert bidi/download/input handling already recovered by integration",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-MANIFEST-LEGACY",
+      "requirement": "Keep legacy runtime unsigned manifest consumers removed",
+      "classification": "Superseded or already complete",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-14"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Web manifest regression/source boundary present;legacy standalone library API is distinct",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Keep legacy runtime unsigned manifest consumers removed",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-FRAME-GUARD",
+      "requirement": "Preserve restricted-view frame refusal",
+      "classification": "Superseded or already complete",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-18"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Source guard and tests already integrated",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve restricted-view frame refusal",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-BUNDLE-SCAN",
+      "requirement": "Preserve all-HTML scanning and shared lean exclusions",
+      "classification": "Superseded or already complete",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-24"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Current source already repaired;new combined build scan required",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve all-HTML scanning and shared lean exclusions",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-RELEASE-INTEGRITY-SOURCE",
+      "requirement": "Preserve origin, public-key denylist, attestation and smoke-check implementation",
+      "classification": "Superseded or already complete",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-09",
+        "SEC-43",
+        "SEC-44",
+        "SEC-46"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Current source/regressions present;actual trusted deployment remains blocked",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve origin, public-key denylist, attestation and smoke-check implementation",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-CONTEXT-HELP",
+      "requirement": "Preserve open context help while pointer leaves the trigger",
+      "classification": "Superseded or already complete",
+      "priority": "P3",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-29"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Existing repaired source;combined web tests",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve open context help while pointer leaves the trigger",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-SDK-QUOTE-WARNING",
+      "requirement": "Retain quote-expired warning semantics required by verifier specification",
+      "classification": "Superseded or already complete",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "D5",
+        "invoice-verification-api R3"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "854fa4c777107a3966ada0252e6c80bb7796571c",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Verified source and specification agree;invoice expiry still blocks;README clarifies consumer duty",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Retain quote-expired warning semantics required by verifier specification",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-I18N-CHECK",
+      "requirement": "Retain required missing-key check and reviewed-critical-message fallback",
+      "classification": "Superseded or already complete",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-I18N-01",
+        "spec i18n IN3/IN4"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Existing extract.mjs checks referenced keys;native/draft review remains external. Historical suggestion for a literal-JSX lint is not a separate specified gate.",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Retain required missing-key check and reviewed-critical-message fallback",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "",
+      "remaining_blocker": "",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "already_complete_at_start"
+    },
+    {
+      "task_id": "RW-HISTORICAL-ISSUE38",
+      "requirement": "Reconcile four historical bug-hunt findings and preserved source recovery",
+      "classification": "Integration-only task",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "issue#38"
+      ],
+      "related_prs": [
+        38
+      ],
+      "existing_owner": null,
+      "assigned_worker": "master consolidation",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Issue body and both comments read;existing bug fixes have historical regressions;key/recovery ports belong to assigned owners",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reconcile four historical bug-hunt findings and preserved source recovery",
+      "dependencies": [],
+      "security_review_status": "PASS",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Historical source-port acceptance must be confirmed by recovery/master owner;issue remains open",
+      "remaining_blocker": "Historical source-port acceptance must be confirmed by recovery/master owner;issue remains open",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-MYTHRIL",
+      "requirement": "Disposition fresh pinned Mythril records without suppressing findings",
+      "classification": "Requires owner decision",
+      "priority": "P1",
+      "estimated_complexity": "medium",
+      "sources": [
+        "#212",
+        "#220",
+        "#225",
+        "#255",
+        "SEC-33"
+      ],
+      "related_prs": [
+        212,
+        220,
+        225,
+        255
+      ],
+      "existing_owner": null,
+      "assigned_worker": "contract_security",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "5e753eb969455089acf40eca2d3a5859e3debb66",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Fresh28edbcf run:5contracts/11findings (3medium8low),strict exit1;all8Factory traces differ from prior report;all11 exact-input local counterexamples recorded;first clock-assumption failure retained;corrected8constructor+3expiry checks pass with explicit state limits",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Disposition fresh pinned Mythril records without suppressing findings",
+      "dependencies": [],
+      "security_review_status": "PASS for evidence only; release gate FAILED",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Finding-specific policy decision or a verified correction that closes the strict analyzer gate;#255 stronger evidence lane remains separately owned",
+      "remaining_blocker": "Finding-specific policy decision or a verified correction that closes the strict analyzer gate;#255 stronger evidence lane remains separately owned",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/MYTHRIL_28EDBCF_REVIEW_20261119.md",
+        "../remaining-20261119/MYTHRIL_CURRENT_REPLAY_20261119.md",
+        "../../handoffs/agents/MYTHRIL_REPLAY_CROSS_REVIEW_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-SONAR-INVENTORY",
+      "requirement": "Obtain current Sonar findings beyond historical107-row triage",
+      "classification": "Implemented but unverified",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "#224",
+        "SonarCloud"
+      ],
+      "related_prs": [
+        224
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Public current issues API returned403;historical107-findings source preserved",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Obtain current Sonar findings beyond historical107-row triage",
+      "dependencies": [],
+      "security_review_status": "NOT EXECUTED",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Authenticated current Sonar access is unavailable;historical53fixed/23FP/16accepted/8routed/3obsolete/2thirdparty/2openlow is not a current inventory",
+      "remaining_blocker": "Authenticated current Sonar access is unavailable;historical53fixed/23FP/16accepted/8routed/3obsolete/2thirdparty/2openlow is not a current inventory",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-GITHUB-ALERTS",
+      "requirement": "Read CodeQL, Dependabot and secret-scanning alert inventories",
+      "classification": "Implemented but unverified",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-48"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "GitHub connector rejects unsupported alert endpoints;branch-protection administrative read403",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Read CodeQL, Dependabot and secret-scanning alert inventories",
+      "dependencies": [],
+      "security_review_status": "NOT EXECUTED",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Connector does not expose alert inventories;passing scanner jobs do not prove zero alerts",
+      "remaining_blocker": "Connector does not expose alert inventories;passing scanner jobs do not prove zero alerts",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-ORACLE-CONFIG",
+      "requirement": "Qualify same-chain sequencer/reference-price configuration and real feeds",
+      "classification": "Partial implementation",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-WEB-02",
+        "spec03 S2"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Library guards exist;four current feed identities/heartbeat metadata source-checked;fresh heartbeat defect repaired",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Qualify same-chain sequencer/reference-price configuration and real feeds",
+      "dependencies": [],
+      "security_review_status": "SOURCE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "No authenticated same-chain sequencer/second-source deployment record or qualified fork/RPC configuration;do not invent addresses",
+      "remaining_blocker": "No authenticated same-chain sequencer/second-source deployment record or qualified fork/RPC configuration;do not invent addresses",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-DEPLOYMENT-MATRIX",
+      "requirement": "Qualify73 chain/token/feed/deployment acceptance cells",
+      "classification": "Implemented but unverified",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-DEP-03",
+        "spec09",
+        "TODO-VERIFY.md"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner/operator",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Strict matrix exits1 with73unverified cells",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Qualify73 chain/token/feed/deployment acceptance cells",
+      "dependencies": [],
+      "security_review_status": "SOURCE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Requires actual deployment/readback evidence and approved network/release configuration;no deployment authorized",
+      "remaining_blocker": "Requires actual deployment/readback evidence and approved network/release configuration;no deployment authorized",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-ORIGIN-TRUST",
+      "requirement": "Choose dedicated origin and establish independent release trust roots",
+      "classification": "Requires owner decision",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "ADR0029",
+        "SEC-01",
+        "SEC-02",
+        "SEC-08",
+        "SEC-32"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Origin and signature gates remain fail-closed",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Choose dedicated origin and establish independent release trust roots",
+      "dependencies": [],
+      "security_review_status": "SOURCE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Owner must choose/configure dedicated hosting, release keys and out-of-band trust;no production publication authorized",
+      "remaining_blocker": "Owner must choose/configure dedicated hosting, release keys and out-of-band trust;no production publication authorized",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-ABI-PRIVACY",
+      "requirement": "Resolve seller-constant policyHash exposure before enabling scheme2",
+      "classification": "Requires owner decision",
+      "priority": "P0",
+      "estimated_complexity": "large",
+      "sources": [
+        "SEC-06",
+        "AUD24-01",
+        "D03"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Confirmed current PolicyRef ABI exposure;source remains experimental",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Resolve seller-constant policyHash exposure before enabling scheme2",
+      "dependencies": [],
+      "security_review_status": "CONFIRMED RESIDUAL",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Approved ABI/protocol migration in lockstep with clients/routers and independent audit required",
+      "remaining_blocker": "Approved ABI/protocol migration in lockstep with clients/routers and independent audit required",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RECOVERY-AUTHORITY",
+      "requirement": "Decide policy-account recovery authority without introducing guardians",
+      "classification": "Requires owner decision",
+      "priority": "P0",
+      "estimated_complexity": "large",
+      "sources": [
+        "ADR0028",
+        "D04",
+        "SEC-31"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Existing model is design support only",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Decide policy-account recovery authority without introducing guardians",
+      "dependencies": [],
+      "security_review_status": "DESIGN GATE",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "User authority preference does not approve a new fund-control protocol;no guardian/custody redesign",
+      "remaining_blocker": "User authority preference does not approve a new fund-control protocol;no guardian/custody redesign",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-ESCROW-AUTHORITY",
+      "requirement": "Resolve milestone escrow custody/authority specification",
+      "classification": "Requires owner decision",
+      "priority": "P2",
+      "estimated_complexity": "large",
+      "sources": [
+        "F-AA-06",
+        "spec17",
+        "D05"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Existing model tests are supporting evidence,not deployed fund control",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Resolve milestone escrow custody/authority specification",
+      "dependencies": [],
+      "security_review_status": "DESIGN GATE",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Separate product/custody approval required;do not invent escrow execution",
+      "remaining_blocker": "Separate product/custody approval required;do not invent escrow execution",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-FEE-FREEZE-RESIDUAL",
+      "requirement": "Disposition immutable fee-token freeze risk beyond deployment acknowledgement",
+      "classification": "Requires owner decision",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-07",
+        "N1",
+        "#255"
+      ],
+      "related_prs": [
+        255
+      ],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Acknowledgement mitigations do not alter factory runtime or eliminate future token freeze",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Disposition immutable fee-token freeze risk beyond deployment acknowledgement",
+      "dependencies": [],
+      "security_review_status": "CONFIRMED CONDITIONAL",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Choose eligible fee/token/commercial policy or approve a specified fail-open protocol change;never silently change recipient",
+      "remaining_blocker": "Choose eligible fee/token/commercial policy or approve a specified fail-open protocol change;never silently change recipient",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-L2-DELAY-POLICY",
+      "requirement": "Choose chain-specific policy withdrawal delay after censorship-bound verification",
+      "classification": "Requires owner decision",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-12",
+        "OD11"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "UI discloses unverified limits;existing delay constants unchanged",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Choose chain-specific policy withdrawal delay after censorship-bound verification",
+      "dependencies": [],
+      "security_review_status": "SOURCE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Authenticated chain-specific inclusion/censorship policy and approved minimum are absent",
+      "remaining_blocker": "Authenticated chain-specific inclusion/censorship policy and approved minimum are absent",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-POLICY-ASSET-PROTOCOL",
+      "requirement": "Resolve withdrawal-asset uncertainty for payers with only a policy meta-address",
+      "classification": "Requires owner decision",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-11"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Client known-record proof/asset mitigation implemented",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Resolve withdrawal-asset uncertainty for payers with only a policy meta-address",
+      "dependencies": [],
+      "security_review_status": "RESIDUAL AFTER MITIGATION",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Meta-address alone lacks asset leaves;full protocol closure needs authenticated policy metadata/design",
+      "remaining_blocker": "Meta-address alone lacks asset leaves;full protocol closure needs authenticated policy metadata/design",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-CONFIDENTIAL-BINDING",
+      "requirement": "Resolve confidential note/cross-chain binding findings requiring protocol evidence",
+      "classification": "Requires owner decision",
+      "priority": "P0",
+      "estimated_complexity": "large",
+      "sources": [
+        "#220 A1/A2",
+        "F-POOL-09"
+      ],
+      "related_prs": [
+        220
+      ],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Fresh security disposition distinguishes confirmed return-copy defect from witness/domain questions",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Resolve confidential note/cross-chain binding findings requiring protocol evidence",
+      "dependencies": [],
+      "security_review_status": "DESIGN GATE",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Need approved backend/proof-domain and transfer-binding design;cannot infer missing cryptographic authority",
+      "remaining_blocker": "Need approved backend/proof-domain and transfer-binding design;cannot infer missing cryptographic authority",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-POOL-CEREMONY",
+      "requirement": "Replace insecure development ceremony before any production pool claim",
+      "classification": "Requires owner decision",
+      "priority": "P0",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-POOL-01"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Documented public development setup preserved;#245 owns input validation recovery",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Replace insecure development ceremony before any production pool claim",
+      "dependencies": [],
+      "security_review_status": "KNOWN DEVELOPMENT LIMIT",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Independent circuit audit and real multiparty ceremony are external prerequisites;no production pool release",
+      "remaining_blocker": "Independent circuit audit and real multiparty ceremony are external prerequisites;no production pool release",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-LOW-DEPENDENCIES",
+      "requirement": "Disposition17 remaining low development dependency findings",
+      "classification": "Requires owner decision",
+      "priority": "P3",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-25"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner/dependency maintainer",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Fresh exact-lock17low;0moderate/high/critical;production0",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Disposition17 remaining low development dependency findings",
+      "dependencies": [],
+      "security_review_status": "AUDIT VERIFIED",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "cookie/elliptic development chains need reviewed compatible upstream migration;no blind major upgrade or unsupported override",
+      "remaining_blocker": "cookie/elliptic development chains need reviewed compatible upstream migration;no blind major upgrade or unsupported override",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-NATIVE-ACCEPTANCE",
+      "requirement": "Qualify real wallets, mobile camera, Safari/Firefox, screen readers and Tor",
+      "classification": "Implemented but unverified",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-A11Y-02",
+        "F-A11Y-03",
+        "SEC-41",
+        "F-WEB-03"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "human QA/operator",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Chromium emulation/local tests are not native-device or assistive-technology proof",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Qualify real wallets, mobile camera, Safari/Firefox, screen readers and Tor",
+      "dependencies": [],
+      "security_review_status": "NOT EXECUTED",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Physical/native environments and actual hosted endpoints unavailable in this execution environment",
+      "remaining_blocker": "Physical/native environments and actual hosted endpoints unavailable in this execution environment",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-NATIVE-LOCALES",
+      "requirement": "Obtain native-language review and decide remaining catalog rollout",
+      "classification": "Implemented but unverified",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-I18N-02"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "native reviewers/owner",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Four catalogs retained as drafts;critical keys fall back to reviewed English;missing-language options disclose fallback",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Obtain native-language review and decide remaining catalog rollout",
+      "dependencies": [],
+      "security_review_status": "HUMAN REVIEW REQUIRED",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Native-speaker acceptance cannot be inferred from machine translation;no review flag fabricated",
+      "remaining_blocker": "Native-speaker acceptance cannot be inferred from machine translation;no review flag fabricated",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-LIVE-HOSTING",
+      "requirement": "Qualify live container startup, TLS/HSTS and onion reachability",
+      "classification": "Implemented but unverified",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-HOST-01",
+        "F-HOST-02",
+        "F-HOST-03",
+        "F-HOST-04"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "operator",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Source/header/Compose checks pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Qualify live container startup, TLS/HSTS and onion reachability",
+      "dependencies": [],
+      "security_review_status": "SOURCE REVIEW ONLY",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Requires actual operator host, authorized deployment and public reachability;this task does not deploy",
+      "remaining_blocker": "Requires actual operator host, authorized deployment and public reachability;this task does not deploy",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-PUBLIC-PACKAGES",
+      "requirement": "Decide public SDK licensing, package publication and external merchant integrations",
+      "classification": "Requires owner decision",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-PROTO-12",
+        "F-INT-01",
+        "F-INT-02",
+        "F-INT-03",
+        "D06"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner/integrator",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "ExistingSDK/plugins/examples retained;README completed;Shopify partner-backed integration remains a stub by design",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Decide public SDK licensing, package publication and external merchant integrations",
+      "dependencies": [],
+      "security_review_status": "SCOPE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Publication/licence, real shop/API and Shopify program access are absent;no mandatory service invented",
+      "remaining_blocker": "Publication/licence, real shop/API and Shopify program access are absent;no mandatory service invented",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-OPTIONAL-PROPOSALS",
+      "requirement": "Keep future ideas and experimental authority changes as explicit references",
+      "classification": "Superseded or already complete",
+      "priority": "P4",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-FUT01..41",
+        "D07",
+        "F-KEY-14"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "41future reference records cross-linked to existing implementations/owners;no duplicate product build counted",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Keep future ideas and experimental authority changes as explicit references",
+      "dependencies": [],
+      "security_review_status": "SCOPE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Separate product approval required for new off-ramp, multi-profile UI, hosted BTC service or custody changes",
+      "remaining_blocker": "Separate product approval required for new off-ramp, multi-profile UI, hosted BTC service or custody changes",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "scope_boundary_reference"
+    },
+    {
+      "task_id": "RW-PAID-AUTOMATION",
+      "requirement": "Preserve explicitly unactivated paid-agent workflows",
+      "classification": "Superseded or already complete",
+      "priority": "P4",
+      "estimated_complexity": "small",
+      "sources": [
+        "#51",
+        "#52",
+        "#82"
+      ],
+      "related_prs": [
+        51,
+        52,
+        82
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Read-only source inventory; no new schedules or activation",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve explicitly unactivated paid-agent workflows",
+      "dependencies": [],
+      "security_review_status": "SCOPE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "The execution directive already prohibits paid-agent activation; no new approval is requested",
+      "remaining_blocker": "The execution directive already prohibits paid-agent activation; no new approval is requested",
+      "completion_status": "SUPERSEDED",
+      "final_disposition": "SUPERSEDED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "scope_boundary_reference"
+    },
+    {
+      "task_id": "RW-MAJOR-UPGRADES",
+      "requirement": "Keep major dependency migration under its existing qualification owner",
+      "classification": "Integration-only task",
+      "priority": "P3",
+      "estimated_complexity": "small",
+      "sources": [
+        "#87",
+        "#253"
+      ],
+      "related_prs": [
+        87,
+        253
+      ],
+      "existing_owner": null,
+      "assigned_worker": "master consolidation",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Active#253 net-harness repair and major-candidate work tracked",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Keep major dependency migration under its existing qualification owner",
+      "dependencies": [],
+      "security_review_status": "SCOPE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Separate major compatibility matrix/owner work;do not auto-merge or duplicate active work",
+      "remaining_blocker": "Separate major compatibility matrix/owner work;do not auto-merge or duplicate active work",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-QUALIFICATION",
+      "requirement": "Qualify the resulting integrated candidate and merge only eligible checked source",
+      "classification": "Integration-only task",
+      "priority": "P1",
+      "estimated_complexity": "large",
+      "sources": [
+        "#246",
+        "#238",
+        "#264",
+        "directive16"
+      ],
+      "related_prs": [
+        238,
+        246,
+        264
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Published28edbcf:CLI3OS/integration/beta/Pages/hosting/Echidna/full+lean browser/Foundry/confidential pass;web2972pass1fail1skip with owned recovery fixture race;strictMythril11findings fails;clock-focused63/63 twice passes but full invoice package786/787 timed out in an unchanged passphrase test at its60s limit; isolated same case later passes1selected/25unselected without coverage; final published source requires distinct hosted qualification",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Qualify the resulting integrated candidate and merge only eligible checked source",
+      "dependencies": [],
+      "security_review_status": "BLOCKED BY REQUIRED QUALIFICATION",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Exact delivered candidate full hosted matrix, strict analyzer closure and owner recovery integration remain open; local full invoice coverage failed with one timeout and CLI/relayer full typechecks were killed; none is claimed passing",
+      "remaining_blocker": "Exact delivered candidate full hosted matrix, strict analyzer closure and owner recovery integration remain open; local full invoice coverage failed with one timeout and CLI/relayer full typechecks were killed; none is claimed passing",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/COMBINED_QUALIFICATION_20261119.md",
+        "../remaining-20261119/POSTINTEGRATION_QUALIFICATION_20261119.md",
+        "../remaining-20261119/HOSTED_CHECKPOINT_FAILURES_20261119.md",
+        "../remaining-20261119/final-source-checks/manifest.json",
+        "../../handoffs/agents/MERCHANT_PROFILE_CLOCK_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-NATIVE-FEE-RECIPIENT",
+      "requirement": "Qualify immutable native fee-recipient acceptance before deployment",
+      "classification": "Requires owner decision",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "SEC-36",
+        "F-CTR-05"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner/operator",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Existing router intentionally reverts when immutable fee transfer fails",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Qualify immutable native fee-recipient acceptance before deployment",
+      "dependencies": [],
+      "security_review_status": "SOURCE REVIEW",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "Fee recipient and its acceptance behavior require owner-selected deployment evidence;do not change funds destination or fee policy",
+      "remaining_blocker": "Fee recipient and its acceptance behavior require owner-selected deployment evidence;do not change funds destination or fee policy",
+      "completion_status": "REQUIRES OWNER DECISION",
+      "final_disposition": "REQUIRES OWNER DECISION",
+      "new_in_this_workstream": true,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-EXPERIMENTAL-MODELS",
+      "requirement": "Run existing recovery and escrow design-model tests in CI",
+      "classification": "CI or dependency repair",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-AA-05",
+        "#209 B4"
+      ],
+      "related_prs": [
+        209
+      ],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "4f3237fcbe09334664dffb68ddbc19d75fd7c6e9",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Existing suites38/38zero skips;twoexplicitpathsadded;allfiveoldglobsretained;YAML/bash/114pins/secrets pass",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Run existing recovery and escrow design-model tests in CI",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent root source review)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Design-support checks do not select recovery/escrow authority or implementfundcontrol;new hostedstep pending",
+      "remaining_blocker": "Design-support checks do not select recovery/escrow authority or implementfundcontrol;new hostedstep pending",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/DESIGN_MODEL_CI_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-EXTERNAL-AUDIT",
+      "requirement": "Obtain independent external cryptographic and contract audit acceptance",
+      "classification": "Implemented but unverified",
+      "priority": "P1",
+      "estimated_complexity": "large",
+      "sources": [
+        "F-PROTO-01",
+        "F-CTR-01",
+        "docs/specs/README.md"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "owner/external reviewer",
+      "implementation_branch": null,
+      "implementation_sha": null,
+      "implementation_status": "See disposition and evidence",
+      "required_tests": "Repository vectors,differential/native checks and independent engineering reviews are retained;none is represented as an external audit",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Obtain independent external cryptographic and contract audit acceptance",
+      "dependencies": [],
+      "security_review_status": "EXTERNAL ACCEPTANCE UNAVAILABLE",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": null,
+      "main_merge_sha": null,
+      "remaining_requirements": "External audit is explicitly owner-gated in the implementation specifications;no commissioned assessment or signed external acceptance is available",
+      "remaining_blocker": "External audit is explicitly owner-gated in the implementation specifications;no commissioned assessment or signed external acceptance is available",
+      "completion_status": "BLOCKED",
+      "final_disposition": "BLOCKED",
+      "new_in_this_workstream": false,
+      "evidence": [],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-READBACK",
+      "requirement": "Require known-chain canonical announcer and configured-secondary deployment agreement",
+      "classification": "Confirmed defect",
+      "priority": "P1",
+      "estimated_complexity": "medium",
+      "sources": [
+        "F-DEP-02",
+        "spec01",
+        "F-WEB-17"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "backlog_ci",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "6fe060e370ccf168899796708ae4d6bed5e990ef",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED12library and6relayer failures;GREEN64library+149relayer+14web consumer,zero skips;both typechecks/builds and separate scoped lints pass;combined lint heap failure retained",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Require known-chain canonical announcer and configured-secondary deployment agreement",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent root source review)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Canonical local browser-devnet fixture follow-up is integrated and reviewed;browser provider consent wiring remains with existing network owner#251",
+      "remaining_blocker": "Canonical local browser-devnet fixture follow-up is integrated and reviewed;browser provider consent wiring remains with existing network owner#251",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/DEPLOYMENT_READBACK_PARITY_20261119.md",
+        "../remaining-20261119/COMBINED_RELAYER_READBACK_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-RELAYER-RECEIPT-STATUS",
+      "requirement": "Reject absent or unknown mined receipt status before settlement",
+      "classification": "Confirmed defect",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "R07",
+        "directive10"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "5f7d5e9e926e5d1ab44665e97b83c191d278649c",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Independent transport probe reproduced on pre-OP and OP source;RED16failure/8valid controls;GREEN97/97 receipt/chain/restart/requiredAnvil;later62/62 targeted;valid success/revert behavior retained",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reject absent or unknown mined receipt status before settlement",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent contract_security and root)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Final combined qualification and eligible main merge",
+      "remaining_blocker": "",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-op-fees.md",
+        "../../handoffs/agents/OP_FEE_SOURCE_REVIEW_20261119.md",
+        "../remaining-20261119/COMBINED_RELAYER_READBACK_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-ACTION-UPDATES",
+      "requirement": "Update two pull-request actions to the reviewed Node24 runtime",
+      "classification": "CI or dependency repair",
+      "priority": "P3",
+      "estimated_complexity": "small",
+      "sources": [
+        "#207"
+      ],
+      "related_prs": [
+        207
+      ],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "f42553ab44d2bf8f544f0287656bbc184679014d",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Upstream action metadata differs only node20→node24;two workflow pin lines only;33/33 existing workflow tests,114actionpins,secrets pass;independent upstream/source review PASS",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Update two pull-request actions to the reviewed Node24 runtime",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (backlog_ci upstream comparison and contract_security exact source)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Live paid-workflow execution is neither authorized nor claimed;setup-python v7 is optional maintenance and remains unselected",
+      "remaining_blocker": "Live paid-workflow execution is neither authorized nor claimed;setup-python v7 is optional maintenance and remains unselected",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/ACTION_RUNTIME_20261119.md",
+        "../../handoffs/agents/ACTION_RUNTIME_CROSS_REVIEW_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-DEVNET-CANONICAL",
+      "requirement": "Reconcile local Base Sepolia browser fixture with canonical deployment verification",
+      "classification": "CI or dependency repair",
+      "priority": "P1",
+      "estimated_complexity": "small",
+      "sources": [
+        "F-DEP-02",
+        "F-WEB-17",
+        "RW-RELAYER-READBACK"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "2a0545ceb6b7971801ac1c225e9e857d4d66474b",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "RED5fail9controls plus old native helper refusal;GREEN14/14 and bounded native replay exit0 in14.598s;two failed replay wrappers retained;coordinator integrated14/14 in3.995s;independent57artifact/source/signature review PASS",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reconcile local Base Sepolia browser fixture with canonical deployment verification",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent root and contract_security)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Full browser execution remains separate;both browser branches and production verification are unchanged",
+      "remaining_blocker": "Full browser execution remains separate;both browser branches and production verification are unchanged",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/workflows-devnet-fixture.md",
+        "../remaining-20261119/DEVNET_INTEGRATED_20261119.md",
+        "../../handoffs/agents/DEVNET_FIXTURE_CROSS_REVIEW_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-SOURCE-PROVENANCE",
+      "requirement": "Preserve original local source commits referenced by evidence after GitData publication",
+      "classification": "CI or dependency repair",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "directive14",
+        "directive19"
+      ],
+      "related_prs": [],
+      "existing_owner": null,
+      "assigned_worker": "root",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "9f522a1b86bad53d7430a66da44a39c8208085d1",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Captured25originalheads/trees at1cb5f907;1,196,924byte incremental bundle SHA256a46d79b3b669f6b1676ebfbeb3fa718d1d857318476c12f2da4a1af0192419ac;fresh bare repository fetched only full public prerequisites, verified/imported bundle without alternates,checked all trees/connectivity and ran two repository-aware evidence verifiers;published read-only helper alsoPASS",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Preserve original local source commits referenced by evidence after GitData publication",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent backlog helper source review; fresh repository verification)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Capture precedes generated ledger/archive packaging;historical execution tools may still need recorded path mappings and separate Node/Foundry dependencies",
+      "remaining_blocker": "Capture precedes generated ledger/archive packaging;historical execution tools may still need recorded path mappings and separate Node/Foundry dependencies",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../remaining-20261119/provenance/README.md",
+        "../remaining-20261119/provenance/manifest.json",
+        "../remaining-20261119/provenance/verification-commands.json",
+        "../remaining-20261119/provenance/helper-verification.json"
+      ],
+      "disposition_subtype": "execution_task"
+    },
+    {
+      "task_id": "RW-MERCHANT-PROFILE-CLOCK",
+      "requirement": "Reject invalid runtime clocks in signed merchant-profile expiry verification",
+      "classification": "Confirmed defect",
+      "priority": "P2",
+      "estimated_complexity": "small",
+      "sources": [
+        "#266",
+        "GP-AUD-208-01",
+        "F-WEB-19",
+        "F-MER-05",
+        "docs/specs/14-embed-merchant-profile.md"
+      ],
+      "related_prs": [
+        266
+      ],
+      "existing_owner": null,
+      "assigned_worker": "workflow_fixes",
+      "implementation_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "implementation_sha": "9bec156622c4c606b97e7d43b1b6f12deff71063",
+      "implementation_status": "Source present in candidate",
+      "required_tests": "Genuinely signed expired-profile RED26fail37controls;author63/63 and integrated63/63 zero skips;typecheck/build/lint pass;full invoice package786/787 fails on unchanged passphrase test60s timeout with no coverage report;one isolated diagnostic passes1selected/25unselected at original budget;23rawartifacts and14sourcehashes retained",
+      "test_status": "See source-pinned evidence; final combined gates are separate",
+      "security_implications": "Reject invalid runtime clocks in signed merchant-profile expiry verification",
+      "dependencies": [
+        "RW-QUALIFICATION"
+      ],
+      "security_review_status": "PASS (independent root and contract_security scoped source/evidence)",
+      "integration_destination": "PR #246 on PR #238, preserving current main",
+      "integration_branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "integration_sha": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+      "main_merge_sha": null,
+      "remaining_requirements": "Conditional supplied-clock defect only; all finite numeric behavior and error precedence preserved; no remote exploit established;full-package qualification failure remains separate",
+      "remaining_blocker": "Conditional supplied-clock defect only; all finite numeric behavior and error precedence preserved; no remote exploit established;full-package qualification failure remains separate",
+      "completion_status": "INTEGRATED",
+      "final_disposition": "INTEGRATED",
+      "new_in_this_workstream": true,
+      "evidence": [
+        "../../handoffs/agents/MERCHANT_PROFILE_CLOCK_20261119.md",
+        "../../handoffs/agents/MERCHANT_PROFILE_CLOCK_CROSS_REVIEW_20261119.md",
+        "../remaining-20261119/MERCHANT_PROFILE_INTEGRATED_20261119.md"
+      ],
+      "disposition_subtype": "execution_task"
+    }
+  ],
+  "excluded_owners": [
+    {
+      "id": "OWN-SPEC18",
+      "name": "Backup verification and independent recovery",
+      "prs": [
+        213,
+        229,
+        239,
+        240
+      ],
+      "feature_refs": [
+        "F-PROTO-13",
+        "F-KEY-01",
+        "F-KEY-02",
+        "F-KEY-03",
+        "F-KEY-05",
+        "F-KEY-06",
+        "F-KEY-07",
+        "F-KEY-08",
+        "F-KEY-09",
+        "F-KEY-10",
+        "F-KEY-11",
+        "F-KEY-12",
+        "F-CLI-03"
+      ],
+      "security_refs": [
+        "SEC-03",
+        "SEC-04",
+        "SEC-05",
+        "SEC-13",
+        "SEC-15",
+        "SEC-23"
+      ]
+    },
+    {
+      "id": "OWN-SIGNER",
+      "name": "Pinned invoice signer validation",
+      "prs": [
+        234,
+        243
+      ],
+      "feature_refs": [],
+      "security_refs": []
+    },
+    {
+      "id": "OWN-CHECKPOINT",
+      "name": "Private seller scan checkpoints",
+      "prs": [
+        235,
+        248
+      ],
+      "feature_refs": [
+        "F-WEB-06"
+      ],
+      "security_refs": [
+        "SEC-22"
+      ]
+    },
+    {
+      "id": "OWN-NETWORK",
+      "name": "Browser network isolation",
+      "prs": [
+        241,
+        251
+      ],
+      "feature_refs": [
+        "F-NET-01",
+        "F-WEB-14"
+      ],
+      "security_refs": [
+        "SEC-10",
+        "SEC-19",
+        "SEC-20"
+      ]
+    },
+    {
+      "id": "OWN-TM",
+      "name": "Privacy threat-model hardening and Sweep destination consent",
+      "prs": [
+        222,
+        228,
+        230,
+        231,
+        249,
+        252
+      ],
+      "feature_refs": [
+        "F-PROTO-05",
+        "F-PROTO-11",
+        "F-WEB-07",
+        "F-WEB-08",
+        "F-WEB-11",
+        "F-WEB-12",
+        "F-WEB-16",
+        "F-OPS-02",
+        "F-PRIV-01",
+        "F-PRIV-02",
+        "F-PRIV-03",
+        "F-PRIV-04",
+        "F-PRIV-05",
+        "F-NET-03"
+      ],
+      "security_refs": [
+        "SEC-21",
+        "SEC-27",
+        "SEC-28",
+        "SEC-34",
+        "SEC-37",
+        "SEC-45"
+      ]
+    },
+    {
+      "id": "OWN-BTC",
+      "name": "BTC spent-output detection and private scanning",
+      "prs": [
+        219,
+        244,
+        254
+      ],
+      "feature_refs": [
+        "F-BTC-01",
+        "F-BTC-02",
+        "F-BTC-03"
+      ],
+      "security_refs": []
+    },
+    {
+      "id": "OWN-IDLE",
+      "name": "Sleep-aware idle lock and clock rollback",
+      "prs": [
+        227,
+        242,
+        256
+      ],
+      "feature_refs": [
+        "F-KEY-04"
+      ],
+      "security_refs": []
+    }
+  ],
+  "merge_confirmations": [
+    {
+      "pr": 237,
+      "destination": "main",
+      "sha": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "merged_at": "2026-11-19T06:12:13Z"
+    },
+    {
+      "pr": 236,
+      "destination": "#210 dependency branch",
+      "sha": "7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+      "merged_at": "2026-11-19T07:13:27Z"
+    }
+  ],
+  "limits": [
+    "Source inventories are bounded by the recorded retrieval time; concurrent master work continues.",
+    "Historical requirement/defect/test-gap cells are namespaced under historical_assessment, not asserted as current facts. Current supported-scope and historical-defect dispositions are separate.",
+    "No current Sonar or GitHub alert-empty assertion is possible.",
+    "Strict Mythril failure is preserved; no disposition-based suppression wired.",
+    "A draft candidate or passed isolated tests does not establish complete release readiness."
+  ]
+}

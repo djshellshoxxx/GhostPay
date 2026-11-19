@@ -1,0 +1,14 @@
+{
+  "viemVersion": "2.57.19",
+  "viemOrigins": {
+    "ghostpay": "/workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/viem/_cjs/index.js",
+    "zama": "/workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/viem/_cjs/index.js",
+    "privacyPools": "/workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/viem/_cjs/index.js"
+  },
+  "vitestVersion": "5.1.0",
+  "coverageVersion": "5.1.0",
+  "coverageResolvedFromVitest": "/workspace/scratch/6eafdb04d91b/GhostPay-dependency-reconcile/node_modules/@vitest/coverage-v8/dist/index.js",
+  "coverageImport": "pass"
+}
+(node:108) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)

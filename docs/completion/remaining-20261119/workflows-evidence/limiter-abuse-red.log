@@ -1,0 +1,192 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/relayer-guard
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/limiter.abuse.test.ts (15 tests | 8 failed) 52ms
+   ❯ T-dd756b08-3 (M-3): per-group overflow while the key table is full (7)
+     × adversarial: a table filled by several groups at their quota leaves each newcomer group its own bucket 22ms
+     × per-group overflow is the default (maxOverflowGroups 1024), not one global bucket 2ms
+     × idle (refilled) overflow buckets are evicted, so the overflow table does not fill up for good 3ms
+   ❯ T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats() (8)
+     × an idle (refilled) entry behind a drained least-recently-used entry is evicted instead of overflowing 2ms
+     × scans the 8 oldest entries for an idle one, and no further (constant work per insert) 3ms
+     × the overflow table shares the scan: an idle group bucket behind a live one is evicted 2ms
+     ❯ one reserveAll never evicts a stale entry it already resolved (review R1) (3)
+       × a one-entry table: the stale entry is not evicted for source 2 either 2ms
+     × stats() returns counters only, never a key, group or address 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/limiter.abuse.test.ts > T-dd756b08-3 (M-3): per-group overflow while the key table is full > adversarial: a table filled by several groups at their quota leaves each newcomer group its own bucket
+AssertionError: expected { ok: false, retryAfterMs: 1000, …(1) } to deeply equal { ok: true, retryAfterMs: +0, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "ok": true,
++   "ok": false,
+    "overflow": true,
+-   "retryAfterMs": 0,
++   "retryAfterMs": 1000,
+  }
+
+ ❯ src/limiter.abuse.test.ts:37:27
+     35|     for (let g = 0; g < 5; g++) {
+     36|       const key = `honest${String(g)}:1`;
+     37|       expect(l.take(key)).toEqual({ ok: true, retryAfterMs: 0, overflo…
+       |                           ^
+     38|       expect(l.take(key)).toEqual({ ok: true, retryAfterMs: 0, overflo…
+     39|       expect(l.take(key).ok).toBe(false); // its own overflow bucket i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/limiter.abuse.test.ts > T-dd756b08-3 (M-3): per-group overflow while the key table is full > per-group overflow is the default (maxOverflowGroups 1024), not one global bucket
+AssertionError: expected { ok: false, retryAfterMs: 1000, …(1) } to deeply equal { ok: true, retryAfterMs: +0, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "ok": true,
++   "ok": false,
+    "overflow": true,
+-   "retryAfterMs": 0,
++   "retryAfterMs": 1000,
+  }
+
+ ❯ src/limiter.abuse.test.ts:51:27
+     49|     drain(l, 'c:1', 2); // c's own overflow bucket
+     50|     expect(l.take('c:1').ok).toBe(false);
+     51|     expect(l.take('d:1')).toEqual({ ok: true, retryAfterMs: 0, overflo…
+       |                           ^
+     52|   });
+     53|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/limiter.abuse.test.ts > T-dd756b08-3 (M-3): per-group overflow while the key table is full > idle (refilled) overflow buckets are evicted, so the overflow table does not fill up for good
+AssertionError: expected { ok: false, retryAfterMs: 1000, …(1) } to deeply equal { ok: true, retryAfterMs: +0, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "ok": true,
++   "ok": false,
+    "overflow": true,
+-   "retryAfterMs": 0,
++   "retryAfterMs": 1000,
+  }
+
+ ❯ src/limiter.abuse.test.ts:88:27
+     86|     clock.t = 1000; // x's overflow bucket and the shared bucket are f…
+     87|     expect(l.take('w:1')).toEqual({ ok: true, retryAfterMs: 0, overflo…
+     88|     expect(l.take('v:1')).toEqual({ ok: true, retryAfterMs: 0, overflo…
+       |                           ^
+     89|   });
+     90|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/limiter.abuse.test.ts > T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats() > an idle (refilled) entry behind a drained least-recently-used entry is evicted instead of overflowing
+AssertionError: expected { ok: true, retryAfterMs: +0, …(1) } to deeply equal { ok: true, retryAfterMs: +0, …(1) }
+
+- Expected
++ Received
+
+  {
+    "ok": true,
+-   "overflow": false,
++   "overflow": true,
+    "retryAfterMs": 0,
+  }
+
+ ❯ src/limiter.abuse.test.ts:110:25
+    108|     l.take('B'); // B holds 1 token
+    109|     clock.t = 1000; // B refilled (idle); A holds 1 token (live) and i…
+    110|     expect(l.take('D')).toEqual({ ok: true, retryAfterMs: 0, overflow:…
+       |                         ^
+    111|     expect(l.size).toBe(2);
+    112|     expect(l.take('A').ok).toBe(true); // A kept its bucket (1 token),…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/limiter.abuse.test.ts > T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats() > scans the 8 oldest entries for an idle one, and no further (constant work per insert)
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/limiter.abuse.test.ts:125:52
+    123|
+    124|   it('scans the 8 oldest entries for an idle one, and no further (cons…
+    125|     expect(nineWithIdleAt(7).take('new').overflow).toBe(false); // 8th…
+       |                                                    ^
+    126|     expect(nineWithIdleAt(8).take('new').overflow).toBe(true); // 9th …
+    127|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/limiter.abuse.test.ts > T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats() > the overflow table shares the scan: an idle group bucket behind a live one is evicted
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/limiter.abuse.test.ts:143:30
+    141|     expect(l.take('z:1')).toEqual({ ok: true, retryAfterMs: 0, overflo…
+    142|     expect(l.take('z:1').ok).toBe(true); // z got its own bucket (y ev…
+    143|     expect(l.take('v:1').ok).toBe(true); // ... so the shared bucket s…
+       |                              ^
+    144|     expect(l.stats().overflowGroups).toBe(2);
+    145|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/limiter.abuse.test.ts > T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats() > one reserveAll never evicts a stale entry it already resolved (review R1) > a one-entry table: the stale entry is not evicted for source 2 either
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/limiter.abuse.test.ts:219:35
+    217|         ),
+    218|       ).not.toBeNull();
+    219|       expect(b.allows('D', 'gD')).toBe(false);
+       |                                   ^
+    220|     });
+    221|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/limiter.abuse.test.ts > T-dd756b08-4 (L-8): bounded idle scan on eviction, and stats() > stats() returns counters only, never a key, group or address
+TypeError: l.stats is not a function
+ ❯ src/limiter.abuse.test.ts:225:35
+    223|   it('stats() returns counters only, never a key, group or address', (…
+    224|     const { l } = limiter({ maxKeys: 1, maxPerGroup: 1, maxOverflowGro…
+    225|     const empty: LimiterStats = l.stats();
+       |                                   ^
+    226|     expect(empty).toEqual({ overflowHits: 0, sharedOverflowHits: 0, ta…
+    227|     l.take('203.0.113.7:a');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 7 passed (15)
+   Start at  23:05:23
+   Duration  632ms (transform 61%, tests 21%, import 14%, worker 3%)
+

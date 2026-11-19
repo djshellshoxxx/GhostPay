@@ -1,0 +1,53 @@
+[
+  {
+    "name": "solana-build",
+    "source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "final_source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--workspace",
+      "@ghostpay/chain-solana"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 8.375,
+    "node": "22.23.4",
+    "heap_mib": 768
+  },
+  {
+    "name": "tron-build",
+    "source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "final_source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--workspace",
+      "@ghostpay/chain-tron"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 5.898,
+    "node": "22.23.4",
+    "heap_mib": 768
+  },
+  {
+    "name": "cli-typecheck",
+    "source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "final_source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "--workspace",
+      "@ghostpay/cli"
+    ],
+    "cwd": ".",
+    "exit_code": 137,
+    "seconds": 25.327,
+    "node": "22.23.4",
+    "heap_mib": 768
+  }
+]

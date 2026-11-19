@@ -1,0 +1,19 @@
+{
+  "name": "merchant-profile-clock-passphrase-focused",
+  "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/passphrase.test.ts",
+    "-t",
+    "authentic but malformed plaintext gives typed errors",
+    "--maxWorkers=1",
+    "--reporter=verbose"
+  ],
+  "cwd": "packages/invoice-schema",
+  "exit_code": 0,
+  "seconds": 6.159,
+  "observed_at": "2026-11-19T09:09:33.573422+00:00",
+  "log": "merchant-profile-clock-passphrase-focused.log"
+}

@@ -1,0 +1,13 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/cli@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli
+      Coverage enabled with v8
+
+ ❯ src/reconcile-command.test.ts (26 tests | 3 failed) 591032ms
+   × rejects a reviewed record absent from current evidence and a changed provider endpoint 62434ms
+   × fails final review if observations change or canonical finality disappears during work 60037ms
+   × rejects wrong archive formats and seller scopes before changing any local state 60062ms

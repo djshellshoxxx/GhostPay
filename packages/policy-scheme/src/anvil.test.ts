@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { secretScalarFromBytes, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { createPublicClient, createWalletClient, decodeEventLog, encodeFunctionData, http, type Abi, type PublicClient, type WalletClient } from 'viem';
+import { createPublicClient, createWalletClient, decodeEventLog, encodeFunctionData, hashStruct, hashTypedData, http, type Abi, type PublicClient, type WalletClient } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
@@ -309,13 +309,24 @@ describe.skipIf(!available)('policy-scheme anvil cross-check (real PolicyAccount
     const td = buildWithdrawTypedData({ chainId: vectors.deployment.chainId, account: key.accountAddress, token: ZERO_ADDRESS, amount: native.net, deadline: now + 3600n, nonce: 1n, limit: { limitsRoot: tree.root, proof } });
     const sig = await signPolicyTypedData(td, key.ownerSecret, key.ownerAddress);
     expect(await send(encodeRequestWithdraw(td, proof, sig))).toBe('success');
-    const tdToken = buildWithdrawTypedData({ chainId: vectors.deployment.chainId, account: key.accountAddress, token, amount: 1n, deadline: now + 3600n, nonce: 2n, limit: { limitsRoot: tree.root, proof } });
+    expect(() => buildWithdrawTypedData({ chainId: vectors.deployment.chainId, account: key.accountAddress, token, amount: 1n, deadline: now + 3600n, nonce: 2n, limit: { limitsRoot: tree.root, proof } })).toThrow(/leaf does not match/);
+    // The hardened builder now refuses this invalid order. Construct its known policy shape explicitly so the
+    // independent encoder and real-contract rejection checks still exercise a correctly signed mismatched leaf.
+    const message = { ...td.message, token, amount: 1n, nonce: 2n };
+    const tdToken = {
+      ...td,
+      message,
+      structHash: hashStruct({ data: message, primaryType: td.primaryType, types: td.types }),
+      digest: hashTypedData({ domain: td.domain, types: td.types, primaryType: td.primaryType, message }),
+    };
     expect(() => encodeRequestWithdraw(tdToken, proof, '0x')).toThrow(/limitLeafHash/);
     // Bypass the client check: the contract itself refuses the mismatched leaf (LimitLeafMismatch).
+    const invalidArgs = [tdToken.message, { limit: proof.limit, windowSeconds: proof.windowSeconds, proof: [...proof.proof] }, (await signPolicyTypedData(tdToken, key.ownerSecret, key.ownerAddress)).signature] as const;
+    await expect(pub.simulateContract({ address: key.accountAddress, abi: policyAccountAbi, functionName: 'requestWithdraw', args: invalidArgs })).rejects.toThrow(/LimitLeafMismatch/);
     const raw = encodeFunctionData({
       abi: policyAccountAbi,
       functionName: 'requestWithdraw',
-      args: [tdToken.message, { limit: proof.limit, windowSeconds: proof.windowSeconds, proof: [...proof.proof] }, (await signPolicyTypedData(tdToken, key.ownerSecret)).signature],
+      args: invalidArgs,
     });
     expect(await send({ to: key.accountAddress, data: raw, value: 0n })).toBe('reverted');
     const before = await pub.getBalance({ address: a.policy.destination });

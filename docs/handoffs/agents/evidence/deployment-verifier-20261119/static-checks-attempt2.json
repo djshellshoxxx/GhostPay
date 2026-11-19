@@ -1,0 +1,27 @@
+[
+  {
+    "check": "lint",
+    "argv": [
+      "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+      "node_modules/eslint/bin/eslint.js",
+      "--config",
+      "eslint.config.js",
+      "packages/chain-adapters/src/verify.ts",
+      "packages/chain-adapters/src/verify.test.ts"
+    ],
+    "node_heap_mib": 512,
+    "exit_code": 1
+  },
+  {
+    "check": "typecheck",
+    "argv": [
+      "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "packages/chain-adapters/tsconfig.json",
+      "--noEmit"
+    ],
+    "node_heap_mib": 512,
+    "exit_code": 0
+  }
+]

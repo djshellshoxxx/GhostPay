@@ -5,7 +5,7 @@ import { parseEmbedMessage, type EmbedDone, type EmbedMessage } from './embedPro
 
 /**
  * Checkout side of the embed protocol. Runs only when this page is framed AND the deployment opted in (header-capable host:
- * `frame-ancestors` allowlist in deploy/nginx/embed-frame.conf). On GitHub Pages the flag is off, so the checkout never
+ * `frame-ancestors` allowlist in deploy/nginx/security-headers-embed.conf). On GitHub Pages the flag is off, so the checkout never
  * answers a parent and the SDK falls back to a top-level popup.
  */
 

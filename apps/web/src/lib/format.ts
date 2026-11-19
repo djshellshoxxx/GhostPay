@@ -57,6 +57,12 @@ export function formatCountdown(ms: number): string {
   return h > 0 ? `${String(h)}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
+/** Seconds as minutes for display: whole minutes plainly, otherwise one decimal (90 s is "1.5"). */
+export function minutesLabel(seconds: number): string {
+  const minutes = seconds / 60;
+  return Number.isInteger(minutes) ? String(minutes) : minutes.toFixed(1);
+}
+
 /**
  * UTC timestamp for a unix-seconds value, locale independent. Total: a value outside the Date range (or not a number)
  * renders as `invalid time` instead of throwing, so an untrusted time can never take down a render (G1-01).

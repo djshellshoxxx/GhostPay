@@ -1,0 +1,235 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-op-fees/apps/relayer
+
+(node:40) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/opFees.test.ts (62 tests | 16 failed | 38 skipped) 81ms
+   ❯ inherited R07 receipt status admission on chain 84532 (12)
+     × lookup refuses missing or unknown mined status undefined 38ms
+     × lookup refuses missing or unknown mined status null 3ms
+     × lookup refuses missing or unknown mined status 0x2 3ms
+     × lookup refuses missing or unknown mined status 0x02 2ms
+     × wait refuses missing or unknown mined status undefined 5ms
+     × wait refuses missing or unknown mined status null 2ms
+     × wait refuses missing or unknown mined status 0x2 3ms
+     × wait refuses missing or unknown mined status 0x02 2ms
+   ❯ inherited R07 receipt status admission on chain 11155111 (12)
+     × lookup refuses missing or unknown mined status undefined 2ms
+     × lookup refuses missing or unknown mined status null 1ms
+     × lookup refuses missing or unknown mined status 0x2 1ms
+     × lookup refuses missing or unknown mined status 0x02 1ms
+     × wait refuses missing or unknown mined status undefined 1ms
+     × wait refuses missing or unknown mined status null 1ms
+     × wait refuses missing or unknown mined status 0x2 1ms
+     × wait refuses missing or unknown mined status 0x02 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 84532 > lookup refuses missing or unknown mined status undefined
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 84532 > lookup refuses missing or unknown mined status null
+AssertionError: promise resolved "{ status: null, gasUsed: 100000n, …(2) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "gasUsed": 100000n,
++   "l1Fee": 1n,
++   "operatorFee": 10n,
++   "status": null,
+  }
+
+ ❯ src/opFees.test.ts:389:71
+    387|     it.each([undefined, null, '0x2', '0x02'])(`${method} refuses missi…
+    388|       const s = rpcClient({ chainId, l1Fee: '0x1', receipt: { status }…
+    389|       if (method === 'lookup') await expect(s.client.getReceipt(HASH))…
+       |                                                                       ^
+    390|       else expect(await s.client.waitForReceipt(HASH, 1000)).toEqual({…
+    391|       expect(s.calls).toHaveLength(0); // refusal precedes even the OP…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 84532 > lookup refuses missing or unknown mined status 0x2
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 84532 > lookup refuses missing or unknown mined status 0x02
+AssertionError: promise resolved "{ status: undefined, …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "gasUsed": 100000n,
++   "l1Fee": 1n,
++   "operatorFee": 10n,
++   "status": undefined,
+  }
+
+ ❯ src/opFees.test.ts:389:71
+    387|     it.each([undefined, null, '0x2', '0x02'])(`${method} refuses missi…
+    388|       const s = rpcClient({ chainId, l1Fee: '0x1', receipt: { status }…
+    389|       if (method === 'lookup') await expect(s.client.getReceipt(HASH))…
+       |                                                                       ^
+    390|       else expect(await s.client.waitForReceipt(HASH, 1000)).toEqual({…
+    391|       expect(s.calls).toHaveLength(0); // refusal precedes even the OP…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 84532 > wait refuses missing or unknown mined status undefined
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 84532 > wait refuses missing or unknown mined status null
+AssertionError: expected { Object (status, gasUsed, ...) } to deeply equal { status: 'timeout', gasUsed: 0n }
+
+- Expected
++ Received
+
+  {
+-   "gasUsed": 0n,
+-   "status": "timeout",
++   "gasUsed": 100000n,
++   "l1Fee": 1n,
++   "operatorFee": 10n,
++   "status": null,
+  }
+
+ ❯ src/opFees.test.ts:390:62
+    388|       const s = rpcClient({ chainId, l1Fee: '0x1', receipt: { status }…
+    389|       if (method === 'lookup') await expect(s.client.getReceipt(HASH))…
+    390|       else expect(await s.client.waitForReceipt(HASH, 1000)).toEqual({…
+       |                                                              ^
+    391|       expect(s.calls).toHaveLength(0); // refusal precedes even the OP…
+    392|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 84532 > wait refuses missing or unknown mined status 0x2
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 84532 > wait refuses missing or unknown mined status 0x02
+AssertionError: expected { status: undefined, …(3) } to deeply equal { status: 'timeout', gasUsed: 0n }
+
+- Expected
++ Received
+
+  {
+-   "gasUsed": 0n,
+-   "status": "timeout",
++   "gasUsed": 100000n,
++   "l1Fee": 1n,
++   "operatorFee": 10n,
++   "status": undefined,
+  }
+
+ ❯ src/opFees.test.ts:390:62
+    388|       const s = rpcClient({ chainId, l1Fee: '0x1', receipt: { status }…
+    389|       if (method === 'lookup') await expect(s.client.getReceipt(HASH))…
+    390|       else expect(await s.client.waitForReceipt(HASH, 1000)).toEqual({…
+       |                                                              ^
+    391|       expect(s.calls).toHaveLength(0); // refusal precedes even the OP…
+    392|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 11155111 > lookup refuses missing or unknown mined status undefined
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 11155111 > lookup refuses missing or unknown mined status null
+AssertionError: promise resolved "{ status: null, gasUsed: 100000n }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "gasUsed": 100000n,
++   "status": null,
+  }
+
+ ❯ src/opFees.test.ts:389:71
+    387|     it.each([undefined, null, '0x2', '0x02'])(`${method} refuses missi…
+    388|       const s = rpcClient({ chainId, l1Fee: '0x1', receipt: { status }…
+    389|       if (method === 'lookup') await expect(s.client.getReceipt(HASH))…
+       |                                                                       ^
+    390|       else expect(await s.client.waitForReceipt(HASH, 1000)).toEqual({…
+    391|       expect(s.calls).toHaveLength(0); // refusal precedes even the OP…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 11155111 > lookup refuses missing or unknown mined status 0x2
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 11155111 > lookup refuses missing or unknown mined status 0x02
+AssertionError: promise resolved "{ status: undefined, gasUsed: 100000n }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "gasUsed": 100000n,
++   "status": undefined,
+  }
+
+ ❯ src/opFees.test.ts:389:71
+    387|     it.each([undefined, null, '0x2', '0x02'])(`${method} refuses missi…
+    388|       const s = rpcClient({ chainId, l1Fee: '0x1', receipt: { status }…
+    389|       if (method === 'lookup') await expect(s.client.getReceipt(HASH))…
+       |                                                                       ^
+    390|       else expect(await s.client.waitForReceipt(HASH, 1000)).toEqual({…
+    391|       expect(s.calls).toHaveLength(0); // refusal precedes even the OP…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 11155111 > wait refuses missing or unknown mined status undefined
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 11155111 > wait refuses missing or unknown mined status null
+AssertionError: expected { status: null, gasUsed: 100000n } to deeply equal { status: 'timeout', gasUsed: 0n }
+
+- Expected
++ Received
+
+  {
+-   "gasUsed": 0n,
+-   "status": "timeout",
++   "gasUsed": 100000n,
++   "status": null,
+  }
+
+ ❯ src/opFees.test.ts:390:62
+    388|       const s = rpcClient({ chainId, l1Fee: '0x1', receipt: { status }…
+    389|       if (method === 'lookup') await expect(s.client.getReceipt(HASH))…
+    390|       else expect(await s.client.waitForReceipt(HASH, 1000)).toEqual({…
+       |                                                              ^
+    391|       expect(s.calls).toHaveLength(0); // refusal precedes even the OP…
+    392|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 11155111 > wait refuses missing or unknown mined status 0x2
+ FAIL  src/opFees.test.ts > inherited R07 receipt status admission on chain 11155111 > wait refuses missing or unknown mined status 0x02
+AssertionError: expected { status: undefined, gasUsed: 100000n } to deeply equal { status: 'timeout', gasUsed: 0n }
+
+- Expected
++ Received
+
+  {
+-   "gasUsed": 0n,
+-   "status": "timeout",
++   "gasUsed": 100000n,
++   "status": undefined,
+  }
+
+ ❯ src/opFees.test.ts:390:62
+    388|       const s = rpcClient({ chainId, l1Fee: '0x1', receipt: { status }…
+    389|       if (method === 'lookup') await expect(s.client.getReceipt(HASH))…
+    390|       else expect(await s.client.waitForReceipt(HASH, 1000)).toEqual({…
+       |                                                              ^
+    391|       expect(s.calls).toHaveLength(0); // refusal precedes even the OP…
+    392|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  16 failed | 8 passed | 38 skipped (62)
+   Start at  00:09:19
+   Duration  4.37s (import 64%, transform 34%, tests 2%)
+

@@ -1,0 +1,61 @@
+{
+  "scope": "F-CTR06 test-only native acceptance and scoped static checks",
+  "baseCommit": "cbed997a1fd8398975feac8fa23f9162a65f7e73",
+  "sourcePath": "packages/chain-adapters/src/router.anvil.test.ts",
+  "sourceSha256": "b2cd4c75e69e6eae942389b408abae94c327ce812cb010a374612589d27229ec",
+  "cwd": "/workspace/scratch/6eafdb04d91b/GhostPay-buffered-sweep/packages/chain-adapters",
+  "nodeOldSpaceMiB": 768,
+  "requireAnvil": true,
+  "lock": "/workspace/scratch/6eafdb04d91b/qualification.lock",
+  "checks": [
+    {
+      "name": "typecheck",
+      "argv": [
+        "node",
+        "../../node_modules/typescript/bin/tsc",
+        "-p",
+        "tsconfig.json",
+        "--noEmit"
+      ],
+      "log": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-typecheck.log",
+      "startedAt": "2026-11-19T07:41:52.325694+00:00",
+      "finishedAt": "2026-11-19T07:42:11.384374+00:00",
+      "exitCode": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "lint",
+      "argv": [
+        "node",
+        "../../node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src/router.anvil.test.ts"
+      ],
+      "log": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-lint.log",
+      "startedAt": "2026-11-19T07:42:11.385180+00:00",
+      "finishedAt": "2026-11-19T07:42:30.906061+00:00",
+      "exitCode": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "anvil-final",
+      "argv": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/router.anvil.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "log": "/workspace/scratch/6eafdb04d91b/security-evidence/buffered-sweep-anvil-final.log",
+      "startedAt": "2026-11-19T07:42:30.906485+00:00",
+      "finishedAt": "2026-11-19T07:42:35.283449+00:00",
+      "exitCode": 0,
+      "sha256": "5e7c70e9fe09bdbf2613f00d8fb424f26f6ca4e2cec2ac62c5f7139e97056b7c",
+      "bytes": 228
+    }
+  ]
+}

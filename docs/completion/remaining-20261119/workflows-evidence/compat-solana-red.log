@@ -1,0 +1,180 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-compat/packages/chain-solana
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/interop.test.ts (11 tests | 8 failed) 954ms
+   ❯ shared vectors: CLI side (chain-solana) (7)
+     × encodes every valid meta-address byte for byte and decodes it back 31ms
+     × rejects the retired gpsol: form with LEGACY_META_ADDRESS and every other invalid input 9ms
+     × binds the cluster: a meta-address for another cluster fails with NETWORK_MISMATCH 5ms
+     × stays stricter than the web decoder only where documented (S == V) 2ms
+     × derives the same one-time address, view tag and memo as the web package, and detects and spends it 2ms
+     × rejects every invalid memo, including the retired base64url form 5ms
+     × reproduces the web package vectors (test-vectors/solana-stealth.json) field by field 14ms
+   ❯ round trip across implementations (random keys) (1)
+     × web encode -> chain-solana decode, chain-solana encode -> web decode, same payment either way 499ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/interop.test.ts > shared vectors: CLI side (chain-solana) > encodes every valid meta-address byte for byte and decodes it back
+AssertionError: seed-0-mainnet: expected 'gpsol:fTW1bcamvsPD5BXZgNsyYPm9UJGfVrH…' to be 'st:sol:3YuwVawHZGcPWPqbMGttRREpmhWfEi…' // Object.is equality
+
+Expected: "st:sol:3YuwVawHZGcPWPqbMGttRREpmhWfEiSkpjt22gzxgJy2F2sv4VFALt92ddLJ8TYRaqSAy1Y5riS2K31oQE9YgeA5LedauyF"
+Received: "gpsol:fTW1bcamvsPD5BXZgNsyYPm9UJGfVrHHvaB8vMjjohyzQVx33hssAaicxGRhN4BrQkZNUfhxPTyGh9srcQRMFkfwgKMx7"
+
+ ❯ src/interop.test.ts:165:47
+    163|         viewPublicKey: hexToBytes(m.viewPublicKey),
+    164|       } as Parameters<typeof encodeMetaAddress>[0];
+    165|       expect(encodeMetaAddress(meta), m.name).toBe(m.metaAddress);
+       |                                               ^
+    166|       const d = decodeMetaAddress(m.metaAddress, m.cluster);
+    167|       expect([d.cluster, hex(d.spendPublicKey), hex(d.viewPublicKey)])…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/interop.test.ts > shared vectors: CLI side (chain-solana) > rejects the retired gpsol: form with LEGACY_META_ADDRESS and every other invalid input
+AssertionError: legacy gpsol: (retired chain-solana form) of the seed-0 keys
+ ❯ src/interop.test.ts:178:56
+    176|   it('rejects the retired gpsol: form with LEGACY_META_ADDRESS and eve…
+    177|     for (const b of V.invalidMetaAddresses) {
+    178|       expect(() => decodeMetaAddress(b.input), b.name).toThrow(
+       |                                                        ^
+    179|         code(b.legacy === true ? 'LEGACY_META_ADDRESS' : 'INVALID_META…
+    180|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/interop.test.ts > shared vectors: CLI side (chain-solana) > binds the cluster: a meta-address for another cluster fails with NETWORK_MISMATCH
+AssertionError: devnet meta-address, testnet expected: expected error to match asymmetric matcher
+
+- Expected
++ Received
+
+- ObjectContaining {
+-   "code": "NETWORK_MISMATCH",
++ SolanaStealthError {
++   "message": "invalid Solana stealth meta-address",
++   "code": "INVALID_META_ADDRESS",
++   "name": "SolanaStealthError",
+  }
+
+ ❯ src/interop.test.ts:187:75
+    185|   it('binds the cluster: a meta-address for another cluster fails with…
+    186|     for (const b of V.networkMismatch) {
+    187|       expect(() => decodeMetaAddress(b.input, b.expectedCluster), b.na…
+       |                                                                           ^
+    188|     }
+    189|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/interop.test.ts > shared vectors: CLI side (chain-solana) > stays stricter than the web decoder only where documented (S == V)
+AssertionError: spend key equals view key (S == V): expected error to match asymmetric matcher
+
+- Expected
++ Received
+
+- ObjectContaining {
+-   "code": "KEY_REUSE",
++ SolanaStealthError {
++   "message": "invalid Solana stealth meta-address",
++   "code": "INVALID_META_ADDRESS",
++   "name": "SolanaStealthError",
+  }
+
+ ❯ src/interop.test.ts:193:56
+    191|   it('stays stricter than the web decoder only where documented (S == …
+    192|     for (const b of V.stricterInCli)
+    193|       expect(() => decodeMetaAddress(b.input), b.name).toThrow(code('K…
+       |                                                        ^
+    194|   });
+    195|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/interop.test.ts > shared vectors: CLI side (chain-solana) > derives the same one-time address, view tag and memo as the web package, and detects and spends it
+SolanaStealthError: invalid Solana stealth meta-address
+ ❯ fail src/errors.ts:58:9
+     56| /** @internal */
+     57| export function fail(code: SolanaStealthErrorCode): never {
+     58|   throw new SolanaStealthError(code);
+       |         ^
+     59| }
+     60|
+ ❯ decodeMetaAddress src/keys.ts:111:12
+ ❯ src/interop.test.ts:198:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/interop.test.ts > shared vectors: CLI side (chain-solana) > rejects every invalid memo, including the retired base64url form
+AssertionError: legacy base64url memo (retired chain-solana form, vector 1 of self-generated-v1.json)
+ ❯ src/interop.test.ts:223:61
+    221|   it('rejects every invalid memo, including the retired base64url form…
+    222|     for (const b of V.invalidMemos)
+    223|       expect(() => decodeAnnouncementMemo(b.input), b.name).toThrow(co…
+       |                                                             ^
+    224|   });
+    225|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/interop.test.ts > shared vectors: CLI side (chain-solana) > reproduces the web package vectors (test-vectors/solana-stealth.json) field by field
+AssertionError: expected 'gpsol:bQg1c5r7HmCbWsj5fGeD9t4xkJ4MqSx…' to be 'st:sol:3ZRPCyNAreMj9M5QTyVzakQmZVYnqi…' // Object.is equality
+
+Expected: "st:sol:3ZRPCyNAreMj9M5QTyVzakQmZVYnqiJpYybCvPwaJqAxkwUkCn9tCPi8Bvj4cy4CW5EJNC7m8V5BTZh8Dcxc32Q5yaH2Nfx"
+Received: "gpsol:bQg1c5r7HmCbWsj5fGeD9t4xkJ4MqSxuNJafxQw2TmUhdADadxZVL2eKYYhzRQTUGjuGzTwBvUM9DJmTAZCTxrU4TB1SL"
+
+ ❯ src/interop.test.ts:234:65
+    232|       );
+    233|       expect(hex(keys.spendPublicKey)).toBe(c['spendPublicKey']);
+    234|       expect(encodeMetaAddress({ ...keys, cluster: 'devnet' })).toBe(c…
+       |                                                                 ^
+    235|       expect(encodeMetaAddress({ ...keys, cluster: 'mainnet' })).toBe(…
+    236|       const pay = deriveWithEphemeral(keys, scalar(c['ephemeralSecret'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/interop.test.ts > round trip across implementations (random keys) > web encode -> chain-solana decode, chain-solana encode -> web decode, same payment either way
+Error: Property failed after 1 tests
+{ seed: 1030431696, path: "0:0:1:0:0:0:0:1:1", endOnFailure: true }
+Counterexample: [1n,2n,1n,"mainnet"]
+Shrunk 8 time(s)
+
+Hint: Enable verbose mode in order to have the list of all failing values encountered during the run
+ ❯ buildError ../../node_modules/fast-check/lib/fast-check.js:2469:16
+ ❯ throwIfFailed ../../node_modules/fast-check/lib/fast-check.js:2476:8
+ ❯ reportRunDetails ../../node_modules/fast-check/lib/fast-check.js:2492:14
+ ❯ Module.assert ../../node_modules/fast-check/lib/fast-check.js:2662:7
+ ❯ src/interop.test.ts:255:8
+    253|
+    254|   it('web encode -> chain-solana decode, chain-solana encode -> web de…
+    255|     fc.assert(
+       |        ^
+    256|       fc.property(s, s, s, cluster, (sv, vv, rv, cl) => {
+    257|         fc.pre(sv !== vv);
+
+Caused by: SolanaStealthError: invalid Solana stealth meta-address
+ ❯ fail src/errors.ts:58:9
+ ❯ decodeMetaAddress src/keys.ts:111:12
+ ❯ src/interop.test.ts:260:21
+ ❯ Property.predicate ../../node_modules/fast-check/lib/fast-check.js:1355:99
+ ❯ Property.run ../../node_modules/fast-check/lib/fast-check.js:1324:24
+ ❯ propertyExecution ../../node_modules/fast-check/lib/fast-check.js:2549:23
+ ❯ run ../../node_modules/fast-check/lib/fast-check.js:2639:91
+ ❯ runIt ../../node_modules/fast-check/lib/fast-check.js:2542:15
+ ❯ check ../../node_modules/fast-check/lib/fast-check.js:2655:14
+ ❯ Module.assert ../../node_modules/fast-check/lib/fast-check.js:2660:14
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'INVALID_META_ADDRESS' }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 3 passed (11)
+   Start at  23:28:54
+   Duration  2.44s (tests 71%, transform 17%, import 11%, worker 1%)
+

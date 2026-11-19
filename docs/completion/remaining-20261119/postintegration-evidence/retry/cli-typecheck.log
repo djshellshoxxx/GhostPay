@@ -1,0 +1,15 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/cli@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+Killed
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 137
+npm error path /workspace/scratch/6eafdb04d91b/GhostPay/packages/cli
+npm error workspace @ghostpay/cli@0.1.0
+npm error location /workspace/scratch/6eafdb04d91b/GhostPay/packages/cli
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit

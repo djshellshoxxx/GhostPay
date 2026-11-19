@@ -1,0 +1,17 @@
+{
+  "name": "limiter-abuse-red",
+  "source_revision": "ba54af382df5beefb11a5fe2455b59d99a9a1e87",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/limiter.abuse.test.ts",
+    "--coverage=false",
+    "--maxWorkers=1"
+  ],
+  "cwd": "packages/relayer-guard",
+  "exit_code": 1,
+  "seconds": 1.405,
+  "observed_at": "2026-11-19T07:05:24.483542+00:00",
+  "log": "limiter-abuse-red.log"
+}

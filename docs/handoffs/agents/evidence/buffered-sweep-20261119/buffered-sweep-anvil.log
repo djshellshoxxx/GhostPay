@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-buffered-sweep/packages/chain-adapters
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  23:34:08
+   Duration  3.58s (tests 48%, import 36%, transform 15%, worker 1%)
+

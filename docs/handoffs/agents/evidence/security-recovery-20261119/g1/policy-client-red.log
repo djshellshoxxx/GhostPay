@@ -1,0 +1,307 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-policy-client/packages/policy-scheme
+
+ ❯ src/negative.test.ts (35 tests | 10 failed) 2588ms
+   ❯ signPolicyTypedData signs only policy-account structs (6)
+     × refuses a self-consistent foreign struct under a foreign domain 117ms
+     × refuses foreign domains, types and primary types even with a matching digest 398ms
+     × reads the typed data once: getters that turn policy data into a Permit are refused 9ms
+     × refuses a salt on the domain that is inherited or not enumerable 61ms
+     × signs only the digest it recomputes from the policy fields 104ms
+   ❯ buildWithdrawTypedData binds the proof leaf to (token, limit, window) (4)
+     × rejects an inflated limit or window on a genuine leaf 15ms
+     × rejects another token's leaf 8ms
+     × rejects the root (an inner node) as a leaf 27ms
+   ❯ getLimitProof recomputes the stored leaf of a restored tree (2)
+     × refuses a leaf whose limit, window or token was edited 7ms
+   ❯ checkScheme2Announcement leaves no live viewing-secret copy (1)
+     × validates policy hashes and deployment before it copies the viewing secret 22ms
+ ❯ src/router.test.ts (10 tests | 4 failed) 535ms
+   ❯ decodePolicyPaymentCalldata checks encoding, ephemeral key and metadata (5)
+     × rejects metadata that is not router metadata for this call 130ms
+     × rejects an ephemeral key that is not a compressed point 2ms
+     × rejects trailing or non-canonical calldata 2ms
+     × native calldata: metadata must be native and not below minNet 63ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/negative.test.ts > signPolicyTypedData signs only policy-account structs > refuses a self-consistent foreign struct under a foreign domain
+AssertionError: expected 'no error' to be 'SIGNING_FAILED' // Object.is equality
+
+Expected: "SIGNING_FAILED"
+Received: "no error"
+
+ ❯ src/negative.test.ts:278:98
+    276|       message: { amt: 1n },
+    277|     };
+    278|     expect(await acode(() => signPolicyTypedData(consistent(foreign), …
+       |                                                                                                  ^
+    279|   });
+    280|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  src/negative.test.ts > signPolicyTypedData signs only policy-account structs > refuses foreign domains, types and primary types even with a matching digest
+AssertionError: expected [ 'no error', 'no error', …(8) ] to deeply equal [ 'SIGNING_FAILED', …(9) ]
+
+- Expected
++ Received
+
+  [
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
++   "no error",
++   "no error",
++   "no error",
++   "no error",
++   "no error",
++   "no error",
++   "no error",
++   "no error",
++   "no error",
++   "no error",
+  ]
+
+ ❯ src/negative.test.ts:296:17
+    294|     const got: string[] = [];
+    295|     for (const v of variants) got.push(await acode(() => signPolicyTyp…
+    296|     expect(got).toEqual(variants.map(() => 'SIGNING_FAILED'));
+       |                 ^
+    297|     // Malformed shapes are refused before any hashing (no TypeError e…
+    298|     const malformed: Record<string, unknown>[] = [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  src/negative.test.ts > signPolicyTypedData signs only policy-account structs > reads the typed data once: getters that turn policy data into a Permit are refused
+TypeError: Cannot read properties of undefined (reading 'length')
+ ❯ size ../../../GhostPay/node_modules/viem/utils/data/size.ts:16:16
+ ❯ validateData ../../../GhostPay/node_modules/viem/utils/typedData.ts:110:22
+ ❯ validateTypedData ../../../GhostPay/node_modules/viem/utils/typedData.ts:136:29
+ ❯ hashTypedData ../../../GhostPay/node_modules/viem/utils/signature/hashTypedData.ts:64:3
+ ❯ viemDigest src/eip712.ts:166:10
+    164| /** @internal viem's independent EIP-712 digest. */
+    165| function viemDigest(domain: PolicyDomain, types: unknown, primaryType:…
+    166|   return hashTypedData({ domain, types, primaryType, message } as unkn…
+       |          ^
+    167| }
+    168|
+ ❯ signPolicyTypedData src/eip712.ts:342:19
+ ❯ src/negative.test.ts:341:30
+ ❯ acode src/negative.test.ts:60:11
+ ❯ src/negative.test.ts:341:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  src/negative.test.ts > signPolicyTypedData signs only policy-account structs > refuses a salt on the domain that is inherited or not enumerable
+AssertionError: expected [ 'no error', 'no error' ] to deeply equal [ 'SIGNING_FAILED', 'SIGNING_FAILED' ]
+
+- Expected
++ Received
+
+  [
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
++   "no error",
++   "no error",
+  ]
+
+ ❯ src/negative.test.ts:361:17
+    359|       got.push(await acode(() => signPolicyTypedData({ ...td, domain, …
+    360|     }
+    361|     expect(got).toEqual(['SIGNING_FAILED', 'SIGNING_FAILED']);
+       |                 ^
+    362|   });
+    363|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  src/negative.test.ts > signPolicyTypedData signs only policy-account structs > signs only the digest it recomputes from the policy fields
+AssertionError: expected [ 'SIGNING_FAILED', …(5) ] to deeply equal [ 'SIGNING_FAILED', …(5) ]
+
+- Expected
++ Received
+
+  [
+    "SIGNING_FAILED",
+    "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
+-   "SIGNING_FAILED",
++   "no error",
++   "TypeError",
++   "TypeError",
++   "TypeError",
+  ]
+
+ ❯ src/negative.test.ts:377:17
+    375|     const got: string[] = [];
+    376|     for (const v of refused) got.push(await acode(() => signPolicyType…
+    377|     expect(got).toEqual(refused.map(() => 'SIGNING_FAILED'));
+       |                 ^
+    378|   });
+    379|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  src/negative.test.ts > buildWithdrawTypedData binds the proof leaf to (token, limit, window) > rejects an inflated limit or window on a genuine leaf
+AssertionError: expected 'no error' to be 'INVALID_PROOF' // Object.is equality
+
+Expected: "INVALID_PROOF"
+Received: "no error"
+
+ ❯ src/negative.test.ts:406:153
+    404|
+    405|   it('rejects an inflated limit or window on a genuine leaf', () => {
+    406|     expect(code(() => buildWithdrawTypedData({ ...wbase, amount: 10n *…
+       |                                                                                                                                                         ^
+    407|     expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limi…
+    408|     expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  src/negative.test.ts > buildWithdrawTypedData binds the proof leaf to (token, limit, window) > rejects another token's leaf
+AssertionError: expected 'no error' to be 'INVALID_PROOF' // Object.is equality
+
+Expected: "INVALID_PROOF"
+Received: "no error"
+
+ ❯ src/negative.test.ts:412:83
+    410|
+    411|   it("rejects another token's leaf", () => {
+    412|     expect(code(() => buildWithdrawTypedData({ ...wbase, token: ZERO_A…
+       |                                                                                   ^
+    413|   });
+    414|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  src/negative.test.ts > buildWithdrawTypedData binds the proof leaf to (token, limit, window) > rejects the root (an inner node) as a leaf
+AssertionError: expected 'no error' to be 'INVALID_PROOF' // Object.is equality
+
+Expected: "INVALID_PROOF"
+Received: "no error"
+
+ ❯ src/negative.test.ts:416:173
+    414|
+    415|   it('rejects the root (an inner node) as a leaf', () => {
+    416|     expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limi…
+       |                                                                                                                                                                             ^
+    417|   });
+    418| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  src/negative.test.ts > getLimitProof recomputes the stored leaf of a restored tree > refuses a leaf whose limit, window or token was edited
+AssertionError: expected 'no error' to be 'INVALID_PROOF' // Object.is equality
+
+Expected: "INVALID_PROOF"
+Received: "no error"
+
+ ❯ src/negative.test.ts:434:74
+    432|
+    433|   it('refuses a leaf whose limit, window or token was edited', () => {
+    434|     expect(code(() => getLimitProof(edit({ limit: 10n ** 30n }), USDC)…
+       |                                                                          ^
+    435|     expect(code(() => getLimitProof(edit({ windowSeconds: 1n }), USDC)…
+    436|     expect(code(() => getLimitProof(edit({ limit: 0n }), USDC))).toBe(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+ FAIL  src/negative.test.ts > checkScheme2Announcement leaves no live viewing-secret copy > validates policy hashes and deployment before it copies the viewing secret
+AssertionError: expected 3 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 3
+
+ ❯ src/negative.test.ts:462:20
+    460|     expect(code(() => checkScheme2Announcement(ann, view, spend, [A.po…
+    461|     expect(code(() => checkScheme2Announcement(ann, view, spend, [A.po…
+    462|     expect(live()).toBe(0);
+       |                    ^
+    463|     // The spy does see the copy of a valid call, and `finally` wipes …
+    464|     expect(checkScheme2Announcement(ann, view, spend, [A.policyHash], …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯
+
+ FAIL  src/router.test.ts > decodePolicyPaymentCalldata checks encoding, ephemeral key and metadata > rejects metadata that is not router metadata for this call
+AssertionError: expected 'no error' to be 'INVALID_INPUT' // Object.is equality
+
+Expected: "INVALID_INPUT"
+Received: "no error"
+
+ ❯ src/router.test.ts:128:98
+    126|
+    127|   it('rejects metadata that is not router metadata for this call', () …
+    128|     expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: `0x${'f…
+       |                                                                                                  ^
+    129|     expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: '0x00' …
+    130|     expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: mk(OTHE…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯
+
+ FAIL  src/router.test.ts > decodePolicyPaymentCalldata checks encoding, ephemeral key and metadata > rejects an ephemeral key that is not a compressed point
+AssertionError: expected 'no error' to be 'INVALID_INPUT' // Object.is equality
+
+Expected: "INVALID_INPUT"
+Received: "no error"
+
+ ❯ src/router.test.ts:139:100
+    137|
+    138|   it('rejects an ephemeral key that is not a compressed point', () => {
+    139|     expect(code(() => decodePolicyPaymentCalldata(rebuild({ 6: `0x04${…
+       |                                                                                                    ^
+    140|     expect(code(() => decodePolicyPaymentCalldata(rebuild({ 6: `0x02${…
+    141|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯
+
+ FAIL  src/router.test.ts > decodePolicyPaymentCalldata checks encoding, ephemeral key and metadata > rejects trailing or non-canonical calldata
+AssertionError: expected 'no error' to be 'INVALID_INPUT' // Object.is equality
+
+Expected: "INVALID_INPUT"
+Received: "no error"
+
+ ❯ src/router.test.ts:144:79
+    142|
+    143|   it('rejects trailing or non-canonical calldata', () => {
+    144|     expect(code(() => decodePolicyPaymentCalldata(`${good.tx.data}00`,…
+       |                                                                               ^
+    145|     expect(code(() => decodePolicyPaymentCalldata(`${good.tx.data}${'0…
+    146|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/14]⎯
+
+ FAIL  src/router.test.ts > decodePolicyPaymentCalldata checks encoding, ephemeral key and metadata > native calldata: metadata must be native and not below minNet
+AssertionError: expected 'no error' to be 'INVALID_INPUT' // Object.is equality
+
+Expected: "INVALID_INPUT"
+Received: "no error"
+
+ ❯ src/router.test.ts:155:92
+    153|       encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName:…
+    154|     expect(code(() => decodePolicyPaymentCalldata(nRebuild({}), dep)))…
+    155|     expect(code(() => decodePolicyPaymentCalldata(nRebuild({ 5: mk(USD…
+       |                                                                                            ^
+    156|     expect(code(() => decodePolicyPaymentCalldata(nRebuild({ 2: n.net …
+    157|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/14]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  14 failed | 31 passed (45)
+   Start at  22:32:03
+   Duration  34.81s (import 53%, transform 36%, tests 10%, worker 1%)
+

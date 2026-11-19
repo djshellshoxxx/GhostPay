@@ -1,0 +1,42 @@
+{
+  "node": "22.23.4",
+  "tooling": {
+    "command": [
+      "flock",
+      "--close",
+      "/workspace/scratch/6eafdb04d91b/qualification.lock",
+      "npm",
+      "run",
+      "test:dependency-tooling"
+    ],
+    "exit_code": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0
+  },
+  "production_tree": {
+    "command": [
+      "npm",
+      "ls",
+      "--all",
+      "--omit=dev"
+    ],
+    "exit_code": 1
+  },
+  "installed_resolution": {
+    "exit_code": 0,
+    "coverage_import_executed": true,
+    "command": "node --input-type=module < docs/handoffs/agents/evidence/dependency-reconcile-20261119/installed-resolution.source.txt",
+    "stdin_sha256": "6a10b7a1dd4feb3defa838dfa91d4806831982d8e7f2cedec1ca2a854e417d57"
+  },
+  "lock_blob": "875e90c613d4bdc1ca53c564944b1a734b3ffd31",
+  "production_tree_aligned_cli": {
+    "exit_code": 0,
+    "npm": "10.9.9",
+    "node": "22.23.4",
+    "evidence": "production-tree-npm10.json",
+    "same_installed_tree": true,
+    "repository_modified": false
+  },
+  "remaining": "Exact combined remote branch CI; no previous failure relabelled, npm11 diagnostic retained."
+}

@@ -22,6 +22,7 @@ import {
 import { erc2612PermitAbi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import type { PermitFields, SweepFields } from './validate.js';
+import { OpStackFees } from './opFees.js';
 
 /** One sweep submission. */
 export interface SweepCall {
@@ -36,6 +37,8 @@ export interface SendOptions {
   readonly nonce: number;
   readonly gas: bigint;
   readonly gasPrice: bigint;
+  /** Held OP L1/operator fee reserve. Required on OP chains; rechecked after signing and before broadcast. */
+  readonly additionalFeeReserve?: bigint;
   /**
    * Called synchronously with the signed transaction's hash after signing and before broadcast. If it throws, nothing
    * is broadcast and `sendSweep` throws {@link SendRefused}.
@@ -66,12 +69,17 @@ export interface SimulationResult {
 export interface ReceiptSummary {
   readonly status: 'success' | 'reverted' | 'timeout';
   readonly gasUsed: bigint;
+  /** Required on OP chains, including real zero values. Missing data must remain unsettled. */
+  readonly l1Fee?: bigint;
+  readonly operatorFee?: bigint;
 }
 
 /** Receipt of a mined transaction. */
 export interface MinedReceipt {
   readonly status: 'success' | 'reverted';
   readonly gasUsed: bigint;
+  readonly l1Fee?: bigint;
+  readonly operatorFee?: bigint;
 }
 
 /**
@@ -91,6 +99,8 @@ export interface ChainClient {
   getBalance(): Promise<bigint>;
   /** Pending transaction count of the hot key. */
   getPendingNonce(): Promise<number>;
+  /** OP L1/operator fee reserve for the fixed-width sweep shape; zero without RPC on other chains. */
+  estimateFeeReserve(gas: bigint, withPermit: boolean): Promise<bigint>;
   /** Reads token balance, allowance and the sweep nonce without spending gas. */
   readOrderState(call: SweepCall): Promise<OrderState>;
   /**
@@ -157,6 +167,11 @@ function sameHash(a: unknown, b: Hex): boolean {
   return typeof a === 'string' && a.toLowerCase() === b.toLowerCase();
 }
 
+/** viem can format missing/unknown RPC status as null/undefined despite its receipt type. */
+function isMinedStatus(status: unknown): status is MinedReceipt['status'] {
+  return status === 'success' || status === 'reverted';
+}
+
 /**
  * Node answers to `eth_sendRawTransaction` that refuse THIS transaction, so it is in no mempool afterwards. A fixed
  * list matched on the JSON-RPC error message: anything else is outcome-unknown (fail closed).
@@ -208,6 +223,7 @@ function sweepTuple(s: SweepFields): {
 export function createViemChainClient(d: ViemChainDeps): ChainClient {
   const { publicClient: pub, walletClient: wallet, account, chain } = d;
   const abi = ghostPaySweepRelayerAbi;
+  const fees = new OpStackFees(pub, chain.id);
 
   return {
     chainId: chain.id,
@@ -215,6 +231,7 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
     getGasPrice: () => pub.getGasPrice(),
     getBalance: () => pub.getBalance({ address: account.address }),
     getPendingNonce: () => pub.getTransactionCount({ address: account.address, blockTag: 'pending' }),
+    estimateFeeReserve: (gas, withPermit) => fees.estimate(gas, withPermit),
 
     async readOrderState(call) {
       const { owner, token, nonce } = call.sweep;
@@ -282,6 +299,7 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
         raw = await wallet.signTransaction({
           account, chain, to: call.sweepRelayer, data, nonce: opts.nonce, gas: opts.gas, gasPrice: opts.gasPrice, type: 'legacy',
         });
+        await fees.checkSigned(raw, opts.additionalFeeReserve);
       } catch {
         throw new SendRefused(); // nothing was handed to the RPC
       }
@@ -306,8 +324,8 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
     async waitForReceipt(hash, timeoutMs) {
       try {
         const r = await pub.waitForTransactionReceipt({ hash, timeout: timeoutMs, pollingInterval: d.receiptPollMs ?? 1000 });
-        if (!sameHash(r.transactionHash, hash)) return { status: 'timeout', gasUsed: 0n };
-        return { status: r.status, gasUsed: r.gasUsed };
+        if (!sameHash(r.transactionHash, hash) || !isMinedStatus(r.status)) return { status: 'timeout', gasUsed: 0n };
+        return { status: r.status, gasUsed: r.gasUsed, ...await fees.receipt(r) };
       } catch {
         return { status: 'timeout', gasUsed: 0n };
       }
@@ -317,7 +335,8 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
       try {
         const r = await pub.getTransactionReceipt({ hash });
         if (!sameHash(r.transactionHash, hash)) return null;
-        return { status: r.status, gasUsed: r.gasUsed };
+        if (!isMinedStatus(r.status)) throw rpcFailure();
+        return { status: r.status, gasUsed: r.gasUsed, ...await fees.receipt(r) };
       } catch (e) {
         if (e instanceof TransactionReceiptNotFoundError) return null;
         throw rpcFailure();

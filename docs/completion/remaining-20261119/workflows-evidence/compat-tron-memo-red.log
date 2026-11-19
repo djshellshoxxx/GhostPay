@@ -1,0 +1,44 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-compat/packages/chain-tron
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/adapter.test.ts (6 tests | 2 failed) 265ms
+   ❯ Tron adapter skeleton (6)
+     × quotes a payment but refuses to build one without the GPT1 memo bound into raw_data.data (ADR-0019) 54ms
+     × rejects bad payment inputs 14ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/adapter.test.ts > Tron adapter skeleton > quotes a payment but refuses to build one without the GPT1 memo bound into raw_data.data (ADR-0019)
+AssertionError: expected function to throw an error, but it didn't
+ ❯ src/adapter.test.ts:60:21
+     58|     const rng: RandomSource = { getRandomValues: (array) => { draws +=…
+     59|     for (const build of [() => req.build({ rng }), () => req.build()])…
+     60|       expect(build).toThrow(expect.objectContaining({ name: 'TronAdapt…
+       |                     ^
+     61|       expect(build).toThrow(TronAdapterError);
+     62|       expect(build).toThrow(/raw_data\.data/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/adapter.test.ts > Tron adapter skeleton > rejects bad payment inputs
+AssertionError: expected function to throw an error, but it didn't
+ ❯ src/adapter.test.ts:77:62
+     75|     expect(() => a.buildPaymentRequest({ ...ok, tokenContract: 'bad' }…
+     76|     for (const amount of [0n, 1n << 256n]) {
+     77|       expect(() => a.buildPaymentRequest({ ...ok, amount })).toThrow(e…
+       |                                                              ^
+     78|     }
+     79|     for (const feeLimit of [0n, MAX_FEE_LIMIT_SUN + 1n]) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  23:29:55
+   Duration  2.15s (import 53%, transform 31%, tests 16%, worker 1%)
+

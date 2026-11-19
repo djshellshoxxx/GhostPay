@@ -1,0 +1,13 @@
+{
+  "source": "cbed997a1fd8398975feac8fa23f9162a65f7e73",
+  "command": [
+    "npm",
+    "run",
+    "build:libs"
+  ],
+  "node": "22.23.4",
+  "heap_mib": 768,
+  "exit_code": 0,
+  "seconds": 358.603,
+  "final_source": "cbed997a1fd8398975feac8fa23f9162a65f7e73"
+}

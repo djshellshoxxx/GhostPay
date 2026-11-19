@@ -1,0 +1,216 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:12) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: tools the step tests need are present
+ok 1 - tools the step tests need are present
+  ---
+  duration_ms: 15.947908
+  type: 'test'
+  ...
+# Subtest: integrate merges a same-repo bot PR only, pinned to the checked head commit
+ok 2 - integrate merges a same-repo bot PR only, pinned to the checked head commit
+  ---
+  duration_ms: 132.491436
+  type: 'test'
+  ...
+# Subtest: integrate also accepts the repository owner (GHOSTPAY_GITHUB_TOKEN PAT identity)
+ok 3 - integrate also accepts the repository owner (GHOSTPAY_GITHUB_TOKEN PAT identity)
+  ---
+  duration_ms: 102.657093
+  type: 'test'
+  ...
+# Subtest: integrate refuses unreviewed CI-green bot PRs (no human approval)
+ok 4 - integrate refuses unreviewed CI-green bot PRs (no human approval)
+  ---
+  duration_ms: 88.427901
+  type: 'test'
+  ...
+# Subtest: integrate refuses stale, self, bot and revoked approvals
+ok 5 - integrate refuses stale, self, bot and revoked approvals
+  ---
+  duration_ms: 342.692073
+  type: 'test'
+  ...
+# Subtest: integrate requires a reviewer with repository write permission
+ok 6 - integrate requires a reviewer with repository write permission
+  ---
+  duration_ms: 105.2631
+  type: 'test'
+  ...
+# Subtest: integrate accepts independent latest exact-head human approval with write access
+ok 7 - integrate accepts independent latest exact-head human approval with write access
+  ---
+  duration_ms: 95.176124
+  type: 'test'
+  ...
+# Subtest: integrate ignores fork, deleted-fork, foreign-author, draft and off-prefix PRs
+ok 8 - integrate ignores fork, deleted-fork, foreign-author, draft and off-prefix PRs
+  ---
+  duration_ms: 19.980577
+  type: 'test'
+  ...
+# Subtest: integrate requires every required check, and every run of it, to be green
+ok 9 - integrate requires every required check, and every run of it, to be green
+  ---
+  duration_ms: 150.601359
+  type: 'test'
+  ...
+# Subtest: integrate refuses a PR that touches gate scripts or workflow files even when CI is green
+ok 10 - integrate refuses a PR that touches gate scripts or workflow files even when CI is green
+  ---
+  duration_ms: 269.585148
+  type: 'test'
+  ...
+# Subtest: no workflow claims branch protection that main does not have, and every merge pins its head
+ok 11 - no workflow claims branch protection that main does not have, and every merge pins its head
+  ---
+  duration_ms: 8.791946
+  type: 'test'
+  ...
+# Subtest: the agent path policy is the same in integrate, develop scope check and publish
+ok 12 - the agent path policy is the same in integrate, develop scope check and publish
+  ---
+  duration_ms: 2.023254
+  type: 'test'
+  ...
+# Subtest: the agent path policy rejects gates, workflow files and high-risk paths and keeps product paths
+ok 13 - the agent path policy rejects gates, workflow files and high-risk paths and keeps product paths
+  ---
+  duration_ms: 25.466172
+  type: 'test'
+  ...
+# Subtest: develop scope check accepts product changes and the report file
+ok 14 - develop scope check accepts product changes and the report file
+  ---
+  duration_ms: 55.2242
+  type: 'test'
+  ...
+# Subtest: develop scope check sees staged, unstaged, untracked and committed gate edits
+ok 15 - develop scope check sees staged, unstaged, untracked and committed gate edits
+  ---
+  duration_ms: 296.700632
+  type: 'test'
+  ...
+# Subtest: publish re-checks the downloaded patch from trusted main before opening a PR
+ok 16 - publish re-checks the downloaded patch from trusted main before opening a PR
+  ---
+  duration_ms: 357.823478
+  type: 'test'
+  ...
+# Subtest: jobs that run an agent never save a shared cache
+ok 17 - jobs that run an agent never save a shared cache
+  ---
+  duration_ms: 2.04769
+  type: 'test'
+  ...
+# Subtest: setup-node-libs keeps saving by default and is restore-only with save-cache false
+ok 18 - setup-node-libs keeps saving by default and is restore-only with save-cache false
+  ---
+  duration_ms: 0.316273
+  type: 'test'
+  ...
+# Subtest: any approval-gated merge trusts only OWNER/MEMBER/COLLABORATOR reviews on same-repo heads
+ok 19 - any approval-gated merge trusts only OWNER/MEMBER/COLLABORATOR reviews on same-repo heads
+  ---
+  duration_ms: 0.208942
+  type: 'test'
+  ...
+# Subtest: parallel-review only opens draft PRs and its validate job runs these invariants
+ok 20 - parallel-review only opens draft PRs and its validate job runs these invariants
+  ---
+  duration_ms: 0.280015
+  type: 'test'
+  ...
+# (node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: integrate has a merge command to guard
+ok 21 - integrate has a merge command to guard
+  ---
+  duration_ms: 1.485946
+  type: 'test'
+  ...
+# Subtest: merge is gated on same-repository head (A5-1)
+ok 22 - merge is gated on same-repository head (A5-1)
+  ---
+  duration_ms: 0.418705
+  type: 'test'
+  ...
+# Subtest: merge is gated on an explicit PR author allowlist (A5-1)
+ok 23 - merge is gated on an explicit PR author allowlist (A5-1)
+  ---
+  duration_ms: 0.253575
+  type: 'test'
+  ...
+# Subtest: merge requires a current-head APPROVED review from a permitted non-bot reviewer (A5-1)
+ok 24 - merge requires a current-head APPROVED review from a permitted non-bot reviewer (A5-1)
+  ---
+  duration_ms: 0.33079
+  type: 'test'
+  ...
+# Subtest: existing check-run gate is kept before merge
+ok 25 - existing check-run gate is kept before merge
+  ---
+  duration_ms: 0.3728
+  type: 'test'
+  ...
+# Subtest: false branch-protection comment is removed (A5-1)
+ok 26 - false branch-protection comment is removed (A5-1)
+  ---
+  duration_ms: 0.200886
+  type: 'test'
+  ...
+# (node:14) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: four distinct funded research lanes run in parallel
+ok 27 - four distinct funded research lanes run in parallel
+  ---
+  duration_ms: 1.716059
+  type: 'test'
+  ...
+# Subtest: pull request validation does not start paid jobs
+ok 28 - pull request validation does not start paid jobs
+  ---
+  duration_ms: 0.267702
+  type: 'test'
+  ...
+# Subtest: worker may write only its evidence and not application source
+ok 29 - worker may write only its evidence and not application source
+  ---
+  duration_ms: 0.391575
+  type: 'test'
+  ...
+# Subtest: reports require provenance, independent tests and conflict analysis
+ok 30 - reports require provenance, independent tests and conflict analysis
+  ---
+  duration_ms: 0.334368
+  type: 'test'
+  ...
+# Subtest: publisher rejects duplicate lane PRs and conflicting document paths
+ok 31 - publisher rejects duplicate lane PRs and conflicting document paths
+  ---
+  duration_ms: 0.247063
+  type: 'test'
+  ...
+# Subtest: cost accounting never asserts an enforced ten-dollar limit
+ok 32 - cost accounting never asserts an enforced ten-dollar limit
+  ---
+  duration_ms: 0.136896
+  type: 'test'
+  ...
+# Subtest: PR ownership preflight passes no fork-controlled free text to the agent (audit F-2)
+ok 33 - PR ownership preflight passes no fork-controlled free text to the agent (audit F-2)
+  ---
+  duration_ms: 0.340929
+  type: 'test'
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2302.778418

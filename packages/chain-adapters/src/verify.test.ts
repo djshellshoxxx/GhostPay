@@ -20,8 +20,10 @@ const ROUTER_CODE = '0x600160005260206000f3aa' as Hex;
 const RELAYER_CODE = '0x600260005260206000f3bb' as Hex;
 const FACTORY_CODE = '0x600360005260206000f3cc' as Hex;
 const ANNOUNCER_CODE = '0x600460005260206000f3dd' as Hex;
+const IMPLEMENTATION_CODE = '0x600560005260206000f3ee' as Hex;
 const word = (a: string): Hex => `0x${'0'.repeat(24)}${a.slice(2).toLowerCase()}`;
 const FEE_RECIPIENT = getAddress('0x00000000000000000000000000000000000d0d44');
+const POLICY_IMPLEMENTATION = getAddress('0x0000000000000000000000000000000000000e55');
 
 function wire(withPolicy = false): Record<string, unknown> {
   const m = manifestJson();
@@ -29,14 +31,14 @@ function wire(withPolicy = false): Record<string, unknown> {
   m['feeRecipient'] = FEE_RECIPIENT;
   m['bytecodeHashes'] = { router: keccak256(ROUTER_CODE), sweepRelayer: keccak256(RELAYER_CODE) };
   if (withPolicy) {
-    m['policyImplementation'] = getAddress('0x0000000000000000000000000000000000000e55');
+    m['policyImplementation'] = POLICY_IMPLEMENTATION;
     m['policyFactory'] = getAddress('0x0000000000000000000000000000000000000f66');
     m['policyFeeToken'] = getAddress('0x0000000000000000000000000000000000000a77');
     m['policyFlatFee'] = '5000000';
     m['policyFeeRecipient'] = getAddress('0x0000000000000000000000000000000000000b88');
     (m['deployTx'] as Record<string, string>)['policyImplementation'] = `0x${'5'.repeat(64)}`;
     (m['deployTx'] as Record<string, string>)['policyFactory'] = `0x${'6'.repeat(64)}`;
-    (m['bytecodeHashes'] as Record<string, string>)['policyImplementation'] = `0x${'7'.repeat(64)}`;
+    (m['bytecodeHashes'] as Record<string, string>)['policyImplementation'] = keccak256(IMPLEMENTATION_CODE);
     (m['bytecodeHashes'] as Record<string, string>)['policyFactory'] = keccak256(FACTORY_CODE);
   }
   return m;
@@ -83,7 +85,10 @@ const good = (policy = false): World => ({
     [FAKE.router.toLowerCase()]: ROUTER_CODE,
     [FAKE.relayer.toLowerCase()]: RELAYER_CODE,
     [CANONICAL_ANNOUNCER.toLowerCase()]: ANNOUNCER_CODE,
-    ...(policy ? { [getAddress('0x0000000000000000000000000000000000000f66').toLowerCase()]: FACTORY_CODE } : {}),
+    ...(policy ? {
+      [getAddress('0x0000000000000000000000000000000000000f66').toLowerCase()]: FACTORY_CODE,
+      [POLICY_IMPLEMENTATION.toLowerCase()]: IMPLEMENTATION_CODE,
+    } : {}),
   },
 });
 const mf = (policy = false): DeploymentManifest => validateManifest(wire(policy), 11155111);
@@ -114,6 +119,23 @@ describe('verifyDeployment', () => {
     const w = good(true);
     w.code[getAddress('0x0000000000000000000000000000000000000f66').toLowerCase()] = '0x6000';
     await bad(verifyDeployment(mf(true), await client(w)), /policy factory code hash/);
+  });
+  it.each<{ state: string; code: Hex; error: RegExp }>([
+    { state: 'missing', code: '0x', error: /no contract code/ },
+    { state: 'mismatched', code: '0x6000', error: /policy implementation code hash/ },
+  ])('refuses $state policy implementation code even when the factory matches', async ({ code, error }) => {
+    const m = mf(true);
+    const w = good(true);
+    w.code[POLICY_IMPLEMENTATION.toLowerCase()] = code;
+    await bad(verifyDeployment(m, await client(w)), error);
+  });
+  it('requires policy implementation code to agree across configured providers', async () => {
+    const m = mf(true);
+    const v = await verifyDeployment(m, await client(good(true)), { secondary: await client(good(true)), requireSecondary: true });
+    expect(v.providers).toBe(2);
+    const lying = good(true);
+    lying.code[POLICY_IMPLEMENTATION.toLowerCase()] = '0x6000';
+    await bad(verifyDeployment(m, await client(good(true)), { secondary: await client(lying) }), /providers disagree/);
   });
   it('fails closed on a wrong router, relayer or missing code', async () => {
     const w1 = good();

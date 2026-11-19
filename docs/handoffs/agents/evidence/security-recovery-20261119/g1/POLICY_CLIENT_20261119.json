@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "scope": "Selective #211 G1 policy-client recovery",
+  "sourcePr": 211,
+  "sourceHead": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+  "recoveryBase": "0249b30c7c6c3bfeda45287f41d92f8d2152c96c",
+  "branch": "chatgpt/ghostpay-policy-client-20261119",
+  "baseline": {
+    "library": {
+      "failed": 14,
+      "passed": 31
+    },
+    "send": {
+      "failed": 4,
+      "passed": 39
+    },
+    "recordCoverage": {
+      "failed": 5,
+      "passed": 35
+    },
+    "webCoverage": {
+      "failed": 6,
+      "passed": 28
+    },
+    "fullPackageBeforeAnvilFixtureRepair": {
+      "failed": 1,
+      "passed": 117
+    }
+  },
+  "final": {
+    "policyPackage": {
+      "passed": 118,
+      "failed": 0,
+      "skipped": 0,
+      "anvilCases": 7,
+      "requireAnvil": true,
+      "coverage": {
+        "statements": 97.38,
+        "branches": 95.84,
+        "functions": 100,
+        "lines": 99.57
+      },
+      "thresholdsUnchanged": true
+    },
+    "focusedWeb": {
+      "passed": 121,
+      "failed": 0,
+      "suites": 9,
+      "fullWebSuiteClaimed": false
+    },
+    "libraryTypecheck": "pass",
+    "libraryBuild": "pass",
+    "libraryLint": "pass",
+    "changedWebLint": "pass",
+    "i18n": {
+      "errors": 0,
+      "missingKeys": 0,
+      "warnings": 521,
+      "unusedKeys": 139
+    },
+    "secretScan": "pass",
+    "gitDiffCheck": "pass"
+  },
+  "independentReview": {
+    "reviewer": "root coordinator",
+    "n09_n10": "pass",
+    "n11_sec11": "pass",
+    "anvilFixtureRepair": "pass",
+    "protocolLevelSec11Closed": false
+  },
+  "runtimeSourceDeviationFromPr211": "None in recovered runtime files. Current dependencies and unrelated locale messages are retained; Anvil test-only fixture preserves new builder refusal and exact on-chain invalid-leaf refusal.",
+  "boundaries": [
+    "No ABI, domain/typehash or authority change",
+    "No numerical delay change",
+    "Experimental feature flag unchanged",
+    "No excluded owner feature edits",
+    "Strict Mythril policy unchanged; all11current findings remain gate-blocking",
+    "Unknown coverage when the payer lacks a verified policy record remains"
+  ],
+  "toolchain": {
+    "node": "24.22.3",
+    "vitest": "5.1.0",
+    "anvil": "1.8.5",
+    "anvilCommit": "51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f",
+    "solcArtifacts": "0.8.28+commit.7893614a",
+    "nodeOldSpaceMiB": 768,
+    "workers": 1
+  },
+  "evidence": {
+    "policy-client-red.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-red.log",
+      "sha256": "0a188a5fc852c775cb08c06f328519257dabcf4b3d2ea37efa0885f9c166bbe1",
+      "bytes": 13342
+    },
+    "policy-client-library-green.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-green.log",
+      "sha256": "a52d11202807e59704d732108c3072798f840d98811595a6350037c575d2430b",
+      "bytes": 440
+    },
+    "policy-client-send-red.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-send-red.log",
+      "sha256": "947e0792492d8797731c872c401fcda73b01b5606bafe3a2dee9a9f805de442a",
+      "bytes": 4919
+    },
+    "policy-client-send-green.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-send-green.log",
+      "sha256": "881f16fa1361b811b13dbecd46798be7d2c783a2a5629d392d78fa7912261df5",
+      "bytes": 227
+    },
+    "policy-client-coverage-library-red.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-coverage-library-red.log",
+      "sha256": "22269636374cf18edb6147c320a725f7a734f49f4eafc5deaa63a0967c0d72d7",
+      "bytes": 4178
+    },
+    "policy-client-coverage-web-red.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-coverage-web-red.log",
+      "sha256": "1b9b395b93eb9e4fb3ccd248a0868f49345de6a6417b10aae539d0d2f7ac3820",
+      "bytes": 44591
+    },
+    "policy-client-library-full.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-full.log",
+      "sha256": "49048a689cac6bca7fbdfabb0a59351f60057565afa87bbf107e3e4086bd2f87",
+      "bytes": 1481
+    },
+    "policy-client-library-full-green.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-full-green.log",
+      "sha256": "d9331885b376c1395624d91b42539b1e17964c9b1f4109d3a2e9d14ba8d21f70",
+      "bytes": 1694
+    },
+    "policy-client-web-green.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-web-green.log",
+      "sha256": "c29ca4cb380a1b0a2c9b363b373c0b3635023b5ef3696fa480f1f52c19121168",
+      "bytes": 579
+    },
+    "policy-client-library-typecheck-final.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-typecheck-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "policy-client-library-build.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "policy-client-library-lint.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-library-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "policy-client-web-lint.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-web-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "policy-client-i18n-check.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-i18n-check.log",
+      "sha256": "2b5894094a594d8aac9c161b39f011eda76b5d004cb9a4c79a526d84c3acc6c0",
+      "bytes": 45209
+    },
+    "policy-client-i18n-extract.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-i18n-extract.log",
+      "sha256": "34d74edfeb3883aa6dc98c21567e08797d53a7cbf6e0f1fbd1dde6a4f8d92808",
+      "bytes": 4934
+    },
+    "policy-client-secrets.log": {
+      "path": "/workspace/scratch/6eafdb04d91b/security-evidence/policy-client-secrets.log",
+      "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "bytes": 50
+    }
+  },
+  "sourceFiles": {
+    "apps/web/locales/ar.json": {
+      "sha256": "297ba878d566ad9895c1fc414a5ea29967fe5face3a1abb048b1c2bd86b14fbe"
+    },
+    "apps/web/locales/en.json": {
+      "sha256": "eb87aa9c17df94690b41b649b36574589ef35d3f049ca9092a8e31c10dbe440f"
+    },
+    "apps/web/locales/es.json": {
+      "sha256": "0981912be5affd39f46702ed38a92d9f74619c4998572721e37f47633e9bb09b"
+    },
+    "apps/web/locales/ja.json": {
+      "sha256": "cf7faf50411b516fac3a902a18f2e9326e47d93458753fec705a31484fcfc944"
+    },
+    "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx": {
+      "sha256": "d3012d18297fd262011c0319cb6a5e79ba453c1631673b4909346cd117e9e4cc"
+    },
+    "apps/web/src/features/policy/PolicyCreate.tsx": {
+      "sha256": "92706ffe6b3d0e275e6fe58cc5f1b0e29bc1fab46cb1e62e98321e292be3ae59"
+    },
+    "apps/web/src/features/policy/PolicyPay.tsx": {
+      "sha256": "838a81a60ce9dd2659b74baf6a879287824b18309f7873f32cad707bdaac184a"
+    },
+    "apps/web/src/features/policy/create.ts": {
+      "sha256": "58ac65752d05409fa8053354b895b6855d71c809d4c77c2d11d949bb411708f8"
+    },
+    "apps/web/src/features/policy/pay.selfcheck.test.ts": {
+      "sha256": "0a97997dfd8c427d9f7278b51846ea0e047ec48ec4813b9d5a2c47b0bf0ffd1f"
+    },
+    "apps/web/src/features/policy/pay.ts": {
+      "sha256": "79be4053d869baa495e3cc126e35df812645e06020821bbb6f2810680159595b"
+    },
+    "apps/web/src/features/policy/policy.logic.test.ts": {
+      "sha256": "ddc268a9bee1962ebec0bfadb3713aae81b7df60a763e327fe3e95f06cc521af"
+    },
+    "apps/web/src/features/policy/send.test.ts": {
+      "sha256": "44f644ad5c06c6b63db3666de84fa459af905a80e1fe81245a0e98e6a77dbf34"
+    },
+    "apps/web/src/features/policy/send.ts": {
+      "sha256": "4fa76827fabf11fd9de5c8daf1ac2212d04a01e65c8656ffb861f7cafe72687e"
+    },
+    "apps/web/src/i18n/securityKeys.ts": {
+      "sha256": "0e16b6a5eb7b22a2ee2dd7a5c4c7e5cb62d8b03dc544ca3f1cc3da60eb3cdcff"
+    },
+    "docs/ai/ACTIVE_WORK.md": {
+      "sha256": "c848159aade111a0f0101c63f6150a3eb97faf1ae2fb9027e574523638dd5129"
+    },
+    "docs/developer/api/policy-scheme.md": {
+      "sha256": "fdd23241aeac618c7085cd78283685027aedf9caf3f7d49db3544b6c1ef8f0c2"
+    },
+    "docs/handoffs/agents/POLICY_CLIENT_20261119.md": {
+      "sha256": "f44eded690b2d4dabe04b2b5b7805a0eef9698ad0cc102f1d401aa97a1dd5876"
+    },
+    "packages/policy-scheme/README.md": {
+      "sha256": "3f175b0865784bc6ce5ee8ed35f242e11d609791318c2c0712d2f748048d6e44"
+    },
+    "packages/policy-scheme/src/anvil.test.ts": {
+      "sha256": "45470704c33c1292c98ad9b41d860b3dcb68786c6eb4ba528ab1b03d07da100f"
+    },
+    "packages/policy-scheme/src/client.test.ts": {
+      "sha256": "d1d59bc531593aa6503b6b72e2c5d27aefd9ee7f503fe32d1fb49b87364a5164"
+    },
+    "packages/policy-scheme/src/derive.ts": {
+      "sha256": "f0ebc6cf04c669c4ec371c908aa8f5bec59970757595e855263c9bad23d4514d"
+    },
+    "packages/policy-scheme/src/eip712.ts": {
+      "sha256": "9ce2f59ee33760be9c26253b22e6ea5b1ccbee69835640f766b1707d3d62fbd1"
+    },
+    "packages/policy-scheme/src/index.ts": {
+      "sha256": "0753ff9324e645fc7d744c0c1dbc0592304a48f67b5562c6c32e8bd870471e2c"
+    },
+    "packages/policy-scheme/src/limits.ts": {
+      "sha256": "42dc67e28aaa6fa357e825d9e6316cb40b908b661f3e52b6464879536e99a357"
+    },
+    "packages/policy-scheme/src/negative.test.ts": {
+      "sha256": "afd5544bab97c2d145667f0a7644631f60426e6414baefa41ddaad5776c28567"
+    },
+    "packages/policy-scheme/src/record.ts": {
+      "sha256": "bddcf51fe068b512b51bf94da3cb7f2de2c6fb8f702a4594501b4c587cf85a27"
+    },
+    "packages/policy-scheme/src/router.test.ts": {
+      "sha256": "8f7cd52900a473cf7af79022551f42bbf925a2b993c0f5665550571861cb3a80"
+    },
+    "packages/policy-scheme/src/router.ts": {
+      "sha256": "4d7384b710f793ec3deaf997a766751c28181217e1c4e56de0cf7e2ae299a458"
+    }
+  }
+}

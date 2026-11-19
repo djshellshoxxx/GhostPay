@@ -1,0 +1,87 @@
+[
+  {
+    "name": "guard-build",
+    "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--workspace",
+      "@ghostpay/relayer-guard"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 4.466
+  },
+  {
+    "name": "web-regressions",
+    "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+    "command": [
+      "node",
+      "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/vitest/vitest.mjs",
+      "run",
+      "src/views/Pay.supported.test.tsx",
+      "src/lib/pay.permitNonce.test.ts",
+      "src/lib/pay.quoteAge.test.ts",
+      "src/lib/relayerClient.test.ts",
+      "src/features/policy/PolicyAssetCoverage.test.tsx",
+      "src/features/policy/send.test.ts",
+      "src/features/policy/pay.selfcheck.test.ts",
+      "--maxWorkers=1"
+    ],
+    "cwd": "apps/web",
+    "exit_code": 0,
+    "seconds": 48.78
+  },
+  {
+    "name": "focus-discovery",
+    "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+    "command": [
+      "node",
+      "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/@playwright/test/cli.js",
+      "test",
+      "e2e/focus-scope.spec.ts",
+      "--list"
+    ],
+    "cwd": "apps/web",
+    "exit_code": 0,
+    "seconds": 3.539
+  },
+  {
+    "name": "web-scoped-lint",
+    "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+    "command": [
+      "node",
+      "/workspace/scratch/6eafdb04d91b/GhostPay/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "../../eslint.config.js",
+      "src/views/Pay.supported.test.tsx",
+      "e2e/focus-scope.spec.ts"
+    ],
+    "cwd": "apps/web",
+    "exit_code": -6,
+    "seconds": 18.278
+  },
+  {
+    "name": "i18n-check",
+    "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+    "command": [
+      "node",
+      "scripts/i18n/check.mjs"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 1.076
+  },
+  {
+    "name": "i18n-extract",
+    "source": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+    "command": [
+      "node",
+      "scripts/i18n/extract.mjs"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.76
+  }
+]

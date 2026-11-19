@@ -1,0 +1,13 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli
+
+
+ Test Files  4 passed (4)
+      Tests  440 passed (440)
+   Start at  22:19:26
+   Duration  56.58s (tests 50%, import 39%, transform 11%)
+
+     Import  260 modules were evaluated 419 times · 20.59s total, 39% of tracked time
+             ~7.81s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

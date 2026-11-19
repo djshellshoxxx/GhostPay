@@ -1,0 +1,61 @@
+{
+  "stage": "red",
+  "reproduction": "Direct calls to independently transpiled current source; no historical PR test helper or compiled workspace artifact is used",
+  "compiler": "5.9.3",
+  "sourceHashes": {
+    "reconcile": "fbf84e968397514c2c782fede254ad560e7d2a026e4f545b1c79b1be31ea03ce",
+    "decimal": "4b4051729a3399c58d5e3af7de6235d601def1d25c0827c53175a1222c1ffbf4",
+    "errors": "cc938e0bd0d2cc92b4f14badc1c60267e53e2d5b28154b8e69b9e4c61a8e861c"
+  },
+  "input": {
+    "invoices": [
+      {
+        "id": "unpaid-positive",
+        "currency": "USD",
+        "amountMinor": "50",
+        "expiresAt": 20
+      },
+      {
+        "id": "nothing-owed",
+        "currency": "USD",
+        "amountMinor": "0",
+        "expiresAt": 20
+      }
+    ],
+    "payments": [],
+    "options": {
+      "now": 10,
+      "tolerance": {
+        "absoluteMinor": "100"
+      }
+    }
+  },
+  "observed": {
+    "invoices": [
+      {
+        "invoiceId": "nothing-owed",
+        "status": "paid",
+        "dueMinor": "0",
+        "paidMinor": "0",
+        "deltaMinor": "0",
+        "paymentIds": [],
+        "latePaymentIds": []
+      },
+      {
+        "invoiceId": "unpaid-positive",
+        "status": "paid",
+        "dueMinor": "50",
+        "paidMinor": "0",
+        "deltaMinor": "-50",
+        "paymentIds": [],
+        "latePaymentIds": []
+      }
+    ],
+    "unmatchedPayments": []
+  },
+  "expected": {
+    "unpaid-positive": "unmatched",
+    "nothing-owed": "paid"
+  },
+  "conforms": false
+}

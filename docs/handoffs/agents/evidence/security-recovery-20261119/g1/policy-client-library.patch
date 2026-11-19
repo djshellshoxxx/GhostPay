@@ -1,0 +1,417 @@
+diff --git a/packages/policy-scheme/README.md b/packages/policy-scheme/README.md
+index c63e4b50..ac057653 100644
+--- a/packages/policy-scheme/README.md
++++ b/packages/policy-scheme/README.md
+@@ -34,6 +34,12 @@ No new crypto libraries: `@noble/curves`, `@noble/hashes`, `viem` and `@ghostpay
+ 
+ `npm run gen-abi` regenerates `src/abi/*.ts` from forge output; `npm run gen-vectors` regenerates the vectors.
+ 
++## Trust notes
++
++- The scheme-2 meta-address string is **unauthenticated** (no checksum, chain id, factory or signature). Whoever supplies it chooses the payee keys and `policyHash`; a swapped `policyHash` pays an account the recipient never scans for. Obtain it over an authenticated channel and verify it out of band.
++- `decodePolicyPaymentCalldata` proves only internal consistency: `stealth` is the account of the calldata's `PolicyRef{owner, policyHash}`, the encoding is canonical, `R` is a compressed point, and the metadata matches the call (kind, token, net = gross minus fee for the ERC-20 methods, net at least `minNet`). A frontend that swaps the whole payee still passes. Compare the returned `owner`, `policyHash`, `ephemeralPublicKey` and metadata (view tag, token, net) with your own derivation, and check the router address and `msg.value` (the gross of `payNative`) yourself.
++- `signPolicyTypedData` reads its input once and refuses typed data that is not exactly a policy-account struct (the domain's four own fields and no `salt`, own, inherited or hidden; name and version; `primaryType`; `types`; the message field types). It signs only the digest it recomputes from validated copies with this package's own domain and types, and the input's `digest` must equal it. It does not check the message values: sign only builder output, and pass `expectedOwner`. `buildWithdrawTypedData` and `getLimitProof` recompute the limit leaf from `(token, limit, windowSeconds)`, so a proof or restored tree whose limit fields were edited is refused.
++
+ ## Status and deviations
+ 
+ Experimental; imported only by the flagged `apps/web/src/features/policy` view, not by `apps/relayer`. [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md) records 60 passed for this package in the 2026-10-21 run (the anvil tests skip when anvil or forge artifacts are missing). Deviations: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts: `build`, `typecheck`, `test`, `lint`, `gen-abi`, `gen-vectors`.
+diff --git a/packages/policy-scheme/src/derive.ts b/packages/policy-scheme/src/derive.ts
+index d70af630..ce4be42c 100644
+--- a/packages/policy-scheme/src/derive.ts
++++ b/packages/policy-scheme/src/derive.ts
+@@ -161,7 +161,8 @@ function ownerFromAnnouncement(viewing: Uint8Array, spend: CompressedPoint, ephe
+  * @param deployment Factory and implementation of the chain the log came from.
+  * @returns Match with owner, account and policy hash, or `{ matches: false }`.
+  * @throws {GhostPayCryptoError} `INVALID_SCALAR`, `INVALID_POINT`. {@link PolicySchemeError} `INVALID_HEX`, `INVALID_ADDRESS`.
+- * @security Never logs the viewing secret (a validated copy is zeroized). The view tag leaks one
++ * @security Never logs the viewing secret. Its copy is made after the argument checks and zeroized on
++ * every path after that (best effort in JavaScript). The view tag leaks one
+  * byte of the shared-secret hash by design. A match only proves the address derivation; the
+  * payment amount in metadata is an unauthenticated payer claim.
+  * @testVector policy-scheme.accounts
+@@ -174,9 +175,10 @@ export function checkScheme2Announcement(
+   deployment: PolicyDeployment,
+ ): Scheme2Check {
+   const spend = parseCompressedPoint(spendingPublicKey);
+-  const viewing = secretScalarFromBytes(viewingSecret);
+   const hashes = policyHashes.map((p, i) => bytes32(p, `policyHashes[${String(i)}]`));
+   const dep = { factory: nonZeroAddr(deployment.factory, 'factory'), implementation: nonZeroAddr(deployment.implementation, 'implementation') };
++  // Copy the secret only after every argument check, so no error path leaves the copy unwiped.
++  const viewing = secretScalarFromBytes(viewingSecret);
+   try {
+     const parsed = parse(announcement);
+     if (parsed === null) return { matches: false };
+diff --git a/packages/policy-scheme/src/eip712.ts b/packages/policy-scheme/src/eip712.ts
+index 5a300009..2f7679ed 100644
+--- a/packages/policy-scheme/src/eip712.ts
++++ b/packages/policy-scheme/src/eip712.ts
+@@ -12,8 +12,8 @@ import {
+   recoverAddress,
+   toHex,
+ } from 'viem/utils';
+-import { fail } from './errors.js';
+-import { verifyLimitProof, type TokenLimitProof } from './limits.js';
++import { PolicySchemeError, fail } from './errors.js';
++import { isLimitLeaf, verifyLimitProof, type TokenLimitProof } from './limits.js';
+ import {
+   MAX_UINT256,
+   ZERO_HASH,
+@@ -180,6 +180,28 @@ function finish<P extends keyof typeof POLICY_TYPES, M extends Record<string, un
+   return Object.freeze({ domain, types, primaryType, message: Object.freeze(message), structHash, digest });
+ }
+ 
++/** @internal Type hash of each policy struct, keyed like {@link POLICY_TYPES}. */
++const TYPEHASHES: Readonly<Record<keyof typeof POLICY_TYPES, Hex>> = Object.freeze({
++  Withdraw: WITHDRAW_TYPEHASH,
++  CancelWithdraw: CANCEL_WITHDRAW_TYPEHASH,
++  ProposeDestination: PROPOSE_DESTINATION_TYPEHASH,
++  CancelDestination: CANCEL_DESTINATION_TYPEHASH,
++});
++
++/**
++ * @internal EIP-712 `hashStruct`: `keccak256(abi.encode(TYPEHASH, field...))` with the fields of
++ * {@link POLICY_TYPES} in order (all static types), exactly as the contract hashes them.
++ */
++function policyStructHash(primaryType: keyof typeof POLICY_TYPES, message: Readonly<Record<string, unknown>>): Hex {
++  const fields = POLICY_TYPES[primaryType];
++  return keccak256(
++    encodeAbiParameters(
++      [{ type: 'bytes32' }, ...fields.map((f) => ({ type: f.type }))],
++      [TYPEHASHES[primaryType], ...fields.map((f) => message[f.name])],
++    ),
++  );
++}
++
+ /** Parameters of a withdrawal order. */
+ export interface WithdrawParams {
+   readonly chainId: number;
+@@ -203,8 +225,9 @@ export interface WithdrawParams {
+  *
+  * @remarks Mirrors `requestWithdraw`'s static checks so an order that would revert is never signed:
+  * `amount > 0`, `token != account`, and with limits: the proof verifies against `limitsRoot`, its
+- * leaf becomes `limitLeafHash` (audit L-04 binding), `amount <= limit`. Without limits
+- * `limitLeafHash` is zero. `structHash` equals the on-chain request id.
++ * leaf equals the leaf recomputed from `(token, limit, windowSeconds)` as the contract does, the leaf
++ * becomes `limitLeafHash` (audit L-04 binding), `amount <= limit`. Without limits `limitLeafHash` is
++ * zero. `structHash` equals the on-chain request id.
+  *
+  * @param p Order parameters.
+  * @returns Typed data, struct hash (request id) and digest.
+@@ -227,17 +250,16 @@ export function buildWithdrawTypedData(p: WithdrawParams): WithdrawTypedData {
+     if (root === ZERO_HASH) return fail('INVALID_INPUT', 'limitsRoot is zero; pass limit: null');
+     const lp = p.limit.proof;
+     if (!verifyLimitProof(root, lp.leaf, lp.proof)) return fail('INVALID_PROOF');
++    // Never trust caller-supplied limit data: recompute the leaf from (token, limit, window). This binds
++    // the proof to the token being withdrawn and refuses an inner node passed as a leaf.
++    if (!isLimitLeaf({ token, limit: lp.limit, windowSeconds: lp.windowSeconds }, lp.leaf)) {
++      return fail('INVALID_PROOF', 'leaf does not match token, limit and window');
++    }
+     if (amount > lp.limit) return fail('INVALID_LIMIT', 'amount exceeds limit');
+     limitLeafHash = bytes32(lp.leaf, 'leaf');
+   }
+-  const message: WithdrawMessage = { token, amount, deadline, nonce, limitLeafHash };
+-  const structHash = keccak256(
+-    encodeAbiParameters(
+-      [{ type: 'bytes32' }, { type: 'address' }, { type: 'uint256' }, { type: 'uint256' }, { type: 'uint256' }, { type: 'bytes32' }],
+-      [WITHDRAW_TYPEHASH, token, amount, deadline, nonce, limitLeafHash],
+-    ),
+-  );
+-  return finish(domain, 'Withdraw', { ...message }, structHash);
++  const message = { token, amount, deadline, nonce, limitLeafHash } satisfies WithdrawMessage;
++  return finish(domain, 'Withdraw', message, policyStructHash('Withdraw', message));
+ }
+ 
+ /**
+@@ -253,9 +275,8 @@ export function buildWithdrawTypedData(p: WithdrawParams): WithdrawTypedData {
+  */
+ export function buildCancelWithdrawTypedData(chainId: number, account: Address, id: Hex): CancelWithdrawTypedData {
+   const domain = policyDomain(chainId, account);
+-  const i = bytes32(id, 'id');
+-  const structHash = keccak256(encodeAbiParameters([{ type: 'bytes32' }, { type: 'bytes32' }], [CANCEL_WITHDRAW_TYPEHASH, i]));
+-  return finish(domain, 'CancelWithdraw', { id: i }, structHash);
++  const message = { id: bytes32(id, 'id') };
++  return finish(domain, 'CancelWithdraw', message, policyStructHash('CancelWithdraw', message));
+ }
+ 
+ /** Parameters of a destination change proposal. */
+@@ -284,14 +305,8 @@ export function buildProposeDestinationTypedData(p: ProposeDestinationParams): P
+   const newDestination = nonZeroAddr(p.newDestination, 'newDestination');
+   if (newDestination === domain.verifyingContract) return fail('INVALID_INPUT', 'newDestination equals account');
+   const deadline = uint(p.deadline, MAX_UINT256, 'deadline');
+-  const nonce = uint(p.nonce, MAX_UINT256, 'nonce');
+-  const structHash = keccak256(
+-    encodeAbiParameters(
+-      [{ type: 'bytes32' }, { type: 'address' }, { type: 'uint256' }, { type: 'uint256' }],
+-      [PROPOSE_DESTINATION_TYPEHASH, newDestination, deadline, nonce],
+-    ),
+-  );
+-  return finish(domain, 'ProposeDestination', { newDestination, deadline, nonce }, structHash);
++  const message = { newDestination, deadline, nonce: uint(p.nonce, MAX_UINT256, 'nonce') };
++  return finish(domain, 'ProposeDestination', message, policyStructHash('ProposeDestination', message));
+ }
+ 
+ /**
+@@ -307,9 +322,8 @@ export function buildProposeDestinationTypedData(p: ProposeDestinationParams): P
+  */
+ export function buildCancelDestinationTypedData(chainId: number, account: Address, id: Hex): CancelDestinationTypedData {
+   const domain = policyDomain(chainId, account);
+-  const i = bytes32(id, 'id');
+-  const structHash = keccak256(encodeAbiParameters([{ type: 'bytes32' }, { type: 'bytes32' }], [CANCEL_DESTINATION_TYPEHASH, i]));
+-  return finish(domain, 'CancelDestination', { id: i }, structHash);
++  const message = { id: bytes32(id, 'id') };
++  return finish(domain, 'CancelDestination', message, policyStructHash('CancelDestination', message));
+ }
+ 
+ /** @internal EIP-55 address of a secret key. */
+@@ -318,20 +332,82 @@ function addressOfSecret(secret: Uint8Array): Address {
+   return getAddress(`0x${bytesToHex(keccak_256(pub.subarray(1)).subarray(12)).slice(2)}`);
+ }
+ 
++/** @internal Same field names and types, in the same order. */
++function sameFields(got: unknown, want: readonly { readonly name: string; readonly type: string }[]): boolean {
++  if (!Array.isArray(got) || got.length !== want.length) return false;
++  return want.every((w, i) => {
++    const f: unknown = got[i];
++    return typeof f === 'object' && f !== null && (f as { name?: unknown }).name === w.name && (f as { type?: unknown }).type === w.type;
++  });
++}
++
++/** @internal Copy of one message field, validated for its EIP-712 type (the only types in {@link POLICY_TYPES}). */
++function policyField(type: string, value: unknown, name: string): unknown {
++  if (type === 'address') return addr(value, name);
++  if (type === 'uint256') return uint(value, MAX_UINT256, name);
++  return bytes32(value, name);
++}
++
++/**
++ * @internal Reads `td` exactly once, refuses anything but one of this package's policy-account structs and
++ * returns the digest recomputed from validated copies: the domain from {@link policyDomain}, the types from
++ * {@link POLICY_TYPES} and the message fields by name, hashed like the builders (by hand and by viem).
++ * The caller's `digest` must equal it. Nothing read from `td` (getters, inherited or hidden fields) reaches
++ * the signer.
++ */
++function rebuildPolicyDigest(td: unknown): Hex {
++  try {
++    if (typeof td !== 'object' || td === null) return fail('SIGNING_FAILED', 'not typed data');
++    const { domain: d, types, primaryType: pt, message: m, digest: claimed } = td as Readonly<Record<string, unknown>>;
++    if (typeof pt !== 'string' || !Object.hasOwn(POLICY_TYPES, pt)) return fail('SIGNING_FAILED', 'unknown primary type');
++    const primaryType = pt as keyof typeof POLICY_TYPES;
++    const keys = typeof types === 'object' && types !== null ? Object.keys(types) : [];
++    if (keys.length !== 1 || keys[0] !== pt || !sameFields((types as Readonly<Record<string, unknown>>)[pt], POLICY_TYPES[primaryType])) {
++      return fail('SIGNING_FAILED', 'types are not policy types');
++    }
++    // Exactly the four own fields of the contract's domain and no salt anywhere (own, inherited or not enumerable).
++    const domainKeys = typeof d === 'object' && d !== null ? Reflect.ownKeys(d).map(String).sort().join(',') : '';
++    if (domainKeys !== 'chainId,name,verifyingContract,version' || 'salt' in (d as object)) {
++      return fail('SIGNING_FAILED', 'domain is not the policy account domain');
++    }
++    const { name, version, chainId, verifyingContract } = d as Readonly<Record<string, unknown>>;
++    if (name !== POLICY_DOMAIN_NAME || version !== POLICY_DOMAIN_VERSION) return fail('SIGNING_FAILED', 'domain is not the policy account domain');
++    const domain = policyDomain(chainId as number, verifyingContract as Address);
++    if (typeof m !== 'object' || m === null) return fail('SIGNING_FAILED', 'message');
++    const message: Record<string, unknown> = {};
++    for (const f of POLICY_TYPES[primaryType]) message[f.name] = policyField(f.type, (m as Readonly<Record<string, unknown>>)[f.name], f.name);
++    const { digest } = finish(domain, primaryType, message, policyStructHash(primaryType, message));
++    if (claimed !== digest) return fail('SIGNING_FAILED', 'digest mismatch');
++    return digest;
++  } catch (e) {
++    if (e instanceof PolicySchemeError && e.code === 'SIGNING_FAILED') throw e;
++    return fail('SIGNING_FAILED', 'not policy typed data');
++  }
++}
++
+ /**
+  * Signs policy typed data with the owner key.
+  *
+- * @remarks Deterministic RFC 6979 low-s ECDSA (noble) over `td.digest`, which is re-checked against
+- * viem's `hashTypedData`. If `expectedOwner` is given the key must map to it, and the signature is
+- * recovered and compared before returning (OpenZeppelin `ECDSA.recover` accepts exactly this form).
++ * @remarks Deterministic RFC 6979 low-s ECDSA (noble). `td` is read exactly once and must be exactly a
++ * policy-account struct: the domain has only the own fields `name`, `version`, `chainId` and
++ * `verifyingContract` (no `salt`, own, inherited or hidden), with this package's name and version, a
++ * valid chain id and a non-zero contract, and `primaryType` and `types` are exactly one entry of
++ * {@link POLICY_TYPES}. The digest is then recomputed from validated copies (the domain from
++ * {@link policyDomain}, the types from {@link POLICY_TYPES}, the message fields by name), by hand and by
++ * viem's `hashTypedData`; `td.digest` must equal it, and only the recomputed digest is signed. If
++ * `expectedOwner` is given the key must map to it, and the signature is recovered and compared before
++ * returning (OpenZeppelin `ECDSA.recover` accepts exactly this form).
+  *
+  * @param td Typed data from one of the builders.
+  * @param ownerSecret Owner key ({@link deriveScheme2OwnerKey}).
+  * @param expectedOwner The account's `owner()`; strongly recommended.
+  * @returns 65-byte signature and its parts.
+  * @throws {PolicySchemeError} `SIGNING_FAILED`.
+- * @security The secret copy is zeroized after use; the secret is never logged. Signing anything
+- * except a digest from these builders is impossible through this function.
++ * @security The secret copy is zeroized after use; the secret is never logged. Foreign typed data
++ * (another domain, type or primary type, or getters that change between reads) is refused, so the
++ * owner key is not a generic EIP-712 signer through this function. It checks the message field types,
++ * not their values (amount, deadline, destination): sign only builder output.
++ * `expectedOwner` is optional but strongly recommended.
+  * @testVector policy-scheme.withdraws
+  */
+ export async function signPolicyTypedData(
+@@ -339,8 +415,8 @@ export async function signPolicyTypedData(
+   ownerSecret: SecretScalar,
+   expectedOwner?: Address,
+ ): Promise<PolicySignature> {
+-  const viaViem = viemDigest(td.domain, td.types, td.primaryType, td.message);
+-  if (viaViem !== td.digest) return fail('SIGNING_FAILED', 'digest mismatch');
++  // Everything below uses this recomputed digest only; `td` is not read again.
++  const digest = rebuildPolicyDigest(td);
+   const key = unsafeRevealSecret(ownerSecret);
+   let signer: Address;
+   let sig: Uint8Array;
+@@ -349,7 +425,7 @@ export async function signPolicyTypedData(
+     if (expectedOwner !== undefined && signer !== addr(expectedOwner, 'expectedOwner')) {
+       return fail('SIGNING_FAILED', 'key is not the expected owner');
+     }
+-    sig = secp256k1.sign(hexToBytes(td.digest), key, { prehash: false, lowS: true, format: 'recovered' });
++    sig = secp256k1.sign(hexToBytes(digest), key, { prehash: false, lowS: true, format: 'recovered' });
+   } finally {
+     zeroize(key);
+   }
+@@ -358,7 +434,7 @@ export async function signPolicyTypedData(
+   const s = bytesToHex(sig.subarray(33, 65));
+   const v = (27 + rec) as 27 | 28;
+   const signature = concatHex([r, s, toHex(v, { size: 1 })]);
+-  const recovered = await recoverAddress({ hash: td.digest, signature });
++  const recovered = await recoverAddress({ hash: digest, signature });
+   if (recovered !== signer) return fail('SIGNING_FAILED', 'recovery self-check');
+   return Object.freeze({ signature, v, r, s });
+ }
+diff --git a/packages/policy-scheme/src/limits.ts b/packages/policy-scheme/src/limits.ts
+index b25c1fa2..28362510 100644
+--- a/packages/policy-scheme/src/limits.ts
++++ b/packages/policy-scheme/src/limits.ts
+@@ -79,6 +79,18 @@ export function limitLeafHash(l: TokenLimit): Hex {
+   return keccak256(inner);
+ }
+ 
++/**
++ * @internal True when `leaf` is exactly the leaf of `(token, limit, windowSeconds)`. False, never a
++ * throw, for values that no leaf can have (a zero limit, a limited zero window, malformed input).
++ */
++export function isLimitLeaf(l: TokenLimit, leaf: unknown): boolean {
++  try {
++    return limitLeafHash(l) === bytes32(leaf, 'leaf');
++  } catch {
++    return false;
++  }
++}
++
+ /** @internal OpenZeppelin `Hashes.commutativeKeccak256`. */
+ function hashPair(a: Hex, b: Hex): Hex {
+   return a < b ? keccak256(concatHex([a, b])) : keccak256(concatHex([b, a]));
+@@ -126,9 +138,10 @@ export function buildLimitsTree(limits: readonly TokenLimit[]): LimitsTree {
+ /**
+  * Merkle proof of a token's leaf, ready for `requestWithdraw` and for `limitLeafHash`.
+  *
+- * @param tree Tree from {@link buildLimitsTree}.
++ * @param tree Tree from {@link buildLimitsTree}, or one restored from storage.
+  * @param token Token (zero address for native).
+- * @returns Limit, window, proof and leaf; the proof is self-verified against the root.
++ * @returns Limit, window, proof and leaf; the proof is self-verified against the root, and the leaf is
++ * recomputed from the entry's `(token, limit, windowSeconds)`.
+  * @throws {PolicySchemeError} `UNKNOWN_TOKEN`, `INVALID_ADDRESS`, `INVALID_PROOF`.
+  * @security Public data (reveals the token's cap once submitted on-chain).
+  * @testVector policy-scheme.limitTrees
+@@ -146,6 +159,8 @@ export function getLimitProof(tree: LimitsTree, token: Address): TokenLimitProof
+     pos = Math.floor((pos - 1) / 2);
+   }
+   if (!verifyLimitProof(tree.root, entry.leaf, proof)) return fail('INVALID_PROOF');
++  // A tree restored from storage is untrusted: the stored leaf must be the hash of its own fields.
++  if (!isLimitLeaf(entry, entry.leaf)) return fail('INVALID_PROOF', 'leaf does not match token, limit and window');
+   return Object.freeze({
+     limit: entry.limit,
+     windowSeconds: entry.windowSeconds,
+diff --git a/packages/policy-scheme/src/router.ts b/packages/policy-scheme/src/router.ts
+index 3e1af8ed..35f20d3f 100644
+--- a/packages/policy-scheme/src/router.ts
++++ b/packages/policy-scheme/src/router.ts
+@@ -1,4 +1,4 @@
+-import { buildErc20Metadata, buildNativeMetadata, parseCompressedPoint } from '@ghostpay/core-crypto';
++import { buildErc20Metadata, buildNativeMetadata, parseCompressedPoint, parseMetadata } from '@ghostpay/core-crypto';
+ import { bytesToHex, decodeFunctionData, encodeFunctionData, hexToBytes } from 'viem/utils';
+ import { ghostPayPolicyRouterAbi } from './abi/policyRouter.js';
+ import type { CallRequest } from './calldata.js';
+@@ -153,16 +153,29 @@ export interface DecodedPolicyPayment {
+ /**
+  * Decodes policy-router calldata and re-checks the policy binding.
+  *
++ * @remarks Besides the binding (`stealth` is the account predicted from `owner` and `policyHash`), the
++ * calldata must be the canonical ABI encoding (no trailing bytes), the ephemeral key must be a valid
++ * compressed secp256k1 point, and the metadata must be valid router metadata consistent with the call:
++ * native metadata for `payNative`, the call's token for the ERC-20 methods, `net = gross - fee` for the
++ * ERC-20 methods, and `net >= minNet`. For `payNative` the gross is `msg.value`, which is not part of
++ * the calldata, so only `net >= minNet` is checked.
++ *
+  * @param data Calldata.
+  * @param deployment Factory and implementation; `stealth` must equal the predicted account.
+  * @returns Method and the scheme-2 fields.
+- * @throws {PolicySchemeError} `INVALID_INPUT` on unknown calldata or a stealth/policy mismatch.
+- * @security Use before showing a wallet prompt: a tampered `stealth` or `owner` is detected here.
++ * @throws {PolicySchemeError} `INVALID_INPUT` on unknown or non-canonical calldata, a stealth/policy
++ * mismatch, an invalid ephemeral key, or metadata that does not match the call.
++ * @security Use before showing a wallet prompt: a tampered `stealth` or `owner` is detected here. This
++ * proves only internal consistency: a frontend that swaps the whole payee (owner, policyHash, stealth,
++ * ephemeral key, view tag) produces calldata that still decodes. Compare the returned fields with your
++ * own derivation from the payee's meta-address, and check the router address and `msg.value` yourself.
+  */
+ export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeployment): DecodedPolicyPayment {
+   let d: ReturnType<typeof decodeFunctionData<typeof ghostPayPolicyRouterAbi>>;
++  let canonical: Hex;
+   try {
+     d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: hexBytes(data, 'data') });
++    canonical = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: d.functionName, args: d.args });
+   } catch {
+     return fail('INVALID_INPUT', 'not policy router calldata');
+   }
+@@ -170,18 +183,45 @@ export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeploym
+   const ephIdx = ({ payNative: 4, payERC20: 6, payERC20WithPermit: 6, payERC20WithBuffer: 7 } as Record<string, number>)[method];
+   if (ephIdx === undefined) return fail('INVALID_INPUT', 'not a payment method');
+   const a = d.args as readonly unknown[];
++  // Refuse trailing bytes and any other encoding than the one the router ABI produces.
++  if (canonical !== data.toLowerCase()) return fail('INVALID_INPUT', 'non-canonical calldata');
+   const native = method === 'payNative';
+   const stealth = (native ? a[0] : a[1]) as Address;
+   const policy = (native ? a[1] : a[2]) as { owner: Address; policyHash: Hex };
+   if (predictAccountAddress(deployment, policy.owner, policy.policyHash) !== stealth) {
+     return fail('INVALID_INPUT', 'stealth is not the policy account');
+   }
++  const ephemeralPublicKey = a[ephIdx] as Hex;
++  const metadata = a[ephIdx + 1] as Hex;
++  try {
++    parseCompressedPoint(hexToBytes(ephemeralPublicKey));
++  } catch {
++    return fail('INVALID_INPUT', 'invalid ephemeral key');
++  }
++  let meta: ReturnType<typeof parseMetadata>;
++  try {
++    meta = parseMetadata(metadata);
++  } catch {
++    return fail('INVALID_INPUT', 'invalid payment metadata');
++  }
++  if (native) {
++    if (meta.kind !== 'native') return fail('INVALID_INPUT', 'metadata is not native');
++    if (meta.netAmount < (a[2] as bigint)) return fail('INVALID_INPUT', 'metadata net below minNet');
++  } else {
++    if (meta.kind !== 'erc20' || meta.token.toLowerCase() !== (a[0] as Address).toLowerCase()) {
++      return fail('INVALID_INPUT', 'metadata token does not match the call');
++    }
++    // policyRouterFee refuses a gross the router would not accept (zero or overflowing).
++    const gross = a[3] as bigint;
++    if (meta.netAmount !== gross - policyRouterFee(gross)) return fail('INVALID_INPUT', 'metadata net is not gross minus fee');
++    if (meta.netAmount < (a[4] as bigint)) return fail('INVALID_INPUT', 'metadata net below minNet');
++  }
+   return Object.freeze({
+     method: method as PolicyRouterMethod,
+     stealth,
+     owner: policy.owner,
+     policyHash: policy.policyHash,
+-    ephemeralPublicKey: a[ephIdx] as Hex,
+-    metadata: a[ephIdx + 1] as Hex,
++    ephemeralPublicKey,
++    metadata,
+   });
+ }

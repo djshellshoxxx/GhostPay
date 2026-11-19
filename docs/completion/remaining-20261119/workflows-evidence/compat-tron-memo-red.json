@@ -1,0 +1,17 @@
+{
+  "name": "compat-tron-memo-red",
+  "source_revision": "1766e71ff0041128c1931fd4718c4499c522901d",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/adapter.test.ts",
+    "--maxWorkers=1",
+    "--no-file-parallelism"
+  ],
+  "cwd": "packages/chain-tron",
+  "exit_code": 1,
+  "seconds": 3.106,
+  "observed_at": "2026-11-19T07:29:57.351740+00:00",
+  "log": "compat-tron-memo-red.log"
+}

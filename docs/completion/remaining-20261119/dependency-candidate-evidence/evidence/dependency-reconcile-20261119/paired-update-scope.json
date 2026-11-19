@@ -1,0 +1,53 @@
+{
+  "head": "4d19655a2e5d93ad9378803cd4163245168aca24",
+  "parent": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+  "direct_version_changes": [
+    [
+      "@playwright/test",
+      "1.64.1",
+      "1.65.1"
+    ],
+    [
+      "@testing-library/user-event",
+      "14.6.8",
+      "14.6.10"
+    ],
+    [
+      "@vitejs/plugin-react",
+      "6.1.2",
+      "6.3.0"
+    ],
+    [
+      "@vitest/coverage-v8",
+      "5.0.5",
+      "5.1.0"
+    ],
+    [
+      "@zama-fhe/sdk",
+      "3.7.1",
+      "3.7.2"
+    ],
+    [
+      "prettier",
+      "3.9.10",
+      "3.10.1"
+    ],
+    [
+      "viem",
+      "2.57.13",
+      "2.57.19"
+    ],
+    [
+      "vite",
+      "8.3.5",
+      "8.3.8"
+    ],
+    [
+      "vitest",
+      "5.0.5",
+      "5.1.0"
+    ]
+  ],
+  "major_version_changes": 0,
+  "changed_non_manifest_or_lock_files": []
+}

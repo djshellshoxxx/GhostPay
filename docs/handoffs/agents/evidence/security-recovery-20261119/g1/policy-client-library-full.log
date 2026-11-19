@@ -1,0 +1,33 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-policy-client/packages/policy-scheme
+      Coverage enabled with v8
+
+ ❯ src/anvil.test.ts (7 tests | 1 failed) 2965ms
+   ❯ policy-scheme anvil cross-check (real PolicyAccount + PolicyAccountFactory) (7)
+     × GhostPayPolicyRouter: pay a counterfactual account, scan the announcement, deploy, withdraw 749ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/anvil.test.ts > policy-scheme anvil cross-check (real PolicyAccount + PolicyAccountFactory) > GhostPayPolicyRouter: pay a counterfactual account, scan the announcement, deploy, withdraw
+PolicySchemeError: merkle proof does not verify: leaf does not match token, limit and window
+ ❯ fail src/errors.ts:57:9
+     55| /** @internal */
+     56| export function fail(code: PolicySchemeErrorCode, field?: string): nev…
+     57|   throw new PolicySchemeError(code, field);
+       |         ^
+     58| }
+     59|
+ ❯ buildWithdrawTypedData src/eip712.ts:256:14
+ ❯ src/anvil.test.ts:312:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 117 passed (118)
+   Start at  22:47:06
+   Duration  29.18s (tests 61%, import 34%, transform 4%, worker 1%)
+
+    Isolate  6 workers spawned · ~640ms startup each (spawn + environment, per file)
+             at least ~3.20s faster with isolate: false — reuses workers across files instead of one per file
+

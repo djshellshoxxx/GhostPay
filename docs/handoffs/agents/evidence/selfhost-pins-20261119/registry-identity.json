@@ -1,0 +1,25 @@
+{
+  "schema": "ghostpay-container-digest-identity/1",
+  "observed_at": "2026-11-19T06:32:38.357961+00:00",
+  "source_candidate": "08c26b12 (PR209 B4)",
+  "method": "unauthenticated HTTPS GET to public Docker Hub tag API; no local Docker configuration or credentials read",
+  "results": [
+    {
+      "url": "https://hub.docker.com/v2/repositories/nginxinc/nginx-unprivileged/tags/1.27-alpine",
+      "name": "1.27-alpine",
+      "digest": "sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0",
+      "last_updated": "2025-06-23T04:00:48.991508Z",
+      "status": "active",
+      "image_count": 16
+    },
+    {
+      "url": "https://hub.docker.com/v2/repositories/library/debian/tags/bookworm-20261104-slim",
+      "name": "bookworm-20261104-slim",
+      "digest": "sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc",
+      "last_updated": "2026-11-05T08:24:29.854959Z",
+      "status": "active",
+      "image_count": 10
+    }
+  ],
+  "limits": "Validates registry identity and tag availability. Does not qualify vulnerability state, container execution, mutable apt packages, TLS, or live hosting."
+}

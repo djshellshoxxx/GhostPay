@@ -1,0 +1,43 @@
+Compiling 61 files with Solc 0.8.28
+Solc 0.8.28 finished in 3.60s
+Compiler run successful!
+Script ran successfully.
+
+== Return ==
+announcer: contract ERC5564Announcer 0x5FbDB2315678afecb367f032d93F642f64180aa3
+router: contract GhostPayRouter 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+relayer: contract GhostPaySweepRelayer 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
+
+== Logs ==
+  announcer : 0x5FbDB2315678afecb367f032d93F642f64180aa3
+  router    : 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+  relayer   : 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
+  USDC      : 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
+  USDT      : 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+  DAI       : 0x5FC8d32690cc91D4c39d9d3abcBD16989F875707
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 31337
+
+Estimated max fee per gas: 2.000000001 gwei
+Estimated base fee per gas: 1 gwei
+Estimated max priority fee per gas: 0.000000001 gwei
+
+Estimated total gas used for script: 6337667
+
+Estimated amount required: 0.012675334006337667 ETH
+
+==========================
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+
+Transactions saved to: /workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/broadcast/DeployDevnet.s.sol/31337/run-latest.json
+
+Sensitive values saved to: /workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-red-w3ubwohc/forge-cache/DeployDevnet.s.sol/31337/run-latest.json
+

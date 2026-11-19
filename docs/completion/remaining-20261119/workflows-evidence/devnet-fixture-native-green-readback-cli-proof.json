@@ -1,0 +1,65 @@
+{
+  "phase": "green",
+  "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "source_sha256": {
+    "scripts/beta/browser-devnet.sh": "e27d6a5f6d5f1f2b1b0cdd5609b37a18485db85f8925d0b7578920c9d285e8d6",
+    "apps/web/e2e/devnet/prepare-devnet-manifest.mjs": "7c25f77738ef4ad7c4a5d1d58a17592c4c0d0701937d181c392bcda5c6fed360",
+    "scripts/testnet/make-manifest.test.mjs": "8396991bc82531b98fac40cf7f27f06ff9f9430605d5ff656192a3b713756394",
+    "packages/chain-adapters/src/deploymentsVerify.ts": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973",
+    "packages/chain-adapters/dist/deploymentsVerify.js": "f82657172746a1411e9059b33c3feb1dc11bc8c3a05119d16bb3b0a9fa85ed26",
+    "packages/contracts/script/Deploy.s.sol": "2e06d10b6dedea114546ca302acd7a9f5a0a85b1107cf84e7cc1941a0b1753e0",
+    "packages/contracts/script/devnet/DeployDevnet.s.sol": "8613019c8bbc6c78fd2b075725e7c19d608f0e9db339dfb3bbad83da75e094d6",
+    "packages/contracts/test/utils/ERC5564Announcer.sol": "9b7f4283fb02c97754cef6136453d38eeaab6c5632e1ccfc41468ae3bddd8e44"
+  },
+  "replay_sha256": "c79047319cf1585cea188d19842da20c0a4ab998331d6d109f08d3f091dd38aa",
+  "observed_at": "2026-11-19T08:38:19.767626+00:00",
+  "work_directory": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx",
+  "acceptance_scope": "native local fixture/readback/signature only; no browser or public-chain acceptance",
+  "public_test_signer_source": "scripts/beta/browser-devnet.sh DEV_DEPLOYER_KEY (public Anvil account 0)",
+  "steps": [
+    {
+      "name": "deploy-devnet-31337",
+      "exit_code": 0,
+      "seconds": 3.923,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/deploy-devnet-31337.log",
+      "sha256": "2539774ef83835883f3ef6411d04fa9fa3d2a2e3caba4ac1a5bbf263567381cf"
+    },
+    {
+      "name": "seed-canonical-runtime",
+      "exit_code": 0,
+      "seconds": 1.198,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/seed-canonical-runtime.log",
+      "sha256": "234dd9d86243c62e29d8e3a162eaa0c0c74ab775167888c6c423af849e7545bc",
+      "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/seed-canonical-runtime.stdout",
+      "stdout_sha256": "6fd26b117e78f5e42db415df7ba494ac0f75d41318aed25f5e17dc14909b09e3"
+    },
+    {
+      "name": "deploy-canonical-84532",
+      "exit_code": 0,
+      "seconds": 3.243,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/deploy-canonical-84532.log",
+      "sha256": "5c7043d6010664e00d9659f22f63da46ce24beeac4b31e54b214510043780b24"
+    },
+    {
+      "name": "prepare-manifest",
+      "exit_code": 0,
+      "seconds": 1.239,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/prepare-manifest.log",
+      "sha256": "2faac1ce0d33093e33435808ac872f6c189b30036c150135df923705e5f20aa5"
+    },
+    {
+      "name": "independent-manifest-readback",
+      "exit_code": 2,
+      "seconds": 0.777,
+      "log": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/independent-manifest-readback.log",
+      "sha256": "0ea40a5fe13d29e452bf1d20382a96063366cc735446047bef18e7c7e12c3b28",
+      "stdout": "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-green-n2h5c_yx/independent-manifest-readback.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "canonical_announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
+  "runner_seed_source_sha256": "776873840f5eb4ac701a96ecbeeb74b28c24981bd5b9f0b6e13847c94489edfd",
+  "canonical_runtime_artifact_sha256": "b974e8ed887185d777ddb72e1f36b637fa44d68a6ebbbd8d429c4af5faed61b2",
+  "prepare_exit_code": 0,
+  "owned_anvil_stopped": true
+}

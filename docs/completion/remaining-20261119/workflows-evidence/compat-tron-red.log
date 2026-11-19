@@ -1,0 +1,50 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-compat/packages/chain-tron
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/compatibility.regression.test.ts (3 tests | 3 failed) 181ms
+   ❯ TB-08: existing TRON derivation accepts the web recipient format (3)
+     × derives the same address, key, tag and memo for st:trx:0x02a3ed440501ae40c390a42d707dd7… 24ms
+     × derives the same address, key, tag and memo for st:trx:0x026eb7fa88521fed437bfdb941bb35… 4ms
+     × rejects the EVM recipient format with the fixed legacy-format code 149ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/compatibility.regression.test.ts > TB-08: existing TRON derivation accepts the web recipient format > derives the same address, key, tag and memo for st:trx:0x02a3ed440501ae40c390a42d707dd7…
+ FAIL  src/compatibility.regression.test.ts > TB-08: existing TRON derivation accepts the web recipient format > derives the same address, key, tag and memo for st:trx:0x026eb7fa88521fed437bfdb941bb35…
+GhostPayCryptoError: invalid stealth meta-address
+ ❯ fail ../core-crypto/src/errors.ts:57:9
+ ❯ decodeMetaAddress ../core-crypto/src/keys.ts:96:34
+ ❯ deriveStealthPayment ../core-crypto/src/stealth.ts:121:51
+ ❯ deriveTronStealthPayment src/stealth.ts:56:13
+     54|  */
+     55| export function deriveTronStealthPayment(metaAddress: string, rng?: Ra…
+     56|   const p = deriveStealthPayment(metaAddress, rng);
+       |             ^
+     57|   return {
+     58|     stealthAddress: evmToTronAddress(p.stealthAddress),
+ ❯ src/compatibility.regression.test.ts:27:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/compatibility.regression.test.ts > TB-08: existing TRON derivation accepts the web recipient format > rejects the EVM recipient format with the fixed legacy-format code
+AssertionError: expected function to throw an error, but it didn't
+ ❯ src/compatibility.regression.test.ts:37:83
+     35|     const vector = vectors[0]!;
+     36|     const old = vector.metaAddress.replace('st:trx:', 'st:eth:');
+     37|     expect(() => deriveTronStealthPayment(old, fixedRng(vector.ephemer…
+       |                                                                                   ^
+     38|       expect.objectContaining({ code: 'LEGACY_META_ADDRESS' }),
+     39|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  23:28:57
+   Duration  2.36s (import 57%, transform 33%, tests 10%, worker 1%)
+

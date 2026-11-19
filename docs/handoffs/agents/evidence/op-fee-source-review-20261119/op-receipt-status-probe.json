@@ -1,0 +1,147 @@
+{
+  "kind": "read-only-source-probe-not-package-qualification",
+  "node": "v24.22.3",
+  "viem": "2.57.19",
+  "cases": [
+    {
+      "revision": "a6bcaf38c4aa1f1dfc21e593816b4ac1a980ab1e",
+      "sourceHashes": {
+        "chain": "72ebbff07fc1bb92cb28eb7dc902a8c97cfe3061309970b3042091331743ef6d",
+        "errors": "33b733aa4eb6a56d1837f53239371a74c817fa659a6a23f54e33968bdf267d96"
+      },
+      "inputStatus": "0x1",
+      "result": {
+        "status": "success",
+        "gasUsed": "100000"
+      },
+      "resultStatusType": "string",
+      "methods": [
+        "eth_getTransactionReceipt"
+      ]
+    },
+    {
+      "revision": "a6bcaf38c4aa1f1dfc21e593816b4ac1a980ab1e",
+      "sourceHashes": {
+        "chain": "72ebbff07fc1bb92cb28eb7dc902a8c97cfe3061309970b3042091331743ef6d",
+        "errors": "33b733aa4eb6a56d1837f53239371a74c817fa659a6a23f54e33968bdf267d96"
+      },
+      "inputStatus": "missing",
+      "result": {
+        "status": null,
+        "gasUsed": "100000"
+      },
+      "resultStatusType": "object",
+      "methods": [
+        "eth_getTransactionReceipt"
+      ]
+    },
+    {
+      "revision": "a6bcaf38c4aa1f1dfc21e593816b4ac1a980ab1e",
+      "sourceHashes": {
+        "chain": "72ebbff07fc1bb92cb28eb7dc902a8c97cfe3061309970b3042091331743ef6d",
+        "errors": "33b733aa4eb6a56d1837f53239371a74c817fa659a6a23f54e33968bdf267d96"
+      },
+      "inputStatus": "0x2",
+      "result": {
+        "gasUsed": "100000"
+      },
+      "resultStatusType": "undefined",
+      "methods": [
+        "eth_getTransactionReceipt"
+      ]
+    },
+    {
+      "revision": "a6bcaf38c4aa1f1dfc21e593816b4ac1a980ab1e",
+      "sourceHashes": {
+        "chain": "72ebbff07fc1bb92cb28eb7dc902a8c97cfe3061309970b3042091331743ef6d",
+        "errors": "33b733aa4eb6a56d1837f53239371a74c817fa659a6a23f54e33968bdf267d96"
+      },
+      "inputStatus": "0x02",
+      "result": {
+        "gasUsed": "100000"
+      },
+      "resultStatusType": "undefined",
+      "methods": [
+        "eth_getTransactionReceipt"
+      ]
+    },
+    {
+      "revision": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "sourceHashes": {
+        "chain": "998ebbb67298179e43d90fc08c94c6a42c5427e63bde3c8b64b37548b9e1015d",
+        "errors": "33b733aa4eb6a56d1837f53239371a74c817fa659a6a23f54e33968bdf267d96",
+        "opFees": "f19d9591954a07abcccf986bcb0f61b423b95cd7bb53e5450efc957b1fe29ea3"
+      },
+      "inputStatus": "0x1",
+      "result": {
+        "status": "success",
+        "gasUsed": "100000",
+        "l1Fee": "100",
+        "operatorFee": "10"
+      },
+      "resultStatusType": "string",
+      "methods": [
+        "eth_getTransactionReceipt",
+        "eth_call"
+      ]
+    },
+    {
+      "revision": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "sourceHashes": {
+        "chain": "998ebbb67298179e43d90fc08c94c6a42c5427e63bde3c8b64b37548b9e1015d",
+        "errors": "33b733aa4eb6a56d1837f53239371a74c817fa659a6a23f54e33968bdf267d96",
+        "opFees": "f19d9591954a07abcccf986bcb0f61b423b95cd7bb53e5450efc957b1fe29ea3"
+      },
+      "inputStatus": "missing",
+      "result": {
+        "status": null,
+        "gasUsed": "100000",
+        "l1Fee": "100",
+        "operatorFee": "10"
+      },
+      "resultStatusType": "object",
+      "methods": [
+        "eth_getTransactionReceipt",
+        "eth_call"
+      ]
+    },
+    {
+      "revision": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "sourceHashes": {
+        "chain": "998ebbb67298179e43d90fc08c94c6a42c5427e63bde3c8b64b37548b9e1015d",
+        "errors": "33b733aa4eb6a56d1837f53239371a74c817fa659a6a23f54e33968bdf267d96",
+        "opFees": "f19d9591954a07abcccf986bcb0f61b423b95cd7bb53e5450efc957b1fe29ea3"
+      },
+      "inputStatus": "0x2",
+      "result": {
+        "gasUsed": "100000",
+        "l1Fee": "100",
+        "operatorFee": "10"
+      },
+      "resultStatusType": "undefined",
+      "methods": [
+        "eth_getTransactionReceipt",
+        "eth_call"
+      ]
+    },
+    {
+      "revision": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "sourceHashes": {
+        "chain": "998ebbb67298179e43d90fc08c94c6a42c5427e63bde3c8b64b37548b9e1015d",
+        "errors": "33b733aa4eb6a56d1837f53239371a74c817fa659a6a23f54e33968bdf267d96",
+        "opFees": "f19d9591954a07abcccf986bcb0f61b423b95cd7bb53e5450efc957b1fe29ea3"
+      },
+      "inputStatus": "0x02",
+      "result": {
+        "gasUsed": "100000",
+        "l1Fee": "100",
+        "operatorFee": "10"
+      },
+      "resultStatusType": "undefined",
+      "methods": [
+        "eth_getTransactionReceipt",
+        "eth_call"
+      ]
+    }
+  ]
+}

@@ -58,11 +58,30 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
-      - name: Slither (same exclusions as ci.yml)
+      - name: Install Slither and the pinned compiler
         run: |
           python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
           solc-select install 0.8.28 && solc-select use 0.8.28
-          slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
+      - name: Slither gate (fails on Medium or High; same command as ci.yml)
+        run: slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
+      # SEC-17: visibility for all severities is separate from the unchanged required gate above.
+      # This report also lists inline-suppressed findings; publishing a report does not approve its findings.
+      - name: Slither report with every detector, Low and Informational included
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/slither"
+          slither . --filter-paths "lib|test|script" --fail-none --show-ignored-findings \
+            --json "$RUNNER_TEMP/slither/slither-all-detectors.json" --checklist > "$RUNNER_TEMP/slither/slither-all-detectors.md"
+          jq -r '.results.detectors // [] | group_by(.impact) | map("\(.[0].impact): \(length)") | join(", ")' \
+            "$RUNNER_TEMP/slither/slither-all-detectors.json" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ !cancelled() }}
+        with:
+          name: slither-all-detectors-${{ github.sha }}
+          path: ${{ runner.temp }}/slither/
+          if-no-files-found: error
+          retention-days: 30
 
   dependency-audit:
     runs-on: ubuntu-latest

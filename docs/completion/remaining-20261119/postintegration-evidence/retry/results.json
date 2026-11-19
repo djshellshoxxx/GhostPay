@@ -1,0 +1,19 @@
+[
+  {
+    "name": "cli-typecheck",
+    "source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "final_source": "ed6ab88896d5d4310c9aae7e2434cc187637c00d",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "--workspace",
+      "@ghostpay/cli"
+    ],
+    "cwd": ".",
+    "exit_code": 137,
+    "seconds": 17.085,
+    "node": "22.23.4",
+    "heap_mib": 640
+  }
+]

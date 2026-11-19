@@ -1,0 +1,17 @@
+{
+  "name": "relayer-web-consumer-green",
+  "source_revision": "e7b148442753121c32f733328bb07bb4f28869d0",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/lib/relayerClient.test.ts",
+    "--maxWorkers=1",
+    "--no-file-parallelism"
+  ],
+  "cwd": "apps/web",
+  "exit_code": 0,
+  "seconds": 5.105,
+  "observed_at": "2026-11-19T07:20:11.785145+00:00",
+  "log": "relayer-web-consumer-green.log"
+}

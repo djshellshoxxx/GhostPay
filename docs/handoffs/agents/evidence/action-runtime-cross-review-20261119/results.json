@@ -1,0 +1,46 @@
+{
+  "source": "f42553ab44d2bf8f544f0287656bbc184679014d",
+  "recorded_utc": "2026-11-19T08:20:47.498370+00:00",
+  "commands": [
+    {
+      "name": "workflow-regressions",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "--test",
+        "scripts/tests/ghostpay-automation-hardening.test.mjs",
+        "scripts/tests/ghostpay-codex-cloud-workflow.test.mjs",
+        "scripts/tests/ghostpay-parallel-review-workflow.test.mjs"
+      ],
+      "exit_code": 0,
+      "seconds": 2.388
+    },
+    {
+      "name": "action-pins",
+      "command": [
+        "bash",
+        "scripts/check-actions-pinned.sh"
+      ],
+      "exit_code": 0,
+      "seconds": 0.244
+    },
+    {
+      "name": "secrets",
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "exit_code": 0,
+      "seconds": 0.247
+    },
+    {
+      "name": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.007
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "merchant-profile-clock-red",
+  "source_revision": "9f68917f1a3721a8d20d23002174a5094223ca20",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/merchantProfile.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose"
+  ],
+  "cwd": "packages/invoice-schema",
+  "exit_code": 1,
+  "seconds": 2.618,
+  "observed_at": "2026-11-19T08:58:35.529167+00:00",
+  "log": "merchant-profile-clock-red.log"
+}

@@ -1,0 +1,80 @@
+{
+  "base": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+  "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+  "original_source_blob_matches_audit": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+  "runtime_source_hashes": [
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "sha256": "00141a5b07600b68c0dc175f9810dd9adfd79fa272693a1cf496d3cfff2bbb67"
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+      "sha256": "13cd1dfeb566e86be85dc1218fa7ad15d1c3e4142b36585d4f679c182cf4deb6"
+    }
+  ],
+  "preserved_source_hashes": [
+    {
+      "path": "packages/invoice-schema/src/json.ts",
+      "sha256": "0a54fa384f04516fd9b56b2e2b44cfa04a2d1ec9d748fea2d4ff73f96aa5a0d7",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "sha256": "156e287d1efb0fc5cabd66510da616a12ea7fe2368025acec7473e02da19fc24",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "packages/invoice-schema/src/sign.ts",
+      "sha256": "8efcb19e49d30dbc742c89104c178f10691026c554278e8e44b9ad0b394964d3",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "packages/invoice-schema/src/expiry.ts",
+      "sha256": "2b7b71e62f300aff38e63960d4dc5e7e6317b6a5a5de061bfea4b15dede63227",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "packages/invoice-schema/src/index.ts",
+      "sha256": "c3fbe2caa3ab089824b5d4c3140d1abd6a2c6b41f788b94e9d97946159236f28",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "packages/invoice-schema/vitest.config.ts",
+      "sha256": "5bb4bb2ef05f4079bf016a6cbb8a6b361e7106507957b225f55ef69133a77b2c",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "sha256": "c32cad9520d1ad2a37cdbf6dd8c0703741780be4c0943e8ff102b97e8b2e3582",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "apps/web/src/lib/embedHost.ts",
+      "sha256": "d6e88df50c9d66b71e637ec423b98484898f1f2049d10a86dc8a992b8441a561",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "apps/web/src/lib/merchantTemplate.ts",
+      "sha256": "8bb7e7bcadb5922abd6baf2ee541d81c16a84fae778e828a1e7b523138ac4ce1",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "apps/web/src/components/MerchantProfilePanel.tsx",
+      "sha256": "0971c0fed755ac51fd3b6b7e726699844d74b0dcc105801edc4bde70921931bd",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "c5305bd026b32331d0dd758ac2a359480b9865cc5871c3276ce1ebb6c07ead9e",
+      "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+    }
+  ],
+  "accepted_clock_domain": "all finite numeric values; original comparisons retained, including negative/fractional values",
+  "invalid_clock_result": "expired, after original size/format/signature precedence",
+  "caller_boundary": "Clock comes from local services.nowMs()/nowSeconds; no profile-controlled clock path found in the three current callers."
+}

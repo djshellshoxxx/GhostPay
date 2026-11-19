@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python",
+    "/workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/verify-history.py",
+    "--repo",
+    "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git",
+    "--check-imported"
+  ],
+  "exit_code": 0,
+  "seconds": 0.16,
+  "recorded_utc": "2026-11-19T09:18:14.401249+00:00",
+  "source": "1cb5f907923a2d67587a303882b10c9bfea175b7",
+  "log_sha256": "d0d502df67ee4a8c360a4075296537ef0136c1438c2be076f1eb28763fe46ba7",
+  "scope": "Published read-only helper against fresh public-plus-bundle repository; all imported original trees checked"
+}

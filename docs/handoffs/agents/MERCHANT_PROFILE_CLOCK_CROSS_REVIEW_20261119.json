@@ -1,0 +1,553 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "contract_security",
+  "date": "2026-11-19",
+  "verdict": "PASS for the narrow source repair and signed-profile regression; whole-package coverage remains unqualified",
+  "finding": "GP-AUD-208-01",
+  "auditPullRequest": 266,
+  "auditHead": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+  "auditedMain": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+  "workerBase": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+  "runtimeSource": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+  "regressionBaseline": "9f68917f1a3721a8d20d23002174a5094223ca20",
+  "authorPacketCommit": "34eee707030b6818021aa535af32d0f566f43bba",
+  "packetFiles": [
+    {
+      "path": "docs/handoffs/agents/MERCHANT_PROFILE_CLOCK_20261119.json",
+      "sha256": "2ff65d039a085a555abc32dfcf53e434ac4ba8625028b9e171b5f53aac00faa0"
+    },
+    {
+      "path": "docs/handoffs/agents/MERCHANT_PROFILE_CLOCK_20261119.md",
+      "sha256": "35f7e89b20511b1e6645908ddf2a3040e74d847ec5188e0f05ac77803952b5e2"
+    }
+  ],
+  "sourceStates": [
+    {
+      "revision": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "blob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+      "sha256": "8a4692b3222c05c1a66410323a763effffca76b22cc22a0fa6930f82d754ae6c"
+    },
+    {
+      "revision": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "blob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+      "sha256": "8a4692b3222c05c1a66410323a763effffca76b22cc22a0fa6930f82d754ae6c"
+    },
+    {
+      "revision": "9f68917f1a3721a8d20d23002174a5094223ca20",
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "blob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+      "sha256": "8a4692b3222c05c1a66410323a763effffca76b22cc22a0fa6930f82d754ae6c"
+    },
+    {
+      "revision": "9f68917f1a3721a8d20d23002174a5094223ca20",
+      "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+      "blob": "31d40e8871a4d1a89c525d3361cb2922431c5c4b",
+      "sha256": "13cd1dfeb566e86be85dc1218fa7ad15d1c3e4142b36585d4f679c182cf4deb6"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "blob": "35af2b07417916eca4d10e1e4f5584e171ece1dd",
+      "sha256": "00141a5b07600b68c0dc175f9810dd9adfd79fa272693a1cf496d3cfff2bbb67"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+      "blob": "31d40e8871a4d1a89c525d3361cb2922431c5c4b",
+      "sha256": "13cd1dfeb566e86be85dc1218fa7ad15d1c3e4142b36585d4f679c182cf4deb6"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/json.ts",
+      "blob": "b7a34bb5176ec72daf0026a59991863421bdb341",
+      "sha256": "0a54fa384f04516fd9b56b2e2b44cfa04a2d1ec9d748fea2d4ff73f96aa5a0d7"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "blob": "dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36",
+      "sha256": "156e287d1efb0fc5cabd66510da616a12ea7fe2368025acec7473e02da19fc24"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/sign.ts",
+      "blob": "55dffe55c71c6daaf18342e05ae403ab71bb496c",
+      "sha256": "8efcb19e49d30dbc742c89104c178f10691026c554278e8e44b9ad0b394964d3"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/expiry.ts",
+      "blob": "51b0f6238f0ddd27a6b00a50b705b2372cff1548",
+      "sha256": "2b7b71e62f300aff38e63960d4dc5e7e6317b6a5a5de061bfea4b15dede63227"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/index.ts",
+      "blob": "f93afefe76b28ed39a45e6e8d726931e865f4c5f",
+      "sha256": "c3fbe2caa3ab089824b5d4c3140d1abd6a2c6b41f788b94e9d97946159236f28"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/vitest.config.ts",
+      "blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "sha256": "5bb4bb2ef05f4079bf016a6cbb8a6b361e7106507957b225f55ef69133a77b2c"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/package.json",
+      "blob": "92bceed2e93389bf7d0033909d6c9d1773d52ff4",
+      "sha256": "c32cad9520d1ad2a37cdbf6dd8c0703741780be4c0943e8ff102b97e8b2e3582"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "apps/web/src/lib/embedHost.ts",
+      "blob": "08ebf79f6a6f0bc0cd01c6263364bfbdde12f7cf",
+      "sha256": "d6e88df50c9d66b71e637ec423b98484898f1f2049d10a86dc8a992b8441a561"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "apps/web/src/lib/merchantTemplate.ts",
+      "blob": "045efb594a73a610662e8f5d45a6b270de0e589e",
+      "sha256": "8bb7e7bcadb5922abd6baf2ee541d81c16a84fae778e828a1e7b523138ac4ce1"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "apps/web/src/components/MerchantProfilePanel.tsx",
+      "blob": "ecba9e7a460b2698ea9f70f4a62edc482e9cfd60",
+      "sha256": "0971c0fed755ac51fd3b6b7e726699844d74b0dcc105801edc4bde70921931bd"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "package.json",
+      "blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "package-lock.json",
+      "blob": "7c405185908b8d8e2410b5aba2ad1800f95d1547",
+      "sha256": "c5305bd026b32331d0dd758ac2a359480b9865cc5871c3276ce1ebb6c07ead9e"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/passphrase.test.ts",
+      "blob": "a80ea26fc2b72a219270418ac2120d3d1f703ef5",
+      "sha256": "09186df084b666d16d789cb7bffd500f57ab546db01827d08bac35ffda4bac1d"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/envelope.ts",
+      "blob": "9e6f5d8b80405d634252bf0b65a50d8610325f58",
+      "sha256": "fe9a123e3181605338d0587cc0c9ec0385303e34e784adf60287478f76f1c487"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/src/passphrase.ts",
+      "blob": "3844a9951dcad85559e823cac9abfc6fe8ece3b7",
+      "sha256": "4b20b14f6e545a5c0d91ffe215e197829cb7ead81d1ceb89906c4df0ed48e9c9"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "eslint.config.js",
+      "blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/tsconfig.json",
+      "blob": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "sha256": "a7afeb9eb63100201233658ba907c3a78c757acb63f83fc0df7908740000f962"
+    },
+    {
+      "revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "path": "packages/invoice-schema/tsconfig.build.json",
+      "blob": "7cd92421109e2b1988a7e547ec0860610aa5460a",
+      "sha256": "8653194a8ad7fe958de857790dbaa781b00fa054d810e65f65ec911c6fc57dab"
+    }
+  ],
+  "preservedPaths": [
+    "packages/invoice-schema/src/json.ts",
+    "packages/invoice-schema/src/json.test.ts",
+    "packages/invoice-schema/src/sign.ts",
+    "packages/invoice-schema/src/expiry.ts",
+    "packages/invoice-schema/src/index.ts",
+    "packages/invoice-schema/vitest.config.ts",
+    "packages/invoice-schema/package.json",
+    "apps/web/src/lib/embedHost.ts",
+    "apps/web/src/lib/merchantTemplate.ts",
+    "apps/web/src/components/MerchantProfilePanel.tsx",
+    "package.json",
+    "package-lock.json",
+    "packages/invoice-schema/src/passphrase.test.ts",
+    "packages/invoice-schema/src/envelope.ts",
+    "packages/invoice-schema/src/passphrase.ts",
+    "eslint.config.js",
+    "packages/invoice-schema/tsconfig.json",
+    "packages/invoice-schema/tsconfig.build.json"
+  ],
+  "onlyRuntimeChange": "Number.isFinite at the existing expiry predicate; matching JSDoc; no other executable change",
+  "acceptedClockDomain": "All finite numeric values, preserving the original comparison including negative/fractional values and equality being expired",
+  "invalidClockResult": "Existing expired result after size, format and signature checks; no coercion",
+  "signedBaseline": {
+    "passed": 37,
+    "failed": 26,
+    "acceptedExpiredProfile": 22,
+    "clockCoercionExceptions": 4,
+    "finiteControlsPassed": 26,
+    "positiveInfinityAlreadyRejected": true
+  },
+  "authorFocused": {
+    "passed": 63,
+    "failed": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "seconds": 1.451
+  },
+  "fullPackageAttempt": {
+    "passed": 786,
+    "failed": 1,
+    "passedFiles": 12,
+    "failedFiles": 1,
+    "exitCode": 1,
+    "seconds": 494.182,
+    "coverageReportProduced": false,
+    "failure": "Timeout in an unchanged passphrase test at the existing 60000 ms limit; no measured pre-repair full-suite timeout asserted"
+  },
+  "isolatedDiagnostic": {
+    "passed": 1,
+    "unselected": 25,
+    "exitCode": 0,
+    "seconds": 6.159,
+    "coverage": false,
+    "testTimeoutMs": 60000,
+    "fullPackagePassEstablished": false
+  },
+  "receipts": [
+    {
+      "name": "merchant-profile-clock-red",
+      "sourceRevision": "9f68917f1a3721a8d20d23002174a5094223ca20",
+      "exitCode": 1,
+      "seconds": 2.618,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/merchantProfile.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose"
+      ]
+    },
+    {
+      "name": "merchant-profile-clock-green",
+      "sourceRevision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "exitCode": 0,
+      "seconds": 1.451,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/merchantProfile.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose"
+      ]
+    },
+    {
+      "name": "merchant-profile-clock-full-coverage",
+      "sourceRevision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "exitCode": 1,
+      "seconds": 494.182,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ]
+    },
+    {
+      "name": "merchant-profile-clock-build",
+      "sourceRevision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "exitCode": 0,
+      "seconds": 2.331,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/invoice-schema/tsconfig.build.json"
+      ]
+    },
+    {
+      "name": "merchant-profile-clock-typecheck",
+      "sourceRevision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "exitCode": 0,
+      "seconds": 5.422,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/invoice-schema/tsconfig.json",
+        "--noEmit"
+      ]
+    },
+    {
+      "name": "merchant-profile-clock-lint",
+      "sourceRevision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "exitCode": 0,
+      "seconds": 9.385,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src"
+      ]
+    },
+    {
+      "name": "merchant-profile-clock-passphrase-focused",
+      "sourceRevision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "exitCode": 0,
+      "seconds": 6.159,
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/passphrase.test.ts",
+        "-t",
+        "authentic but malformed plaintext gives typed errors",
+        "--maxWorkers=1",
+        "--reporter=verbose"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "merchant-profile-clock-red.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-red.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-red.json",
+      "sha256": "4883085fb5c0c7858a03b44f48babad3b3e06ad0a1b5e030648fb7fd00b96b8e",
+      "bytes": 508
+    },
+    {
+      "name": "merchant-profile-clock-red.log",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-red.log",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-red.log",
+      "sha256": "daa3afe3572f93859c0b958be1afd25ad8e27ebe376684240779ba0109bfbe38",
+      "bytes": 17318
+    },
+    {
+      "name": "merchant-profile-clock-green.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-green.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-green.json",
+      "sha256": "bef1f81af4d92ddb9009ce39496da883711d64b173328e40edea42ee4864db33",
+      "bytes": 512
+    },
+    {
+      "name": "merchant-profile-clock-green.log",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-green.log",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-green.log",
+      "sha256": "0deb2f2b2ab9b36f96b2b3a9c24a64e19374d727d79687a05d98b66865c68ac1",
+      "bytes": 9040
+    },
+    {
+      "name": "merchant-profile-clock-full-coverage.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-full-coverage.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-full-coverage.json",
+      "sha256": "cef5de54c828a9943e705e28d8209ebb5abb3848af189cbbda891d7144cad1c3",
+      "bytes": 487
+    },
+    {
+      "name": "merchant-profile-clock-full-coverage.log",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-full-coverage.log",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-full-coverage.log",
+      "sha256": "5d6c56d1251e33dbda993272a4ce940e83e4f23cb35539417f13e9df7266403b",
+      "bytes": 3683
+    },
+    {
+      "name": "merchant-profile-clock-build.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-build.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-build.json",
+      "sha256": "1212720c33997f58114308db819e9fd114a926daedd88f6d8c66afa40c47b97f",
+      "bytes": 452
+    },
+    {
+      "name": "merchant-profile-clock-build.log",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-build.log",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "merchant-profile-clock-typecheck.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-typecheck.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-typecheck.json",
+      "sha256": "4b25174e5331a28195cf914154c277763fa1a1bd9dce1d69c84ba09e8fcc1926",
+      "bytes": 470
+    },
+    {
+      "name": "merchant-profile-clock-typecheck.log",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-typecheck.log",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "merchant-profile-clock-lint.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-lint.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-lint.json",
+      "sha256": "06b016fd4704fac73f0bc360fc435eee6ec9863691a8aaef240561c62b2e0a4e",
+      "bytes": 476
+    },
+    {
+      "name": "merchant-profile-clock-lint.log",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-lint.log",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-lint.log",
+      "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "bytes": 174
+    },
+    {
+      "name": "merchant-profile-clock-passphrase-focused.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-passphrase-focused.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-passphrase-focused.json",
+      "sha256": "95e85b07d5c1917a1000773827e66f942e0a237cdc56d8def81d0e34412f2fd9",
+      "bytes": 603
+    },
+    {
+      "name": "merchant-profile-clock-passphrase-focused.log",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-passphrase-focused.log",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-passphrase-focused.log",
+      "sha256": "dec6593d5bbcc581565cf40c6ee2475545050247640312a170b2a08dd4a35880",
+      "bytes": 4273
+    },
+    {
+      "name": "merchant-profile-clock-dependency-copy.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-dependency-copy.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-dependency-copy.json",
+      "sha256": "0dbf0ee5d9bd1481b7e0b352c28f549c0d0cbfc4646691fdf88f419abcd233ab",
+      "bytes": 501
+    },
+    {
+      "name": "merchant-profile-clock-baseline-source.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-baseline-source.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-baseline-source.json",
+      "sha256": "e179a09bb902f1fe746bececb8a3f35af6e3d180ebb0c34dbb6024333e8ce32d",
+      "bytes": 581
+    },
+    {
+      "name": "merchant-profile-clock-original-source.ts.txt",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-original-source.ts.txt",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-original-source.ts.txt",
+      "sha256": "8a4692b3222c05c1a66410323a763effffca76b22cc22a0fa6930f82d754ae6c",
+      "bytes": 7508
+    },
+    {
+      "name": "merchant-profile-clock-regression-source.test.ts.txt",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-regression-source.test.ts.txt",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-regression-source.test.ts.txt",
+      "sha256": "13cd1dfeb566e86be85dc1218fa7ad15d1c3e4142b36585d4f679c182cf4deb6",
+      "bytes": 7347
+    },
+    {
+      "name": "merchant-profile-clock-audit-source.patch",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-audit-source.patch",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-audit-source.patch",
+      "sha256": "bea7ed10dbc71ee27b255cad0e3679146fccb53b305afc0340c3cceeb848fa58",
+      "bytes": 6256
+    },
+    {
+      "name": "merchant-profile-clock-source-proof.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-source-proof.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-source-proof.json",
+      "sha256": "7eba5e4cef982ef98d6c9c1aab66d5b6e893ddb6bb3037ca51eb456c266b3d38",
+      "bytes": 3528
+    },
+    {
+      "name": "merchant-profile-clock-passphrase-source-parity.json",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-passphrase-source-parity.json",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-passphrase-source-parity.json",
+      "sha256": "d7566c29ccb900abbbcda923aafbb729ab5f40b908aba7aa593da1fd8df905fa",
+      "bytes": 1189
+    },
+    {
+      "name": "merchant-profile-clock-final-source.ts.txt",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-final-source.ts.txt",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-final-source.ts.txt",
+      "sha256": "00141a5b07600b68c0dc175f9810dd9adfd79fa272693a1cf496d3cfff2bbb67",
+      "bytes": 7611
+    },
+    {
+      "name": "merchant-profile-clock-built-runtime.js.txt",
+      "archivedPath": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-built-runtime.js.txt",
+      "originalPath": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-built-runtime.js.txt",
+      "sha256": "125c47bf88a856ce2cdbd04c2226d717dbc084f0c85481bc69743900a9b1a96f",
+      "bytes": 6816
+    }
+  ],
+  "expectedLogText": [
+    {
+      "name": "merchant-profile-clock-green.log",
+      "text": "Tests  63 passed (63)"
+    },
+    {
+      "name": "merchant-profile-clock-full-coverage.log",
+      "text": "Tests  1 failed | 786 passed (787)"
+    },
+    {
+      "name": "merchant-profile-clock-full-coverage.log",
+      "text": "Error: Test timed out in 60000ms."
+    },
+    {
+      "name": "merchant-profile-clock-passphrase-focused.log",
+      "text": "Tests  1 passed | 25 skipped (26)"
+    }
+  ],
+  "integratedCheck": {
+    "source": "9bec156622c4c606b97e7d43b1b6f12deff71063",
+    "packetCommit": "3c6f81fe54d6f4f09354c9d647bbb1cf6bf053e6",
+    "originalPacketCommit": "d26a0b9c15539844f738d1f7aa80924c4234b65d",
+    "directory": "docs/completion/remaining-20261119/merchant-profile-integrated-evidence",
+    "files": [
+      {
+        "path": "docs/completion/remaining-20261119/merchant-profile-integrated-evidence/manifest.json",
+        "sha256": "2b82ce50b3bdece6f5c0e4b0dd74b5a8cee5653f279cf4506f53bed2e04c5321",
+        "bytes": 553
+      },
+      {
+        "path": "docs/completion/remaining-20261119/merchant-profile-integrated-evidence/receipt.json",
+        "sha256": "b8bed06cb77f62f9954733462edf72f4d9b17d144ec0b60cfa069c9a613591d2",
+        "bytes": 573
+      },
+      {
+        "path": "docs/completion/remaining-20261119/merchant-profile-integrated-evidence/tests.log",
+        "sha256": "76f80d21cd4a80aa708178fb0ae0cd003829dddb8b7b8d49ff8189c92522874e",
+        "bytes": 576
+      },
+      {
+        "path": "docs/completion/remaining-20261119/MERCHANT_PROFILE_INTEGRATED_20261119.md",
+        "sha256": "0dce7b84f5f339bafbeee1aa1654df86477bec83992ef5af74dceb5982ef9715",
+        "bytes": 1259
+      }
+    ],
+    "passed": 63,
+    "failed": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "seconds": 2.113,
+    "sameSourceAndTests": true,
+    "overlapsAuthorFocusedCases": true
+  },
+  "reachableScope": "Conditional caller-clock correctness. Inspected callers use local clock dependencies; no profile-controlled clock path, production occurrence or remote exploit established.",
+  "reviewerExecutedApplicationTests": false,
+  "limits": [
+    "Finite but inaccurate caller time remains trusted. This guard does not authenticate wall time.",
+    "Whole-package coverage remains failed/unqualified despite the focused regression and isolated timeout diagnostic passing.",
+    "No changes to signature domain, schema, public result union, profile authority, callers, dependencies, budgets or coverage thresholds.",
+    "No JSON-array work, seven owned feature changes, browser/wallet/public-network acceptance or hosted release qualification.",
+    "Dependencies were copied independently by the author; no fresh npm-ci result is asserted.",
+    "The original audit patch is verified byte-for-byte, including its blank-context whitespace; no raw evidence was normalized."
+  ],
+  "reproduce": "node docs/handoffs/agents/evidence/merchant-profile-clock-cross-review-20261119/verify.mjs /path/to/GhostPay",
+  "checkerSha256": "b3be357ab34c5f9d71a34e5ce91c7e17ec2ae2dad20ce58151f8d476cade0f7e",
+  "verificationResult": "docs/handoffs/agents/evidence/merchant-profile-clock-cross-review-20261119/verification.json"
+}

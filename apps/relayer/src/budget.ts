@@ -84,6 +84,14 @@ export class DailyBudget {
     this.spent = wei > this.spent ? 0n : this.spent - wei;
   }
 
+  /** Replaces a held reservation with its actual cost, recording overages even when they exceed the limit. */
+  public settle(reserved: bigint, actual: bigint, reservedDay: number): void {
+    this.roll();
+    if (reservedDay !== this.day) return;
+    if (actual > reserved) this.spent += actual - reserved;
+    else this.release(reserved - actual, reservedDay);
+  }
+
   /** @returns The UTC day index that a new reservation will belong to. */
   public get currentDay(): number {
     this.roll();

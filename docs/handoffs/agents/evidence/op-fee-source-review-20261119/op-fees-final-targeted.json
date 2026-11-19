@@ -1,0 +1,20 @@
+{
+  "name": "op-fees-final-targeted",
+  "source_revision": "2af11e3816d3b9de93df5fab4d35e39c68447a9b",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/opFees.test.ts",
+    "src/chain.test.ts",
+    "src/restart.test.ts",
+    "src/e2e.anvil.test.ts",
+    "--maxWorkers=1",
+    "--no-file-parallelism"
+  ],
+  "cwd": "apps/relayer",
+  "exit_code": 0,
+  "seconds": 19.589,
+  "observed_at": "2026-11-19T08:11:25.394197+00:00",
+  "log": "op-fees-final-targeted.log"
+}

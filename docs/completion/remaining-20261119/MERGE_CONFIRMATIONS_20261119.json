@@ -1,0 +1,42 @@
+{
+  "schema": "ghostpay-merge-confirmations/1",
+  "confirmations": [
+    {
+      "source_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls/237",
+      "retrieved_utc": "2026-11-19 07:55:08 UTC",
+      "number": 237,
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-11-19T06:12:13Z",
+      "merge_commit_sha": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "head": {
+        "ref": "chatgpt/ghostpay-beta-log-artifact-20261118",
+        "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      },
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/pull/237"
+    },
+    {
+      "source_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls/236",
+      "retrieved_utc": "2026-11-19 07:55:08 UTC",
+      "number": 236,
+      "state": "closed",
+      "merged": true,
+      "merged_at": "2026-11-19T07:13:27Z",
+      "merge_commit_sha": "7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+      "head": {
+        "ref": "chatgpt/ghostpay-viem-alignment-20261118",
+        "sha": "defdaa308a2d05ab407af7e42f8dc457cf52d103"
+      },
+      "base": {
+        "ref": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+        "sha": "4d19655a2e5d93ad9378803cd4163245168aca24"
+      },
+      "html_url": "https://github.com/djshellshoxxx/GhostPay/pull/236"
+    }
+  ],
+  "limit": "Only PR237 has main as its destination; PR236 merged into the dependency branch."
+}

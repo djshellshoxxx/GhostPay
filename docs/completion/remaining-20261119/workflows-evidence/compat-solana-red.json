@@ -1,0 +1,17 @@
+{
+  "name": "compat-solana-red",
+  "source_revision": "9c1ccb903cfb66bcb28851e5ea75afa6c982214b",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/interop.test.ts",
+    "--maxWorkers=1",
+    "--no-file-parallelism"
+  ],
+  "cwd": "packages/chain-solana",
+  "exit_code": 1,
+  "seconds": 3.357,
+  "observed_at": "2026-11-19T07:28:56.919041+00:00",
+  "log": "compat-solana-red.log"
+}

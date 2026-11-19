@@ -1,0 +1,564 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-pay-residuals/apps/web
+
+(node:43) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/views/Pay.test.tsx (67 tests | 1 failed | 66 skipped) 535ms
+   ❯ Pay: optional delay (Feature 6) and gas buffer (Feature 1) (14)
+     × LF-65392fcef-4: displays fractional delay minutes instead of rounding 90 seconds to 2 minutes 531ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > LF-65392fcef-4: displays fractional delay minutes instead of rounding 90 seconds to 2 minutes
+TestingLibraryElementError: Unable to find a label with the text of: Wait a random time first (1.5 to 2.5 minutes)
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"skip"[39m
+      [33mhref[39m=[32m"#main"[39m
+    [36m>[39m
+      [0mSkip to content[0m
+    [36m</a>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"site-header"[39m
+    [36m>[39m
+      [36m<h1>[39m
+        [0mGhostPay[0m
+      [36m</h1>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"tagline"[39m
+      [36m>[39m
+        [0mStealth-address payments. Everything runs in your browser. Unaudited software.[0m
+      [36m</p>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Main"[39m
+      [36m>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"nav"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"home"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"seller"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSeller keys[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"create"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCreate invoice[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33maria-current[39m=[32m"page"[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"pay"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPay[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"scan"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mScan and receive[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"sweep"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSweep[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"btc"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mBitcoin (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"solana"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSolana (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"tron"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mTRON (test)[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"registry"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPublic registry[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"settings"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSettings[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"about"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mAbout and privacy[0m
+            [36m</button>[39m
+          [36m</li>[39m
+        [36m</ul>[39m
+      [36m</nav>[39m
+    [36m</header>[39m
+    [36m<main[39m
+      [33mid[39m=[32m"main"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"card"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0mMerchant profile[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_0_"[39m
+          [36m>[39m
+            [0mProfile URL[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33maria-describedby[39m=[32m"_r_0_-hint"[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mid[39m=[32m"_r_0_"[39m
+            [33minputmode[39m=[32m"url"[39m
+            [33mmaxlength[39m=[32m"2048"[39m
+            [33mspellcheck[39m=[32m"false"[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hint"[39m
+            [33mid[39m=[32m"_r_0_-hint"[39m
+          [36m>[39m
+            [0mLoading contacts this HTTPS server and reveals your IP address and the requested URL. Cookies and referrers are omitted. No request is made until you choose Load profile.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mLoad profile[0m
+        [36m</button>[39m
+      [36m</details>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"notice notice-warn"[39m
+        [33mrole[39m=[32m"note"[39m
+      [36m>[39m
+        [36m<strong[39m
+          [33mclass[39m=[32m"notice-title"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+          [36m>[39m
+            [0m⚠[0m
+            [0m [0m
+          [36m</span>[39m
+          [0mThese seller keys have no backup[0m
+          [36m<span[39m
+            [33mclass[39m=[32m"sr-only"[39m
+          [36m>[39m
+            [0m:[0m
+          [36m</span>[39m
+        [36m</strong>[39m
+        [36m<div>[39m
+          [0mThey exist only in this tab. If it closes, reloads or crashes before you back them up, every payment sent to their meta-address is lost. Until then the idle lock leaves them loaded.[0m
+          [0m [0m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mBack up now[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"pay-h"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mid[39m=[32m"pay-h"[39m
+        [36m>[39m
+          [0mReview payment[0m
+        [36m</h2>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"notice notice-warn"[39m
+          [33mrole[39m=[32m"note"[39m
+        [36m>[39m
+          [36m<strong[39m
+            [33mclass[39m=[32m"notice-title"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+            [36m>[39m
+              [0m⚠[0m
+              [0m [0m
+            [36m</span>[39m
+            [0mSignature[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m:[0m
+            [36m</span>[39m
+          [36m</strong>[39m
+          [36m<div>[39m
+            [0mSignature matches key 0308837c9431b23c18c42c69b0e77f6db7ecdb9dceb4b4dec5adab0ee3d4a74fcc (not pinned). This only shows the link was not altered by someone without that key.[0m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<dl[39m
+          [33mclass[39m=[32m"details"[39m
+        [36m>[39m
+          [36m<dt>[39m
+            [0mChain[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [0mBase Sepolia[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mToken[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [0mETH[0m
+            [0m [0m
+            [0m(native coin)[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mInvoice total[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [36m<strong>[39m
+              [0m0.5 ETH[0m
+            [36m</strong>[39m
+            [0m (fixed token amount)[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mSeller-stated fiat total[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [0mUSD 100.00[0m
+            [0m (not converted or checked by this app)[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mPricing[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [0mFixed: 0.5 ETH[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mWho pays the checkout fee[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [0mSeller (deducted from the amount)[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mInvoice expires[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [0m2027-01-16 08:00:00 UTC[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mSeller meta-address[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [36m<code[39m
+              [33mclass[39m=[32m"mono"[39m
+              [33mdir[39m=[32m"ltr"[39m
+            [36m>[39m
+              [0mst:eth:0x02f57c912…f7ffb936[0m
+            [36m</code>[39m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mSeller fingerprint[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [36m<code[39m
+              [33mclass[39m=[32m"mono"[39m
+              [33mdir[39m=[32m"ltr"[39m
+            [36m>[39m
+              [0md7b2-c493-a962-eb75-d23f[0m
+            [36m</code>[39m
+            [0m (compare with the seller by another channel)[0m
+          [36m</dd>[39m
+          [36m<dt>[39m
+            [0mPrivate part[0m
+          [36m</dt>[39m
+          [36m<dd>[39m
+            [0mPlain in the link[0m
+          [36m</dd>[39m
+        [36m</dl>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Line items"[39m
+          [33mclass[39m=[32m"table-wrap"[39m
+          [33mrole[39m=[32m"region"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<table>[39m
+            [36m<caption>[39m
+              [0mLine items[0m
+            [36m</caption>[39m
+            [36m<thead>[39m
+              [36m<tr>[39m
+                [36m<th[39m
+                  [33mscope[39m=[32m"col"[39m
+                [36m>[39m
+                  [0mDescription[0m
+                [36m</th>[39m
+                [36m<th[39m
+                  [33mscope[39m=[32m"col"[39m
+                [36m>[39m
+                  [0mQty[0m
+                [36m</th>[39m
+                [36m<th[39m
+                  [33mscope[39m=[32m"col"[39m
+                [36m>[39m
+                  [0mUnit[0m
+                [36m</th>[39m
+              [36m</tr>[39m
+            [36m</thead>[39m
+            [36m<tbody>[39m
+              [36m<tr>[39m
+                [36m<td[39m
+                  [33mclass[39m=[32m"wrap"[39m
+                [36m>[39m
+                  [0mConsulting[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m2[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0mUSD 50.00[0m
+                [36m</td>[39m
+              [36m</tr>[39m
+            [36m</tbody>[39m
+          [36m</table>[39m
+          [36m<p>[39m
+            [0mTax (0 %): USD 0.00[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mPrint bill[0m
+        [36m</button>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"fee-disclosure"[39m
+        [36m>[39m
+          [0mGhostPay charges 0.25 % on payments made through its checkout contract. The fee goes to [0m
+          [36m<bdi[39m
+            [33mdir[39m=[32m"ltr"[39m
+          [36m>[39m
+            [36m<code[39m
+              [33mclass[39m=[32m"mono"[39m
+              [33mdir[39m=[32m"ltr"[39m
+            [36m>[39m
+              [0m0x4444444444444444444444444444444444444444[0m
+            [36m</code>[39m
+          [36m</bdi>[39m
+          [0m (shown from the deployment manifest, with signature status unavailable). Paying the stealth address directly costs no GhostPay fee.[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"notice notice-info"[39m
+          [33mrole[39m=[32m"note"[39m
+        [36m>[39m
+          [36m<strong[39m
+            [33mclass[39m=[32m"notice-title"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+            [36m>[39m
+              [0mℹ[0m
+              [0m [0m
+            [36m</span>[39m
+            [0mWhat becomes public[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m:[0m
+            [36m</span>[39m
+          [36m</strong>[39m
+          [36m<div>[39m
+            [0mYour address, the token, the amounts, the fee and the time are public on-chain. The seller’s identity is not revealed by the one-time address.[0m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<fieldset[39m
+          [33mclass[39m=[32m"options"[39m
+        [36m>[39m
+          [36m<legend>[39m
+            [0mOptions[0m
+          [36m</legend>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"check"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33mid[39m=[32m"delay"[39m
+              [33mtype[39m=[32m"checkbox"[39m
+            [36m/>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"delay"[39m
+            [36m>[39m
+              [0mWait a random time first (2 to 3 minutes)[0m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"hint"[39m
+          [36m>[39m
+            [0mTiming friction only, not anonymity. While waiting nothing is signed or sent, and the page must stay open. You can cancel or send now.[0m
+          [36m</p>[39m
+        [36m</fieldset>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn-primary"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mContinue[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mForget this invoice[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+    [36m<div[39m
+      [33maria-atomic[39m=[32m"true"[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"sr-only"[39m
+      [33mrole[39m=[32m"status"[39m
+    [36m/>[39m
+    [36m<footer[39m
+      [33mclass[39m=[32m"site-footer"[39m
+    [36m>[39m
+      [36m<p>[39m
+        [0mNo analytics, no third-party scripts, no remote fonts. Fee and contract addresses come only from the deployment manifest.[0m
+      [36m</p>[39m
+      [36m<ul[39m
+        [33mclass[39m=[32m"footer-links"[39m
+      [36m>[39m
+        [36m<li>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"./help.html"[39m
+            [33mrel[39m=[32m"noopener noreferrer"[39m
+            [33mtarget[39m=[32m"_blank"[39m
+          [36m>[39m
+            [0mHelp and getting started[0m
+            [0m [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m(opens in a new tab)[0m
+            [36m</span>[39m
+          [36m</a>[39m
+        [36m</li>[39m
+        [36m<li>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"./privacy.html"[39m
+            [33mrel[39m=[32m"noopener noreferrer"[39m
+            [33mtarget[39m=[32m"_blank"[39m
+          [36m>[39m
+            [0mPrivacy and verification limits[0m
+            [0m [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m(opens in a new tab)[0m
+            [36m</span>[39m
+          [36m</a>[39m
+        [36m</li>[39m
+        [36m<li>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"./help.html#technology"[39m
+            [33mrel[39m=[32m"noopener noreferrer"[39m
+            [33mtarget[39m=[32m"_blank"[39m
+          [36m>[39m
+            [0mSource and attribution[0m
+            [0m [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m(opens in a new tab)[0m
+            [36m</span>[39m
+          [36m</a>[39m
+        [36m</li>[39m
+      [36m</ul>[39m
+    [36m</footer>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getAllByLabelText ../../node_modules/@testing-library/dom/dist/queries/label-text.js:111:38
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/views/Pay.test.tsx:673:19
+    671|     openWith(fragment, makeServices({ loadManifest: loaded(84532), cre…
+    672|     const delay = await screen.findByLabelText(/Wait a random time fir…
+    673|     expect(screen.getByLabelText('Wait a random time first (1.5 to 2.5…
+       |                   ^
+    674|     expect(wallet.calls).toEqual([]);
+    675|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 66 skipped (67)
+   Start at  22:56:53
+   Duration  14.04s (transform 36%, import 35%, environment 25%, tests 4%)
+

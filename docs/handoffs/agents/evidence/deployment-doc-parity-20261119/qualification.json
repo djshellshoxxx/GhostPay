@@ -1,0 +1,26 @@
+{
+  "base": "5128da10b7916e090922a6fe68469d5f0dddd072",
+  "change": "documentation only; no configuration or evidence-cell status mutation",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "scripts/check-chain-matrix.mjs",
+    "--release"
+  ],
+  "exit_code": 1,
+  "result": "existing release gate remains blocked",
+  "runtime_deployments_executed": 0,
+  "unverified_required_cells": 73,
+  "configuration_check": {
+    "exit_code": 0,
+    "chains": 14,
+    "tokens": 9,
+    "feeds": 4
+  },
+  "relative_markdown_links": {
+    "checked": 14,
+    "missing": 0
+  },
+  "whitespace_check": {
+    "exit_code": 0
+  }
+}

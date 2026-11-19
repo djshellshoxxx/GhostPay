@@ -1,0 +1,47 @@
+{
+  "all": {
+    "command": [
+      "npm",
+      "audit",
+      "--package-lock-only",
+      "--audit-level=high",
+      "--json",
+      "--fetch-timeout=15000",
+      "--fetch-retries=0"
+    ],
+    "exit_code": 0,
+    "vulnerabilities": {
+      "info": 0,
+      "low": 17,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 17
+    },
+    "error": null
+  },
+  "production": {
+    "command": [
+      "npm",
+      "audit",
+      "--package-lock-only",
+      "--audit-level=high",
+      "--json",
+      "--fetch-timeout=15000",
+      "--fetch-retries=0",
+      "--omit=dev"
+    ],
+    "exit_code": 0,
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "error": null
+  },
+  "lock_unchanged": true,
+  "timestamp": "2026-11-19T07:06:22.318060+00:00"
+}

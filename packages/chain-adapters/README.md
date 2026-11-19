@@ -34,11 +34,16 @@ assertPreviewMatchesCalldata(preview, tx, 84532);            // before the walle
 - Router math is bit-identical to the contract (floor 25 bps; `gross <= max/25`).
 - Any mismatch between the previewed payment and calldata (token, stealth, gross, fee, net, minNet, deadline,
   metadata, ephemeral key, router, value, buffer cap, permit) throws `PREVIEW_MISMATCH`.
-- RPC: https/wss only (loopback http needs an explicit flag), credentials in URLs rejected and never echoed,
-  response-size cap, bounded retries, chain id verified before use.
+- RPC: the URL validator accepts HTTPS/WSS (loopback HTTP/WS needs an explicit flag), but the default fetch
+  transport supports HTTP(S) only and refuses WebSocket URLs. Credentials in URLs are rejected and never echoed;
+  response sizes and retries are bounded, and chain identity is verified before use. A browser's CSP may impose
+  additional restrictions on otherwise valid endpoints.
 - Logs: provider faults throw, hostile content is skipped and counted; cursors store a block hash and roll back by
   `finalityDepth` on mismatch.
-- Quotes: stale, non-positive, earlier-round or future answers are refused.
+- Quotes: stale, non-positive, earlier-round or future answers are refused. A supplied trusted heartbeat caps
+  acceptable age at heartbeat plus 300 seconds; a smaller caller age limit remains effective. The web Pay path
+  requires valid heartbeat metadata before reading a quote. Sequencer and reference-price options require
+  separately verified caller configuration; a heartbeat is not proof of feed availability.
 
 ## Scripts
 
@@ -47,7 +52,7 @@ assertPreviewMatchesCalldata(preview, tx, 84532);            // before the walle
 
 ## Limits
 
-Most tests use deterministic RPC fixtures; the required-Anvil suite also exercises a local EVM. See `TODO-VERIFY.md` for unverified public token/feed addresses and chain parameters, and `DEVIATIONS.md` for scope limits. Bitcoin and Solana adapters are out of scope for this package version.
+Most tests use deterministic RPC fixtures; the required-Anvil suite also exercises a local EVM. See `TODO-VERIFY.md` for the configured token/feed registries and their remaining live acceptance, and `DEVIATIONS.md` for scope limits. Bitcoin and Solana adapters are out of scope for this package version.
 
 ## Trust and verification helpers (audit fixes S3-01, S3-02, S3-14, G-07)
 

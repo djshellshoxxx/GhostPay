@@ -1,0 +1,106 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-pay-residuals/apps/web
+
+(node:43) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/views/Pay.test.tsx (0 test)
+(node:51) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/lib/pay.permitNonce.test.ts (7 tests | 4 failed) 90ms
+   ❯ LF-65392fcef-3: permit nonce RPC response is exactly one ABI word (7)
+     × refuses malformed nonce 0x with a fixed user-facing error 50ms
+     × refuses malformed nonce 0x01 with a fixed user-facing error 11ms
+     × refuses malformed nonce 0x00000000000000000000000000000000000000000000000000000000000000 with a fixed user-facing error 6ms
+     × refuses malformed nonce 0x000000000000000000000000000000000000000000000000000000000000000000 with a fixed user-facing error 5ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/Pay.test.tsx [ src/views/Pay.test.tsx ]
+Error: Failed to resolve import "@ghostpay/solana-stealth" from "src/features/solana/SolanaView.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /workspace/scratch/6eafdb04d91b/GhostPay-pay-residuals/apps/web/src/features/solana/SolanaView.tsx:4:40
+  2  |  import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS } from "../../lib/transactionOutcome";
+  3  |  import { useEffect, useRef, useState } from "react";
+  4  |  import { zeroize } from "@ghostpay/solana-stealth";
+     |                           ^
+  5  |  import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
+  6  |  import { CopyButton, Field, Mono, Notice } from "../../components/Common";
+ ❯ TransformPluginContext._formatLog ../../node_modules/vite/dist/node/chunks/node.js:8865:39
+ ❯ TransformPluginContext.error ../../node_modules/vite/dist/node/chunks/node.js:8862:14
+ ❯ resolveId ../../node_modules/vite/dist/node/chunks/node.js:26552:18
+ ❯ ../../node_modules/vite/dist/node/chunks/node.js:26651:23
+ ❯ TransformPluginContext.transform ../../node_modules/vite/dist/node/chunks/node.js:26624:4
+ ❯ EnvironmentPluginContainer.transform ../../node_modules/vite/dist/node/chunks/node.js:8636:14
+ ❯ loadAndTransform ../../node_modules/vite/dist/node/chunks/node.js:20112:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/pay.permitNonce.test.ts > LF-65392fcef-3: permit nonce RPC response is exactly one ABI word > refuses malformed nonce 0x with a fixed user-facing error
+AssertionError: expected SyntaxError: Cannot convert 0x to a BigInt to be an instance of UserFacingError
+ ❯ src/lib/pay.permitNonce.test.ts:12:24
+     10|   it.each(['0x', '0x01', `0x${'00'.repeat(31)}`, `0x${'00'.repeat(33)}…
+     11|     const nonce = permitReader(mockRpc(84532, () => response), '1').no…
+     12|     await expect(nonce).rejects.toBeInstanceOf(UserFacingError);
+       |                        ^
+     13|     await expect(nonce).rejects.toThrow('Your RPC returned an unexpect…
+     14|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/lib/pay.permitNonce.test.ts > LF-65392fcef-3: permit nonce RPC response is exactly one ABI word > refuses malformed nonce 0x01 with a fixed user-facing error
+AssertionError: promise resolved "1n" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+1n
+
+ ❯ src/lib/pay.permitNonce.test.ts:12:24
+     10|   it.each(['0x', '0x01', `0x${'00'.repeat(31)}`, `0x${'00'.repeat(33)}…
+     11|     const nonce = permitReader(mockRpc(84532, () => response), '1').no…
+     12|     await expect(nonce).rejects.toBeInstanceOf(UserFacingError);
+       |                        ^
+     13|     await expect(nonce).rejects.toThrow('Your RPC returned an unexpect…
+     14|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/lib/pay.permitNonce.test.ts > LF-65392fcef-3: permit nonce RPC response is exactly one ABI word > refuses malformed nonce 0x00000000000000000000000000000000000000000000000000000000000000 with a fixed user-facing error
+ FAIL  src/lib/pay.permitNonce.test.ts > LF-65392fcef-3: permit nonce RPC response is exactly one ABI word > refuses malformed nonce 0x000000000000000000000000000000000000000000000000000000000000000000 with a fixed user-facing error
+AssertionError: promise resolved "0n" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+0n
+
+ ❯ src/lib/pay.permitNonce.test.ts:12:24
+     10|   it.each(['0x', '0x01', `0x${'00'.repeat(31)}`, `0x${'00'.repeat(33)}…
+     11|     const nonce = permitReader(mockRpc(84532, () => response), '1').no…
+     12|     await expect(nonce).rejects.toBeInstanceOf(UserFacingError);
+       |                        ^
+     13|     await expect(nonce).rejects.toThrow('Your RPC returned an unexpect…
+     14|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 3 passed (7)
+   Start at  22:48:22
+   Duration  34.63s (transform 38%, environment 36%, import 25%, tests 1%)
+
+    Isolate  2 workers spawned · ~3.94s startup each (spawn + environment, per file)
+             at least ~3.94s faster with isolate: false — reuses workers across files instead of one per file
+

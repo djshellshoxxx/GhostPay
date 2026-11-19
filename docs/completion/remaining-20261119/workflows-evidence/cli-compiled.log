@@ -1,0 +1,62 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/cli@0.1.0 test:compiled
+> node --test test/compiled.test.mjs test/operators.test.mjs test/build-info.test.mjs
+
+✔ build stamping records a real clean Git revision and produces identical bytes on repeat (1780.331682ms)
+✔ build stamping identifies tracked changes and untracked source files (1478.340018ms)
+✔ build stamping replaces prior metadata with explicit nulls when Git is unavailable (1858.830499ms)
+✔ build stamping uses explicit nulls for a source archive without Git metadata (686.371809ms)
+✔ build stamping ignores unrelated checkout routing in ambient Git variables (1843.581643ms)
+✔ compiled diagnostics exposes the stamped module without invoking Git at runtime (4811.813825ms)
+✔ compiled doctor and create → sign → verify → links → verify from a directory with spaces (35819.479095ms)
+✔ compiled webhook authenticates Unicode bytes but reports stateless replay checking (16266.074429ms)
+✔ compiled subscription, immutable batch confirmation, export and simulator journeys (14859.553954ms)
+✔ compiled errors stay machine-readable and secret sources are explicit (15658.773386ms)
+✔ compiled executable handles a closed stdout pipe without an uncaught stack (7649.519904ms)
+✔ SIGTERM before output publication preserves the existing file and private staging (4223.553522ms)
+✔ compiled invoice, signed receipt, SVG and multipart public exchange are interoperable (59056.753438ms)
+✔ compiled credential, authenticated recovery and immutable output boundaries hold across formats (75749.673365ms)
+✔ compiled seller key generation publishes only a new encrypted keystore and public metadata (17699.595451ms)
+✔ compiled real verifier distinguishes offline, canonical, pending and reorganized controlled RPC evidence (21512.796131ms)
+✔ compiled receipt creation signs only after explicit approval and fresh owned-payment verification (18225.052385ms)
+✔ compiled manual-digest receipt creation verifies payment without inventing invoice binding (25269.627354ms)
+✔ compiled reconciliation requires reviewed live context and approval while imported history remains untrusted (102891.755185ms)
+✔ compiled private scans authenticate their cursor and keep matches out of terminal output (35025.126011ms)
+✖ compiled merchant planning and diagnostics never imply payment or refund execution (58958.89821ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 20
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 418796.530804
+
+✖ failing tests:
+
+test at test/operators.test.mjs:279:1
+✖ compiled merchant planning and diagnostics never imply payment or refund execution (58958.89821ms)
+  AssertionError [ERR_ASSERTION]: merchant interrupted: 
+  
+  'SIGKILL' !== null
+  
+      at cli (file:///workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli/test/operators.test.mjs:61:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli/test/operators.test.mjs:285:17)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'SIGKILL',
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+npm error Lifecycle script `test:compiled` failed with error:
+npm error code 1
+npm error path /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli
+npm error workspace @ghostpay/cli@0.1.0
+npm error location /workspace/scratch/6eafdb04d91b/GhostPay-workflows/packages/cli
+npm error command failed
+npm error command sh -c node --test test/compiled.test.mjs test/operators.test.mjs test/build-info.test.mjs

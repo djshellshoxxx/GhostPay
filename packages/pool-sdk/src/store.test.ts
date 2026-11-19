@@ -48,11 +48,11 @@ describe('note store', () => {
 describe('seed backup', () => {
   it('roundtrips with a passphrase', async () => {
     const box = createPoolSeed();
-    const blob = await exportSeedEncrypted((f) => box.use(f), 'correct horse', { logN: 10 });
-    const back = await importSeedEncrypted(blob, 'correct horse');
+    const blob = await exportSeedEncrypted((f) => box.use(f), 'quartz lantern velvet orbit 739!', { logN: 14 });
+    const back = await importSeedEncrypted(blob, 'quartz lantern velvet orbit 739!');
     expect(back.equals(box)).toBe(true);
     await expect(importSeedEncrypted(blob, 'wrong horse!')).rejects.toMatchObject({ code: 'STORE_CORRUPT' });
-    await expect(importSeedEncrypted('{}', 'correct horse')).rejects.toMatchObject({ code: 'STORE_CORRUPT' });
+    await expect(importSeedEncrypted('{}', 'quartz lantern velvet orbit 739!')).rejects.toMatchObject({ code: 'STORE_CORRUPT' });
     await expect(exportSeedEncrypted((f) => box.use(f), 'short')).rejects.toThrow(/short/);
     expect(String(box)).not.toMatch(/[0-9a-f]{16}/);
     box.dispose();
@@ -61,8 +61,8 @@ describe('seed backup', () => {
   it('default scrypt cost and rng injection', async () => {
     const rng = { getRandomValues: <T extends ArrayBufferView | null>(a: T): T => { if (a) new Uint8Array(a.buffer, a.byteOffset, a.byteLength).fill(7); return a; } };
     const box = createPoolSeed(rng);
-    const blob = await exportSeedEncrypted((f) => box.use(f), 'passphrase-1', { rng: rng, logN: 10 });
-    expect((JSON.parse(blob) as { logN: number }).logN).toBe(10);
+    const blob = await exportSeedEncrypted((f) => box.use(f), 'quartz lantern velvet orbit 739!', { rng: rng, logN: 14 });
+    expect((JSON.parse(blob) as { logN: number }).logN).toBe(14);
     expect(await sealNotes(withSeed, [], rng as never)).toContain('"iv":"BwcHBwcHBwcHBwcH"');
   });
 });

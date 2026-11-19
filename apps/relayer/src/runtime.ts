@@ -88,7 +88,8 @@ function hex(b: Uint8Array): `0x${string}` {
 
 /**
  * Builds viem-backed clients for every configured chain and verifies each endpoint reports the
- * configured chain id (via the chain-adapters RPC client) before anything is served.
+ * configured chain id (via the chain-adapters RPC client) before anything is served. Manifest reads
+ * must also agree with the secondary endpoint when one is explicitly configured.
  *
  * @param config Resolved configuration.
  * @param hotKey Hot key bytes.
@@ -103,9 +104,15 @@ export async function buildChainClients(config: RelayerConfig, hotKey: Uint8Arra
     const known: ChainConfig =
       findChain(c.chainId) ??
       { chainId: DEV_CHAIN_ID, name: c.name, nativeSymbol: 'ETH', nativeDecimals: 18, testnet: true, enabled: true, finalityDepth: 1, getLogsMaxRange: 1000, blockTimeMs: 1000 };
-    const rpc = await createClient(known, c.rpcUrl, { allowInsecureLocalhost: config.allowInsecureLocalhostRpc });
+    const options = { allowInsecureLocalhost: config.allowInsecureLocalhostRpc };
+    const rpc = await createClient(known, c.rpcUrl, options);
     // CHAIN-ADAPTERS-05: the manifest's router/fee recipient/announcer/code hashes must match the chain. Fail closed.
-    if (c.manifest !== undefined) await verifyManifestOnChain(c.manifest, rpc);
+    if (c.manifest !== undefined) {
+      const secondary = c.secondaryRpcUrl === undefined ? undefined : await createClient(known, c.secondaryRpcUrl, options);
+      await verifyManifestOnChain(c.manifest, rpc, {
+        ...(secondary === undefined ? {} : { secondary }), requireSecondary: c.secondaryRpcUrl !== undefined,
+      });
+    }
     const chain = defineChain({ id: c.chainId, name: c.name, nativeCurrency: { name: 'Native', symbol: known.nativeSymbol, decimals: 18 }, rpcUrls: { default: { http: [c.rpcUrl] } } });
     const transport = http(c.rpcUrl, { timeout: 10_000, retryCount: 1, ...(metrics === undefined ? {} : { fetchFn: timedRpcFetch(metrics, c.chainId, now) }) });
     const publicClient = createPublicClient({ chain, transport });

@@ -1,0 +1,17 @@
+{
+  "name": "op-fees-full-coverage",
+  "source_revision": "6d23e5b69bf6b2c4a56b2a4527d64aa6fa74aad5",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "--coverage",
+    "--maxWorkers=1",
+    "--no-file-parallelism"
+  ],
+  "cwd": "apps/relayer",
+  "exit_code": 0,
+  "seconds": 296.016,
+  "observed_at": "2026-11-19T08:08:14.478143+00:00",
+  "log": "op-fees-full-coverage.log"
+}

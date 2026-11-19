@@ -1,0 +1,21 @@
+{
+  "base": "fe7a598d589057c139ef0f823fa02b7c0cc38e04",
+  "yaml_parse": "pass",
+  "shell_syntax": "pass",
+  "job": "ts-test",
+  "step_index": 4,
+  "existing_node_arguments_preserved": true,
+  "only_added_test_arguments": [
+    "scripts/experimental/milestone-escrow/model.test.mjs",
+    "scripts/experimental/policy-recovery/model.test.mjs"
+  ],
+  "only_existing_rest_0_invocation_changed": true,
+  "triggers_permissions_other_steps_unchanged": true,
+  "model_sources_byte_identical_to_base": true,
+  "ci_sha256": "29332ecaa8fa160df5d6dd1ff771c35c12f4e6989ec74ae8705522e0aa117a26",
+  "independent_source_review": {
+    "reviewer": "root",
+    "result": "PASS",
+    "ci_sha256": "29332ecaa8fa160df5d6dd1ff771c35c12f4e6989ec74ae8705522e0aa117a26"
+  }
+}

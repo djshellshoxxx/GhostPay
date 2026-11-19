@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "contract_security",
+  "date": "2026-11-19",
+  "verdict": "PASS for scoped source and archived native qualification",
+  "runtimeSource": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "regressionBaseline": "05f5631d759476793614913c8926cb1727e376b3",
+  "authorPacketCommit": "bd62f0737e34112253380a0919fc3aedaaf2c7db",
+  "packetJsonSha256": "d1cb4c457d372a9c62cf7f9d96dea2751bebb0bf66b36d76e860f5941945a709",
+  "packetMarkdownSha256": "1fa2e1683693ba02482c4da77a12be1c34adbc4d9948593b188af64795863a48",
+  "archivedArtifactsVerified": 57,
+  "sourceHashes": [
+    {
+      "path": "scripts/beta/browser-devnet.sh",
+      "sha256": "e27d6a5f6d5f1f2b1b0cdd5609b37a18485db85f8925d0b7578920c9d285e8d6",
+      "kind": "runtime_source_hashes"
+    },
+    {
+      "path": "apps/web/e2e/devnet/prepare-devnet-manifest.mjs",
+      "sha256": "7c25f77738ef4ad7c4a5d1d58a17592c4c0d0701937d181c392bcda5c6fed360",
+      "kind": "runtime_source_hashes"
+    },
+    {
+      "path": "scripts/testnet/make-manifest.test.mjs",
+      "sha256": "8396991bc82531b98fac40cf7f27f06ff9f9430605d5ff656192a3b713756394",
+      "kind": "runtime_source_hashes"
+    },
+    {
+      "path": "packages/chain-adapters/src/deploymentsVerify.ts",
+      "sha256": "8692319a0a6e629023bdbf207d72c3c7ed3fd0d1096fc708f8124586d1e85973",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "packages/contracts/script/Deploy.s.sol",
+      "sha256": "2e06d10b6dedea114546ca302acd7a9f5a0a85b1107cf84e7cc1941a0b1753e0",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "packages/contracts/script/devnet/DeployDevnet.s.sol",
+      "sha256": "8613019c8bbc6c78fd2b075725e7c19d608f0e9db339dfb3bbad83da75e094d6",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "packages/contracts/test/utils/ERC5564Announcer.sol",
+      "sha256": "9b7f4283fb02c97754cef6136453d38eeaab6c5632e1ccfc41468ae3bddd8e44",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "sha256": "bffb01d28a5183df5f16fc5f0e519897d1260ed3e55301dc84e48fe7232de124",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "apps/web/playwright.devnet.config.ts",
+      "sha256": "8d998e476a17731e11ec710308f90abd52eb7edb6ca4f40d2f6c2152fe9663b8",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "apps/web/playwright.pages-devnet.config.ts",
+      "sha256": "dd30f7a94a0afc6e227679bfc39f46d5ad4aed7c4107cd35e64e0ab18eed86b2",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "apps/web/e2e/prepare-manifest.mjs",
+      "sha256": "3920a20a2a4920d50c8d807bc9e7d48adc4e553b1bfc4eac1f80ad804944a1b7",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "c5305bd026b32331d0dd758ac2a359480b9865cc5871c3276ce1ebb6c07ead9e",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    },
+    {
+      "path": "eslint.config.js",
+      "sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+      "compared_with": "29355af7c697a6d424fc3801fe62b8022e083072",
+      "kind": "preserved_source_hashes"
+    }
+  ],
+  "sameRegressionsBeforeAndAfter": true,
+  "mandatoryBrowserTailIdentical": true,
+  "extractedSeedProgramSha256": "776873840f5eb4ac701a96ecbeeb74b28c24981bd5b9f0b6e13847c94489edfd",
+  "executedReplaySha256": "a853a215149f8b050277f92853ff6601863fc8fbac1e7c0e8228e47096a70b50",
+  "unitBaseline": {
+    "passed": 9,
+    "failed": 5
+  },
+  "unitFinal": {
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0
+  },
+  "nativeBaseline": {
+    "helperExit": 1,
+    "expectedFailureWrapperExit": 0,
+    "reason": "canonical announcer mismatch"
+  },
+  "retainedReplayWrapperFailures": [
+    {
+      "check": "devnet-fixture-native-green",
+      "exit_code": 1,
+      "reason": "Replay combined the existing Node stderr warning with canonical-address stdout; the actual runner captures stdout only. Replay capture corrected; source unchanged."
+    },
+    {
+      "check": "devnet-fixture-native-green-final",
+      "exit_code": 1,
+      "reason": "Deployments and helper signing succeeded, but replay node -e made imported helper path equal argv[1], triggering its CLI usage guard. Replay changed to stdin entry; source unchanged."
+    }
+  ],
+  "finalNative": {
+    "exit": 0,
+    "seconds": 14.598,
+    "stepNames": [
+      "deploy-devnet-31337",
+      "seed-canonical-runtime",
+      "deploy-canonical-84532",
+      "prepare-manifest",
+      "independent-manifest-readback"
+    ],
+    "originalTokenBroadcastPreserved": true,
+    "standInTokensWithCode": 3,
+    "publicAllowlistedTokensStillAbsent": true,
+    "ownedAnvilStopped": true,
+    "browserExecuted": false
+  },
+  "reviewerOfflineSignatureCheck": "valid",
+  "referenceArtifactSha256": "b974e8ed887185d777ddb72e1f36b637fa44d68a6ebbbd8d429c4af5faed61b2",
+  "referenceArtifactSourceMatchesExactGitRevision": true,
+  "reviewerExecutedNativeOrBrowserRun": false,
+  "limits": [
+    "No browser execution or public-chain/RPC/wallet acceptance. The native replay stops after fixture/readback/signature checks and never claims browser PASS.",
+    "No permanent fixture-only runner mode, timeout extension, skip adjustment, production verifier bypass, contract change or browser isolation change.",
+    "Dependencies were independent copies with relevant source/manifest parity, not a fresh npm-ci claim. Chain-adapters was rebuilt from this worktree before RED.",
+    "Repository ESLint intentionally ignores .mjs files; shell and both changed module syntax checks plus actual module execution are the scoped static qualification, not a lint/typecheck claim.",
+    "Full combined-head hosted browser/application qualification remains coordinator-owned. Historical browser runs are not relabeled as this source."
+  ],
+  "checkerSha256": "defc1872c686b1664215f9e98f2ddd64e315e7bda9e6bc242127ae75557b328e"
+}

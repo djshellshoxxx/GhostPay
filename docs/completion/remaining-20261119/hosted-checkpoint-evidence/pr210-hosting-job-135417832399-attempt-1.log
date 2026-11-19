@@ -1,0 +1,227 @@
+﻿2026-11-19T08:00:49.1990681Z Current runner version: '2.338.2'
+2026-11-19T08:00:49.2011186Z ##[group]Runner Image Provisioner
+2026-11-19T08:00:49.2011900Z Hosted Compute Agent
+2026-11-19T08:00:49.2012394Z Version: 20261103.629
+2026-11-19T08:00:49.2012860Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-19T08:00:49.2013442Z Build Date: 2026-11-03T17:26:59Z
+2026-11-19T08:00:49.2013939Z Worker ID: {6db3b767-cd9b-4e4f-a6b0-27a6515a63c3}
+2026-11-19T08:00:49.2014445Z Region: us-west-2
+2026-11-19T08:00:49.2014846Z Cloud: AWS
+2026-11-19T08:00:49.2015281Z ##[endgroup]
+2026-11-19T08:00:49.2016259Z ##[group]Operating System
+2026-11-19T08:00:49.2016705Z Ubuntu
+2026-11-19T08:00:49.2017074Z 26.04.1
+2026-11-19T08:00:49.2017445Z LTS
+2026-11-19T08:00:49.2017841Z ##[endgroup]
+2026-11-19T08:00:49.2018227Z ##[group]Runner Image
+2026-11-19T08:00:49.2018672Z Image: ubuntu-26.04
+2026-11-19T08:00:49.2019088Z Version: 20261111.82.6
+2026-11-19T08:00:49.2020032Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.82/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-19T08:00:49.2021295Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.82
+2026-11-19T08:00:49.2021993Z ##[endgroup]
+2026-11-19T08:00:49.2022834Z ##[group]GITHUB_TOKEN Permissions
+2026-11-19T08:00:49.2024536Z Contents: read
+2026-11-19T08:00:49.2024993Z Metadata: read
+2026-11-19T08:00:49.2025379Z ##[endgroup]
+2026-11-19T08:00:49.2027205Z Secret source: Actions
+2026-11-19T08:00:49.2027861Z Cache mode: write
+2026-11-19T08:00:49.2028391Z Prepare workflow directory
+2026-11-19T08:00:49.2268432Z Prepare all required actions
+2026-11-19T08:00:49.2307050Z Getting action download info
+2026-11-19T08:00:49.6048152Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-19T08:00:51.9623232Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-19T08:00:52.2683459Z Complete job name: kit
+2026-11-19T08:00:52.3451794Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-19T08:00:52.3452893Z with:
+2026-11-19T08:00:52.3453412Z   persist-credentials: false
+2026-11-19T08:00:52.3454076Z   repository: djshellshoxxx/GhostPay
+2026-11-19T08:00:52.3458217Z   token: ***
+2026-11-19T08:00:52.3458758Z   ssh-strict: true
+2026-11-19T08:00:52.3459380Z   ssh-user: git
+2026-11-19T08:00:52.3460008Z   clean: true
+2026-11-19T08:00:52.3460615Z   sparse-checkout-cone-mode: true
+2026-11-19T08:00:52.3461462Z   fetch-depth: 1
+2026-11-19T08:00:52.3461913Z   fetch-tags: false
+2026-11-19T08:00:52.3462382Z   show-progress: true
+2026-11-19T08:00:52.3462851Z   lfs: false
+2026-11-19T08:00:52.3463281Z   submodules: false
+2026-11-19T08:00:52.3463734Z   set-safe-directory: true
+2026-11-19T08:00:52.3464255Z   allow-unsafe-pr-checkout: false
+2026-11-19T08:00:52.3465250Z ##[endgroup]
+2026-11-19T08:00:56.7309421Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-19T08:00:56.7311213Z ##[group]Getting Git version info
+2026-11-19T08:00:56.7311675Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-19T08:00:56.7312367Z [command]/usr/bin/git version
+2026-11-19T08:00:56.7326957Z git version 2.56.1
+2026-11-19T08:00:56.7341301Z ##[endgroup]
+2026-11-19T08:00:56.7347915Z Temporarily overriding HOME='/home/runner/work/_temp/9fb43bd3-67b3-40cd-98bb-9d0bac431996' before making global git config changes
+2026-11-19T08:00:56.7350870Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-19T08:00:56.7351562Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-19T08:00:56.7821621Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-19T08:00:56.7825627Z ##[group]Determining repository object format
+2026-11-19T08:00:56.7828046Z ##[endgroup]
+2026-11-19T08:00:56.7828598Z ##[group]Initializing the repository
+2026-11-19T08:00:56.7834679Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-19T08:00:56.8534772Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-19T08:00:56.8535405Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-19T08:00:56.8536319Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-19T08:00:56.8536734Z hint: call:
+2026-11-19T08:00:56.8537053Z hint:
+2026-11-19T08:00:56.8537405Z hint: 	git config --global init.defaultBranch <name>
+2026-11-19T08:00:56.8537728Z hint:
+2026-11-19T08:00:56.8538167Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-19T08:00:56.8538633Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-19T08:00:56.8539003Z hint:
+2026-11-19T08:00:56.8539304Z hint: 	git branch -m <name>
+2026-11-19T08:00:56.8539576Z hint:
+2026-11-19T08:00:56.8539930Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-19T08:00:56.8559956Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-19T08:00:56.8569212Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-19T08:00:56.8639420Z ##[endgroup]
+2026-11-19T08:00:56.8640133Z ##[group]Disabling automatic garbage collection
+2026-11-19T08:00:56.8642450Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-19T08:00:56.8667246Z ##[endgroup]
+2026-11-19T08:00:56.8667751Z ##[group]Setting up auth
+2026-11-19T08:00:56.8668125Z Removing SSH command configuration
+2026-11-19T08:00:56.8672635Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-19T08:00:56.8696614Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-19T08:00:57.2114344Z Removing HTTP extra header
+2026-11-19T08:00:57.2119895Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-19T08:00:57.2143831Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-19T08:00:57.2327610Z Removing includeIf entries pointing to credentials config files
+2026-11-19T08:00:57.2332742Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-19T08:00:57.2364277Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-19T08:00:57.2551258Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-19T08:00:57.2583668Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config
+2026-11-19T08:00:57.2605734Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config
+2026-11-19T08:00:57.2633576Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config
+2026-11-19T08:00:57.2654620Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config
+2026-11-19T08:00:57.2672718Z ##[endgroup]
+2026-11-19T08:00:57.2673209Z ##[group]Fetching the repository
+2026-11-19T08:00:57.2678310Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bf38ab1d37ac2e5e3ea1dc867b5db83e6d4d89d7:refs/remotes/pull/210/merge
+2026-11-19T08:00:58.4485164Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-19T08:00:58.4486249Z  * [new ref]         bf38ab1d37ac2e5e3ea1dc867b5db83e6d4d89d7 -> pull/210/merge
+2026-11-19T08:00:58.4499463Z ##[endgroup]
+2026-11-19T08:00:58.4500277Z ##[group]Determining the checkout info
+2026-11-19T08:00:58.4501094Z ##[endgroup]
+2026-11-19T08:00:58.4501565Z [command]/usr/bin/git sparse-checkout disable
+2026-11-19T08:00:58.4557061Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-19T08:00:58.4581501Z ##[group]Checking out the ref
+2026-11-19T08:00:58.4584812Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/210/merge
+2026-11-19T08:00:58.6357360Z Note: switching to 'refs/remotes/pull/210/merge'.
+2026-11-19T08:00:58.6357714Z 
+2026-11-19T08:00:58.6357936Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-19T08:00:58.6358443Z changes and commit them, and you can discard any commits you make in this
+2026-11-19T08:00:58.6359003Z state without impacting any branches by switching back to a branch.
+2026-11-19T08:00:58.6359348Z 
+2026-11-19T08:00:58.6359593Z If you want to create a new branch to retain commits you create, you may
+2026-11-19T08:00:58.6360156Z do so (now or later) by using -c with the switch command. Example:
+2026-11-19T08:00:58.6360419Z 
+2026-11-19T08:00:58.6360592Z   git switch -c <new-branch-name>
+2026-11-19T08:00:58.6361023Z 
+2026-11-19T08:00:58.6361289Z Or undo this operation with:
+2026-11-19T08:00:58.6361543Z 
+2026-11-19T08:00:58.6361682Z   git switch -
+2026-11-19T08:00:58.6361859Z 
+2026-11-19T08:00:58.6362113Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-19T08:00:58.6362711Z 
+2026-11-19T08:00:58.6363049Z HEAD is now at bf38ab1 Merge 3c95b2a00bdcfb45dd36242ff40c133dd19d1811 into ffd982a7aea2856c186b40ef236a39720a1b81f5
+2026-11-19T08:00:58.6373805Z ##[endgroup]
+2026-11-19T08:00:58.6430341Z [command]/usr/bin/git log -1 --format=%H
+2026-11-19T08:00:58.6451886Z bf38ab1d37ac2e5e3ea1dc867b5db83e6d4d89d7
+2026-11-19T08:00:58.6461515Z ##[group]Removing auth
+2026-11-19T08:00:58.6462140Z Removing SSH command configuration
+2026-11-19T08:00:58.6463519Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-19T08:00:58.6487591Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-19T08:00:58.6685585Z Removing HTTP extra header
+2026-11-19T08:00:58.6688292Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-19T08:00:58.6712969Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-19T08:00:58.6902909Z Removing includeIf entries pointing to credentials config files
+2026-11-19T08:00:58.6906340Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-19T08:00:58.6924471Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-19T08:00:58.6925307Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-19T08:00:58.6925828Z includeif.gitdir:/github/workspace/.git.path
+2026-11-19T08:00:58.6926236Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-19T08:00:58.6931570Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-19T08:00:58.6947739Z /home/runner/work/_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config
+2026-11-19T08:00:58.6955522Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-5a225540\-4acb\-49fe\-84a2\-3c8630e6987a\.config
+2026-11-19T08:00:58.6981731Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-19T08:00:58.6997959Z /home/runner/work/_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config
+2026-11-19T08:00:58.7004229Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-5a225540\-4acb\-49fe\-84a2\-3c8630e6987a\.config
+2026-11-19T08:00:58.7032200Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-19T08:00:58.7049605Z /github/runner_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config
+2026-11-19T08:00:58.7054036Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-5a225540\-4acb\-49fe\-84a2\-3c8630e6987a\.config
+2026-11-19T08:00:58.7078560Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-19T08:00:58.7139143Z /github/runner_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config
+2026-11-19T08:00:58.7158468Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-5a225540\-4acb\-49fe\-84a2\-3c8630e6987a\.config
+2026-11-19T08:00:58.7186586Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-19T08:00:58.7376690Z Removing credentials config '/home/runner/work/_temp/git-credentials-5a225540-4acb-49fe-84a2-3c8630e6987a.config'
+2026-11-19T08:00:58.7384875Z ##[endgroup]
+2026-11-19T08:00:58.7589719Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-19T08:00:58.7590078Z with:
+2026-11-19T08:00:58.7590281Z   node-version: 22
+2026-11-19T08:00:58.7590535Z   cache: npm
+2026-11-19T08:00:58.7591022Z   check-latest: false
+2026-11-19T08:00:58.7592944Z   token: ***
+2026-11-19T08:00:58.7593194Z   package-manager-cache: true
+2026-11-19T08:00:58.7593428Z ##[endgroup]
+2026-11-19T08:00:58.9334814Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-19T08:01:01.5582535Z ##[group]Environment details
+2026-11-19T08:01:03.8861033Z node: v22.23.4
+2026-11-19T08:01:03.8861366Z npm: 10.9.9
+2026-11-19T08:01:03.8861752Z yarn: 1.22.22
+2026-11-19T08:01:03.8862296Z ##[endgroup]
+2026-11-19T08:01:03.8871840Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache
+2026-11-19T08:01:04.1973884Z /home/runner/.npm
+2026-11-19T08:01:04.5747699Z npm cache is not found
+2026-11-19T08:01:04.5859667Z ##[group]Run npm ci --ignore-scripts
+2026-11-19T08:01:04.5860065Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-19T08:01:04.5898515Z shell: /usr/bin/bash -e {0}
+2026-11-19T08:01:04.5898899Z ##[endgroup]
+2026-11-19T08:01:07.0103204Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-19T08:01:12.2683311Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-19T08:01:15.3251295Z 
+2026-11-19T08:01:15.3252135Z added 721 packages, and audited 790 packages in 11s
+2026-11-19T08:01:15.3252671Z 
+2026-11-19T08:01:15.3252818Z 157 packages are looking for funding
+2026-11-19T08:01:15.3253243Z   run `npm fund` for details
+2026-11-19T08:01:15.3378724Z 
+2026-11-19T08:01:15.3379864Z 17 low severity vulnerabilities
+2026-11-19T08:01:15.3380412Z 
+2026-11-19T08:01:15.3381248Z To address issues that do not require attention, run:
+2026-11-19T08:01:15.3382000Z   npm audit fix
+2026-11-19T08:01:15.3382255Z 
+2026-11-19T08:01:15.3382697Z To address all issues possible (including breaking changes), run:
+2026-11-19T08:01:15.3383312Z   npm audit fix --force
+2026-11-19T08:01:15.3383598Z 
+2026-11-19T08:01:15.3383961Z Some issues need review, and may require choosing
+2026-11-19T08:01:15.3384527Z a different dependency.
+2026-11-19T08:01:15.3384821Z 
+2026-11-19T08:01:15.3385056Z Run `npm audit` for details.
+2026-11-19T08:01:15.3800194Z ##[group]Run printf '#!/bin/sh\nexit 101\n' | sudo tee /usr/sbin/policy-rc.d >/dev/null
+2026-11-19T08:01:15.3801045Z [36;1mprintf '#!/bin/sh\nexit 101\n' | sudo tee /usr/sbin/policy-rc.d >/dev/null[0m
+2026-11-19T08:01:15.3801453Z [36;1msudo chmod +x /usr/sbin/policy-rc.d[0m
+2026-11-19T08:01:15.3801765Z [36;1msudo apt-get update -qq[0m
+2026-11-19T08:01:15.3802150Z [36;1msudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq nginx tor i2pd[0m
+2026-11-19T08:01:15.3826209Z shell: /usr/bin/bash -e {0}
+2026-11-19T08:01:15.3826505Z ##[endgroup]
+2026-11-19T08:03:22.7695428Z E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/n/nginx/nginx_1.28.3-2ubuntu1.13_amd64v3.deb  404  Not Found [IP: 91.189.92.24 80]
+2026-11-19T08:03:22.7696841Z E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/n/nginx/nginx-common_1.28.3-2ubuntu1.13_all.deb  404  Not Found [IP: 91.189.92.24 80]
+2026-11-19T08:03:22.7697939Z E: Unable to fetch some archives, maybe run apt update or try with --fix-missing?
+2026-11-19T08:03:22.7723317Z ##[error]Process completed with exit code 100.
+2026-11-19T08:03:22.7863623Z Post job cleanup.
+2026-11-19T08:03:22.8599314Z [command]/usr/bin/git version
+2026-11-19T08:03:22.8637015Z git version 2.56.1
+2026-11-19T08:03:22.8666395Z Temporarily overriding HOME='/home/runner/work/_temp/c78db18b-2135-48c4-a4d3-b943a19ff661' before making global git config changes
+2026-11-19T08:03:22.8667449Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-19T08:03:22.8672455Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-19T08:03:22.8700451Z Removing SSH command configuration
+2026-11-19T08:03:22.8705985Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-19T08:03:22.8734161Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-19T08:03:22.8944153Z Removing HTTP extra header
+2026-11-19T08:03:22.8948570Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-19T08:03:22.8974897Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-19T08:03:22.9162589Z Removing includeIf entries pointing to credentials config files
+2026-11-19T08:03:22.9167422Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-19T08:03:22.9198655Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-19T08:03:22.9531972Z Cleaning up orphan processes

@@ -1,0 +1,82 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-verifier/packages/chain-adapters
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/verify.test.ts (24 tests | 3 failed) 1518ms
+   ❯ verifyDeployment (12)
+     × refuses missing policy implementation code even when the factory matches 159ms
+     × refuses mismatched policy implementation code even when the factory matches 209ms
+     × requires policy implementation code to agree across configured providers 65ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/verify.test.ts > verifyDeployment > refuses missing policy implementation code even when the factory matches
+ FAIL  src/verify.test.ts > verifyDeployment > refuses mismatched policy implementation code even when the factory matches
+AssertionError: promise resolved "{ chainId: 11155111, …(7) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++   "chainId": 11155111,
++   "feeBps": 25n,
++   "feeRecipient": "0x00000000000000000000000000000000000D0D44",
++   "policyFactory": "0x0000000000000000000000000000000000000F66",
++   "providers": 1,
++   "router": "0x0000000000000000000000000000000000000b22",
++   "sweepRelayer": "0x0000000000000000000000000000000000000c33",
+  }
+
+ ❯ bad src/verify.test.ts:96:18
+     94| const mf = (policy = false): DeploymentManifest => validateManifest(wi…
+     95| const bad = async (p: Promise<unknown>, re: RegExp): Promise<void> => {
+     96|   await expect(p).rejects.toThrow(re);
+       |                  ^
+     97|   await p.catch((e: unknown) => {
+     98|     expect(e).toBeInstanceOf(ChainAdapterError);
+ ❯ src/verify.test.ts:130:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/verify.test.ts > verifyDeployment > requires policy implementation code to agree across configured providers
+AssertionError: promise resolved "{ chainId: 11155111, …(7) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++   "chainId": 11155111,
++   "feeBps": 25n,
++   "feeRecipient": "0x00000000000000000000000000000000000D0D44",
++   "policyFactory": "0x0000000000000000000000000000000000000F66",
++   "providers": 2,
++   "router": "0x0000000000000000000000000000000000000b22",
++   "sweepRelayer": "0x0000000000000000000000000000000000000c33",
+  }
+
+ ❯ bad src/verify.test.ts:96:18
+     94| const mf = (policy = false): DeploymentManifest => validateManifest(wi…
+     95| const bad = async (p: Promise<unknown>, re: RegExp): Promise<void> => {
+     96|   await expect(p).rejects.toThrow(re);
+       |                  ^
+     97|   await p.catch((e: unknown) => {
+     98|     expect(e).toBeInstanceOf(ChainAdapterError);
+ ❯ src/verify.test.ts:138:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 21 passed (24)
+   Start at  22:22:28
+   Duration  19.65s (transform 70%, import 21%, tests 9%)
+

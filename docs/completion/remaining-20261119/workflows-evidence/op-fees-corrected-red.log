@@ -1,0 +1,208 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-op-fees/apps/relayer
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/opFees.test.ts (16 tests | 15 failed) 432ms
+   ❯ R07-4 OP total-cost service regression (4)
+     × quotes execution plus the additional OP reserve 47ms
+     × refuses a daily budget that only covers execution gas 157ms
+     × refuses a loss budget that only covers execution gas 38ms
+     × settles actual L1/operator fees once, including cost above the original reservation 70ms
+   ❯ R07-4 OP chain admission and receipt regression (12)
+     × checks signed transaction fees before any broadcast 30ms
+     × refuses malformed oracle answer 0x before broadcast 8ms
+     × refuses malformed oracle answer 0x01 before broadcast 9ms
+     × refuses malformed oracle answer 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff before broadcast 16ms
+     × refuses malformed oracle answer private-rpc-error before broadcast 14ms
+     × retains an unsettled receipt with missing/malformed L1 fee undefined 7ms
+     × retains an unsettled receipt with missing/malformed L1 fee 0x 2ms
+     × retains an unsettled receipt with missing/malformed L1 fee -1 2ms
+     × retains an unsettled receipt with missing/malformed L1 fee 0x00 6ms
+     × retains an unsettled receipt with missing/malformed L1 fee 0x10000000000000000000000000000000000000000000000000000000000000000 2ms
+     × returns actual L1 fee plus operator fee read at the canonical receipt block 7ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP total-cost service regression > quotes execution plus the additional OP reserve
+AssertionError: expected '500000' to be '1419000' // Object.is equality
+
+Expected: "1419000"
+Received: "500000"
+
+ ❯ src/opFees.test.ts:112:35
+    110|   it('quotes execution plus the additional OP reserve', async () => {
+    111|     const s = await service();
+    112|     expect((await s.quote()).fee).toBe('1419000'); // (130k + 300k) gw…
+       |                                   ^
+    113|   });
+    114|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP total-cost service regression > refuses a daily budget that only covers execution gas
+AssertionError: promise resolved "{ txHash: '0x00000000000000000000000…' }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "txHash": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  }
+
+ ❯ src/opFees.test.ts:117:27
+    115|   it('refuses a daily budget that only covers execution gas', async ()…
+    116|     const s = await service({ daily: 160_000n * GWEI });
+    117|     await expect(s.send()).rejects.toMatchObject({ code: 'budget_exhau…
+       |                           ^
+    118|     expect(s.fake.sent).toHaveLength(0);
+    119|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP total-cost service regression > refuses a loss budget that only covers execution gas
+AssertionError: promise resolved "{ txHash: '0x00000000000000000000000…' }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "txHash": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  }
+
+ ❯ src/opFees.test.ts:123:27
+    121|   it('refuses a loss budget that only covers execution gas', async () …
+    122|     const s = await service({ loss: 160_000n * GWEI });
+    123|     await expect(s.send()).rejects.toMatchObject({ code: 'loss_budget_…
+       |                           ^
+    124|     expect(s.fake.sent).toHaveLength(0);
+    125|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP total-cost service regression > settles actual L1/operator fees once, including cost above the original reservation
+AssertionError: expected 100000000000000n to be 1100000000000000n // Object.is equality
+
+- Expected
++ Received
+
+- 1100000000000000n
++ 100000000000000n
+
+ ❯ src/opFees.test.ts:133:75
+    131|     await s.send();
+    132|     await settle();
+    133|     expect(decodeState(s.backend.text ?? '').get(OP_ID)?.budget.spentW…
+       |                                                                           ^
+    134|     expect(s.relayer.metrics.render()).toContain('relayer_gas_spent_we…
+    135|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > checks signed transaction fees before any broadcast
+AssertionError: promise resolved "'0x7c1e6a9c902c6add3c2fa045385fbca3251…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"0x7c1e6a9c902c6add3c2fa045385fbca3251ddf440335aeb71a885408aafca4bb"
+
+ ❯ src/opFees.test.ts:141:57
+    139|   it('checks signed transaction fees before any broadcast', async () =…
+    140|     const s = rpcClient({ oracle: toHex(EXTRA_RESERVE, { size: 32 }) }…
+    141|     await expect(s.client.sendSweep(order, sendOptions)).rejects.toBeI…
+       |                                                         ^
+    142|     expect(s.raw).toHaveLength(0);
+    143|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > refuses malformed oracle answer 0x before broadcast
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > refuses malformed oracle answer 0x01 before broadcast
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > refuses malformed oracle answer 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff before broadcast
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > refuses malformed oracle answer private-rpc-error before broadcast
+AssertionError: promise resolved "'0x7c1e6a9c902c6add3c2fa045385fbca3251…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"0x7c1e6a9c902c6add3c2fa045385fbca3251ddf440335aeb71a885408aafca4bb"
+
+ ❯ src/opFees.test.ts:147:57
+    145|   it.each(['0x', '0x01', `0x${'ff'.repeat(33)}`, 'private-rpc-error'])…
+    146|     const s = rpcClient({ oracle });
+    147|     await expect(s.client.sendSweep(order, sendOptions)).rejects.toBeI…
+       |                                                         ^
+    148|     expect(s.raw).toHaveLength(0);
+    149|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > retains an unsettled receipt with missing/malformed L1 fee undefined
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > retains an unsettled receipt with missing/malformed L1 fee 0x
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > retains an unsettled receipt with missing/malformed L1 fee -1
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > retains an unsettled receipt with missing/malformed L1 fee 0x00
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > retains an unsettled receipt with missing/malformed L1 fee 0x10000000000000000000000000000000000000000000000000000000000000000
+AssertionError: promise resolved "{ status: 'success', gasUsed: 100000n }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "gasUsed": 100000n,
++   "status": "success",
+  }
+
+ ❯ src/opFees.test.ts:153:44
+    151|   it.each([undefined, '0x', '-1', '0x00', `0x1${'00'.repeat(32)}`])('r…
+    152|     const s = rpcClient({ l1Fee });
+    153|     await expect(s.client.getReceipt(HASH)).rejects.toThrow('rpc_failu…
+       |                                            ^
+    154|   });
+    155|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  src/opFees.test.ts > R07-4 OP chain admission and receipt regression > returns actual L1 fee plus operator fee read at the canonical receipt block
+AssertionError: expected { status: 'success', gasUsed: 100000n } to deeply equal { status: 'success', …(3) }
+
+- Expected
++ Received
+
+  {
+    "gasUsed": 100000n,
+-   "l1Fee": 100n,
+-   "operatorFee": 10n,
+    "status": "success",
+  }
+
+ ❯ src/opFees.test.ts:158:45
+    156|   it('returns actual L1 fee plus operator fee read at the canonical re…
+    157|     const s = rpcClient({ l1Fee: '0x64' });
+    158|     expect(await s.client.getReceipt(HASH)).toEqual({ status: 'success…
+       |                                             ^
+    159|     expect(s.calls).toHaveLength(1);
+    160|     expect(s.calls[0]?.block).toEqual({ blockHash: BLOCK, requireCanon…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  15 failed | 1 passed (16)
+   Start at  23:57:01
+   Duration  13.80s (import 58%, transform 36%, tests 6%, worker 1%)
+

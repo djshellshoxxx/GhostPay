@@ -1,0 +1,15 @@
+green: deploy-devnet-31337
+(node:94) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+green: seed-canonical-runtime
+green: deploy-canonical-84532
+green: prepare-manifest
+green: independent-manifest-readback
+Traceback (most recent call last):
+  File "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-replay.py", line 188, in <module>
+    assert status == 0, validation_log.read_text()
+           ^^^^^^^^^^^
+AssertionError: (node:190) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+usage: prepare-devnet-manifest.mjs --rpc <loopback url> --broadcast <run-latest.json> --out-dir <dir> [--state <file>]
+

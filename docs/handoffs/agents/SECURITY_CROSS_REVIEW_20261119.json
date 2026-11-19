@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "reviewType": "read-only concurrent-source comparison and independent documentation review",
+  "reviewer": "contract_security",
+  "reviewDate": "2026-11-19",
+  "pr255": {
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/255",
+    "head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "base": "e454de6abfefda70d82784fafc1d8949b277c334",
+    "state": "open",
+    "draft": true,
+    "sourceFileHashes": {
+      "packages/contracts/script/DeployPolicy.s.sol": {
+        "bytes": 9310,
+        "sha256": "3d9641a92f75cc558ef52297b7910bcdd9289addb410053685097d27b392ed8a"
+      },
+      "packages/contracts/scripts/pre-deploy-check.sh": {
+        "bytes": 11043,
+        "sha256": "3f77b829b7525c46c98abeb7018b4a24f3673011dd5c4e63181c25aeb2260cd3"
+      },
+      "packages/contracts/scripts/run-mythril.sh": {
+        "bytes": 3040,
+        "sha256": "cb89ec12f0333a8df2caeec67653f8f80753a4fb815f3166ac879dd67f76a425"
+      },
+      "packages/contracts/scripts/capture-mythril-evidence.py": {
+        "bytes": 10958,
+        "sha256": "e2b878c4912ec467194688350bb7039ab34c98c502632dfb479e182e7d81b25f"
+      },
+      "packages/contracts/scripts/mythril-compat.py": {
+        "bytes": 4944,
+        "sha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd"
+      },
+      "packages/contracts/scripts/collect-analysis-report.py": {
+        "bytes": 3134,
+        "sha256": "e505285351aee626c6eafde18bb363baea8ae249f72c884d9f197bccab43a56e"
+      },
+      "scripts/contract-analysis/mythril-disposition-check.mjs": {
+        "bytes": 27381,
+        "sha256": "fe4823bc84848da956b9efb25d9304855aa4c0ae9feca0655f8259146702c2f7"
+      },
+      "packages/contracts/test/DeployPolicyFreezeConfig.t.sol": {
+        "bytes": 4738,
+        "sha256": "a3c1b8d7d5b360633bbf8aaf14e69bf792865b42abd252d773e17b4a96f8540c"
+      },
+      "packages/contracts/test/PolicyAccountFactoryFreezeRisk.t.sol": {
+        "bytes": 5257,
+        "sha256": "83af890cd42ebbd928d0f33605d083d75bb8eca2feb278034f56b57967fcc399"
+      },
+      "scripts/tests/deploy-policy-preflight.test.mjs": {
+        "bytes": 6506,
+        "sha256": "bbe827febc6f618c1bf4ff06d38ede1aa9a4a21b1280007e5b0ef0f170330b92"
+      },
+      ".github/workflows/contract-analysis.yml": {
+        "bytes": 4768,
+        "sha256": "7737bc99c2eaf723ab375712c816fa14bd06d78b176f8191a642d1c52253ba8e"
+      }
+    },
+    "guardComparedWith": "cff088d69c0f2731722894ee8835164b3ec8b221",
+    "observationalArchiveCommit": "5fadb4ff709701bff2a5f08fac548d24c2de42ad",
+    "productionSourceTree": "dabfd36a98424a4184ee7e267e12815763d1157f",
+    "vendoredLibraryTree": "b10191d543360a5c102e269cca72883b4303d8c7",
+    "productionSourceAndLibraryTreesEqual854fa4c7": true,
+    "strongerBehaviors": [
+      "chain/token/runtime-codehash/fee/recipient-bound deployment acknowledgment",
+      "strict nonzero-fee RPC/cast checksum and configuration preflight",
+      "permanent prefund fee-switch/broken-view regressions",
+      "per-target raw analyzer capture and native compiler/source identity",
+      "duplicate-JSON and known-incomplete-execution rejection",
+      "unwired exact disposition schema requiring scoped external owner approval"
+    ],
+    "alreadyPresentInOurIntegration": [
+      "setup-forge cached solc integrity guard"
+    ],
+    "mergeNotes": [
+      "Preserve cff088d6 numeric-all-zero diagnostic guard",
+      "Adapt token-only offline success fixtures to the new explicit nonzero-fee configuration contract",
+      "Do not convert observational current-report records into approved disposition records",
+      "Preserve latest surrounding README and runbook content"
+    ],
+    "newHeadNativeOrHostedQualificationRunByThisReviewer": false,
+    "ownerApprovalGranted": false,
+    "checkerWiredIntoStrictGate": false
+  },
+  "diagnosticProbe": {
+    "path": "docs/handoffs/agents/SECURITY_CROSS_REVIEW_20261119_DIAGNOSTIC.json",
+    "sha256": "6150c9ba83092f2c8c682ca26a6c8cbe3804c6b5c42ec1b66827bdfa313a53f3",
+    "bytes": 4518,
+    "cases": 4,
+    "exitCodeInEveryCase": 1,
+    "pr255MisleadingZeroMessage": true,
+    "recoveredGuardMisleadingZeroMessage": false,
+    "securityBypass": false,
+    "networkOrDeployment": false
+  },
+  "documentationReview": {
+    "commit": "854fa4c777107a3966ada0252e6c80bb7796571c",
+    "result": "PASS",
+    "scope": [
+      "packages/sdk/README.md",
+      "docs/adr/ADR-0018-erc6538.md",
+      "apps/web/src/lib/embedHost.ts comment",
+      "packages/chain-adapters/README.md"
+    ],
+    "checks": [
+      "Root exports and package metadata",
+      "Builder/parse/sign/link/clock semantics",
+      "Spec R3 and verifyInvoice warning/blocker policy",
+      "Web expired-invoice/fiat-quote final guard",
+      "Merchant lazy network boundary",
+      "Frozen registry delegation inputs and caller-owned callbacks",
+      "Direct-only web publishing and selected-RPC ENS resolution",
+      "No CCIP/offchain fallback and unpinned codehash residual",
+      "Existing embed-header path",
+      "RPC transport protocols and trusted heartbeat age cap"
+    ],
+    "runtimeTestsRunForDocs": false
+  },
+  "modelInventory": {
+    "sourceCommit": "854fa4c777107a3966ada0252e6c80bb7796571c",
+    "existingModelTestFiles": [
+      "scripts/experimental/policy-recovery/model.test.mjs",
+      "scripts/experimental/milestone-escrow/model.test.mjs"
+    ],
+    "modelTestsListedInCurrentCiInvocation": false,
+    "authorityOrCustodyDecisionMade": false
+  }
+}

@@ -1,0 +1,6 @@
+2026-11-18T07:22:35.8340226Z Download action repository 'actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0' (SHA:6d4fd22b20465ccc0f7354476588e8df7c9ca0e0)
+2026-11-18T07:22:45.6648127Z ##[group]Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+2026-11-18T07:23:17.0271794Z Mythril version v0.24.8
+2026-11-18T08:11:07.7872994Z ##[error]Process completed with exit code 1.
+2026-11-18T08:11:09.2203934Z Artifact contract-analysis-mythril-199ab7ef1e80e6368fdc17c09b94c87a62871861 successfully finalized. Artifact ID 14408769048
+

@@ -1,0 +1,48 @@
+{
+  "base": "4d19655a2e5d93ad9378803cd4163245168aca24",
+  "head": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+  "root_manifest_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+  "lock_blob": "875e90c613d4bdc1ca53c564944b1a734b3ffd31",
+  "changed_files": [
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/handoffs/GHOSTPAY_VIEM_ALIGNMENT_20261118.md",
+    "package-lock.json",
+    "package.json"
+  ],
+  "added_unique_package_tuples": [],
+  "removed_unique_package_tuples": [
+    [
+      "ox",
+      "0.14.59",
+      "https://registry.npmjs.org/ox/-/ox-0.14.59.tgz",
+      "sha512-Y+DPEQScTEGKteQATjtytE1JRQ5cg1R2+DvYQ/lbhUCm/xS9n0Jnkkf2AqQyIntefQxs8xY6dZ+kyNZ7zf2FzA=="
+    ],
+    [
+      "viem",
+      "2.57.13",
+      "https://registry.npmjs.org/viem/-/viem-2.57.13.tgz",
+      "sha512-hSIsR4Y47BKrp89idH11WC3pqYOJFq9nVYBYxuJ9zXCA8Qg3pQhnlhnHn4qnjo7Z5wXs920XhtWbnrAtFidk+Q=="
+    ]
+  ],
+  "lock_records_added": [
+    "node_modules/@vitest/coverage-v8",
+    "node_modules/@vitest/istanbul-lib-coverage",
+    "node_modules/@vitest/istanbul-lib-report"
+  ],
+  "lock_records_removed_count": 333,
+  "retained_records_changed": [
+    "",
+    "node_modules/viem",
+    "apps/web",
+    "node_modules/ox"
+  ],
+  "platform_records_count": 30,
+  "platform_records_unchanged": true,
+  "override_before": {
+    "viem": "2.57.13"
+  },
+  "override_after": {
+    "viem": "2.57.19"
+  },
+  "root_coverage": "5.1.0"
+}

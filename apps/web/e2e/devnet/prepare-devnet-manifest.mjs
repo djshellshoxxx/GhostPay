@@ -8,8 +8,9 @@
 //
 // Usage: node prepare-devnet-manifest.mjs --rpc http://127.0.0.1:8546 --broadcast <run-latest.json> --out-dir <new dir>
 //   [--state <devnet.json to write>] [--artifacts <forge out dir>]
-// The broadcast must come from script/devnet/DeployDevnet.s.sol, which only deploys on 31337: the runner deploys there
-// and switches the same anvil to 84532 (anvil_setChainId) before calling this helper.
+// The broadcast must come from script/Deploy.s.sol on 84532, after the runner seeds the compiled CC0 reference
+// announcer at the canonical address on its local anvil. The original DeployDevnet 31337 token broadcast is retained
+// separately for the Pages fixture; it must not be used to sign a known-chain manifest with a custom announcer.
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { request } from 'node:http';
 import { dirname, relative, resolve, isAbsolute } from 'node:path';
@@ -18,13 +19,12 @@ import { fileURLToPath } from 'node:url';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { getAddress, keccak256 } from 'viem';
 import {
-  canonicalManifestJson, loadDeployment, manifestDigest, verifyManifestOnChain, verifyObjectManifestSignature,
+  CANONICAL_ANNOUNCER, canonicalManifestJson, loadDeployment, manifestDigest, verifyManifestOnChain, verifyObjectManifestSignature,
 } from '@ghostpay/chain-adapters';
 import { validateAll } from '../../../../scripts/testnet/make-manifest.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
 const CHAIN_ID = 84532;
-const DEPLOY_CHAIN_ID = 31337;
 const LOOPBACK = new Set(['127.0.0.1', 'localhost', '[::1]']);
 const hex = (bytes) => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 
@@ -85,8 +85,7 @@ export async function prepareDevnetManifest({ rpcUrl, broadcastPath, outDir, sta
   const rpc = loopbackRpc(rpcUrl);
   await assertLocalAnvil(rpc);
   const broadcast = JSON.parse(readFileSync(broadcastPath, 'utf8'));
-  if (Number(broadcast.chain) !== DEPLOY_CHAIN_ID) fail('broadcast is not a DeployDevnet (31337) broadcast');
-  const announcerTx = pickCreate(broadcast, 'ERC5564Announcer');
+  if (Number(broadcast.chain) !== CHAIN_ID) fail('broadcast is not a Deploy (84532) broadcast');
   const routerTx = pickCreate(broadcast, 'GhostPayRouter');
   const relayerTx = pickCreate(broadcast, 'GhostPaySweepRelayer');
   const router = getAddress(routerTx.contractAddress);
@@ -103,7 +102,7 @@ export async function prepareDevnetManifest({ rpcUrl, broadcastPath, outDir, sta
   const feeRecipient = getAddress(`0x${(await call('FEE_RECIPIENT()')).slice(26)}`);
   const announcer = getAddress(`0x${(await call('ANNOUNCER()')).slice(26)}`);
   const feeBps = Number(BigInt(await call('FEE_BPS()')));
-  if (announcer !== getAddress(announcerTx.contractAddress)) fail('router ANNOUNCER is not the deployed announcer');
+  if (announcer !== getAddress(CANONICAL_ANNOUNCER)) fail('router ANNOUNCER is not the canonical announcer');
   const receipt = await rpc('eth_getTransactionReceipt', [routerTx.hash]);
   if (receipt === null || receipt.status !== '0x1') fail('router deployment receipt missing');
   const block = await rpc('eth_getBlockByNumber', [receipt.blockNumber, false]);

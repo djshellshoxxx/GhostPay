@@ -1,0 +1,42 @@
+{
+  "recorded_utc": "2026-11-19T08:22:54.491619+00:00",
+  "representation": "Connector-decoded UTF-8 job logs, preserved with a single terminal newline; not the original GitHub compressed transport bytes.",
+  "files": [
+    {
+      "path": "pr210-hosting-job-135417832399-attempt-1.log",
+      "bytes": 19198,
+      "sha256": "e460fc09bce2663b75474e953818664ffa9b7f2a468348c09f0c4226e4ff3f2e"
+    },
+    {
+      "path": "pr246-web-job-135390371611.log",
+      "bytes": 275430,
+      "sha256": "16b7e0cc18ac59623f97f57025324b7c9d12f38a3b20f47dab8f5d586a69ba62"
+    }
+  ],
+  "observations": [
+    {
+      "pr": 246,
+      "head": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+      "run": 44472897740,
+      "job": 135390371611,
+      "outcome": "failure",
+      "tests": {
+        "passed": 2972,
+        "failed": 1,
+        "skipped": 1
+      },
+      "owner_referral": "https://github.com/djshellshoxxx/GhostPay/pull/240#issuecomment-7003469356",
+      "reason": "Existing recovery-owned asynchronous sealing fixture race; no independently rewritten recovery implementation."
+    },
+    {
+      "pr": 210,
+      "head": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "run": 44482491845,
+      "job": 135417832399,
+      "attempt": 1,
+      "outcome": "failure",
+      "reason": "Ubuntu security mirror returned404 for nginx/nginx-common packages during validation-tool installation, exit100. Later checks skipped.",
+      "followup": "Only this failed job was rerun through GitHub on2026-11-19; successful jobs and required checks were not bypassed. Outcome pending at record creation."
+    }
+  ]
+}

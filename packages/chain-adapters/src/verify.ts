@@ -167,7 +167,7 @@ const CODE = /^0x(?:[0-9a-fA-F]{2})+$/;
  *
  * @remarks Through the user's RPC (and, when given, a second independent provider with identical-result
  * reconciliation via {@link requestWithFallbackCheck}):
- * - `eth_getCode` of router, sweep relayer and (if the manifest has a policy section) the policy factory must
+ * - `eth_getCode` of router, sweep relayer and (if the manifest has a policy section) the policy factory and implementation must
  *   hash (keccak256) to the manifest `bytecodeHashes`;
  * - the router's `FEE_BPS()` must equal 25, `FEE_RECIPIENT()` must equal `manifest.feeRecipient`, and `ANNOUNCER()`
  *   must equal both `manifest.announcer` and the canonical announcer constant of the chain, which must have code.
@@ -207,6 +207,9 @@ export async function verifyDeployment(m: DeploymentManifest, client: RpcClient,
   }
   if (m.policy !== undefined && !same(await codeHash(m.policy.factory), m.policy.bytecodeHashes.factory)) {
     return fail('DEPLOYMENT_UNVERIFIED', 'policy factory code hash differs from the manifest');
+  }
+  if (m.policy !== undefined && !same(await codeHash(m.policy.implementation), m.policy.bytecodeHashes.implementation)) {
+    return fail('DEPLOYMENT_UNVERIFIED', 'policy implementation code hash differs from the manifest');
   }
   await codeHash(announcer); // the canonical announcer must exist on this chain (its hash is not pinned here)
 

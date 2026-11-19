@@ -1,0 +1,646 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-workflows/apps/relayer
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/hardening.test.ts (30 tests | 23 failed) 17732ms
+   ❯ R07-3 / LF-074edb61e-8: a failing log sink never takes the process down (6)
+     × createLogger swallows a sink that throws (ENOSPC, destroyed stream) 21ms
+     × the stdout sink swallows asynchronous stream errors (EPIPE) instead of an unhandled error event 1ms
+     × the stdout sink swallows a write that throws synchronously (destroyed stream) 1ms
+     × the stdout sink writes one newline-terminated line per call 1ms
+     × main.ts logs through the guarded stdout sink, not a bare process.stdout.write 3ms
+     × a request served with a throwing log sink produces no unhandled rejection 115ms
+   ❯ LF-6f25385ce-1: per-peer TCP connection cap (server.maxConnectionsPerIp) (3)
+     × by default one peer cannot hold more than 64 concurrent connections 1576ms
+     × caps concurrent connections per peer, counts the refusal and frees the slot on close 1505ms
+   ❯ LF-074edb61e-4 / LF-2789f780b-2 / LF-29de09c05-1: per-client cap on lane slots (queue.maxPerClient) (4)
+     × one client cannot hold every lane slot; its excess gets 429 client_queue_full and another client is still admitted 396ms
+     × reserves the client slot before the first await, so concurrent requests cannot all pass the check (no overshoot) 2220ms
+     × holds the client slot until the lane slot is released (receipt settled), then frees it 2635ms
+     × frees the client slot when admission or the lane job fails 155ms
+   ❯ LF-29de09c05-4: a malformed request target answers 400 invalid_url, not 500 (5)
+     × GET // 16ms
+     × GET //[ 5ms
+     × GET //a:b@ 8ms
+     × GET //x:99999/ 3ms
+   ❯ LF-074edb61e-7: non-canonical sweep signatures are refused before any RPC call (4)
+     × rejects the malleable high-S twin (same owner recovers) as 422 invalid_signature with no chain work 40ms
+     × rejects the 0/1 encoding of the same recovery id (viem still recovers the owner) with no chain work 19ms
+     × a refused non-canonical signature is not an owner strike 17ms
+   ❯ LF-074edb61e-1: quote-path RPC failures feed the circuit breaker (6)
+     × a full RPC outage seen only by /v1/quote opens the breaker and degrades /healthz 64ms
+     × a good quote lookup ends a run of failures: only consecutive failed lookups open the breaker 49ms
+   ❯ LF-074edb61e-9: slow and idle sockets are cut promptly (connectionsCheckingInterval) (2)
+     × production timeouts: headers 10 s, request 15 s, keep-alive 5 s, checked every second 2ms
+     × a client dripping headers is closed within headersTimeout plus about one check interval, not the Node default of 30 s 8008ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 23 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/hardening.test.ts > R07-3 / LF-074edb61e-8: a failing log sink never takes the process down > createLogger swallows a sink that throws (ENOSPC, destroyed stream)
+AssertionError: expected [Function] to not throw an error but 'Error: write ENOSPC' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"Error: write ENOSPC"
+
+ ❯ src/hardening.test.ts:35:55
+     33|       throw new Error('write ENOSPC');
+     34|     });
+     35|     expect(() => lg.log('info', 'listening', {})).not.toThrow();
+       |                                                       ^
+     36|     expect(() => lg.log('error', 'request', { status: 500 })).not.toTh…
+     37|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/23]⎯
+
+ FAIL  src/hardening.test.ts > R07-3 / LF-074edb61e-8: a failing log sink never takes the process down > the stdout sink swallows asynchronous stream errors (EPIPE) instead of an unhandled error event
+TypeError: createStdoutSink is not a function
+ ❯ src/hardening.test.ts:49:18
+     47|     }
+     48|     const stream = new FakeStream();
+     49|     const sink = createStdoutSink(stream);
+       |                  ^
+     50|     sink('a');
+     51|     // An 'error' event without a listener throws from emit(); with th…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/23]⎯
+
+ FAIL  src/hardening.test.ts > R07-3 / LF-074edb61e-8: a failing log sink never takes the process down > the stdout sink swallows a write that throws synchronously (destroyed stream)
+TypeError: createStdoutSink is not a function
+ ❯ src/hardening.test.ts:59:18
+     57|
+     58|   it('the stdout sink swallows a write that throws synchronously (dest…
+     59|     const sink = createStdoutSink({
+       |                  ^
+     60|       on: () => undefined,
+     61|       write: () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/23]⎯
+
+ FAIL  src/hardening.test.ts > R07-3 / LF-074edb61e-8: a failing log sink never takes the process down > the stdout sink writes one newline-terminated line per call
+TypeError: createStdoutSink is not a function
+ ❯ src/hardening.test.ts:70:18
+     68|   it('the stdout sink writes one newline-terminated line per call', ()…
+     69|     const chunks: string[] = [];
+     70|     const sink = createStdoutSink({ on: () => undefined, write: (c: st…
+       |                  ^
+     71|     sink('{"a":1}');
+     72|     expect(chunks).toEqual(['{"a":1}\n']);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/23]⎯
+
+ FAIL  src/hardening.test.ts > R07-3 / LF-074edb61e-8: a failing log sink never takes the process down > main.ts logs through the guarded stdout sink, not a bare process.stdout.write
+AssertionError: expected 'import { privateKeyToAccount } from \…' not to match /createLogger\(\s*\(line\)\s*=>\s*proc…/
+
+- Expected:
+/createLogger\(\s*\(line\)\s*=>\s*process\.stdout\.write/
+
++ Received:
+"import { privateKeyToAccount } from 'viem/accounts';
+import { loadConfigFile, parseReleaseKeys } from './config.js';
+import { createLogger, parseLogLevel } from './log.js';
+import { buildRelayer } from './runtime.js';
+import { HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
+
+/** Process entry point: `node dist/main.js`. Excluded from coverage (thin glue over tested modules). */
+async function main(): Promise<void> {
+  const env = process.env;
+  const logger = createLogger((line) => process.stdout.write(`${line}\\n`), Date.now, parseLogLevel(env['LOG_LEVEL']));
+  const hotKey = loadSecret(env, HOT_KEY_SOURCE);
+  const quoteSecret = loadSecret(env, QUOTE_SECRET_SOURCE);
+  const previousQuoteSecret = loadOptionalSecret(env, QUOTE_SECRET_PREVIOUS_SOURCE);
+  const hotKeyAddress = privateKeyToAccount(`0x${Buffer.from(hotKey).toString('hex')}`).address;
+  const releaseKeys = parseReleaseKeys(env['GHOSTPAY_RELEASE_PUBKEYS']);
+  const config = loadConfigFile(env['RELAYER_CONFIG'] ?? './relayer.config.json', env['DEPLOYMENTS_DIR'] ?? '../../deployments', { env, hotKeyAddress, releaseKeys });
+  let stopping = false;
+  // `exitCode` 1 after a lost state lock, so `Restart=on-failure` / the container policy brings the relayer back.
+  const stop = (exitCode = 0): void => {
+    if (stopping) return;
+    stopping = true;
+    logger.log('info', 'shutdown_started', {});
+    // Drain first (queued and in-flight sweeps still write the journal), then release the state lock: releasing it
+    // earlier would let a starting replacement take the state over while this process still writes it.
+    void (async () => {
+      try {
+        await relayer.server.close();
+        await relayer.metricsServer?.close();
+        relayer.dispose();
+        process.exit(exitCode);
+      } catch {
+        relayer.dispose();
+        process.exit(1);
+      }
+    })();
+  };
+  const relayer = await buildRelayer({
+    config, hotKey, quoteSecret, ...(previousQuoteSecret === undefined ? {} : { previousQuoteSecret }), logger,
+    onLockLost: () => stop(1),
+  });
+  await relayer.server.listen();
+  await relayer.metricsServer?.listen();
+  logger.log('info', 'listening', {});
+  process.on('SIGTERM', () => stop());
+  process.on('SIGINT', () => stop());
+}
+
+// Node's default process diagnostics can expose provider URLs or request details; emit only a fixed class.
+for (const event of ['uncaughtException', 'unhandledRejection'] as const) {
+  process.on(event, () => {
+    process.stderr.write(`fatal: ${event}\\n`);
+    process.exit(1);
+  });
+}
+
+main().catch((e: unknown) => {
+  // Startup errors name variables/paths only (ConfigError); never print arbitrary objects.
+  const msg = e instanceof Error && (e.name === 'ConfigError' || e.name === 'ChainAdapterError' || e.name === 'StateError') ? e.message : 'startup failed';
+  process.stderr.write(`fatal: ${msg}\\n`);
+  process.exit(1);
+});
+"
+
+ ❯ src/hardening.test.ts:77:21
+     75|   it('main.ts logs through the guarded stdout sink, not a bare process…
+     76|     const src = readFileSync(new URL('./main.ts', import.meta.url), 'u…
+     77|     expect(src).not.toMatch(/createLogger\(\s*\(line\)\s*=>\s*process\…
+       |                     ^
+     78|     expect(src).toMatch(/createLogger\(\s*createStdoutSink\(process\.s…
+     79|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/23]⎯
+
+ FAIL  src/hardening.test.ts > R07-3 / LF-074edb61e-8: a failing log sink never takes the process down > a request served with a throwing log sink produces no unhandled rejection
+AssertionError: expected [ 'Error: write EPIPE', …(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "Error: write EPIPE",
++   "Error: write EPIPE",
++ ]
+
+ ❯ src/hardening.test.ts:115:46
+    113|       for (const l of previous) process.on('unhandledRejection', l as …
+    114|     }
+    115|     expect(rejections.map((e) => String(e))).toEqual([]);
+       |                                              ^
+    116|   });
+    117| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-6f25385ce-1: per-peer TCP connection cap (server.maxConnectionsPerIp) > by default one peer cannot hold more than 64 concurrent connections
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/hardening.test.ts:156:37
+    154|     const s = await start();
+    155|     for (let i = 0; i < 64; i++) await open(s);
+    156|     expect(await closedByServer(s)).toBe(true);
+       |                                     ^
+    157|   }, 30_000);
+    158|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-6f25385ce-1: per-peer TCP connection cap (server.maxConnectionsPerIp) > caps concurrent connections per peer, counts the refusal and frees the slot on close
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/hardening.test.ts:163:37
+    161|     const a = await open(s);
+    162|     await open(s);
+    163|     expect(await closedByServer(s)).toBe(true);
+       |                                     ^
+    164|     expect(s.relayer.metrics.render()).toMatch(/relayer_connections_re…
+    165|     a.destroy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-4 / LF-2789f780b-2 / LF-29de09c05-1: per-client cap on lane slots (queue.maxPerClient) > one client cannot hold every lane slot; its excess gets 429 client_queue_full and another client is still admitted
+AssertionError: expected [ 'ok', 'ok', 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ '429:client_queue_full', …(5) ]
+
+- Expected
++ Received
+
+  [
+-   "429:client_queue_full",
+-   "429:client_queue_full",
+-   "429:client_queue_full",
+-   "429:client_queue_full",
++   "ok",
++   "ok",
++   "ok",
++   "ok",
+    "ok",
+    "ok",
+  ]
+
+ ❯ src/hardening.test.ts:204:19
+    202|     const replies = await Promise.all(attacker);
+    203|     const codes = replies.map((r) => (r.status === 200 ? 'ok' : `${Str…
+    204|     expect(codes).toEqual(['429:client_queue_full', '429:client_queue_…
+       |                   ^
+    205|     const refused = replies.find((r) => r.status === 429) as Reply;
+    206|     expect(refused.headers.get('retry-after')).toBe('5');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-4 / LF-2789f780b-2 / LF-29de09c05-1: per-client cap on lane slots (queue.maxPerClient) > reserves the client slot before the first await, so concurrent requests cannot all pass the check (no overshoot)
+AssertionError: expected 6 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 6
+
+ ❯ src/hardening.test.ts:226:20
+    224|     await settle(200);
+    225|     // All six requests are in flight at once; only the two that reser…
+    226|     expect(checks).toBe(2);
+       |                    ^
+    227|     gate.resolve();
+    228|     const replies = await Promise.all(pending);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-4 / LF-2789f780b-2 / LF-29de09c05-1: per-client cap on lane slots (queue.maxPerClient) > holds the client slot until the lane slot is released (receipt settled), then frees it
+AssertionError: expected 'still queued' to be '429:client_queue_full' // Object.is equality
+
+Expected: "429:client_queue_full"
+Received: "still queued"
+
+ ❯ src/hardening.test.ts:245:22
+    243|     const answered = await Promise.race([third.then((r) => `${String(r…
+    244|     receipt.resolve();
+    245|     expect(answered).toBe('429:client_queue_full');
+       |                      ^
+    246|     expect((await second).status).toBe(200);
+    247|     await third;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-4 / LF-2789f780b-2 / LF-29de09c05-1: per-client cap on lane slots (queue.maxPerClient) > frees the client slot when admission or the lane job fails
+TypeError: s.relayer.service.heldClientSlots is not a function
+ ❯ src/hardening.test.ts:271:30
+    269|     expect(ok.status).toBe(200);
+    270|     await settle(50);
+    271|     expect(s.relayer.service.heldClientSlots(CHAIN_ID)).toBe(0);
+       |                              ^
+    272|   });
+    273| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-29de09c05-4: a malformed request target answers 400 invalid_url, not 500 > GET //
+ FAIL  src/hardening.test.ts > LF-29de09c05-4: a malformed request target answers 400 invalid_url, not 500 > GET //[
+ FAIL  src/hardening.test.ts > LF-29de09c05-4: a malformed request target answers 400 invalid_url, not 500 > GET //a:b@
+ FAIL  src/hardening.test.ts > LF-29de09c05-4: a malformed request target answers 400 invalid_url, not 500 > GET //x:99999/
+AssertionError: expected 500 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 500
+
+ ❯ src/hardening.test.ts:295:22
+    293|     const s = await start();
+    294|     const r = await raw(s, target);
+    295|     expect(r.status).toBe(400);
+       |                      ^
+    296|     expect(JSON.parse(r.body)).toEqual({ error: { code: 'invalid_url' …
+    297|     const line = s.logs.map((l) => JSON.parse(l) as Record<string, unk…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-7: non-canonical sweep signatures are refused before any RPC call > rejects the malleable high-S twin (same owner recovers) as 422 invalid_signature with no chain work
+AssertionError: expected { status: 200, code: 'ok', …(3) } to deeply equal { status: 422, …(4) }
+
+- Expected
++ Received
+
+  {
+-   "code": "invalid_signature",
+-   "gasReads": 0,
+-   "sent": 0,
+-   "simulations": 0,
+-   "status": 422,
++   "code": "ok",
++   "gasReads": 2,
++   "sent": 1,
++   "simulations": 2,
++   "status": 200,
+  }
+
+ ❯ src/hardening.test.ts:334:78
+    332|     const twin = join(r, N - low, v === 27 ? 28 : 27);
+    333|     const reply = await call(s, 'POST', '/v1/sweep', { ...p.body, swee…
+    334|     expect({ status: reply.status, code: codeOf(reply), ...noChainWork…
+       |                                                                              ^
+    335|     // The canonical original still goes through.
+    336|     expect((await call(s, 'POST', '/v1/sweep', p.body)).status).toBe(2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-7: non-canonical sweep signatures are refused before any RPC call > rejects the 0/1 encoding of the same recovery id (viem still recovers the owner) with no chain work
+AssertionError: expected { status: 200, code: 'ok', …(2) } to deeply equal { status: 422, …(3) }
+
+- Expected
++ Received
+
+  {
+-   "code": "invalid_signature",
+-   "sent": 0,
+-   "simulations": 0,
+-   "status": 422,
++   "code": "ok",
++   "sent": 1,
++   "simulations": 2,
++   "status": 200,
+  }
+
+ ❯ src/hardening.test.ts:347:118
+    345|     const { r, s: low, v } = parts(p.body['sweepSig'] as string);
+    346|     const reply = await call(s, 'POST', '/v1/sweep', { ...p.body, swee…
+    347|     expect({ status: reply.status, code: codeOf(reply), simulations: s…
+       |                                                                                                                      ^
+    348|   });
+    349|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-7: non-canonical sweep signatures are refused before any RPC call > a refused non-canonical signature is not an owner strike
+AssertionError: expected 'ok' to be 'invalid_signature' // Object.is equality
+
+Expected: "invalid_signature"
+Received: "ok"
+
+ ❯ src/hardening.test.ts:356:29
+    354|     for (let i = 0; i < 4; i++) {
+    355|       const reply = await call(s, 'POST', '/v1/sweep', { ...p.body, sw…
+    356|       expect(codeOf(reply)).toBe('invalid_signature');
+       |                             ^
+    357|     }
+    358|     expect((await call(s, 'POST', '/v1/sweep', p.body)).status).toBe(2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-1: quote-path RPC failures feed the circuit breaker > a full RPC outage seen only by /v1/quote opens the breaker and degrades /healthz
+AssertionError: expected 200 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 200
+
+ ❯ src/hardening.test.ts:373:27
+    371|     }
+    372|     const health = await call(s, 'GET', '/healthz');
+    373|     expect(health.status).toBe(503);
+       |                           ^
+    374|     expect(health.json).toMatchObject({ status: 'degraded', chains: [{…
+    375|     expect(s.relayer.metrics.render()).toMatch(/relayer_breaker_transi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-1: quote-path RPC failures feed the circuit breaker > a good quote lookup ends a run of failures: only consecutive failed lookups open the breaker
+AssertionError: expected { status: 'ok', chains: [ { …(4) } ] } to match object { status: 'degraded', …(1) }
+(3 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "chains": [
+      {
+-       "breaker": "open",
++       "breaker": "closed",
+      },
+    ],
+-   "status": "degraded",
++   "status": "ok",
+  }
+
+ ❯ src/hardening.test.ts:420:53
+    418|     s.fake.rpcDown = true;
+    419|     for (let i = 0; i < 3; i++) await call(s, 'POST', '/v1/quote', q);
+    420|     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ st…
+       |                                                     ^
+    421|   });
+    422|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-9: slow and idle sockets are cut promptly (connectionsCheckingInterval) > production timeouts: headers 10 s, request 15 s, keep-alive 5 s, checked every second
+AssertionError: expected undefined to deeply equal { headersMs: 10000, …(3) }
+
+- Expected:
+{
+  "checkIntervalMs": 1000,
+  "headersMs": 10000,
+  "keepAliveMs": 5000,
+  "requestMs": 15000,
+}
+
++ Received:
+undefined
+
+ ❯ src/hardening.test.ts:469:30
+    467|
+    468|   it('production timeouts: headers 10 s, request 15 s, keep-alive 5 s,…
+    469|     expect(DEFAULT_TIMEOUTS).toEqual({ headersMs: 10_000, requestMs: 1…
+       |                              ^
+    470|   });
+    471|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/23]⎯
+
+ FAIL  src/hardening.test.ts > LF-074edb61e-9: slow and idle sockets are cut promptly (connectionsCheckingInterval) > a client dripping headers is closed within headersTimeout plus about one check interval, not the Node default of 30 s
+AssertionError: expected Infinity to be less than 4000
+ ❯ src/hardening.test.ts:487:25
+    485|     clearInterval(drip);
+    486|     sock.destroy();
+    487|     expect(closedAfter).toBeLessThan(4_000);
+       |                         ^
+    488|   }, 15_000);
+    489| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/23]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 6 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: fetch failed
+ ❯ node:internal/deps/undici/undici:15456:13
+ ❯ call src/harness.testutil.ts:264:15
+    262|     ...(body === undefined ? {} : { body: typeof body === 'string' ? b…
+    263|   };
+    264|   const res = await fetch(`${h.url}${path}`, init);
+       |               ^
+    265|   const text = await res.text();
+    266|   let json: unknown;
+
+This error originated in "src/hardening.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "holds the client slot until the lane slot is released (receipt settled), then frees it". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+Caused by: SocketError: other side closed
+ ❯ Socket.<anonymous> node:internal/deps/undici/undici:6569:28
+ ❯ Socket.emit node:events:531:35
+ ❯ endReadableNT node:internal/streams/readable:1698:12
+ ❯ process.processTicksAndRejections node:internal/process/task_queues:89:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'UND_ERR_SOCKET', socket: { localAddress: '127.0.0.1', localPort: 57294, remoteAddress: '127.0.0.1', remotePort: 46419, remoteFamily: 'IPv4', timeout: undefined, bytesWritten: 839, bytesRead: 0 } }
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: fetch failed
+ ❯ node:internal/deps/undici/undici:15456:13
+ ❯ call src/harness.testutil.ts:264:15
+    262|     ...(body === undefined ? {} : { body: typeof body === 'string' ? b…
+    263|   };
+    264|   const res = await fetch(`${h.url}${path}`, init);
+       |               ^
+    265|   const text = await res.text();
+    266|   let json: unknown;
+
+This error originated in "src/hardening.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "holds the client slot until the lane slot is released (receipt settled), then frees it". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+Caused by: SocketError: other side closed
+ ❯ Socket.<anonymous> node:internal/deps/undici/undici:6569:28
+ ❯ Socket.emit node:events:531:35
+ ❯ endReadableNT node:internal/streams/readable:1698:12
+ ❯ process.processTicksAndRejections node:internal/process/task_queues:89:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'UND_ERR_SOCKET', socket: { localAddress: '127.0.0.1', localPort: 57282, remoteAddress: '127.0.0.1', remotePort: 46419, remoteFamily: 'IPv4', timeout: undefined, bytesWritten: 839, bytesRead: 0 } }
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: fetch failed
+ ❯ node:internal/deps/undici/undici:15456:13
+ ❯ call src/harness.testutil.ts:264:15
+    262|     ...(body === undefined ? {} : { body: typeof body === 'string' ? b…
+    263|   };
+    264|   const res = await fetch(`${h.url}${path}`, init);
+       |               ^
+    265|   const text = await res.text();
+    266|   let json: unknown;
+
+This error originated in "src/hardening.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "holds the client slot until the lane slot is released (receipt settled), then frees it". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+Caused by: SocketError: other side closed
+ ❯ Socket.<anonymous> node:internal/deps/undici/undici:6569:28
+ ❯ Socket.emit node:events:531:35
+ ❯ endReadableNT node:internal/streams/readable:1698:12
+ ❯ process.processTicksAndRejections node:internal/process/task_queues:89:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'UND_ERR_SOCKET', socket: { localAddress: '127.0.0.1', localPort: 57268, remoteAddress: '127.0.0.1', remotePort: 46419, remoteFamily: 'IPv4', timeout: undefined, bytesWritten: 839, bytesRead: 0 } }
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: fetch failed
+ ❯ node:internal/deps/undici/undici:15456:13
+ ❯ call src/harness.testutil.ts:264:15
+    262|     ...(body === undefined ? {} : { body: typeof body === 'string' ? b…
+    263|   };
+    264|   const res = await fetch(`${h.url}${path}`, init);
+       |               ^
+    265|   const text = await res.text();
+    266|   let json: unknown;
+
+This error originated in "src/hardening.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "holds the client slot until the lane slot is released (receipt settled), then frees it". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+Caused by: SocketError: other side closed
+ ❯ Socket.<anonymous> node:internal/deps/undici/undici:6569:28
+ ❯ Socket.emit node:events:531:35
+ ❯ endReadableNT node:internal/streams/readable:1698:12
+ ❯ process.processTicksAndRejections node:internal/process/task_queues:89:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'UND_ERR_SOCKET', socket: { localAddress: '127.0.0.1', localPort: 57254, remoteAddress: '127.0.0.1', remotePort: 46419, remoteFamily: 'IPv4', timeout: undefined, bytesWritten: 839, bytesRead: 0 } }
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: fetch failed
+ ❯ node:internal/deps/undici/undici:15456:13
+ ❯ call src/harness.testutil.ts:264:15
+    262|     ...(body === undefined ? {} : { body: typeof body === 'string' ? b…
+    263|   };
+    264|   const res = await fetch(`${h.url}${path}`, init);
+       |               ^
+    265|   const text = await res.text();
+    266|   let json: unknown;
+
+This error originated in "src/hardening.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "holds the client slot until the lane slot is released (receipt settled), then frees it". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+Caused by: SocketError: other side closed
+ ❯ Socket.<anonymous> node:internal/deps/undici/undici:6569:28
+ ❯ Socket.emit node:events:531:35
+ ❯ endReadableNT node:internal/streams/readable:1698:12
+ ❯ process.processTicksAndRejections node:internal/process/task_queues:89:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'UND_ERR_SOCKET', socket: { localAddress: '127.0.0.1', localPort: 57244, remoteAddress: '127.0.0.1', remotePort: 46419, remoteFamily: 'IPv4', timeout: undefined, bytesWritten: 839, bytesRead: 0 } }
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: fetch failed
+ ❯ node:internal/deps/undici/undici:15456:13
+ ❯ call src/harness.testutil.ts:264:15
+    262|     ...(body === undefined ? {} : { body: typeof body === 'string' ? b…
+    263|   };
+    264|   const res = await fetch(`${h.url}${path}`, init);
+       |               ^
+    265|   const text = await res.text();
+    266|   let json: unknown;
+
+This error originated in "src/hardening.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "holds the client slot until the lane slot is released (receipt settled), then frees it". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+Caused by: SocketError: other side closed
+ ❯ Socket.<anonymous> node:internal/deps/undici/undici:6569:28
+ ❯ Socket.emit node:events:531:35
+ ❯ endReadableNT node:internal/streams/readable:1698:12
+ ❯ process.processTicksAndRejections node:internal/process/task_queues:89:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'UND_ERR_SOCKET', socket: { localAddress: '127.0.0.1', localPort: 57230, remoteAddress: '127.0.0.1', remotePort: 46419, remoteFamily: 'IPv4', timeout: undefined, bytesWritten: 839, bytesRead: 0 } }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  23 failed | 7 passed (30)
+     Errors  6 errors
+   Start at  23:05:25
+   Duration  20.76s (tests 87%, import 7%, transform 6%)
+

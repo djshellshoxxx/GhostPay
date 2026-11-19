@@ -1,0 +1,434 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T09:10:49.196027+00:00",
+  "task_id": "RW-MERCHANT-PROFILE-CLOCK",
+  "finding": "GP-AUD-208-01",
+  "mapped_features": [
+    "F-WEB-19",
+    "F-MER-05",
+    "spec14"
+  ],
+  "base_sha": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+  "audit_head": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+  "original_audit_source_blob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+  "original_source_matches_audit": true,
+  "cherry_pick_sequence_before_packet": [
+    "4ea57693db40b3fad7a4aff1e98a507a3d9b74f2",
+    "9f68917f1a3721a8d20d23002174a5094223ca20",
+    "67caefd2f0a696f115abbc61a7cfc7ccf923f731"
+  ],
+  "runtime_sha": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+  "requirement_and_decision": {
+    "requirement": "A caller-supplied invalid verification clock must not make an expired, validly signed merchant profile verify successfully or cause a clock-coercion exception.",
+    "authorization": "Coordinator explicitly assigned this previously unowned conditional Low finding after PR266. Subsequent coordinator/reviewer direction chose finite-only validation and unchanged result precedence.",
+    "accepted_domain": "All finite numbers. Negative Unix seconds, fractions, zero and extreme finite values retain the exact existing comparison behavior.",
+    "invalid_domain": "NaN, either Infinity and all non-number runtime types are rejected without coercion.",
+    "result_semantics": "Existing expired result at the existing expiry predicate, after size, format and signature checks. No new result variant or thrown error.",
+    "audit_proposal_not_adopted": "The initial audit suggested safe integers/nonnegative clocks and a format reason. Those broader changes were not implemented because the existing profile API permits finite fractional/negative values and existing error precedence must remain stable."
+  },
+  "red_proof": {
+    "source_revision": "9f68917f1a3721a8d20d23002174a5094223ca20",
+    "fixture": "signMerchantProfile({...body,exp:NOW-1},public deterministic test KEY); no post-signing expiry tamper.",
+    "reference_now": 1700000000,
+    "signed_expiry": 1699999999,
+    "signature_control": "Both object and JSON inputs verify successfully at exp-1 and return expired at ordinary NOW.",
+    "tests_failed": 26,
+    "tests_passed": 37,
+    "successful_expired_verifications": 22,
+    "coercion_exceptions": 4,
+    "positive_infinity_already_rejected": true,
+    "finite_comparison_controls_passed": 26,
+    "error_precedence_preserved": true
+  },
+  "runtime_delta": "One predicate change: if (!Number.isFinite(nowSec) || p.exp <= nowSec) return {ok:false,reason:\"expired\"}; plus matching JSDoc.",
+  "checks": [
+    {
+      "name": "merchant-profile-clock-red",
+      "source_revision": "9f68917f1a3721a8d20d23002174a5094223ca20",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/merchantProfile.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose"
+      ],
+      "cwd": "packages/invoice-schema",
+      "exit_code": 1,
+      "seconds": 2.618,
+      "observed_at": "2026-11-19T08:58:35.529167+00:00",
+      "log": "merchant-profile-clock-red.log",
+      "receipt": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-red.json",
+      "raw_log": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-red.log"
+    },
+    {
+      "name": "merchant-profile-clock-green",
+      "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/merchantProfile.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose"
+      ],
+      "cwd": "packages/invoice-schema",
+      "exit_code": 0,
+      "seconds": 1.451,
+      "observed_at": "2026-11-19T09:08:36.884924+00:00",
+      "log": "merchant-profile-clock-green.log",
+      "receipt": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-green.json",
+      "raw_log": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-green.log"
+    },
+    {
+      "name": "merchant-profile-clock-full-coverage",
+      "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "packages/invoice-schema",
+      "exit_code": 1,
+      "seconds": 494.182,
+      "observed_at": "2026-11-19T09:08:35.162891+00:00",
+      "log": "merchant-profile-clock-full-coverage.log",
+      "receipt": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-full-coverage.json",
+      "raw_log": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-full-coverage.log"
+    },
+    {
+      "name": "merchant-profile-clock-build",
+      "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/invoice-schema/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 2.331,
+      "observed_at": "2026-11-19T09:00:11.485599+00:00",
+      "log": "merchant-profile-clock-build.log",
+      "receipt": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-build.json",
+      "raw_log": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-build.log"
+    },
+    {
+      "name": "merchant-profile-clock-typecheck",
+      "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/invoice-schema/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 5.422,
+      "observed_at": "2026-11-19T09:00:09.088749+00:00",
+      "log": "merchant-profile-clock-typecheck.log",
+      "receipt": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-typecheck.json",
+      "raw_log": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-typecheck.log"
+    },
+    {
+      "name": "merchant-profile-clock-lint",
+      "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src"
+      ],
+      "cwd": "packages/invoice-schema",
+      "exit_code": 0,
+      "seconds": 9.385,
+      "observed_at": "2026-11-19T09:00:20.931927+00:00",
+      "log": "merchant-profile-clock-lint.log",
+      "receipt": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-lint.json",
+      "raw_log": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-lint.log"
+    },
+    {
+      "name": "merchant-profile-clock-passphrase-focused",
+      "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/passphrase.test.ts",
+        "-t",
+        "authentic but malformed plaintext gives typed errors",
+        "--maxWorkers=1",
+        "--reporter=verbose"
+      ],
+      "cwd": "packages/invoice-schema",
+      "exit_code": 0,
+      "seconds": 6.159,
+      "observed_at": "2026-11-19T09:09:33.573422+00:00",
+      "log": "merchant-profile-clock-passphrase-focused.log",
+      "receipt": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-passphrase-focused.json",
+      "raw_log": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-passphrase-focused.log"
+    }
+  ],
+  "full_package_coverage": null,
+  "broader_package_result": {
+    "status": "FAILED; full coverage qualification remains unfulfilled",
+    "passed_tests": 786,
+    "failed_tests": 1,
+    "passed_files": 12,
+    "failed_files": 1,
+    "seconds": 494.182,
+    "failure": "passphrase.test.ts: authentic but malformed plaintext gives typed errors (reachable only with the passphrase) timed out at its unchanged60000ms budget.",
+    "source_parity": "Failed test, passphrase KDF, envelope parser, JSON and invoice signing sources are byte-identical to8a2ce1da. This path does not call verifyMerchantProfile.",
+    "followup": "Exactly one authorized focused rerun without coverage; actual exit status/receipt retained separately. It cannot turn the original full coverage run into a pass.",
+    "focused_rerun": {
+      "passed_selected": 1,
+      "unselected": 25,
+      "exit_code": 0,
+      "seconds": 6.159,
+      "unchanged_test_timeout_ms": 60000
+    }
+  },
+  "source_proof": {
+    "base": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb",
+    "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+    "original_source_blob_matches_audit": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+    "runtime_source_hashes": [
+      {
+        "path": "packages/invoice-schema/src/merchantProfile.ts",
+        "sha256": "00141a5b07600b68c0dc175f9810dd9adfd79fa272693a1cf496d3cfff2bbb67"
+      },
+      {
+        "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+        "sha256": "13cd1dfeb566e86be85dc1218fa7ad15d1c3e4142b36585d4f679c182cf4deb6"
+      }
+    ],
+    "preserved_source_hashes": [
+      {
+        "path": "packages/invoice-schema/src/json.ts",
+        "sha256": "0a54fa384f04516fd9b56b2e2b44cfa04a2d1ec9d748fea2d4ff73f96aa5a0d7",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "packages/invoice-schema/src/json.test.ts",
+        "sha256": "156e287d1efb0fc5cabd66510da616a12ea7fe2368025acec7473e02da19fc24",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "packages/invoice-schema/src/sign.ts",
+        "sha256": "8efcb19e49d30dbc742c89104c178f10691026c554278e8e44b9ad0b394964d3",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "packages/invoice-schema/src/expiry.ts",
+        "sha256": "2b7b71e62f300aff38e63960d4dc5e7e6317b6a5a5de061bfea4b15dede63227",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "packages/invoice-schema/src/index.ts",
+        "sha256": "c3fbe2caa3ab089824b5d4c3140d1abd6a2c6b41f788b94e9d97946159236f28",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "packages/invoice-schema/vitest.config.ts",
+        "sha256": "5bb4bb2ef05f4079bf016a6cbb8a6b361e7106507957b225f55ef69133a77b2c",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "packages/invoice-schema/package.json",
+        "sha256": "c32cad9520d1ad2a37cdbf6dd8c0703741780be4c0943e8ff102b97e8b2e3582",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "apps/web/src/lib/embedHost.ts",
+        "sha256": "d6e88df50c9d66b71e637ec423b98484898f1f2049d10a86dc8a992b8441a561",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "apps/web/src/lib/merchantTemplate.ts",
+        "sha256": "8bb7e7bcadb5922abd6baf2ee541d81c16a84fae778e828a1e7b523138ac4ce1",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "apps/web/src/components/MerchantProfilePanel.tsx",
+        "sha256": "0971c0fed755ac51fd3b6b7e726699844d74b0dcc105801edc4bde70921931bd",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "package.json",
+        "sha256": "e6e11d17db5a845f296e270f5d19fe3ecdb0640d64e061d6de6d95108f8e916d",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "c5305bd026b32331d0dd758ac2a359480b9865cc5871c3276ce1ebb6c07ead9e",
+        "compared_with": "8a2ce1da1507771935b88bdc91ecad9eb5c540cb"
+      }
+    ],
+    "accepted_clock_domain": "all finite numeric values; original comparisons retained, including negative/fractional values",
+    "invalid_clock_result": "expired, after original size/format/signature precedence",
+    "caller_boundary": "Clock comes from local services.nowMs()/nowSeconds; no profile-controlled clock path found in the three current callers."
+  },
+  "review": [
+    {
+      "reviewer": "root",
+      "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "result": "SOURCE PASS"
+    },
+    {
+      "reviewer": "contract_security",
+      "source_revision": "67caefd2f0a696f115abbc61a7cfc7ccf923f731",
+      "result": "SOURCE AND RAW RED PASS; final archived-evidence review recorded separately by reviewer"
+    }
+  ],
+  "qualification_limits": [
+    "Conditional supplied-clock correctness issue. Current inspected callers supply local clock dependencies; no profile-controlled clock, browser exploit or observed production occurrence was established.",
+    "A finite but inaccurate caller clock remains trusted as before. This change does not authenticate wall time or prevent intentional finite clock substitution.",
+    "No cryptographic domain/signature/format change, no caller/web runtime change and no #265 JSON-array or other excluded-owner edit.",
+    "No browser, public network, wallet, deployment, external merchant acceptance or fresh npm-ci claim.",
+    "Whole-package qualification is reported at its actual source and exit status. Combined-head hosted qualification and final completion ledger remain coordinator-owned."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-red.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-red.json",
+      "sha256": "4883085fb5c0c7858a03b44f48babad3b3e06ad0a1b5e030648fb7fd00b96b8e",
+      "bytes": 508
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-red.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-red.log",
+      "sha256": "daa3afe3572f93859c0b958be1afd25ad8e27ebe376684240779ba0109bfbe38",
+      "bytes": 17318
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-green.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-green.json",
+      "sha256": "bef1f81af4d92ddb9009ce39496da883711d64b173328e40edea42ee4864db33",
+      "bytes": 512
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-green.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-green.log",
+      "sha256": "0deb2f2b2ab9b36f96b2b3a9c24a64e19374d727d79687a05d98b66865c68ac1",
+      "bytes": 9040
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-full-coverage.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-full-coverage.json",
+      "sha256": "cef5de54c828a9943e705e28d8209ebb5abb3848af189cbbda891d7144cad1c3",
+      "bytes": 487
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-full-coverage.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-full-coverage.log",
+      "sha256": "5d6c56d1251e33dbda993272a4ce940e83e4f23cb35539417f13e9df7266403b",
+      "bytes": 3683
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-build.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-build.json",
+      "sha256": "1212720c33997f58114308db819e9fd114a926daedd88f6d8c66afa40c47b97f",
+      "bytes": 452
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-build.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-typecheck.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-typecheck.json",
+      "sha256": "4b25174e5331a28195cf914154c277763fa1a1bd9dce1d69c84ba09e8fcc1926",
+      "bytes": 470
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-typecheck.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-lint.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-lint.json",
+      "sha256": "06b016fd4704fac73f0bc360fc435eee6ec9863691a8aaef240561c62b2e0a4e",
+      "bytes": 476
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-lint.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-lint.log",
+      "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "bytes": 174
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-passphrase-focused.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-passphrase-focused.json",
+      "sha256": "95e85b07d5c1917a1000773827e66f942e0a237cdc56d8def81d0e34412f2fd9",
+      "bytes": 603
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-passphrase-focused.log",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-passphrase-focused.log",
+      "sha256": "dec6593d5bbcc581565cf40c6ee2475545050247640312a170b2a08dd4a35880",
+      "bytes": 4273
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-dependency-copy.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-dependency-copy.json",
+      "sha256": "0dbf0ee5d9bd1481b7e0b352c28f549c0d0cbfc4646691fdf88f419abcd233ab",
+      "bytes": 501
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-baseline-source.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-baseline-source.json",
+      "sha256": "e179a09bb902f1fe746bececb8a3f35af6e3d180ebb0c34dbb6024333e8ce32d",
+      "bytes": 581
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-original-source.ts.txt",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-original-source.ts.txt",
+      "sha256": "8a4692b3222c05c1a66410323a763effffca76b22cc22a0fa6930f82d754ae6c",
+      "bytes": 7508
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-regression-source.test.ts.txt",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-regression-source.test.ts.txt",
+      "sha256": "13cd1dfeb566e86be85dc1218fa7ad15d1c3e4142b36585d4f679c182cf4deb6",
+      "bytes": 7347
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-audit-source.patch",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-audit-source.patch",
+      "sha256": "bea7ed10dbc71ee27b255cad0e3679146fccb53b305afc0340c3cceeb848fa58",
+      "bytes": 6256
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-source-proof.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-source-proof.json",
+      "sha256": "7eba5e4cef982ef98d6c9c1aab66d5b6e893ddb6bb3037ca51eb456c266b3d38",
+      "bytes": 3528
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-passphrase-source-parity.json",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-passphrase-source-parity.json",
+      "sha256": "d7566c29ccb900abbbcda923aafbb729ab5f40b908aba7aa593da1fd8df905fa",
+      "bytes": 1189
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-final-source.ts.txt",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-final-source.ts.txt",
+      "sha256": "00141a5b07600b68c0dc175f9810dd9adfd79fa272693a1cf496d3cfff2bbb67",
+      "bytes": 7611
+    },
+    {
+      "path": "docs/handoffs/agents/evidence/merchant-profile-clock-20261119/merchant-profile-clock-built-runtime.js.txt",
+      "source": "/workspace/scratch/6eafdb04d91b/workflow-evidence/merchant-profile-clock-built-runtime.js.txt",
+      "sha256": "125c47bf88a856ce2cdbd04c2226d717dbc084f0c85481bc69743900a9b1a96f",
+      "bytes": 6816
+    }
+  ]
+}

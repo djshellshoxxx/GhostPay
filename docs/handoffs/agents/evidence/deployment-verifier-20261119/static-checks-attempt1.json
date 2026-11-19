@@ -1,0 +1,13 @@
+[
+  {
+    "check": "typecheck",
+    "argv": [
+      "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "packages/chain-adapters/tsconfig.json",
+      "--noEmit"
+    ],
+    "exit_code": -9
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "base": "f3c38f3f3208637eb5673ed9ace2e6975d1a2719",
+  "original_gate": "slither . --filter-paths \"lib|test|script\" --fail-medium --exclude-informational --exclude-low",
+  "gate_unchanged": true,
+  "triggers_permissions_other_jobs_unchanged": true,
+  "shell_syntax": "pass",
+  "yaml_parse": "pass",
+  "baseline_sha256": "fc4b3b98b1e5eb671d9a6351988024b017bbe715813d966d5ec18c7df481c1cd",
+  "candidate_sha256": "2019dd76a75392a42859f8d9122f008bbd1430cabe72731e2fca24fe733b0f2a",
+  "full_analyzer_campaign_executed": false
+}

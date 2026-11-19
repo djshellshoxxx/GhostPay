@@ -1,0 +1,146 @@
+[
+  {
+    "command": [
+      "git",
+      "bundle",
+      "create",
+      "/workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/remaining-work-original-history.bundle",
+      "refs/heads/chatgpt/ghostpay-buffered-sweep-20261119",
+      "refs/heads/chatgpt/ghostpay-confidential-forward-20261119",
+      "refs/heads/chatgpt/ghostpay-dependency-reconcile-20261119",
+      "refs/heads/chatgpt/ghostpay-deployment-docs-20261119",
+      "refs/heads/chatgpt/ghostpay-deployment-readback-20261119",
+      "refs/heads/chatgpt/ghostpay-design-model-ci-20261119",
+      "refs/heads/chatgpt/ghostpay-devnet-canonical-fixture-20261119",
+      "refs/heads/chatgpt/ghostpay-example-idb-ci-20261119",
+      "refs/heads/chatgpt/ghostpay-ledger-tolerance-20261119",
+      "refs/heads/chatgpt/ghostpay-merchant-profile-clock-20261119",
+      "refs/heads/chatgpt/ghostpay-op-fees-20261119",
+      "refs/heads/chatgpt/ghostpay-op-fees-corrected-baseline-20261119",
+      "refs/heads/chatgpt/ghostpay-pay-residuals-20261119",
+      "refs/heads/chatgpt/ghostpay-policy-client-20261119",
+      "refs/heads/chatgpt/ghostpay-policy-guard-20261119",
+      "refs/heads/chatgpt/ghostpay-pool-seed-security-20261119",
+      "refs/heads/chatgpt/ghostpay-quote-age-20261119",
+      "refs/heads/chatgpt/ghostpay-relayer-recovery-20261119",
+      "refs/heads/chatgpt/ghostpay-remaining-ci-20261119",
+      "refs/heads/chatgpt/ghostpay-remaining-work-20261119",
+      "refs/heads/chatgpt/ghostpay-selfhost-pins-20261119",
+      "refs/heads/chatgpt/ghostpay-slither-visibility-20261119",
+      "refs/heads/chatgpt/ghostpay-sol-tron-compat-20261119",
+      "refs/heads/chatgpt/ghostpay-verifier-parity-20261119",
+      "refs/heads/chatgpt/ghostpay-workflow-recovery-20261119",
+      "^198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "^14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "^28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+      "^7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+      "^3c95b2a00bdcfb45dd36242ff40c133dd19d1811"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/GhostPay",
+    "exit_code": 0,
+    "seconds": 0.613,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "init",
+      "--bare",
+      "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi",
+    "exit_code": 0,
+    "seconds": 0.005,
+    "output": "hint: Using 'master' as the name for the initial branch. This default branch name\nhint: will change to \"main\" in Git 3.0. To configure the initial branch name\nhint: to use in all of your new repositories, which will suppress this warning,\nhint: call:\nhint:\nhint: \tgit config --global init.defaultBranch <name>\nhint:\nhint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\nhint: 'development'. The just-created branch can be renamed via this command:\nhint:\nhint: \tgit branch -m <name>\nhint:\nhint: Disable this message with \"git config set advice.defaultBranchName false\"\nInitialized empty Git repository in /workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git/\n"
+  },
+  {
+    "command": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "https://github.com/djshellshoxxx/GhostPay.git",
+      "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+      "7fab4b92f90d65dd8d3e992eaca2483187f544a7",
+      "3c95b2a00bdcfb45dd36242ff40c133dd19d1811"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git",
+    "exit_code": 0,
+    "seconds": 9.718,
+    "output": "From https://github.com/djshellshoxxx/GhostPay\n * branch              198aa5baff22272453733a0f3dcfcac0e0994eec -> FETCH_HEAD\n * branch              14ded337a10c140d7a9f9a9238ec038587d925bb -> FETCH_HEAD\n * branch              28edbcf55093a6d6056232fd59ef37a2ae832b9a -> FETCH_HEAD\n * branch              7fab4b92f90d65dd8d3e992eaca2483187f544a7 -> FETCH_HEAD\n * branch              3c95b2a00bdcfb45dd36242ff40c133dd19d1811 -> FETCH_HEAD\n"
+  },
+  {
+    "command": [
+      "git",
+      "bundle",
+      "verify",
+      "/workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/remaining-work-original-history.bundle"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git",
+    "exit_code": 0,
+    "seconds": 0.074,
+    "output": "/workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/remaining-work-original-history.bundle is okay\nThe bundle contains these 25 refs:\n7ee1b02775502069af31c657133d258b3622f6b5 refs/heads/chatgpt/ghostpay-buffered-sweep-20261119\n47a0895ab347a259e4ff040400c2b9fdc180e2a1 refs/heads/chatgpt/ghostpay-confidential-forward-20261119\ndbd638867051e5067c0139b516d47637c916f667 refs/heads/chatgpt/ghostpay-dependency-reconcile-20261119\nbd6b26dda054fe376dfdc0a347eb4e158c4487a0 refs/heads/chatgpt/ghostpay-deployment-docs-20261119\n8238f66b6beafb46a7a2d1598e5c4c354819fc86 refs/heads/chatgpt/ghostpay-deployment-readback-20261119\n3fa9029d6a921238c9b574e203dd8518b9b9a6b8 refs/heads/chatgpt/ghostpay-design-model-ci-20261119\nbd62f0737e34112253380a0919fc3aedaaf2c7db refs/heads/chatgpt/ghostpay-devnet-canonical-fixture-20261119\nf3c38f3f3208637eb5673ed9ace2e6975d1a2719 refs/heads/chatgpt/ghostpay-example-idb-ci-20261119\n51836d594700e362d033ecb7d1b481d0c9473f8b refs/heads/chatgpt/ghostpay-ledger-tolerance-20261119\n34eee707030b6818021aa535af32d0f566f43bba refs/heads/chatgpt/ghostpay-merchant-profile-clock-20261119\na2afd126b0276cda9ec0429657bbd130e17827ea refs/heads/chatgpt/ghostpay-op-fees-20261119\n49d68d7b2d71119d43c502a6ff4613c927b36f1c refs/heads/chatgpt/ghostpay-op-fees-corrected-baseline-20261119\n7b932e3e9467b762877813bf862d3ac5a6b6142b refs/heads/chatgpt/ghostpay-pay-residuals-20261119\n7828166cdc10bc146b48ab1339f584c0b2753da2 refs/heads/chatgpt/ghostpay-policy-client-20261119\ncff088d69c0f2731722894ee8835164b3ec8b221 refs/heads/chatgpt/ghostpay-policy-guard-20261119\n59715cb3a741cfb8d1be7a5333290e3a61752960 refs/heads/chatgpt/ghostpay-pool-seed-security-20261119\n5dca6b4d2ef378618f35a639e192277fe37d0288 refs/heads/chatgpt/ghostpay-quote-age-20261119\n308a2148dbf7e23795b223e1f8aeaf6806b4160f refs/heads/chatgpt/ghostpay-relayer-recovery-20261119\n33a4e5b457dfda723dfca027568a0f4bf8983f14 refs/heads/chatgpt/ghostpay-remaining-ci-20261119\n1cb5f907923a2d67587a303882b10c9bfea175b7 refs/heads/chatgpt/ghostpay-remaining-work-20261119\n42ef7f626d5859bdd0940d5c8fee0d93777c38a9 refs/heads/chatgpt/ghostpay-selfhost-pins-20261119\nbda57c32039fa4908cacc8fdeecfe29f44d47ad7 refs/heads/chatgpt/ghostpay-slither-visibility-20261119\n7be82871a4867210da20e185202be0faa661ed7b refs/heads/chatgpt/ghostpay-sol-tron-compat-20261119\n5128da10b7916e090922a6fe68469d5f0dddd072 refs/heads/chatgpt/ghostpay-verifier-parity-20261119\n18d44d283ef28197ea84670c9662e81a93c42188 refs/heads/chatgpt/ghostpay-workflow-recovery-20261119\nThe bundle requires these 8 refs:\n28edbcf55093a6d6056232fd59ef37a2ae832b9a \n198aa5baff22272453733a0f3dcfcac0e0994eec \n7fab4b92f90d65dd8d3e992eaca2483187f544a7 \n14ded337a10c140d7a9f9a9238ec038587d925bb \na36f48da526b818a5940a7a0ed2ae7303ef17056 \nffd982a7aea2856c186b40ef236a39720a1b81f5 \ne454de6abfefda70d82784fafc1d8949b277c334 \n58d89b39b27a66454ebf392bcd35d5c68b57b2f8 \nThe bundle uses this hash algorithm: sha1\n"
+  },
+  {
+    "command": [
+      "git",
+      "fetch",
+      "/workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/remaining-work-original-history.bundle",
+      "refs/heads/chatgpt/*:refs/remotes/remaining-evidence/*"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git",
+    "exit_code": 0,
+    "seconds": 0.384,
+    "output": "From /workspace/scratch/6eafdb04d91b/GhostPay/docs/completion/remaining-20261119/provenance/remaining-work-original-history.bundle\n * [new branch]        chatgpt/ghostpay-workflow-recovery-20261119 -> remaining-evidence/ghostpay-workflow-recovery-20261119\n * [new branch]        chatgpt/ghostpay-verifier-parity-20261119 -> remaining-evidence/ghostpay-verifier-parity-20261119\n * [new branch]        chatgpt/ghostpay-sol-tron-compat-20261119 -> remaining-evidence/ghostpay-sol-tron-compat-20261119\n * [new branch]        chatgpt/ghostpay-slither-visibility-20261119 -> remaining-evidence/ghostpay-slither-visibility-20261119\n * [new branch]        chatgpt/ghostpay-selfhost-pins-20261119 -> remaining-evidence/ghostpay-selfhost-pins-20261119\n * [new branch]        chatgpt/ghostpay-remaining-work-20261119 -> remaining-evidence/ghostpay-remaining-work-20261119\n * [new branch]        chatgpt/ghostpay-remaining-ci-20261119 -> remaining-evidence/ghostpay-remaining-ci-20261119\n * [new branch]        chatgpt/ghostpay-relayer-recovery-20261119 -> remaining-evidence/ghostpay-relayer-recovery-20261119\n * [new branch]        chatgpt/ghostpay-quote-age-20261119 -> remaining-evidence/ghostpay-quote-age-20261119\n * [new branch]        chatgpt/ghostpay-pool-seed-security-20261119 -> remaining-evidence/ghostpay-pool-seed-security-20261119\n * [new branch]        chatgpt/ghostpay-policy-guard-20261119 -> remaining-evidence/ghostpay-policy-guard-20261119\n * [new branch]        chatgpt/ghostpay-policy-client-20261119 -> remaining-evidence/ghostpay-policy-client-20261119\n * [new branch]        chatgpt/ghostpay-pay-residuals-20261119 -> remaining-evidence/ghostpay-pay-residuals-20261119\n * [new branch]        chatgpt/ghostpay-op-fees-corrected-baseline-20261119 -> remaining-evidence/ghostpay-op-fees-corrected-baseline-20261119\n * [new branch]        chatgpt/ghostpay-op-fees-20261119 -> remaining-evidence/ghostpay-op-fees-20261119\n * [new branch]        chatgpt/ghostpay-merchant-profile-clock-20261119 -> remaining-evidence/ghostpay-merchant-profile-clock-20261119\n * [new branch]        chatgpt/ghostpay-ledger-tolerance-20261119 -> remaining-evidence/ghostpay-ledger-tolerance-20261119\n * [new branch]        chatgpt/ghostpay-example-idb-ci-20261119 -> remaining-evidence/ghostpay-example-idb-ci-20261119\n * [new branch]        chatgpt/ghostpay-devnet-canonical-fixture-20261119 -> remaining-evidence/ghostpay-devnet-canonical-fixture-20261119\n * [new branch]        chatgpt/ghostpay-design-model-ci-20261119 -> remaining-evidence/ghostpay-design-model-ci-20261119\n * [new branch]        chatgpt/ghostpay-deployment-readback-20261119 -> remaining-evidence/ghostpay-deployment-readback-20261119\n * [new branch]        chatgpt/ghostpay-deployment-docs-20261119 -> remaining-evidence/ghostpay-deployment-docs-20261119\n * [new branch]        chatgpt/ghostpay-dependency-reconcile-20261119 -> remaining-evidence/ghostpay-dependency-reconcile-20261119\n * [new branch]        chatgpt/ghostpay-confidential-forward-20261119 -> remaining-evidence/ghostpay-confidential-forward-20261119\n * [new branch]        chatgpt/ghostpay-buffered-sweep-20261119 -> remaining-evidence/ghostpay-buffered-sweep-20261119\n"
+  },
+  {
+    "command": [
+      "git",
+      "fsck",
+      "--connectivity-only",
+      "--no-dangling"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git",
+    "exit_code": 0,
+    "seconds": 0.093,
+    "output": "notice: HEAD points to an unborn branch (master)\n"
+  },
+  {
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/verified-checkout",
+      "1cb5f907923a2d67587a303882b10c9bfea175b7"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/public-only.git",
+    "exit_code": 0,
+    "seconds": 0.684,
+    "output": "Preparing worktree (detached HEAD 1cb5f907)\nHEAD is now at 1cb5f907 docs(security): finalize merchant profile clock cross-review\n"
+  },
+  {
+    "command": [
+      "python",
+      "docs/handoffs/agents/evidence/mythril-28edbcf-20261119/compare-reports.py",
+      "--check"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/verified-checkout",
+    "exit_code": 0,
+    "seconds": 0.455,
+    "output": "PASS: five raw files, ZIP parity, exact source/test bindings and all eleven finding comparisons verified; strict failure unchanged.\n"
+  },
+  {
+    "command": [
+      "python",
+      "docs/handoffs/agents/evidence/mythril-replay-cross-review-20261119/verify.py",
+      "--repository",
+      "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/verified-checkout"
+    ],
+    "cwd": "/workspace/scratch/6eafdb04d91b/ghostpay-original-history-_0ztg_xi/verified-checkout",
+    "exit_code": 0,
+    "seconds": 0.04,
+    "output": "PASS: six archived files, eleven exact finding/input identities, both timestamp outcomes and unchanged assertions verified; no EVM run.\n"
+  }
+]

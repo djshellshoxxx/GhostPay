@@ -1,0 +1,6 @@
+(node:138) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL: docker-compose.yml web image default is not pinned by digest: 'nginxinc/nginx-unprivileged:1.27-alpine'
+FAIL: docker-compose.yml tor BASE_IMAGE default is not pinned by digest: 'debian:bookworm-slim'
+FAIL: tor/Dockerfile ARG BASE_IMAGE default is not pinned by digest: 'debian:bookworm-slim'
+selfhost selftest: 3 failure(s)

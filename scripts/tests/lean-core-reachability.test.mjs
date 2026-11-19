@@ -1,6 +1,7 @@
 // Lean-core reachability proof (docs/handoffs/LEAN_RELEASE_SCOPE.md: deferred paths are "excluded-with-proof" only
 // with source/artifact reachability evidence). Two locks:
-//   1. The workspace dependency closure of apps/web and apps/relayer equals a reviewed allowlist, so no other deferred
+//   1. The workspace dependency closure of apps/web and apps/relayer equals unchanged reviewed allowlists plus named
+//      pending-owner-review additions, so no other deferred
 //      package (pools, PIR, policy, fiat, merchant, confidential, ...) can enter either build without this test failing.
 //   2. Inside apps/web, the core flow sources (views + lib) never import the deferred BTC / Solana / TRON / registry
 //      features or their packages. Only the app shell (App.tsx) mounts those views, as separate routes.
@@ -65,6 +66,8 @@ const WEB_REVIEWED = [
 // a new dep fails, and a PENDING entry that left the closure fails too, so the list never grows or lingers silently.
 // A WEB_DEFERRED package must never be listed here.
 const WEB_PENDING_OWNER_REVIEW = [
+  '@ghostpay/hygiene', // #222 / 72c4b533: apps/web direct dep; not owner-reviewed
+  '@ghostpay/metadata-hardening', // #222 / 72c4b533: apps/web direct dep; not owner-reviewed
   '@ghostpay/net-transport', // 61e790da: apps/web direct dep (with scan-source)
   '@ghostpay/payment-uri', // bff25c1d: apps/web direct dep
   '@ghostpay/pir-two-server', // 62e6a449: transitive via @ghostpay/scan-source
@@ -82,13 +85,24 @@ test('apps/web workspace dependency closure is REVIEWED plus the named PENDING_O
   );
 });
 
-test('apps/relayer workspace dependency closure is the reviewed allowlist', () => {
-  assert.deepEqual(closure('apps/relayer', workspaceIndex()), [
-    '@ghostpay/chain-adapters',
-    '@ghostpay/core-crypto',
-    '@ghostpay/invoice-schema',
-    '@ghostpay/relayer-guard',
-  ]);
+// Keep the original relayer owner-reviewed boundary distinct from the #222 request-padding integration.
+const RELAYER_REVIEWED = [
+  '@ghostpay/chain-adapters',
+  '@ghostpay/core-crypto',
+  '@ghostpay/invoice-schema',
+  '@ghostpay/relayer-guard',
+];
+const RELAYER_PENDING_OWNER_REVIEW = [
+  '@ghostpay/metadata-hardening', // #222 / 72c4b533: relayer direct dep; not owner-reviewed
+];
+
+test('apps/relayer workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list', () => {
+  assert.equal(RELAYER_PENDING_OWNER_REVIEW.filter((n) => WEB_DEFERRED.includes(n) || RELAYER_REVIEWED.includes(n)).length, 0);
+  assert.deepEqual(
+    closure('apps/relayer', workspaceIndex()),
+    [...RELAYER_REVIEWED, ...RELAYER_PENDING_OWNER_REVIEW].sort(),
+    'apps/relayer closure must equal REVIEWED + RELAYER_PENDING_OWNER_REVIEW (not owner-reviewed: ' + RELAYER_PENDING_OWNER_REVIEW.join(', ') + ')',
+  );
 });
 
 const SRC = join(ROOT, 'apps/web/src');

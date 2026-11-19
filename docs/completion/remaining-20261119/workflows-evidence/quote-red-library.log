@@ -1,0 +1,80 @@
+(node:35) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-quotes/packages/chain-adapters
+
+(node:70) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/quote.heartbeat.test.ts (9 tests | 7 failed) 304ms
+   ❯ LF-365f017ac-1: sourced feed heartbeat caps the caller age (9)
+     × rejects a price beyond heartbeat plus the original 300-second margin despite a day-long quote 145ms
+     × rejects invalid heartbeat 0n before reading 22ms
+     × rejects invalid heartbeat -1n before reading 2ms
+     × rejects invalid heartbeat 604801n before reading 27ms
+     × rejects invalid heartbeat 1200 before reading 16ms
+     × rejects invalid heartbeat NaN before reading 2ms
+     × rejects invalid heartbeat 1200 before reading 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/quote.heartbeat.test.ts > LF-365f017ac-1: sourced feed heartbeat caps the caller age > rejects a price beyond heartbeat plus the original 300-second margin despite a day-long quote
+AssertionError: promise resolved "{ answer: 100000000n, …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "answer": 100000000n,
++   "decimals": 8,
++   "roundId": 1n,
++   "updatedAt": 1799998499n,
+  }
+
+ ❯ src/quote.heartbeat.test.ts:15:59
+     13| describe('LF-365f017ac-1: sourced feed heartbeat caps the caller age',…
+     14|   it('rejects a price beyond heartbeat plus the original 300-second ma…
+     15|     await expect(readPrice(reader(1_501n), FEED, options)).rejects.toT…
+       |                                                           ^
+     16|   });
+     17|   it('accepts the exact heartbeat-plus-margin boundary', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/quote.heartbeat.test.ts > LF-365f017ac-1: sourced feed heartbeat caps the caller age > rejects invalid heartbeat 0n before reading
+ FAIL  src/quote.heartbeat.test.ts > LF-365f017ac-1: sourced feed heartbeat caps the caller age > rejects invalid heartbeat -1n before reading
+ FAIL  src/quote.heartbeat.test.ts > LF-365f017ac-1: sourced feed heartbeat caps the caller age > rejects invalid heartbeat 604801n before reading
+ FAIL  src/quote.heartbeat.test.ts > LF-365f017ac-1: sourced feed heartbeat caps the caller age > rejects invalid heartbeat 1200 before reading
+ FAIL  src/quote.heartbeat.test.ts > LF-365f017ac-1: sourced feed heartbeat caps the caller age > rejects invalid heartbeat NaN before reading
+ FAIL  src/quote.heartbeat.test.ts > LF-365f017ac-1: sourced feed heartbeat caps the caller age > rejects invalid heartbeat 1200 before reading
+AssertionError: promise resolved "{ answer: 100000000n, …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "answer": 100000000n,
++   "decimals": 8,
++   "roundId": 1n,
++   "updatedAt": 1800000000n,
+  }
+
+ ❯ src/quote.heartbeat.test.ts:31:105
+     29|       latestRoundData: () => { reads += 1; return reader(0n).latestRou…
+     30|     };
+     31|     await expect(readPrice(counted, FEED, { ...options, heartbeatSecon…
+       |                                                                                                         ^
+     32|       .rejects.toThrow('QUOTE_FAILED: feed heartbeat');
+     33|     expect(reads).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 2 passed (9)
+   Start at  22:32:43
+   Duration  25.31s (import 93%, transform 5%, tests 1%, worker 1%)
+

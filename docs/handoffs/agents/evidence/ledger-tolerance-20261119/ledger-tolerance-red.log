@@ -1,0 +1,31 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-ledger-tolerance/packages/merchant-ledger
+
+ ❯ src/ledger.test.ts (28 tests | 1 failed) 54ms
+   ❯ reconcile (11)
+     × a tolerance at least the amount due never turns zero payments into paid (review G, D-2) 17ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/ledger.test.ts > reconcile > a tolerance at least the amount due never turns zero payments into paid (review G, D-2)
+AssertionError: expected 'paid' to be 'unmatched' // Object.is equality
+
+Expected: "unmatched"
+Received: "paid"
+
+ ❯ src/ledger.test.ts:118:61
+    116|   it('a tolerance at least the amount due never turns zero payments in…
+    117|     const o = { now: T0, tolerance: { absoluteMinor: 100n } };
+    118|     expect(status(reconcile([inv('a', '50')], [], o), 'a')).toBe('unma…
+       |                                                             ^
+    119|     expect(status(reconcile([inv('a', '50')], [pay('p', '1', { invoice…
+    120|     expect(status(reconcile([inv('b', '10000')], [], { now: T0, tolera…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 27 passed (28)
+   Start at  23:02:41
+   Duration  619ms (transform 68%, tests 16%, import 14%, worker 2%)
+

@@ -1,0 +1,15 @@
+{
+  "name": "devnet-fixture-native-green-verified",
+  "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "command": [
+    "python",
+    "/workspace/scratch/6eafdb04d91b/workflow-evidence/devnet-fixture-native-replay.py",
+    "/workspace/scratch/6eafdb04d91b/GhostPay-devnet-fixture",
+    "green"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 14.598,
+  "observed_at": "2026-11-19T08:39:33.184071+00:00",
+  "log": "devnet-fixture-native-green-verified.log"
+}

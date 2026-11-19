@@ -1,0 +1,21 @@
+{
+  "name": "op-fees-scoped-lint",
+  "source_revision": "de253aaf7f4139c8778b73cd7a9e052f9438e91e",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "node_modules/eslint/bin/eslint.js",
+    "--config",
+    "eslint.config.js",
+    "apps/relayer/src/chain.ts",
+    "apps/relayer/src/opFees.ts",
+    "apps/relayer/src/service.ts",
+    "apps/relayer/src/budget.ts",
+    "apps/relayer/src/harness.testutil.ts",
+    "apps/relayer/src/opFees.test.ts"
+  ],
+  "cwd": ".",
+  "exit_code": 1,
+  "seconds": 15.45,
+  "observed_at": "2026-11-19T08:14:19.582849+00:00",
+  "log": "op-fees-scoped-lint.log"
+}

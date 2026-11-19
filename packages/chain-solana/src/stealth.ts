@@ -1,8 +1,8 @@
 import { equalBytes } from '@noble/curves/utils.js';
 import { encodeAnnouncement } from './announcement.js';
 import { fail } from './errors.js';
-import { reduceDigestNonZero, taggedSha512, TAG_TWEAK, TAG_VIEW_TAG } from './hash.js';
-import { decodeMetaAddress, type SolanaMetaAddress } from './keys.js';
+import { reduceDigestNonZero, taggedSha256, taggedSha512, TAG_SHARED, TAG_VIEW_TAG } from './hash.js';
+import { decodeMetaAddress, type SolanaMetaKeys } from './keys.js';
 import {
   brandPoint,
   decodeAddress,
@@ -43,30 +43,30 @@ export interface AnnouncementFields {
   readonly viewTag: number;
 }
 
-/** @internal View tag: first byte of SHA-512(tag || K). */
-export function viewTagOf(sharedPoint: EdPoint): number {
-  return taggedSha512(TAG_VIEW_TAG, sharedPoint.toBytes())[0] as number;
+/** @internal ADR-0017 view tag: `SHA-256(dst("view-tag") || R || Z)[0]`. */
+export function viewTagOf(R: Uint8Array, Z: EdPoint): number {
+  return taggedSha256(TAG_VIEW_TAG, R, Z.toBytes())[0] as number;
 }
 
-/** @internal h = SHA-512(tag || K || R || S) mod L, rejected if zero. */
-export function tweakOf(sharedPoint: EdPoint, R: Uint8Array, S: Uint8Array): bigint {
-  return reduceDigestNonZero(taggedSha512(TAG_TWEAK, sharedPoint.toBytes(), R, S));
+/** @internal ADR-0017 tweak: `h = SHA-512(dst("shared") || R || Z || S) mod L`, rejected if zero. */
+export function tweakOf(R: Uint8Array, Z: EdPoint, S: Uint8Array): bigint {
+  return reduceDigestNonZero(taggedSha512(TAG_SHARED, R, Z.toBytes(), S));
 }
 
 /**
- * @internal Cofactor-cleared ECDH point K = [8]*(k*Q) (Monero `ge_mul8` style).
+ * @internal ADR-0017 ECDH point Z = k*Q, with no cofactor multiplication.
  *
- * @remarks Q is already validated as prime-order, so [8] is a bijection on
- * the subgroup and never changes security; it is kept as defence in depth so a
- * future relaxation of input validation cannot let a torsion component of a
- * hostile R desynchronise sender and receiver.
+ * @remarks Every Q reaching this function has been validated as a canonical, torsion-free, non-identity point
+ * (`decodePrimeOrderPoint`), so a hostile R cannot carry a torsion component and k*Q stays in the prime-order
+ * subgroup. This matches `@ghostpay/solana-stealth` byte for byte (an earlier version used [8]*(k*Q), which
+ * derived different addresses for the same keys).
  *
- * @throws {SolanaStealthError} `IDENTITY_POINT` (only reachable for an unvalidated small-order Q).
+ * @throws {SolanaStealthError} `IDENTITY_POINT` (unreachable for a validated Q and k in [1, L-1]).
  */
 export function sharedSecretPoint(Q: EdPoint, k: bigint): EdPoint {
-  const K = Q.multiply(k).clearCofactor();
-  if (K.is0()) fail('IDENTITY_POINT');
-  return K;
+  const Z = Q.multiply(k);
+  if (Z.is0()) fail('IDENTITY_POINT');
+  return Z;
 }
 
 /**
@@ -87,7 +87,7 @@ export function addTweak(S: EdPoint, h: bigint): EdPoint {
  * @param ephemeral r in [1, L-1].
  */
 export function deriveWithEphemeral(
-  meta: SolanaMetaAddress,
+  meta: SolanaMetaKeys,
   ephemeral: SecretScalar,
 ): DerivedSolanaStealthPayment {
   const S = decodePrimeOrderPoint(meta.spendPublicKey);
@@ -95,10 +95,10 @@ export function deriveWithEphemeral(
   if (S.equals(V)) fail('KEY_REUSE');
   const r = scalarValue(ephemeral);
   const R = brandPoint(Point.BASE.multiply(r));
-  const K = sharedSecretPoint(V, r);
-  const h = tweakOf(K, R, meta.spendPublicKey);
+  const Z = sharedSecretPoint(V, r);
+  const h = tweakOf(R, Z, meta.spendPublicKey);
   const P = brandPoint(addTweak(S, h));
-  const viewTag = viewTagOf(K);
+  const viewTag = viewTagOf(R, Z);
   return {
     stealthAddress: encodeAddress(P),
     stealthPublicKey: P,
@@ -111,18 +111,20 @@ export function deriveWithEphemeral(
 /**
  * Derives a fresh one-time Solana address for a recipient (sender side).
  *
- * @remarks r is sampled uniformly in [1, L-1]; R = r*B; K = [8](r*V);
- * h = H_s(K || R || S); P = S + h*B; view_tag = H_t(K)[0]. All recipient points
- * must be canonical and of prime order (see `decodePrimeOrderPoint`).
+ * @remarks ADR-0017 section 3, identical to `@ghostpay/solana-stealth`: r is sampled uniformly in [1, L-1];
+ * R = r*B; Z = r*V; h = SHA-512(dst("shared") || R || Z || S) mod L; P = S + h*B;
+ * view_tag = SHA-256(dst("view-tag") || R || Z)[0]. All recipient points must be canonical and of prime order
+ * (see `decodePrimeOrderPoint`). A text meta-address may be for any cluster (the cluster is not part of the
+ * derivation); callers bound to one cluster use `decodeMetaAddress(text, cluster)` first, as the adapter does.
  *
- * @param meta Text meta-address or decoded keys.
+ * @param meta `st:sol:` meta-address or decoded keys.
  * @param rng Optional random source (tests only).
  * @returns Address, announcement and its parts.
- * @throws {SolanaStealthError} `INVALID_META_ADDRESS`, `INVALID_POINT`, `KEY_REUSE`, `RNG_*`.
+ * @throws {SolanaStealthError} `INVALID_META_ADDRESS`, `LEGACY_META_ADDRESS`, `INVALID_POINT`, `KEY_REUSE`, `RNG_*`.
  * @security r is discarded after use; reuse of r for two payments links them.
  */
 export function deriveStealthPayment(
-  meta: string | SolanaMetaAddress,
+  meta: string | SolanaMetaKeys,
   rng?: RandomSource,
 ): DerivedSolanaStealthPayment {
   const keys = typeof meta === 'string' ? decodeMetaAddress(meta) : meta;
@@ -137,7 +139,7 @@ export function deriveStealthPayment(
 /**
  * Checks whether an announcement pays the holder of `viewSecret` (receiver side).
  *
- * @remarks Recomputes K = [8](v*R), compares the view tag first (cheap rejection
+ * @remarks Recomputes Z = v*R, compares the view tag first (cheap rejection
  * of ~255/256 foreign announcements), then derives P = S + h*B. When
  * `expectedAddress` is given (the account the transaction actually funded), P
  * must equal it. Returns `null` for "not ours", including every hostile
@@ -170,9 +172,9 @@ export function checkAnnouncement(
   } catch {
     return null;
   }
-  const K = sharedSecretPoint(R, v);
-  if (viewTagOf(K) !== ann.viewTag) return null;
-  const h = tweakOf(K, ann.ephemeralPublicKey, spendPublicKey);
+  const Z = sharedSecretPoint(R, v);
+  if (viewTagOf(ann.ephemeralPublicKey, Z) !== ann.viewTag) return null;
+  const h = tweakOf(ann.ephemeralPublicKey, Z, spendPublicKey);
   const P = brandPoint(addTweak(S, h));
   if (expected !== undefined && !equalBytes(expected, P)) return null;
   return { stealthAddress: encodeAddress(P), stealthPublicKey: P, tweak: scalarFromValue(h) };

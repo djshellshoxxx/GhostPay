@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "scope": "#220 D-2 merchant ledger tolerance recovery",
+  "baseCommit": "3db3c3597666ceb77862481ee8ed4a38a6d2ff81",
+  "historicalFixCommit": "6db114920589a38dbbb5d52f45bb7a52be98d9b6",
+  "recoveryBranch": "chatgpt/ghostpay-ledger-tolerance-20261119",
+  "runtimeMatchesHistoricalSource": true,
+  "baseline": {
+    "testsPassed": 27,
+    "testsFailed": 1,
+    "independentProbeConforms": false
+  },
+  "final": {
+    "testsPassed": 28,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "coverage": {
+      "statements": 100,
+      "branches": 99.32,
+      "functions": 100,
+      "lines": 100
+    },
+    "typecheck": "pass",
+    "lint": "pass",
+    "independentProbeConforms": true,
+    "independentSourceReview": "root coordinator PASS"
+  },
+  "testAddition": "Explicit zero-due paid control; original absolute/bps no-payment and counted-payment cases preserved",
+  "toolchain": {
+    "node": "24.22.3",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0",
+    "nodeOldSpaceMiB": 768,
+    "workers": 1
+  },
+  "qualificationScope": "Complete merchant-ledger package; no full CLI or repository-wide qualification claimed",
+  "sourceFiles": {
+    "packages/merchant-ledger/src/reconcile.ts": {
+      "sha256": "90b0f13a954d758426e7b9c2e5be13871044283d18bd0f6bf2d2776c4244b678"
+    },
+    "packages/merchant-ledger/src/ledger.test.ts": {
+      "sha256": "11f8d8a08746faedb176d1153582081f4817db0d518d9535664a408a025bbfb2"
+    }
+  },
+  "evidence": {
+    "ledger-tolerance-independent-red.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-independent-red.json",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-independent-red.json",
+      "sha256": "6cab133b7e81cf038f235697d319cfe65fc11b7f9e736de68982704e358624cc",
+      "bytes": 1492
+    },
+    "ledger-tolerance-independent-red.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-independent-red.log",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-independent-red.log",
+      "sha256": "d834d16a8f7e3dc419db650bc0186bc788004485c938e077f6e6cf9e6f57c28b",
+      "bytes": 458
+    },
+    "ledger-tolerance-independent-green.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-independent-green.json",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-independent-green.json",
+      "sha256": "f8c8c9bffda5246c38a0fb195cc05bcb69a1ec69e51b458ca5438c0ea10e6d09",
+      "bytes": 1498
+    },
+    "ledger-tolerance-independent-green.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-independent-green.log",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-independent-green.log",
+      "sha256": "f594b99a31f718df41bc0eea208393f8d71453921a3a2939287556d2ce550586",
+      "bytes": 464
+    },
+    "ledger-tolerance-red.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-red.log",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-red.log",
+      "sha256": "8b13d2f0b28443ab37500076a2f4bb8fc12b0189e853550a2f3ae134635241c6",
+      "bytes": 1321
+    },
+    "ledger-tolerance-green.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-green.log",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-green.log",
+      "sha256": "0488c0418b4e4f4a84de1004aca610ffa18cc66df4463f181c0f071d8c80c2c5",
+      "bytes": 1050
+    },
+    "ledger-tolerance-typecheck.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-typecheck.log",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "ledger-tolerance-lint.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-lint.log",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "ledger-tolerance-tests.patch": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance-tests.patch",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance-tests.patch",
+      "sha256": "a4409ea5208fc28cd7c1aaa08b6221942a2058982c155abf38c54625a7e34dc9",
+      "bytes": 1209
+    },
+    "ledger-tolerance.patch": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/ledger-tolerance.patch",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/ledger-tolerance.patch",
+      "sha256": "8413627599c7d41aaa4af055fcc198c2f38b77a29ab71c65ac7bc61f785246c6",
+      "bytes": 885
+    },
+    "probe-ledger-tolerance.mjs": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/security-evidence/probe-ledger-tolerance.mjs",
+      "archivedPath": "docs/handoffs/agents/evidence/ledger-tolerance-20261119/probe-ledger-tolerance.mjs",
+      "sha256": "a354ac9a87304771e60b470f3a7ccd5f8cac03230b9fc4f90b72f6c20e3a5f2a",
+      "bytes": 2146
+    }
+  }
+}

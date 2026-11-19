@@ -1,0 +1,81 @@
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-policy-client/packages/policy-scheme
+
+ ❯ src/client.test.ts (40 tests | 5 failed) 136ms
+   ❯ policy token coverage (SEC-11) (5)
+     × a policy without limits (limitsRoot zero) can withdraw any token and the native coin 19ms
+     × a policy with limits covers exactly its leaves; any other asset can never be withdrawn 2ms
+     × fails closed on a record whose tree is missing or does not match its limits root 2ms
+     × fails closed on a hand-built tree whose leaf for the token is not provably in the limits root 1ms
+     × refuses a malformed token 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/client.test.ts > policy token coverage (SEC-11) > a policy without limits (limitsRoot zero) can withdraw any token and the native coin
+TypeError: policyCoversToken is not a function
+ ❯ src/client.test.ts:169:12
+    167|     const rec = buildPolicyRecord(acct('acct-002'));
+    168|     expect(rec.policy.limitsRoot).toBe(ZERO_HASH);
+    169|     expect(policyCoversToken(rec, 'native')).toBe(true);
+       |            ^
+    170|     expect(policyCoversToken(rec, ZERO_ADDRESS)).toBe(true);
+    171|     expect(policyCoversToken(rec, DAI)).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/client.test.ts > policy token coverage (SEC-11) > a policy with limits covers exactly its leaves; any other asset can never be withdrawn
+TypeError: policyCoversToken is not a function
+ ❯ src/client.test.ts:175:12
+    173|   it('a policy with limits covers exactly its leaves; any other asset …
+    174|     const twoLeaves = buildPolicyRecord(acct('acct-001')); // tree-2: …
+    175|     expect(policyCoversToken(twoLeaves, 'native')).toBe(true);
+       |            ^
+    176|     expect(policyCoversToken(twoLeaves, ZERO_ADDRESS)).toBe(true);
+    177|     expect(policyCoversToken(twoLeaves, USDC)).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/client.test.ts > policy token coverage (SEC-11) > fails closed on a record whose tree is missing or does not match its limits root
+TypeError: policyCoversToken is not a function
+ ❯ src/client.test.ts:186:12
+    184|   it('fails closed on a record whose tree is missing or does not match…
+    185|     const rec = buildPolicyRecord(acct('acct-001'));
+    186|     expect(policyCoversToken({ ...rec, tree: null }, USDC)).toBe(false…
+       |            ^
+    187|     expect(policyCoversToken({ ...rec, policy: { ...rec.policy, limits…
+    188|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/client.test.ts > policy token coverage (SEC-11) > fails closed on a hand-built tree whose leaf for the token is not provably in the limits root
+TypeError: policyCoversToken is not a function
+ ❯ src/client.test.ts:198:12
+    196|     // from (token, limit, windowSeconds) and reverts with InvalidLimi…
+    197|     const reusedHash = { ...tree, leaves: [...tree.leaves, { ...usdcLe…
+    198|     expect(policyCoversToken({ ...rec, tree: reusedHash }, DAI)).toBe(…
+       |            ^
+    199|     // An extra DAI entry with its own correct leaf hash that is not i…
+    200|     const daiLimit = { token: DAI, limit: usdcLeaf.limit, windowSecond…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/client.test.ts > policy token coverage (SEC-11) > refuses a malformed token
+TypeError: policyCoversToken is not a function
+ ❯ src/client.test.ts:209:25
+    207|   it('refuses a malformed token', () => {
+    208|     const rec = buildPolicyRecord(acct('acct-002'));
+    209|     expect(codeOf(() => policyCoversToken(rec, '0xnope'))).toBe('INVAL…
+       |                         ^
+    210|   });
+    211| });
+ ❯ codeOf src/client.test.ts:57:5
+ ❯ src/client.test.ts:209:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 35 passed (40)
+   Start at  22:43:54
+   Duration  2.58s (import 57%, transform 34%, tests 7%, worker 2%)
+

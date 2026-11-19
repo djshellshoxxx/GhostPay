@@ -9,7 +9,7 @@ import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { clearFragment, extractFragment } from '../lib/fragment';
 import { safeText, payeeFingerprint } from '../lib/displayText';
-import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
+import { formatCountdown, formatFiat, formatUnits, formatUnix, minutesLabel, shortHex } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage, type MessageDescriptor } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
@@ -1180,7 +1180,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           <div className="check">
             <input id="delay" type="checkbox" checked={useDelay} onChange={(e) => { setUseDelay(e.target.checked); }} />
             <label htmlFor="delay">
-              {t('pay.delay.label', { min: String(Math.round(app.settings.delayMinSec / 60)), max: String(Math.round(app.settings.delayMaxSec / 60)) })}
+              {t('pay.delay.label', { min: minutesLabel(app.settings.delayMinSec), max: minutesLabel(app.settings.delayMaxSec) })}
             </label>
           </div>
           <p className="hint">{t('pay.delay.hint')}</p>

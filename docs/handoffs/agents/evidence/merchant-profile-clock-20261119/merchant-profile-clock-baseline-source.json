@@ -1,0 +1,14 @@
+[
+  {
+    "path": "packages/invoice-schema/src/merchantProfile.ts",
+    "source_revision": "9f68917f1a3721a8d20d23002174a5094223ca20",
+    "archive": "merchant-profile-clock-original-source.ts.txt",
+    "sha256": "8a4692b3222c05c1a66410323a763effffca76b22cc22a0fa6930f82d754ae6c"
+  },
+  {
+    "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+    "source_revision": "9f68917f1a3721a8d20d23002174a5094223ca20",
+    "archive": "merchant-profile-clock-regression-source.test.ts.txt",
+    "sha256": "13cd1dfeb566e86be85dc1218fa7ad15d1c3e4142b36585d4f679c182cf4deb6"
+  }
+]

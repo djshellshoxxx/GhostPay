@@ -1,0 +1,292 @@
+diff --git a/packages/policy-scheme/src/negative.test.ts b/packages/policy-scheme/src/negative.test.ts
+index 02b5b6de..2c165a79 100644
+--- a/packages/policy-scheme/src/negative.test.ts
++++ b/packages/policy-scheme/src/negative.test.ts
+@@ -1,6 +1,6 @@
+ import { GhostPayCryptoError, parseCompressedPoint, secretScalarFromBytes } from '@ghostpay/core-crypto';
+-import { decodeFunctionData } from 'viem/utils';
+-import { describe, expect, it } from 'vitest';
++import { decodeFunctionData, hashTypedData, recoverAddress } from 'viem/utils';
++import { afterEach, describe, expect, it, vi } from 'vitest';
+ import {
+   PolicySchemeError,
+   ZERO_ADDRESS,
+@@ -256,3 +256,213 @@ describe('calldata', () => {
+     expect(code(() => encodeExecuteWithdraw(ZERO_ADDRESS, td.structHash))).toBe('INVALID_ADDRESS');
+   });
+ });
++
++// Repro from the PR #218 dropped-fix triage (T-b85e0b59-4): check of b85e0b59 lost in merge 84c2c185.
++describe('signPolicyTypedData signs only policy-account structs', () => {
++  const owner = (): ReturnType<typeof secretScalarFromBytes> => secretScalarFromBytes(hexBytes(A.ownerPrivateKey));
++  const td = buildWithdrawTypedData({ chainId: 1, account: A.accountAddress, token: USDC, amount: 5n, deadline: 10n, nonce: 1n, limit: null });
++  // Each variant carries its own correct digest, so only the shape check can refuse it.
++  const consistent = (v: Record<string, unknown>): never => {
++    const digest = hashTypedData(v as never);
++    return { ...v, structHash: digest, digest } as never;
++  };
++  const withdrawTypes = td.types.Withdraw;
++
++  it('refuses a self-consistent foreign struct under a foreign domain', async () => {
++    const foreign = {
++      domain: { name: 'Evil', version: '1', chainId: 1, verifyingContract: A.accountAddress },
++      types: { Transfer: [{ name: 'amt', type: 'uint256' }] },
++      primaryType: 'Transfer',
++      message: { amt: 1n },
++    };
++    expect(await acode(() => signPolicyTypedData(consistent(foreign), owner(), A.ownerAddress))).toBe('SIGNING_FAILED');
++  });
++
++  it('refuses foreign domains, types and primary types even with a matching digest', async () => {
++    const variants: Record<string, unknown>[] = [
++      { ...td, domain: { ...td.domain, name: 'Evil' } },
++      { ...td, domain: { ...td.domain, version: '2' } },
++      { ...td, domain: { ...td.domain, salt: H1 } },
++      { ...td, domain: { ...td.domain, verifyingContract: ZERO_ADDRESS } },
++      { ...td, types: { Withdraw: [{ name: 'x', type: 'uint256' }] }, message: { x: 1n } },
++      { ...td, types: { Withdraw: withdrawTypes.slice(0, 4) } },
++      { ...td, types: { Withdraw: withdrawTypes.map((f) => (f.name === 'amount' ? { ...f, type: 'uint128' } : f)) } },
++      { ...td, types: { Withdraw: withdrawTypes, Extra: [{ name: 'y', type: 'uint256' }] } },
++      { ...td, primaryType: 'Transfer', types: { Transfer: withdrawTypes } },
++      { ...td, primaryType: 'hasOwnProperty', types: { hasOwnProperty: withdrawTypes } },
++    ];
++    const got: string[] = [];
++    for (const v of variants) got.push(await acode(() => signPolicyTypedData(consistent(v), owner(), A.ownerAddress)));
++    expect(got).toEqual(variants.map(() => 'SIGNING_FAILED'));
++    // Malformed shapes are refused before any hashing (no TypeError escapes).
++    const malformed: Record<string, unknown>[] = [
++      { ...td, domain: { ...td.domain, chainId: 0 } },
++      { ...td, domain: null },
++      { ...td, types: null },
++      { ...td, types: { Withdraw: [null, ...withdrawTypes.slice(1)] } },
++      { ...td, primaryType: 1 },
++    ];
++    const bad: string[] = [];
++    for (const v of malformed) bad.push(await acode(() => signPolicyTypedData(v as never, owner(), A.ownerAddress)));
++    expect(bad).toEqual(malformed.map(() => 'SIGNING_FAILED'));
++  });
++
++  // A self-consistent ERC-2612 Permit: what an attacker wants the owner key to sign.
++  const permit = {
++    domain: { name: 'USD Coin', version: '2', chainId: 1, verifyingContract: USDC },
++    types: {
++      Permit: [
++        { name: 'owner', type: 'address' },
++        { name: 'spender', type: 'address' },
++        { name: 'value', type: 'uint256' },
++        { name: 'nonce', type: 'uint256' },
++        { name: 'deadline', type: 'uint256' },
++      ],
++    },
++    primaryType: 'Permit',
++    message: { owner: A.ownerAddress, spender: DEST, value: 2n ** 256n - 1n, nonce: 0n, deadline: 2n ** 256n - 1n },
++  } as const;
++  const permitDigest = hashTypedData(permit as never);
++  /** Getter returning `first` on the first read and `then` on every later read. */
++  const swapping = (first: unknown, then: unknown): PropertyDescriptor => {
++    let reads = 0;
++    return { enumerable: true, get: () => (reads++ === 0 ? first : then) };
++  };
++
++  it('reads the typed data once: getters that turn policy data into a Permit are refused', async () => {
++    const shapeSwap = Object.defineProperties({}, {
++      domain: swapping(td.domain, permit.domain),
++      types: swapping(td.types, permit.types),
++      primaryType: swapping(td.primaryType, permit.primaryType),
++      message: { enumerable: true, value: permit.message },
++      structHash: { enumerable: true, value: permitDigest },
++      digest: { enumerable: true, value: permitDigest },
++    });
++    expect(await acode(() => signPolicyTypedData(shapeSwap as never, owner(), A.ownerAddress))).toBe('SIGNING_FAILED');
++    // The digest itself swaps: the policy digest when compared, the Permit digest on later reads. Only the
++    // policy digest may be signed.
++    const digestSwap = Object.defineProperties({ ...td }, { digest: swapping(td.digest, permitDigest) });
++    const sig = await signPolicyTypedData(digestSwap, owner(), A.ownerAddress);
++    expect(await recoverAddress({ hash: td.digest, signature: sig.signature })).toBe(A.ownerAddress);
++    expect(sig.signature).toBe((await signPolicyTypedData(td, owner(), A.ownerAddress)).signature);
++  });
++
++  it('refuses a salt on the domain that is inherited or not enumerable', async () => {
++    const own = { name: td.domain.name, version: td.domain.version, chainId: td.domain.chainId, verifyingContract: td.domain.verifyingContract };
++    const inherited = Object.assign(Object.create({ salt: H1 }) as object, own);
++    const hidden = Object.defineProperty({ ...own }, 'salt', { value: H1, enumerable: false });
++    const got: string[] = [];
++    for (const domain of [inherited, hidden]) {
++      // viem reads the salt into the separator; the variant carries that salted digest, as an attacker's would.
++      const digest = hashTypedData({ domain, types: td.types, primaryType: td.primaryType, message: td.message } as never);
++      expect(digest).not.toBe(td.digest);
++      got.push(await acode(() => signPolicyTypedData({ ...td, domain, structHash: digest, digest }, owner(), A.ownerAddress)));
++    }
++    expect(got).toEqual(['SIGNING_FAILED', 'SIGNING_FAILED']);
++  });
++
++  it('signs only the digest it recomputes from the policy fields', async () => {
++    const sig = await signPolicyTypedData({ ...td, structHash: H1 }, owner(), A.ownerAddress);
++    expect(sig.signature).toBe((await signPolicyTypedData(td, owner(), A.ownerAddress)).signature);
++    const refused: unknown[] = [
++      { ...td, digest: undefined },
++      { ...td, message: { ...td.message, amount: 6n } },
++      { ...td, message: { ...td.message, amount: 5 } },
++      { ...td, message: null },
++      Object.defineProperty({ ...td }, 'message', { enumerable: true, get: () => { throw new TypeError('boom'); } }),
++      null,
++    ];
++    const got: string[] = [];
++    for (const v of refused) got.push(await acode(() => signPolicyTypedData(v as never, owner(), A.ownerAddress)).catch((e: unknown) => (e instanceof Error ? e.name : 'thrown')));
++    expect(got).toEqual(refused.map(() => 'SIGNING_FAILED'));
++  });
++
++  it('still signs every builder output', async () => {
++    const tds = [
++      td,
++      buildCancelWithdrawTypedData(1, A.accountAddress, H1),
++      buildProposeDestinationTypedData({ chainId: 1, account: A.accountAddress, newDestination: DEST, deadline: 1n, nonce: 3n }),
++      buildCancelDestinationTypedData(1, A.accountAddress, H1),
++    ];
++    for (const t of tds) expect(await acode(() => signPolicyTypedData(t, owner(), A.ownerAddress))).toBe('no error');
++  });
++});
++
++// Repro from the PR #218 dropped-fix triage (T-b85e0b59-5): check of b85e0b59 lost in merge 84c2c185.
++describe('buildWithdrawTypedData binds the proof leaf to (token, limit, window)', () => {
++  const tree = buildLimitsTree([
++    { token: ZERO_ADDRESS, limit: 100n, windowSeconds: 60n },
++    { token: USDC, limit: 10n, windowSeconds: 60n },
++  ]);
++  const lp = getLimitProof(tree, USDC);
++  const wbase = { chainId: 1, account: A.accountAddress, token: USDC, amount: 5n, deadline: 10n, nonce: 1n, limit: { limitsRoot: tree.root, proof: lp } };
++
++  it('accepts the genuine proof', () => {
++    expect(buildWithdrawTypedData(wbase).message.limitLeafHash).toBe(lp.leaf);
++    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { ...lp, leaf: lp.leaf.toUpperCase().replace('0X', '0x') as Hex } } }))).toBe('no error');
++  });
++
++  it('rejects an inflated limit or window on a genuine leaf', () => {
++    expect(code(() => buildWithdrawTypedData({ ...wbase, amount: 10n ** 20n, limit: { limitsRoot: tree.root, proof: { ...lp, limit: 10n ** 30n } } }))).toBe('INVALID_PROOF');
++    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { ...lp, windowSeconds: 1n } } }))).toBe('INVALID_PROOF');
++    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { ...lp, windowSeconds: 0n } } }))).toBe('INVALID_PROOF');
++  });
++
++  it("rejects another token's leaf", () => {
++    expect(code(() => buildWithdrawTypedData({ ...wbase, token: ZERO_ADDRESS }))).toBe('INVALID_PROOF');
++  });
++
++  it('rejects the root (an inner node) as a leaf', () => {
++    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { leaf: tree.root, proof: [], limit: 10n ** 30n, windowSeconds: 1n } } }))).toBe('INVALID_PROOF');
++  });
++});
++
++// Repro from the PR #218 dropped-fix triage (T-b85e0b59-6): check of b85e0b59 lost in merge 84c2c185.
++describe('getLimitProof recomputes the stored leaf of a restored tree', () => {
++  const tree = buildLimitsTree([
++    { token: ZERO_ADDRESS, limit: 100n, windowSeconds: 60n },
++    { token: USDC, limit: 10n, windowSeconds: 60n },
++  ]);
++  const edit = (patch: Record<string, unknown>): never =>
++    ({ ...tree, leaves: tree.leaves.map((l) => (l.token === USDC ? { ...l, ...patch } : l)) }) as never;
++
++  it('accepts an untouched tree', () => {
++    expect(getLimitProof(tree, USDC).limit).toBe(10n);
++  });
++
++  it('refuses a leaf whose limit, window or token was edited', () => {
++    expect(code(() => getLimitProof(edit({ limit: 10n ** 30n }), USDC))).toBe('INVALID_PROOF');
++    expect(code(() => getLimitProof(edit({ windowSeconds: 1n }), USDC))).toBe('INVALID_PROOF');
++    expect(code(() => getLimitProof(edit({ limit: 0n }), USDC))).toBe('INVALID_PROOF');
++    const other: Address = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
++    expect(code(() => getLimitProof(edit({ token: other }), other))).toBe('INVALID_PROOF');
++  });
++});
++
++// Repro from the PR #218 dropped-fix triage (T-b85e0b59-7): check of b85e0b59 lost in merge 84c2c185.
++describe('checkScheme2Announcement leaves no live viewing-secret copy', () => {
++  afterEach(() => vi.restoreAllMocks());
++
++  it('validates policy hashes and deployment before it copies the viewing secret', () => {
++    const view = secretScalarFromBytes(hexBytes(A.viewingPrivateKey));
++    const spend = parseCompressedPoint(hexBytes(A.spendingPublicKey));
++    const ann = { stealthAddress: A.accountAddress, ephemeralPublicKey: A.ephemeralPublicKey, metadata: A.viewTag };
++    // Records every 32-byte SecretBytes core-crypto fills (secretScalarFromBytes copies through `set`).
++    const copies: Uint8Array[] = [];
++    // eslint-disable-next-line @typescript-eslint/unbound-method
++    const realSet = Uint8Array.prototype.set;
++    vi.spyOn(Uint8Array.prototype, 'set').mockImplementation(function (this: Uint8Array, ...a: Parameters<typeof realSet>) {
++      if (this.length === 32 && this.constructor.name === 'SecretBytes') copies.push(this);
++      return realSet.apply(this, a);
++    });
++    const live = (): number => copies.filter((c) => c.some((b) => b !== 0)).length;
++    expect(code(() => checkScheme2Announcement(ann, view, spend, ['0xzz'], dep))).toBe('INVALID_HEX');
++    expect(code(() => checkScheme2Announcement(ann, view, spend, [A.policyHash], { ...dep, factory: ZERO_ADDRESS }))).toBe('INVALID_ADDRESS');
++    expect(code(() => checkScheme2Announcement(ann, view, spend, [A.policyHash], { ...dep, implementation: ZERO_ADDRESS }))).toBe('INVALID_ADDRESS');
++    expect(live()).toBe(0);
++    // The spy does see the copy of a valid call, and `finally` wipes it.
++    expect(checkScheme2Announcement(ann, view, spend, [A.policyHash], dep).matches).toBe(true);
++    expect(copies.length).toBeGreaterThan(0);
++    expect(live()).toBe(0);
++  });
++});
+diff --git a/packages/policy-scheme/src/router.test.ts b/packages/policy-scheme/src/router.test.ts
+index 5bc471b3..1dac9858 100644
+--- a/packages/policy-scheme/src/router.test.ts
++++ b/packages/policy-scheme/src/router.test.ts
+@@ -1,4 +1,4 @@
+-import { decodeFunctionData } from 'viem/utils';
++import { decodeFunctionData, encodeFunctionData } from 'viem/utils';
+ import { describe, expect, it } from 'vitest';
+ import {
+   MAX_POLICY_ROUTER_GROSS,
+@@ -105,3 +105,54 @@ describe('policy router calldata', () => {
+     expect(code(() => decodePolicyPaymentCalldata('0xbf333f2c', dep))).toBe('INVALID_INPUT');
+   });
+ });
++
++// Repro from the PR #218 dropped-fix triage (T-b85e0b59-3): checks of b85e0b59 lost in merge 84c2c185.
++describe('decodePolicyPaymentCalldata checks encoding, ephemeral key and metadata', () => {
++  const good = buildPolicyPaymentTx(base);
++  const args = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: good.tx.data }).args as unknown as unknown[];
++  // payERC20: [token, stealth, {owner, policyHash}, gross, minNet, deadline, eph, metadata]
++  const rebuild = (patch: Record<number, unknown>): `0x${string}` =>
++    encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: args.map((v, i) => (i in patch ? patch[i] : v)) as never });
++  const tag = good.metadata.slice(2, 4);
++  const mk = (token: string, net: bigint): string => `0x${tag}a9059cbb${token.slice(2).toLowerCase()}${net.toString(16).padStart(64, '0')}`;
++  const OTHER: Address = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
++
++  it('accepts the calldata buildPolicyPaymentTx builds', () => {
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({}), dep))).toBe('no error');
++    expect(code(() => decodePolicyPaymentCalldata(good.tx.data.toUpperCase().replace('0X', '0x') as `0x${string}`, dep))).toBe('no error');
++    const permit = buildPolicyPaymentTx({ ...base, permitSignature: `0x${'11'.repeat(32)}${'22'.repeat(32)}1b` });
++    expect(decodePolicyPaymentCalldata(permit.tx.data, dep).metadata).toBe(permit.metadata);
++  });
++
++  it('rejects metadata that is not router metadata for this call', () => {
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: `0x${'ff'.repeat(57)}` }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: '0x00' }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: mk(OTHER, good.net) }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: mk(USDC, good.net + 1n) }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: `0x${tag}eeeeeeee${'ee'.repeat(20)}${good.net.toString(16).padStart(64, '0')}` }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 3: 0n, 7: mk(USDC, 1n) }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 3: MAX_POLICY_ROUTER_GROSS + 1n }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 4: good.net + 1n }), dep))).toBe('INVALID_INPUT');
++  });
++
++  it('rejects an ephemeral key that is not a compressed point', () => {
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 6: `0x04${'11'.repeat(32)}` }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 6: `0x02${'00'.repeat(32)}` }), dep))).toBe('INVALID_INPUT');
++  });
++
++  it('rejects trailing or non-canonical calldata', () => {
++    expect(code(() => decodePolicyPaymentCalldata(`${good.tx.data}00`, dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(`${good.tx.data}${'00'.repeat(32)}`, dep))).toBe('INVALID_INPUT');
++  });
++
++  it('native calldata: metadata must be native and not below minNet', () => {
++    const n = buildPolicyPaymentTx({ ...base, token: 'native', minNet: 1n });
++    const nArgs = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: n.tx.data }).args as unknown as unknown[];
++    // payNative: [stealth, {owner, policyHash}, minNet, deadline, eph, metadata]
++    const nRebuild = (patch: Record<number, unknown>): `0x${string}` =>
++      encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payNative', args: nArgs.map((v, i) => (i in patch ? patch[i] : v)) as never });
++    expect(code(() => decodePolicyPaymentCalldata(nRebuild({}), dep))).toBe('no error');
++    expect(code(() => decodePolicyPaymentCalldata(nRebuild({ 5: mk(USDC, n.net) }), dep))).toBe('INVALID_INPUT');
++    expect(code(() => decodePolicyPaymentCalldata(nRebuild({ 2: n.net + 1n }), dep))).toBe('INVALID_INPUT');
++  });
++});

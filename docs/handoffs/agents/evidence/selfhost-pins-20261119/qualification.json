@@ -1,0 +1,64 @@
+{
+  "base": "bda57c32039fa4908cacc8fdeecfe29f44d47ad7",
+  "node": "22.23.4",
+  "selftest": {
+    "command": [
+      "flock",
+      "--close",
+      "/workspace/scratch/6eafdb04d91b/qualification.lock",
+      "bash",
+      "deploy/selftest.sh"
+    ],
+    "exit_code": 0
+  },
+  "compose": [
+    {
+      "profile": "default",
+      "command": [
+        "/workspace/scratch/6eafdb04d91b/qualification-tools/docker-compose-v5.8.0",
+        "--env-file",
+        "deploy/.env.example",
+        "-f",
+        "deploy/docker-compose.yml",
+        "config",
+        "--no-env-resolution",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "service_env_resolution": false,
+      "docker_config": "new empty temporary directory"
+    },
+    {
+      "profile": "onion",
+      "command": [
+        "/workspace/scratch/6eafdb04d91b/qualification-tools/docker-compose-v5.8.0",
+        "--env-file",
+        "deploy/.env.example",
+        "-f",
+        "deploy/docker-compose.yml",
+        "--profile",
+        "onion",
+        "config",
+        "--no-env-resolution",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "service_env_resolution": false,
+      "docker_config": "new empty temporary directory"
+    }
+  ],
+  "file_sha256": {
+    "deploy/.env.example": "78d35b3a45c44905ef7646a1837dad47d1352c1bd4de9b15f226265edf0d36bb",
+    "deploy/docker-compose.yml": "d581b75469296e9ab96e11f117061d44f072442934f1a6263c494f8bfe6f9ee4",
+    "deploy/tor/Dockerfile": "07c549bbaaa6f40b073a345e6ff82e8122efd1d8166abb05c1dbb9479b86709b",
+    "deploy/selftest.sh": "7512f5d5ab2d105eb03fe8880e57c79ff46b354748a68b3027129b6440b2f549",
+    ".github/workflows/ci.yml": "d4b3375ec2ff537b866be862a72f1ce756621c3554a20619cae0a5df0e34b5a5",
+    "deploy/README.md": "8ba690f18328c0f657c22a0615beac5870fde98b19e0bb126d97ab88d744639f",
+    "deploy/nginx/security-headers.conf": "77de01a89a1cff6740c4e5db2b5167f0ea862617081309bea8e4a93c4fb17b5d"
+  },
+  "container_lifecycle_commands_executed": false
+}

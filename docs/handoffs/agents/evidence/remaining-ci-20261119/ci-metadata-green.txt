@@ -1,0 +1,24 @@
+✔ table cells escape backslashes before pipes and collapse whitespace (15.353068ms)
+✔ a library change reaches every transitive dependent (7.698385ms)
+✔ a leaf change affects only itself (0.438662ms)
+✔ docs and markdown changes trigger nothing (0.420398ms)
+✔ root config forces the full suite (0.343544ms)
+✔ contracts change adds forge project and its TS consumers that exist (0.537067ms)
+✔ other forge projects do not pull in contract consumers (0.227606ms)
+✔ prefix match does not confuse similarly named workspaces (0.249789ms)
+✔ node script tests and unmapped paths are reported (0.353312ms)
+✔ buildsNeeded lists built dependencies in dependency order, skipping ones without build (3.560106ms)
+✔ topoOrder detects cycles (2.254217ms)
+✔ real repo: graph loads, is acyclic, and the committed package map is current (382.135827ms)
+✔ apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list (100.235116ms)
+✔ apps/relayer workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list (22.500388ms)
+✔ core web flow sources never reach deferred BTC/Solana/TRON/registry code (253.745474ms)
+✔ only the app shell mounts the deferred views (2584.776969ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4150.711726

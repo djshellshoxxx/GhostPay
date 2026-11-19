@@ -1,0 +1,17 @@
+{
+  "name": "relayer-hardening-red",
+  "source_revision": "ba54af382df5beefb11a5fe2455b59d99a9a1e87",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/hardening.test.ts",
+    "--coverage=false",
+    "--maxWorkers=1"
+  ],
+  "cwd": "apps/relayer",
+  "exit_code": 1,
+  "seconds": 22.041,
+  "observed_at": "2026-11-19T07:05:46.575716+00:00",
+  "log": "relayer-hardening-red.log"
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+  "runId": 44472897672,
+  "jobId": 135386401249,
+  "artifactId": 14508101082,
+  "files": {
+    "artifact.zip": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/mythril-28edbcf/artifact.zip",
+      "bytes": 17059,
+      "sha256": "d3d29c449003c05e6a9c1b87548aeff837e93cd49ae2af44c580898eeab9a7f0"
+    },
+    "metadata.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/mythril-28edbcf/metadata.json",
+      "bytes": 532,
+      "sha256": "069e0c0f09d0e000d379e20b1112f1718087fcd5d0e6425f42e565e256f1788e"
+    },
+    "report.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/mythril-28edbcf/report.log",
+      "bytes": 283170,
+      "sha256": "84f4f5846b68054fac52dc4968da78996d520c03c4049318ddc62ba4424b642e"
+    },
+    "pr246-mythril-job.log": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/pr246-mythril-job.log",
+      "bytes": 35802,
+      "sha256": "5a1ac387668f8c724ebff1cad31064f6c3f6c246aabb655cd8feba0d5d402d41"
+    },
+    "pr246-analyzer-artifacts.json": {
+      "originalPath": "/workspace/scratch/6eafdb04d91b/pr246-analyzer-artifacts.json",
+      "bytes": 1792,
+      "sha256": "ce6a771ae3b627ffbea9ff8446add524ffc3865b32b5977437bf6baa232eeaca"
+    }
+  },
+  "byteIdenticalCopies": true,
+  "zipMemberParity": true
+}

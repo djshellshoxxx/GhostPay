@@ -1,0 +1,17 @@
+{
+  "schema": "ghostpay-merchant-profile-integrated-check/1",
+  "source": "9bec156622c4c606b97e7d43b1b6f12deff71063",
+  "files": [
+    {
+      "file": "receipt.json",
+      "bytes": 573,
+      "sha256": "b8bed06cb77f62f9954733462edf72f4d9b17d144ec0b60cfa069c9a613591d2"
+    },
+    {
+      "file": "tests.log",
+      "bytes": 576,
+      "sha256": "76f80d21cd4a80aa708178fb0ae0cd003829dddb8b7b8d49ff8189c92522874e"
+    }
+  ],
+  "scope": "Existing full merchant-profile regression file on integrated source; no browser or end-to-end remote exploit test"
+}

@@ -1,0 +1,354 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T07:02:58.464644+00:00",
+  "base_sha": "eb92878c09fbcd932bc1e85470bb65e12e8dd2f8",
+  "claim_sha": "5eb57197216652b6d97fe27ecdc212bdab181c58",
+  "historical_source_sha": "65392fcefefdb102bf71863d25f4a5ed9cd07e21",
+  "regression_sha": "a9267a67c9944b94e418c9483a67239528cf2d89",
+  "render_assertion_refinement_sha": "b98d36789a697b54463f596ea46d56a1b45e1172",
+  "implementation_commits": [
+    "617ae8b73afcd0834f14be17954fe84fb92391cb",
+    "36c66271d5ce491971339bbafbba0181609c66cd"
+  ],
+  "final_test_sha": "b69c5b91858da8d45491380b3354be54752ac4da",
+  "requirements": [
+    {
+      "id": "LF-65392fcef-3 / #218 L3",
+      "requirement": "Permit nonce RPC responses must be exactly one ABI uint256 word, with malformed results reported through an existing fixed user-facing error.",
+      "status": "IMPLEMENTED; FOCUSED GREEN"
+    },
+    {
+      "id": "LF-65392fcef-4 / #218 L3",
+      "requirement": "The existing delay label displays fractional minutes instead of rounding 90 seconds to 2 minutes.",
+      "status": "IMPLEMENTED; FOCUSED GREEN"
+    }
+  ],
+  "environment": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "node_options": "--max-old-space-size=768",
+    "setup": "Independent matching-lock dependencies copied from the quote worktree. Missing solana-stealth, tron-adapter and net-transport outputs rebuilt from this exact local source; newer root artifacts were not copied across differing source trees. No source change to those packages."
+  },
+  "checks": [
+    {
+      "name": "pay-residual-red",
+      "source_revision": "a9267a67c9944b94e418c9483a67239528cf2d89",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/pay.permitNonce.test.ts",
+        "src/views/Pay.test.tsx",
+        "-t",
+        "LF-65392fcef",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 1,
+      "seconds": 37.577,
+      "observed_at": "2026-11-19T06:48:57.794862+00:00",
+      "log": "pay-residual-red.log",
+      "node": "22.23.4",
+      "passed": 3,
+      "failed": 4,
+      "suite_load_failures": 1,
+      "result": "Four actual malformed-nonce failures and three valid-word passes. Pay component suite could not resolve an unbuilt source-matching Solana package; not counted as label behavior evidence."
+    },
+    {
+      "name": "pay-label-red",
+      "source_revision": "a9267a67c9944b94e418c9483a67239528cf2d89",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.test.tsx",
+        "-t",
+        "LF-65392fcef-4",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 1,
+      "seconds": 35.242,
+      "observed_at": "2026-11-19T06:52:11.372406+00:00",
+      "log": "pay-label-red.log",
+      "node": "22.23.4",
+      "passed": 0,
+      "failed": 1,
+      "skipped": 66,
+      "result": "Initial label lookup failure. Superseded as primary evidence by the next run, which first establishes that the generic delay control is rendered."
+    },
+    {
+      "name": "pay-label-red-rendered",
+      "source_revision": "617ae8b73afcd0834f14be17954fe84fb92391cb",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.test.tsx",
+        "-t",
+        "LF-65392fcef-4",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 1,
+      "seconds": 15.443,
+      "observed_at": "2026-11-19T06:57:08.310746+00:00",
+      "log": "pay-label-red-rendered.log",
+      "node": "22.23.4",
+      "passed": 0,
+      "failed": 1,
+      "skipped": 66,
+      "result": "Primary label RED: generic delay control renders, exact text assertion fails; captured DOM shows 2 to 3 minutes for configured 90 to 150 seconds."
+    },
+    {
+      "name": "pay-residual-build-solana-stealth",
+      "source_revision": "a9267a67c9944b94e418c9483a67239528cf2d89",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/solana-stealth/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 9.663,
+      "observed_at": "2026-11-19T06:50:39.904186+00:00",
+      "log": "pay-residual-build-solana-stealth.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "pay-residual-build-tron-adapter",
+      "source_revision": "a9267a67c9944b94e418c9483a67239528cf2d89",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/tron-adapter/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 5.46,
+      "observed_at": "2026-11-19T06:50:30.107935+00:00",
+      "log": "pay-residual-build-tron-adapter.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "pay-residual-build-net-transport",
+      "source_revision": "a9267a67c9944b94e418c9483a67239528cf2d89",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "packages/net-transport/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 10.171,
+      "observed_at": "2026-11-19T06:50:24.450125+00:00",
+      "log": "pay-residual-build-net-transport.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "pay-permit-green",
+      "source_revision": "617ae8b73afcd0834f14be17954fe84fb92391cb",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/pay.permitNonce.test.ts",
+        "src/lib/pay.test.ts",
+        "src/lib/payExec.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "seconds": 16.401,
+      "observed_at": "2026-11-19T06:57:24.896186+00:00",
+      "log": "pay-permit-green.log",
+      "node": "22.23.4",
+      "passed": 123,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "pay-label-green",
+      "source_revision": "36c66271d5ce491971339bbafbba0181609c66cd",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.test.tsx",
+        "-t",
+        "Pay: optional delay",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "seconds": 14.333,
+      "observed_at": "2026-11-19T06:58:43.363712+00:00",
+      "log": "pay-label-green.log",
+      "node": "22.23.4",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 53,
+      "result": "All tests in the existing optional-delay/gas-buffer describe, including the new fractional label case, pass. Other Pay describes deliberately unselected."
+    },
+    {
+      "name": "pay-residual-web-lint",
+      "source_revision": "36c66271d5ce491971339bbafbba0181609c66cd",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/format.ts",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/lib/pay.permitNonce.test.ts",
+        "apps/web/src/views/Pay.test.tsx",
+        "apps/web/src/lib/pay.quoteAge.test.ts",
+        "apps/web/src/lib/pay.test.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/i18n/securityKeys.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 1,
+      "seconds": 31.394,
+      "observed_at": "2026-11-19T06:59:52.038376+00:00",
+      "log": "pay-residual-web-lint.log",
+      "node": "22.23.4",
+      "result": "One real diagnostic: unused binding in earlier quote regression fixture. Fixed by d7667bcb (b69c5b91 on this branch). No runtime change for that repair."
+    },
+    {
+      "name": "pay-residual-web-lint-green",
+      "source_revision": "b69c5b91858da8d45491380b3354be54752ac4da",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/format.ts",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/lib/pay.permitNonce.test.ts",
+        "apps/web/src/views/Pay.test.tsx",
+        "apps/web/src/lib/pay.quoteAge.test.ts",
+        "apps/web/src/lib/pay.test.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/i18n/securityKeys.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 31.532,
+      "observed_at": "2026-11-19T07:01:21.453072+00:00",
+      "log": "pay-residual-web-lint-green.log",
+      "node": "22.23.4"
+    },
+    {
+      "name": "quote-fixture-green",
+      "source_revision": "b69c5b91858da8d45491380b3354be54752ac4da",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/pay.quoteAge.test.ts",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "seconds": 3.587,
+      "observed_at": "2026-11-19T07:00:49.858428+00:00",
+      "log": "quote-fixture-green.log",
+      "node": "22.23.4",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "review": {
+    "reviewer": "root coordinator, independent of implementation",
+    "result": "PASS: root independently reviewed both implementation commits and the baseline regressions; exact 32-byte admission matches ABI and preserves uint256 zero/max, while the existing fixed descriptor remains. Fractional label is display-only; scheduler is unchanged and the baseline regression first establishes a rendered control.",
+    "implementation_commits": [
+      "617ae8b73afcd0834f14be17954fe84fb92391cb",
+      "36c66271d5ce491971339bbafbba0181609c66cd"
+    ],
+    "evidence": "Coordinator message in this task, 2026-11-19: independent source review PASS; integration underway. This is a source review, not a claim that all hosted qualification passed."
+  },
+  "qualification": {
+    "whole_web_typecheck": "Unresolved: previous quote checkpoint exhausted the required 768 MiB heap cap; not repeated for these tiny changes. No whole-web static pass claimed.",
+    "scope": "123 focused payment checks, 14 selected delay/buffer component checks, 9-file scoped web lint and 10 quote-fixture checks. Counts across prior milestones overlap; do not sum them into a whole-project test total.",
+    "hosted": "Exact combined candidate remains a coordinator gate.",
+    "public_provider_calls": false,
+    "real_wallet_calls": false,
+    "main_merge_sha": null
+  },
+  "preserved": [
+    "Original scheduling and signing behavior",
+    "Original test/coverage budgets",
+    "All excluded privacy, recovery, signer and scan-owner source",
+    "Current quote heartbeat fix and existing oracle guards"
+  ],
+  "artifacts": [
+    {
+      "path": "pay-residual-red.log",
+      "sha256": "5fd14c8a4bcdb4e6ec8df5921b4a3bd83a3f16e915b2add5d124d7b6357c0e4c",
+      "bytes": 5756
+    },
+    {
+      "path": "pay-label-red.log",
+      "sha256": "45d28dd34600b0902c3ae7783294502b1e6bd06b5f9e14afeb3d08c7807a863f",
+      "bytes": 15919
+    },
+    {
+      "path": "pay-label-red-rendered.log",
+      "sha256": "55712c2dd4cc32ef292620fca120f143230fbdf4a239b768ff69f73f70004845",
+      "bytes": 20339
+    },
+    {
+      "path": "pay-residual-build-solana-stealth.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "pay-residual-build-tron-adapter.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "pay-residual-build-net-transport.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "pay-permit-green.log",
+      "sha256": "594a9809dbc045bc411da46fb9dd0254e35cdbfb41abe226e3ab980b0610f163",
+      "bytes": 917
+    },
+    {
+      "path": "pay-label-green.log",
+      "sha256": "71359be3d52f2adf1fe1887f9873ac4f4a4e2d56dbc4353a9582712424902ee4",
+      "bytes": 594
+    },
+    {
+      "path": "pay-residual-web-lint.log",
+      "sha256": "6e0d02b53ab078bf7786c78c4fadb2386e7ea3f64a21c8eb1268b798880e1fd5",
+      "bytes": 402
+    },
+    {
+      "path": "pay-residual-web-lint-green.log",
+      "sha256": "357d92a12b89b0b80a0734e8b5802fc8f95280beb9778c6110550b880f7b5e12",
+      "bytes": 174
+    },
+    {
+      "path": "quote-fixture-green.log",
+      "sha256": "1e2a45e3763b1f9bf960ebb9ab5c53b7dcb20a8c82934b37005d9bb557f8cbb6",
+      "bytes": 564
+    }
+  ]
+}

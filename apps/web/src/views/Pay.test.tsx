@@ -664,6 +664,16 @@ describe('Pay: sending', () => {
 });
 
 describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
+  it('LF-65392fcef-4: displays fractional delay minutes instead of rounding 90 seconds to 2 minutes', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ delayMinSec: 90, delayMaxSec: 150 }));
+    const wallet = new MockWallet();
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    const delay = await screen.findByLabelText(/Wait a random time first/);
+    expect(screen.getByLabelText('Wait a random time first (1.5 to 2.5 minutes)')).toBe(delay);
+    expect(wallet.calls).toEqual([]);
+  });
+
   it('delay: nothing is signed while waiting, can be cancelled, or skipped with "send now"', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ delayMinSec: 60, delayMaxSec: 60 }));
     const wallet = new MockWallet();

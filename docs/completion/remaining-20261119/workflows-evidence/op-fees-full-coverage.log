@@ -1,0 +1,84 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-op-fees/apps/relayer
+      Coverage enabled with v8
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:558) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:570) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:582) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:594) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:620) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:632) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:644) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:656) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:668) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:680) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:692) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:704) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:716) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:728) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:740) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:752) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:764) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:776) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  21 passed (21)
+      Tests  556 passed (556)
+   Start at  00:03:22
+   Duration  292.14s (transform 73%, tests 17%, import 10%)
+
+ % Coverage report from v8
+------------------|---------|----------|---------|---------|--------------------
+File              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s  
+------------------|---------|----------|---------|---------|--------------------
+All files         |   96.98 |    92.92 |    98.2 |   98.77 |                    
+ alerts.ts        |    91.3 |    85.59 |   95.83 |      98 | 72,94              
+ chain.ts         |    96.8 |    90.69 |     100 |     100 | 144,147-154,191    
+ clientip.ts      |   98.41 |    90.41 |     100 |   97.95 | 103                
+ config.ts        |   98.11 |    97.35 |     100 |     100 | ...440,444,464-469 
+ feedPricing.ts   |   95.74 |    91.66 |     100 |   97.14 | 35                 
+ lane.ts          |   96.77 |    87.87 |     100 |     100 | 39,70,76,115       
+ limiter.ts       |     100 |    94.73 |     100 |     100 | 32                 
+ metrics.ts       |   98.07 |    84.93 |     100 |     100 | ...138-139,147,167 
+ metricsServer.ts |   89.74 |    86.36 |     100 |   91.42 | 16-18              
+ opFees.ts        |   97.67 |    97.36 |     100 |   97.22 | 83                 
+ ops.ts           |   97.11 |    96.68 |   91.17 |   97.23 | 317,423-427        
+ rejectSpike.ts   |   95.65 |    94.11 |     100 |     100 | 20                 
+ runtime.ts       |   97.08 |    84.61 |     100 |   98.88 | 170                
+ server.ts        |      98 |    93.45 |   96.96 |   98.82 | 208-209            
+ service.ts       |   96.16 |    88.95 |   96.73 |      99 | ...20,966,972,1210 
+ stateStore.ts    |   96.61 |     95.9 |     100 |   97.04 | ...120-121,464-465 
+ validate.ts      |   94.73 |     90.9 |     100 |     100 | 121                
+------------------|---------|----------|---------|---------|--------------------
+
+=============================== Coverage summary ===============================
+Statements   : 96.98% ( 2506/2584 )
+Branches     : 92.92% ( 1656/1782 )
+Functions    : 98.2% ( 437/445 )
+Lines        : 98.77% ( 2091/2117 )
+================================================================================

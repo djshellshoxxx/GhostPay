@@ -1,0 +1,12 @@
+{
+  "yaml_parse": "pass",
+  "new_shell_step_syntax": "pass",
+  "selftest_shell_syntax": "pass",
+  "existing_ci_steps_triggers_permissions_unchanged": true,
+  "compose_profiles_validated": [
+    "default",
+    "onion"
+  ],
+  "service_env_resolution": false,
+  "private_docker_config_read": false
+}

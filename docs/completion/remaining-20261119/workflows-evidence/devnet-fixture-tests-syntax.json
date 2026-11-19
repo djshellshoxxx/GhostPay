@@ -1,0 +1,14 @@
+{
+  "name": "devnet-fixture-tests-syntax",
+  "source_revision": "5f6af961b25b9759497693ceb14b834bcae54f45",
+  "command": [
+    "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "--check",
+    "scripts/testnet/make-manifest.test.mjs"
+  ],
+  "cwd": ".",
+  "exit_code": 0,
+  "seconds": 0.089,
+  "observed_at": "2026-11-19T08:37:09.449234+00:00",
+  "log": "devnet-fixture-tests-syntax.log"
+}

@@ -9,8 +9,8 @@ Complements [`deployment-runbook.md`](deployment-runbook.md) (fee-recipient rule
 ## 0. Prerequisites
 
 - Node 22, `npm ci`, `npm run build:libs`.
-- Foundry 1.8.5 (`forge`, `cast`, `anvil`); `export PATH="$PATH:$HOME/.foundry/bin"`. The sandbox `foundry.toml` pins a local
-  `solc` path; on a normal machine replace it locally with `solc_version = "0.8.28"` (as CI does) and do not commit that edit.
+- Foundry 1.8.5 (`forge`, `cast`, `anvil`); `export PATH="$PATH:$HOME/.foundry/bin"`.
+  `packages/contracts/foundry.toml` pins `solc_version = "0.8.28"`.
 - `cd packages/contracts && forge build` once (the anvil tests and the rehearsal read `out/` artifacts).
 
 ## 1. Local devnet (no wallet, no coins, no network)
@@ -23,8 +23,9 @@ bash scripts/devnet/down.sh      # stop anvil, delete generated manifest/state
 
 `up.sh` is idempotent: it reuses a live anvil and an existing deployment, and redeploys when the manifest points at code
 that is gone. It writes `deployments/31337.json` (validated against `deployments/schema.json` and by the chain-adapters
-validator), copies it to `apps/web/public/deployments/`, and writes `scripts/devnet/.state/devnet.json` (git-ignored).
-Do not commit `31337.json`; chain 31337 is not in the chain-adapters table, so the app ignores it unless run in dev.
+validator), and writes `scripts/devnet/.state/devnet.json` (git-ignored). It does not copy an unsigned manifest into
+the web application; any legacy public copy is removed during a fresh setup. Chain 31337 is intentionally absent
+from the bundled web deployment registry. The separate browser/devnet test harness supplies its own authored fixture.
 
 Expected e2e tail: `E2E OK: 12 steps, 14 transactions`. The script uses only the public anvil mnemonic accounts, starts the
 real `apps/relayer` (`dist/main.js`) as a child process, and checks balances after every step: payer pays ETH, ERC-20 with
@@ -48,11 +49,25 @@ runs the real `Deploy.s.sol` with the public anvil dev key, builds and validates
 Networks: `sepolia` 11155111, `base-sepolia` 84532, `op-sepolia` 11155420, `arbitrum-sepolia` 421614, `polygon-amoy` 80002,
 `hoodi` 560048 (the built-in allowlist of `DeployBase.s.sol`).
 
+This driver list and the client registry have different scopes:
+
+| Surface | Current scope |
+| --- | --- |
+| Deployment driver and built-in contract-script allowlist | The six networks listed above |
+| Enabled client testnets | Sepolia, Base Sepolia, OP Sepolia, Arbitrum Sepolia, Polygon Amoy, BNB Smart Chain Testnet (97), Avalanche Fuji (43113) |
+| Client mainnets | Configured but disabled |
+
+Hoodi is a built-in deployment-script network but is absent from the client registry. BNB Testnet and Fuji are
+client-configured but have no aliases in this driver and are not built into `DeployBase.s.sol`'s allowlist.
+For those additional public testnets, the contract script requires an explicit `ALLOWED_CHAIN_IDS` configuration;
+local chain 31337 separately requires `ALLOW_LOCAL=1` unless explicitly allowlisted. The client registry does not
+grant either authorization. This runbook does not expand either allowlist.
+
 ## 3. Public testnet (REQUIRES a funded testnet key supplied by you)
 
-Chains that the app and relayer accept today: Ethereum Sepolia and Base Sepolia only (`packages/chain-adapters/src/config/chains.ts`).
-A manifest for OP Sepolia, Arbitrum Sepolia or Polygon Amoy can be produced, but those chains must be added to that table
-(and an announcer confirmed there) before any component uses them.
+The seven enabled client testnets are listed above and in `packages/chain-adapters/src/config/chains.ts`.
+Their presence in that table does not demonstrate a live deployment. Review the required chain, token, feed and
+deployment evidence in [the matrix guide](chain-matrix.md); payment and manifest verification gates still apply.
 
 1. **Get a testnet key and funds.** Create a fresh throw-away key (`cast wallet new`, or import into a keystore:
    `cast wallet import ghostpay-testnet --interactive`). Never reuse a mainnet key. Fund its public address with testnet ETH
@@ -67,6 +82,8 @@ A manifest for OP Sepolia, Arbitrum Sepolia or Polygon Amoy can be produced, but
 3. **Confirm the announcer exists:** `cast code 0x55649E01B5Df198D18D95b5cc5051630cfD45564 --rpc-url $RPC_URL` must be non-empty.
    If empty, either use another announcer with `ANNOUNCER=0x... ALLOW_CUSTOM_ANNOUNCER=1` (testnets only) or deploy the CC0
    reference announcer first and use that.
+   The client `verifyDeployment` check requires the canonical announcer on configured chains. A custom-announcer
+   script deployment does not satisfy that browser/CLI acceptance gate.
 4. **Simulate (sends nothing):**
    ```sh
    export RPC_URL=https://...  FEE_RECIPIENT=0x...  DEPLOYER_ADDRESS=0x<public address of your funded key>
@@ -78,12 +95,17 @@ A manifest for OP Sepolia, Arbitrum Sepolia or Polygon Amoy can be produced, but
    CONFIRM_BROADCAST=1 KEYSTORE_ACCOUNT=ghostpay-testnet bash scripts/testnet/deploy.sh sepolia broadcast
    ```
    (`PRIVATE_KEY=...` also works but is visible in `ps`; prefer the keystore.) Expected: forge prints `ONCHAIN EXECUTION COMPLETE
-   & SUCCESSFUL`, `make-manifest.mjs` prints `wrote deployments/11155111.json` and `copied apps/web/public/deployments/11155111.json`,
+   & SUCCESSFUL`, `make-manifest.mjs` writes `deployments/11155111.json`,
    `SmokeSepolia.s.sol` ends with `SMOKE OK`, then `DEPLOYED sepolia (11155111)`.
+   There is no automatic copy into the web application.
 6. **Verify sources** (needs an explorer API key; prints commands only until `CONFIRM_VERIFY=1`):
    `ETHERSCAN_API_KEY=... CONFIRM_VERIFY=1 bash scripts/testnet/verify-sources.sh sepolia`. Whether one Etherscan key covers each
    chain is UNVERIFIED; use `VERIFIER_URL` for Blockscout-style explorers.
-7. **Review the manifest** (`git diff deployments/`), check `commit` equals the commit you built, and commit it via PR.
+7. **Review and sign the manifest.** Check `git diff deployments/`, confirm `commit` equals the commit you built,
+   and complete the independent readback. Sign the manifest offline through the approved release process, then
+   explicitly copy the signed file to `apps/web/deployments/<chainId>.json` and validate it against the pinned release
+   keys (`npm run validate:deployments -w @ghostpay/web`). Review those exact files through a PR. The manifest builder
+   refuses the removed `--copy-web` option; generating an unsigned manifest does not enable payments.
 8. **Relayer on testnet:** copy `apps/relayer/relayer.config.example.json` to `relayer.config.json`, set `chains[].chainId`,
    `rpcUrlEnv`, `feeTo`, the token list (addresses from the issuer's docs, with `permit` set only if the token implements ERC-2612
    with the domain you verified), then `RELAYER_KEY_FILE` / `QUOTE_SECRET_FILE` (chmod 600) and `node apps/relayer/dist/main.js`.
@@ -96,8 +118,10 @@ A manifest for OP Sepolia, Arbitrum Sepolia or Polygon Amoy can be produced, but
 
 Contracts are immutable and hold no funds beyond a single transaction; "rollback" means ceasing to use them:
 
-1. Delete `deployments/<chainId>.json` and `apps/web/public/deployments/<chainId>.json` in a PR (the app then shows payments
-   disabled; the relayer refuses a chain without a manifest or `sweepRelayer`).
+1. Remove the affected `deployments/<chainId>.json` and bundled `apps/web/deployments/<chainId>.json` through a reviewed
+   change, then rebuild and publish through the authorized release process. Editing the repository does not alter an
+   already served bundle. The rebuilt app refuses a missing manifest; remove the chain from the running relayer's
+   configuration as part of the same operator response.
 2. Stop the relayer or remove the chain from its config; drain the hot key's remaining testnet ETH.
 3. Redeploy with corrected inputs: archive the old record first (`mv packages/contracts/broadcast/Deploy.s.sol/<id> ...`), because
    `deploy.sh` refuses to run over an existing `run-latest.json`. A half-finished broadcast can be continued with

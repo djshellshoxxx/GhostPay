@@ -1,0 +1,1666 @@
+(node:78) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/6eafdb04d91b/GhostPay-quotes/apps/web
+
+(node:114) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/lib/pay.quoteAge.test.ts (10 tests | 8 failed) 2125ms
+   ❯ LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime (10)
+     × rejects an expired feed while the seller-authored quote is still valid for a day 633ms
+     × refuses a feed with no configured heartbeat before any RPC request 225ms
+     × refuses invalid configured heartbeat 0 without RPC 176ms
+     × refuses invalid configured heartbeat -1 without RPC 135ms
+     × refuses invalid configured heartbeat 1.5 without RPC 101ms
+     × refuses invalid configured heartbeat NaN without RPC 157ms
+     × refuses invalid configured heartbeat Infinity without RPC 177ms
+     × refuses invalid configured heartbeat 604801 without RPC 175ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/pay.quoteAge.test.ts > LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime > rejects an expired feed while the seller-authored quote is still valid for a day
+AssertionError: promise resolved "{ review: { …(12) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "adapter": {
++     "buildPaymentRequest": [Function buildPaymentRequest],
++     "chainId": "84532",
++     "family": "evm",
++     "fees": {
++       "checkout": "enforced",
++       "checkoutBps": 25,
++       "flatSecurity": "not_deployed",
++       "gasSponsorship": "enforced",
++     },
++     "parseRecipient": [Function parseRecipient],
++     "scan": [Function scan],
++   },
++   "chain": {
++     "blockTimeMs": 2000,
++     "chainId": 84532,
++     "enabled": true,
++     "finalityDepth": 100,
++     "getLogsMaxRange": 1000,
++     "name": "Base Sepolia",
++     "nativeDecimals": 18,
++     "nativeSymbol": "ETH",
++     "opStack": true,
++     "testnet": true,
++   },
++   "client": {
++     "blockNumber": [Function blockNumber],
++     "calls": [
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0x313ce567",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0xfeaf968c",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++     ],
++     "chainId": 84532,
++     "getBlock": [Function getBlock],
++     "getLogs": [Function getLogs],
++     "request": [Function request],
++   },
++   "manifest": {
++     "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++     "bytecodeHashes": {
++       "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++       "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++     },
++     "chainId": 84532,
++     "commit": "cccccccccccccccccccccccccccccccccccccccc",
++     "date": "2026-01-01T00:00:00Z",
++     "deployTx": {
++       "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++     },
++     "feeBps": 25,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "router": "0x1111111111111111111111111111111111111111",
++     "solcVersion": "0.8.28+commit.7893614a",
++     "sweepRelayer": "0x2222222222222222222222222222222222222222",
++   },
++   "quotedTokenAmount": 50000000000000000n,
++   "request": {
++     "asset": "native",
++     "build": [Function build],
++     "chainId": "84532",
++     "family": "evm",
++     "feeAmount": 125000000000000n,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "grossAmount": 50000000000000000n,
++     "netAmount": 49875000000000000n,
++     "router": "0x1111111111111111111111111111111111111111",
++   },
++   "review": {
++     "blockerMessages": [],
++     "blockers": [],
++     "chain": {
++       "blockTimeMs": 2000,
++       "chainId": 84532,
++       "enabled": true,
++       "finalityDepth": 100,
++       "getLogsMaxRange": 1000,
++       "name": "Base Sepolia",
++       "nativeDecimals": 18,
++       "nativeSymbol": "ETH",
++       "opStack": true,
++       "testnet": true,
++     },
++     "encrypted": false,
++     "expiry": {
++       "invoiceExpired": false,
++       "quoteExpired": false,
++       "secondsRemaining": 86400,
++     },
++     "invoice": {
++       "amountPolicy": {
++         "mode": "fiat_quote",
++       },
++       "chainId": 84532,
++       "expiresAt": 1800086400,
++       "feePolicy": "seller_pays",
++       "fiat": {
++         "currency": "USD",
++         "minorUnits": "10000",
++       },
++       "lineItems": [
++         {
++           "description": "Consulting",
++           "quantity": "2",
++           "unitMinorUnits": "5000",
++         },
++       ],
++       "metaAddress": "st:eth:0x02c5aa1dccb3d02e9f54304e1b91ae462e8aca5b2daa02e41c8f5c2cd27c37d7ed020005211ab5f19b5323e5978e1e9533c52606d9981b443f777f1f8cc2c016ebfa",
++       "nonce": "1f91a5177e55e720f7878cb1a8510343",
++       "quote": {
++         "expiresAt": 1800086400,
++         "maxSlippageBps": 50,
++         "source": "chainlink:eth-usd",
++         "timestamp": 1800000000,
++       },
++       "schemeId": 1,
++       "signer": "03493ff3a22b68c8152337ba60061f50a00b66eb9ec45c1d19ec3c0421f3bf65a7",
++       "tax": {
++         "minorUnits": "0",
++         "rateBps": 0,
++       },
++       "token": "native",
++       "v": 1,
++     },
++     "manifest": {
++       "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++       "bytecodeHashes": {
++         "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++         "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++       },
++       "chainId": 84532,
++       "commit": "cccccccccccccccccccccccccccccccccccccccc",
++       "date": "2026-01-01T00:00:00Z",
++       "deployTx": {
++         "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++         "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++       },
++       "feeBps": 25,
++       "feeRecipient": "0x4444444444444444444444444444444444444444",
++       "router": "0x1111111111111111111111111111111111111111",
++       "solcVersion": "0.8.28+commit.7893614a",
++       "sweepRelayer": "0x2222222222222222222222222222222222222222",
++     },
++     "token": {
++       "address": "native",
++       "config": undefined,
++       "decimals": 18,
++       "symbol": "ETH",
++     },
++     "totals": {
++       "subtotal": 10000n,
++       "tax": 0n,
++       "total": 10000n,
++     },
++     "trust": {
++       "kind": "valid-signature",
++       "message": {
++         "key": "pay.review.unpinnedSignature",
++         "values": {
++           "key": "03493ff3a22b68c8152337ba60061f50a00b66eb9ec45c1d19ec3c0421f3bf65a7",
++         },
++       },
++       "text": "Signature matches key 03493ff3a22b68c8152337ba60061f50a00b66eb9ec45c1d19ec3c0421f3bf65a7 (not pinned). This only shows the link was not altered by someone without that key.",
++     },
++     "warningMessages": [],
++     "warnings": [],
++   },
+  }
+
+ ❯ src/lib/pay.quoteAge.test.ts:32:30
+     30|   it('rejects an expired feed while the seller-authored quote is still…
+     31|     const q = await quote(1_501);
+     32|     await expect(q.execute()).rejects.toThrow('QUOTE_FAILED: stale pri…
+       |                              ^
+     33|   });
+     34|   it('accepts the exact feed freshness boundary', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/lib/pay.quoteAge.test.ts > LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime > refuses a feed with no configured heartbeat before any RPC request
+AssertionError: promise resolved "{ review: { …(12) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "adapter": {
++     "buildPaymentRequest": [Function buildPaymentRequest],
++     "chainId": "84532",
++     "family": "evm",
++     "fees": {
++       "checkout": "enforced",
++       "checkoutBps": 25,
++       "flatSecurity": "not_deployed",
++       "gasSponsorship": "enforced",
++     },
++     "parseRecipient": [Function parseRecipient],
++     "scan": [Function scan],
++   },
++   "chain": {
++     "blockTimeMs": 2000,
++     "chainId": 84532,
++     "enabled": true,
++     "finalityDepth": 100,
++     "getLogsMaxRange": 1000,
++     "name": "Base Sepolia",
++     "nativeDecimals": 18,
++     "nativeSymbol": "ETH",
++     "opStack": true,
++     "testnet": true,
++   },
++   "client": {
++     "blockNumber": [Function blockNumber],
++     "calls": [
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0x313ce567",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0xfeaf968c",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++     ],
++     "chainId": 84532,
++     "getBlock": [Function getBlock],
++     "getLogs": [Function getLogs],
++     "request": [Function request],
++   },
++   "manifest": {
++     "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++     "bytecodeHashes": {
++       "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++       "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++     },
++     "chainId": 84532,
++     "commit": "cccccccccccccccccccccccccccccccccccccccc",
++     "date": "2026-01-01T00:00:00Z",
++     "deployTx": {
++       "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++     },
++     "feeBps": 25,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "router": "0x1111111111111111111111111111111111111111",
++     "solcVersion": "0.8.28+commit.7893614a",
++     "sweepRelayer": "0x2222222222222222222222222222222222222222",
++   },
++   "quotedTokenAmount": 50000000000000000n,
++   "request": {
++     "asset": "native",
++     "build": [Function build],
++     "chainId": "84532",
++     "family": "evm",
++     "feeAmount": 125000000000000n,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "grossAmount": 50000000000000000n,
++     "netAmount": 49875000000000000n,
++     "router": "0x1111111111111111111111111111111111111111",
++   },
++   "review": {
++     "blockerMessages": [],
++     "blockers": [],
++     "chain": {
++       "blockTimeMs": 2000,
++       "chainId": 84532,
++       "enabled": true,
++       "finalityDepth": 100,
++       "getLogsMaxRange": 1000,
++       "name": "Base Sepolia",
++       "nativeDecimals": 18,
++       "nativeSymbol": "ETH",
++       "opStack": true,
++       "testnet": true,
++     },
++     "encrypted": false,
++     "expiry": {
++       "invoiceExpired": false,
++       "quoteExpired": false,
++       "secondsRemaining": 86400,
++     },
++     "invoice": {
++       "amountPolicy": {
++         "mode": "fiat_quote",
++       },
++       "chainId": 84532,
++       "expiresAt": 1800086400,
++       "feePolicy": "seller_pays",
++       "fiat": {
++         "currency": "USD",
++         "minorUnits": "10000",
++       },
++       "lineItems": [
++         {
++           "description": "Consulting",
++           "quantity": "2",
++           "unitMinorUnits": "5000",
++         },
++       ],
++       "metaAddress": "st:eth:0x029e7236c51fc7e615f6a5854f9ded4eaa44cf56b3922acd053ee856e0ac17f6b5021a3469c9b9412e57883ef41a1d2a7297613b5049fa1fae911dfeb78397b06742",
++       "nonce": "216a8e58fa8a4722c4ad8624e1ce011c",
++       "quote": {
++         "expiresAt": 1800086400,
++         "maxSlippageBps": 50,
++         "source": "chainlink:eth-usd",
++         "timestamp": 1800000000,
++       },
++       "schemeId": 1,
++       "signer": "0206149ee44399af04b65573b05679ab5b2ee12543579bd4dda42f586c07b67c57",
++       "tax": {
++         "minorUnits": "0",
++         "rateBps": 0,
++       },
++       "token": "native",
++       "v": 1,
++     },
++     "manifest": {
++       "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++       "bytecodeHashes": {
++         "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++         "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++       },
++       "chainId": 84532,
++       "commit": "cccccccccccccccccccccccccccccccccccccccc",
++       "date": "2026-01-01T00:00:00Z",
++       "deployTx": {
++         "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++         "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++       },
++       "feeBps": 25,
++       "feeRecipient": "0x4444444444444444444444444444444444444444",
++       "router": "0x1111111111111111111111111111111111111111",
++       "solcVersion": "0.8.28+commit.7893614a",
++       "sweepRelayer": "0x2222222222222222222222222222222222222222",
++     },
++     "token": {
++       "address": "native",
++       "config": undefined,
++       "decimals": 18,
++       "symbol": "ETH",
++     },
++     "totals": {
++       "subtotal": 10000n,
++       "tax": 0n,
++       "total": 10000n,
++     },
++     "trust": {
++       "kind": "valid-signature",
++       "message": {
++         "key": "pay.review.unpinnedSignature",
++         "values": {
++           "key": "0206149ee44399af04b65573b05679ab5b2ee12543579bd4dda42f586c07b67c57",
++         },
++       },
++       "text": "Signature matches key 0206149ee44399af04b65573b05679ab5b2ee12543579bd4dda42f586c07b67c57 (not pinned). This only shows the link was not altered by someone without that key.",
++     },
++     "warningMessages": [],
++     "warnings": [],
++   },
+  }
+
+ ❯ src/lib/pay.quoteAge.test.ts:45:30
+     43|     const { heartbeatSec: _unused, ...missing } = FEED;
+     44|     const q = await quote(0, missing);
+     45|     await expect(q.execute()).rejects.toThrow(/freshness limit/);
+       |                              ^
+     46|     expect(q.requests()).toBe(0);
+     47|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/lib/pay.quoteAge.test.ts > LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime > refuses invalid configured heartbeat 0 without RPC
+AssertionError: promise resolved "{ review: { …(12) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "adapter": {
++     "buildPaymentRequest": [Function buildPaymentRequest],
++     "chainId": "84532",
++     "family": "evm",
++     "fees": {
++       "checkout": "enforced",
++       "checkoutBps": 25,
++       "flatSecurity": "not_deployed",
++       "gasSponsorship": "enforced",
++     },
++     "parseRecipient": [Function parseRecipient],
++     "scan": [Function scan],
++   },
++   "chain": {
++     "blockTimeMs": 2000,
++     "chainId": 84532,
++     "enabled": true,
++     "finalityDepth": 100,
++     "getLogsMaxRange": 1000,
++     "name": "Base Sepolia",
++     "nativeDecimals": 18,
++     "nativeSymbol": "ETH",
++     "opStack": true,
++     "testnet": true,
++   },
++   "client": {
++     "blockNumber": [Function blockNumber],
++     "calls": [
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0x313ce567",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0xfeaf968c",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++     ],
++     "chainId": 84532,
++     "getBlock": [Function getBlock],
++     "getLogs": [Function getLogs],
++     "request": [Function request],
++   },
++   "manifest": {
++     "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++     "bytecodeHashes": {
++       "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++       "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++     },
++     "chainId": 84532,
++     "commit": "cccccccccccccccccccccccccccccccccccccccc",
++     "date": "2026-01-01T00:00:00Z",
++     "deployTx": {
++       "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++     },
++     "feeBps": 25,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "router": "0x1111111111111111111111111111111111111111",
++     "solcVersion": "0.8.28+commit.7893614a",
++     "sweepRelayer": "0x2222222222222222222222222222222222222222",
++   },
++   "quotedTokenAmount": 50000000000000000n,
++   "request": {
++     "asset": "native",
++     "build": [Function build],
++     "chainId": "84532",
++     "family": "evm",
++     "feeAmount": 125000000000000n,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "grossAmount": 50000000000000000n,
++     "netAmount": 49875000000000000n,
++     "router": "0x1111111111111111111111111111111111111111",
++   },
++   "review": {
++     "blockerMessages": [],
++     "blockers": [],
++     "chain": {
++       "blockTimeMs": 2000,
++       "chainId": 84532,
++       "enabled": true,
++       "finalityDepth": 100,
++       "getLogsMaxRange": 1000,
++       "name": "Base Sepolia",
++       "nativeDecimals": 18,
++       "nativeSymbol": "ETH",
++       "opStack": true,
++       "testnet": true,
++     },
++     "encrypted": false,
++     "expiry": {
++       "invoiceExpired": false,
++       "quoteExpired": false,
++       "secondsRemaining": 86400,
++     },
++     "invoice": {
++       "amountPolicy": {
++         "mode": "fiat_quote",
++       },
++       "chainId": 84532,
++       "expiresAt": 1800086400,
++       "feePolicy": "seller_pays",
++       "fiat": {
++         "currency": "USD",
++         "minorUnits": "10000",
++       },
++       "lineItems": [
++         {
++           "description": "Consulting",
++           "quantity": "2",
++           "unitMinorUnits": "5000",
++         },
++       ],
++       "metaAddress": "st:eth:0x024ad24e7db5109769cfd84affc8b760b5b29a67006e95bb83eacfaaa93ae9a383027c3558642ab0562e3262b95fa886e0c0bd131c1f8070bd482d026d27ce95a32a",
++       "nonce": "54cf80d139543a1208659c680232003d",
++       "quote": {
++         "expiresAt": 1800086400,
++         "maxSlippageBps": 50,
++         "source": "chainlink:eth-usd",
++         "timestamp": 1800000000,
++       },
++       "schemeId": 1,
++       "signer": "0381a699480d6242f4df8374823323606197d18662eb8de66004668e21de2bd955",
++       "tax": {
++         "minorUnits": "0",
++         "rateBps": 0,
++       },
++       "token": "native",
++       "v": 1,
++     },
++     "manifest": {
++       "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++       "bytecodeHashes": {
++         "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++         "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++       },
++       "chainId": 84532,
++       "commit": "cccccccccccccccccccccccccccccccccccccccc",
++       "date": "2026-01-01T00:00:00Z",
++       "deployTx": {
++         "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++         "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++       },
++       "feeBps": 25,
++       "feeRecipient": "0x4444444444444444444444444444444444444444",
++       "router": "0x1111111111111111111111111111111111111111",
++       "solcVersion": "0.8.28+commit.7893614a",
++       "sweepRelayer": "0x2222222222222222222222222222222222222222",
++     },
++     "token": {
++       "address": "native",
++       "config": undefined,
++       "decimals": 18,
++       "symbol": "ETH",
++     },
++     "totals": {
++       "subtotal": 10000n,
++       "tax": 0n,
++       "total": 10000n,
++     },
++     "trust": {
++       "kind": "valid-signature",
++       "message": {
++         "key": "pay.review.unpinnedSignature",
++         "values": {
++           "key": "0381a699480d6242f4df8374823323606197d18662eb8de66004668e21de2bd955",
++         },
++       },
++       "text": "Signature matches key 0381a699480d6242f4df8374823323606197d18662eb8de66004668e21de2bd955 (not pinned). This only shows the link was not altered by someone without that key.",
++     },
++     "warningMessages": [],
++     "warnings": [],
++   },
+  }
+
+ ❯ src/lib/pay.quoteAge.test.ts:50:30
+     48|   it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, 604_801])…
+     49|     const q = await quote(0, { ...FEED, heartbeatSec });
+     50|     await expect(q.execute()).rejects.toThrow(/freshness limit/);
+       |                              ^
+     51|     expect(q.requests()).toBe(0);
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/lib/pay.quoteAge.test.ts > LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime > refuses invalid configured heartbeat -1 without RPC
+AssertionError: promise resolved "{ review: { …(12) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "adapter": {
++     "buildPaymentRequest": [Function buildPaymentRequest],
++     "chainId": "84532",
++     "family": "evm",
++     "fees": {
++       "checkout": "enforced",
++       "checkoutBps": 25,
++       "flatSecurity": "not_deployed",
++       "gasSponsorship": "enforced",
++     },
++     "parseRecipient": [Function parseRecipient],
++     "scan": [Function scan],
++   },
++   "chain": {
++     "blockTimeMs": 2000,
++     "chainId": 84532,
++     "enabled": true,
++     "finalityDepth": 100,
++     "getLogsMaxRange": 1000,
++     "name": "Base Sepolia",
++     "nativeDecimals": 18,
++     "nativeSymbol": "ETH",
++     "opStack": true,
++     "testnet": true,
++   },
++   "client": {
++     "blockNumber": [Function blockNumber],
++     "calls": [
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0x313ce567",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0xfeaf968c",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++     ],
++     "chainId": 84532,
++     "getBlock": [Function getBlock],
++     "getLogs": [Function getLogs],
++     "request": [Function request],
++   },
++   "manifest": {
++     "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++     "bytecodeHashes": {
++       "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++       "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++     },
++     "chainId": 84532,
++     "commit": "cccccccccccccccccccccccccccccccccccccccc",
++     "date": "2026-01-01T00:00:00Z",
++     "deployTx": {
++       "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++     },
++     "feeBps": 25,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "router": "0x1111111111111111111111111111111111111111",
++     "solcVersion": "0.8.28+commit.7893614a",
++     "sweepRelayer": "0x2222222222222222222222222222222222222222",
++   },
++   "quotedTokenAmount": 50000000000000000n,
++   "request": {
++     "asset": "native",
++     "build": [Function build],
++     "chainId": "84532",
++     "family": "evm",
++     "feeAmount": 125000000000000n,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "grossAmount": 50000000000000000n,
++     "netAmount": 49875000000000000n,
++     "router": "0x1111111111111111111111111111111111111111",
++   },
++   "review": {
++     "blockerMessages": [],
++     "blockers": [],
++     "chain": {
++       "blockTimeMs": 2000,
++       "chainId": 84532,
++       "enabled": true,
++       "finalityDepth": 100,
++       "getLogsMaxRange": 1000,
++       "name": "Base Sepolia",
++       "nativeDecimals": 18,
++       "nativeSymbol": "ETH",
++       "opStack": true,
++       "testnet": true,
++     },
++     "encrypted": false,
++     "expiry": {
++       "invoiceExpired": false,
++       "quoteExpired": false,
++       "secondsRemaining": 86400,
++     },
++     "invoice": {
++       "amountPolicy": {
++         "mode": "fiat_quote",
++       },
++       "chainId": 84532,
++       "expiresAt": 1800086400,
++       "feePolicy": "seller_pays",
++       "fiat": {
++         "currency": "USD",
++         "minorUnits": "10000",
++       },
++       "lineItems": [
++         {
++           "description": "Consulting",
++           "quantity": "2",
++           "unitMinorUnits": "5000",
++         },
++       ],
++       "metaAddress": "st:eth:0x03178e6f189b0cf3c98b7aa5f35812199cdc732d1c501727eff32de4926f11a62a0348bcb9ec041c22bf91656ebb47c130ae55ee6b548296e0ba3ddf2903fb0e59c2",
++       "nonce": "66d7ef3498489a33c021157fc851dbb8",
++       "quote": {
++         "expiresAt": 1800086400,
++         "maxSlippageBps": 50,
++         "source": "chainlink:eth-usd",
++         "timestamp": 1800000000,
++       },
++       "schemeId": 1,
++       "signer": "03ccfc8db2dbc7c0328d53df31d0d288c15a5cc546df6888a93777ad7a11f30d81",
++       "tax": {
++         "minorUnits": "0",
++         "rateBps": 0,
++       },
++       "token": "native",
++       "v": 1,
++     },
++     "manifest": {
++       "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++       "bytecodeHashes": {
++         "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++         "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++       },
++       "chainId": 84532,
++       "commit": "cccccccccccccccccccccccccccccccccccccccc",
++       "date": "2026-01-01T00:00:00Z",
++       "deployTx": {
++         "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++         "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++       },
++       "feeBps": 25,
++       "feeRecipient": "0x4444444444444444444444444444444444444444",
++       "router": "0x1111111111111111111111111111111111111111",
++       "solcVersion": "0.8.28+commit.7893614a",
++       "sweepRelayer": "0x2222222222222222222222222222222222222222",
++     },
++     "token": {
++       "address": "native",
++       "config": undefined,
++       "decimals": 18,
++       "symbol": "ETH",
++     },
++     "totals": {
++       "subtotal": 10000n,
++       "tax": 0n,
++       "total": 10000n,
++     },
++     "trust": {
++       "kind": "valid-signature",
++       "message": {
++         "key": "pay.review.unpinnedSignature",
++         "values": {
++           "key": "03ccfc8db2dbc7c0328d53df31d0d288c15a5cc546df6888a93777ad7a11f30d81",
++         },
++       },
++       "text": "Signature matches key 03ccfc8db2dbc7c0328d53df31d0d288c15a5cc546df6888a93777ad7a11f30d81 (not pinned). This only shows the link was not altered by someone without that key.",
++     },
++     "warningMessages": [],
++     "warnings": [],
++   },
+  }
+
+ ❯ src/lib/pay.quoteAge.test.ts:50:30
+     48|   it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, 604_801])…
+     49|     const q = await quote(0, { ...FEED, heartbeatSec });
+     50|     await expect(q.execute()).rejects.toThrow(/freshness limit/);
+       |                              ^
+     51|     expect(q.requests()).toBe(0);
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/lib/pay.quoteAge.test.ts > LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime > refuses invalid configured heartbeat 1.5 without RPC
+AssertionError: promise resolved "{ review: { …(12) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "adapter": {
++     "buildPaymentRequest": [Function buildPaymentRequest],
++     "chainId": "84532",
++     "family": "evm",
++     "fees": {
++       "checkout": "enforced",
++       "checkoutBps": 25,
++       "flatSecurity": "not_deployed",
++       "gasSponsorship": "enforced",
++     },
++     "parseRecipient": [Function parseRecipient],
++     "scan": [Function scan],
++   },
++   "chain": {
++     "blockTimeMs": 2000,
++     "chainId": 84532,
++     "enabled": true,
++     "finalityDepth": 100,
++     "getLogsMaxRange": 1000,
++     "name": "Base Sepolia",
++     "nativeDecimals": 18,
++     "nativeSymbol": "ETH",
++     "opStack": true,
++     "testnet": true,
++   },
++   "client": {
++     "blockNumber": [Function blockNumber],
++     "calls": [
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0x313ce567",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0xfeaf968c",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++     ],
++     "chainId": 84532,
++     "getBlock": [Function getBlock],
++     "getLogs": [Function getLogs],
++     "request": [Function request],
++   },
++   "manifest": {
++     "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++     "bytecodeHashes": {
++       "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++       "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++     },
++     "chainId": 84532,
++     "commit": "cccccccccccccccccccccccccccccccccccccccc",
++     "date": "2026-01-01T00:00:00Z",
++     "deployTx": {
++       "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++     },
++     "feeBps": 25,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "router": "0x1111111111111111111111111111111111111111",
++     "solcVersion": "0.8.28+commit.7893614a",
++     "sweepRelayer": "0x2222222222222222222222222222222222222222",
++   },
++   "quotedTokenAmount": 50000000000000000n,
++   "request": {
++     "asset": "native",
++     "build": [Function build],
++     "chainId": "84532",
++     "family": "evm",
++     "feeAmount": 125000000000000n,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "grossAmount": 50000000000000000n,
++     "netAmount": 49875000000000000n,
++     "router": "0x1111111111111111111111111111111111111111",
++   },
++   "review": {
++     "blockerMessages": [],
++     "blockers": [],
++     "chain": {
++       "blockTimeMs": 2000,
++       "chainId": 84532,
++       "enabled": true,
++       "finalityDepth": 100,
++       "getLogsMaxRange": 1000,
++       "name": "Base Sepolia",
++       "nativeDecimals": 18,
++       "nativeSymbol": "ETH",
++       "opStack": true,
++       "testnet": true,
++     },
++     "encrypted": false,
++     "expiry": {
++       "invoiceExpired": false,
++       "quoteExpired": false,
++       "secondsRemaining": 86400,
++     },
++     "invoice": {
++       "amountPolicy": {
++         "mode": "fiat_quote",
++       },
++       "chainId": 84532,
++       "expiresAt": 1800086400,
++       "feePolicy": "seller_pays",
++       "fiat": {
++         "currency": "USD",
++         "minorUnits": "10000",
++       },
++       "lineItems": [
++         {
++           "description": "Consulting",
++           "quantity": "2",
++           "unitMinorUnits": "5000",
++         },
++       ],
++       "metaAddress": "st:eth:0x035081fca16e80cb101525c4b8d72fb7cb36217281e50018bfe15e327c542375f5033dc584d0447a1c6263ecac8d9f0a435da7a1d8db71a212770dfb64f19367147b",
++       "nonce": "92545c71770f43aa042548b514d30de0",
++       "quote": {
++         "expiresAt": 1800086400,
++         "maxSlippageBps": 50,
++         "source": "chainlink:eth-usd",
++         "timestamp": 1800000000,
++       },
++       "schemeId": 1,
++       "signer": "027e65f7b042354a59fd048f5e7589847629e09b25db6edb3df5f0a8cb80a2fb04",
++       "tax": {
++         "minorUnits": "0",
++         "rateBps": 0,
++       },
++       "token": "native",
++       "v": 1,
++     },
++     "manifest": {
++       "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++       "bytecodeHashes": {
++         "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++         "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++       },
++       "chainId": 84532,
++       "commit": "cccccccccccccccccccccccccccccccccccccccc",
++       "date": "2026-01-01T00:00:00Z",
++       "deployTx": {
++         "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++         "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++       },
++       "feeBps": 25,
++       "feeRecipient": "0x4444444444444444444444444444444444444444",
++       "router": "0x1111111111111111111111111111111111111111",
++       "solcVersion": "0.8.28+commit.7893614a",
++       "sweepRelayer": "0x2222222222222222222222222222222222222222",
++     },
++     "token": {
++       "address": "native",
++       "config": undefined,
++       "decimals": 18,
++       "symbol": "ETH",
++     },
++     "totals": {
++       "subtotal": 10000n,
++       "tax": 0n,
++       "total": 10000n,
++     },
++     "trust": {
++       "kind": "valid-signature",
++       "message": {
++         "key": "pay.review.unpinnedSignature",
++         "values": {
++           "key": "027e65f7b042354a59fd048f5e7589847629e09b25db6edb3df5f0a8cb80a2fb04",
++         },
++       },
++       "text": "Signature matches key 027e65f7b042354a59fd048f5e7589847629e09b25db6edb3df5f0a8cb80a2fb04 (not pinned). This only shows the link was not altered by someone without that key.",
++     },
++     "warningMessages": [],
++     "warnings": [],
++   },
+  }
+
+ ❯ src/lib/pay.quoteAge.test.ts:50:30
+     48|   it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, 604_801])…
+     49|     const q = await quote(0, { ...FEED, heartbeatSec });
+     50|     await expect(q.execute()).rejects.toThrow(/freshness limit/);
+       |                              ^
+     51|     expect(q.requests()).toBe(0);
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/lib/pay.quoteAge.test.ts > LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime > refuses invalid configured heartbeat NaN without RPC
+AssertionError: promise resolved "{ review: { …(12) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "adapter": {
++     "buildPaymentRequest": [Function buildPaymentRequest],
++     "chainId": "84532",
++     "family": "evm",
++     "fees": {
++       "checkout": "enforced",
++       "checkoutBps": 25,
++       "flatSecurity": "not_deployed",
++       "gasSponsorship": "enforced",
++     },
++     "parseRecipient": [Function parseRecipient],
++     "scan": [Function scan],
++   },
++   "chain": {
++     "blockTimeMs": 2000,
++     "chainId": 84532,
++     "enabled": true,
++     "finalityDepth": 100,
++     "getLogsMaxRange": 1000,
++     "name": "Base Sepolia",
++     "nativeDecimals": 18,
++     "nativeSymbol": "ETH",
++     "opStack": true,
++     "testnet": true,
++   },
++   "client": {
++     "blockNumber": [Function blockNumber],
++     "calls": [
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0x313ce567",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0xfeaf968c",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++     ],
++     "chainId": 84532,
++     "getBlock": [Function getBlock],
++     "getLogs": [Function getLogs],
++     "request": [Function request],
++   },
++   "manifest": {
++     "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++     "bytecodeHashes": {
++       "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++       "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++     },
++     "chainId": 84532,
++     "commit": "cccccccccccccccccccccccccccccccccccccccc",
++     "date": "2026-01-01T00:00:00Z",
++     "deployTx": {
++       "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++     },
++     "feeBps": 25,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "router": "0x1111111111111111111111111111111111111111",
++     "solcVersion": "0.8.28+commit.7893614a",
++     "sweepRelayer": "0x2222222222222222222222222222222222222222",
++   },
++   "quotedTokenAmount": 50000000000000000n,
++   "request": {
++     "asset": "native",
++     "build": [Function build],
++     "chainId": "84532",
++     "family": "evm",
++     "feeAmount": 125000000000000n,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "grossAmount": 50000000000000000n,
++     "netAmount": 49875000000000000n,
++     "router": "0x1111111111111111111111111111111111111111",
++   },
++   "review": {
++     "blockerMessages": [],
++     "blockers": [],
++     "chain": {
++       "blockTimeMs": 2000,
++       "chainId": 84532,
++       "enabled": true,
++       "finalityDepth": 100,
++       "getLogsMaxRange": 1000,
++       "name": "Base Sepolia",
++       "nativeDecimals": 18,
++       "nativeSymbol": "ETH",
++       "opStack": true,
++       "testnet": true,
++     },
++     "encrypted": false,
++     "expiry": {
++       "invoiceExpired": false,
++       "quoteExpired": false,
++       "secondsRemaining": 86400,
++     },
++     "invoice": {
++       "amountPolicy": {
++         "mode": "fiat_quote",
++       },
++       "chainId": 84532,
++       "expiresAt": 1800086400,
++       "feePolicy": "seller_pays",
++       "fiat": {
++         "currency": "USD",
++         "minorUnits": "10000",
++       },
++       "lineItems": [
++         {
++           "description": "Consulting",
++           "quantity": "2",
++           "unitMinorUnits": "5000",
++         },
++       ],
++       "metaAddress": "st:eth:0x030433c6d6695f5b0849006c3c4bdacd8d2d24c60dbadd61dff03f25f7166da78c0303d29492a089fdd7d755519f19e81a304f8cf57fa7fe872f33c8e9080058dbec",
++       "nonce": "195727ec28e77cc4c545aa3cca1d8053",
++       "quote": {
++         "expiresAt": 1800086400,
++         "maxSlippageBps": 50,
++         "source": "chainlink:eth-usd",
++         "timestamp": 1800000000,
++       },
++       "schemeId": 1,
++       "signer": "02dcd17432bde48833d101c838a55e9e8d7ca7df3c16ba8c693c1a92154d282b59",
++       "tax": {
++         "minorUnits": "0",
++         "rateBps": 0,
++       },
++       "token": "native",
++       "v": 1,
++     },
++     "manifest": {
++       "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++       "bytecodeHashes": {
++         "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++         "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++       },
++       "chainId": 84532,
++       "commit": "cccccccccccccccccccccccccccccccccccccccc",
++       "date": "2026-01-01T00:00:00Z",
++       "deployTx": {
++         "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++         "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++       },
++       "feeBps": 25,
++       "feeRecipient": "0x4444444444444444444444444444444444444444",
++       "router": "0x1111111111111111111111111111111111111111",
++       "solcVersion": "0.8.28+commit.7893614a",
++       "sweepRelayer": "0x2222222222222222222222222222222222222222",
++     },
++     "token": {
++       "address": "native",
++       "config": undefined,
++       "decimals": 18,
++       "symbol": "ETH",
++     },
++     "totals": {
++       "subtotal": 10000n,
++       "tax": 0n,
++       "total": 10000n,
++     },
++     "trust": {
++       "kind": "valid-signature",
++       "message": {
++         "key": "pay.review.unpinnedSignature",
++         "values": {
++           "key": "02dcd17432bde48833d101c838a55e9e8d7ca7df3c16ba8c693c1a92154d282b59",
++         },
++       },
++       "text": "Signature matches key 02dcd17432bde48833d101c838a55e9e8d7ca7df3c16ba8c693c1a92154d282b59 (not pinned). This only shows the link was not altered by someone without that key.",
++     },
++     "warningMessages": [],
++     "warnings": [],
++   },
+  }
+
+ ❯ src/lib/pay.quoteAge.test.ts:50:30
+     48|   it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, 604_801])…
+     49|     const q = await quote(0, { ...FEED, heartbeatSec });
+     50|     await expect(q.execute()).rejects.toThrow(/freshness limit/);
+       |                              ^
+     51|     expect(q.requests()).toBe(0);
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/lib/pay.quoteAge.test.ts > LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime > refuses invalid configured heartbeat Infinity without RPC
+AssertionError: promise resolved "{ review: { …(12) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "adapter": {
++     "buildPaymentRequest": [Function buildPaymentRequest],
++     "chainId": "84532",
++     "family": "evm",
++     "fees": {
++       "checkout": "enforced",
++       "checkoutBps": 25,
++       "flatSecurity": "not_deployed",
++       "gasSponsorship": "enforced",
++     },
++     "parseRecipient": [Function parseRecipient],
++     "scan": [Function scan],
++   },
++   "chain": {
++     "blockTimeMs": 2000,
++     "chainId": 84532,
++     "enabled": true,
++     "finalityDepth": 100,
++     "getLogsMaxRange": 1000,
++     "name": "Base Sepolia",
++     "nativeDecimals": 18,
++     "nativeSymbol": "ETH",
++     "opStack": true,
++     "testnet": true,
++   },
++   "client": {
++     "blockNumber": [Function blockNumber],
++     "calls": [
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0x313ce567",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0xfeaf968c",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++     ],
++     "chainId": 84532,
++     "getBlock": [Function getBlock],
++     "getLogs": [Function getLogs],
++     "request": [Function request],
++   },
++   "manifest": {
++     "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++     "bytecodeHashes": {
++       "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++       "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++     },
++     "chainId": 84532,
++     "commit": "cccccccccccccccccccccccccccccccccccccccc",
++     "date": "2026-01-01T00:00:00Z",
++     "deployTx": {
++       "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++     },
++     "feeBps": 25,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "router": "0x1111111111111111111111111111111111111111",
++     "solcVersion": "0.8.28+commit.7893614a",
++     "sweepRelayer": "0x2222222222222222222222222222222222222222",
++   },
++   "quotedTokenAmount": 50000000000000000n,
++   "request": {
++     "asset": "native",
++     "build": [Function build],
++     "chainId": "84532",
++     "family": "evm",
++     "feeAmount": 125000000000000n,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "grossAmount": 50000000000000000n,
++     "netAmount": 49875000000000000n,
++     "router": "0x1111111111111111111111111111111111111111",
++   },
++   "review": {
++     "blockerMessages": [],
++     "blockers": [],
++     "chain": {
++       "blockTimeMs": 2000,
++       "chainId": 84532,
++       "enabled": true,
++       "finalityDepth": 100,
++       "getLogsMaxRange": 1000,
++       "name": "Base Sepolia",
++       "nativeDecimals": 18,
++       "nativeSymbol": "ETH",
++       "opStack": true,
++       "testnet": true,
++     },
++     "encrypted": false,
++     "expiry": {
++       "invoiceExpired": false,
++       "quoteExpired": false,
++       "secondsRemaining": 86400,
++     },
++     "invoice": {
++       "amountPolicy": {
++         "mode": "fiat_quote",
++       },
++       "chainId": 84532,
++       "expiresAt": 1800086400,
++       "feePolicy": "seller_pays",
++       "fiat": {
++         "currency": "USD",
++         "minorUnits": "10000",
++       },
++       "lineItems": [
++         {
++           "description": "Consulting",
++           "quantity": "2",
++           "unitMinorUnits": "5000",
++         },
++       ],
++       "metaAddress": "st:eth:0x0380ae6ff8010fd19bf59d6c55f15ea145a0ecbf0fee087c526a513d90bd4e441f03ff31267c8a935bf49e0119515ee08b715ca8721a0c7df0823ced7d0d7414327f",
++       "nonce": "edb3cbe2163a6c92bdcda37d8213e444",
++       "quote": {
++         "expiresAt": 1800086400,
++         "maxSlippageBps": 50,
++         "source": "chainlink:eth-usd",
++         "timestamp": 1800000000,
++       },
++       "schemeId": 1,
++       "signer": "02a4dc69f175270958b77171076a79b5c0d7d18c65b70b4bb66dc4bae767a56d39",
++       "tax": {
++         "minorUnits": "0",
++         "rateBps": 0,
++       },
++       "token": "native",
++       "v": 1,
++     },
++     "manifest": {
++       "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++       "bytecodeHashes": {
++         "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++         "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++       },
++       "chainId": 84532,
++       "commit": "cccccccccccccccccccccccccccccccccccccccc",
++       "date": "2026-01-01T00:00:00Z",
++       "deployTx": {
++         "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++         "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++       },
++       "feeBps": 25,
++       "feeRecipient": "0x4444444444444444444444444444444444444444",
++       "router": "0x1111111111111111111111111111111111111111",
++       "solcVersion": "0.8.28+commit.7893614a",
++       "sweepRelayer": "0x2222222222222222222222222222222222222222",
++     },
++     "token": {
++       "address": "native",
++       "config": undefined,
++       "decimals": 18,
++       "symbol": "ETH",
++     },
++     "totals": {
++       "subtotal": 10000n,
++       "tax": 0n,
++       "total": 10000n,
++     },
++     "trust": {
++       "kind": "valid-signature",
++       "message": {
++         "key": "pay.review.unpinnedSignature",
++         "values": {
++           "key": "02a4dc69f175270958b77171076a79b5c0d7d18c65b70b4bb66dc4bae767a56d39",
++         },
++       },
++       "text": "Signature matches key 02a4dc69f175270958b77171076a79b5c0d7d18c65b70b4bb66dc4bae767a56d39 (not pinned). This only shows the link was not altered by someone without that key.",
++     },
++     "warningMessages": [],
++     "warnings": [],
++   },
+  }
+
+ ❯ src/lib/pay.quoteAge.test.ts:50:30
+     48|   it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, 604_801])…
+     49|     const q = await quote(0, { ...FEED, heartbeatSec });
+     50|     await expect(q.execute()).rejects.toThrow(/freshness limit/);
+       |                              ^
+     51|     expect(q.requests()).toBe(0);
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/lib/pay.quoteAge.test.ts > LF-7aee9060b-1: fiat payment freshness is bounded independently of seller quote lifetime > refuses invalid configured heartbeat 604801 without RPC
+AssertionError: promise resolved "{ review: { …(12) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "adapter": {
++     "buildPaymentRequest": [Function buildPaymentRequest],
++     "chainId": "84532",
++     "family": "evm",
++     "fees": {
++       "checkout": "enforced",
++       "checkoutBps": 25,
++       "flatSecurity": "not_deployed",
++       "gasSponsorship": "enforced",
++     },
++     "parseRecipient": [Function parseRecipient],
++     "scan": [Function scan],
++   },
++   "chain": {
++     "blockTimeMs": 2000,
++     "chainId": 84532,
++     "enabled": true,
++     "finalityDepth": 100,
++     "getLogsMaxRange": 1000,
++     "name": "Base Sepolia",
++     "nativeDecimals": 18,
++     "nativeSymbol": "ETH",
++     "opStack": true,
++     "testnet": true,
++   },
++   "client": {
++     "blockNumber": [Function blockNumber],
++     "calls": [
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0x313ce567",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++       {
++         "method": "eth_call",
++         "params": [
++           {
++             "data": "0xfeaf968c",
++             "to": "0x7777777777777777777777777777777777777777",
++           },
++           "latest",
++         ],
++       },
++     ],
++     "chainId": 84532,
++     "getBlock": [Function getBlock],
++     "getLogs": [Function getLogs],
++     "request": [Function request],
++   },
++   "manifest": {
++     "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++     "bytecodeHashes": {
++       "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++       "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++     },
++     "chainId": 84532,
++     "commit": "cccccccccccccccccccccccccccccccccccccccc",
++     "date": "2026-01-01T00:00:00Z",
++     "deployTx": {
++       "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++     },
++     "feeBps": 25,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "router": "0x1111111111111111111111111111111111111111",
++     "solcVersion": "0.8.28+commit.7893614a",
++     "sweepRelayer": "0x2222222222222222222222222222222222222222",
++   },
++   "quotedTokenAmount": 50000000000000000n,
++   "request": {
++     "asset": "native",
++     "build": [Function build],
++     "chainId": "84532",
++     "family": "evm",
++     "feeAmount": 125000000000000n,
++     "feeRecipient": "0x4444444444444444444444444444444444444444",
++     "grossAmount": 50000000000000000n,
++     "netAmount": 49875000000000000n,
++     "router": "0x1111111111111111111111111111111111111111",
++   },
++   "review": {
++     "blockerMessages": [],
++     "blockers": [],
++     "chain": {
++       "blockTimeMs": 2000,
++       "chainId": 84532,
++       "enabled": true,
++       "finalityDepth": 100,
++       "getLogsMaxRange": 1000,
++       "name": "Base Sepolia",
++       "nativeDecimals": 18,
++       "nativeSymbol": "ETH",
++       "opStack": true,
++       "testnet": true,
++     },
++     "encrypted": false,
++     "expiry": {
++       "invoiceExpired": false,
++       "quoteExpired": false,
++       "secondsRemaining": 86400,
++     },
++     "invoice": {
++       "amountPolicy": {
++         "mode": "fiat_quote",
++       },
++       "chainId": 84532,
++       "expiresAt": 1800086400,
++       "feePolicy": "seller_pays",
++       "fiat": {
++         "currency": "USD",
++         "minorUnits": "10000",
++       },
++       "lineItems": [
++         {
++           "description": "Consulting",
++           "quantity": "2",
++           "unitMinorUnits": "5000",
++         },
++       ],
++       "metaAddress": "st:eth:0x02e4691719263d743031da9e5d16901481b753c740da8e98c125b75f3933d8a52a0230aa9b9b974b2ca972a4a764ca142a0891eb42b906840bd8a9baaf065dc3b7a3",
++       "nonce": "49a67d0212f118786416da1f37e394c4",
++       "quote": {
++         "expiresAt": 1800086400,
++         "maxSlippageBps": 50,
++         "source": "chainlink:eth-usd",
++         "timestamp": 1800000000,
++       },
++       "schemeId": 1,
++       "signer": "03c939cbd7f8951a812b061454f4b2b400ccf7da379f98507da3f0200bbe7d9ae3",
++       "tax": {
++         "minorUnits": "0",
++         "rateBps": 0,
++       },
++       "token": "native",
++       "v": 1,
++     },
++     "manifest": {
++       "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
++       "bytecodeHashes": {
++         "router": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
++         "sweepRelayer": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
++       },
++       "chainId": 84532,
++       "commit": "cccccccccccccccccccccccccccccccccccccccc",
++       "date": "2026-01-01T00:00:00Z",
++       "deployTx": {
++         "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++         "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++       },
++       "feeBps": 25,
++       "feeRecipient": "0x4444444444444444444444444444444444444444",
++       "router": "0x1111111111111111111111111111111111111111",
++       "solcVersion": "0.8.28+commit.7893614a",
++       "sweepRelayer": "0x2222222222222222222222222222222222222222",
++     },
++     "token": {
++       "address": "native",
++       "config": undefined,
++       "decimals": 18,
++       "symbol": "ETH",
++     },
++     "totals": {
++       "subtotal": 10000n,
++       "tax": 0n,
++       "total": 10000n,
++     },
++     "trust": {
++       "kind": "valid-signature",
++       "message": {
++         "key": "pay.review.unpinnedSignature",
++         "values": {
++           "key": "03c939cbd7f8951a812b061454f4b2b400ccf7da379f98507da3f0200bbe7d9ae3",
++         },
++       },
++       "text": "Signature matches key 03c939cbd7f8951a812b061454f4b2b400ccf7da379f98507da3f0200bbe7d9ae3 (not pinned). This only shows the link was not altered by someone without that key.",
++     },
++     "warningMessages": [],
++     "warnings": [],
++   },
+  }
+
+ ❯ src/lib/pay.quoteAge.test.ts:50:30
+     48|   it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, 604_801])…
+     49|     const q = await quote(0, { ...FEED, heartbeatSec });
+     50|     await expect(q.execute()).rejects.toThrow(/freshness limit/);
+       |                              ^
+     51|     expect(q.requests()).toBe(0);
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 2 passed (10)
+   Start at  22:33:13
+   Duration  20.14s (transform 57%, import 31%, tests 12%)
+

@@ -1,0 +1,638 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T08:19:46.620976+00:00",
+  "base_sha": "7be82871a4867210da20e185202be0faa661ed7b",
+  "final_runtime_sha": "de253aaf7f4139c8778b73cd7a9e052f9438e91e",
+  "qualified_fixture_docs_sha": "1ef57cee254ad72b755ec2f4c2007f527c9ac1d3",
+  "cherry_pick_sequence": [
+    "d655260db0e1c935ca0efbf26abe86991f79adc8",
+    "a6bcaf38c4aa1f1dfc21e593816b4ac1a980ab1e",
+    "0aef3a254da123c4ec2d873bc0490cf22c739709",
+    "25ba30dc7cb39ea126503df2f3f0778bf9f641d4",
+    "0b7fbfbaedaef688ce337f1ecfe3d7940bdfa4da",
+    "6d23e5b69bf6b2c4a56b2a4527d64aa6fa74aad5",
+    "f3c0c795c7f9366cde982dc8e28e0cc1dd6870c2",
+    "2af11e3816d3b9de93df5fab4d35e39c68447a9b",
+    "de253aaf7f4139c8778b73cd7a9e052f9438e91e",
+    "1ef57cee254ad72b755ec2f4c2007f527c9ac1d3"
+  ],
+  "corrected_red_only_branch_sha": "49d68d7b2d71119d43c502a6ff4613c927b36f1c",
+  "requirements": [
+    {
+      "id": "#218 R07-4",
+      "historical_requirement_sha": "d894106e382c143c511912cb443cb980f5cf9731",
+      "requirement": "Account for OP L1 data and operator fees in quotes, fee coverage, daily/loss reservations and actual settlement.",
+      "authorization": "Coordinator explicitly authorized contained implementation after compatibility qualification: existing predeploy/2x reserve, legacy quote-size bound, signed-send-cost recheck, actual receipt settlement, no new provider/custody/protocol.",
+      "status": "IMPLEMENTED; INDEPENDENT SOURCE REVIEW PASS; FULL OP SUITE AND FINAL TARGETED/BUILD/SCOPED LINT GREEN; WHOLE-PACKAGE TYPECHECK REMAINS UNQUALIFIED"
+    },
+    {
+      "id": "Inherited R07 receipt-status admission",
+      "requirement": "Missing/unknown mined status must not settle a transaction; accept only exact success/reverted on both receipt paths and chain families.",
+      "authorization": "Coordinator explicitly authorized after independent pre-OP/current-source probe. Separate defect, not introduced by OP accounting.",
+      "status": "IMPLEMENTED;16 CASE RED,8 VALID CONTROLS; FINAL97/62 GREEN; INDEPENDENT SOURCE REVIEW PASS"
+    }
+  ],
+  "design": {
+    "quote": "getL1FeeUpperBound uses a conservative fixed-ABI legacy unsigned RLP size with maximum-width transaction integers and EIP155 fields; permits use the larger shape. Oracle signature overhead is counted once.",
+    "send": "Fresh reserve for each selected sweep simulation. After signing, reconstruct unsigned RLP from actual signed legacy bytes, then getL1Fee/getOperatorFee and refuse before synchronous journal hook/broadcast if reserve no longer covers2x fees. Final order/feed deadlines checked after reads.",
+    "settlement": "signed gasPrice * gasUsed + actual receipt.l1Fee + getOperatorFee(gasUsed) at canonical receipt blockHash. No reserve multiplier or duplicated fork formula in actual cost. Unknown/malformed fees retain reservation, including restart. Actual overage is recorded.",
+    "cache": "Quote-only TTL/coalescing bounded to two shapes per chain, independent quote fee failure streak. Send/receipt reads are fresh.",
+    "operator_compatibility": "Missing/reverting operator getter is refused rather than guessed pre-Isthmus zero. Genuine zero accepted.",
+    "privacy": "No additional journal fields, persisted calldata/signatures/owner/destination, provider or API quote fields. Non-OP sends/receipts make no fee-oracle requests."
+  },
+  "preserved_source_hashes": [
+    {
+      "path": "apps/relayer/src/config.ts",
+      "sha256": "e29b6d11f76c58b58bd1b36259c1e7c03612536df77d273886a9b394c0f21f29"
+    },
+    {
+      "path": "apps/relayer/src/server.ts",
+      "sha256": "01707b40781061c3420b6e12c535248f93bba4953ca6e0ddd579cdb3ea08dc4b"
+    },
+    {
+      "path": "apps/relayer/src/log.ts",
+      "sha256": "031db38633d9860153c5c77f84674527ec899960ffb7f78b605266034c888e1a"
+    },
+    {
+      "path": "apps/relayer/src/runtime.ts",
+      "sha256": "7308a2b735950065a126c1c6c7d7853b56cfdfafd3971e323ff90ad4138d7b6f"
+    },
+    {
+      "path": "apps/relayer/src/stateStore.ts",
+      "sha256": "7e0cc7bd2ba670048f881a88d95473de794e0912f027dace7612884f99e2e28e"
+    },
+    {
+      "path": "apps/relayer/src/quoteToken.ts",
+      "sha256": "80f0ba10f2bc05b636660544833369af9f8e77cae16bce36c62d9e02e6630b22"
+    },
+    {
+      "path": "apps/web/src/lib/opStackFee.ts",
+      "sha256": "7597421d72b807b08258b28acf663f097cd5ac92e77fdef94652e11bd00cc7d6"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2"
+    }
+  ],
+  "runtime_source_hashes": [
+    {
+      "path": "apps/relayer/src/budget.ts",
+      "sha256": "bfa1436da4409ff1307fa10a926adbece5a4198c2c7f311ea6748e9ac15a8fbd"
+    },
+    {
+      "path": "apps/relayer/src/chain.ts",
+      "sha256": "0d4c9a63b0b4035d7c00ea6c5aeb696bddd205ce900285b67d53ce2a40ccd177"
+    },
+    {
+      "path": "apps/relayer/src/opFees.ts",
+      "sha256": "7e1056d993606dcc195847983483640d89089c4e707e5e9ab8293f26f0eadb4e"
+    },
+    {
+      "path": "apps/relayer/src/service.ts",
+      "sha256": "2f16b217585fbc44f2f857230a7eac8e872b8c109e902d3e9bb818e1011ebf73"
+    }
+  ],
+  "environment": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "typescript": "5.9.3",
+    "viem": "2.57.19",
+    "mutex": "flock --close /workspace/scratch/6eafdb04d91b/qualification.lock, released between commands",
+    "dependencies": "74 independent copies from completed compatibility worktree; relative workspace links resolve inside this worktree. No fresh npm-ci success claimed.",
+    "anvil": "/workspace/scratch/75c78c17e2fc/contract-tools/anvil (Foundry1.8.5)",
+    "contracts": "Two independent artifact copies, byte hashes retained; packages/contracts tree equals previously qualified308a2148/e7b14844 source. Original forge/solc0.8.28 build record is workflows-evidence/relayer-contract-build.json in the prior relayer packet."
+  },
+  "independent_review": {
+    "reviewer": "contract_security, independent implementer lane",
+    "report": "docs/handoffs/agents/OP_FEE_SOURCE_REVIEW_20261119.md",
+    "report_commits": [
+      "54648f0ef8de731a9296db7a64784cc35a0a9986",
+      "ef4e95d6646cdaaf107ee51503fb48521e0bd70e"
+    ],
+    "passed_source": [
+      "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "2af11e3816d3b9de93df5fab4d35e39c68447a9b",
+      "de253aaf7f4139c8778b73cd7a9e052f9438e91e"
+    ],
+    "fixture_followup": "1ef57cee reviewed behavior-neutral; final62 GREEN binds its Promise.then fixture change.",
+    "qualification": "Source/probe review, not public-chain acceptance or an independent cryptographic audit.",
+    "probe_node": "24.22.3 (read-only source probe; not package qualification)"
+  },
+  "checks": [
+    {
+      "name": "op-fees-red",
+      "source_revision": "a6bcaf38c4aa1f1dfc21e593816b4ac1a980ab1e",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/opFees.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 1,
+      "seconds": 15.064,
+      "observed_at": "2026-11-19T07:50:55.618337+00:00",
+      "log": "op-fees-red.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768",
+      "passed": 1,
+      "failed": 15,
+      "note": "Initial quote expectation mistakenly used 150%; corrected baseline below is authoritative for that assertion."
+    },
+    {
+      "name": "op-fees-initial-green",
+      "source_revision": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/opFees.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 1,
+      "seconds": 26.418,
+      "observed_at": "2026-11-19T07:54:52.678490+00:00",
+      "log": "op-fees-initial-green.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768",
+      "passed": 15,
+      "failed": 1,
+      "note": "Only the erroneous 150% quote fixture remained failing. Runtime retained the correct published 110% multiplier."
+    },
+    {
+      "name": "op-fees-initial-typecheck",
+      "source_revision": "0aef3a254da123c4ec2d873bc0490cf22c739709",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/relayer/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": -9,
+      "seconds": 39.839,
+      "observed_at": "2026-11-19T07:56:19.741682+00:00",
+      "log": "op-fees-initial-typecheck.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768",
+      "note": "SIGKILL(-9), empty compiler diagnostic log; wrapper exit247. Whole-package typecheck is not qualified. No further full retry."
+    },
+    {
+      "name": "op-fees-corrected-red",
+      "source_revision": "49d68d7b2d71119d43c502a6ff4613c927b36f1c",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/opFees.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 1,
+      "seconds": 17.612,
+      "observed_at": "2026-11-19T07:57:15.517153+00:00",
+      "log": "op-fees-corrected-red.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=768",
+      "passed": 1,
+      "failed": 15,
+      "note": "Separate unchanged-runtime baseline branch49d68d7b uses the correct110% expectation: actual500000 versus expected1419000."
+    },
+    {
+      "name": "op-fees-targeted",
+      "source_revision": "0b7fbfbaedaef688ce337f1ecfe3d7940bdfa4da",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/opFees.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 0,
+      "seconds": 12.694,
+      "observed_at": "2026-11-19T07:59:27.267487+00:00",
+      "log": "op-fees-targeted.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "op-fees-typecheck512",
+      "source_revision": "0b7fbfbaedaef688ce337f1ecfe3d7940bdfa4da",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/relayer/tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": ".",
+      "exit_code": -9,
+      "seconds": 29.316,
+      "observed_at": "2026-11-19T08:01:25.725050+00:00",
+      "log": "op-fees-typecheck512.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512",
+      "note": "SIGKILL(-9), empty compiler diagnostic log; wrapper exit247. Whole-package typecheck is not qualified. No further full retry."
+    },
+    {
+      "name": "op-fees-full-coverage",
+      "source_revision": "6d23e5b69bf6b2c4a56b2a4527d64aa6fa74aad5",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 0,
+      "seconds": 296.016,
+      "observed_at": "2026-11-19T08:08:14.478143+00:00",
+      "log": "op-fees-full-coverage.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512",
+      "passed": 556,
+      "failed": 0,
+      "skipped": 0,
+      "files": 21,
+      "require_anvil": true,
+      "coverage_percent": {
+        "statements": 96.98,
+        "branches": 92.92,
+        "functions": 98.2,
+        "lines": 98.77
+      },
+      "coverage_counts": {
+        "statements": [
+          2506,
+          2584
+        ],
+        "branches": [
+          1656,
+          1782
+        ],
+        "functions": [
+          437,
+          445
+        ],
+        "lines": [
+          2091,
+          2117
+        ]
+      }
+    },
+    {
+      "name": "op-receipt-status-red",
+      "source_revision": "f3c0c795c7f9366cde982dc8e28e0cc1dd6870c2",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/opFees.test.ts",
+        "-t",
+        "inherited R07 receipt status admission",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 1,
+      "seconds": 5.149,
+      "observed_at": "2026-11-19T08:09:24.110925+00:00",
+      "log": "op-receipt-status-red.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512",
+      "passed": 8,
+      "failed": 16,
+      "unselected": 38,
+      "note": "Separate inherited status defect; valid success/revert controls pass."
+    },
+    {
+      "name": "op-fees-final-targeted",
+      "source_revision": "2af11e3816d3b9de93df5fab4d35e39c68447a9b",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/opFees.test.ts",
+        "src/chain.test.ts",
+        "src/restart.test.ts",
+        "src/e2e.anvil.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 0,
+      "seconds": 19.589,
+      "observed_at": "2026-11-19T08:11:25.394197+00:00",
+      "log": "op-fees-final-targeted.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512",
+      "passed": 97,
+      "failed": 0,
+      "skipped": 0,
+      "files": 4,
+      "require_anvil": true,
+      "note": "All62 OP/status tests plus complete chain, restart and nativeAnvil files after the status guard. Later TypeScript expression rewrite has identical request objects."
+    },
+    {
+      "name": "op-fees-build",
+      "source_revision": "2af11e3816d3b9de93df5fab4d35e39c68447a9b",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/relayer/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 2,
+      "seconds": 9.146,
+      "observed_at": "2026-11-19T08:12:24.327114+00:00",
+      "log": "op-fees-build.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512",
+      "note": "Actual TS2345: optional spread failed the blockHash CallParameters discriminant. Corrected by de253aaf without changing either emitted request object."
+    },
+    {
+      "name": "op-fees-final-build",
+      "source_revision": "de253aaf7f4139c8778b73cd7a9e052f9438e91e",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/relayer/tsconfig.build.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 7.623,
+      "observed_at": "2026-11-19T08:13:10.078937+00:00",
+      "log": "op-fees-final-build.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512"
+    },
+    {
+      "name": "op-fees-scoped-lint",
+      "source_revision": "de253aaf7f4139c8778b73cd7a9e052f9438e91e",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/relayer/src/chain.ts",
+        "apps/relayer/src/opFees.ts",
+        "apps/relayer/src/service.ts",
+        "apps/relayer/src/budget.ts",
+        "apps/relayer/src/harness.testutil.ts",
+        "apps/relayer/src/opFees.test.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 1,
+      "seconds": 15.45,
+      "observed_at": "2026-11-19T08:14:19.582849+00:00",
+      "log": "op-fees-scoped-lint.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512",
+      "note": "Three test-fixture errors: two unused parameters and an async provider callback without await. Corrected at1ef57cee; assertions unchanged."
+    },
+    {
+      "name": "op-fees-final-lint",
+      "source_revision": "1ef57cee254ad72b755ec2f4c2007f527c9ac1d3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/relayer/src/chain.ts",
+        "apps/relayer/src/opFees.ts",
+        "apps/relayer/src/service.ts",
+        "apps/relayer/src/budget.ts",
+        "apps/relayer/src/harness.testutil.ts",
+        "apps/relayer/src/opFees.test.ts"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 18.377,
+      "observed_at": "2026-11-19T08:15:49.735320+00:00",
+      "log": "op-fees-final-lint.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512"
+    },
+    {
+      "name": "op-fees-final-regressions",
+      "source_revision": "1ef57cee254ad72b755ec2f4c2007f527c9ac1d3",
+      "command": [
+        "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/opFees.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "apps/relayer",
+      "exit_code": 0,
+      "seconds": 3.531,
+      "observed_at": "2026-11-19T08:15:53.326811+00:00",
+      "log": "op-fees-final-regressions.log",
+      "node": "22.23.4",
+      "node_options": "--max-old-space-size=512",
+      "passed": 62,
+      "failed": 0,
+      "skipped": 0,
+      "files": 1
+    }
+  ],
+  "limits": [
+    "Full556-test coverage is pinned6d23e5b6, before the separately authorized status guard. Final guard received97 affected tests including required Anvil; the subsequent equivalent TypeScript parameter expression and fixture cleanup received62 final regressions/build/scoped lint. No claim of a final-head full580-test run.",
+    "Whole-package typecheck was killed twice with no diagnostic and remains a hosted/combined qualification gate. Runtime build is GREEN; this is not represented as a whole-package typecheck pass.",
+    "No public OP RPC, wallet/provider, broadcast or deploy qualification. The official size oracle is a practical estimator;2x reserve is a policy margin, not protection against arbitrary future fee rises.",
+    "No change to seven excluded feature streams, web Sweep code, dependency manifests/lock, oracle/feed configuration, fee authority or transaction protocol."
+  ],
+  "raw_evidence": [
+    {
+      "path": "workflows-evidence/op-fees-red.json",
+      "sha256": "569ea3d12314be63acfb2fb79c9055ec5e6ec08589bd0670f86786542e9eaaff",
+      "bytes": 462
+    },
+    {
+      "path": "workflows-evidence/op-fees-red.log",
+      "sha256": "8219ec63856515a7f7af13b3bb2dac5621bb27d55afc4a7601a3a681747d28b2",
+      "bytes": 9492
+    },
+    {
+      "path": "workflows-evidence/op-fees-initial-green.json",
+      "sha256": "eb24e3270811cde29478b8a14f93773aeed1b0044de6adf860253ab48eb0fa88",
+      "bytes": 482
+    },
+    {
+      "path": "workflows-evidence/op-fees-initial-green.log",
+      "sha256": "e6ffa8f4f81a11f67b72eed62b28dd4fa063ccd1ac522099f99aa0ba064787ed",
+      "bytes": 1414
+    },
+    {
+      "path": "workflows-evidence/op-fees-initial-typecheck.json",
+      "sha256": "541b0220057ca518e368548389281075d8759ce6ed875d34d8b897a178730610",
+      "bytes": 447
+    },
+    {
+      "path": "workflows-evidence/op-fees-initial-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/op-fees-corrected-red.json",
+      "sha256": "37ba57b85050c0e3f9f2ccb022a34847dc07fec7cbd9cc0c4bbdcc0a8331d7de",
+      "bytes": 482
+    },
+    {
+      "path": "workflows-evidence/op-fees-corrected-red.log",
+      "sha256": "fa6f3460a1661acd5332830eb8dcdf3ccd56aa6f7bcfc48130b5a0e3964a9b14",
+      "bytes": 9497
+    },
+    {
+      "path": "workflows-evidence/op-fees-targeted.json",
+      "sha256": "030179be508531df33a7b24c39eb34792149745e47251627926e8beee6f200d3",
+      "bytes": 472
+    },
+    {
+      "path": "workflows-evidence/op-fees-targeted.log",
+      "sha256": "cad747b0c34472b85d886247c83c595df14531c2fe9195d3e744b015c6c96eed",
+      "bytes": 563
+    },
+    {
+      "path": "workflows-evidence/op-fees-typecheck512.json",
+      "sha256": "f347e4cafd59ed62a8fa0a08fdc755567d7fbdfc9a85fcfc4919b5eb97735a80",
+      "bytes": 437
+    },
+    {
+      "path": "workflows-evidence/op-fees-typecheck512.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/op-fees-full-coverage.json",
+      "sha256": "02fb7040109a69713717e205dae8475dc74b99ef28a792c71024e19e01cfbba4",
+      "bytes": 475
+    },
+    {
+      "path": "workflows-evidence/op-fees-full-coverage.log",
+      "sha256": "d3a0c122c5c66af209663b4c516ef07169c2257b29ef05e99462685829bd4696",
+      "bytes": 6230
+    },
+    {
+      "path": "workflows-evidence/op-receipt-status-red.json",
+      "sha256": "14a3c1e88003a7e05b7b6cd554deb8b9d041c45751dd2871101c4fdc25928bea",
+      "bytes": 537
+    },
+    {
+      "path": "workflows-evidence/op-receipt-status-red.log",
+      "sha256": "22d5792beae345a9ddb25cdd614d8cab652114aa05d403a617e5f449aba9ba1a",
+      "bytes": 10604
+    },
+    {
+      "path": "workflows-evidence/op-fees-final-targeted.json",
+      "sha256": "db966da52cd97a7c447a96097f5cf58148630a0983d6f9a8dad85e34a4806c90",
+      "bytes": 565
+    },
+    {
+      "path": "workflows-evidence/op-fees-final-targeted.log",
+      "sha256": "a6d2fca0a837fdfc87ff3c5d167f9d0a529d5e90c30a2724cc3941cf3e1bb310",
+      "bytes": 1087
+    },
+    {
+      "path": "workflows-evidence/op-fees-build.json",
+      "sha256": "a8884035395a452806835f1017c88f505993135f05ed65abc17ffad328ce7b7d",
+      "bytes": 411
+    },
+    {
+      "path": "workflows-evidence/op-fees-build.log",
+      "sha256": "18e83416d3deac8a5f909cb78a2b882b53c32147c70b226ba50c975800eedece",
+      "bytes": 1307
+    },
+    {
+      "path": "workflows-evidence/op-fees-final-build.json",
+      "sha256": "f5b2de546511f859121ca68ccbaa448ae7573859a7fb491202f989ab0b8f1dbd",
+      "bytes": 423
+    },
+    {
+      "path": "workflows-evidence/op-fees-final-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "workflows-evidence/op-fees-scoped-lint.json",
+      "sha256": "2867a6f19c8692eafb646adf09753a55f13a28607c078167b5346707d4cd31dc",
+      "bytes": 634
+    },
+    {
+      "path": "workflows-evidence/op-fees-scoped-lint.log",
+      "sha256": "4280180f460351d8eebeafe0f1dc292af21bbbf88f66c4d272068fb38ed8f9ae",
+      "bytes": 664
+    },
+    {
+      "path": "workflows-evidence/op-fees-final-lint.json",
+      "sha256": "d888bc98e6afaa2f59ce5d774cd2d1363e93d7a507a9d2757a7649ac1fdcdf0b",
+      "bytes": 633
+    },
+    {
+      "path": "workflows-evidence/op-fees-final-lint.log",
+      "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "bytes": 174
+    },
+    {
+      "path": "workflows-evidence/op-fees-final-regressions.json",
+      "sha256": "e5a9d42c8b3c5b0d4dd67116781490e762ffae8ba7f4d70916f4cfe81c113047",
+      "bytes": 489
+    },
+    {
+      "path": "workflows-evidence/op-fees-final-regressions.log",
+      "sha256": "22baf7339388632334d1d9e4d7a8fc32f2f52f6a90374392228bdc892cf56c30",
+      "bytes": 562
+    },
+    {
+      "path": "workflows-evidence/op-fees-dependency-copy.json",
+      "sha256": "0307c3b48208364c4cad53373e77782275da04a615cdb73a23f8dd33af08556b",
+      "bytes": 2793
+    },
+    {
+      "path": "workflows-evidence/op-fees-contract-artifacts.json",
+      "sha256": "ed5c7132a492f9643687fad77461bc0610df1ca69d26e8fac78f7624e5c0d10f",
+      "bytes": 588
+    },
+    {
+      "path": "workflows-evidence/op-fees-primary-source.json",
+      "sha256": "38c2453ee42dfd1de0775782ed6d963b299564ca906ede2e4a3f0592f56679c8",
+      "bytes": 1014
+    },
+    {
+      "path": "workflows-evidence/op-receipt-status-probe.json",
+      "sha256": "c101f5b2b9c8db65830db4d659c23a85f98ceab8ee3057d48b8f6c112b76c83c",
+      "bytes": 4569
+    },
+    {
+      "path": "workflows-evidence/op-receipt-status-probe.mjs",
+      "sha256": "ca6ed3842d89d8e809415fa6bad73812e30d600ce525f4b1791a0973871074e7",
+      "bytes": 3727
+    },
+    {
+      "path": "workflows-evidence/op-fees-run-check.py",
+      "sha256": "d0960431b6eda85170a4c93aa8e1879864bd5342c2456a05e29f84f1e5c6f0ab",
+      "bytes": 798
+    },
+    {
+      "path": "workflows-evidence/op-fees-full-coverage.lcov",
+      "sha256": "a0ab06b5debcb09980f4928f9529d2c20f0227ef930dc1a05693f83c2f3fe798",
+      "bytes": 70842
+    }
+  ]
+}

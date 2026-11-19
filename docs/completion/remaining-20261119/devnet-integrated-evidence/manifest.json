@@ -1,0 +1,18 @@
+{
+  "schema": "ghostpay-devnet-integrated-check/1",
+  "source": "2a0545ceb6b7971801ac1c225e9e857d4d66474b",
+  "scope": "14 focused manifest helper regressions; loopback fake RPC only; no browser execution",
+  "files": [
+    {
+      "file": "receipt.json",
+      "bytes": 402,
+      "sha256": "8e58e0f63fff90100889a824e0c3b85958eb6f776dc427b746a099d47f8917ef"
+    },
+    {
+      "file": "tests.log",
+      "bytes": 3496,
+      "sha256": "65db5adc1b6d85c8500a34e42d54d57e3eef82181141df76a314a445a3716175"
+    }
+  ],
+  "current_source_identity": "All three repair/test files match the executed source."
+}

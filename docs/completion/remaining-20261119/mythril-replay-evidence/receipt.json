@@ -1,0 +1,67 @@
+{
+  "schema": "ghostpay-current-mythril-concrete-replay/1",
+  "recorded_utc": "2026-11-19T08:13:45.307692+00:00",
+  "source": "28edbcf55093a6d6056232fd59ef37a2ae832b9a",
+  "report_sha256": "84f4f5846b68054fac52dc4968da78996d520c03c4049318ddc62ba4424b642e",
+  "first_attempt": {
+    "exit_code": 1,
+    "cause": "Harness assumed genesis --timestamp 0 also fixed mined block timestamps. Actual deploymentTimestamp was1, causing expected Expired rejections for the first two expiry calls rather than the earlier timestamp-zero errors. All8 Factory constructor checks had already passed.",
+    "observed_expiry_errors": [
+      "Expired()",
+      "Expired()",
+      "InvalidDestination()"
+    ]
+  },
+  "final_attempt": {
+    "exit_code": 0,
+    "clock_control": "Explicit successful anvil_setBlockTimestampInterval(0), all deployed block timestamps asserted0",
+    "findings": 11,
+    "factory_constructor_rejections": 8,
+    "expiry_errors": [
+      "InvalidAmount()",
+      "ZeroAmount()",
+      "InvalidDestination()"
+    ]
+  },
+  "limits": [
+    "Exact original creation bytecode, constructor calldata and supplied call input/value/origin are replayed; no patched contract is substituted.",
+    "Creation origins are funded and impersonated only within the disposable child Anvil; other call origins are funded for eth_call. Symbolic initial-state balances/storage are not fully injected.",
+    "Expiry eth_call targets are rebound to the corresponding newly deployed local instances under a 20000000 gas cap. The pinned Anvil default chain/fork and prior deployment nonce state are used; this is not an exact symbolic-world recreation.",
+    "The8 Factory creation calls fail before later sequence steps. The experiment does not execute those impossible later steps or disprove the genuine token-freeze/fee-waiver conditions.",
+    "Timestamp-zero Anvil is a controlled local counterexample, not acceptance of a real chain clock or production timelock policy.",
+    "Executed harnesses are archived verbatim with their session-specific tool/report paths. The original failed assumption is retained; no analyzer outcome or required gate changed."
+  ],
+  "evidence": [
+    {
+      "path": "attempt-1/replay-current-mythril.py",
+      "bytes": 6835,
+      "sha256": "b233bb204a031e3d98d3dfa1829284f663e93db4965b172cf4693990edf794b3"
+    },
+    {
+      "path": "attempt-1/mythril-current-concrete-replay.json",
+      "bytes": 6443,
+      "sha256": "6883ff7218075c76dfcd0e29966a8de01c2a8ebf5216a16f73f65005f1b2a64b"
+    },
+    {
+      "path": "attempt-1/mythril-current-anvil.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "fixed-clock/replay-current-mythril.py",
+      "bytes": 7093,
+      "sha256": "2879956736c275eace36c6cf13e869a6f057bb83441d447e1eb41716d0f5b38a"
+    },
+    {
+      "path": "fixed-clock/mythril-current-concrete-replay.json",
+      "bytes": 6510,
+      "sha256": "34d89c2e90138227e043a4b3a4001e0ac90964b80edd5951e4e2a6d327ed45c5"
+    },
+    {
+      "path": "fixed-clock/mythril-current-anvil.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "input_hash_encoding": "SHA-256 of UTF-8 hexadecimal strings, not decoded bytes"
+}

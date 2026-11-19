@@ -20,6 +20,7 @@ Select no beta network by assumption. Verify exact-head registry, chain/asset, c
 | Area | Lean disposition |
 |---|---|
 | The EVM invoice/payment/detection/receipt/sweep/key-recovery path | `beta-core` candidate, not certified done; existing core findings and acceptance gates remain open until dispositioned. |
+| Payer gas buffer for a v1 fixed-amount ERC-20 invoice | Available in lean and full, off by default; opt-in displays the native amount and public linkage. This is distinct from the deferred v2 seller buffer policy. Real-chain buffered-sweep acceptance remains separate. |
 | Tag archive/import/rotation and combined backup panel | `later-preserved`; archive-import findings gate beta only if reachable or required by a shipped dependency. Otherwise prove exclusion before deferring. |
 | Bitcoin, Solana, TRON and additional network support | `later-preserved`; not included in the one-EVM support claim without separate qualification. |
 | Fiat/oracles, invoice buffer-policy v2, merchant embedding/profiles, escrow, PIR/private pools, policy accounts/EIP-7702 and other extensions | `later-preserved`; separate decisions, dependencies and acceptance required. |

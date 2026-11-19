@@ -1,0 +1,4 @@
+(node:8) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+wrote /workspace/scratch/6eafdb04d91b/GhostPay-compat/test-vectors/meta-address-sol-tron-v1.json
+{"original_fixture_restored": true, "reproduced_metadata": {"generatedAt": "2026-11-19", "node": "v22.23.4"}, "saved_metadata": {"generatedAt": "2026-11-18", "node": "v22.23.5"}, "semantic_sha256": "31ecfe6a775a9deb13ce9c3e261e6c23c0c1978d686dda4f83ba3db24092402c", "vector_payload_identical": true, "web_only_generator": true}
