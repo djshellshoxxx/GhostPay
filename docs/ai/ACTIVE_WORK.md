@@ -13,6 +13,11 @@ the tested product; preserve every prior main claim; identify differences in roo
 configuration/lockfiles and record evidence limits honestly. Obtain independent
 recovery-worker review. No other runtime, dependency, workflow, threshold, deployment
 or remote changes. The coordinator owns publication and hosted qualification.
+Status: exact `-x` cherry-pick product `f4464e57bc6743800c2564ddb71bb5b06f64eb35`;
+complete kit tree and three product blobs equal the reviewed original. Historical
+evidence copied byte-for-byte; root lock differences remain explicit. Recovery-worker
+source review found no introduced blocker. No new runtime replay is claimed.
+Provenance: `docs/consolidation/hosting-timestamp-main-20261119/PROVENANCE.md`.
 
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
