@@ -5,7 +5,7 @@
 - Isolated branch: `chatgpt/ghostpay-pages-artifact-integrity-20261119`
 - Starting `main`: `8f56376427c96881f49590920ff0bf8543ec81b4`.
 - Changed production file: `scripts/pages/verify-pages-artifact.mjs` (blob `b13870688d722fe5928ed192499ae76be55554ee`, commit `924559411aff83e6de50cb23059dd3976bd9d03a`).
-- New tests: `scripts/pages/verify-pages-artifact.test.mjs` (blob `26ed2b9f2401946a257ee76e4536db82458842f3`, commit `35e2b6f92fabdfd5125e5997bdd71ec5c0887934`).
+- New tests: `scripts/pages/verify-pages-artifact.test.mjs` (current blob `341e14cfd555a8db44eba8861458b682dedd54ff`, original test commit `35e2b6f92fabdfd5125e5997bdd71ec5c0887934`, CLI-test follow-up `9bf0e1bbf8f083c51fe7924535273857a7a68d72`).
 - Existing integration branches, workflows, release settings, testnet manifests, contracts, and deployed Pages content were not modified.
 
 ## Purpose
@@ -28,7 +28,7 @@ Exit 0 confirms the file inventory and hashes matched the supplied trusted manif
 ## Executed verification
 
 - Node `v22.16.0` run: `node --test verify-pages-artifact.test.mjs` on exact file blobs copied to `/mnt/data/ghostpay-work`.
-- Result: **5 test groups passed, 0 failed, 0 skipped**; includes fixture-level positive, integrity failures, path/manifest validation, symlink denial and source-commit mismatch.
+- Result: **6 test groups passed, 0 failed, 0 skipped**; includes fixture-level positive, integrity failures, path/manifest validation, symlink denial source-commit mismatch, and real CLI exit-code paths.
 - Local `git hash-object` of both tested files exactly matches their published GitHub blob SHAs above.
 - No full workspace dependency installation or actual published Pages artifact was used in this environment. Repository CI and independent code review remain **pending**, not passed.
 
