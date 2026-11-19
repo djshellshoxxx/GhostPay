@@ -35,6 +35,10 @@ Owned paths: `packages/chain-adapters/src/{deployments,quote,rpc}.ts` and focuse
 `packages/tron-adapter/src/rpc.ts` block-range validation only and `scan.test.ts`; this claim and scoped handoff.
 Source provenance: `e2fef011ca1195d6c5edaf4e1ea1055692462004`,
 `b098b73a3a93bde331b7f49123e99d3406b6cb6f`, `c37604d1b1cf561573270d6cc002418003f80b69`.
+Status: selected runtime safeguards recovered; baseline regressions reproduced; affected package coverage
+passed (552 chain-adapter tests plus 104 TRON tests). Coordinator independently reviewed the source diff.
+Concurrent typecheck was killed with exit 137; remaining checks and combined-source CI are recorded in the
+scoped handoff, `docs/handoffs/consolidation-20261118/HISTORICAL_ADAPTER_SAFEGUARDS.md`.
 Acceptance: reject impossible manifest calendar dates; bounded retries for non-finite inputs; preserve the existing
 0..30 price-decimals bound with additional regressions; refuse incomplete/noncontiguous TRON block ranges;
 preserve PR #241 transport isolation. The historical price-decimals runtime hunk is redundant and excluded.

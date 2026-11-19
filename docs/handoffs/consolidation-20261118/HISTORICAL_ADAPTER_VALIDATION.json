@@ -1,0 +1,68 @@
+{
+  "base": "5a33a435ffbb4711d0a5fa69ade9d32ad4f8b929",
+  "validated_source_head": "cd885251980fc9bd8c9dcb7fe1a380d8fc3475f3",
+  "branch": "integration/ghostpay-historical-fixes-20261118",
+  "node": "v24.22.3",
+  "npm": "11.9.0",
+  "source_commits": [
+    "e2fef011ca1195d6c5edaf4e1ea1055692462004",
+    "b098b73a3a93bde331b7f49123e99d3406b6cb6f",
+    "c37604d1b1cf561573270d6cc002418003f80b69"
+  ],
+  "net_runtime_paths": [
+    "packages/chain-adapters/src/deployments.ts",
+    "packages/chain-adapters/src/rpc.ts",
+    "packages/tron-adapter/src/rpc.ts"
+  ],
+  "excluded_hunks": [
+    "quote.ts: adding price.decimals to 0..36 loop duplicates the existing stricter integer 0..30 validation; quote regression retained."
+  ],
+  "validation": {
+    "npm_ci": "passed: 212 packages in 49 seconds, unchanged lockfile, scoped chain-adapters and tron-adapter workspaces",
+    "dependency_build": "core-crypto and invoice-schema passed",
+    "baseline_regressions": "chain-adapters 2 failing/120 passing; TRON scan 2 failing/25 passing; original runtime restored only for reproduction and fixed tree restored afterward",
+    "chain_adapters": "exit 0: 26 test files passed, 552 tests passed, 22 skipped; coverage statements97.35 branches96.48 functions99.01 lines98.93",
+    "tron_adapter": "exit 0: 9 test files passed, 104 tests passed; coverage statements96.98 branches93.36 functions98.92 lines99.08",
+    "typecheck": "concurrent attempt exit137: chain-adapters process killed without a TypeScript diagnostic; no green claim",
+    "lint": "not yet run",
+    "build": "affected-package build not yet run; dependency builds passed",
+    "independent_source_review": "coordinator reported pass after reviewing cd885251 runtime diff; full combined hosted CI remains coordinator work"
+  },
+  "logs": [
+    {
+      "file": "history-fixes-npm-ci.log",
+      "sha256": "d0f445b1b10935469df6eb35022382e69336d8338f037020c15e12f5ab1d0a34",
+      "bytes": 126
+    },
+    {
+      "file": "history-fixes-dependency-build.log",
+      "sha256": "46b17d9b4626cc817c45b42565440a3c4ad49e852e958a3785018a058ea7da9b",
+      "bytes": 236
+    },
+    {
+      "file": "history-fixes-red-chain-adapters.log",
+      "sha256": "1709cd462a981a50ead0f4d39f69ba6eeff1417b49667d59171cb3e808bf881d",
+      "bytes": 1986
+    },
+    {
+      "file": "history-fixes-red-tron-adapter.log",
+      "sha256": "9b88b8be75adf5133833be8cc23a8cbc76abb6783635d9a0325d09c1b0b61c6e",
+      "bytes": 1731
+    },
+    {
+      "file": "history-fixes-green-chain-adapters.log",
+      "sha256": "d0a65587f5814561888b47d808c4e03e925bcceb3f0a09eba4b89cdfc2e8528e",
+      "bytes": 2540
+    },
+    {
+      "file": "history-fixes-green-tron-adapter.log",
+      "sha256": "51cac70a59c562fda04e75e8e6df28b5957696313f351fda769283ab3f1d5201",
+      "bytes": 1797
+    },
+    {
+      "file": "history-fixes-typecheck.log",
+      "sha256": "9c61b45c5ed8ca99e2921e229e96c4ac5cd66bb1734cc099414f0ab761bcee28",
+      "bytes": 658
+    }
+  ]
+}
