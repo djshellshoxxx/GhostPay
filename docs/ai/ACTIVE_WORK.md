@@ -1,3 +1,15 @@
+# Run 20261119T1640Z — privacy-set 30-day coverage correctness
+
+Worker: one ChatGPT coordinator, with sequential implementation and audit phases; no independent subagent.
+Base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; isolated branch: `automation/20261119T1640Z/bug/scan-privacy-partial-30d`.
+Owned paths: `apps/web/src/lib/scanSpam.ts`, new `apps/web/src/lib/scanSpam.partial.test.ts`, and `docs/handoffs/SCAN_SPAM_PARTIAL_30D_20261119.md`. The claim is recorded here before source edits.
+Finding: `anonymitySet()` reports 7-day and 30-day public announcement counts but calculates `partial` from only the 7-day lower bound. If a scan began ten days ago, the 30-day displayed count is incomplete yet the warning is absent.
+Acceptance: a test that fails on baseline for incomplete 30-day coverage; 7-day/30-day counts remain unchanged; the `partial` flag marks incomplete 30-day history and gaps to head, but does not spuriously mark full available genesis history incomplete. Run available focused checks and report exact limits; avoid changing privacy policy, protocol, network access or real funds.
+Dependencies/ownership: checked active #278/#264/#246/#238/#244/#251/#248/#249/#222/#219/#250/#269/#270/#279/#280 changed-file inventories; none owns `scanSpam.ts` or new focused test. Recheck before PR. The metadata integration lock was last observed released generation 3; no protected integration requested.
+Status: claimed; implementation pending.
+
+---
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
