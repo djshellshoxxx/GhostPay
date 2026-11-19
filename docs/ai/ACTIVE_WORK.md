@@ -14,6 +14,12 @@ privacy-worker review, and record failures/limits without weakening checks. Scop
 sparse/decorated inert arrays, not arbitrary hostile accessors/proxies or a demonstrated
 signature exploit. No root checkout, other PR head, dependency, threshold, workflow,
 mainnet, deployment or remote mutation. Root owns later integration and consumer gates.
+Status: original PR ancestry retained via `7b264276`; reviewed product
+`0f8dca27613fe9952cdb772cb10d05ced0f2b455`. Actual upstream Vitest baseline: 10 passed,
+1 failed. Focused JSON/schema/signing/receipt selection: 200 passed in four files.
+Package typecheck, typed lint and build passed. Privacy-worker source review found
+no introduced blocker. Full package coverage and root consumer/release gates are not
+claimed. Evidence: `docs/consolidation/canonical-array-20261119/QUALIFICATION.md`.
 
 # Hosting export timestamp precision — 2026-11-19
 
