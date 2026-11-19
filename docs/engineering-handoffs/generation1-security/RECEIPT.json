@@ -14,7 +14,7 @@
       "files": 1,
       "passed": 1,
       "failed": 3,
-      "log": "evidence/expiry-baseline.log"
+      "log": "evidence/expiry-baseline.log.gz"
     },
     {
       "name": "Corrected boundary plus Payment/Recovery/Verification",
@@ -22,7 +22,7 @@
       "files": 4,
       "passed": 49,
       "failed": 0,
-      "log": "evidence/expiry-fixed-and-export-regression.log"
+      "log": "evidence/expiry-fixed-and-export-regression.log.gz"
     },
     {
       "name": "Selection/download integration",
@@ -30,12 +30,12 @@
       "files": 2,
       "passed": 10,
       "failed": 0,
-      "log": "evidence/expiry-selection-download-regression.log"
+      "log": "evidence/expiry-selection-download-regression.log.gz"
     },
     {
       "name": "Original-rule scoped typed ESLint",
       "exit_code": 0,
-      "log": "evidence/expiry-typed-lint.log"
+      "log": "evidence/expiry-typed-lint.log.gz"
     }
   ],
   "source_blobs": {
@@ -57,21 +57,21 @@
     "No contract, fee, dependency, workflow, deployment or remote branch changes."
   ],
   "evidence": {
-    "expiry-baseline.log": {
-      "sha256": "4e02570746d9955edfc6b947126fa37feaeb50af0a78ac77df9436008250b9a4",
-      "bytes": 2925
+    "expiry-baseline.log.gz": {
+      "sha256": "d019e228dcc57b7353e47e14209d2bc6d91045a7d8ed87ba8535ef9e1e246af9",
+      "bytes": 1039
     },
-    "expiry-fixed-and-export-regression.log": {
-      "sha256": "60812fd30769d075f7dc19be41b3a4619b9e4dbee5d457dd26fa82f674ed269c",
-      "bytes": 1305
+    "expiry-fixed-and-export-regression.log.gz": {
+      "sha256": "7e8fd10cadaa697942e855f59764cc0aaf561fc7e4b4ddb89fe4d9f61fe4c703",
+      "bytes": 456
     },
-    "expiry-selection-download-regression.log": {
-      "sha256": "2be3919844739011dae28896be0587d38635a81b43af0164ae08336b4a02197c",
-      "bytes": 954
+    "expiry-selection-download-regression.log.gz": {
+      "sha256": "3677353dbb3467bb63875147caf0f89918aed0c5bac5d9debdbbe70a8f977f87",
+      "bytes": 443
     },
-    "expiry-typed-lint.log": {
-      "sha256": "3a55bee2309810197bd8422071bdebee2c7b395309f4be263e38e9a2330048ac",
-      "bytes": 175
+    "expiry-typed-lint.log.gz": {
+      "sha256": "835db4640ee455e4c3777d71f6a518a62469942504b35cbe5a7eef67c65ee5cc",
+      "bytes": 161
     },
     "mythril-c993.zip": {
       "sha256": "7ea2f0648d3ae777ede6aebb5e8c7de81ebe20e7746f24d9b1c290ffc45fceee",
