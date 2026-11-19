@@ -1509,3 +1509,12 @@ dependency upgrade, mainnet request, deployment or remote write.
 - Acceptance: preserve source provenance, fail-closed session/network authority, private backup recovery, disabled demonstration payments, original test assertions and coverage gates. Run focused regressions and applicable builds/browser/security checks.
 - Shared integration lock is held by `20261119T105500Z-0bed53303053-root`, generation 3. This branch does not acquire, supersede, or mutate that lease. Shared branch/main promotion remains blocked until the existing coordinator releases ownership and required checks pass.
 - No edits to other checkouts, source branches, deployments, published tags, fee recipients, guardians, mainnet configuration, dependency versions, or security thresholds. Release/deployment remains conditional on ADR-0029, origin isolation and actual qualification.
+
+
+## 2026-11-19 — Sweep signing review authority (246ff268d20d)
+
+- Worker: independent security reviewer, delegated bounded implementation by final Pages coordinator.
+- Branch: `review/ghostpay-final-security-20261119`; base `7f44cf742f25df25105a5a21d223b6d0d1efb62d`.
+- Owned paths: `apps/web/src/lib/sweep.ts`, `apps/web/src/lib/sweep.reviewAuthority.test.ts`, this claim and scoped evidence. Root owns the Sweep component; payment-export worker owns network/export source.
+- Requirement: revalidate the user's live review before key derivation, immediately before every signature, after asynchronous helpers, and before external handoff. A stale recipient/balance/manifest review must not authorize a local signature merely because the journal hook later prevents transport.
+- Acceptance: regression-first proof against the prior helper; focused real-signing controls, cancellation and post-handoff outcome tests; preserve all existing journal and uncertainty semantics; independent review by another worker. No contract, relayer server, dependency, gate, deployment or remote changes.
