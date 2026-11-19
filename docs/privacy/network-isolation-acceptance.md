@@ -199,12 +199,16 @@ The initial published draft [#251](https://github.com/djshellshoxxx/GhostPay/pul
 has head `089a0081418dcca395ce169abc36d9ef470162ef`. Its tree
 `80ad5268b3b095cd01171e8578631647f5056b2e` exactly matches local commit
 `7c7af09ff41c87f3fd5ac62f8a09cfb2202c699b`; both tree IDs were independently
-checked. The later exact-key schema correction is identified by its source/test
-hashes below. Consult the PR's final qualification receipt for its published
-child-commit SHA and hosted run links; this ledger does not guess a future SHA.
-The required gates apply to that final head. Earlier focused working-tree logs
-and the initial published tree do not establish a whole-candidate pass after
-the schema correction.
+checked. The exact-key schema correction was published at
+`325a915664b9c8ce44f136d08c6e0ec3c64a6ace`, with tree
+`79df61485096126bc0cdb5023f87a6aad0a80c5c`, identical to local commit
+`a7b24cc11ee6e9809abf3c92e26ef4ae0f920fb9`. Its source/test hashes are below.
+The subsequent Settings assertion correction and evidence update change tests
+and documentation only; runtime remains the source published at `325a9156`.
+Consult the PR's final qualification receipt for the final published follow-up
+SHA and hosted run links; this ledger does not guess a future SHA. Required
+gates apply to that head. Earlier focused logs and the initial published tree
+do not establish a whole-candidate pass after the schema correction.
 
 | Required check | Final source / command / actual result |
 |---|---|
@@ -213,7 +217,7 @@ the schema correction.
 | EVM RPC adapter package | 562 passed, 22 existing conditional Anvil/solc/artifact cases skipped; original package coverage gate passed, exit 0. The skipped cases remain required in their configured CI environment. |
 | Esplora/indexer/relayer regressions | Focused transport/browser/native/Bitcoin selection passed 74 non-scan cases; the mixed run had 76 passes, 3 scan assertion failures and 16 filtered cases, exit 1. The scan assertions omitted the existing error-code prefix; after correction the five-case scan cancellation suite passed. Final Esplora isolation/broadcast suite passed 5/5. These are focused working-tree receipts, not a full web gate. |
 | BTC/Solana/TRON consumer and SDK checks | Solana SDK 136/136 and TRON adapter 103/103 with original coverage gates; scan-source 72/72. Selected Bitcoin i18n/native transport cases pass as above. Full chain-view/browser and public-network qualification are not implied. |
-| Session, app lock, settings revision and cross-tab checks | Existing Pay/Settings race/Scan auto-rescan/Policy scope/Sweep flows pass 138/138 across five files on the final reviewed schema source `c65e93f4`; focused coverage-disabled run, not the full coverage gate. Earlier six-file UI group passed 48/48, AppShell 3/3 at `7c7af09f`, and policy/registry/native composition 10/10 at `1960318b`. Real cross-tab browser cases remain unexecuted locally. |
+| Session, app lock, settings revision and cross-tab checks | Existing Pay/Settings race/Scan auto-rescan/Policy scope/Sweep flows pass 138/138 across five files on schema source `c65e93f4`. AppShell/Settings group passes 58/58 after the independently reviewed test-only assertion correction. Final native/policy/registry composition passes 10/10 on the exact `325a9156` runtime tree. These overlapping focused groups do not replace full coverage or real cross-tab browser execution. |
 | Full web unit suite with original coverage thresholds | Unqualified: the local coverage attempt recorded five SellerKeys failures and has no complete passing suite/coverage receipt. One wrong-passphrase case subsequently passed in isolation; that does not clear the other failures or the full gate. The separate existing no-coverage configuration passed 3/3; hosted full web qualification remains required. |
 | Full Chromium suite, including real request interception | Local Chromium launch blocked by native socket denial before any test body. The new 12-case spec is collected and scoped-typed/lint checked; hosted execution pending. |
 | Lean Chromium suite, including real request interception | Pending hosted execution; repeating the same local browser launch restriction would not provide a result. |
@@ -298,6 +302,28 @@ node --max-old-space-size=640 --max-semi-space-size=8 ../../node_modules/vitest/
 
 This focused integration receipt does not replace full web coverage or hosted
 browser execution.
+
+The seven-file AppShell/Settings group initially had **55 passes and three
+failures** at `325a9156`, recorded in `network-shell-settings-325a915.log`.
+Two assertions expected the old "Scan privacy settings saved" copy; the third
+expected the old pending text and a displayed active Direct mode while a saved
+nondefault selection was unacknowledged. Independent review confirmed that the
+existing runtime deliberately blocks that state. Only `Settings.test.tsx`
+changed: it now checks the current save text, the actual saved Tor selection
+with `noticeAcknowledged: false`, the blocked notice and absence of an active
+mode before acknowledgment, active Tor after acknowledgment, and renewed
+blocking after another choice clears acknowledgment. No runtime, mock,
+coverage rule, skip or gate changed.
+
+The identical seven-file command then passed **58/58** in 129.01 seconds;
+`network-shell-settings-green.log` is the independently read receipt. The
+changed test also passed original-option import-closure TypeScript checking
+with zero diagnostics and unchanged typed ESLint rules with zero errors or
+warnings (`settings-test-static-325a9156.log`). From `apps/web`:
+
+```sh
+node --max-old-space-size=640 --max-semi-space-size=8 ../../node_modules/vitest/vitest.mjs run src/AppShell.idleClock.test.tsx src/AppShell.i18n.test.tsx src/AppShell.frameGuard.test.tsx src/AppShell.beforeUnload.test.tsx src/views/Settings.test.tsx src/views/Settings.scanPrivacy.test.tsx src/views/Settings.exchange.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism
+```
 
 `network-ui-focused-final.log` records 48/48 in six focused UI files;
 `app-shell-network-final.log` and `app-shell-final-results.json` record the
@@ -425,13 +451,23 @@ TypeScript diagnostics over the central source/test import closure and zero
 errors or warnings under the unchanged repository ESLint rules. These scoped
 checks do not replace the pending full-project gates.
 
-The independently read `network-policy-composition-1960318.log` records five
-policy/registry lifecycle tests and five native adapter tests passing together
-at commit `1960318bffa3bd8c1ec418b7aee17dddfb510a6d`. That run includes the earlier
-strict value validation but precedes the later exact-key correction, and is not
-promoted to whole-candidate qualification. The policy/registry cases deliberately
-ignore abort in their fake RPC while verifying that old results and queued lock
-callbacks cannot regain authority.
+The independently read `network-policy-composition-a7b24cc.log` records **10/10
+passes in three files**, 14.66 seconds: five policy/registry lifecycle tests and
+five native adapter tests. Before and after execution the clean local commit
+was `a7b24cc11ee6e9809abf3c92e26ef4ae0f920fb9`, tree
+`79df61485096126bc0cdb5023f87a6aad0a80c5c`; this exactly matches published
+`325a915664b9c8ce44f136d08c6e0ec3c64a6ace` and contains the final exact-key
+correction. It supersedes the earlier composition receipt at `1960318b`.
+The command from `apps/web` was:
+
+```sh
+npx vitest run src/lib/networkAuthorization.adapters.test.ts src/features/policy/PolicyView.network.test.tsx src/features/registry/RegistryView.network.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism
+```
+
+These are focused composition results, not full web coverage or browser
+qualification. The policy/registry cases deliberately ignore abort in their
+fake RPC while verifying that old results and queued lock callbacks cannot
+regain authority.
 
 `networkAuthorization.adapters.test.ts` uses actual native HTTP
 servers: Esplora/Solana/TRON requests reach the chosen loopback destination, then

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "recordedAtUtc": "2026-11-19T07:14:08.425249+00:00",
+  "recordedAtUtc": "2026-11-19T07:25:14.948942+00:00",
   "classification": "Bounded validation receipt; full candidate acceptance and release readiness remain incomplete.",
   "pullRequest": "https://github.com/djshellshoxxx/GhostPay/pull/251",
   "sourcePins": {
@@ -22,7 +22,10 @@
       "apps/web/e2e/network-authorization.spec.ts": "c2b362e904c72fb3622d136be946787f6d1eca50340b7f7daf06aaa00894106b",
       "docs/privacy/network-egress-inventory.json": "8a4cdd20a6c80518ebe7e53cf178d2953048db2f01ca748cdd32c5a937a1dfed"
     },
-    "hashScope": "Receipt-time source snapshot. The final policy check is explicitly bound to its source/test hashes. Earlier runs retain their recorded scopes; a current hash does not retrospectively attest an unpinned run."
+    "hashScope": "Receipt-time source snapshot. The final policy check is explicitly bound to its source/test hashes. Earlier runs retain their recorded scopes; a current hash does not retrospectively attest an unpinned run.",
+    "finalSchemaRuntimeCommit": "325a915664b9c8ce44f136d08c6e0ec3c64a6ace",
+    "finalSchemaLocalEquivalent": "a7b24cc11ee6e9809abf3c92e26ef4ae0f920fb9",
+    "verifiedFinalSchemaGitTree": "79df61485096126bc0cdb5023f87a6aad0a80c5c"
   },
   "commands": {
     "cwdConvention": "Repository root unless a check states apps/web. Scratch paths identify original executions, not shipped runtime dependencies."
@@ -301,6 +304,57 @@
     "web-nocov-final.log": "e76afc940e8e0011edecbc7954f046d50f28e1ef9d8aad76c62bf5457cff7665",
     "web-full-coverage.log": "cfedaa8fbea1491733668294563cd7fe17f5b4bb6a1de9e237fc7fdcdb05335f",
     "network-browser-full.log": "3cc50a67c9081ecc79153fdc12c04157d7186705327480c014a12725f1490ab1",
-    "network-existing-flows-final.log": "27407bb51d92066d09f92b300a545d2dbce37e50cc596bcb16c21461970e0f1c"
+    "network-existing-flows-final.log": "27407bb51d92066d09f92b300a545d2dbce37e50cc596bcb16c21461970e0f1c",
+    "network-shell-settings-green.log": "4e05e36ebdf885855976707c7861838bedb06f94433a5f8bd5ebacc995d4ecd2",
+    "network-shell-settings-325a915.log": "cdc252a3ad7177b8eae5544172935ec514f5524e6bd9a290e1a66a1c1e6b85b6",
+    "network-policy-composition-a7b24cc.log": "92e3087317817288eb341fbf1aeebdeb5bd521495a3ad96dad7888f1bf9dd1dc"
+  },
+  "finalNativeAndLifecycleComposition": {
+    "cwd": "apps/web",
+    "command": "npx vitest run src/lib/networkAuthorization.adapters.test.ts src/features/policy/PolicyView.network.test.tsx src/features/registry/RegistryView.network.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism",
+    "sourceCommit": "a7b24cc11ee6e9809abf3c92e26ef4ae0f920fb9",
+    "equivalentPublishedCommit": "325a915664b9c8ce44f136d08c6e0ec3c64a6ace",
+    "verifiedGitTree": "79df61485096126bc0cdb5023f87a6aad0a80c5c",
+    "authorizationSourceSha256": "c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931",
+    "exitCode": 0,
+    "filesPassed": 3,
+    "testsPassed": 10,
+    "durationSeconds": 14.66,
+    "log": "network-policy-composition-a7b24cc.log",
+    "supersedesEarlierCompositionLog": "network-policy-composition-1960318.log",
+    "scope": "Five controlled native adapter cases and five policy/registry lifecycle cases on the final schema source. Does not qualify browser flows or full web coverage."
+  },
+  "shellSettingsFollowup": {
+    "cwd": "apps/web",
+    "command": "node --max-old-space-size=640 --max-semi-space-size=8 ../../node_modules/vitest/vitest.mjs run src/AppShell.idleClock.test.tsx src/AppShell.i18n.test.tsx src/AppShell.frameGuard.test.tsx src/AppShell.beforeUnload.test.tsx src/views/Settings.test.tsx src/views/Settings.scanPrivacy.test.tsx src/views/Settings.exchange.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism",
+    "runtimeCommit": "325a915664b9c8ce44f136d08c6e0ec3c64a6ace",
+    "authorizationSourceSha256": "c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931",
+    "changedTest": "apps/web/src/views/Settings.test.tsx",
+    "changedTestSha256": "1f2bcb507b501e14702273800ea59e1eaa36b6fe44221f061c68de6870cde867",
+    "static": {
+      "command": "node --max-old-space-size=640 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/settings-test-verify.mjs",
+      "exitCode": 0,
+      "typeScriptDiagnostics": 0,
+      "typedEslintErrors": 0,
+      "typedEslintWarnings": 0,
+      "log": "settings-test-static-325a9156.log",
+      "scope": "Original application compiler options and import closure rooted at the changed test plus vite-env.d.ts; unchanged repository ESLint rules. Not full-project qualification."
+    },
+    "red": {
+      "passed": 55,
+      "failed": 3,
+      "files": 7,
+      "log": "network-shell-settings-325a915.log",
+      "cause": "Two stale saved-notice expectations and one stale assertion that an unacknowledged stored restrictive choice remains actively Direct."
+    },
+    "correction": "Updated saved-notice text; strengthened assertions for persisted unacknowledged choice, blocked network access, absence of an active profile, acknowledged Tor selection, and subsequent revocation.",
+    "green": {
+      "exitCode": 0,
+      "filesPassed": 7,
+      "testsPassed": 58,
+      "durationSeconds": 129.01,
+      "log": "network-shell-settings-green.log"
+    },
+    "scope": "Runtime source is unchanged from 325a915; only the Settings test changed. The follow-up immutable commit is pinned in the PR body. Full hosted and full web coverage gates remain pending."
   }
 }
