@@ -1704,3 +1704,14 @@ Acceptance: exact-cause evidence, original dependency-tree/audit gate under the 
 Worker: `key_exports`, reassigned by the release coordinator. Branch `review/ghostpay-pages-artifact-20261119`; implementation baseline `acdebc5a281d41bf0250e93bf217c04624fdd9d9` plus isolated dependency evidence.
 Scope: independently inspect and qualify PR #276 `f39a9dd36c09f8b02d937c5f3d19676d334976d6`; preserve its ancestry if compatible. Own only the new artifact verifier/test and scoped review evidence. Compare it with the existing site-safety verifier without replacing that verifier or loosening any gate.
 Acceptance: run the original checksum/adversarial/CLI tests; check exact published blobs and parser/filesystem/trust boundaries; record limitations and merge risk. No dependency, workflow, application, deployment, remote-ref or shared-lock mutation.
+
+
+## Recovered fail-closed Mythril evidence backport — 2026-11-19
+
+Worker: `/root/provenance`, delegated by the final Pages integration coordinator.
+Branch: `repair/ghostpay-analyzer-recovered-20261119`.
+Base: published PR #278 `7b4c1554382b05ac3fab48527aadf596d6b1ff7b`.
+Source: read-only PR #255 `ea47fa75eabb0be2045081ffeb120fc2bfae67ab`.
+Owned paths: `packages/contracts/scripts/{run-mythril.sh,mythril-compat.py,capture-mythril-evidence.py,collect-analysis-report.py}`; `scripts/tests/{mythril-runner.test.mjs,mythril-completeness.test.mjs,mythril-evidence.test.mjs,contract-analysis-workflow.test.mjs}`; exactly two path triggers and three evidence-environment lines in `.github/workflows/contract-analysis.yml`; this additive claim; `docs/handoffs/recovered-mythril-evidence-20261119/`.
+Acceptance: recover the eight original blobs exactly; preserve current workflow semantics and strict analyzer failure behavior; execute all 54 dependency-free runner/completeness/evidence/workflow regressions with Node 22 and a 128 MB heap; retain fresh raw compressed evidence and independently review the result before integration. Native Mythril, Echidna and contract campaigns are not authorized or claimed by this scoped run.
+Scope excludes contract/runtime/deployment changes, disposition exceptions, new release policy, dependency changes, shared integration/main promotion and all eight root-owned release documents. Earlier local implementation/evidence commits were lost with the previous executor and are historical identifiers only; this reconstruction receives new identities and fresh qualification. Original remote branches and other workers' claims remain unchanged.
