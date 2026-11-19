@@ -781,3 +781,9 @@ focus behavior with the original standalone regression. No protocol, contract, d
 network change. Heavy local validation is deferred by the coordinator after repeated resource exits 137;
 record source checks honestly and require independent review plus exact combined-head hosted qualification.
 Original PR #211 and its branch remain read-only. Larger multichain and secret-clipboard decisions are separate.
+
+Independent review follow-up: investigate whether the passive-effect records mirror in PolicyPay can leave the
+final send guard using old asset coverage after a new record commit. Additional owned path:
+`apps/web/src/features/policy/PolicyPay.authority.test.tsx`. Require a behavioral failing regression before any
+runtime correction; use a bounded real-React component boundary without broad builds or dependency mutation.
+Do not claim the timing concern is confirmed until that evidence exists. Multichain implementation is paused.
