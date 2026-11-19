@@ -137,6 +137,33 @@ describe('BTC worker stale and untrusted boundary', () => {
     wipeFound(result.found);
   });
 
+  it.each(['local', 'unknown'] as const)('rejects a %s-labelled result after an authorized provider query', async (spentStatus) => {
+    const f = await fixture(); const result = await scanForPayments(f);
+    const transferred = structuredClone(result); const terminate = vi.fn(); const abort = new AbortController();
+    let id = 0; let fake!: BtcScanWorker; let reply!: BtcScanRequest; let received!: () => void;
+    const response = new Promise<void>((resolve) => { received = resolve; });
+    f.chain.requests.length = 0;
+    const running = scanForPaymentsInWorker({ ...f, providerSpentCheck: true, signal: abort.signal }, () => (fake = {
+      onmessage: null, onerror: null, onmessageerror: null, terminate,
+      postMessage: (m) => { if (m.type === 'start') id = m.id; else { reply = m; received(); } },
+    }), f.chain.fetchFn);
+    const output = result.found[0]!; const path = `/tx/${output.txid}/outspend/${String(output.vout)}`;
+    try {
+      fake.onmessage?.({ data: { type: 'source', id, requestId: 1, path } });
+      await response;
+      expect(reply).toMatchObject({ type: 'sourceResult', id, requestId: 1, status: 200 });
+      expect(f.chain.requests).toEqual([`GET ${path}`]);
+      fake.onmessage?.({ data: { type: 'done', id, result: { ...transferred, spentStatus } } });
+      await expect(running).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+      expect(transferred.found[0]!.spendTweak.every((b) => b === 0)).toBe(true);
+      expect(terminate).toHaveBeenCalledOnce(); expect(fake.onmessage).toBeNull();
+    } finally {
+      abort.abort();
+      await running.then((accepted) => { wipeFound(accepted.found); }, () => {});
+      wipeFound(transferred.found); wipeFound(result.found);
+    }
+  });
+
   it.each(['range', 'chain', 'duplicate', 'local-gap', 'history-page'] as const)('binds a same-session worker result to the requested %s evidence', async (bad) => {
     const f = await fixture(); const result = await scanForPayments(f);
     let posted!: BtcScanRequest; let fake!: BtcScanWorker;

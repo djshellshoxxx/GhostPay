@@ -29,7 +29,7 @@ function validateResult(r: ScanResult, p: ScanParams, providerSpentCheck: boolea
   const hex = (s: unknown): boolean => typeof s === 'string' && /^[0-9a-f]{64}$/.test(s);
   if (r === null || typeof r !== 'object' || !isHeight(r.fromHeight) || !Number.isSafeInteger(r.toHeight) || !isHeight(r.spentCount) || r.headerAnchored !== true ||
       !['local', 'provider', 'unknown'].includes(r.spentStatus) ||
-      (r.spentStatus === 'provider' && !providerSpentCheck) ||
+      ((r.spentStatus === 'provider') !== providerSpentCheck) ||
       !Array.isArray(r.blocks) || r.blocks.length > 1000 || r.blocks.some((b: ScanResult['blocks'][number]) => !isHeight(b.height) || !hex(b.hash)) ||
       !Array.isArray(r.found) || r.found.length > MAX_SCAN_MATCHES || r.found.some((f: ScanResult['found'][number]) =>
         !isHeight(f.height) || !hex(f.blockHash) || !hex(f.txid) || !isHeight(f.vout) || typeof f.amountSats !== 'bigint' || f.amountSats < 0n || f.amountSats > 2_100_000_000_000_000n ||
