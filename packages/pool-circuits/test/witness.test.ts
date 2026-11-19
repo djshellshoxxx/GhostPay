@@ -51,7 +51,6 @@ describe.skipIf(!HAVE_WASM)('withdraw circuit: valid witnesses', () => {
     ['state depth 20 synthetic', { stateDepth: 20 }],
     ['state depth 32 synthetic', { stateDepth: 32 }],
     ['max values 2^128-1', { value: VALUE_LIMIT - 1n, withdrawnValue: VALUE_LIMIT - 1n }],
-    ['zero withdrawal (circuit allows; contract rejects)', { withdrawnValue: 0n }],
   ];
   for (const [name, opts] of cases) {
     it(name, async () => {
@@ -71,6 +70,24 @@ describe.skipIf(!HAVE_WASM)('withdraw circuit: valid witnesses', () => {
       ]);
     });
   }
+
+  it('zero withdrawal (circuit allows; contract rejects)', async () => {
+    // The production helper rejects zero; exercise the unchanged raw circuit boundary directly.
+    const s = scenario({ withdrawnValue: 1n });
+    const input = { ...s.input, withdrawnValue: '0' };
+    const w = await witness(art.withdrawWasm, input);
+    expect(w.slice(1, 10)).toEqual([
+      commitment(s.note.value, s.note.label, precommitment(s.newNullifier, s.newSecret)),
+      s.expect.existingNullifierHash,
+      0n,
+      BigInt(input.stateRoot),
+      BigInt(input.stateTreeDepth),
+      BigInt(input.aspEnabled),
+      BigInt(input.ASPRoot),
+      BigInt(input.ASPTreeDepth),
+      BigInt(input.context),
+    ]);
+  });
 
   it('double spend: two different withdrawals of one note reveal the same nullifier hash; ragequit too', async () => {
     const a = scenario();
@@ -203,7 +220,7 @@ describe.skipIf(!HAVE_WASM)('withdraw circuit: adversarial witnesses fail (one r
 
   it('existingValue >= 2^128 is rejected even if the note were in the tree (D-3)', async () => {
     // Build a tree containing a note with value 2^128 (unreachable via the contract, but the circuit must still refuse).
-    const big = scenario({ value: 1n, withdrawnValue: 0n });
+    const big = scenario({ value: 1n, withdrawnValue: 1n });
     const forged = { ...big.input, existingValue: VALUE_LIMIT.toString(), withdrawnValue: '1' };
     // Root mismatch would also fail; recompute a consistent tree so only the range check can fail.
     const { LeanImt } = await import('../src/index.js');
