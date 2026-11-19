@@ -15,6 +15,7 @@ export class BtcScanProtocol {
   private started = false;
   private stopped = false;
   private providerSpentCheck = false;
+  private allowMatchedProof = false;
   private readonly abort = new AbortController();
   private secret: Uint8Array | undefined;
   private pending: { id: number; sequence: number; resolve: () => void; reject: (e: Error) => void } | undefined;
@@ -78,7 +79,8 @@ export class BtcScanProtocol {
     });
   }
   private source(path: string, signal: AbortSignal | null | undefined): Promise<Response> {
-    if (!isScanSourcePath(path) || (path.includes('/outspend/') && !this.providerSpentCheck) || this.sources.size >= MAX_SOURCE_PENDING)
+    if (!isScanSourcePath(path) || (path.includes('/outspend/') && !this.providerSpentCheck) ||
+        (/\/(?:hex|merkle-proof)$/.test(path) && !this.allowMatchedProof) || this.sources.size >= MAX_SOURCE_PENDING)
       return Promise.reject(new SilentPaymentError('INVALID_INPUT'));
     if (this.stopped || signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
     const requestId = ++this.requestId;
@@ -110,7 +112,8 @@ export class BtcScanProtocol {
       const baseUrl = normalizeEsploraUrl(m.baseUrl);
       const oracle = m.oracle === undefined ? undefined : normalizeOracleConfig(m.oracle, baseUrl);
       this.providerSpentCheck = m.providerSpentCheck === true;
-      if (oracle?.mode === 'light' && !this.providerSpentCheck) throw new SilentPaymentError('INVALID_INPUT');
+      this.allowMatchedProof = oracle?.mode === 'light';
+      if (this.allowMatchedProof && !this.providerSpentCheck) throw new SilentPaymentError('INVALID_INPUT');
       const client = new EsploraClient({ baseUrl, fetchFn: (url, init) => {
         if (!url.startsWith(`${baseUrl}/`) || (init.method !== undefined && init.method !== 'GET') || init.body !== undefined)
           return Promise.reject(new SilentPaymentError('INVALID_INPUT'));

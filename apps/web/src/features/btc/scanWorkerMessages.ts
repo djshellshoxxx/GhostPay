@@ -38,7 +38,7 @@ export function readWorkerState(text: string): ScanState {
   if (typeof text !== 'string' || text.length > MAX_WORKER_STATE_BYTES) throw new SilentPaymentError('INVALID_INPUT');
   return parseScanState(text);
 }
-/** The worker can request only public block data and current outspend status from the selected source. */
+/** Syntactic allowlist; the bridge and protocol separately enforce this session's proof and outspend permissions. */
 export function isScanSourcePath(path: unknown): path is string {
   if (typeof path !== 'string' || path.length > 128) return false;
   if (path === '/blocks/tip/height') return true;

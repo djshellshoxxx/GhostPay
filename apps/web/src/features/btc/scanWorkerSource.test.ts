@@ -41,6 +41,18 @@ describe('BTC main-thread source bridge', () => {
     b.source.dispose();
   });
 
+  it.each([
+    ['hex', false], ['merkle-proof', false], ['hex', true], ['merkle-proof', true],
+  ] as const)('refuses matched %s requests in full mode with provider consent %s before network access', (suffix, consent) => {
+    const fetchFn = vi.fn<EsploraFetch>(() => Promise.resolve(new Response('untrusted proof')));
+    const b = bridge(fetchFn, consent);
+    try {
+      b.source.handle(request(1, `/tx/${'ab'.repeat(32)}/${suffix}`));
+      expect(fetchFn).not.toHaveBeenCalled();
+      expect(b.fail).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ code: 'INVALID_RESPONSE' }));
+    } finally { b.source.dispose(); }
+  });
+
   it('permits the opted-in outpoint request and refuses later requests after consent cancellation', async () => {
     const fetchFn = vi.fn<EsploraFetch>(() => Promise.resolve(new Response('{"spent":false}')));
     const b = bridge(fetchFn, true); const path = `/tx/${'ab'.repeat(32)}/outspend/2`;
