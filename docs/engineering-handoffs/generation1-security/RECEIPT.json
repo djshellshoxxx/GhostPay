@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "baseline": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "test_first_commit": "7abf4e00",
+  "product_commit": "84f39e41ef132af88b4ca3280818ed701026d412",
+  "node_version": "22.23.4",
+  "vitest_version": "5.1.0",
+  "runtime_scope": "Original web Vite/Vitest configuration; maxWorkers=1; coverage disabled for focused regressions only. Thresholds and timeouts unchanged.",
+  "dependency_resolution": "node_modules symlink to coordinator clean npm10 install at ../GhostPay/node_modules; web source and configured invoice-schema/QR aliases resolve within this worktree; compiled core dependencies are unchanged source from c993.",
+  "checks": [
+    {
+      "name": "Original-runtime boundary regression",
+      "exit_code": 1,
+      "files": 1,
+      "passed": 1,
+      "failed": 3,
+      "log": "evidence/expiry-baseline.log"
+    },
+    {
+      "name": "Corrected boundary plus Payment/Recovery/Verification",
+      "exit_code": 0,
+      "files": 4,
+      "passed": 49,
+      "failed": 0,
+      "log": "evidence/expiry-fixed-and-export-regression.log"
+    },
+    {
+      "name": "Selection/download integration",
+      "exit_code": 0,
+      "files": 2,
+      "passed": 10,
+      "failed": 0,
+      "log": "evidence/expiry-selection-download-regression.log"
+    },
+    {
+      "name": "Original-rule scoped typed ESLint",
+      "exit_code": 0,
+      "log": "evidence/expiry-typed-lint.log"
+    }
+  ],
+  "source_blobs": {
+    "apps/web/src/components/StealthExportCommon.tsx": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a",
+    "apps/web/src/components/StealthExportCommon.expiry.test.tsx": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+    "apps/web/src/lib/session.ts": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+    "apps/web/src/lib/paymentKeyExport.ts": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd",
+    "apps/web/src/lib/paymentExportRpc.ts": "78a2122759db2b1245b74cd965c4c4f20b539a15",
+    "apps/web/src/lib/networkAuthorization.ts": "04defade63f86886f12a6299f19f46a2e562b680",
+    "apps/web/src/lib/keyVault.ts": "000be25182a877bbab96cc3b6a0e5ac9038790ca",
+    "packages/core-crypto/src/index.ts": "ebf3777b7db44a1c7a51c915b09058f5ede91e4a",
+    "packages/secret-box/src/index.ts": "7e5ba1878b3ec08fa333e920d0eef254662241d3"
+  },
+  "review_status": "Independent final review requested from coordinator; this worker implemented the expiry fix. Five upstream narrow PRs received independent source review, runtime qualification delegated to coordinator.",
+  "limitations": [
+    "No whole-workspace acceptance implied by these 59 tests.",
+    "No private-key theft or remotely reachable exploit demonstrated.",
+    "Strict Mythril gate remains failed with fresh 10 records; external review/origin decisions remain open.",
+    "No contract, fee, dependency, workflow, deployment or remote branch changes."
+  ],
+  "evidence": {
+    "expiry-baseline.log": {
+      "sha256": "4e02570746d9955edfc6b947126fa37feaeb50af0a78ac77df9436008250b9a4",
+      "bytes": 2925
+    },
+    "expiry-fixed-and-export-regression.log": {
+      "sha256": "60812fd30769d075f7dc19be41b3a4619b9e4dbee5d457dd26fa82f674ed269c",
+      "bytes": 1305
+    },
+    "expiry-selection-download-regression.log": {
+      "sha256": "2be3919844739011dae28896be0587d38635a81b43af0164ae08336b4a02197c",
+      "bytes": 954
+    },
+    "expiry-typed-lint.log": {
+      "sha256": "3a55bee2309810197bd8422071bdebee2c7b395309f4be263e38e9a2330048ac",
+      "bytes": 175
+    },
+    "mythril-c993.zip": {
+      "sha256": "7ea2f0648d3ae777ede6aebb5e8c7de81ebe20e7746f24d9b1c290ffc45fceee",
+      "bytes": 53084
+    }
+  }
+}
