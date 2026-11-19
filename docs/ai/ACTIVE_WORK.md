@@ -1,3 +1,20 @@
+# Hosting export timestamp precision — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-hosting-timestamp-20261119`.
+Base: `74e3111f994481e7c9201ddb0494cf4a8405eadd`.
+Owned paths: `tools/portable-hosting-kit/src/profiles/static-export.mjs`,
+`tools/portable-hosting-kit/test/profiles/static-export.test.mjs`,
+`tools/portable-hosting-kit/test/profiles/differential.test.mjs`, this additive claim,
+and `docs/consolidation/hosting-timestamp-20261119/` evidence.
+Acceptance: reproduce the source-versus-export HTTP timestamp second mismatch at a
+fractional-millisecond boundary; preserve precise source timestamps, epoch and
+pre-epoch behavior; retain all byte, URL, header, validator, no-follow and atomic
+export checks. Run the focused regression before and after the minimal fix, obtain
+independent recovery-worker review, and coordinate any larger kit/nginx replay with
+the root worker's resource-bound gates. No web source, dependency, configuration,
+assertion weakening, deployment, publication, or remote mutation.
+
 # Settings exchange disclosure assertion reconciliation — 2026-11-19
 
 Worker: `privacy_completion`, delegated by the feature-consolidation coordinator.
