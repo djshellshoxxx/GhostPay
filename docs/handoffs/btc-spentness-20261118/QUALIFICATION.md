@@ -1,6 +1,85 @@
 # Bitcoin spent-output detection and private scanning
 
-## Candidate and scope
+## Latest test correction and qualification
+
+The final test-only correction is local commit
+`da351eb840bc758d5bd43f91d8da202fc151b041`, corresponding to publication commit
+`970732daf9d2330ef9fe1c56425021f4502b9291`. Their complete Git trees are identical:
+`a512665c8233592680c7d6179a382d538a1103ac`. Their respective parents are local
+`4476402cc68700d8881b644a088a64e10b4147e2` and published
+`70ded5c6d117848178bf59aec2f37197e08749a5`. The coordinator fetched the publication
+object and verified its parent and entire tree before advancing the branch.
+The PR description records the eventual evidence descendant and actual hosted
+checkout, including the latest workflow outcomes.
+
+### Late lint diagnostic and correction
+
+Inspection of the superseded [hosted lint job 135412579088](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579088)
+found one concrete `@typescript-eslint/require-await` error at
+`apps/web/src/features/btc/scan.spentness-completion.test.ts:131:116`, followed by
+npm exit 1 before the workflow cancellation. Earlier reporting missed that late
+diagnostic; cancellation does not erase the observed lint failure.
+
+The injected provider mock now uses
+`() => { abort.abort(); return Promise.resolve(true); }` in place of an async
+callback returning `true`. Independent review confirmed that it still aborts
+synchronously and returns a fulfilled `Promise<boolean>`. The `ABORTED`
+expectation and one-call assertion remain unchanged. This changes one test line;
+product code, assertions, timeouts, coverage thresholds, dependencies and workflow
+gates are unchanged. The eleven product/security findings below remain the same.
+
+### Fresh independent execution on da351eb8
+
+The independent reviewer reran the library selection and all eight selected web
+files on the clean corrected commit. Node was **22.23.4**, Vitest **5.0.5**, and
+ESLint **10.15.0**. Commands used a **512 MiB** old-space limit, **8 MiB** semi-space
+limit, one Vitest worker and no file parallelism. Each web row is a separate
+sequential invocation, not a single combined-suite run.
+
+| Selection | Passed / collected | Failed | Skipped | Vitest duration |
+| --- | ---: | ---: | ---: | ---: |
+| Library state/scanner, 2 files | 45 / 45 | 0 | 0 | 9.43 s |
+| `scan.spentness-completion.test.ts` | 9 / 9 | 0 | 0 | 8.30 s |
+| `scan-secrets.hardening.test.ts` | 6 / 6 | 0 | 0 | 7.00 s |
+| `esplora.test.ts` | 36 / 36 | 0 | 0 | 15.46 s |
+| `headers.test.ts` | 31 / 31 | 0 | 0 | 23.99 s |
+| `scanWorker.test.ts` | 27 / 27 | 0 | 0 | 11.40 s |
+| `scanWorkerSource.test.ts` | 14 / 14 | 0 | 0 | 1.08 s |
+| `oracleWorker.test.ts` | 12 / 12 | 0 | 0 | 6.67 s |
+| `BtcView.spentness.test.tsx` | 9 / 9 | 0 | 0 | 29.88 s |
+| **Selected web total, eight invocations** | **144 / 144** | **0** | **0** | **103.78 s summed** |
+
+All test commands exited 0. The affected nine-test file is included in the 144
+web tests, not an additional test count. These focused executions do not replace
+full-web coverage/nocov, dedicated full/lean Chromium, build, typecheck or lint.
+
+The reviewer attempted targeted ESLint once. It terminated after **14.617 s**
+with **SIGABRT**, subprocess status **-6**, shell exit **134**, and the explicit
+V8 diagnostic `Reached heap limit Allocation failed - JavaScript heap out of memory`.
+No lint pass is claimed and no retry was made. A separate earlier coordinator
+attempt before the correction exited 137 with no lint diagnostic; its cause is
+undetermined. Hosted lint remains required.
+
+The worktree was clean at command start and final handoff. All 22 reviewed
+fingerprints remained unchanged during execution; relative to the earlier
+qualification, only the corrected test fingerprint changed, to
+`661ffc0b3e6787b0b9c164bb9f44cfcc7ad2cfdcc6ddcc692c837ce8ff38467c`.
+The other 21 fingerprints and six complete source/dist inventories match the
+earlier evidence. Complete unchanged manifests are referenced from the prior
+execution bundle; the new JSON includes all current reviewed fingerprints.
+
+- [Fresh execution bundle](evidence/test-lint-followup/qualification.json):
+  25,612 bytes, SHA-256 `2867c75871d92db3cc6a08caa1385a4ec8b386fd46a891f30af49ec41fa0c0c2`.
+- [Complete ten-invocation transcript](evidence/test-lint-followup/qualification-transcript.txt):
+  13,715 bytes, SHA-256 `099b5e77679324267edb55f7fc222d891b330ac07de2f8600bafa0cf9d063833`.
+
+The `f567d760` and `d646e6db` executions retained below are historical observations
+at their named inputs. Filenames containing `btc-current-main` retain their
+original meaning and bytes; they are not fresh executions of `da351eb8`.
+The PR description retains the latest source-pinned hosted results so status-only
+updates do not retrigger workflows.
+
+## Previously qualified combined runtime and scope
 
 Branch: `chatgpt/btc-spentness-private-scan-20261118`.
 
@@ -23,9 +102,9 @@ Branch: `chatgpt/btc-spentness-private-scan-20261118`.
 | Earlier hosted PR merge checkout | `a5673653b0a856b63a266ee0e2bbb8b44fdf9c02` |
 | Earlier hosted checkout tree | `9721a1fe7bfbfcac65dad577c651c9b5284386cb` |
 | Current-main runtime baseline imported (#242 and #214) | `ffd982a7aea2856c186b40ef236a39720a1b81f5` |
-| Current combined runtime, local merge | `f567d7602c2aa2999a6b5b346389af7c409fdf6d` |
+| Previous combined runtime, local merge | `f567d7602c2aa2999a6b5b346389af7c409fdf6d` |
 | Matching published combined runtime | `11667060182bf4d59a559530b2c89e258b231c08` |
-| Current combined runtime tree | `af0d3d83344c80c44cdf977a3d1c0a2e05992861` |
+| Previous combined runtime tree | `af0d3d83344c80c44cdf977a3d1c0a2e05992861` |
 | Documentation-only main advance (#216), included with retained evidence | `a36f48da526b818a5940a7a0ed2ae7303ef17056` |
 
 This work preserves PR #219 and completes its Bitcoin-specific spentness,
@@ -37,7 +116,7 @@ idle clock, seller checkpoint v4, invoice signer and ux-core changes from curren
 main exactly; the import is verified below. The full web profile contains Bitcoin;
 the lean Pages profile still excludes it.
 
-**Current combined-source qualification status:** independent focused validation
+**Previous combined-source qualification status:** independent focused validation
 passed on `f567d760`: **45 library tests across 2 files and 144 web tests across
 8 files, with no failures or skips**. The web result comes from eight separate
 sequential invocations with unchanged assertions and timeouts; each retained the
@@ -105,7 +184,7 @@ retain live/abort/wallet checks. Timer rearming does not restore Bitcoin authori
 This is read-only source/test inspection, with no new test or browser execution
 claimed by that review.
 
-## Current combined-source validation
+## Previous combined-source validation: f567d760
 
 The following fresh observations are attributed to local `f567d760` / tree
 `af0d3d83`, whose matching published runtime is `11667060`. Later evidence-only
@@ -403,7 +482,9 @@ node --max-old-space-size=128 --max-semi-space-size=8 --expose-gc docs/handoffs/
 
 Every feature file relative to the inspected current-main baseline belongs to
 the following groups. The 51-path count above is for `f567d760`; four retained
-evidence files bring the feature diff against `a36f48da` to 55 paths. Paths in the middle column are relative to the stated directory; paired
+evidence files brought the prior feature diff to 55 paths. The two test-correction
+evidence files bring the final feature diff against `a36f48da` to 57 paths.
+Paths in the middle column are relative to the stated directory; paired
 source/test names are listed explicitly. PR #219's original changes are included
 in this mapping. The unrelated main changes inherited through ancestry do not
 appear in the feature diff.
@@ -429,10 +510,11 @@ appear in the feature diff.
 | `docs/handoffs/btc-spentness-20261118/evidence/` | `benchmark.mjs`, `performance-scan.json`, `performance-resume.json`, `performance-conflict.json` | Reproducible measured resource behavior with explicit exclusions (§11). |
 | Same | `publication-map.json` | Exact local/published commit-tree and ordered-parent provenance (§§13,15,16). |
 | Same | `btc-independent-final-library.txt`, `btc-independent-final-web.txt` | Retained earlier independent execution evidence at `d646e6db` (§§10,13,16). |
-| Same | `btc-current-main-library.txt` | Fresh 45-test, two-file library execution at combined runtime `f567d760`, including the actual command and terminal result (§§10,13,16). |
+| Same | `btc-current-main-library.txt` | Retained 45-test, two-file library execution at combined runtime `f567d760`, including the actual command and terminal result (§§10,13,16). |
 | Same | `btc-current-main-web.txt` | All eight completed sequential Bitcoin web invocations: 144 passed, 0 failed/skipped, with individual counts, statuses and timings (§§10,13,16). |
 | Same | `btc-current-main-web-interrupted.txt` | Preserve the 940-byte interrupted combined attempt and its signal/exit/wall-time attribution, separate from the replacement run (§§10,13,16). |
 | Same | `btc-current-main-execution.json` | Exact source/tree, runtime versions, commands, statuses/timings, all 22 Bitcoin fingerprints and six source/dist inventories before and after execution (§§10,13,16). |
+| `docs/handoffs/btc-spentness-20261118/evidence/test-lint-followup/` | `qualification.json`, `qualification-transcript.txt` | Fresh independent 45-library/144-web test qualification of the corrected test descendant, retained lint limitation, commands, versions and unchanged source evidence (§§9,10,13,16). |
 
 ## Publication provenance
 
@@ -440,8 +522,8 @@ Shell Git has no push credential in this workspace. The authenticated GitHub
 connector initially recreated the nine local feature-history commits
 with the same complete trees and ordered ancestry, then created this feature's
 separate branch. Every generated blob and tree was checked against its local Git object
-ID. Original local commit IDs, authors, committers and ordered parent IDs are
-retained in the corresponding published commit messages. The machine-readable
+ID. For those original nine commits, local commit IDs, authors, committers and
+ordered parent IDs are retained in the corresponding published commit messages. The machine-readable
 [mapping](evidence/publication-map.json) identifies both sets of commits. This
 transport does not modify main, PR #219 or another worker's branch and does not
 force-update any ref. Documentation-only descendants retain the same runtime
@@ -450,11 +532,13 @@ inputs; the PR description records the final published head and its own checks.
 For the current-main integration, local `f567d760` corresponds to published
 runtime `11667060182bf4d59a559530b2c89e258b231c08`, with the identical complete tree
 `af0d3d83344c80c44cdf977a3d1c0a2e05992861`. The publication map includes this
-correspondence and the preceding documentation commit. The final evidence
-commit also integrates the documentation-only `a36f48da` advance without
-changing runtime inputs; its local/published identities and actual hosted
-outcomes are recorded in the PR description. The feature branch is updated
-with a checked, non-force fast-forward.
+correspondence and the preceding documentation commit. The earlier evidence
+commit `4476402c` / `70ded5c6` also integrates the documentation-only `a36f48da`
+advance without changing runtime inputs. The map now retains 13 correspondences,
+including that evidence commit and the test-only `da351eb8` / `970732da` correction.
+The latest documentation descendant and actual hosted outcomes are recorded in
+the PR description. The feature branch is updated with a checked, non-force
+fast-forward.
 
 ## Independent review and integration limits
 

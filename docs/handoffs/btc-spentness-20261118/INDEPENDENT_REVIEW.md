@@ -1,6 +1,66 @@
 # Independent review: Bitcoin spent-output detection and scan privacy
 
-## Disposition and reviewed source
+## Latest test-only follow-up: da351eb8
+
+The independent reviewer inspected and executed the final test-only correction at
+local `da351eb840bc758d5bd43f91d8da202fc151b041`, tree
+`a512665c8233592680c7d6179a382d538a1103ac`. The corresponding publication object is
+`970732daf9d2330ef9fe1c56425021f4502b9291`; the coordinator fetched it and verified
+its entire tree and sole parent `70ded5c6d117848178bf59aec2f37197e08749a5`.
+The local parent is `4476402cc68700d8881b644a088a64e10b4147e2`.
+
+This correction follows a concrete diagnostic in superseded
+[hosted lint job 135412579088](https://github.com/djshellshoxxx/GhostPay/actions/runs/44475622817/job/135412579088):
+`@typescript-eslint/require-await` at
+`scan.spentness-completion.test.ts:131:116`, then npm exit 1 before cancellation.
+The earlier report missed that late diagnostic. It must be recorded as an observed
+lint failure even though the job's final workflow conclusion was cancelled.
+
+Only the injected test mock changed: it now aborts synchronously and returns
+`Promise.resolve(true)` without an unnecessary async declaration. Independent
+semantic review confirmed the same synchronous abort and fulfilled
+`Promise<boolean>` behavior. The `ABORTED` expectation and one-call assertion,
+product code, test timeouts, thresholds, dependencies and workflow gates remain
+unchanged. This is a test hygiene correction, not a twelfth product/security finding.
+
+Fresh independent execution passed **45/45 library tests and 144/144 selected
+Bitcoin web tests, with zero failed or skipped tests**. The library ran as one
+two-file invocation; the web result consists of **eight separate sequential
+invocations**. The corrected nine-test file is part of the 144, not an additional
+count. All test commands exited 0. Node was **22.23.4**, Vitest **5.0.5**; commands
+used `--max-old-space-size=512 --max-semi-space-size=8`, one worker and no file
+parallelism. The library took **9.43 s** of reported Vitest time; web durations sum
+to **103.78 s**, which is not a single-run elapsed time.
+
+The one targeted ESLint **10.15.0** attempt ended after **14.617 s** with subprocess
+status **-6 / SIGABRT**, shell exit **134**, and an explicit V8 heap-limit failure.
+It did not produce a completed lint result, and was not retried. Hosted lint and
+full coverage/browser gates remain required; their latest source-pinned outcomes
+belong in the PR description.
+
+Source/tree/worktree and fingerprints were unchanged at every command boundary,
+and the final worktree was clean. Relative to the earlier review, the only changed
+reviewed fingerprint is the corrected test:
+`661ffc0b3e6787b0b9c164bb9f44cfcc7ad2cfdcc6ddcc692c837ce8ff38467c`.
+The other 21 fingerprints and six complete source/dist inventories match prior
+evidence. Before/after inventory snapshots are byte-identical with SHA-256
+`4a93e0a010598b74a1d576cf3ac3d5d9f3093765e28a1afd3785eec87819dfb0`.
+
+The [fresh execution JSON](evidence/test-lint-followup/qualification.json)
+(25,612 bytes; SHA-256 `2867c75871d92db3cc6a08caa1385a4ec8b386fd46a891f30af49ec41fa0c0c2`)
+records exact commands, versions, statuses, per-file counts/times, all reviewed
+fingerprints and references to the unchanged committed full manifests.
+The [complete transcript](evidence/test-lint-followup/qualification-transcript.txt)
+(13,715 bytes; SHA-256 `099b5e77679324267edb55f7fc222d891b330ac07de2f8600bafa0cf9d063833`)
+retains all ten invocations, including the failed lint attempt.
+The reviewer made no repository edits or remote changes and left no process running.
+
+The `f567d760` and `d646e6db` records below remain historical, with their original
+source attribution and original evidence bytes. They do not substitute for these
+fresh executions. References to the combined runtime in the retained sections
+describe the earlier `f567d760` checkpoint.
+
+## Previous disposition and reviewed source: f567d760
 
 The Bitcoin implementation has no unresolved feature-specific **source** blocker
 after the eleven corrections recorded below. The earlier independent execution on
@@ -109,7 +169,7 @@ version, rather than creating a parallel implementation.
 
 ## Independent execution ledger
 
-### Current combined runtime: f567d760 / af0d3d83
+### Previous combined runtime: f567d760 / af0d3d83
 
 The `spentness_review` lane rebuilt the changed `invoice-schema` and `ux-core`
 packages successfully before checking the combined runtime. Fresh commands use

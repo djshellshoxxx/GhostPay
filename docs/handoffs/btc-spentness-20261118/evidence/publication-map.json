@@ -95,11 +95,32 @@
         "8c1d87a2587281c32a5f1326a4f36cfada4384bc",
         "ffd982a7aea2856c186b40ef236a39720a1b81f5"
       ]
+    },
+    {
+      "local": "4476402cc68700d8881b644a088a64e10b4147e2",
+      "published": "70ded5c6d117848178bf59aec2f37197e08749a5",
+      "tree": "8cd4b54fe22fc4d5fb4ec64a04119ce2bb65e675",
+      "parents": [
+        "11667060182bf4d59a559530b2c89e258b231c08",
+        "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      ]
+    },
+    {
+      "local": "da351eb840bc758d5bd43f91d8da202fc151b041",
+      "published": "970732daf9d2330ef9fe1c56425021f4502b9291",
+      "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+      "parents": [
+        "70ded5c6d117848178bf59aec2f37197e08749a5"
+      ]
     }
   ],
   "bitcoinImplementationLocal": "d646e6db035f008b643d5a5278bbbae8b838f488",
   "bitcoinImplementationPublished": "4281fce1ecc862b2805fce0106efa395ed4b2f4a",
   "runtimeTree": "af0d3d83344c80c44cdf977a3d1c0a2e05992861",
   "runtimeIntegratedMain": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
-  "documentationMainIncluded": "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+  "documentationMainIncluded": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+  "qualificationLocal": "da351eb840bc758d5bd43f91d8da202fc151b041",
+  "qualificationPublished": "970732daf9d2330ef9fe1c56425021f4502b9291",
+  "qualificationTree": "a512665c8233592680c7d6179a382d538a1103ac",
+  "qualificationDelta": "One test-only require-await correction; product code and assertions unchanged"
 }
