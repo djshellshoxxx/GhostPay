@@ -1,5 +1,5 @@
 import { expect, test, type Worker } from '@playwright/test';
-import { mockChain, SEED_A, walletA } from '../src/features/btc/fixtures.testutil';
+import { appendBlocks, coinbase, mockChain, SEED_A, spendTx, walletA } from '../src/features/btc/fixtures.testutil';
 
 const lean = (process.env['GHOSTPAY_LOCAL_BUILD_PROFILE'] ?? 'full') === 'lean';
 
@@ -56,4 +56,18 @@ test('Bitcoin native worker cancels, resumes encrypted checkpoints, and never se
   expect(chain.requests).not.toContain('GET /block-height/1');
   await expect(page.getByRole('checkbox', { name: /^Sweep / })).not.toBeChecked();
   expect(workers).toHaveLength(3); expect(errors).toEqual([]);
+  expect(chain.requests.some((path) => path.includes('/outspend/'))).toBe(false);
+
+  // A later confirmed block consumes the payment restored after reload; no matched-outpoint query is needed.
+  const payment = chain.blocks[3]!.txs[2]!;
+  appendBlocks(chain.blocks, [[coinbase(5), spendTx(100, { txid: payment.txid, vout: 1, scriptpubkey: payment.vout[1]!.scriptpubkey })]]);
+  await page.getByRole('button', { name: 'Scan', exact: true }).click();
+  await expect(page.getByText(/Saved scan: birth height 1, checked through 5, 1 historical matches/)).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /^Sweep / })).toHaveCount(0);
+  await open();
+  await expect(page.getByText(/Saved scan: birth height 1, checked through 5, 1 historical matches/)).toBeVisible();
+  await page.getByRole('button', { name: 'Scan', exact: true }).click();
+  await expect(page.getByText('No unspent payments found in this range.')).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /^Sweep / })).toHaveCount(0);
+  expect(chain.requests.some((path) => path.includes('/outspend/'))).toBe(false);
 });
