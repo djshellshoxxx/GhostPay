@@ -1,4 +1,5 @@
 import dns from 'node:dns';
+import { once } from 'node:events';
 import net from 'node:net';
 import tls from 'node:tls';
 import http from 'node:http';
@@ -148,7 +149,18 @@ describe('socks5 server', () => {
     });
     try {
       const p = track(await startSocks5Server());
-      expect(await exchange(p.port, [greet(0)], 2)).toEqual(Buffer.alloc(0));
+      const client = net.connect({ host: '127.0.0.1', port: p.port });
+      let receivedReply = false;
+      try {
+        // A timeout must fail: client cleanup must not masquerade as a server-initiated close.
+        const closed = once(client, 'close', { signal: AbortSignal.timeout(1_000) });
+        client.on('data', () => { receivedReply = true; });
+        client.once('connect', () => { client.write(greet(0)); });
+        await closed;
+      } finally {
+        client.destroy();
+      }
+      expect(receivedReply).toBe(false);
       expect(p.greetings).toEqual([]);
       expect(p.records).toEqual([]);
     } finally {
