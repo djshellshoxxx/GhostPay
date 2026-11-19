@@ -749,3 +749,21 @@ checks with paired prepare/send regressions. Retain current experimental/disable
 contract runtime, dependency versions and v4 checkpoints. Separate asset-coverage UI and multichain format changes
 remain outside this group. No local test/install workload during coordinator's resource limit; hosted combined
 qualification and independent crypto/custody review remain required before promotion.
+
+# Bitcoin PR #244 reconciliation — 2026-11-19
+
+Worker: btc_source_review, delegated by history_census for the authorized master consolidation.
+Branch: `integration/ghostpay-btc244-reconciled-20261119`.
+Base: `435c6e6bca463f83b6c55a2063f8c18c546c3c22`; source PR #244:
+`ef08170a83d86d194b8ce4186299e791027e461e`. Earlier scoped recovery
+`befd696546020abfe2988ed8c49495b4e9a83f23` remains a separate provenance snapshot.
+Owned paths: BTC web feature source/tests, BTC worker and browser fixtures, BTC package scan
+source/tests, related locale/security keys and BTC documentation; this claim and a scoped handoff.
+Acceptance: retain #244's transaction-bound spends, persisted continuous coverage, reorg/header
+ownership checks, explicit revocable consent and unknown-result selection gate. Preserve master's
+TM13 local spend tracking API/tests and fresh selected-output provider check before signing, with
+matching user disclosures. Capture worker consent from the start request for dispatch and result
+validation. Reconcile the current feature, without runtime activation, new protocols, dependencies,
+generic SecretBackup changes or unrelated chain work. Prepare focused regressions; execute only
+coordinator-authorized serialized checks and report unrun or blocked gates explicitly. The lead
+worker owns integration/publication and validation of the final combined candidate.
