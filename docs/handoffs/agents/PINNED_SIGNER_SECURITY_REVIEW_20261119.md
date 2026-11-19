@@ -336,5 +336,9 @@ The added `invoice-signer.spec.ts` idle case tests the other boundary explicitly
 the invoice is demonstrably still unexpired, and a 16-minute wall-clock jump followed by a real navigation-button
 pointerdown triggers the default idle lock. It requires the no-seller-session idle notice, removes old trusted status,
 review and payment controls, retains the selected public pin, records zero wallet requests, and requires the invoice
-to be reopened and checked before trust returns. Source inspection found no blocker in these three browser-test
+to be reopened and checked before trust returns. The coordinator corrected the new case's initial expectation:
+Continue is disabled before the lock and after reopening because this profile has no RPC-backed payment context;
+signer trust alone cannot authorize payment. After lock the Continue control must disappear entirely. No RPC/settings
+mock was added, and the test records zero wallet calls before the clock jump as well. This bounds the case to local
+trust/lifecycle invalidation, separate from the prepared-payment expiry fixtures. Source inspection found no blocker in these three browser-test
 changes. This reviewer made no production or test edits and performed no browser execution for this follow-up.
