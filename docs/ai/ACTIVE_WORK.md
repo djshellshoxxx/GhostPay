@@ -11,6 +11,11 @@ explicit endpoint opt-in, exact listing, endpoint-path privacy and empty-section
 assertions, and execute the repaired focused suite. Reuse an existing repair if
 present. No runtime consent/export, locale, dependency, gate or threshold changes.
 Independent recovery-worker source review and combined qualification remain required.
+Status: test-only repair `83bc4f52`; original-config baseline 1 failed / 10 passed,
+then 11/11 passed. Recovery worker independently pinned source review to that
+commit with no blocker. Runtime and locale inputs are unchanged. Evidence:
+`docs/handoffs/settings-exchange-20261119/REVIEW.md`. Combined qualification remains
+coordinator-owned.
 
 # Idle regression type reconciliation — 2026-11-19
 
