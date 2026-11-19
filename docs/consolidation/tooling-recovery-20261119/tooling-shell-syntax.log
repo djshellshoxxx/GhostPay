@@ -1,0 +1,2 @@
+bash -n deploy/selfhost.sh: exit0
+bash -n deploy/selftest.sh: exit0

@@ -1,0 +1,83 @@
+✔ every nightly job is read-only and receives no secrets (29.879078ms)
+✖ nightly runs every examples/ test file and the webhook self-test (TB-09) (5.595604ms)
+✖ nightly runs the reconciliation IndexedDB check in Chromium (TB-06, TB-09) (0.624491ms)
+✖ nightly runs the anvil suites PR CI skips, with the anvil pinned as in ci.yml (TB-09) (0.557736ms)
+✖ nightly Slither keeps the failing Medium+ gate and adds a non-failing all-detector report (SEC-17) (0.558637ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 1
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11206.070112
+
+✖ failing tests:
+
+test at scripts/tests/nightly-workflow.test.mjs:52:1
+✖ nightly runs every examples/ test file and the webhook self-test (TB-09) (5.595604ms)
+  AssertionError [ERR_ASSERTION]: nightly.yml has no examples job
+      at TestContext.<anonymous> (file:///workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery/scripts/tests/nightly-workflow.test.mjs:54:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at scripts/tests/nightly-workflow.test.mjs:70:1
+✖ nightly runs the reconciliation IndexedDB check in Chromium (TB-06, TB-09) (0.624491ms)
+  TypeError [Error]: Cannot read properties of undefined (reading 'split')
+      at steps (file:///workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery/scripts/tests/nightly-workflow.test.mjs:28:26)
+      at step (file:///workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery/scripts/tests/nightly-workflow.test.mjs:35:17)
+      at TestContext.<anonymous> (file:///workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery/scripts/tests/nightly-workflow.test.mjs:72:13)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at scripts/tests/nightly-workflow.test.mjs:82:1
+✖ nightly runs the anvil suites PR CI skips, with the anvil pinned as in ci.yml (TB-09) (0.557736ms)
+  AssertionError [ERR_ASSERTION]: nightly.yml has no anvil-suites job
+      at TestContext.<anonymous> (file:///workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery/scripts/tests/nightly-workflow.test.mjs:84:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at scripts/tests/nightly-workflow.test.mjs:101:1
+✖ nightly Slither keeps the failing Medium+ gate and adds a non-failing all-detector report (SEC-17) (0.558637ms)
+  AssertionError [ERR_ASSERTION]: step "Slither gate (fails on Medium or High; same command as ci.yml)" not found
+      at step (file:///workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery/scripts/tests/nightly-workflow.test.mjs:36:10)
+      at TestContext.<anonymous> (file:///workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery/scripts/tests/nightly-workflow.test.mjs:103:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
