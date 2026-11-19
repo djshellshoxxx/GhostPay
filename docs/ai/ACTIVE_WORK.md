@@ -1181,3 +1181,20 @@ Initial defects and exact acceptance evidence are tracked in the task handoff di
 Provenance: the idle-only delta is ported from local `b2fb5f20455ca2823739f7a29ed784ec94e049c2`,
 preserved remotely as `7e6089e2e40a2a7daf93961eddef17d3fe8501fd` on `chatgpt/ghostpay-idle-lifecycle-20261119`.
 The broader #238 tree and its unrelated worker claims are not imported; this combined target requires fresh qualification.
+
+# BTC spentness consolidation — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT branch_recon, assigned by the current consolidation coordinator.
+Branch: `codex/ghostpay-btc-consolidation-20261119`.
+Base: `66e707d0676caa26e074c7e5e9f5db0285f6ca62`, which retains the existing master integration.
+Selected source: PR #254 `8c1d87a2587281c32a5f1326a4f36cfada4384bc`; compare sibling
+PR #244 `2364284a2717a22b895fcb7badeb2e7ae6bb0e48` for unique header/cancellation regressions.
+Owned paths: `packages/btc-silent-payments/src/scan/`; `apps/web/src/features/btc/`;
+BTC-specific browser tests, locale/security-key entries and user/spec documentation;
+this claim and `docs/consolidation/btc-20261119/` evidence.
+Acceptance: retain #254 ancestry and complete local/provider spentness semantics, preserve current
+action-bound network authorization and cancellation, reconcile useful #244-only tests, execute
+focused library/web/type/lint/browser checks available in the exact dependency environment, and
+report remaining combined qualification explicitly. Source review by the coordinator remains required.
+Privacy/recovery workers own their current shared lanes. No remote merge/push, contract change,
+mainnet interaction, dependency upgrade or release action is included in this worker's assignment.
