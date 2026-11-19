@@ -1509,3 +1509,11 @@ dependency upgrade, mainnet request, deployment or remote write.
 - Acceptance: preserve source provenance, fail-closed session/network authority, private backup recovery, disabled demonstration payments, original test assertions and coverage gates. Run focused regressions and applicable builds/browser/security checks.
 - Shared integration lock is held by `20261119T105500Z-0bed53303053-root`, generation 3. This branch does not acquire, supersede, or mutate that lease. Shared branch/main promotion remains blocked until the existing coordinator releases ownership and required checks pass.
 - No edits to other checkouts, source branches, deployments, published tags, fee recipients, guardians, mainnet configuration, dependency versions, or security thresholds. Release/deployment remains conditional on ADR-0029, origin isolation and actual qualification.
+
+
+### Final Pages payment export reconciliation — 2026-11-19
+
+Worker: `key_exports`; isolated branch `repair/ghostpay-final-key-exports-20261119`; base `7f44cf742f25df25105a5a21d223b6d0d1efb62d`.
+Source: PR #269 `683f8587b8de45448f14aab0539cb07a5f21bce3`.
+Owned paths: payment export RPC/key export and network-authorization code/tests, Scan view and its export/checkpoint tests, scanClient cancellation normalization/tests, privateScanLifecycle test, private-scan checkpoint browser test, payment-export network-egress inventory entries, and scoped evidence.
+Acceptance: preserve existing session/profile/idle authority; secret exports obtain fresh address-bound permission independently of ended scans; cancellation and expired/replaced authority refuse late exports; original selected endpoint remains fixed; relevant original tests pass with no weakened assertions. Retain current merchant-profile and canonicalization code. No other source checkout, remote branch, shared integration lease, release or deployment mutation.
