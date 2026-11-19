@@ -1,0 +1,257 @@
+{
+  "scope": "bounded native version startup measurements only; not contract analysis",
+  "importNetworkingChanged": false,
+  "measurements": [
+    {
+      "scope": "actual existing wrapper version preflight",
+      "command": [
+        "timeout",
+        "--kill-after=5s",
+        "45s",
+        "/workspace/scratch/b608f89bdf4a/tools/mythbin/myth",
+        "version"
+      ],
+      "elapsed_seconds": 28.994,
+      "exit_code": 0,
+      "stdout": "Mythril version v0.24.8\n",
+      "stderr": "/workspace/scratch/b608f89bdf4a/mythril-venv/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n  import pkg_resources\n",
+      "path_prefix": [
+        "/workspace/scratch/b608f89bdf4a/tools/mythbin",
+        "/workspace/scratch/b608f89bdf4a/tools",
+        "/workspace/scratch/b608f89bdf4a/mythril-venv/bin"
+      ],
+      "concurrentGroup": "initial paired version probes"
+    },
+    {
+      "scope": "final47f41a81 compatibility source version preflight",
+      "compat_sha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd",
+      "command": [
+        "timeout",
+        "--kill-after=5s",
+        "45s",
+        "/workspace/scratch/b608f89bdf4a/mythril-venv/bin/python3",
+        "/workspace/scratch/b608f89bdf4a/GhostPay-analyzer-tooling/packages/contracts/scripts/mythril-compat.py",
+        "version"
+      ],
+      "elapsed_seconds": 31.99,
+      "exit_code": 0,
+      "stdout": "Mythril version v0.24.8\n",
+      "stderr": "/workspace/scratch/b608f89bdf4a/mythril-venv/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n  import pkg_resources\n",
+      "path_prefix": [
+        "/workspace/scratch/b608f89bdf4a/tools/mythbin",
+        "/workspace/scratch/b608f89bdf4a/tools",
+        "/workspace/scratch/b608f89bdf4a/mythril-venv/bin"
+      ],
+      "concurrentGroup": "initial paired version probes"
+    },
+    {
+      "scope": "one serial bounded exact final-candidate version startup import profile; not symbolic analysis",
+      "source": "13ad455d707b0e4c7e5329b3299843354f44f137",
+      "compat_sha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd",
+      "command": [
+        "timeout",
+        "--kill-after=5s",
+        "45s",
+        "/workspace/scratch/b608f89bdf4a/mythril-venv/bin/python3",
+        "-X",
+        "importtime",
+        "/workspace/scratch/b608f89bdf4a/GhostPay-final/packages/contracts/scripts/mythril-compat.py",
+        "version"
+      ],
+      "elapsed_seconds": 36.857,
+      "exit_code": 0,
+      "stdout": "Mythril version v0.24.8\n",
+      "stderr_profile": "/workspace/scratch/b608f89bdf4a/mythril-final-version-serial-importtime.log",
+      "path_prefix": [
+        "/workspace/scratch/b608f89bdf4a/tools/mythbin",
+        "/workspace/scratch/b608f89bdf4a/tools",
+        "/workspace/scratch/b608f89bdf4a/mythril-venv/bin"
+      ],
+      "solcx_binary_path": "/workspace/scratch/b608f89bdf4a/solcx",
+      "profiling_enabled": true,
+      "concurrentGroup": null,
+      "rawProfileSha256": "ec858ff020f0f26663a46ead829b0acc0007d8337a6fb673f16f3e8be3642aba",
+      "rawProfileBytes": 213229,
+      "topSelfTime": [
+        {
+          "self_us": 12681615,
+          "cumulative_us": 12744126,
+          "module": "mythril.ethereum.util"
+        },
+        {
+          "self_us": 1457780,
+          "cumulative_us": 2174717,
+          "module": "pkg_resources"
+        },
+        {
+          "self_us": 1232194,
+          "cumulative_us": 1244570,
+          "module": "matplotlib.axis"
+        },
+        {
+          "self_us": 736603,
+          "cumulative_us": 2799958,
+          "module": "scipy.stats._stats_py"
+        },
+        {
+          "self_us": 491985,
+          "cumulative_us": 597331,
+          "module": "scipy.ndimage._support_alternative_backends"
+        },
+        {
+          "self_us": 474748,
+          "cumulative_us": 474748,
+          "module": "py_ecc.bls12_381.bls12_381_pairing"
+        },
+        {
+          "self_us": 473107,
+          "cumulative_us": 473107,
+          "module": "multiprocessing.queues"
+        },
+        {
+          "self_us": 372418,
+          "cumulative_us": 372418,
+          "module": "py_ecc.bn128.bn128_pairing"
+        },
+        {
+          "self_us": 283177,
+          "cumulative_us": 283177,
+          "module": "jaraco.context"
+        },
+        {
+          "self_us": 224391,
+          "cumulative_us": 315439,
+          "module": "eth.vm.forks.frontier.opcodes"
+        },
+        {
+          "self_us": 222274,
+          "cumulative_us": 281558,
+          "module": "joblib.externals.loky.reusable_executor"
+        },
+        {
+          "self_us": 205250,
+          "cumulative_us": 211804,
+          "module": "scipy.special._support_alternative_backends"
+        },
+        {
+          "self_us": 203937,
+          "cumulative_us": 423845,
+          "module": "scipy.stats._continuous_distns"
+        },
+        {
+          "self_us": 197058,
+          "cumulative_us": 197058,
+          "module": "scipy.linalg._fblas"
+        },
+        {
+          "self_us": 188803,
+          "cumulative_us": 206283,
+          "module": "scipy.optimize._slsqp_py"
+        }
+      ],
+      "topCumulativeTime": [
+        {
+          "self_us": 24679,
+          "cumulative_us": 33648658,
+          "module": "mythril.interfaces.cli"
+        },
+        {
+          "self_us": 5821,
+          "cumulative_us": 20627620,
+          "module": "mythril.interfaces"
+        },
+        {
+          "self_us": 3316,
+          "cumulative_us": 20621800,
+          "module": "mythril"
+        },
+        {
+          "self_us": 47,
+          "cumulative_us": 20617750,
+          "module": "mythril.plugin.loader"
+        },
+        {
+          "self_us": 1740,
+          "cumulative_us": 20617703,
+          "module": "mythril.plugin"
+        },
+        {
+          "self_us": 685,
+          "cumulative_us": 20510594,
+          "module": "mythril.plugin.interface"
+        },
+        {
+          "self_us": 748,
+          "cumulative_us": 20509910,
+          "module": "mythril.laser.plugin.builder"
+        },
+        {
+          "self_us": 507,
+          "cumulative_us": 20506215,
+          "module": "mythril.laser.plugin.interface"
+        },
+        {
+          "self_us": 2645,
+          "cumulative_us": 20505708,
+          "module": "mythril.laser.ethereum.svm"
+        },
+        {
+          "self_us": 1225,
+          "cumulative_us": 20345036,
+          "module": "mythril.analysis.potential_issues"
+        }
+      ],
+      "nonProfileStderr": [
+        "/workspace/scratch/b608f89bdf4a/mythril-venv/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.",
+        "  import pkg_resources"
+      ],
+      "profileLimit": "Import timings do not isolate network delay; profiler was enabled."
+    }
+  ],
+  "captureVersionCommandTimeoutSecondsAtMeasurement": 30,
+  "measurementChangedCaptureTimeout": false,
+  "measurementConcurrency": "First two commands ran concurrently; third was serial.",
+  "initialCapture": {
+    "manifestPath": "/workspace/scratch/b608f89bdf4a/qualification/mythril-native-evidence/manifest.json",
+    "manifestSha256": "34ff50d7b92218e2fb86037720b23ac6b51063aef03c643665bf394e208ad85c",
+    "sourceCommit": "f9b8928c35e3825a9f73ae31d3b33cb38b354703",
+    "sourceRoot": "/workspace/scratch/b608f89bdf4a/GhostPay-qualified",
+    "completed": false,
+    "runnerExitCode": null,
+    "targetRecords": 0,
+    "tools": {
+      "mythril": {
+        "argv": [
+          "myth",
+          "version"
+        ],
+        "exitCode": 124,
+        "stdout": "",
+        "stderr": "TimeoutExpired"
+      },
+      "solc": {
+        "argv": [
+          "solc",
+          "--version"
+        ],
+        "exitCode": 0,
+        "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.38+commit.1835d247.Linux.g++\n",
+        "stderr": "",
+        "executableSha256": "b3c6dd53d66aa1091d7e7ff9728068da7173c501bd52d616e4496cb541ecd2c5"
+      }
+    },
+    "qualification": "incomplete; not accepted"
+  },
+  "independentMetadataFixReview": {
+    "source": "9c7c59c82b9888c60a84069a7c8e7844127ff41e",
+    "changedFile": "packages/contracts/scripts/capture-mythril-evidence.py",
+    "mythrilVersionMetadataTimeoutSeconds": 60,
+    "compilerVersionMetadataTimeoutSeconds": 30,
+    "symbolicExecutionTimeoutSeconds": 900,
+    "transactionDepth": 3,
+    "modules": "default",
+    "importNetworkingChanged": false,
+    "observedNewDefect": null,
+    "scope": "exact source diff inspection; final capture preflight and native campaign remain coordinator-owned"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "workerSource": "47f41a818a2e63abef2c459730b712c1c6bd8a36",
+  "nodeVersion": "v24.22.3",
+  "pythonVersion": "Python 3.12.14",
+  "results": [
+    {
+      "scope": "original #225 checker/runner/workflow baseline",
+      "passed": 39,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "original production duplicate-key baseline",
+      "expectedRejection": true,
+      "actualExitCode": 0,
+      "fixtures": 3,
+      "source": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8"
+    },
+    {
+      "scope": "pre-telemetry full sequential tooling batch",
+      "source": "63fa32caae935099ad900a6ba9475e1d4f6d4bf7",
+      "passed": 56,
+      "failed": 4,
+      "skipped": 0,
+      "durationSeconds": 382.472841004,
+      "failure": "runner-fixture subprocess timeouts and missing invocation files under concurrent load; not a pass"
+    },
+    {
+      "scope": "instrumentation, checker, capture",
+      "passed": 42,
+      "failed": 0,
+      "skipped": 0,
+      "durationSeconds": 19.204494813,
+      "command": "node --test --test-concurrency=1 scripts/tests/mythril-completeness.test.mjs scripts/tests/mythril-disposition-check.test.mjs scripts/tests/mythril-evidence.test.mjs"
+    },
+    {
+      "scope": "strict runner including complete per-target malformed-report coverage",
+      "source": "47f41a818a2e63abef2c459730b712c1c6bd8a36",
+      "passed": 31,
+      "failed": 0,
+      "skipped": 0,
+      "durationSeconds": 338.650068578,
+      "command": "node --test --test-concurrency=1 scripts/tests/mythril-runner.test.mjs",
+      "existingAssertionsAndSubprocessTimeBoundsChanged": false
+    },
+    {
+      "scope": "installed Mythril0.24.8 interfaces, synthetic state",
+      "passed": 3,
+      "failed": 0,
+      "nativeCampaign": false
+    },
+    {
+      "scope": "independent Factory preflight",
+      "source": "f9b8928c35e3825a9f73ae31d3b33cb38b354703",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "durationSeconds": 27.3028626,
+      "command": "node --test scripts/tests/deploy-policy-preflight.test.mjs"
+    },
+    {
+      "scope": "independent native Factory acknowledgment",
+      "source": "f9b8928c35e3825a9f73ae31d3b33cb38b354703",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "command": "forge test --threads 2 --match-path test/DeployPolicyFreezeConfig.t.sol --offline --use /workspace/scratch/b608f89bdf4a/tools/solc --out /workspace/scratch/b608f89bdf4a/independent-deploy-out --cache-path /workspace/scratch/b608f89bdf4a/independent-deploy-cache -vv"
+    }
+  ],
+  "limits": [
+    "No production finding approval created or activated.",
+    "No full symbolic campaign by this worker.",
+    "Whole-candidate final CI and native qualification remain coordinator-owned."
+  ]
+}

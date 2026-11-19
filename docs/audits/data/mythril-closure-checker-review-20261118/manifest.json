@@ -1,0 +1,66 @@
+{
+  "initialSource": "f9b8928c35e3825a9f73ae31d3b33cb38b354703",
+  "fixedSource": "4eae4aeaa39bc0a07622b76f7ec51cf9c944ecdc",
+  "scope": "Offline synthetic fixtures only; no real finding approval. Four extra compiler-option probes fail CONFIGURATION_CHANGED after fix; checker suite27/27 passes.",
+  "logs": [
+    {
+      "file": "checker-config-probe.log.gz",
+      "rawSha256": "17ed0dbd1594a454d5c55f0ba95227379c62a2e61d81c18babe3ed6adcd040bd",
+      "rawBytes": 293,
+      "sha256": "2d6423daf4d41189d1a82856fe87461f298bc9b89705d89b82b814cab6d66bde",
+      "bytes": 115
+    },
+    {
+      "file": "checker-config-retest.log.gz",
+      "rawSha256": "369c85eeaa8fb9b62f16ed77605b6ea51756d55508e936e2e575e8b9e244d6a6",
+      "rawBytes": 617,
+      "sha256": "23a3bea24681a04a1a66351ba46a7a54f45beca9b8ec79b11a94abc284313419",
+      "bytes": 183
+    },
+    {
+      "file": "checker-unit-retest.log.gz",
+      "rawSha256": "f32225173538b6ee1f8ec486c3f93c81889a522f4c2d99996bd8f756cc43bc46",
+      "rawBytes": 2729,
+      "sha256": "2aa7dd12852d7ef1be6219b825879848743dc5ec9574a88a2ccf3ba66961d7e5",
+      "bytes": 1382
+    }
+  ],
+  "completenessReview": {
+    "source": "47f41a818a2e63abef2c459730b712c1c6bd8a36",
+    "scope": "Read-only source review, 42 passing synthetic Node tests, and installed-interface controlled clean/interrupt/exception cases. No symbolic contract campaign or approval.",
+    "nodeCommand": [
+      "node",
+      "--test",
+      "--test-concurrency=1",
+      "scripts/tests/mythril-completeness.test.mjs",
+      "scripts/tests/mythril-disposition-check.test.mjs",
+      "scripts/tests/mythril-evidence.test.mjs"
+    ],
+    "files": [
+      {
+        "file": "completeness-review-tests.log.gz",
+        "rawSha256": "98c890e6dcba87c715060713bd7aab65f11ca62d4807f22b643e7392c9bd44c0",
+        "rawBytes": 4315,
+        "sha256": "81359f50e22c7d79403004da09129aed7ce98806aeda9e066b2b0363b997cef5",
+        "bytes": 2017
+      },
+      {
+        "file": "independent-completeness-native.log.gz",
+        "rawSha256": "3f56aa9828659665632bea7fe35dcb602ce9b783e325d8bdd14125d2aeb5f743",
+        "rawBytes": 2720,
+        "sha256": "47a8743f5711745001228178ceefe0b5fc8e1d95e0509aa774e246e3ae5cb677",
+        "bytes": 1001
+      },
+      {
+        "file": "completeness-native-review.py",
+        "sha256": "f37994a3edaa34378f105df46dbcc1e613ba500cba0f6fee16eec2412cb53dbd",
+        "bytes": 4154
+      },
+      {
+        "file": "independent-completeness-native.json",
+        "sha256": "5d95805ebb50f189d883f1d448d7bd9a17e2b0e511fb4943f29d0b362c4d5e5d",
+        "bytes": 929
+      }
+    ]
+  }
+}

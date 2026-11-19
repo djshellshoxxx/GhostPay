@@ -1,0 +1,112 @@
+{
+  "main": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+  "factory_full_test_source": "7593ea5f62f073cb4c01f435cbb106c2e43a74de",
+  "configuration_implementation": "b25819a894a96d617a5403f08bd0a786293f5853",
+  "snapshot_source": "bdfb6258d00d8e0bdb62bd29533aa770b2032c5e",
+  "forge": {
+    "version": "1.8.5",
+    "commit": "51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f",
+    "binary_sha256": "06c477aee83d0996e57aa92b0841fdf06382cb172fd69bbb88920bb0054dfd7f"
+  },
+  "solc": {
+    "version": "0.8.28+commit.7893614a.Linux.g++",
+    "binary_sha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25"
+  },
+  "logs": [
+    {
+      "sha256": "ea027f824f69c2b9438f635ea67d989fa89e7eb3127885ab543dacb82b56c2f8",
+      "bytes": 6093,
+      "raw_file": "baseline-dispositions.log",
+      "file": "baseline-dispositions.log.gz",
+      "compressed_sha256": "ba272e51c38d39c6ab5af8350ffe8d93fdbc834952f0d8e4202385e613e45b4e",
+      "compressed_bytes": 2118
+    },
+    {
+      "sha256": "3d59bf7d524f545d9183b704d54832be6695437fc2b37fe40ba4d94d8b880bab",
+      "bytes": 45532,
+      "raw_file": "full-forge.log",
+      "file": "full-forge.log.gz",
+      "compressed_sha256": "53c2f0eed825873ee9692d7fa2fc1b1eb6eef7f030c3f16cd4708da68221569a",
+      "compressed_bytes": 11082
+    },
+    {
+      "sha256": "683fd8a20be5e5f928f50732d00ee8a785dd43643f3d8ee9132833aca6771532",
+      "bytes": 568,
+      "raw_file": "freeze-risk.log",
+      "file": "freeze-risk.log.gz",
+      "compressed_sha256": "6d7df7ad2e58615fd1086e706a551684d0d105ff7fa7cbeb0d0a3bff0cabeeb2",
+      "compressed_bytes": 359
+    },
+    {
+      "sha256": "d0010bf59c493b80352ba8ed874ef7b338a258c699cdd2366348af6ff4527580",
+      "bytes": 2376,
+      "raw_file": "preflight-red.log",
+      "file": "preflight-red.log.gz",
+      "compressed_sha256": "f387191f5b20b75b71289e972d41d8adc229c77d2da93dcc78e0d67869cb9da8",
+      "compressed_bytes": 1127
+    },
+    {
+      "sha256": "b2e98c809188cf6f6d6f5627d0ca2acd2fb324848f30b1c436fb5468cdacc46b",
+      "bytes": 554,
+      "raw_file": "preflight-green.log",
+      "file": "preflight-green.log.gz",
+      "compressed_sha256": "9735d715457d46c809f412e18f955915e43dd94b97bf7fc909fa90f132271c74",
+      "compressed_bytes": 335
+    },
+    {
+      "sha256": "52a947a34af370439e0a5a2214416d359a40a7035c5858be623c74e5b733149c",
+      "bytes": 19043,
+      "raw_file": "deploy-config.log",
+      "file": "deploy-config.log.gz",
+      "compressed_sha256": "483ca5ca58ecf9910247730bd30814ef3d7f3b5a345d54b430590f93e781d3c2",
+      "compressed_bytes": 3747
+    },
+    {
+      "sha256": "1eebd374aa54306965196e26ad816c2d0a70fd465c6eeb552a27a7cef33ad434",
+      "bytes": 739,
+      "raw_file": "preflight-config-final.log",
+      "file": "preflight-config-final.log.gz",
+      "compressed_sha256": "cd7525a5f3eccc349be8e85e333736f03c4416ea381c9fd1abc1b0b85c194f8a",
+      "compressed_bytes": 414
+    },
+    {
+      "sha256": "cd9d8f52d4222e3ba7896c490d96648cef3f7a1342cf55e693a25be50baadc23",
+      "bytes": 36060,
+      "raw_file": "gas-snapshot.log",
+      "file": "gas-snapshot.log.gz",
+      "compressed_sha256": "4dc4639a89b17bb7b7daa0f1464447dac8035b80d719ad19e0db3f9cf466a2b7",
+      "compressed_bytes": 9566
+    },
+    {
+      "sha256": "b1f4ab9e7e39e75d0264577723c72668342cc3f623e5369762118bb4bf1648ae",
+      "bytes": 34474,
+      "raw_file": "gas-snapshot-check.log",
+      "file": "gas-snapshot-check.log.gz",
+      "compressed_sha256": "a27de203e63854d1dbb0566423867f31ee29bb27c232a5cba590de8297ec3bbd",
+      "compressed_bytes": 9014
+    },
+    {
+      "sha256": "f2019c0608afcb15bc5c8aa93815c1693210ad12a848059775a22a65ee944d46",
+      "bytes": 34371,
+      "raw_file": "gas-snapshot-check-cwd.log",
+      "file": "gas-snapshot-check-cwd.log.gz",
+      "compressed_sha256": "2bac1f02f5c8fad6cfa468616b65f4a2d33b17ea035ad1e7afd8791692f6525f",
+      "compressed_bytes": 8906
+    },
+    {
+      "sha256": "f4e0d804a3b9fbcdc5a26da00be30e3970489fc4ace7febd38f81697367eabf2",
+      "bytes": 5686,
+      "raw_file": "natspec.log",
+      "file": "natspec.log.gz",
+      "compressed_sha256": "92e180bb21db4ba8e6dd3a0da124b9bdb8f07c2bfb4766f3643732534486f93a",
+      "compressed_bytes": 758
+    }
+  ],
+  "limits": [
+    "Full 492-test run preceded the added 10 configuration cases; it does not qualify the final 502-test combined candidate.",
+    "preflight-red.log is an intentional red regression against ported PR217.",
+    "gas-snapshot-check.log preserves an invocation from the repository root whose default snapshot path did not resolve; the packages/contracts cwd retry is separate.",
+    "Node preflight tests use offline executable fixtures, not public-chain acceptance.",
+    "No symbolic-analysis pass, approval, release or deployment is asserted by this evidence."
+  ]
+}

@@ -1,3 +1,49 @@
+# Mythril security closure — 2026-11-18 (active)
+
+Coordinator: ChatGPT root, with separate Factory, findings and analyzer-tooling workers.
+Branch: `integration/ghostpay-mythril-security-closure-20261118`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (observed current main).
+Owned paths: integration of the scoped Mythril checker and evidence capture, deployment
+safeguards, related analyzer CI integrity, and dedicated records under
+`docs/audits/mythril-closure-20261118/`. Workers use their own branches/worktrees and
+record their narrower claims; the coordinator owns conflict resolution, combined-source
+qualification, the owner decision packet and publication of the integration PR.
+Acceptance: verify current-source findings; preserve strict analyzer outcomes; reject
+incomplete/malformed/crashed or changed-source evidence; bind proposed dispositions to
+exact source/configuration/review and real approval; test fee-token deployment safeguards;
+run pinned contract/security checks; retain independent review and exact source identities.
+PRs #212, #217, #220 and #225 are read-only provenance inputs. PR #238 is a separately
+owned Pages integration, inspected for overlap but not replaced by this scoped work.
+No finding exceptions are approved by this engineering authorization. No deployment,
+release, branch deletion, fee-policy change or bypass of checks/reviews is authorized.
+
+# Mythril checker security closure — 2026-11-18
+
+Worker: analyzer_tooling, independently coordinated by the security closure lead.
+Branch: `security/mythril-checker-closure-20261118`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8`.
+Owned paths: `scripts/contract-analysis/mythril-disposition-check.mjs`, dedicated checker tests, adjacent evidence validation helpers and `docs/audits/mythril-closure-tooling-20261118.md`. Additional capture helper paths require coordination.
+Acceptance: retain #225 process-failure defenses; bind complete five-target coverage, findings, source closure, tool configuration, per-target process outcomes and explicit external approval/review identity; reject malformed/ambiguous/partial evidence and preserve the strict unwired Mythril gate. Regression tests must expose every confirmed gap before correction. No exceptions activated, no fabricated approval, no deployment or merge.
+
+# Mythril closure: Factory and deployment safeguards — 2026-11-18
+
+Worker: factory_security (independent contract reviewer), coordinated by root.
+Branch: `security/mythril-closure-factory-20261118`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (main).
+Owned paths: `packages/contracts/script/DeployPolicy.s.sol`,
+`packages/contracts/scripts/pre-deploy-check.sh`, associated deployment and
+Factory regression tests, `scripts/tests/deploy-policy-preflight.test.mjs`,
+the corresponding gas-snapshot entries, and
+`docs/audits/mythril-closure-factory-20261118.md`.
+Follow-up review ownership: `docs/audits/mythril-closure-independent-tooling-20261118.md`
+and its checker-review evidence directory; analyzer implementation remains read-only.
+Acceptance: reuse PR #217 safeguards; reject absent/mismatched token freeze
+acknowledgment, retain zero-fee deployment, prove checks with native Forge and
+shell cases; independently inspect Factory fee/reentrancy/CREATE2 behaviors and
+record exact current-source outcomes. Contract/economic policy, analyzer policy,
+other workstreams and main merges remain root-owned. No deployments or approval
+of residual-risk exceptions is authorized by this claim.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.

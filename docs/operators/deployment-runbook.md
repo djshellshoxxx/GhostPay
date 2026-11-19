@@ -52,7 +52,41 @@ Where a chain has no ERC-5564 announcer, deploying the CC0 reference through the
 
 ### Policy contracts (experimental; skip unless ADR-0014 changes)
 
-`script/DeployPolicy.s.sol` needs `FEE_RECIPIENT`, `FEE_TOKEN`, `FLAT_FEE` (in token base units), `MAX_FLAT_FEE` (hard upper bound that guards decimals typos) and the same chain variables. Do not deploy it for real use: there is no client support and no recovery path.
+`script/DeployPolicy.s.sol` needs `FEE_RECIPIENT`, `FEE_TOKEN`, `FLAT_FEE` (in token base units), `MAX_FLAT_FEE` (hard upper bound that guards decimals typos) and the same chain variables. `FLAT_FEE != 0` also needs `FEE_TOKEN_FREEZE_ACK` equal to the checksummed `FEE_TOKEN` and a matching `FEE_TOKEN_FREEZE_ACK_CONFIG`: an upgradeable or fee-switch fee token can freeze prefunded, undeployed policy accounts (residual N1). The guard records token-specific and configuration-specific acknowledgment; it does not approve a token or enable the experimental policy scheme. The supported zero-fee path avoids fee-token calls inside the factory and needs neither acknowledgment. It cannot recover funds already sent to a different factory's counterfactual addresses. Existing deployment and release gates still apply.
+
+#### Fee-token freeze acknowledgment
+
+Review the token's implementation, upgrade/admin powers, pause/blacklist controls, transfer-fee switches,
+view-call behavior and transfer gas behavior before considering a nonzero fee. The two fields are explicit
+operator statements, not automatic token-safety checks. A proxy's codehash can remain unchanged while its
+implementation or storage-based behavior changes. Prefer zero fees when these assumptions cannot be met.
+
+The configuration digest is `keccak256(abi.encode(domain, chainId, token, tokenCodehash, flatFee, recipient))`,
+where `domain = keccak256("GhostPay.DeployPolicy.FeeTokenFreezeAck.v1")`. It deliberately excludes the newly
+created implementation address; review of that built implementation is a separate requirement.
+The script also continues to enforce `MAX_FLAT_FEE`, exact address checksums, chain allowlisting, token code
+existence, broadcaster/recipient separation and immutable readback.
+
+With the intended configuration already set, these commands only read public chain data and calculate the digest:
+
+```bash
+fee_ack_chain_id="$(cast chain-id --rpc-url "$RPC_URL")"
+fee_ack_token_code="$(cast code "$FEE_TOKEN" --rpc-url "$RPC_URL")"
+fee_ack_token_hash="$(cast keccak "$fee_ack_token_code")"
+fee_ack_domain="$(cast keccak 'GhostPay.DeployPolicy.FeeTokenFreezeAck.v1')"
+fee_ack_encoding="$(cast abi-encode 'f(bytes32,uint256,address,bytes32,uint256,address)' \
+  "$fee_ack_domain" "$fee_ack_chain_id" "$FEE_TOKEN" "$fee_ack_token_hash" \
+  "$FLAT_FEE" "$FEE_RECIPIENT")"
+cast keccak "$fee_ack_encoding"
+```
+
+Only after separately reviewing those exact inputs and the residual freeze/economic risks, an operator may
+set `FEE_TOKEN_FREEZE_ACK` to the checksummed token address and `FEE_TOKEN_FREEZE_ACK_CONFIG` to the reviewed
+digest. The tooling does not set either acknowledgment automatically. Changing the chain, token, current token
+codehash, flat fee or recipient invalidates the digest. Nonzero-fee `pre-deploy-check.sh policy` requires `cast`
+and `RPC_URL` to recompute it, and fails on unavailable/malformed chain data; it never broadcasts. A digest
+printed by a failed check is diagnostic output, not approval. Zero-fee preflight remains usable offline,
+while the actual deployment script continues to require a token address with code.
 
 ## 4. Verify what you deployed
 

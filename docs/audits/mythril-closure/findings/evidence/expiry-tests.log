@@ -1,0 +1,42 @@
+Compiling 78 files with Solc 0.8.28
+Solc 0.8.28 finished in 13.70s
+Compiler run successful!
+
+Ran 21 tests for test/MythrilExpiryDispositions.t.sol:MythrilExpiryPolicyTest
+[PASS] testFuzz_exp2_producerTimestampOnlyGatesAcceptance(uint256,uint256) (runs: 10000, μ: 186002, ~: 248960)
+[PASS] testFuzz_exp3_producerTimestampOnlyGatesAcceptance(uint256,uint256) (runs: 10000, μ: 158593, ~: 184858)
+[PASS] test_exp2_atDeadline_inclusiveAndStartsFullDelay() (gas: 236850)
+[PASS] test_exp2_deadlineBoundsSubmissionNotExecution() (gas: 381319)
+[PASS] test_exp2_exp3_implementationModelNeverPassesAuthorization() (gas: 225059)
+[PASS] test_exp2_lateAcceptedRequestStaysCancellableForFullDelay() (gas: 298215)
+[PASS] test_exp2_mythrilCounterexample_bothBranchesRevertWithoutEffect() (gas: 176710)
+[PASS] test_exp2_mythrilCounterexample_decodesToZeroDeadlineOrder() (gas: 60548)
+[PASS] test_exp2_oneSecondAfterDeadline_revertsWithoutEffect() (gas: 105857)
+[PASS] test_exp2_oneSecondBeforeDeadline_accepts() (gas: 247360)
+[PASS] test_exp2_replayAfterExpiry_rejectedByDeadlineThenByNonce() (gas: 351870)
+[PASS] test_exp2_wrongChainOrCloneAtDeadline_revertsInvalidSignature() (gas: 700726)
+[PASS] test_exp3_atDeadline_inclusiveAndStartsFullTimelock() (gas: 160638)
+[PASS] test_exp3_deadlineBoundsSubmissionNotExecution() (gas: 219297)
+[PASS] test_exp3_lateAcceptedProposalStaysCancellableForFullTimelock() (gas: 253777)
+[PASS] test_exp3_mythrilCounterexample_bothBranchesRevertWithoutEffect() (gas: 217859)
+[PASS] test_exp3_mythrilCounterexample_decodesToFarFutureDeadline() (gas: 34637)
+[PASS] test_exp3_oneSecondAfterDeadline_revertsWithoutEffect() (gas: 116353)
+[PASS] test_exp3_oneSecondBeforeDeadline_accepts() (gas: 171572)
+[PASS] test_exp3_replayAfterExpiry_rejectedByDeadlineThenByNonce() (gas: 300879)
+[PASS] test_exp3_wrongChainAtDeadline_revertsInvalidSignature() (gas: 314962)
+Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 6.28s (10.31s CPU time)
+
+Ran 10 tests for test/MythrilExpiryDispositions.t.sol:MythrilExpirySweepTest
+[PASS] testFuzz_exp1_producerTimestampOnlyGatesAcceptance(uint256,uint256) (runs: 10000, μ: 234718, ~: 282600)
+[PASS] test_exp1_atDeadline_inclusiveOnBothEntryPoints() (gas: 494602)
+[PASS] test_exp1_expiredUnusedOrder_staysDeadAfterNonceIsReused() (gas: 326419)
+[PASS] test_exp1_mythrilCounterexample_bothBranchesRevertWithoutEffect() (gas: 70772)
+[PASS] test_exp1_mythrilCounterexample_decodesToZeroDeadlineOrder() (gas: 76539)
+[PASS] test_exp1_oneSecondAfterDeadline_revertsOnBothEntryPointsWithoutEffect() (gas: 212289)
+[PASS] test_exp1_oneSecondBeforeDeadline_sweeps() (gas: 281448)
+[PASS] test_exp1_replayAfterExpiry_rejectedByDeadlineThenByNonce() (gas: 308214)
+[PASS] test_exp1_sameNonceReplacementRevokesOrderBeforeItsDeadline() (gas: 288407)
+[PASS] test_exp1_wrongChainOrRelayerAtDeadline_revertsInvalidSignature() (gas: 390734)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 6.27s (6.35s CPU time)
+
+Ran 2 test suites in 6.31s (12.55s CPU time): 31 tests passed, 0 failed, 0 skipped (31 total tests)
