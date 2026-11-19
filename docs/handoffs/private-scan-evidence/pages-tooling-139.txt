@@ -1,0 +1,478 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:12) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: base handling
+    # Subtest: the base serves index.html
+    ok 1 - the base serves index.html
+      ---
+      duration_ms: 118.739593
+      type: 'test'
+      ...
+    # Subtest: the base without its trailing slash redirects to it (like Pages)
+    ok 2 - the base without its trailing slash redirects to it (like Pages)
+      ---
+      duration_ms: 22.786624
+      type: 'test'
+      ...
+    # Subtest: a directory serves its index.html, and redirects without its slash
+    ok 3 - a directory serves its index.html, and redirects without its slash
+      ---
+      duration_ms: 15.150115
+      type: 'test'
+      ...
+    # Subtest: a query string never selects another file
+    ok 4 - a query string never selects another file
+      ---
+      duration_ms: 11.838136
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /
+    ok 5 - outside the base is 404: /
+      ---
+      duration_ms: 25.260142
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /index.html
+    ok 6 - outside the base is 404: /index.html
+      ---
+      duration_ms: 10.565671
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /help.html
+    ok 7 - outside the base is 404: /help.html
+      ---
+      duration_ms: 14.081833
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /build-info.json
+    ok 8 - outside the base is 404: /build-info.json
+      ---
+      duration_ms: 19.974452
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /assets/app.js
+    ok 9 - outside the base is 404: /assets/app.js
+      ---
+      duration_ms: 12.278873
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /ghostpay/
+    ok 10 - outside the base is 404: /ghostpay/
+      ---
+      duration_ms: 22.233357
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /GhostPayX/
+    ok 11 - outside the base is 404: /GhostPayX/
+      ---
+      duration_ms: 10.368351
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /GhostPay.html
+    ok 12 - outside the base is 404: /GhostPay.html
+      ---
+      duration_ms: 19.213294
+      type: 'test'
+      ...
+    # Subtest: outside the base is 404: /other/GhostPay/index.html
+    ok 13 - outside the base is 404: /other/GhostPay/index.html
+      ---
+      duration_ms: 11.723402
+      type: 'test'
+      ...
+    # Subtest: normalizeBase
+    ok 14 - normalizeBase
+      ---
+      duration_ms: 6.466444
+      type: 'test'
+      ...
+    # Subtest: a root base serves the site at /
+    ok 15 - a root base serves the site at /
+      ---
+      duration_ms: 324.909973
+      type: 'test'
+      ...
+    1..15
+ok 1 - base handling
+  ---
+  duration_ms: 713.844325
+  type: 'suite'
+  ...
+# Subtest: MIME types and allowlist
+    # Subtest: /GhostPay/index.html -> text/html; charset=utf-8
+    ok 1 - /GhostPay/index.html -> text/html; charset=utf-8
+      ---
+      duration_ms: 23.395927
+      type: 'test'
+      ...
+    # Subtest: /GhostPay/assets/app.js -> text/javascript; charset=utf-8
+    ok 2 - /GhostPay/assets/app.js -> text/javascript; charset=utf-8
+      ---
+      duration_ms: 13.903288
+      type: 'test'
+      ...
+    # Subtest: /GhostPay/assets/app.css -> text/css; charset=utf-8
+    ok 3 - /GhostPay/assets/app.css -> text/css; charset=utf-8
+      ---
+      duration_ms: 7.148863
+      type: 'test'
+      ...
+    # Subtest: /GhostPay/assets/logo.svg -> image/svg+xml
+    ok 4 - /GhostPay/assets/logo.svg -> image/svg+xml
+      ---
+      duration_ms: 10.956323
+      type: 'test'
+      ...
+    # Subtest: /GhostPay/build-info.json -> application/json; charset=utf-8
+    ok 5 - /GhostPay/build-info.json -> application/json; charset=utf-8
+      ---
+      duration_ms: 4.539321
+      type: 'test'
+      ...
+    # Subtest: /GhostPay/assets/font.woff2 -> font/woff2
+    ok 6 - /GhostPay/assets/font.woff2 -> font/woff2
+      ---
+      duration_ms: 6.097673
+      type: 'test'
+      ...
+    # Subtest: /GhostPay/robots.txt -> text/plain; charset=utf-8
+    ok 7 - /GhostPay/robots.txt -> text/plain; charset=utf-8
+      ---
+      duration_ms: 1.544095
+      type: 'test'
+      ...
+    # Subtest: /GhostPay/assets/icon.png -> image/png
+    ok 8 - /GhostPay/assets/icon.png -> image/png
+      ---
+      duration_ms: 10.285335
+      type: 'test'
+      ...
+    # Subtest: /GhostPay/favicon.ico -> image/x-icon
+    ok 9 - /GhostPay/favicon.ico -> image/x-icon
+      ---
+      duration_ms: 6.12835
+      type: 'test'
+      ...
+    # Subtest: the extension is matched case-insensitively, the file name exactly
+    ok 10 - the extension is matched case-insensitively, the file name exactly
+      ---
+      duration_ms: 4.235562
+      type: 'test'
+      ...
+    # Subtest: not an allowlisted published file -> 404: /GhostPay/assets/app.js.map
+    ok 11 - not an allowlisted published file -> 404: /GhostPay/assets/app.js.map
+      ---
+      duration_ms: 9.169402
+      type: 'test'
+      ...
+    # Subtest: not an allowlisted published file -> 404: /GhostPay/assets/module.mjs
+    ok 12 - not an allowlisted published file -> 404: /GhostPay/assets/module.mjs
+      ---
+      duration_ms: 1.638422
+      type: 'test'
+      ...
+    # Subtest: not an allowlisted published file -> 404: /GhostPay/.nojekyll
+    ok 13 - not an allowlisted published file -> 404: /GhostPay/.nojekyll
+      ---
+      duration_ms: 16.710391
+      type: 'test'
+      ...
+    # Subtest: not an allowlisted published file -> 404: /GhostPay/Makefile
+    ok 14 - not an allowlisted published file -> 404: /GhostPay/Makefile
+      ---
+      duration_ms: 20.603932
+      type: 'test'
+      ...
+    # Subtest: not an allowlisted published file -> 404: /GhostPay/missing.html
+    ok 15 - not an allowlisted published file -> 404: /GhostPay/missing.html
+      ---
+      duration_ms: 4.666701
+      type: 'test'
+      ...
+    # Subtest: not an allowlisted published file -> 404: /GhostPay/assets/
+    ok 16 - not an allowlisted published file -> 404: /GhostPay/assets/
+      ---
+      duration_ms: 1.490465
+      type: 'test'
+      ...
+    # Subtest: HEAD answers like GET without a body; other methods are 405
+    ok 17 - HEAD answers like GET without a body; other methods are 405
+      ---
+      duration_ms: 15.768335
+      type: 'test'
+      ...
+    # Subtest: no security headers are sent (GitHub Pages cannot send them)
+    ok 18 - no security headers are sent (GitHub Pages cannot send them)
+      ---
+      duration_ms: 14.001572
+      type: 'test'
+      ...
+    1..18
+ok 2 - MIME types and allowlist
+  ---
+  duration_ms: 174.788304
+  type: 'suite'
+  ...
+# Subtest: path traversal and symlinks
+    # Subtest: refused: /GhostPay/../secret.txt
+    ok 1 - refused: /GhostPay/../secret.txt
+      ---
+      duration_ms: 19.33852
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/%2e%2e/secret.txt
+    ok 2 - refused: /GhostPay/%2e%2e/secret.txt
+      ---
+      duration_ms: 1.768476
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/%2E%2E/secret.txt
+    ok 3 - refused: /GhostPay/%2E%2E/secret.txt
+      ---
+      duration_ms: 1.369888
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/..%2fsecret.txt
+    ok 4 - refused: /GhostPay/..%2fsecret.txt
+      ---
+      duration_ms: 6.429766
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/..%2Fsecret.txt
+    ok 5 - refused: /GhostPay/..%2Fsecret.txt
+      ---
+      duration_ms: 6.309529
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/assets/..%2f..%2fsecret.txt
+    ok 6 - refused: /GhostPay/assets/..%2f..%2fsecret.txt
+      ---
+      duration_ms: 3.458314
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/%2e%2e%2fsecret.txt
+    ok 7 - refused: /GhostPay/%2e%2e%2fsecret.txt
+      ---
+      duration_ms: 26.610694
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/..%5csecret.txt
+    ok 8 - refused: /GhostPay/..%5csecret.txt
+      ---
+      duration_ms: 4.153508
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/assets%5c..%5c..%5csecret.txt
+    ok 9 - refused: /GhostPay/assets%5c..%5c..%5csecret.txt
+      ---
+      duration_ms: 7.227522
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/%00index.html
+    ok 10 - refused: /GhostPay/%00index.html
+      ---
+      duration_ms: 6.702657
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/index.html%00.js
+    ok 11 - refused: /GhostPay/index.html%00.js
+      ---
+      duration_ms: 4.382458
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/%
+    ok 12 - refused: /GhostPay/%
+      ---
+      duration_ms: 2.787786
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/%zz
+    ok 13 - refused: /GhostPay/%zz
+      ---
+      duration_ms: 5.897277
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay//etc/passwd
+    ok 14 - refused: /GhostPay//etc/passwd
+      ---
+      duration_ms: 4.75202
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/%2fetc%2fpasswd
+    ok 15 - refused: /GhostPay/%2fetc%2fpasswd
+      ---
+      duration_ms: 2.869581
+      type: 'test'
+      ...
+    # Subtest: refused: /GhostPay/assets/../../secret.txt
+    ok 16 - refused: /GhostPay/assets/../../secret.txt
+      ---
+      duration_ms: 9.349298
+      type: 'test'
+      ...
+    # Subtest: a symlinked file is refused, even to an allowlisted extension
+    ok 17 - a symlinked file is refused, even to an allowlisted extension
+      ---
+      duration_ms: 1.50963
+      type: 'test'
+      ...
+    # Subtest: a symlinked directory is never followed
+    ok 18 - a symlinked directory is never followed
+      ---
+      duration_ms: 10.613901
+      type: 'test'
+      ...
+    # Subtest: resolveRequest keeps every decision inside the root
+    ok 19 - resolveRequest keeps every decision inside the root
+      ---
+      duration_ms: 2.726132
+      type: 'test'
+      ...
+    # Subtest: the site directory itself may not be a dangling or non-directory path
+    ok 20 - the site directory itself may not be a dangling or non-directory path
+      ---
+      duration_ms: 0.359834
+      type: 'test'
+      ...
+    1..20
+ok 3 - path traversal and symlinks
+  ---
+  duration_ms: 141.807826
+  type: 'suite'
+  ...
+# Subtest: 404 page
+    # Subtest: a site 404.html is served with status 404 inside the base only
+    ok 1 - a site 404.html is served with status 404 inside the base only
+      ---
+      duration_ms: 11.795236
+      type: 'test'
+      ...
+    1..1
+ok 4 - 404 page
+  ---
+  duration_ms: 12.031379
+  type: 'suite'
+  ...
+# (node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: permits a document and assets within the published project base
+ok 5 - permits a document and assets within the published project base
+  ---
+  duration_ms: 10.132858
+  type: 'test'
+  ...
+# Subtest: rejects same-origin requests that escape the Pages project base
+ok 6 - rejects same-origin requests that escape the Pages project base
+  ---
+  duration_ms: 4.542056
+  type: 'test'
+  ...
+# Subtest: rejects requests on other origins including sibling subdomains
+ok 7 - rejects requests on other origins including sibling subdomains
+  ---
+  duration_ms: 0.43753
+  type: 'test'
+  ...
+# Subtest: retains the existing data and blob URL exemptions
+ok 8 - retains the existing data and blob URL exemptions
+  ---
+  duration_ms: 0.249628
+  type: 'test'
+  ...
+# (node:15) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: a minimal lean site passes and SHA256SUMS lists every file sorted
+ok 9 - a minimal lean site passes and SHA256SUMS lists every file sorted
+  ---
+  duration_ms: 45.579801
+  type: 'test'
+  ...
+# Subtest: missing .nojekyll, index.html or build-info.json fails
+ok 10 - missing .nojekyll, index.html or build-info.json fails
+  ---
+  duration_ms: 23.553883
+  type: 'test'
+  ...
+# Subtest: source maps, _headers, lean evidence, unknown extensions and symlinks are refused
+ok 11 - source maps, _headers, lean evidence, unknown extensions and symlinks are refused
+  ---
+  duration_ms: 3.280621
+  type: 'test'
+  ...
+# Subtest: index.html without the mirror banner fails
+ok 12 - index.html without the mirror banner fails
+  ---
+  duration_ms: 24.016911
+  type: 'test'
+  ...
+# Subtest: commit and manifest digest must match the approved build
+ok 13 - commit and manifest digest must match the approved build
+  ---
+  duration_ms: 2.189595
+  type: 'test'
+  ...
+# Subtest: HTML: CSP is required and script-src must be self or none
+ok 14 - HTML: CSP is required and script-src must be self or none
+  ---
+  duration_ms: 0.779672
+  type: 'test'
+  ...
+# Subtest: HTML: inline scripts, handlers, <base> and absolute or external resource references are refused
+ok 15 - HTML: inline scripts, handlers, <base> and absolute or external resource references are refused
+  ---
+  duration_ms: 14.559498
+  type: 'test'
+  ...
+# Subtest: HTML: commented CSP is not an active browser policy
+ok 16 - HTML: commented CSP is not an active browser policy
+  ---
+  duration_ms: 0.385743
+  type: 'test'
+  ...
+# Subtest: HTML: external script and image refs are refused regardless of attribute quoting
+ok 17 - HTML: external script and image refs are refused regardless of attribute quoting
+  ---
+  duration_ms: 0.686938
+  type: 'test'
+  ...
+# Subtest: HTML: comments cannot introduce fake scripts and single-quoted blank targets require noopener
+ok 18 - HTML: comments cannot introduce fake scripts and single-quoted blank targets require noopener
+  ---
+  duration_ms: 10.444804
+  type: 'test'
+  ...
+# Subtest: secret-shaped strings and public anvil keys are refused; curve constants are not
+ok 19 - secret-shaped strings and public anvil keys are refused; curve constants are not
+  ---
+  duration_ms: 0.377338
+  type: 'test'
+  ...
+# Subtest: lean report: wrong profile, missing workers and excluded modules fail
+ok 20 - lean report: wrong profile, missing workers and excluded modules fail
+  ---
+  duration_ms: 0.518202
+  type: 'test'
+  ...
+# Subtest: manifests: testnets only; mainnet chain ids fail closed
+ok 21 - manifests: testnets only; mainnet chain ids fail closed
+  ---
+  duration_ms: 0.594705
+  type: 'test'
+  ...
+# Subtest: HTML: comment and script scanning is spec-shaped and fails closed (no single-pass regex bypass)
+ok 22 - HTML: comment and script scanning is spec-shaped and fails closed (no single-pass regex bypass)
+  ---
+  duration_ms: 13.065187
+  type: 'test'
+  ...
+1..22
+# tests 72
+# suites 4
+# pass 72
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1770.908816

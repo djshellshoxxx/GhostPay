@@ -1,0 +1,584 @@
+{
+  "schema": 1,
+  "status": "Qualified main e454de6a integrated; app-lock cancellation gap corrected after 3 RED regressions. PrivateUI19 + auto5 + idleClock10 passed. Final combined-source gates pending.",
+  "feature_branch": "chatgpt/ghostpay-private-scan-completion-20261119",
+  "starting_feature_sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+  "integrated_main_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+  "local_merge_sha": "684eec18f9f7562e304c7a347ecb62ff6ac4bb71",
+  "source_files_sha256": {
+    "apps/web/e2e/pages-devnet.spec.ts": "25f04cee8de83b29e3f60f26f76080ca67510d88bde75e370b481b7eba55b236",
+    "apps/web/e2e/private-scan-checkpoints.spec.ts": "928245cf2c621a71ec78af6e522f4194f289e9ae5a14c7e0911552032764c214",
+    "apps/web/locales/ar.json": "e5737868d08f1237fab1acc59f70d8f6f0e90f4345dbdfca8aead02484698727",
+    "apps/web/locales/en.json": "733c7c6b4f66ec6f9a0e6a0586da63aa0748c9b79ae1daee6e7afa73e9620888",
+    "apps/web/locales/es.json": "e35969cc300e1429e5f1d66dc9fe767a885012c3fbeeed3aa26b4e45b2474340",
+    "apps/web/locales/ja.json": "070db9d1b98a1f00b9351b9f7ccad222c682a0f57e2ae5290b35363bba5e4efb",
+    "apps/web/src/i18n/securityKeys.ts": "83b7d9d83b5b44869b8a55bfda2620ae03c638035ffaadfcd99931a5ca22f2c4",
+    "apps/web/src/lib/defaultServices.ts": "50be9f662b039833c6a9f282bc68c1f8d25bdbf1ea3ce50ed8c5b658f6d8de5b",
+    "apps/web/src/lib/keyVault.ts": "e671c2bc6334dc9e02d6f09fb68c2d2ad9d172dfb00d839e3af65d6351e3f091",
+    "apps/web/src/lib/privateScanLifecycle.test.ts": "a3648a5321573e13379fedc5bb39544152b74319dfbd3bb145b3c4506db42e18",
+    "apps/web/src/lib/privateScanLifecycle.ts": "0e62ee5c9e926c325d9d640d28c6dbc8440c2a2eced81dc31131e5f3e393bb21",
+    "apps/web/src/lib/privateScanStore.test.ts": "52ed3c3b231ddba4283b27a2458fe9f9d06f7fdeeeb31c5c9df3afd46f60c1bb",
+    "apps/web/src/lib/privateScanStore.ts": "82a9ac42f6b7588a0dc1d05094dc11ae8971d29b24e2a09de50f832b10d45e88",
+    "apps/web/src/lib/reconciliationVault.idb.test.ts": "1a964d54894f4d5d04a8967ff65e62458d41a022d7e5967f005c9490017bb707",
+    "apps/web/src/lib/reconciliationVault.ts": "1e077897e2da7c47f83b00461a79927ed5577f8e0bfd03914d2bf27ad70d919f",
+    "apps/web/src/lib/scanCheckpointPrivacy.test.ts": "99586b0e66559fc7fca3104c480cb731fad061d4793193e1a41f10319e96f008",
+    "apps/web/src/lib/scanClient.test.ts": "289c65fb3260ce84a2626e1a654a8304f49063e187318cc052434af91aa7a388",
+    "apps/web/src/lib/scanClient.ts": "d61c4cfe89e915135288df0398ff3cdb6bd85a7282c9136f1546f5d39ddf9546",
+    "apps/web/src/lib/scanCursorSlot.test.ts": "97c3d0e1c041621fa9e478b7d6d06316ef78ae5d7a69c48ca76a8c0574e8bea0",
+    "apps/web/src/lib/scanCursorSlot.ts": "dc80aae231ff33262897e01c94ca3c2bf275e626b4be0325f495c0f9d5404f20",
+    "apps/web/src/lib/scanPrivacy.clients.test.ts": "fc3a32d8e4d1e6e4c54107fb91bf918daf0b4dc299f87ff294653b58c4ff5b6d",
+    "apps/web/src/lib/scanPrivacy.ts": "fcb03fbf2c63362618273dc0bdba8a4b37e403648530945a6ecf6eb777190c14",
+    "apps/web/src/lib/scannerCore.spam.nocov.test.ts": "66917f6fec539c8cc6ededcfe51f769b141309383a25bc767b0eeff239700f98",
+    "apps/web/src/lib/services.ts": "54d182a2726a65b4579ec0c8ec3d86e45f937a4ade1f319ed36152ef98e4ca1a",
+    "apps/web/src/views/Scan.privateCheckpoint.test.tsx": "1ffa317c166875bea82103d7ecbdfa3342a3dc1e2630da504b14a8788df908e3",
+    "apps/web/src/views/Scan.tsx": "cb1b0f03c270c531bd3ee3747fac26517272ad224d5c9ffb235c6b43f8bf8877",
+    "apps/web/src/lib/privateScanPerformance.nocov.test.ts": "fb97ebd968a2f5c837270ce8bb4d203f08c858000f7e77664ca968b3847c9b55"
+  },
+  "runs": [
+    {
+      "log": "scan-engine-red.txt",
+      "log_sha256": "c33a054b8d2afab92b3b1998860c4b788049826f5a52ef4448e0faf42b37f529",
+      "exit_code": 1,
+      "observation": "Behavioral regression: five failures before durable replay/atomic progress fixes.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "../../node_modules/.bin/vitest run src/lib/scanClient.test.ts --coverage=false -t \"durable private scan discovery\"",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log.",
+      "raw_log_sha256": "4331c41949899b13d74a11baabb91ab677fcf0e8c9eb08fcd6be9199a3490c86",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-engine-green.txt",
+      "log_sha256": "0b5be4bdc2d712c81acfb81eeed9f345eef0e1d905a23cf83abcf298d0d71da0",
+      "exit_code": 0,
+      "observation": "Five focused tests passed at implementation snapshot.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "../../node_modules/.bin/vitest run src/lib/scanClient.test.ts --coverage=false -t \"durable private scan discovery\"",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log.",
+      "raw_log_sha256": "4a6ac5da402f13017c05d0343424a1cd80eb1ca9a2eaa1dc7a692ab00a9e754e",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "private-scan-lifecycle-red.txt",
+      "log_sha256": "5414a7ee7485cb6dc5d4b6d2c4c0e1641b420a73171763d8b1fba6f4aa723eb5",
+      "command": "NODE_OPTIONS=--max-old-space-size=768 ../../node_modules/.bin/vitest run src/lib/privateScanLifecycle.test.ts --coverage=false",
+      "exit_code": 1,
+      "observation": "Two failed, nine passed before safe lifecycle classification correction.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "raw_log_sha256": "31216d8aa216e15b23f8306eccd3d06b91cce809799de61531f53b7539ca0027",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "private-scan-storage-lifecycle-green.txt",
+      "log_sha256": "99fde69b176d9c8fe624ad3403e1e619be98ffc104795b980472ed5fd28fd5af",
+      "command": "NODE_OPTIONS=--max-old-space-size=768 ../../node_modules/.bin/vitest run src/lib/privateScanStore.test.ts src/lib/privateScanLifecycle.test.ts --coverage=false",
+      "exit_code": 0,
+      "observation": "47 tests passed: 36 store and 11 lifecycle.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "raw_log_sha256": "add036f39c1bb1cb4aed5a5513be79a8e8152e412dba4a2c69b794051cf90925",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "replay-narrow-red.txt",
+      "log_sha256": "b099992bba3af98956a0254d27b6aca54a044f8591b3a3cc5c97dd47ac46ce4d",
+      "exit_code": 1,
+      "observation": "One behavioral failure before narrowed historical replay rejection.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "../../node_modules/.bin/vitest run src/lib/scanClient.test.ts --coverage=false -t \"does not replace saved non-router\"",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log.",
+      "raw_log_sha256": "166780a68a8ec09498e0f71fda70cdd79af793869aee3710ec88f963ca4b4a9a",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "replay-tail-red.txt",
+      "log_sha256": "7e571663715f5651d2e982f80c983670c73d3d828880b777f236e67cfe144ce0",
+      "exit_code": 1,
+      "observation": "One behavioral failure before removing finality-tail replay overlap.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "../../node_modules/.bin/vitest run src/lib/scanClient.test.ts --coverage=false -t \"rechecks finality-tail\"",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log.",
+      "raw_log_sha256": "6809074577ad6845cdfda2b60e9b0ea55081d1843cbdd8c64b7280a0090ce5f8",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "replay-budget-red.txt",
+      "log_sha256": "462465c3c1ffd7f0b39a32f9235e14a4abf0d7dcce76f444e448deee6ea7ac47",
+      "exit_code": 1,
+      "observation": "One behavioral failure before separate historical/incremental budgets.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "../../node_modules/.bin/vitest run src/lib/scanClient.test.ts --coverage=false -t \"gives incremental pages\"",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log.",
+      "raw_log_sha256": "cbe0baa7ee5339258f272dd01ba2e970de89734e3a47ddc5b562deef3de6a503",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-rpc-cancel-red.txt",
+      "log_sha256": "32510d0c58d9e8e4d1c2dcdafcac5a3b3fe4cf603cc6d0157fb91b2c862ed982",
+      "exit_code": 1,
+      "observation": "One behavioral cancellation failure; see log for exact test title.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "../../node_modules/.bin/vitest run src/lib/scanClient.test.ts --coverage=false -t \"stalled\"",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log.",
+      "raw_log_sha256": "6629ef72b503d00c7592cd9901a62dc10fdc9b26ece1ff72e78e98e5719c7bcd",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-window-cancel-red.txt",
+      "log_sha256": "69d3b6a0476db33baa774976f6168631125044d2f670bc8bcec581fa7d1b132c",
+      "exit_code": 1,
+      "observation": "Two behavioral failures before per-dispatch/window guards.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "../../node_modules/.bin/vitest run src/lib/scanPrivacy.clients.test.ts --coverage=false",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log.",
+      "raw_log_sha256": "5c6f0cd2b70640f75766be91d25e66b78f7160a8ed19c5776addd08c26573ba0",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-window-cancel-green.txt",
+      "log_sha256": "e9bffaf7ca9471b9faacea09279075f8397f658719b3f99ca70be74d7305d9cc",
+      "exit_code": 0,
+      "observation": "Four tests passed.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "../../node_modules/.bin/vitest run src/lib/scanPrivacy.clients.test.ts --coverage=false",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log.",
+      "raw_log_sha256": "66335b81f1e97451d8e0514cd0ecd4153c99853328aa6d21c34dde6cb67e5cc9",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-coverage-limit-red.txt",
+      "log_sha256": "cbdb80147b238a4a80eb9d9b8680732e01f71fc61034886308f168bce3ac8364",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS=\"--max-old-space-size=768 --max-semi-space-size=8\" ../../node_modules/.bin/vitest run src/lib/scanClient.test.ts --coverage=false --maxWorkers=1 -t \"1001st coverage warning\"",
+      "exit_code": 1,
+      "observation": "One behavioral failure: completed range silently retained only 1000 coverage warnings.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "raw_log_sha256": "1f22408aad14d3d7c658d1f4525cf395462b873c03fabdcf67bddea65dc408ac",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-coverage-idb-green.txt",
+      "log_sha256": "01212e68863d1b37c2450fbb51e1b6f3be3e24242061e463af61ba2ae085960d",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS=\"--max-old-space-size=768 --max-semi-space-size=8\" ../../node_modules/.bin/vitest run src/lib/scanClient.test.ts src/lib/reconciliationVault.idb.test.ts --coverage=false --maxWorkers=1 -t \"1001st coverage warning|atomic private scan namespace invalidation\"",
+      "exit_code": 0,
+      "observation": "Three tests passed; then cap error localization was tightened without changing persistence behavior.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "raw_log_sha256": "d38eae13d92224decdf14883ffa3e45517acec28d03df81c5c922d0f1a0c401d",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-ui-final-after-main.txt",
+      "log_sha256": "fcc243cf4cb575cce8c7f92334691d13cc8caa12c463038380db9c866a0984b3",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=1024 --max-semi-space-size=8' ../../node_modules/.bin/vitest run src/views/Scan.privateCheckpoint.test.tsx src/views/Scan.autoRescan.test.tsx --maxWorkers=1 --coverage=false",
+      "exit_code": 0,
+      "observation": "21 tests passed on the reviewed final UI source after main integration.",
+      "phase": "final reviewed UI runtime after main integration",
+      "raw_log_sha256": "f8489b8da559d1de5e8d241e7687204920b6459f4a525976bef8facd8e46bc98",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "npm-ci.txt",
+      "log_sha256": "09a5ae2b928675fedff3d024f45e015119c6612fd6d961796c04dda6be029eab",
+      "command": "npm ci --ignore-scripts --offline --no-audit --no-fund",
+      "exit_code": 1,
+      "observation": "Environment startup: pinned Vitest tarball missing from offline cache; not a behavioral RED.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)"
+    },
+    {
+      "log": "build-libs.txt",
+      "log_sha256": "70bef568e86db7849977751b0b4790dc75a0d07a6888b3d2450c569aa33c6c5f",
+      "command": "npm run build:libs",
+      "exit_code": 1,
+      "observation": "Initial local missing-protobuf dependency failure; resolved without changing lockfile.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)"
+    },
+    {
+      "log": "build-libs-retry.txt",
+      "log_sha256": "3ef9daa504cb677fee17f9815a3055afd71bfca13b20c8c1ef3d6afe6a6ae3aa",
+      "command": "npm run build:libs",
+      "exit_code": 0,
+      "observation": "All 68 library workspaces rebuilt from source at the original base; updated-main transport libraries rebuilt separately.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "raw_log_sha256": "7dbc1069df30902348c218dde0f047e97229434a13f9b093177383522d219cd7",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-browser-full.txt",
+      "log_sha256": "810af9e381f0525ac4cd21553e9532201c331bf1467af7e9f6a1b216ba5cf2a4",
+      "exit_code": 1,
+      "observation": "Initial full browser attempt stopped in webServer typecheck with exit137; Chromium did not launch.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "reproduction_command": "GHOSTPAY_CHROMIUM=/usr/bin/chromium npm run test:e2e -w apps/web",
+      "command_note": "Selected test command reconstructed from implementation notes; original complete shell flags were not retained. Result is from the attached log."
+    },
+    {
+      "log": "scan-repo-guards.txt",
+      "log_sha256": "10cbd39fd76945d9e6bae10643429a37c7bcebc1b531f107f8285a348aaf9a5b",
+      "command": "node --test scripts/tests/dependency-tooling.test.mjs scripts/tests/build-cli.test.mjs scripts/tests/network-egress-inventory.test.mjs scripts/tests/workflows.test.mjs",
+      "exit_code": 1,
+      "observation": "13 passed, two unchanged dependency-tooling subprocess tests timed out; no source diagnostics.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)",
+      "raw_log_sha256": "f7ca0cedaa1f4eddeebe7322653470ddca4f21c3904d029dbcd766dd8fe129b1",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-actions-pinned.txt",
+      "log_sha256": "ac7f76874d0e68d41343b7ecf41b81fe4fbe416429f92e05b003aa6c9457e9a6",
+      "command": "bash scripts/check-actions-pinned.sh",
+      "exit_code": 0,
+      "observation": "All111 action references pinned.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)"
+    },
+    {
+      "log": "package-boundaries.txt",
+      "log_sha256": "ab8aba2a40e5264dfd96ae936caa377a89f2520531122e5a35201d4c1e2c124e",
+      "command": "node --test scripts/agent/*.test.mjs",
+      "exit_code": 0,
+      "observation": "12 passed.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)"
+    },
+    {
+      "log": "package-map.txt",
+      "log_sha256": "3b6e5ba5f62727c827d6e425e93e5be69054a6fe921c756e7c3ad8e19b9d0d0d",
+      "command": "node scripts/agent/package-map.mjs --check",
+      "exit_code": 0,
+      "observation": "Package map current.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)"
+    },
+    {
+      "log": "scan-secrets.txt",
+      "log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "command": "bash scripts/scan-secrets.sh",
+      "exit_code": 0,
+      "observation": "Tracked source scan passed; rerun after new files are staged.",
+      "phase": "implementation (see note; not all runs tested the final snapshot)"
+    },
+    {
+      "log": "scan-ui-typecheck-node22.txt",
+      "log_sha256": "07b619e7bb029cec2c78f0efcd9d470debcff6417bf4201798d4a0231c289475",
+      "raw_log_sha256": "07b619e7bb029cec2c78f0efcd9d470debcff6417bf4201798d4a0231c289475",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=1536 --max-semi-space-size=8' npm run typecheck -w @ghostpay/web",
+      "cwd": "repository root",
+      "exit_code": 137,
+      "observation": "Killed before any TypeScript diagnostic.",
+      "phase": "final reviewed runtime after main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-browser-full-node22.txt",
+      "log_sha256": "7d3804b43be2942884b8cc0fbdd2709e089dfd23b0ccdfbdd12f0099b1a57309",
+      "raw_log_sha256": "7d3804b43be2942884b8cc0fbdd2709e089dfd23b0ccdfbdd12f0099b1a57309",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH GHOSTPAY_CHROMIUM=/usr/bin/chromium GHOSTPAY_LOCAL_BUILD_PROFILE=full NODE_OPTIONS='--max-old-space-size=1536 --max-semi-space-size=8' npm run test:e2e -w @ghostpay/web -- --max-failures=1",
+      "cwd": "repository root",
+      "exit_code": 1,
+      "observation": "Configured webServer typecheck killed137; no Chromium launch or browser assertion.",
+      "phase": "final reviewed runtime after main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-browser-lean-node22.txt",
+      "log_sha256": "7d3804b43be2942884b8cc0fbdd2709e089dfd23b0ccdfbdd12f0099b1a57309",
+      "raw_log_sha256": "7d3804b43be2942884b8cc0fbdd2709e089dfd23b0ccdfbdd12f0099b1a57309",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH GHOSTPAY_CHROMIUM=/usr/bin/chromium GHOSTPAY_LOCAL_BUILD_PROFILE=lean NODE_OPTIONS='--max-old-space-size=1536 --max-semi-space-size=8' npm run test:e2e -w @ghostpay/web -- --max-failures=1",
+      "cwd": "repository root",
+      "exit_code": 1,
+      "observation": "Configured webServer typecheck killed137; no Chromium launch or browser assertion.",
+      "phase": "final reviewed runtime after main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-net-transport-rebuild.txt",
+      "log_sha256": "a11f2dadcbe33bdde9f295ac8a58ea0eee634306b3ba94079bb2950d3218f3ff",
+      "raw_log_sha256": "071cdf3c307a110b81373592d16a1e7625e59b0b937e8a364e0c23758365da5e",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=1024 --max-semi-space-size=8' npm run build -w packages/net-transport",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "observation": "Post-main source library build passed.",
+      "phase": "final reviewed runtime after main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-solana-stealth-rebuild.txt",
+      "log_sha256": "aab06c99c6d8c4c4d83afa25bedce64bd4414356f3d802258aa473fa0be676f4",
+      "raw_log_sha256": "3304b908e67aab0e89b9d7edc57051c88318b96f871af3d773c70fa97c82e55d",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=1024 --max-semi-space-size=8' npm run build -w packages/solana-stealth",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "observation": "Post-main source library build passed.",
+      "phase": "final reviewed runtime after main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "log": "scan-tron-adapter-rebuild.txt",
+      "log_sha256": "64900efccc19dd960dc799bca0f5357e65cfdf34122ae1d3082d67d90880a569",
+      "raw_log_sha256": "44253caf5bc58ea89d59f6998f2d715f470180df30c10f8fd6dd2243b7763fdc",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=1024 --max-semi-space-size=8' npm run build -w packages/tron-adapter",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "observation": "Post-main source library build passed.",
+      "phase": "final reviewed runtime after main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "pages-tooling-139.txt",
+      "log_sha256": "93bc065fb608f2b564e21e1b49c9a3d1f21e62b94a871a808e5b12435f29a1ef",
+      "raw_log_sha256": "93bc065fb608f2b564e21e1b49c9a3d1f21e62b94a871a808e5b12435f29a1ef",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH node --test scripts/pages/*.test.mjs",
+      "cwd": "repository root",
+      "exit_code": 0,
+      "observation": "72 passed, 4 suites, no skips; 1770.908816 ms.",
+      "phase": "published feature before latest main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "web-nocov-139.txt",
+      "log_sha256": "aa04ee337ebaad76051f89581e6fc6f6d2c98bd16171f3066366ec8cc815886f",
+      "raw_log_sha256": "cfc40fb41177c30399da41a6ac9ec0a88082e114e5a87304d4ac355dd2b61525",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=768 --max-semi-space-size=8' ../../node_modules/.bin/vitest run --config vitest.nocov.config.ts --maxWorkers=1",
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "observation": "3 files / 3 tests passed; 95.49s. Million-announcement repeated-key spam fixture, crypto microbenchmark and tag-archive fuzz; not a mobile or million-distinct-key throughput claim.",
+      "phase": "published feature before latest main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "pay-control-139.txt",
+      "log_sha256": "8056f2e306fdb0a29b4e0499ecf5886581c0fd7ab4b2e026dc01057529007923",
+      "raw_log_sha256": "f72b057b48be5c96d6a5818da66b09adf98dca72dc96f501dfbbeaf7a153e6f2",
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "observation": "1 passed, 65 filtered/skipped, 12.28s. Isolated diagnostic only; does not establish why the full coverage run failed.",
+      "phase": "published feature before latest main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged.",
+      "command_summary": "Vitest selected the exact named Pay receipt-read/selection case, with coverage disabled and one worker, under Node 22.",
+      "command_note": "The retained log establishes the case result; this diagnostic entry does not reconstruct unretained full shell arguments."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "seller-delete-control-139.txt",
+      "log_sha256": "ae75b299559261faa477c788c63740127d711e25b4ea26566adae3e15295f7c1",
+      "raw_log_sha256": "79173ba0cb053ea3c73b016c894a85c25b14040c42a2ad7240ddda6ad569fe6a",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=768 --max-semi-space-size=8' ../../node_modules/.bin/vitest run src/views/SellerKeys.test.tsx --maxWorkers=1 --coverage=false -t 'supports cancelling or confirming explicit vault deletion'",
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "observation": "1 passed, 38 filtered/skipped, 10.59s. Isolated diagnostic only; does not establish why the full coverage run failed.",
+      "phase": "published feature before latest main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "web-lint-139.txt",
+      "log_sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "raw_log_sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=1536 --max-semi-space-size=8' ../../node_modules/.bin/eslint --config ../../eslint.config.js src e2e",
+      "cwd": "apps/web",
+      "exit_code": 137,
+      "observation": "Process killed, exit 137; no source diagnostic. The shell termination notice appeared in tool output, not the redirected log.",
+      "phase": "published feature before latest main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "pages-artifact-139.txt",
+      "log_sha256": "b248fc7dac619c744ac1173c87eb041552f8e8af66d1c07aa1120bf7f88558e1",
+      "raw_log_sha256": "b248fc7dac619c744ac1173c87eb041552f8e8af66d1c07aa1120bf7f88558e1",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH bash scripts/pages/build-pages.sh /workspace/scratch/f3944b12cd1b/private-scan-pages-139c5cb8",
+      "cwd": "repository root",
+      "exit_code": 1,
+      "observation": "Killed during web build; build-pages: web build failed. No artifact verification pass.",
+      "phase": "published feature before latest main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "chain-adapters-139.txt",
+      "log_sha256": "77d76e4730eba31194618e9dabab6d77b9ddb906e5bbcf3e815506522a863391",
+      "raw_log_sha256": "e3d75ced8934cbc5d2ca5076c72770b562ae98870228f9006233927182ed0ddb",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=768 --max-semi-space-size=8' ../../node_modules/.bin/vitest run --coverage --maxWorkers=1 > /workspace/scratch/f3944b12cd1b/private-scan-chain-adapters.log 2>&1",
+      "cwd": "packages/chain-adapters",
+      "exit_code": 0,
+      "observation": "26 files passed; 551 tests passed, 22 native cases skipped; 147.20s. Coverage statements97.33/branches96.47/functions99.01/lines98.93 percent. ANVIL_BIN, SOLC_BIN and REQUIRE_ANVIL unset; native Anvil/artifacts absent, skips not counted as passes. Existing thresholds unchanged.",
+      "phase": "published feature before latest main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "full-web-coverage-139-incomplete.txt",
+      "log_sha256": "9f648bee4531437b14d37083d597df30c4980ed428b396ba18b8497fa2eae617",
+      "raw_log_sha256": "9f648bee4531437b14d37083d597df30c4980ed428b396ba18b8497fa2eae617",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=1024 --max-semi-space-size=8' ../../node_modules/.bin/vitest run --coverage --maxWorkers=1 > /workspace/scratch/f3944b12cd1b/private-scan-full-web-coverage.log 2>&1",
+      "cwd": "apps/web",
+      "exit_code": null,
+      "observation": "Incomplete: session84359 later returned Unknown process id. Log last written2026-11-19T07:06:15Z,24coverage chunks,no final summary or exit result. Two reported failures: Pay receipt-file selection and SellerKeys explicit vault deletion. Both exact cases pass individually without coverage; no established failure cause or inherited-failure classification. Not a full-web pass.",
+      "phase": "published feature before latest main integration",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "New regression test against pre-fix Scan.tsx from139, after qualified main integration; per-file hashes below.",
+      "log": "app-lock-red.txt",
+      "log_sha256": "578aa958bee22d6afa3812a7577fc3d280c7c28f988460101dbd6f850712c6cd",
+      "raw_log_sha256": "a529e13284c70e918028f1daacb6c5571114a2dfe1b5814b6b85b0556e8a9b94",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=768 --max-semi-space-size=8' ../../node_modules/.bin/vitest run src/views/Scan.privateCheckpoint.test.tsx --maxWorkers=1 --coverage=false -t 'app idle lock'",
+      "cwd": "apps/web in isolated main-integration worktree",
+      "exit_code": 1,
+      "observation": "Three new regressions failed before the fix: two missing vault locks and one still-enabled auto mode. 16 other cases filtered/skipped. 6.96s.",
+      "phase": "post-qualified-main integration app-lock correction",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged.",
+      "source_runtime_sha256": {
+        "apps/web/src/views/Scan.tsx": "fcea8ca14255b81492b8e3919fb14b4ebd7c4fa0a2e1fcbe37b341434e1294e4"
+      },
+      "source_test_sha256": {
+        "apps/web/src/views/Scan.privateCheckpoint.test.tsx": "1ffa317c166875bea82103d7ecbdfa3342a3dc1e2630da504b14a8788df908e3"
+      }
+    },
+    {
+      "source_sha": "pending publication; source_files_sha256 and integration_source_files_sha256 identify files",
+      "log": "app-lock-green.txt",
+      "log_sha256": "ecd14f5ccd5c54a39af3fa0e9dc0c9c876e325bd9f736d22947bbfbb8b0c9203",
+      "raw_log_sha256": "80211151ec3883a3ac2d92056cb2ca019f98252b734fa43894aa8cb7ccecf661",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=768 --max-semi-space-size=8' ../../node_modules/.bin/vitest run src/views/Scan.privateCheckpoint.test.tsx src/views/Scan.autoRescan.test.tsx src/AppShell.idleClock.test.tsx --maxWorkers=1 --coverage=false",
+      "cwd": "apps/web in isolated main-integration worktree",
+      "exit_code": 0,
+      "observation": "34 passed: privateUI19,existingauto5,newmainidleClock10;28.60s. Tests use existing reconstructed dependency tree via integration node_modules symlink, not a clean install.",
+      "phase": "post-qualified-main integration app-lock correction",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "log": "two-case-coverage-control-139.txt",
+      "log_sha256": "f6ce0d834650f7328bcc2ad9b79493ead658886a70cd832f7973094ab5e57d86",
+      "raw_log_sha256": "d9c53256090e511fa471e0cb624248010e9e5715a9ff5e69e0bd4953a33ab282",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=1024 --max-semi-space-size=8' ../../node_modules/.bin/vitest run src/views/Pay.test.tsx src/views/SellerKeys.test.tsx --coverage --maxWorkers=1 -t 'allows the same receipt file after a failed read and preserves a newer selection while the old read finishes|supports cancelling or confirming explicit vault deletion' > /workspace/scratch/f3944b12cd1b/private-scan-two-case-coverage-control.log 2>&1",
+      "cwd": "apps/web in original139 worktree",
+      "exit_code": 1,
+      "test_result": "2 passed,103 filtered/skipped,2 files passed;77.68s",
+      "observation": "Both exact reported failing assertions pass with v8 coverage as well as earlier without coverage. Exit1 is solely the existing global thresholds (90/85/90/90) applied to this diagnostic two-case subset. Coverage threshold failures remain visible, not suppressed. Does not explain the incomplete full-suite failures or qualify full coverage.",
+      "phase": "diagnostic of incomplete published-head coverage run",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    },
+    {
+      "source_sha": "Post-main integration working tree pinned by source_files_sha256 and private-scan-performance-source.json",
+      "log": "private-scan-performance.txt",
+      "log_sha256": "67b46e47db97f43ab6ea10a8b3f1fdefdfb32b192dddf0e77674a826fb265081",
+      "raw_log_sha256": "307c3be361be6fa698c59780f49cd365344e495e8709e43225439b0b4ed1629d",
+      "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=768 --max-semi-space-size=8' ../../node_modules/.bin/vitest run --config vitest.nocov.config.ts src/lib/privateScanPerformance.nocov.test.ts --maxWorkers=1 --reporter=verbose > /workspace/scratch/f3944b12cd1b/private-scan-performance.log 2>&1",
+      "cwd": "apps/web in isolated main-integration worktree",
+      "exit_code": 0,
+      "test_result": "1 file/1 test passed on first and only execution; test9319ms, suite15.87s",
+      "observation": "Deterministic272distinct-key fixture,5payments. Empty journal272announcements2221.43ms; encrypted historical resume80announcements/4replayblocks560.96ms. Both5verifiedmatches,1save,6495-byte envelope,safe cursor4252. Real crypto/fetch validation/receipts with in-memory RPC/CAS; single warm-process shared-container observation, excludes browserIDB/transfers/rendering/network/mobile. No timing-ratio assertion.",
+      "phase": "post-qualified-main integration performance measurement",
+      "archive_note": "Trailing whitespace and terminal blank lines normalized; diagnostic content unchanged."
+    }
+  ],
+  "not_claimed": [
+    "clean local dependency install",
+    "whole-web typecheck/lint",
+    "full web coverage",
+    "full or lean Chromium acceptance",
+    "Pages artifact verification",
+    "external professional security audit",
+    "overall release readiness"
+  ],
+  "runtime_snapshot_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+  "hosted_runs": [
+    {
+      "head_sha": "797f75ac8d91ae8e5872218028365496e67fc7d3",
+      "merge_sha": "827273b4bfaa6869e92cd6234f4fb8edb4ad63c8",
+      "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44472906116/job/135386429191",
+      "result": "failed",
+      "cause": "TS2345 fixture address inferred as string in privateScanStore.test.ts; corrected by satisfies readonly Partial<PrivateScanScope>[]; runtime unchanged",
+      "log": "hosted-first-head-typecheck.txt",
+      "log_sha256": "18de094ab258b57dcd9709a579aeb1eec59e9a9fd97a7f503831710ac03e0207"
+    },
+    {
+      "head_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "merge_sha": "d6dec43fd9e0058efa30fa8776efaa025bb72eb7",
+      "tree_sha": "e6695474a2b69a0bf9df3ee21d3a66640da8b8af",
+      "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44473986198/job/135389985506",
+      "result": "success",
+      "observation": "Beta acceptance: library PASS, CLI 124 checks and 11 fail-closed assertions, 3 real-chain Chromium journeys; required web typecheck/full-build preflight passed. Merge tree independently equals feature-head tree."
+    },
+    {
+      "head_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44473986130/job/135390064618",
+      "result": "success",
+      "observation": "Web build/typecheck, validate/package/verify dist and Chromium smoke passed. This is not the full/lean mocked browser matrix or whole-web lint."
+    },
+    {
+      "head_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+      "run_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44473986160",
+      "result": "success",
+      "observation": "CLI build, typecheck, unit and compiled qualification passed on macOS, Windows and Ubuntu."
+    }
+  ],
+  "previous_integrated_main_sha": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+  "latest_integration": {
+    "main_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+    "main_pr": 242,
+    "feature_parent_sha": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+    "conflict_resolution": "Only ACTIVE_WORK.md conflicted. An identical duplicated beta-log ownership block already present byte-for-byte was retained once; private feature source had no conflicts.",
+    "qualification": "Earlier-head results are not counted as final combined-source gate passes. See PR #248 for the final head and results.",
+    "private_source_files_unchanged_before_lock_fix": 26
+  },
+  "integration_source_files_sha256": {
+    "apps/web/src/AppShell.tsx": "f290b87e11f909b12da7242c43a2ba8bb21fa9706d4aef4160dd2d0238d6ddc0",
+    "apps/web/src/AppShell.idleClock.test.tsx": "f76af0ec03ff75cdda8fbc315a79acb5f314920d4770cb3581c1dcf528236d92",
+    "packages/invoice-schema/src/envelope.ts": "fe9a123e3181605338d0587cc0c9ec0385303e34e784adf60287478f76f1c487",
+    "packages/invoice-schema/src/errors.ts": "fb7837b9dcd9e3e2e31ece185c2e69c29916aa4b414fefccbd70fc6c769ad012",
+    "packages/invoice-schema/src/pinnedSigner.test.ts": "fe7e9ae73450bd7ec92e6c894e161fb46621ff88a3b52f1cfc0b2ba0a14900d1",
+    "packages/ux-core/src/errors.ts": "cf7999b49097d5c084038d207e57b8635ba6cadc85ed7bb4f054a9e5d78ebdf2",
+    "packages/ux-core/src/errors.test.ts": "fa291b9f474a3d602d0cec68d171b26b7f9e7c63bafd0f9dea4803b560493dbe"
+  },
+  "runtime_snapshot_note": "The two Scan files below were subsequently changed by the reviewed app-lock fix; their current hashes and focused evidence pin that delta before publication.",
+  "performance": {
+    "provenance": "private-scan-performance-source.json",
+    "fixture_source_sha256": "fb97ebd968a2f5c837270ce8bb4d203f08c858000f7e77664ca968b3847c9b55",
+    "metrics": [
+      {
+        "phase": "cold",
+        "announcements": 272,
+        "matches": 5,
+        "replayBlocks": 0,
+        "workerBatches": 1,
+        "checkpointCommits": 1,
+        "rpcCalls": {
+          "eth_blockNumber": 6,
+          "eth_getBlockByNumber": 38,
+          "eth_getLogs": 5,
+          "eth_getTransactionReceipt": 5,
+          "eth_getTransactionByHash": 5
+        },
+        "envelopeBytes": 6495,
+        "milliseconds": {
+          "openAndLoad": 0.44,
+          "scanIncludingSaves": 2220.99,
+          "encryptedSaves": 2.78,
+          "total": 2221.43
+        }
+      },
+      {
+        "phase": "historical-resume",
+        "announcements": 80,
+        "matches": 5,
+        "replayBlocks": 4,
+        "workerBatches": 5,
+        "checkpointCommits": 1,
+        "rpcCalls": {
+          "eth_blockNumber": 10,
+          "eth_getBlockByNumber": 23,
+          "eth_getLogs": 5,
+          "eth_getTransactionReceipt": 5,
+          "eth_getTransactionByHash": 5
+        },
+        "envelopeBytes": 6495,
+        "milliseconds": {
+          "openAndLoad": 2.27,
+          "scanIncludingSaves": 558.62,
+          "encryptedSaves": 9.72,
+          "total": 560.96
+        }
+      }
+    ],
+    "limits": "Once per phase, shared-container observation; real crypto and memory RPC/CAS; not browser/mobile or real-network throughput."
+  }
+}

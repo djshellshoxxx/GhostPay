@@ -1,0 +1,72 @@
+{
+  "recorded_utc": "2026-11-19T07:24:37.103079+00:00",
+  "head": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+  "node": "v22.23.4",
+  "cwd": "/workspace/scratch/f3944b12cd1b/GhostPay-main-integration/apps/web",
+  "command": "PATH=/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin:$PATH NODE_OPTIONS='--max-old-space-size=768 --max-semi-space-size=8' ../../node_modules/.bin/vitest run --config vitest.nocov.config.ts src/lib/privateScanPerformance.nocov.test.ts --maxWorkers=1 --reporter=verbose > /workspace/scratch/f3944b12cd1b/private-scan-performance.log 2>&1",
+  "source_files_sha256": {
+    "apps/web/src/lib/privateScanPerformance.nocov.test.ts": "fb97ebd968a2f5c837270ce8bb4d203f08c858000f7e77664ca968b3847c9b55",
+    "apps/web/src/lib/privateScanStore.ts": "82a9ac42f6b7588a0dc1d05094dc11ae8971d29b24e2a09de50f832b10d45e88",
+    "apps/web/src/lib/scanClient.ts": "d61c4cfe89e915135288df0398ff3cdb6bd85a7282c9136f1546f5d39ddf9546",
+    "apps/web/src/lib/scannerCore.ts": "64c7eb07139c4a5440289aee43596efca337074246fde80dc71e7c85c9920eb2",
+    "apps/web/src/test/inlineWorker.ts": "e8ea723445d5f1b9f718ad9f1a865cb69321240a7edb3f4968e65b679090cb59",
+    "apps/web/src/test/mockRpc.ts": "36ed182a5e1a70fd196674ef01d4f6cbc7e245ef3ca99a3fbb13a5927756bdad",
+    "apps/web/vitest.nocov.config.ts": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07",
+    "packages/chain-adapters/src/logs.ts": "18c1b927aa3911581f87db1b8ba9587bdbaa28c8ccf629f9352ccda3b7e9c1f4",
+    "packages/chain-adapters/src/config/chains.ts": "d9f24f2be8a172e1e35bde28fe3e3cf588939889782bf06472cf7c7f2492a3b7"
+  },
+  "scope": "Once per phase, shared-container observation; real crypto and memory RPC/CAS; not browser/mobile or real-network throughput.",
+  "exit_code": 0,
+  "head_after": "139c5cb8e086ec4b13d08e10409dfb0765b53bcf",
+  "log_sha256": "307c3be361be6fa698c59780f49cd365344e495e8709e43225439b0b4ed1629d",
+  "source_hashes_unchanged": true,
+  "metrics": [
+    {
+      "phase": "cold",
+      "announcements": 272,
+      "matches": 5,
+      "replayBlocks": 0,
+      "workerBatches": 1,
+      "checkpointCommits": 1,
+      "rpcCalls": {
+        "eth_blockNumber": 6,
+        "eth_getBlockByNumber": 38,
+        "eth_getLogs": 5,
+        "eth_getTransactionReceipt": 5,
+        "eth_getTransactionByHash": 5
+      },
+      "envelopeBytes": 6495,
+      "milliseconds": {
+        "openAndLoad": 0.44,
+        "scanIncludingSaves": 2220.99,
+        "encryptedSaves": 2.78,
+        "total": 2221.43
+      }
+    },
+    {
+      "phase": "historical-resume",
+      "announcements": 80,
+      "matches": 5,
+      "replayBlocks": 4,
+      "workerBatches": 5,
+      "checkpointCommits": 1,
+      "rpcCalls": {
+        "eth_blockNumber": 10,
+        "eth_getBlockByNumber": 23,
+        "eth_getLogs": 5,
+        "eth_getTransactionReceipt": 5,
+        "eth_getTransactionByHash": 5
+      },
+      "envelopeBytes": 6495,
+      "milliseconds": {
+        "openAndLoad": 2.27,
+        "scanIncludingSaves": 558.62,
+        "encryptedSaves": 9.72,
+        "total": 560.96
+      }
+    }
+  ],
+  "fixture_lines": 260,
+  "fixture_whitespace_ok": true,
+  "source_note": "HEAD is the pre-integration parent. The per-file hashes pin the measured working tree after qualified-main integration and the app-lock correction; final published commit is linked by PR #248."
+}

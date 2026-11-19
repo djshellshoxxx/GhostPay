@@ -1,3 +1,25 @@
+# Private seller scan completion — 2026-11-19
+
+Owner: ChatGPT coordinator with independent scan reviewer, encrypted-storage worker and scan UI worker.
+Branch: `chatgpt/ghostpay-private-scan-completion-20261119`.
+Base: PR #235 `a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1`; main observed
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. Updated main
+`58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (#241 transport isolation and #237 log retention)
+was merged into this feature branch at `684eec18` before combined qualification.
+Owned paths: EVM `scanClient`, new `privateScanStore` and `privateScanLifecycle`, `views/Scan`,
+scan services, focused scanner/storage/lifecycle/browser tests, minimal seller-vault deletion integration,
+related locale strings and scoped user/developer/handoff documentation. The scanner's optional per-dispatch guard
+in `scanPrivacy.ts` is included; PR #241 transport implementations remain separate. Storage worker owns
+`privateScanStore.ts` and its tests; UI worker owns Scan/services and view/browser tests; coordinator owns
+engine/lifecycle/integration. Independent reviewer owns only
+`docs/handoffs/private-scan-independent-review.md` and otherwise remains read-only.
+Acceptance: atomic encrypted discovery+cursor persistence; seller/network/config/session isolation;
+safe interruption, recovery, cross-tab conflicts, deletion and reorg handling; bounded scan work;
+failing-first regression evidence; full/lean browser qualification and unchanged security gates.
+PR #238 is a read-only consolidation input; #241 transport modules, Spec 18 formats, contracts,
+dependency inputs, automation branches and unrelated work stay with their existing owners.
+No merge into main, deployment or release is authorized.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.

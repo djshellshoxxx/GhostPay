@@ -1,0 +1,184 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+      Coverage enabled with v8
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  2 passed (2)
+      Tests  2 passed | 103 skipped (105)
+   Start at  23:20:38
+   Duration  77.68s (tests 55%, transform 22%, import 14%, environment 9%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   13.17 |     8.15 |   11.59 |   15.18 |
+ src               |   48.59 |    29.09 |   44.82 |    51.9 |
+  App.tsx          |     100 |       50 |     100 |     100 | 18-23
+  AppLean.tsx      |       0 |      100 |       0 |       0 | 6
+  AppShell.tsx     |   66.24 |    46.87 |   62.16 |   69.92 | ...34,252,273-290
+  state.tsx        |    11.9 |     1.53 |    5.55 |   14.28 | 74-186,190-212
+ src/components    |   21.34 |    15.22 |   19.32 |   23.21 |
+  BackupPanel.tsx  |   61.29 |    34.69 |   42.85 |   69.23 | 31-32,65-67,83-87
+  ...aImporter.tsx |   27.27 |    12.01 |   18.91 |    32.4 | ...22-328,338-359
+  Common.tsx       |   43.75 |    55.26 |      50 |   42.22 | 62-72,88-123
+  ContextHelp.tsx  |   18.91 |       25 |   13.33 |   20.63 | 36-79,88-113
+  Disclosure.tsx   |   86.79 |    66.66 |   78.94 |   88.88 | 26,93-108
+  ...rBoundary.tsx |   30.76 |     37.5 |      50 |   27.27 | 28,35-37,42-49
+  ...ntSummary.tsx |   33.33 |        0 |       0 |   33.33 | 16-17
+  ...estBanner.tsx |      75 |       50 |     100 |   66.66 | 9
+  ...ileNotice.tsx |       0 |        0 |       0 |       0 | 9-10
+  ...filePanel.tsx |    33.8 |       20 |   34.28 |   37.14 | ...18-127,154-172
+  ...ateIssuer.tsx |       0 |        0 |       0 |       0 | 13-83
+  ...RequestQr.tsx |       0 |        0 |       0 |       0 | 40-168
+  ...tableBill.tsx |      28 |    12.12 |   22.22 |      30 | ...21-123,131-132
+  QrFrame.tsx      |   44.07 |    35.83 |    28.2 |   47.65 | ...61-271,298-347
+  QrView.tsx       |   66.66 |       50 |   66.66 |   72.72 | 19-20,38
+  ReceiptPanel.tsx |    0.47 |        0 |       0 |     0.6 | 30-311
+  ...ionLedger.tsx |    0.34 |        0 |       0 |    0.37 | 34-48,65-786
+  RichText.tsx     |     100 |       70 |     100 |     100 | 12-13,23
+  SecretBackup.tsx |     5.3 |        0 |       0 |    6.12 | 25-63,71-239
+  TagArchive.tsx   |   19.49 |    12.02 |   19.71 |   22.22 | ...15-418,421-462
+  ...tAttempts.tsx |   65.21 |    41.66 |   66.66 |   73.33 | 22-30
+ src/features/btc  |    2.48 |        0 |       0 |    3.42 |
+  BtcView.tsx      |       0 |        0 |       0 |       0 | 42-894
+  esplora.ts       |    2.37 |        0 |       0 |    3.05 | 49-567
+  headers.ts       |    5.15 |        0 |       0 |    6.43 | ...67-251,282-475
+  inclusion.ts     |       0 |        0 |       0 |       0 | 6-14
+  network.ts       |   28.57 |        0 |       0 |      40 | 60-62
+  oracleBridge.ts  |       0 |        0 |       0 |       0 | 10-55
+  oracleSource.ts  |    1.38 |        0 |       0 |    1.85 | 16-102
+  scan.ts          |     1.8 |        0 |       0 |    2.27 | 79-197
+  scan.worker.ts   |       0 |      100 |       0 |       0 | 4-9
+  scanStore.ts     |    4.04 |        0 |       0 |    6.45 | 22-103
+  ...rkerClient.ts |    0.84 |        0 |       0 |    1.66 | 19,23-102
+  ...erMessages.ts |   22.22 |        0 |       0 |   33.33 | 36-50
+  ...erProtocol.ts |       0 |        0 |       0 |       0 | 15-145
+  ...rkerSource.ts |       0 |        0 |       0 |       0 | 7-77
+  sweep.ts         |    6.45 |        0 |       0 |       8 | ...30-170,192-198
+  wallet.ts        |    4.54 |        0 |       0 |    5.88 | 26-55
+ ...eatures/policy |    2.22 |      0.1 |    0.41 |     2.9 |
+  PolicyCreate.tsx |    1.23 |        0 |       0 |    1.56 | 24-157
+  PolicyPay.tsx    |    1.49 |        0 |       0 |    1.85 | 25-124
+  ...cyReceive.tsx |       0 |        0 |       0 |       0 | 21-304
+  PolicyView.tsx   |       0 |        0 |       0 |       0 | 28-143
+  chain.ts         |    2.38 |        0 |       0 |    2.98 | 40-196
+  create.ts        |    7.14 |        0 |       0 |      10 | 46-77
+  ...ntEvidence.ts |       8 |        0 |       0 |      10 | 36-72
+  guard.ts         |    1.58 |        0 |       0 |    1.96 | 20-114
+  pay.ts           |       0 |        0 |       0 |       0 | 47-71
+  ...ntEvidence.ts |       0 |        0 |       0 |       0 | 9-203
+  policyTime.ts    |      25 |        0 |       0 |   33.33 | 5-6
+  scan2.ts         |       0 |        0 |       0 |       0 | 29-98
+  send.ts          |     5.5 |        0 |       0 |    7.31 | 34,46-138,147-210
+  withdraw.ts      |    1.81 |        0 |       0 |    2.22 | 51-156
+  ...walJournal.ts |       0 |        0 |       0 |       0 | 11-58
+  ...rawalState.ts |     3.5 |        0 |       0 |    5.22 | 30-226
+ ...tures/registry |       0 |        0 |       0 |       0 |
+  RegistryView.tsx |       0 |        0 |       0 |       0 | 20-333
+ ...eatures/solana |     2.8 |        0 |       0 |    3.41 |
+  SolanaView.tsx   |       0 |        0 |       0 |       0 | 28-457
+  network.ts       |   44.44 |        0 |       0 |   57.14 | 59-61
+  rpc.ts           |    7.69 |        0 |       0 |    9.52 | 11-12,20-51,83-88
+  scan.ts          |    3.12 |        0 |       0 |       4 | 48-97
+  sweep.ts         |    6.06 |        0 |       0 |    6.66 | 38-102
+  wallet.ts        |    4.76 |        0 |       0 |    6.25 | 26-50
+ src/features/tron |    2.63 |        0 |       0 |    3.16 |
+  TronView.tsx     |       0 |        0 |       0 |       0 | 27-454
+  network.ts       |   44.44 |        0 |       0 |   57.14 | 31-33
+  rpc.ts           |    4.54 |        0 |       0 |    5.71 | ...,33-92,115-120
+  scan.ts          |     3.7 |        0 |       0 |    4.16 | 45-84
+  sweep.ts         |    8.33 |        0 |       0 |    8.82 | 39-41,55-127
+  wallet.ts        |       0 |        0 |       0 |       0 | 25-84
+ src/i18n          |   25.28 |    15.08 |   18.75 |   28.37 |
+  ...agePicker.tsx |       0 |        0 |       0 |       0 | 12-40
+  Trans.tsx        |       0 |        0 |       0 |       0 | 16-31
+  catalog.ts       |   21.21 |     4.16 |       0 |   27.27 | 36-47,51-67
+  context.tsx      |    2.98 |        0 |    5.88 |    3.44 | 40-134,144
+  languages.ts     |   13.23 |        0 |       0 |   16.36 | 54,67-147
+  message.ts       |   29.36 |    21.05 |   28.26 |   32.32 | ...86-461,477-496
+  storage.ts       |    8.33 |        0 |       0 |   11.11 | 12-44
+  translator.ts    |   59.57 |    46.66 |   53.84 |   63.41 | ...00-105,112-115
+ src/lib           |   12.38 |     7.23 |   13.69 |   14.36 |
+  appLock.ts       |   57.14 |      100 |   66.66 |   57.14 | 23-25
+  buildProfile.ts  |      60 |    22.22 |   33.33 |      60 | 26-31
+  ...dManifests.ts |     100 |       50 |     100 |     100 | 10
+  deployment.ts    |       0 |        0 |       0 |       0 | 21-36
+  displayText.ts   |   72.72 |       40 |      50 |   77.77 | 16,33
+  ...mptJournal.ts |    19.4 |     6.55 |   21.42 |    23.8 | 24,33-36,49-87
+  embedHost.ts     |    6.66 |     6.45 |   10.52 |    5.95 | 36,44-134,145-186
+  embedProtocol.ts |   13.95 |        0 |       0 |   18.75 | 34-91
+  errors.ts        |   57.14 |       50 |   71.42 |   68.18 | 27-29,77-79,91
+  format.ts        |   71.79 |    56.75 |    87.5 |      80 | 51-57
+  fragment.ts      |   33.33 |       50 |   66.66 |    37.5 | 30-34
+  invoiceCreate.ts |   61.42 |    53.57 |      70 |   81.63 | ...07-108,127-128
+  jitter.ts        |    2.08 |        0 |       0 |    2.56 | 10-23,43-106
+  keyVault.ts      |   22.31 |    20.58 |   22.22 |   27.56 | ...88,307-360,379
+  manifest.ts      |   14.28 |     8.33 |      40 |   17.07 | 39-99,113,124
+  ...ntIdentity.ts |    2.98 |        0 |       0 |       4 | 8-90
+  ...ntTemplate.ts |       0 |        0 |       0 |       0 | 18-87
+  opStackFee.ts    |   13.04 |        0 |       0 |      15 | 27-80
+  pay.ts           |   22.85 |    16.08 |   10.86 |   26.73 | ...09-502,518-604
+  payExec.ts       |       0 |        0 |       0 |       0 | 63-342
+  ...nLifecycle.ts |    18.3 |    15.15 |   16.66 |   21.15 | ...33-42,55,67-98
+  ...eScanStore.ts |    5.07 |        0 |       0 |    6.87 | 51-363
+  qr.ts            |   78.04 |    66.66 |      80 |    86.2 | 31,41,66-67
+  qrClassify.ts    |    8.58 |        0 |     2.7 |   11.58 | 163,168-447
+  qrContrast.ts    |       0 |        0 |       0 |       0 | 6-77
+  qrKinds.ts       |      60 |        5 |      60 |    64.7 | 233-236,256-257
+  qrMultipart.ts   |       0 |        0 |       0 |       0 | 11-30
+  qrPayload.ts     |       0 |      100 |       0 |       0 | 6-7
+  receipts.ts      |      30 |     1.88 |   52.94 |   30.76 | 61,76-107
+  ...tionLedger.ts |   11.11 |        0 |       0 |   15.62 | 19-81
+  ...ationVault.ts |    2.45 |        0 |       0 |    2.96 | 14-222,231-245
+  registry.ts      |       0 |      100 |       0 |       0 | 11-12
+  relayerClient.ts |    4.87 |        0 |       0 |     5.4 | 46-70,79-195
+  release.ts       |    6.25 |     6.06 |      10 |    7.54 | 8-99
+  releaseKeys.ts   |     100 |       50 |     100 |     100 | 9
+  sanitize.ts      |    12.5 |        0 |       0 |   14.28 | 18-24
+  scanClient.ts    |    0.57 |        0 |       0 |    0.75 | ...60-783,787-827
+  ...CursorSlot.ts |   15.38 |        0 |       0 |   18.75 | ...8,51-81,94-103
+  scanMatches.ts   |       0 |        0 |       0 |       0 | 9-46
+  scanPrivacy.ts   |    2.65 |        0 |       0 |    3.28 | ...13-552,561-675
+  scanSpam.ts      |   14.28 |        0 |       0 |   16.66 | ...88-193,208-211
+  scannerCore.ts   |    5.55 |        0 |       0 |    6.55 | 46-47,63-160
+  sellerPairing.ts |   72.72 |      100 |      75 |   66.66 | 13,20
+  services.ts      |      80 |       50 |     100 |     100 | 30
+  session.ts       |   42.28 |    41.88 |   58.33 |   46.93 | ...23-425,453-474
+  settings.ts      |   53.22 |    53.57 |   55.55 |   56.89 | ...12,133-146,154
+  ...gsExchange.ts |    5.15 |        0 |       0 |    7.46 | ...11-180,195-217
+  sweep.ts         |    1.92 |        0 |       0 |    2.27 | ...38-683,731-743
+  ...mptJournal.ts |    9.09 |        0 |       0 |   13.92 | 35-42,52-167
+  tagArchive.ts    |    4.76 |        0 |       0 |    5.88 | 29-63
+  tags.ts          |    3.03 |        0 |    1.96 |    3.57 | ...41-503,513-559
+  ...ionOutcome.ts |    8.33 |        0 |       0 |    9.09 | 37-47,62-97
+  txGuard.ts       |   13.51 |        0 |       0 |   16.12 | 40-82,98-201
+  wallet.ts        |    5.24 |     0.43 |    3.12 |     6.6 | ...86-395,424-503
+ src/views         |   18.46 |    14.06 |    13.3 |   21.36 |
+  About.tsx        |       0 |        0 |       0 |       0 | 6-19
+  ...teInvoice.tsx |    2.09 |        0 |       0 |    2.75 | 24-25,39-395
+  Home.tsx         |      56 |       50 |      30 |   60.86 | 23-32,43-57,70
+  Pay.tsx          |   33.13 |    27.43 |   25.58 |   37.46 | ...1037,1155-1395
+  Scan.tsx         |    0.75 |        0 |       0 |    0.95 | ...68-107,120-969
+  SellerKeys.tsx   |   37.69 |    35.01 |   37.86 |   44.67 | ...89-591,634-646
+  ...erPairing.tsx |   41.33 |     30.3 |   36.36 |   59.09 | ...55,58-67,85,93
+  Settings.tsx     |    1.25 |        0 |       0 |     1.9 | 22-172,198-493
+  Sweep.tsx        |     0.4 |        0 |       0 |    0.47 | 32-387
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 13.17% ( 1946/14773 )
+Branches     : 8.15% ( 885/10849 )
+Functions    : 11.59% ( 336/2898 )
+Lines        : 15.18% ( 1737/11437 )
+================================================================================
+ERROR: Coverage for lines (15.18%) does not meet global threshold (90%)
+ERROR: Coverage for functions (11.59%) does not meet global threshold (90%)
+ERROR: Coverage for statements (13.17%) does not meet global threshold (90%)
+ERROR: Coverage for branches (8.15%) does not meet global threshold (85%)

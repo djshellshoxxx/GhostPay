@@ -1,0 +1,26 @@
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+
+ ❯ src/lib/scanClient.test.ts (99 tests | 1 failed | 98 skipped) 240ms
+   ❯ durable private scan discovery (8)
+     × gives incremental pages a fresh open-lane budget after bounded history replay 226ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scanClient.test.ts > durable private scan discovery > gives incremental pages a fresh open-lane budget after bounded history replay
+AssertionError: expected 50000 to be greater than 50000
+ ❯ src/lib/scanClient.test.ts:177:37
+    175|       replayBlocks: [100n, 200n], openLaneBudget: 2, onCheckpoint,
+    176|     });
+    177|     expect(result.cursor.nextBlock).toBeGreaterThan(50_000n);
+       |                                     ^
+    178|     expect(onCheckpoint).toHaveBeenCalled();
+    179|     expect(result.matches).toHaveLength(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 98 skipped (99)
+   Start at  22:08:41
+   Duration  5.24s (import 65%, transform 30%, tests 5%)
