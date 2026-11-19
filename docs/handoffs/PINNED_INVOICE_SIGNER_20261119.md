@@ -13,7 +13,10 @@ The initial published implementation is `8ecd46d67445e20ed35189ee0eec00798ab0931
 locally tested commit `0b43637f44638739d84ba31652aba6ac391ab166`. A subsequent test-only correction removes four
 unsupported Testing Library `exact` options and explicitly awaits the mock-completion microtask in four async `act`
 callbacks. Literal accessible-name equality, assertions and runtime source remain unchanged. This document and the
-expanded persistence specification are documentation-only additions.
+expanded persistence specification are documentation-only additions. The later integration followup keeps signer
+status announcements polite without duplicating the existing rejection alert, and separates browser expiry fixtures
+from the independently enforced idle-lock deadline. Cryptographic verification and payment-authority rules are
+unchanged by that followup.
 
 The PR description is the final qualification ledger: it records the exact later source commit, hosted run/job links,
 commands, tool versions, results and outstanding gates after these documentation files are committed. A source review
@@ -33,7 +36,7 @@ or an authored browser test is not counted as an executed pass. Earlier evidence
 | Late UI mutation completion | Newly identified during independent review | Operation tokens prevent old writes from clearing newer editors or restoring obsolete selections |
 | Tamper coverage across supported formats | Implemented but incomplete for the requested cross-format field matrix | Added 53 protocol status/tamper regressions with real signatures and independently constructed encrypted containers |
 | Offline inspection | Existing local parser; UI inspection was coupled to other view state | Signer panel works while deployment information is pending; browser acceptance observes HTTP, WebSocket and wallet access |
-| Browser acceptance | Missing for the named workflow | Added seven cases exercised by existing full/lean Chromium configurations; actual results belong to the PR ledger |
+| Browser acceptance | Missing for the named workflow | Added eight cases exercised by existing full/lean Chromium configurations; actual results belong to the PR ledger |
 | Documentation | Shared parser policy documented, named trust workflow absent | Added user guide, payload/trust/persistence specification and independent security review |
 | Repository release qualification | Existing integration failures | Preserved all gates; classify inherited and introduced failures separately in the PR ledger |
 
@@ -74,6 +77,8 @@ boundaries; local pins are not tamper-proof against an actor controlling that or
 | Published `8ecd46d…` with only the four unsupported test options removed | Pay signer file, Node 22.23.4 / Vitest 5.1.0 | 11 passed; source review confirmed name matching and assertions unchanged |
 | Published `8ecd46d…` plus the two test-only corrections, subsequently committed locally as `324b0f49` | Same four feature files; Node 22.23.4 / Vitest 5.1.0, 768 MiB heap | 84 passed in 54.24 seconds; coverage disabled; no runtime delta |
 | Hosted merge `16b4746df4b38d22cd19eff9af80676011d45e97`, complete tree identical to `8ecd46d…` | Full invoice-schema suite with coverage; Node 22.23.4, npm 10.9.9, Vitest 5.1.0 | 14 files / 784 tests passed; 98.02% statements, 97.54% branches, 100% functions, 99.28% lines; original thresholds retained |
+| Hosted merge `9d1e363241f855424179cfca763305cfe978d206`, complete tree identical to `d3a2fbfe…` | Full Chromium suite; Playwright 1.65.1 | All seven original signer cases passed; broader suite 83 passed, 8 failed, 1 existing profile skip; introduced integration failures described below, not hidden |
+| Local `d7937fe5ac16a1ea4f57abee8e0d3416b05bbf35`; all four executed feature files match that commit, with later browser/docs edits outside the test inputs | Four feature files after the live-announcement correction; Node 22.23.4 / Vitest 5.1.0, 768 MiB heap | 86/86 passed in 34.44 seconds; zero failures; targeted run without coverage |
 
 The 84-test command, from `apps/web`, was:
 
@@ -125,6 +130,36 @@ mutation cancellation, Unicode names, unmount and cross-tab notifications. Brows
 confirmation, selected-seller mismatch, offline inspection, failure privacy, passphrase verification and keyboard/mobile
 use.
 
+### Integration followup: live announcements and clock isolation
+
+Hosted testing of `d3a2fbfe54a933173296699b68d7a0b482df68aa` passed the Pages build/site verification and the full
+repository build/guard/audit job. Its Pages Anvil journey passed 15 cases and failed the expiry-at-send assertion.
+Source review identified that the fixture jumped wall time by more than an hour after mounting. The send interaction
+therefore crossed the existing 15-minute idle deadline, and Pay's new required idle-lock handler cleared the verified
+invoice before the expected expiry-specific error. This was not evidence that an expired payment reached a wallet.
+
+The corrected Pages fixture mounts a separate payer context at invoice expiry minus 60 seconds, then advances to
+expiry plus 30 seconds before Send. The equivalent Core journey uses its already separate payer context. All existing
+expiry, wallet, nonce, RPC and on-chain assertions are retained. A separate eighth signer browser case crosses the
+actual idle deadline while the invoice remains unexpired, proves the no-seller-session branch, asserts trust/payment
+controls are cleared and no wallet calls occurred, and reopens the invoice for fresh verification. No idle timeout or
+production guard is disabled. An independent reviewer checked the fixture changes; their executed outcome must be
+read from the final PR ledger.
+
+The initial hosted full web log also exposed four existing Pay tests failing because the new negative signer status
+used an assertive `alert` inside its already polite live status, alongside Pay's existing detailed rejection alert.
+Two new component regressions first failed on that nested alert. The fix changes only the status Notice's negative
+presentation to a warning inside the polite status region; explicit pin-mutation failures and the existing detailed
+rejection remain alerts. All signer/payment authority checks are unchanged. The complete component file then passed
+14 tests, and four unchanged existing Pay rejection/final-send-expiry tests passed. Neither assertion nor timeout was
+relaxed. The independent review records this as PIN-06.
+
+These followup runs used Node 22.23.4 and Vitest 5.1.0: component 14/14 in 10.52 seconds, targeted Pay 4/4 in
+27.78 seconds (62 unrelated cases not selected). A first isolated cold-start expiry run failed while waiting for
+Continue before reaching the expiry assertion; a duplicate full Pay investigation run was interrupted with exit 130.
+Those attempts are not reported as passes. Final full-suite qualification remains the hosted check on the final
+published source.
+
 ## Changed-file map
 
 | Area | Files |
@@ -136,7 +171,7 @@ use.
 | Status classification | `apps/web/src/lib/invoiceVerification.ts`, matching test |
 | Inspection controls | `apps/web/src/components/InvoiceSignerVerification.tsx`, matching test |
 | Pay lifecycle and authority | `apps/web/src/views/Pay.tsx`, `apps/web/src/views/Pay.signer.test.tsx` |
-| Browser acceptance | `apps/web/e2e/invoice-signer.spec.ts` |
+| Browser acceptance | `apps/web/e2e/invoice-signer.spec.ts`; expiry-fixture corrections in `core-journey.spec.ts` and `pages-devnet.spec.ts` |
 | Localization | `apps/web/locales/{en,es,ja,ar}.json`, `apps/web/src/i18n/securityKeys.ts` |
 | Documentation | `docs/user/invoice-signer-pins.md`, `docs/specs/INVOICE_SIGNER_VERIFICATION.md`, this handoff, independent review, `docs/ai/ACTIVE_WORK.md`, invoice-schema `README.md` / `DEVIATIONS.md` |
 
