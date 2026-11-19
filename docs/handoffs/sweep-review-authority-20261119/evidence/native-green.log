@@ -1,0 +1,12 @@
+
+ RUN  v5.1.0 /tmp/ghostpay-security-246ff268d20d/apps/web
+
+
+ Test Files  3 passed (3)
+      Tests  131 passed (131)
+   Start at  03:26:30
+   Duration  14.62s (import 35%, tests 34%, transform 31%)
+
+    Isolate  3 workers spawned · ~486ms startup each (spawn + environment, per file)
+             at least ~972ms faster with isolate: false — reuses workers across files instead of one per file
+

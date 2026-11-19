@@ -1,7 +1,7 @@
 import { eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, signDigest, signPermit, signSweep, type Address } from '@ghostpay/chain-adapters';
 import { deriveStealthPayment, deriveStealthSecret, type PublicAnnouncement } from '@ghostpay/core-crypto';
 import { recoverTransactionAddress } from 'viem';
-import { encodeFunctionResult, keccak256 } from 'viem/utils';
+import { encodeFunctionResult, keccak256, parseTransaction } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeManifest } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
@@ -176,5 +176,68 @@ describe('Sweep helper review authority', () => {
     await expect(relayedSweep(h.input)).resolves.toBe(HASH);
     expect(vi.mocked(signSweep).mock.calls.length).toBe(1); expect(vi.mocked(signPermit).mock.calls.length).toBe(1);
     expect(h.handoff).toHaveBeenCalledTimes(1); expect(h.fetchFn).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('native sweep reviewed balance', () => {
+  it.each([BALANCE + 1n, BALANCE - 1n])('refuses a native balance changed to %s before signing or creating an attempt', async (freshBalance) => {
+    const h = directInput();
+    const base = h.input.rpc;
+    const input = { ...h.input, rpc: { ...base, request: (method: string, params: readonly unknown[]) =>
+      method === 'eth_getBalance' ? Promise.resolve(`0x${freshBalance.toString(16)}`) : base.request(method, params) } };
+    await expect(directSweep(input)).rejects.toThrow('Your RPC returned an unexpected balance');
+    expect(vi.mocked(signDigest).mock.calls.length).toBe(0); expect(h.handoff).not.toHaveBeenCalled();
+    expect(base.calls.map((call) => call.method)).not.toContain('eth_estimateGas');
+    expect(base.calls.map((call) => call.method)).not.toContain('eth_sendRawTransaction');
+    const secret = vi.mocked(deriveStealthSecret).mock.results[0]?.value as Uint8Array;
+    expect(Array.from(secret).every((byte) => byte === 0)).toBe(true);
+  });
+
+  it('refuses a changed balance returned by a pending native read with an otherwise current review', async () => {
+    const h = directInput();
+    const base = h.input.rpc;
+    let answer!: (balance: string) => void;
+    let reached!: () => void;
+    const started = new Promise<void>((resolve) => { reached = resolve; });
+    const input = { ...h.input, rpc: { ...base, request: (method: string, params: readonly unknown[]) => {
+      if (method !== 'eth_getBalance') return base.request(method, params);
+      reached();
+      return new Promise<string>((resolve) => { answer = resolve; });
+    } } };
+    const pending = directSweep(input);
+    const refused = expect(pending).rejects.toThrow('Your RPC returned an unexpected balance');
+    await started;
+    answer(`0x${(BALANCE + 10n ** 15n).toString(16)}`);
+    await refused;
+    expect(vi.mocked(signDigest).mock.calls.length).toBe(0); expect(h.handoff).not.toHaveBeenCalled();
+    expect(base.calls.map((call) => call.method)).not.toContain('eth_sendRawTransaction');
+  });
+
+  it('applies the same balance binding to a same-nonce replacement', async () => {
+    const h = directInput();
+    const base = h.input.rpc;
+    const input = { ...h.input, replaceNonce: 7, rpc: { ...base, request: (method: string, params: readonly unknown[]) =>
+      method === 'eth_getBalance' ? Promise.resolve(`0x${(BALANCE + 1n).toString(16)}`) : base.request(method, params) } };
+    await expect(directSweep(input)).rejects.toThrow('Your RPC returned an unexpected balance');
+    expect(vi.mocked(signDigest).mock.calls.length).toBe(0); expect(h.handoff).not.toHaveBeenCalled();
+  });
+
+  it('signs only the reviewed native balance minus fees even if more funds arrive after the preflight read', async () => {
+    let chainBalance = BALANCE;
+    const h = directInput((method) => { if (method === 'eth_call') chainBalance += 10n ** 15n; });
+    const base = h.input.rpc;
+    let balanceReads = 0;
+    let raw: `0x${string}` | undefined;
+    const input = { ...h.input, rpc: { ...base, request: (method: string, params: readonly unknown[]) => {
+      if (method === 'eth_getBalance') { balanceReads++; return Promise.resolve(`0x${chainBalance.toString(16)}`); }
+      if (method === 'eth_sendRawTransaction') raw = params[0] as `0x${string}`;
+      return base.request(method, params);
+    } } };
+    const result = await directSweep(input);
+    const maximumGas = 21_000n * 2_000_000_000n;
+    expect(chainBalance).toBeGreaterThan(BALANCE); expect(balanceReads).toBe(1);
+    expect(parseTransaction(raw!).value).toBe(BALANCE - maximumGas);
+    expect(result.sent).toBe(BALANCE - maximumGas); expect(result.maxGasCost).toBe(maximumGas);
+    expect(await recoverTransactionAddress({ serializedTransaction: raw! })).toBe(target.owner);
   });
 });

@@ -50,5 +50,44 @@
     "verdict": "No introduced source blocker in bounded helper delta",
     "independent_tests": "14 passed, zero skipped",
     "component_binding_reviewed": "04ded6b5"
+  },
+  "native_balance_followup": {
+    "regression_commit": "0004bc9d",
+    "implementation_commit": "3f6fcb845320a6d898e996d4a11d6fa22816b671",
+    "runtime_blob": "6d14435b315f38646c30d6406ae358a73210d715",
+    "review_tests_blob": "8d42f4cdbda43274f10f7d95ecc4b7ab823f48c8",
+    "existing_tests_blob": "c391e4aca34e7125383e04bb32d26f1c1b55bd4d",
+    "checks": [
+      {
+        "name": "red",
+        "exit_code": 1,
+        "result": "Native selected cases: 4 failed / 1 passed; 14 prior cases deliberately unselected",
+        "log": "evidence/native-red.log",
+        "sha256": "86e9feff3f3ccf8cb15273c3ad70b2aac79a6feb12056637b5135bf151f5eeb6"
+      },
+      {
+        "name": "first",
+        "exit_code": 1,
+        "result": "Minimal runtime guard: 116 passed / 15 failed; old fee/oracle fixtures used a placeholder reviewed native amount",
+        "log": "evidence/native-first.log",
+        "sha256": "bc57e8ce72d574e95681c374836453603ad866cda27af7570855a5bd13b5069c"
+      },
+      {
+        "name": "green",
+        "exit_code": 0,
+        "result": "131 passed / zero skipped across all three scoped helper files after fixture reconciliation",
+        "log": "evidence/native-green.log",
+        "sha256": "ed4ae4d36524eeb0fa93425b12905c1d068d0373a86dadbed1db18b97bc00f60"
+      },
+      {
+        "name": "lint",
+        "exit_code": 0,
+        "result": "Original type-aware ESLint passed for helper, existing tests and new review tests",
+        "log": "evidence/native-lint.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "dependency_note": "GREEN and lint ran after coordinator replaced cached dependencies with its successful clean npm ci installation. The production npm ls gate remained under separate coordinator diagnosis; this is not a claim that every dependency gate passed.",
+    "independent_review": "Separate provenance reviewer inspected the exact five-line runtime guard and all eight fixture adjustments; final committed source pin requested."
   }
 }
