@@ -1025,8 +1025,13 @@ test.describe('GitHub Pages artifact: refusals', () => {
       const createdAt = Math.floor(Date.now() / 1000);
       expect(parsed.invoice.expiresAt - createdAt).toBeGreaterThan(3_500);
       expect(parsed.invoice.expiresAt - createdAt).toBeLessThanOrEqual(3_600);
-      const past = new Date((parsed.invoice.expiresAt + 300) * 1000);
-      const payer = await openPayer(c, ACCOUNTS.expiryPayer);
+      const past = new Date((parsed.invoice.expiresAt + 30) * 1000);
+      // Keep the seller's clock unchanged, and mount the payer near expiry so only 90 seconds pass before Send.
+      // A one-hour jump after mounting would also trigger the independent 15-minute idle lock before the click.
+      const payerContext = await newContext(browser, baseURL, net);
+      extra.push(payerContext);
+      await payerContext.clock.install({ time: new Date((parsed.invoice.expiresAt - 60) * 1000) });
+      const payer = await openPayer(payerContext, ACCOUNTS.expiryPayer);
       const p = payer.page;
       const nonce = await anvil.nonce(ACCOUNTS.expiryPayer);
 
