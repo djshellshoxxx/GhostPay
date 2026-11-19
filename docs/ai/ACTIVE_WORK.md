@@ -1,3 +1,19 @@
+# Idle regression type reconciliation — 2026-11-19
+
+Worker: `recovery_completion`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-idle-test-types-20261119`.
+Base: `5dd63d651384a4712615e237bb09da3afcd40afb`.
+Owned paths: `apps/web/src/AppShell.idleClock.test.tsx`,
+`apps/web/src/lib/session.idleLock.test.ts`, and this additive claim.
+Acceptance: reuse the exact eight-line test-only tail from PR #256 commit
+`247c3353871bf67b6711aeacb5ad1e53faa77326` after independently confirming its runtime
+safety behavior is already represented in the consolidated candidate. Preserve the
+candidate's additional retained-copy raw/payment export test and every assertion.
+Verify the source delta and whitespace; combined-head compilation and execution remain
+coordinator gates. No runtime, dependency, threshold, workflow or release changes.
+Status: the exact eight changed lines match the upstream patch; the extra raw/payment
+export case is byte-preserved; `git diff --check` passes. No new test or lint run claimed.
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.

@@ -391,7 +391,7 @@ describe.each(['full', 'lean'] as const)('GP-PAGES-04: %s session generation and
     wall += 61_000;
     await resume('focus');
     await resume('pointerdown');
-    const repeatPassphrase = screen.getByLabelText('Repeat passphrase', { exact: true }) as HTMLInputElement;
+    const repeatPassphrase = screen.getByLabelText<HTMLInputElement>('Repeat passphrase', { exact: true });
     fireEvent.change(repeatPassphrase, { target: { value: 'fresh recovery passphrase for this test' } });
     const recoveryGuard = captureSessionBackupGuard();
     expect(repeatPassphrase.value).toBe('fresh recovery passphrase for this test');
