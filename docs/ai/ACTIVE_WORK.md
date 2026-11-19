@@ -1280,3 +1280,18 @@ removal; preserve all runtime-fetch, deployments, testnet, unsigned and signed-o
 run the manifest test file with its original Vitest configuration. Independently review the
 coordinator's current BTC network-egress inventory changes without editing their checkout.
 No production scanner API change, broad compilation/lint retry, dependency change or remote write.
+
+# Home release-hash authorization repair — 2026-11-19
+
+Worker: privacy_completion; root delegated this exact hosted failure after the final PR sweep.
+Branch: `codex/ghostpay-home-release-hash-20261119`.
+Base: coordinator candidate `5dd63d651384a4712615e237bb09da3afcd40afb`.
+Owned paths: `apps/web/src/views/Home.tsx`, a focused production-authority Home regression,
+this registry and a scoped evidence handoff. Preserve strict network authorization parsing.
+Acceptance: relative module script URLs under `/GhostPay/` resolve against `document.baseURI`
+before granting authority; the exact resolved URL binds grant and digest fetch; cross-origin
+targets remain refused; reproduce the hosted PR #251 failure before fixing it, then run focused
+tests and obtain an independent recovery-worker review. No broad checks or remote mutation.
+Status: implemented at `9bc9f1a19abedfc667db7931c9892d6cee1190d0`; baseline 3 failures/1 control,
+30 focused tests pass. Independent scoped source review found no blocker; combined hosted
+qualification remains required. See `docs/handoffs/home-release-hash-20261119/REVIEW.md`.

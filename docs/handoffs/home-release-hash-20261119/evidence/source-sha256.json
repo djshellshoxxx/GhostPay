@@ -1,0 +1,5 @@
+{
+  "apps/web/src/views/Home.tsx": "8b4c5a2bbcf1a756dbabbb6f694814bff8788773f372c4a161702d44ccafe0d8",
+  "apps/web/src/views/Home.authorization.test.tsx": "289e4452bab5050ca452a713fb4c31f914afbbf9ad98e83763a7f70c26ef15b3",
+  "apps/web/src/lib/networkAuthorization.ts": "1482558abb68fe1551b90c301677713de1599260a20f81b2662bc84caab35aa1"
+}
