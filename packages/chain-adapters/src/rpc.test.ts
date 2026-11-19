@@ -96,6 +96,9 @@ describe('createClient', () => {
     await expect(createClient(SEPOLIA, URL_OK, { transport: t, retries: 99, ...opts })).rejects.toThrow(ChainAdapterError);
     expect(n).toBe(6); // clamped to 5 retries
     n = 0;
+    await expect(createClient(SEPOLIA, URL_OK, { transport: t, retries: Number.NaN, ...opts })).rejects.toThrow(ChainAdapterError);
+    expect(n).toBe(1); // NaN must not mean "retry forever"
+    n = 0;
     await expect(createClient(SEPOLIA, URL_OK, { transport: t, retries: -3, ...opts })).rejects.toThrow(ChainAdapterError);
     expect(n).toBe(1);
   });
