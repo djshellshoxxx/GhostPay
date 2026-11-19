@@ -1,0 +1,102 @@
+{
+  "sourceHashes": {
+    "packages/chain-adapters/src/rpc.ts": "205c3eaea071fc489f25cf96e09a2e4b3f0403ad0be8e33a5dc7e03ce767d22b",
+    "packages/chain-adapters/src/errors.ts": "b9acba56845b2da257d9244d56aacb72b842430638f84dbf10a465c642915bee",
+    "packages/solana-stealth/src/rpc.ts": "62bb6b2a0a9e08933cc2b9cd61397e80726c3a57fa6eef4e18fe8747aea04181",
+    "packages/solana-stealth/src/errors.ts": "934f606a7d2b452ef9af6b21062594644e301b2d00b4997e4e0b1de7889aa8b6",
+    "packages/tron-adapter/src/rpc.ts": "ea83e41e65c0fa618df3a1bbb55ad8b24c818ea06b291a3fe48b4f2bae446ba4",
+    "packages/tron-adapter/src/errors.ts": "e12a7283b44c61abea2a439fe28ece437961c0535fb1c8bd64fffcf320a3e349",
+    "packages/net-transport/src/fetchTransport.ts": "51bf75966b97f9d64757a0ec80a98b71b37968a578c02a78fb72fe1816d86d40",
+    "packages/net-transport/src/errors.ts": "6b88e15ea8162c8bf775147b89ab54b58f4b4558ff6968cfca76476d6329c479",
+    "apps/web/src/lib/release.ts": "dce1b02fa429d287a99b67c1958c7080de15d2b658d3dbc401c269a7f5231035"
+  },
+  "environment": "Node native fetch against two controlled loopback HTTP servers; current leaf TypeScript sources transpiled with installed TypeScript. Not browser acceptance or full qualification.",
+  "outcomes": [
+    {
+      "name": "solana: native HTTP redirect never reaches the second server",
+      "result": "PASS"
+    },
+    {
+      "name": "solana: HTTP refusal does not echo response data or retry",
+      "result": "PASS"
+    },
+    {
+      "name": "tron: native HTTP redirect never reaches the second server",
+      "result": "PASS"
+    },
+    {
+      "name": "tron: HTTP refusal does not echo response data or retry",
+      "result": "PASS"
+    },
+    {
+      "name": "netTransport: native HTTP redirect never reaches the second server",
+      "result": "PASS"
+    },
+    {
+      "name": "netTransport: HTTP refusal does not echo response data or retry",
+      "result": "PASS"
+    },
+    {
+      "name": "release: native HTTP redirect never reaches the second server",
+      "result": "PASS"
+    },
+    {
+      "name": "release: HTTP refusal does not echo response data or retry",
+      "result": "PASS"
+    },
+    {
+      "name": "solana: a real stalled response body settles its deadline",
+      "result": "PASS"
+    },
+    {
+      "name": "tron: a real stalled response body settles its deadline",
+      "result": "PASS"
+    },
+    {
+      "name": "netTransport: a real stalled response body settles its deadline",
+      "result": "PASS"
+    },
+    {
+      "name": "solana: malformed native RPC data produces a fixed error",
+      "result": "PASS"
+    },
+    {
+      "name": "tron: malformed native RPC data produces a fixed error",
+      "result": "PASS"
+    },
+    {
+      "name": "solana-stealth: injected fetch cannot reuse an exported error with private details",
+      "result": "PASS"
+    },
+    {
+      "name": "solana-stealth: injected stream cannot reuse an exported error with private details",
+      "result": "PASS"
+    },
+    {
+      "name": "tron-adapter: injected fetch cannot reuse an exported error with private details",
+      "result": "PASS"
+    },
+    {
+      "name": "tron-adapter: injected stream cannot reuse an exported error with private details",
+      "result": "PASS"
+    },
+    {
+      "name": "release: throwing reader cleanup cannot replace a successful hash with private error text",
+      "result": "PASS"
+    }
+  ],
+  "passed": 18,
+  "failed": 0,
+  "baseCommit": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "reviewDate": "2026-11-18",
+  "classification": "Independent AI-assisted source review and controlled native-HTTP probes; not an external audit or whole-feature qualification.",
+  "verification": {
+    "command": "node --test --test-reporter=tap scripts/tests/network-isolation-native.test.mjs",
+    "exitCode": 0,
+    "behavioralSubtests": 18,
+    "runnerTests": 19,
+    "runnerPassed": 19,
+    "runnerFailed": 0,
+    "runnerSkipped": 0
+  }
+}
