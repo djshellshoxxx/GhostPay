@@ -1,0 +1,8 @@
+(node:8) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:32) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+manifests: none (payments disabled on every chain)
+== build apps/web (lean profile, relative base) at 139c5cb8e086ec4b13d08e10409dfb0765b53bcf
+Killed
+build-pages: web build failed

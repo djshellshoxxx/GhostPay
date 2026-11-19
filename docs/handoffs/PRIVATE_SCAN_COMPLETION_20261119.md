@@ -2,14 +2,15 @@
 
 ## Scope and source
 
-This change completes the local EVM seller scan journal for the Pages beta and supersedes the narrower v4 slot extraction in PR #235. It does not establish overall GhostPay release readiness. No deployment, protected-main merge, release publication, contract change, Spec 18 format change, dependency change, or weakened gate is part of this work.
+This change completes the local EVM seller scan journal for the Pages beta and extends the narrower v4 slot extraction in PR #235, which subsequently reached main through PR #242. PR #248 contains the v5 completion. It does not establish overall GhostPay release readiness. No deployment, protected-main merge, release publication, contract change, Spec 18 format change, dependency change, or weakened gate is part of this work.
 
 - Feature branch: `chatgpt/ghostpay-private-scan-completion-20261119`.
 - Starting feature source: PR #235, `a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1`.
 - Initial main: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
-- Updated main: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8`, including transport isolation PR #241 and beta log retention PR #237.
+- First updated main: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8`, including transport isolation PR #241 and beta log retention PR #237.
 - Main was integrated into the feature branch at `684eec18`; the only merge conflict was the append-only work-ownership document. Both existing entries were preserved.
 - PR #238 (`198aa5baff22272453733a0f3dcfcac0e0994eec`) was inspected as a read-only integration input. Its unrelated features and release failures were not imported.
+- Latest qualified main integration: `e454de6abfefda70d82784fafc1d8949b277c334` (PR #242), containing the reviewed idle-clock, invoice-signer and v4 checkpoint work. The only conflict was a duplicate work-ownership note already present byte-for-byte; one identical copy is retained. All 26 captured private-scan source/test hashes were identical to feature head `139c5cb8e086ec4b13d08e10409dfb0765b53bcf` immediately after merging. The subsequent lock review identified the app-lock-only cancellation gap described below; its correction is an explicit feature delta. Incoming AppShell and invoice-library changes still require combined-source qualification.
 
 The PR head and the machine-readable evidence beside this report identify the final source. The independent review is in [private-scan-independent-review.md](private-scan-independent-review.md). Feature behavior and limits are specified in [the developer guide](../developers/private-scan-checkpoints.md) and [the seller guide](../user/receive-and-scan.md).
 
@@ -53,6 +54,7 @@ At the initial census, PR #235 was an open draft with five successful workflows 
 7. **Forward-scan starvation:** prior-history announcements could consume the open-lane budget on every resume. Separate bounded replay/new-range counters preserve forward progress.
 8. **Coverage disclosure loss:** a clean resume could drop historical router-only warnings; both UI accumulation and engine accumulation could silently truncate the 1,001st height. The journal retains the union, drops only confirmed rolled-back notes, and fails before committing a page whose warnings cannot fit. The engine RED test actually completed while retaining only 1,000 warnings; the corrected test fails closed.
 9. **Recovery/status ergonomics:** CAS failures now expose Reload; cancelling during client creation or manifest readback releases Start; an unchanged anchorless starting cursor does not claim completed coverage. Tests check these visible outcomes.
+10. **App lock while keys remain loaded:** the existing session subscription alone did not pause a private scan while the app checked recoverability or deliberately retained the sole seller-key copy. The private Scan path now subscribes to the app-lock signal, aborts the active operation and disables automatic rescanning immediately. A due automatic callback is synchronously neutralized, including before React updates its checkbox/effect state. The key-retention policy and subsequent explicit Start remain unchanged. Three failing regressions cover RPC setup, pending checkpoint commit and an armed timer with the same session retained.
 
 Not every initial test invocation was a behavioral RED result. The first storage invocation failed during dependency startup; two authored view fixtures initially lacked the required canonical anchor and were corrected. Those runs are recorded as setup/fixture failures rather than proof of product defects. Existing assertions, coverage thresholds and security gates were not weakened.
 
@@ -79,6 +81,33 @@ Local environmental failures are not passing evidence:
 The final private Scan and automatic-rescan view selection passed 21/21 after main integration (16 new private cases and five existing auto-rescan cases). Updated-main transport libraries rebuilt successfully. Node 22 whole-web typecheck and both standard Chromium profile attempts were killed in typecheck with exit 137; neither browser launched. The first clean hosted build at `797f75ac8d91ae8e5872218028365496e67fc7d3` then reported one real test-source TS2345 inference error: a fixture address widened to `string`. A precise `satisfies readonly Partial<PrivateScanScope>[]` annotation corrects it without changing runtime bytes or any assertion. Its diagnostic is retained alongside the local failures.
 
 Full-web coverage, chain-adapter, full/lean Chromium, Pages artifact, whole-web typecheck/lint and hosted qualification results are updated in the evidence manifest and PR before merge readiness is claimed. Performance figures must come from executed deterministic fixtures; aggregate test durations are not mobile-browser performance promises.
+
+Further evidence at feature head `139c5cb8e086ec4b13d08e10409dfb0765b53bcf`, before the latest main integration:
+
+- Chain adapters: 551 passed and 22 native-chain cases skipped because the local Anvil/solc/artifact prerequisites were unavailable. Coverage: 97.33% statements, 96.47% branches, 99.01% functions and 98.93% lines; existing thresholds remain unchanged.
+- Pages tooling: 72 passed. The separate no-coverage web fixtures passed 3/3, including the million-announcement repeated-key spam/budget fixture and a fixed-workload crypto microbenchmark. The microbenchmark generates random exact keys; its workload shape, not its input bytes, is reproducible. This is not a million-distinct-key ECDH benchmark or a mobile throughput result.
+- Hosted beta acceptance passed library checks, 124 CLI checks, 11 fail-closed assertions and three real-chain browser journeys. Its web preflight includes typecheck/full build. Hosted hosting-kit qualification passed the web build, package verification and Chromium smoke. CLI qualification passed on Linux, macOS and Windows.
+- Local whole-web lint was killed with exit 137; local Pages artifact building was killed during the web build. Neither local attempt passed. The full local coverage run reported Pay receipt-selection and SellerKeys deletion failures before its execution session became unavailable without a final summary or retrievable exit result; the retained log stopped after 24 coverage chunks. Both exact cases passed individually without coverage and together with coverage (2 passed, 103 filtered; 77.68 seconds). The two-case diagnostic exits 1 because the unchanged global coverage thresholds apply to that small subset; no assertion failed. The incomplete full-suite failures are not classified as inherited or transient, and neither diagnostic is a full-suite pass.
+- Hosted results above qualify the earlier tree `e6695474a2b69a0bf9df3ee21d3a66640da8b8af`, not the later combined main tree. Final current-head results belong in PR #248. The old superseded CI cancellation tail eventually cleared without a cancellation action by this agent.
+
+After the latest main integration and app-lock correction, the private Scan (19), automatic-rescan (5), and new-main idle-clock (10) suites passed 34/34 in 28.60 seconds. Three new lock regressions failed before the correction. This run used the existing reconstructed dependencies through the isolated worktree's dependency link; it is focused source evidence, not clean-install or complete combined-source qualification.
+
+### Deterministic private-journal performance observation
+
+The new `privateScanPerformance.nocov.test.ts` passed on its first and only execution (one test; 15.87-second suite, 9.319-second test). Its fixed input generator produces 272 distinct ephemeral keys, including five real router-payment fixtures. Preparation and fixture generation are outside the measured intervals. The empty-journal scan and reopened-history scan both use fresh worker protocol instances, real announcement validation/cryptography, transaction-bound receipt checks, HKDF/AES-GCM and awaited complete-journal saves.
+
+| Measured operation | Empty journal | Reopened historical journal |
+|---|---:|---:|
+| Announcements checked | 272 | 80 |
+| Historical match blocks replayed | 0 | 4 |
+| Freshly verified payment identities | 5 | 5 |
+| Open and load | 0.44 ms | 2.27 ms |
+| Scan including encrypted saves | 2,220.99 ms | 558.62 ms |
+| Encrypted-save time, included above | 2.78 ms | 9.72 ms |
+| Total measured operation | 2,221.43 ms | 560.96 ms |
+| Complete journal saves / envelope bytes | 1 / 6,495 | 1 / 6,495 |
+
+Both journals preserve the same five identities and the configured safe cursor 4252. Restored observations initially have `claimed` receipt authority; no journal commits during historical replay, and forward completed progress follows durable saves. There is no timing-ratio assertion. These are single observations in a shared Node 22 container with in-memory RPC and CAS storage. "Empty journal" does not mean a cold JavaScript process; preparation warms the runtime. Browser IndexedDB, worker transfer/rendering, real network and mobile costs are excluded. Exact commands, runtime/source hashes, RPC counts and logs are in the evidence directory.
 
 ## Remaining limitations and integration notes
 

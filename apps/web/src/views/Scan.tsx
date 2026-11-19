@@ -15,6 +15,7 @@ import { browserStorage, createWindowedScanClient, describeScanDisclosureMessage
 import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, SCAN_LANES_KEY, type AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
+import { subscribeAppLock } from '../lib/appLock';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { ScanStateError, type PrivateScanScope, type PrivateScanState, type PrivateScanVault } from '../lib/privateScanStore';
@@ -185,6 +186,16 @@ export function Scan(): ReactNode {
     window.addEventListener('storage', onStorage);
     const unsubscribe = subscribePrivateScanInvalidation(changed);
     return () => { window.removeEventListener('storage', onStorage); unsubscribe(); };
+  }, [privateMode]);
+
+  useEffect(() => {
+    if (!privateMode) return undefined;
+    return subscribeAppLock(() => {
+      // Stop an already-due timer synchronously, even when the sole seller-key copy must stay loaded.
+      autoTick.current = () => undefined;
+      setAutoRescan(false);
+      abort.current?.abort();
+    });
   }, [privateMode]);
 
   useEffect(() => {
@@ -597,7 +608,7 @@ export function Scan(): ReactNode {
     })();
   };
 
-  autoTick.current = () => { begin({ append: true }); };
+  autoTick.current = () => { if (autoRescan) begin({ append: true }); };
 
   const clearCheckpoint = (): void => {
     if (running || clearing || keyId === undefined) return;

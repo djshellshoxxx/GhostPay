@@ -53,6 +53,21 @@ describe('catalog coverage (UXERR-1, T-1)', () => {
 });
 
 describe('recover', () => {
+  it('keeps invalid signatures distinct from valid but unpinned seller keys', () => {
+    const untrusted = recover('UNTRUSTED_SIGNER', { ...ctx, phase: 'prepare' });
+    const invalid = recover('INVALID_SIGNATURE', { ...ctx, phase: 'prepare' });
+    expect(untrusted.code).toBe('UNTRUSTED_SIGNER');
+    expect(invalid.code).toBe('INVALID_SIGNATURE');
+    expect(untrusted.summary).not.toBe(invalid.summary);
+    expect(untrusted.cause).toMatch(/signature is valid/i);
+    expect(invalid.summary).toMatch(/signature is not valid/i);
+    for (const guidance of [untrusted, invalid]) {
+      expect(guidance.severity).toBe('error');
+      expect(guidance.docAnchor).toBe('invoice-link');
+      expect(guidance.retrySafe).toBe('yes');
+      expect(guidance.steps.length).toBeGreaterThan(0);
+    }
+  });
   it('T-3 first step names Settings when no RPC', () => {
     const g = recover('RPC_UNREACHABLE', { ...ctx, hasRpc: false });
     expect(g.steps[0]?.action).toBe('open-settings-rpc');
