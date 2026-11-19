@@ -56,7 +56,7 @@ describe('Settings RPC secrets (TM4)', () => {
     clearRpcSessionOnly();
     await open();
     expect(await screen.findByText(/saved endpoint URL looks like it contains a provider key/)).toBeTruthy();
-    expect((screen.getByLabelText('Base Sepolia RPC URL') as HTMLInputElement).value).toBe(SECRET);
+    expect(screen.getByLabelText<HTMLInputElement>('Base Sepolia RPC URL').value).toBe(SECRET);
     expect(stored()).toMatchObject({ rpcUrls: { '84532': SECRET } });
   });
   it('offers session-only storage even when a provider credential is not recognized by the heuristic', async () => {

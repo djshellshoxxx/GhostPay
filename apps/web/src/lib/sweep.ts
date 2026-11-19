@@ -703,7 +703,7 @@ async function prepareDirectSweepTransaction(i: DirectSweepInput, assertCurrent:
   let data: Hex = '0x';
   let value: bigint;
   let gas: bigint;
-  let additionalFeeReserve = 0n;
+  let additionalFeeReserve: bigint;
   if (token === 'native') {
     to = i.destination;
     if (nativeBalance <= TRANSFER_GAS * maxFeePerGas) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFee' });

@@ -151,7 +151,8 @@ describe('native direct-sweep fee review', () => {
     const authority = createNetworkAuthority({
       storage: () => ({ getItem: (key) => key === SETTINGS_KEY ? JSON.stringify({ rpcUrls: { '84532': h.input.endpoint } }) : null }),
       fetchFn: async (_url, init) => {
-        const message = JSON.parse(String(init.body)) as { id: number; method: string; params: readonly unknown[] };
+        if (typeof init.body !== 'string') throw new Error('Expected a string JSON-RPC request body');
+        const message = JSON.parse(init.body) as { id: number; method: string; params: readonly unknown[] };
         dispatched.push(message.method);
         const result = message.method === 'eth_chainId' ? '0x14a34' : await backend.request(message.method, message.params);
         return new Response(JSON.stringify({ jsonrpc: '2.0', id: message.id, result }));
