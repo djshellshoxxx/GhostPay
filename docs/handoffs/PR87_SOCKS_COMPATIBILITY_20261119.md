@@ -122,9 +122,42 @@ The resolved path identifies the exact cached package used for this probe. Root 
 currently uses the lock-hoisted 5.9.3 compiler, whose API is compatible with those calls.
 A separate, bounded dependency reconciliation must retain a compatible compiler for
 API consumers and regenerate the lock with npm, preserving security scanners and test
-coverage. No dependency adjustment or hand-edited lock was made in this repair. The
-coordinator is also inspecting indirect TypeScript API consumers before choosing the
-smallest compatible pin set.
+coverage. No dependency adjustment or hand-edited lock was made in this repair.
+
+### Compiler dependency correction remains blocked
+
+A separate child worktree attempted the authorized exact root/web 5.9.3 declarations.
+Three normal commands completed with exit 0 but did not produce the requested web
+compiler resolution. Each began from the original lock; no force or legacy-peer flag
+was used:
+
+```sh
+# npm 11.9.0, after setting both approved manifests to exact 5.9.3:
+npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+# npm 10.9.9, matching original CI:
+npm install --workspace @ghostpay/web --include-workspace-root --save-dev --save-exact typescript@5.9.3 --package-lock-only --ignore-scripts --no-audit --no-fund
+# npm 11.9.0, explicit single workspace:
+npm install --workspace=apps/web --save-dev --save-exact typescript@5.9.3 --package-lock-only --ignore-scripts --no-audit --no-fund
+```
+
+The expected lock resolution was root 5.9.3 / web 5.9.3; all three retained root 5.9.3 /
+web 7.0.2. The first left web's manifest at 5.9.3 with nested 7.0.2, and `npm ls
+--package-lock-only --workspace @ghostpay/web typescript --json` returned `ELSPROBLEMS`.
+The latter commands retained or restored web's manifest to 7.0.2. Generated metadata also
+changed optional EDR libc selectors; those outputs were rejected, not selectively edited.
+
+Read-only diagnostics confirmed the intended child prefix and web workspace cwd/package
+path. The manifests are regular files inside that worktree, with no node_modules directory
+or workspace symlink. Save is enabled; global, dry-run, force and legacy-peer modes are
+disabled. No wrong-directory/shared-module explanation or peer error was observed; the
+underlying unsuccessful-update cause remains unestablished. All experimental manifest and
+lock edits were restored, and no dependency correction was committed or published.
+
+Machine-readable attempts, exact commands, before/after lock resolutions, target diagnostics,
+and the independent source review are saved under `analysis/pr87-repair` for the readiness
+ledger. Cached Hardhat 2.29.2 does not validate candidate 3.22.0, and the broader upgrade
+remains NOT_READY. A future valid lock and matching install must precede affected API and
+full candidate qualification.
 
 Root owns publication, fresh exact-head hosted checks and any integration. This work
 does not authorize or claim a deployment, release, paid-agent activation or completed
