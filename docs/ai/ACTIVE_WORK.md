@@ -9,6 +9,15 @@ Acceptance: refuse truncated saved profiles at both production authority and sta
 boundaries; preserve stale-form revision checks across storage events without erasing drafts;
 retain saved-secret UI persistence fixture from the existing master. Run red/green regressions.
 Existing master already contains #248, #249, #251 and #256; do not duplicate their integration.
+Follow-up source comparison identified missing final tails: #249 `c17e5c38` configured-CSP
+scanner handling (five source/test files), #248 `18b36745` app-lock Scan pause and its tests,
+and #251 `5ec15534` blocked-profile test assertions. Integrate these exact deltas while
+preserving master AST/all-HTML scanning and the existing saved-endpoint UI fixture.
+Additional acceptance: a changed network-profile record before its storage event must prevent
+a pending private journal write; owned `Scan.tsx` and its private-checkpoint regression.
+Status: three source-pinned follow-ups committed and 323 focused tests passed; evidence and
+compiled-build limitations are in `docs/handoffs/privacy-master-followup-20261119/REVIEW.md`.
+Combined-source CI and coordinator integration remain required.
 
 # Spec 18 independent completion review — 2026-11-18
 
