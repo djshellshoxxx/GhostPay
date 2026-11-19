@@ -1843,3 +1843,9 @@ Acceptance: original-config regression failures on the unmodified candidate and 
 Release scope: static client-side, noncustodial EVM Pages beta. Future modules remain isolated; no fees, fund transactions, deployment, release publication, source-branch deletion, or protection bypass.
 
 Continuous coordinator also owns the two intentional array-deletion fixtures in `packages/invoice-schema/src/json.test.ts`, which fail hosted lint at exact c993 source. Preserve both attack semantics and assertions while using an explicit property-deletion operation; no lint suppression or rule change.
+
+# Continuous coordination tooling recovery — 2026-11-19
+
+Worker: current root coordinator; source PR #261 `61f2b3729fa4b78c90d43a1ecd8c351e9c22f577`.
+Owned paths: `scripts/automation/integration-lock.mjs` and `scripts/tests/integration-lock.test.mjs`, both absent from the c993 candidate. Recover these two files byte-for-byte, retain current application source and ledgers, and never merge the metadata-only control ref into application history.
+Acceptance: unchanged real-Git concurrency/ownership/tag-isolation/expiry tests pass; independent review; source pin and full applicable qualification recorded. Extraction introduces no schedule, service, deployment, fee, or production configuration change.
