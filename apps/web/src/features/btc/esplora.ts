@@ -259,6 +259,9 @@ export class EsploraClient {
     this.baseUrl = normalizeEsploraUrl(options.baseUrl);
     this.fetchFn = options.fetchFn;
     this.timeoutMs = options.timeoutMs ?? TIMEOUT_MS;
+    if (!Number.isInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 2_147_483_647) {
+      throw new SilentPaymentError('INVALID_INPUT');
+    }
   }
 
   /** Requests `path` and reads the body through `max` bytes; returns the text and the bytes read. */
@@ -405,9 +408,9 @@ export class EsploraClient {
   }
 
   /** Broadcasts a raw transaction (hex). Returns the txid the server reports. */
-  public async broadcast(rawHex: string): Promise<string> {
+  public async broadcast(rawHex: string, signal?: AbortSignal): Promise<string> {
     if (!/^[0-9a-f]+$/.test(rawHex) || rawHex.length % 2 !== 0) throw new SilentPaymentError('INVALID_INPUT');
-    const t = (await this.text('/tx', { method: 'POST', body: rawHex, headers: { 'content-type': 'text/plain' } })).trim().toLowerCase();
+    const t = (await this.text('/tx', { method: 'POST', body: rawHex, headers: { 'content-type': 'text/plain' } }, signal)).trim().toLowerCase();
     return HEX64.test(t) ? t : bad();
   }
 
