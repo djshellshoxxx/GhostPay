@@ -4,6 +4,7 @@ import {
   checkOwnNodeRpcUrl,
   effectiveSelection,
   parseWebNetworkSelection,
+  createFetchTransport,
   type WebNetworkSelection,
 } from '@ghostpay/net-transport/browser';
 import { UserFacingError } from './errors';
@@ -16,6 +17,7 @@ import type { Services } from './services';
 import { TagVault, MemoryTagStore, type TagStore } from './tags';
 import { discoverWallets } from './wallet';
 import { createBrowserScanWorker } from './workerFactory';
+import { createNetworkAuthority, networkAuthorizationError } from './networkAuthorization';
 
 function safeStorage(): Storage | undefined {
   try {
@@ -39,9 +41,9 @@ export function loadDefaultManifest(
 }
 
 /**
- * TM14: the network selection that applies now (`ghostpay.networkProfiles.v1`). Missing, unreadable or invalid storage,
- * or a non-default selection whose first-use notice was not acknowledged, yields the default (direct, single RPC), which
- * is the behaviour before TM14.
+ * Legacy display/standalone-helper selection (`ghostpay.networkProfiles.v1`). This forgiving parser never grants
+ * production network authority: createDefaultServices uses the strict per-action networkAuthorization boundary,
+ * which refuses corrupt or unacknowledged private settings instead of dispatching through this fallback.
  *
  * `tor-browser` is ambient: requests still use this page's `fetch`; only the user running the page in Tor Browser
  * changes the path, and that is not verified (unverified profile, see `PROFILE_VERIFICATION`).
@@ -94,12 +96,35 @@ export function createSelectedRpc(
 }
 
 export function createDefaultServices(): Services {
+  const network = createNetworkAuthority();
   return {
     nowMs: () => Date.now(),
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
-    fetchFn: (u, i) => fetch(u, i),
+    network,
+    fetchFn: () => Promise.reject(networkAuthorizationError()),
     loadManifest: (id) => loadDefaultManifest(id),
-    createRpc: createSelectedRpc(),
+    async createRpc(chain, url, authorization) {
+      network.assertRpcAuthorization(authorization, chain.chainId, url);
+      // assertRpcAuthorization verifies opaque ownership; the explicit check also narrows the optional type.
+      if (authorization === undefined) throw networkAuthorizationError();
+      const bounded = createFetchTransport({ fetchImpl: authorization.fetchFn, allowInsecureLocalhost: true });
+      const transport: RpcTransport = {
+        async send(target, body, init) {
+          network.assertRpcAuthorization(authorization, chain.chainId, target, body);
+          const result = await bounded.send(target, body, init);
+          network.assertRpcAuthorization(authorization, chain.chainId, target);
+          return result;
+        },
+      };
+      try {
+        const client = await createClient(chain, url, { transport, allowInsecureLocalhost: true });
+        authorization.assertCurrent();
+        return client;
+      } catch (error) {
+        authorization.dispose();
+        throw error;
+      }
+    },
     discoverWallets: () => discoverWallets(window),
     createScanWorker: createBrowserScanWorker,
     checkpoints: localCheckpointStore(safeStorage()),

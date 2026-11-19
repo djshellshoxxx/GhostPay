@@ -1,3 +1,54 @@
+# Browser network isolation completion — 2026-11-19 UTC
+
+Worker: ChatGPT lead, bounded-transport implementer, policy/adapter implementer, independent review.
+Branch: `codex/network-isolation-complete-20261119`.
+Pinned inputs: main `dfc75ef2087fa6463ae59e0818abec01796c578d`; #238
+`198aa5baff22272453733a0f3dcfcac0e0994eec`; #241
+`e8857bfa1ec93fafa9ff83f63f7430ef26a362c2`. This isolated integration preserves
+both input histories; source branches remain read-only. The stacked PR targets
+`integration/ghostpay-pages-completion-20261118`.
+Owned additions: central browser authorization/lifetime module and focused tests; bounded
+Esplora/indexer/relayer follow-up and tests; per-dispatch service/scan authorization integration;
+network-specific settings/Sweep/chain-view integration as required; browser/native regression
+fixtures; network inventory, acceptance matrix, documentation and source-pinned evidence.
+Unrelated session/key-export/recovery/signing behavior and all contracts/security gates are
+outside this work. Recheck active source heads before publication; retain concurrent fixes.
+Qualification update (2026-11-19 UTC): implementation and independent bounded source review are recorded in draft [PR #251](https://github.com/djshellshoxxx/GhostPay/pull/251). Main was rechecked at `e454de6abfefda70d82784fafc1d8949b277c334`: #241, #237 and #242 were merged externally, and their exact product inputs already exist in this branch through the pinned inputs. #238 remains at the unchanged draft head. Local authorization 108/108, existing flows 138/138, AppShell/Settings 58/58 and final native/lifecycle composition 10/10 passed; package suites passed 1,073 cases with 22 existing conditional skips. Full local web coverage remains incomplete, and Chromium cannot start because native socket creation is denied. Final hosted web, full/lean browser, Pages and security/integration qualification remains pending; keep the PR draft. Source pins, scoped commands, inherited failures and platform limits are recorded in [the acceptance ledger](../privacy/network-isolation-acceptance.md), [the validation receipt](../privacy/evidence/network-isolation-completion-validation.json) and the PR body. No whole-feature or release-completion claim is made while those gates remain unqualified.
+Acceptance: fail closed on revoked or stale authorization/settings, preserve the exact selected
+endpoint without fallback, bound non-cooperative fetch/reads/cleanup, invalidate old sessions and
+cross-tab settings, action-scope Sweep consent, preserve offline actions and prove actual
+outbound destinations in browser/native fixtures. No merge, deployment or release claim.
+
+# Browser network isolation: unowned transport gaps — 2026-11-18
+
+Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
+Branch: `codex/ghostpay-browser-isolation-20261118`.
+Base: `dfc75ef2087fa6463ae59e0818abec01796c578d` (live `main`).
+Owned paths: `packages/net-transport/src/fetchTransport.ts`, `fetchAdapter.ts` and new focused
+transport isolation tests; `packages/solana-stealth/src/rpc.ts`, `packages/tron-adapter/src/rpc.ts`
+and new `rpc.isolation.test.ts` tests (chain adapter worker); `apps/web/src/lib/release.ts`, its
+focused tests, a new browser network isolation spec; new machine-readable egress inventory
+and scoped isolation documentation; new `scripts/tests/network-egress-inventory.test.mjs` and
+independently authored `scripts/tests/network-isolation-native.test.mjs` QA. Both chain RPC files were checked against all 39 open
+PRs, including new recovery #239 (`d2c64522`); no current PR changes either file.
+Acceptance: reproduce and fix unintended redirect egress, cancelled/stale request dispatch,
+unbounded transport failure and untrusted error disclosure in these paths; prove no fallback,
+bounded failure and fixed error messages with controlled fixtures and browser requests. Record
+source-pinned findings, exact checks and unresolved integration dependencies.
+Status: implemented and independently re-reviewed in draft PR #241. Hosted first-head typecheck,
+unit/integration suites and lean browser acceptance passed; 11 lint errors were corrected with their
+adversarial assertions preserved. Final-head checks and the separately owned policy integration are
+tracked in `docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md` and the PR.
+
+Active inputs remain read-only: privacy #222 (`2bc20982`), own-node #228 (`685fe1a3`), Sweep
+consent #231 (`d9ff3868`), browser fixtures #233 (`67cf835d`), integration #238 (`198aa5ba`),
+recovery/keypair exports and Mythril remediation. Their UI, service policy, settings, scan,
+Sweep, catalogs, consolidation ledgers and release gates are not owned by this task. The
+five lower-level transport files were compared against these heads and are unchanged; this
+lane extends existing adapters without a second policy engine. Recheck all heads before PR.
+
+# Repository consolidation — 2026-11-18 (active)
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:

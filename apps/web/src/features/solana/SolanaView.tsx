@@ -70,6 +70,8 @@ export function SolanaView(): ReactNode {
     setBusy(false);
   };
 
+  useEffect(() => services.network?.subscribe(invalidate), [services]);
+
   const begin = (): { readonly signal: AbortSignal; readonly live: () => boolean } => {
     abort.current?.abort();
     const ac = new AbortController();
@@ -118,10 +120,11 @@ export function SolanaView(): ReactNode {
   };
 
   /** Fresh client for the current URL, after proving the server is on the selected network. */
-  const connect = async (signal: AbortSignal): Promise<SolanaRpc> => {
+  const connect = async (signal: AbortSignal, action: 'solana-scan' | 'solana-sweep' = 'solana-sweep'): Promise<SolanaRpc> => {
+    const context = services.network?.authorize({ action, category: 'rpc', endpoint: url, network: { kind: 'solana', network: net.id }, match: 'exact', signal });
     let rpc: SolanaRpc;
     try {
-      rpc = createRpc(url, services.fetchFn);
+      rpc = createRpc(url, context?.fetchFn ?? services.fetchFn);
     } catch {
       throw new SolViewError({ key: 'sol.rpc.missing' });
     }
@@ -155,7 +158,7 @@ export function SolanaView(): ReactNode {
     setScanning(true);
     void (async () => {
       try {
-        const rpc = await connect(signal);
+        const rpc = await connect(signal, 'solana-scan');
         if (!/^\d{1,15}$/.test(fromSlot.trim())) throw new SolViewError({ key: 'sol.slot.required' });
         const res = await scanForPayments({
           rpc,

@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-11-19T07:25:14.948942+00:00",
+  "classification": "Bounded validation receipt; full candidate acceptance and release readiness remain incomplete.",
+  "pullRequest": "https://github.com/djshellshoxxx/GhostPay/pull/251",
+  "sourcePins": {
+    "dependencyBaselinePr238": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "transportInputPr241": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+    "initialCombinedLocal": "2503d7ce9ab519783dca3f0a4d6fade6459609b8",
+    "frozenLocal": "7c7af09ff41c87f3fd5ac62f8a09cfb2202c699b",
+    "publishedEquivalent": "089a0081418dcca395ce169abc36d9ef470162ef",
+    "verifiedCommonGitTree": "80ad5268b3b095cd01171e8578631647f5056b2e",
+    "finalCommit": "Pinned by the final PR body; this receipt does not name its own future commit.",
+    "sha256": {
+      "apps/web/src/lib/networkAuthorization.ts": "c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931",
+      "apps/web/src/lib/networkAuthorization.test.ts": "abd2cc29683ababdf004875bf7cdd4751050b8c403792811b1a102d14cb817c5",
+      "apps/web/src/lib/defaultServices.ts": "5beabcc2cf559f28af4553b367272d9d44c8ae62e87e8597a76d6f2929481c69",
+      "apps/web/src/lib/boundedRequest.ts": "3ef2bb33d16f86feaaf258bea1842b0c22e218ce8aeab9419574a1c8d6989401",
+      "apps/web/src/features/btc/esplora.ts": "f2aec5c1b2fc19b3ca57745d5d755fa8be0db2abb53cad9650d35199f5598d53",
+      "apps/web/src/lib/relayerClient.ts": "4682ea856e6c4335adff019ba2d1a8cc7b45af2f0894e36e318dc64483966145",
+      "apps/web/src/lib/scanPrivacy.ts": "95e5f4c4220088f973a795147d613be26cd1ecda71f73585f09a7247bfde5c4e",
+      "apps/web/e2e/network-authorization.spec.ts": "c2b362e904c72fb3622d136be946787f6d1eca50340b7f7daf06aaa00894106b",
+      "docs/privacy/network-egress-inventory.json": "8a4cdd20a6c80518ebe7e53cf178d2953048db2f01ca748cdd32c5a937a1dfed"
+    },
+    "hashScope": "Receipt-time source snapshot. The final policy check is explicitly bound to its source/test hashes. Earlier runs retain their recorded scopes; a current hash does not retrospectively attest an unpinned run.",
+    "finalSchemaRuntimeCommit": "325a915664b9c8ce44f136d08c6e0ec3c64a6ace",
+    "finalSchemaLocalEquivalent": "a7b24cc11ee6e9809abf3c92e26ef4ae0f920fb9",
+    "verifiedFinalSchemaGitTree": "79df61485096126bc0cdb5023f87a6aad0a80c5c"
+  },
+  "commands": {
+    "cwdConvention": "Repository root unless a check states apps/web. Scratch paths identify original executions, not shipped runtime dependencies."
+  },
+  "finalPolicy": {
+    "cwd": "apps/web",
+    "command": "npx vitest run src/lib/networkAuthorization.test.ts src/lib/defaultServices.authorization.test.ts src/lib/defaultServices.test.ts src/lib/defaultServices.networkGuard.test.ts --coverage --coverage.include=src/lib/networkAuthorization.ts --coverage.reportsDirectory=/workspace/scratch/e4cd51001ae8/network-policy-schema-coverage --maxWorkers=1 --no-file-parallelism",
+    "sourceSha256": "c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931",
+    "testSha256": "abd2cc29683ababdf004875bf7cdd4751050b8c403792811b1a102d14cb817c5",
+    "exitCode": 0,
+    "filesPassed": 4,
+    "testsPassed": 108,
+    "coverageScope": "src/lib/networkAuthorization.ts only; not full web coverage",
+    "coveragePercent": {
+      "statements": 93.5,
+      "branches": 92.21,
+      "functions": 93.22,
+      "lines": 99.32
+    },
+    "log": "network-policy-unknown-schema-green-089a008.log",
+    "redEvidence": {
+      "log": "network-policy-unknown-schema-red-089a008.log",
+      "failedCases": 2,
+      "unexpectedDispatchesPerCase": 1
+    },
+    "staticCommand": "node --max-old-space-size=512 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/policy-core-verify.mjs",
+    "staticResult": "Exit 0; actual application compiler options over central source/test import closure: 0 diagnostics; unchanged repository typed ESLint rules: 0 errors and 0 warnings.",
+    "staticLog": "network-policy-unknown-schema-static-089a008.log"
+  },
+  "packageCoverage": {
+    "sourceScope": "Integrated workspace before the final policy schema correction. Package command receipts did not record per-run immutable source hashes; no final-head rerun is claimed.",
+    "testsPassed": 1073,
+    "testsSkipped": 22,
+    "filesPassed": 57,
+    "skipScope": "Existing chain-adapters conditional Anvil, solc and compiled-artifact cases; REQUIRE_ANVIL=1 hosted gates remain required.",
+    "configuredCoverageRulesAndThresholds": "unchanged",
+    "runs": [
+      {
+        "package": "@ghostpay/net-transport",
+        "command": "npm run test --workspace @ghostpay/net-transport -- --maxWorkers=1",
+        "exitCode": 0,
+        "tests": "200 passed (200)",
+        "files": "7 passed (7)",
+        "coveragePercent": {
+          "Statements": 97.66,
+          "Branches": 96.2,
+          "Functions": 96.62,
+          "Lines": 98.01
+        },
+        "log": "bounded-package-net-transport.log"
+      },
+      {
+        "package": "@ghostpay/chain-adapters",
+        "command": "npm run test --workspace @ghostpay/chain-adapters -- --maxWorkers=1",
+        "exitCode": 0,
+        "tests": "562 passed | 22 skipped (584)",
+        "files": "27 passed (27)",
+        "coveragePercent": {
+          "Statements": 97.46,
+          "Branches": 96.45,
+          "Functions": 99.11,
+          "Lines": 98.98
+        },
+        "log": "bounded-package-chain-adapters.log"
+      },
+      {
+        "package": "@ghostpay/scan-source",
+        "command": "npm run test --workspace @ghostpay/scan-source -- --maxWorkers=1",
+        "exitCode": 0,
+        "tests": "72 passed (72)",
+        "files": "7 passed (7)",
+        "coveragePercent": {
+          "Statements": 98.76,
+          "Branches": 95.82,
+          "Functions": 100.0,
+          "Lines": 100.0
+        },
+        "log": "bounded-package-scan-source.log"
+      },
+      {
+        "package": "@ghostpay/solana-stealth",
+        "command": "npm run test --workspace @ghostpay/solana-stealth -- --maxWorkers=1",
+        "exitCode": 0,
+        "tests": "136 passed (136)",
+        "files": "7 passed (7)",
+        "coveragePercent": {
+          "Statements": 97.48,
+          "Branches": 95.07,
+          "Functions": 98.09,
+          "Lines": 99.17
+        },
+        "log": "bounded-package-solana-stealth.log"
+      },
+      {
+        "package": "@ghostpay/tron-adapter",
+        "command": "npm run test --workspace @ghostpay/tron-adapter -- --maxWorkers=1",
+        "exitCode": 0,
+        "tests": "103 passed (103)",
+        "files": "9 passed (9)",
+        "coveragePercent": {
+          "Statements": 96.98,
+          "Branches": 93.3,
+          "Functions": 98.92,
+          "Lines": 99.08
+        },
+        "log": "bounded-package-tron-adapter.log"
+      }
+    ]
+  },
+  "focusedTransport": {
+    "cwd": "apps/web",
+    "initialEsploraRed": {
+      "source": "2503d7ce9ab519783dca3f0a4d6fade6459609b8",
+      "command": "../../node_modules/.bin/vitest run src/features/btc/esplora.isolation.test.ts --coverage=false",
+      "failedCases": 4,
+      "log": "esplora-red.log"
+    },
+    "cases": [
+      "pre-aborted request and broadcast send zero requests",
+      "ignored fetch abort and stalled body read settle an independent deadline",
+      "declared and streamed byte caps reject without awaiting hostile cancellation",
+      "late response body is discarded",
+      "wall-clock forward expiry and rollback refuse stale results",
+      "foreign-realm Uint8Array chunks work",
+      "remote error text and forged local error instances do not escape",
+      "no provider fallback or forbidden redirect dispatch",
+      "relayer padding compatibility and uncertain-broadcast behavior remain intact",
+      "caller cancellation reaches indexer requests, queued windows and jitter"
+    ],
+    "mixedRun": {
+      "command": "../../node_modules/.bin/vitest run src/lib/boundedRequest.test.ts src/lib/boundedRequest.browser.test.ts src/lib/transportCancellation.test.ts src/lib/transportNative.test.ts src/lib/scanPrivacy.authorization.test.ts src/features/chainViews.i18n.test.tsx -t 'bounded|Esplora fixed|actual native|scan caller|Bitcoin.*rerenders completed scans' --coverage=false --maxWorkers=1",
+      "passed": 76,
+      "failed": 3,
+      "filtered": 16,
+      "transportAndBitcoinCasesPassed": 74,
+      "note": "The other two passes were scan pre-abort cases. Three scan expectations omitted the existing ChainAdapterError code prefix; the run was not green. Those expectations were corrected and the complete five-case scan file rerun below.",
+      "log": "bounded-final-focused.log"
+    },
+    "finalScan": {
+      "command": "../../node_modules/.bin/vitest run src/lib/scanPrivacy.authorization.test.ts --coverage=false --maxWorkers=1",
+      "exitCode": 0,
+      "passed": 5,
+      "log": "scan-authorization-final.log"
+    },
+    "finalEsplora": {
+      "command": "../../node_modules/.bin/vitest run src/features/btc/esplora.isolation.test.ts --coverage=false --maxWorkers=1",
+      "exitCode": 0,
+      "passed": 5,
+      "log": "esplora-isolation-final.log"
+    },
+    "privacySourceGuard": {
+      "command": "../../node_modules/.bin/vitest run src/privacyInvariants.test.ts --coverage=false --maxWorkers=1",
+      "exitCode": 0,
+      "passed": 34,
+      "log": "privacy-invariants-green.log"
+    },
+    "sourceScope": "Focused development runs precede final publication and the last policy schema correction. Results overlap and must not be added into a unique-test total."
+  },
+  "frozenNodeSuites": {
+    "sourceCommit": "7c7af09ff41c87f3fd5ac62f8a09cfb2202c699b",
+    "equivalentPublishedCommit": "089a0081418dcca395ce169abc36d9ef470162ef",
+    "command": "node --test --test-concurrency=1 scripts/tests/*.test.mjs scripts/pages/*.test.mjs apps/web/scripts/localBuildProfile.test.mjs",
+    "exitCode": 1,
+    "total": 352,
+    "passed": 349,
+    "failed": 3,
+    "skipped": 0,
+    "passingSubsets": {
+      "nativeIsolationBehavioralCases": 18,
+      "nativeIsolationRunnerTestsIncludingParent": 19,
+      "inventoryMaintenanceTests": 6,
+      "pagesAndLocalBuildProfile": "All included script tests passed; not a built artifact/browser qualification."
+    },
+    "inheritedFailures": {
+      "webClosureExtraDependencies": [
+        "@ghostpay/hygiene",
+        "@ghostpay/metadata-hardening"
+      ],
+      "relayerClosureExtraDependencies": [
+        "@ghostpay/metadata-hardening"
+      ],
+      "classification": "Both failures reproduce on the exact PR238 dependency baseline; not introduced by PR251.",
+      "reproduction": {
+        "baseline": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "command": "node --test '--test-name-pattern=workspace dependency closure' /tmp/ghostpay-closure-pr238-qeeun9b0/scripts/tests/lean-core-reachability.test.mjs",
+        "fixture": "Exact baseline test plus all 68 baseline apps/packages package.json files; temporary fixture removed afterward.",
+        "inputCount": 69,
+        "exitCode": 1,
+        "passed": 0,
+        "failed": 2,
+        "manifestOrGuardDiffAgainstFrozenCandidate": [],
+        "guardGitBlob": "6d7c6963807a4603a4c1d90ce1bec09495415280",
+        "log": "lean-closure-pr238-baseline.log"
+      },
+      "provenance": "Older pinned main passes both; the relevant dependencies first appear in the inspected PR238 input. Lists and rest-0 gate were not changed."
+    },
+    "thirdFailure": {
+      "test": "PGP release-tag verification",
+      "stage": "Temporary throwaway-key generation before tag verification",
+      "diagnostic": "gpg-agent exited 2; General error; No agent running",
+      "classification": "Local fixture could not start its GPG agent; underlying cause not established. Existing test unchanged from PR238. Not passed or skipped."
+    },
+    "log": "frozen-node-suites.log"
+  },
+  "webNoCoverage": {
+    "cwd": "apps/web",
+    "command": "node --max-old-space-size=640 --max-semi-space-size=8 ../../node_modules/vitest/vitest.mjs run --config vitest.nocov.config.ts --maxWorkers=1",
+    "exitCode": 0,
+    "filesPassed": 3,
+    "testsPassed": 3,
+    "log": "web-nocov-final.log",
+    "scope": "Separate existing no-coverage suite on the 089a008 working tree with the final schema source; no immutable per-run commit was recorded. Does not satisfy the full coverage gate."
+  },
+  "existingFlowsFinal": {
+    "cwd": "apps/web",
+    "command": "node --max-old-space-size=640 --max-semi-space-size=8 ../../node_modules/vitest/vitest.mjs run src/views/Pay.test.tsx src/views/Settings.race.test.tsx src/views/Scan.autoRescan.test.tsx src/features/policy/PolicyView.scope.test.tsx src/views/Sweep.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism",
+    "authorizationSourceSha256": "c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931",
+    "exitCode": 0,
+    "filesPassed": 5,
+    "testsPassed": 138,
+    "durationSeconds": 91.34,
+    "scope": "Existing-flow regression group after final schema correction; not full web coverage or browser qualification.",
+    "log": "network-existing-flows-final.log"
+  },
+  "scopedStatic": {
+    "uiLintFiles": 28,
+    "uiLintExitCode": 0,
+    "uiLintCommands": [
+      "node --max-old-space-size=512 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/GhostPay/node_modules/eslint/bin/eslint.js --config /workspace/scratch/e4cd51001ae8/ui-batch-1-eslint.config.mjs /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/AppShell.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/AppShell.network.test.tsx",
+      "node --max-old-space-size=512 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/GhostPay/node_modules/eslint/bin/eslint.js --config /workspace/scratch/e4cd51001ae8/ui-batch-2-eslint.config.mjs /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/views/Pay.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/views/Scan.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/views/Sweep.tsx",
+      "node --max-old-space-size=512 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/GhostPay/node_modules/eslint/bin/eslint.js --config /workspace/scratch/e4cd51001ae8/ui-batch-3-eslint.config.mjs /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/views/Settings.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/views/Home.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/components/MerchantProfilePanel.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/features/btc/BtcView.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/features/solana/SolanaView.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/features/tron/TronView.tsx",
+      "node --max-old-space-size=512 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/GhostPay/node_modules/eslint/bin/eslint.js --config /workspace/scratch/e4cd51001ae8/ui-batch-4-eslint.config.mjs /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/features/policy/PolicyPay.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/features/policy/PolicyReceive.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/features/policy/PolicyView.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/features/registry/RegistryView.tsx",
+      "node --max-old-space-size=512 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/GhostPay/node_modules/eslint/bin/eslint.js --config /workspace/scratch/e4cd51001ae8/ui-batch-5-eslint.config.mjs /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/features/btc/esplora.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/i18n/securityKeys.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/lib/defaultServices.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/lib/relayerClient.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/lib/scanPrivacy.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/lib/services.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/lib/settings.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/state.tsx /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/lib/networkOperation.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/lib/networkOperation.test.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/lib/settings.loopback.test.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/e2e/network-authorization.spec.ts /workspace/scratch/e4cd51001ae8/GhostPay/apps/web/src/privacyInvariants.test.ts"
+    ],
+    "uiLintScope": "Five sequential actual-TypeScript-Program batches using original app compiler options/import closure and unchanged repository ESLint rules. Batch 1 passed after its four diagnostics were corrected; batches 2-5 passed previously.",
+    "transportTypecheckCommand": "node --max-old-space-size=512 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/bounded-typecheck.mjs",
+    "transportTypecheck": "10 owned roots and import closure; 0 diagnostics.",
+    "uiTypecheck": "Changed production roots and import closure; 0 diagnostics in ui-typecheck.log.",
+    "limitation": "Scoped checks do not replace full-project lint, typecheck or build gates."
+  },
+  "incompleteGates": {
+    "fullWebCoverage": {
+      "command": "node --max-old-space-size=768 --max-semi-space-size=8 node_modules/vitest/vitest.mjs run --root apps/web --coverage --maxWorkers=1",
+      "exitCode": 130,
+      "status": "Interrupted; no full-suite result or coverage qualification.",
+      "observed": "First SellerKeys file took 692593 ms; 39 cases reported, five failed. A separate isolated wrong-passphrase check later passed one case with 38 filtered; this does not clear the full run.",
+      "log": "web-full-coverage.log"
+    },
+    "fullProjectStatic": "Local whole-project typecheck/lint attempts terminated with exit 137/SIGKILL; this receipt does not establish the cause. Scoped results do not promote these gates to green.",
+    "browser": {
+      "cwd": "apps/web",
+      "command": "GHOSTPAY_CHROMIUM=/usr/bin/chromium NODE_OPTIONS=--max-old-space-size=1536 node ../../node_modules/@playwright/test/cli.js test --config /workspace/scratch/e4cd51001ae8/network-browser.config.mts network-authorization.spec.ts --workers=1",
+      "exitCode": 130,
+      "status": "Platform-blocked before browser test bodies; zero traffic assertions executed.",
+      "observed": "Chromium process-singleton socket creation returned Operation not permitted and SIGABRT. Seven equivalent launch failures occurred from nine cases collected at attempt time; remaining attempts were stopped.",
+      "diagnosticBuild": "Vite build, CSP application and bundle scan completed. Temporary runner omitted the separately failing full tsc gate; it is not the normal full build qualification.",
+      "finalSpecCollection": 12,
+      "finalSpecSha256": "c2b362e904c72fb3622d136be946787f6d1eca50340b7f7daf06aaa00894106b",
+      "remaining": "Full/lean Chromium, actual cross-tab flows and Pages artifact/browser qualification remain required.",
+      "log": "network-browser-full.log"
+    },
+    "hosted": "Pending for the final schema-corrected source. Prior-head run 44474577078 is not qualification of the forthcoming final head; consult PR251 checks and final source pin.",
+    "acceptance": "No all-gates-green, whole-feature completion, merge, deployment, external audit or release approval claim."
+  },
+  "evidencePolicy": "Only bounded summaries and hashes are retained here; transient logs are identified by basename and are not copied into the repository.",
+  "receiptLogSha256": {
+    "network-policy-unknown-schema-green-089a008.log": "2fdaa0713c1b18f280f654d82e88d8d78f7fc068e9e9be9db1b3b64cddcd9e20",
+    "network-policy-unknown-schema-static-089a008.log": "f3fc85408232551090f7f33af36698977e333d6ea13e99ab22f3c31a4378d277",
+    "bounded-package-results.json": "0c38a3ff17f18899908702ad347ce5629f6a2a323f8d3740d361b08c2817ff59",
+    "bounded-final-focused.log": "5a81315a8956155ab54f51f47b864eaada7f0eb06c2c25bf7fb6119bc00b72bb",
+    "scan-authorization-final.log": "911a096d63cae6c61b73c3af8d13a37b010df6b4244401521ff2ba9e80fdb33b",
+    "esplora-isolation-final.log": "13680a0888f27fb853e57418731bf5096ea9c13465b26b7973b68305d2f83a59",
+    "frozen-node-suites.log": "dfe5d715db7e329fc6be268438a9c467f653e7f054d99f8558e7c9ef98349ad9",
+    "lean-closure-pr238-baseline.log": "f59b51670836ccf2faeed1a7e1025783fe11213c766bdf1a97d4033ea66ef930",
+    "lean-closure-provenance.json": "bc6329cbb17fa927de41b2f0ca7ff0a117f9d4b568d76fa1b7a29c7bef78161d",
+    "web-nocov-final.log": "e76afc940e8e0011edecbc7954f046d50f28e1ef9d8aad76c62bf5457cff7665",
+    "web-full-coverage.log": "cfedaa8fbea1491733668294563cd7fe17f5b4bb6a1de9e237fc7fdcdb05335f",
+    "network-browser-full.log": "3cc50a67c9081ecc79153fdc12c04157d7186705327480c014a12725f1490ab1",
+    "network-existing-flows-final.log": "27407bb51d92066d09f92b300a545d2dbce37e50cc596bcb16c21461970e0f1c",
+    "network-shell-settings-green.log": "4e05e36ebdf885855976707c7861838bedb06f94433a5f8bd5ebacc995d4ecd2",
+    "network-shell-settings-325a915.log": "cdc252a3ad7177b8eae5544172935ec514f5524e6bd9a290e1a66a1c1e6b85b6",
+    "network-policy-composition-a7b24cc.log": "92e3087317817288eb341fbf1aeebdeb5bd521495a3ad96dad7888f1bf9dd1dc"
+  },
+  "finalNativeAndLifecycleComposition": {
+    "cwd": "apps/web",
+    "command": "npx vitest run src/lib/networkAuthorization.adapters.test.ts src/features/policy/PolicyView.network.test.tsx src/features/registry/RegistryView.network.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism",
+    "sourceCommit": "a7b24cc11ee6e9809abf3c92e26ef4ae0f920fb9",
+    "equivalentPublishedCommit": "325a915664b9c8ce44f136d08c6e0ec3c64a6ace",
+    "verifiedGitTree": "79df61485096126bc0cdb5023f87a6aad0a80c5c",
+    "authorizationSourceSha256": "c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931",
+    "exitCode": 0,
+    "filesPassed": 3,
+    "testsPassed": 10,
+    "durationSeconds": 14.66,
+    "log": "network-policy-composition-a7b24cc.log",
+    "supersedesEarlierCompositionLog": "network-policy-composition-1960318.log",
+    "scope": "Five controlled native adapter cases and five policy/registry lifecycle cases on the final schema source. Does not qualify browser flows or full web coverage."
+  },
+  "shellSettingsFollowup": {
+    "cwd": "apps/web",
+    "command": "node --max-old-space-size=640 --max-semi-space-size=8 ../../node_modules/vitest/vitest.mjs run src/AppShell.idleClock.test.tsx src/AppShell.i18n.test.tsx src/AppShell.frameGuard.test.tsx src/AppShell.beforeUnload.test.tsx src/views/Settings.test.tsx src/views/Settings.scanPrivacy.test.tsx src/views/Settings.exchange.test.tsx --coverage=false --maxWorkers=1 --no-file-parallelism",
+    "runtimeCommit": "325a915664b9c8ce44f136d08c6e0ec3c64a6ace",
+    "authorizationSourceSha256": "c65e93f414098aa7158fead2b1a8ab19640c448efd0359171f48cb816c807931",
+    "changedTest": "apps/web/src/views/Settings.test.tsx",
+    "changedTestSha256": "1f2bcb507b501e14702273800ea59e1eaa36b6fe44221f061c68de6870cde867",
+    "static": {
+      "command": "node --max-old-space-size=640 --max-semi-space-size=8 /workspace/scratch/e4cd51001ae8/settings-test-verify.mjs",
+      "exitCode": 0,
+      "typeScriptDiagnostics": 0,
+      "typedEslintErrors": 0,
+      "typedEslintWarnings": 0,
+      "log": "settings-test-static-325a9156.log",
+      "scope": "Original application compiler options and import closure rooted at the changed test plus vite-env.d.ts; unchanged repository ESLint rules. Not full-project qualification."
+    },
+    "red": {
+      "passed": 55,
+      "failed": 3,
+      "files": 7,
+      "log": "network-shell-settings-325a915.log",
+      "cause": "Two stale saved-notice expectations and one stale assertion that an unacknowledged stored restrictive choice remains actively Direct."
+    },
+    "correction": "Updated saved-notice text; strengthened assertions for persisted unacknowledged choice, blocked network access, absence of an active profile, acknowledged Tor selection, and subsequent revocation.",
+    "green": {
+      "exitCode": 0,
+      "filesPassed": 7,
+      "testsPassed": 58,
+      "durationSeconds": 129.01,
+      "log": "network-shell-settings-green.log"
+    },
+    "scope": "Runtime source is unchanged from 325a915; only the Settings test changed. The follow-up immutable commit is pinned in the PR body. Full hosted and full web coverage gates remain pending."
+  }
+}

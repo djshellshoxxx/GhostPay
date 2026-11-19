@@ -66,6 +66,8 @@ export function TronView(): ReactNode {
     setBusy(false);
   };
 
+  useEffect(() => services.network?.subscribe(invalidate), [services]);
+
   const begin = (): { readonly signal: AbortSignal; readonly live: () => boolean } => {
     abort.current?.abort();
     const ac = new AbortController();
@@ -104,10 +106,11 @@ export function TronView(): ReactNode {
   };
 
   /** Fresh client for the current URL, after refusing a node that reports mainnet. */
-  const connect = async (signal: AbortSignal): Promise<TronRpc> => {
+  const connect = async (signal: AbortSignal, action: 'tron-scan' | 'tron-sweep' = 'tron-sweep'): Promise<TronRpc> => {
+    const context = services.network?.authorize({ action, category: 'rpc', endpoint: url, network: { kind: 'tron', network: net.id }, match: 'prefix', signal });
     let rpc: TronRpc;
     try {
-      rpc = createRpc(url, services.fetchFn);
+      rpc = createRpc(url, context?.fetchFn ?? services.fetchFn);
     } catch {
       throw new TronViewError({ key: 'tron.node.missing' });
     }
@@ -136,7 +139,7 @@ export function TronView(): ReactNode {
     setScanning(true);
     void (async () => {
       try {
-        const rpc = await connect(signal);
+        const rpc = await connect(signal, 'tron-scan');
         if (!/^\d{1,15}$/.test(fromBlock.trim())) throw new TronViewError({ key: 'tron.block.required' });
         const res = await scanForPayments({
           rpc,
