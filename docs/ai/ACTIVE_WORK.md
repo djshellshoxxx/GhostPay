@@ -1,3 +1,45 @@
+# Historical security promotion — 2026-11-19
+
+Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
+Base/main: `e454de6abfefda70d82784fafc1d8949b277c334`.
+Owned integration: exact PR245 `baa032547a16196005dccc30a247acd55d4f62c6` and
+PR247 `20207a930336da95e78ad1d6f4987b3c74fc535a`, preserving both source parents,
+all ownership claims and their existing evidence. Resolve registry append collisions only;
+the focused main does not contain the broader master scanner changes.
+Optional source-only guard: the two net-harness source/test hunks from PR253
+`303ba1114fd78426162c4728f1778f66d64088f4`, excluding its major dependency train.
+Acceptance: merged pool helpers/witness fixtures and AST source scanner equal reviewed
+candidate source; untouched main content remains intact; bounded affected checks and
+exact dependency provenance recorded. No circuit, contract, protocol, release or gate change,
+no active source-branch overwrite, no remote mutation. Coordinator owns final publication/CI.
+
+# Historical pool repair main reconciliation — 2026-11-19
+
+Worker: actions_repair, assigned by the pre-merge reconciliation coordinator.
+Branch: `repair/ghostpay-history-pool-values-20261118-local`.
+Starting local head: `a85896ab6bb1b60eee9c9ad4ddc0e43d9ede9645`; reviewed tree:
+`7f85edb78d56c9c981ba1bc3745c3f3ccbeb07d8`. Merge target: main
+`e454de6abfefda70d82784fafc1d8949b277c334`, independently observed after PR #242 merged.
+Owned scope: this additive claim, preservation of the existing pool repair while
+merging current main, and scoped validation evidence. Preserve both source histories,
+all ownership sections, and the reviewed pool implementation/test blobs. Run the
+19 helper tests on Node 22 and obtain independent integration-diff review. Source
+conflicts require inspection; publication and hosted qualification remain coordinator-owned.
+
+# Historical scanner repair main reconciliation — 2026-11-19
+
+Worker: actions_repair, assigned by the pre-merge reconciliation coordinator.
+Branch: `repair/ghostpay-history-scanner-20261118-local`.
+Starting local head: `3db24b5496a2d1979a55757a2b83eb8dd362614b`; reviewed tree:
+`96e15f7544b592bac8da065ad64188f56b0d9f4d`. Merge target: main
+`e454de6abfefda70d82784fafc1d8949b277c334`, independently observed after PR #242 merged.
+Owned scope: this additive claim, preservation of the existing AST scanner repair
+while merging current main, and scoped validation evidence. Preserve both source
+histories, all ownership sections, and the reviewed scanner implementation/test blobs.
+Run all 88 scanner/privacy tests on Node 22, scan the resulting eligible production
+sources, and obtain independent integration-diff review. Source conflicts require
+inspection; publication and hosted qualification remain coordinator-owned.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
@@ -421,6 +463,44 @@ dependency, build, upload or rerun. Hosted artifact existence remains unverified
 precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
 limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
 
+# Historical source-sink scanner reconciliation — 2026-11-18
+
+
+# Historical pool input guard recovery — 2026-11-18
+
+Worker: history_review, coordinated by the pre-merge repair lead.
+Branch: `repair/ghostpay-history-pool-values-20261118-local`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
+Owned paths: `packages/pool-circuits/src/inputs.ts`, `src/helpers.test.ts`, `test/witness.test.ts`,
+the package `DEVIATIONS.md`, this claim and a scoped merge-readiness handoff.
+Acceptance: recover the existing historical nonzero-input guards from
+`ea1f0b244f0adf4794e55cda6dc7dbd1e5f4039c` and property regression from
+`768b1f4cc86638e747cb1553297d012973c4cbb0`; reproduce the present helper/contract
+mismatch, preserve valid positive values and full withdrawals, and qualify the
+minimal repair independently. All 44 open PR file lists were checked; none
+changes the two owned source/test paths. The existing pool circuit constraints,
+proof artifacts, contracts, crypto, dependencies, deployment and security gates
+remain outside this scope. The coordinator owns publication and integration.
+
+Owned paths: `apps/web/scripts/scan-bundle.mjs`, its `.d.mts` declaration,
+`apps/web/src/scanBundle.test.ts`, this claim and a source-pinned scanner handoff.
+Acceptance: reproduce the source scanner's false negatives after nested template,
+regex and JSX text; reconcile only the TypeScript AST source-sink check from
+historical `016fa2521f7cd7c1cfbe763aaf658e32f6e27be6`; retain current built-artifact,
+HTML, CSP, deployment and release-boundary checks unchanged. Add behavioral
+regressions, use already-declared TypeScript without dependency changes, fail on
+unparsable source, and independently review before integration.
+Ownership check: open PRs #209 and #238 still contain the old comment stripper;
+their separately owned hosting/HTML/deployment changes are preserved. Original
+branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
+regressions (4 failed / 15 passed before correction; 19/19 after), package
+typecheck/lint/build, secret scan and action pins passing. Available full package
+coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existing
+artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
+also passes all 19 helper tests. See the source-pinned handoff under
+`docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
 
 ## Shared invoice signer-policy extraction — 2026-11-18
 
@@ -491,3 +571,44 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+# Historical pool input guard recovery — 2026-11-18
+
+Worker: history_review, coordinated by the pre-merge repair lead.
+Branch: `repair/ghostpay-history-pool-values-20261118-local`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
+Owned paths: `packages/pool-circuits/src/inputs.ts`, `src/helpers.test.ts`, `test/witness.test.ts`,
+the package `DEVIATIONS.md`, this claim and a scoped merge-readiness handoff.
+Acceptance: recover the existing historical nonzero-input guards from
+`ea1f0b244f0adf4794e55cda6dc7dbd1e5f4039c` and property regression from
+`768b1f4cc86638e747cb1553297d012973c4cbb0`; reproduce the present helper/contract
+mismatch, preserve valid positive values and full withdrawals, and qualify the
+minimal repair independently. All 44 open PR file lists were checked; none
+changes the two owned source/test paths. The existing pool circuit constraints,
+proof artifacts, contracts, crypto, dependencies, deployment and security gates
+remain outside this scope. The coordinator owns publication and integration.
+
+Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
+regressions (4 failed / 15 passed before correction; 19/19 after), package
+typecheck/lint/build, secret scan and action pins passing. Available full package
+coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existing
+artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
+also passes all 19 helper tests. See the source-pinned handoff under
+`docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
+
+# Historical source-sink scanner reconciliation — 2026-11-18
+
+Worker: actions_repair, Caveman investigate-first; parent owns publication and integration.
+Branch: `repair/ghostpay-history-scanner-20261118-local`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
+Owned paths: `apps/web/scripts/scan-bundle.mjs`, its `.d.mts` declaration,
+`apps/web/src/scanBundle.test.ts`, this claim and a source-pinned scanner handoff.
+Acceptance: reproduce the source scanner's false negatives after nested template,
+regex and JSX text; reconcile only the TypeScript AST source-sink check from
+historical `016fa2521f7cd7c1cfbe763aaf658e32f6e27be6`; retain current built-artifact,
+HTML, CSP, deployment and release-boundary checks unchanged. Add behavioral
+regressions, use already-declared TypeScript without dependency changes, fail on
+unparsable source, and independently review before integration.
+Ownership check: open PRs #209 and #238 still contain the old comment stripper;
+their separately owned hosting/HTML/deployment changes are preserved. Original
+branches remain read-only. No workflow, contract, paid-automation or deployment changes.
