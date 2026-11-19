@@ -1,0 +1,84 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-network-selection/apps/web
+
+ ❯ src/lib/networkAuthorization.test.ts (122 tests | 24 failed | 90 skipped) 123ms
+   ❯ strict persisted v1 selection at the common dispatch boundary (32)
+     × refuses EVM dispatch for a present empty record 43ms
+     × refuses EVM dispatch for a present missing rpcProfile 4ms
+     × refuses EVM dispatch for a present missing relayerProfile 3ms
+     × refuses EVM dispatch for a present missing rpcMode 3ms
+     × refuses EVM dispatch for a present missing noticeAcknowledged 3ms
+     × refuses EVM dispatch for a present lost own-node field 3ms
+     × refuses BTC dispatch for a present empty record 2ms
+     × refuses BTC dispatch for a present missing rpcProfile 3ms
+     × refuses BTC dispatch for a present missing relayerProfile 3ms
+     × refuses BTC dispatch for a present missing rpcMode 3ms
+     × refuses BTC dispatch for a present missing noticeAcknowledged 2ms
+     × refuses BTC dispatch for a present lost own-node field 2ms
+     × refuses Solana dispatch for a present empty record 2ms
+     × refuses Solana dispatch for a present missing rpcProfile 1ms
+     × refuses Solana dispatch for a present missing relayerProfile 2ms
+     × refuses Solana dispatch for a present missing rpcMode 2ms
+     × refuses Solana dispatch for a present missing noticeAcknowledged 2ms
+     × refuses Solana dispatch for a present lost own-node field 1ms
+     × refuses TRON dispatch for a present empty record 1ms
+     × refuses TRON dispatch for a present missing rpcProfile 7ms
+     × refuses TRON dispatch for a present missing relayerProfile 2ms
+     × refuses TRON dispatch for a present missing rpcMode 1ms
+     × refuses TRON dispatch for a present missing noticeAcknowledged 2ms
+     × refuses TRON dispatch for a present lost own-node field 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 24 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present empty record
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present missing rpcProfile
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present missing relayerProfile
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present missing rpcMode
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present missing noticeAcknowledged
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present lost own-node field
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present empty record
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present missing rpcProfile
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present missing relayerProfile
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present missing rpcMode
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present missing noticeAcknowledged
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present lost own-node field
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present empty record
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present missing rpcProfile
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present missing relayerProfile
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present missing rpcMode
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present missing noticeAcknowledged
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present lost own-node field
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present empty record
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present missing rpcProfile
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present missing relayerProfile
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present missing rpcMode
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present missing noticeAcknowledged
+ FAIL  src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present lost own-node field
+AssertionError: expected { refused: false, dispatched: 1 } to deeply equal { refused: true, dispatched: +0 }
+
+- Expected
++ Received
+
+  {
+-   "dispatched": 0,
+-   "refused": true,
++   "dispatched": 1,
++   "refused": false,
+  }
+
+ ❯ src/lib/networkAuthorization.test.ts:256:68
+    254|       let refused = false;
+    255|       try { await text(h.authorize({ action, network }), rpc, init); }…
+    256|       expect({ refused, dispatched: h.fetcher.mock.calls.length }).toE…
+       |                                                                    ^
+    257|     },
+    258|   );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/24]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  24 failed | 8 passed | 90 skipped (122)
+   Start at  23:35:21
+   Duration  3.82s (transform 64%, import 32%, tests 3%)
+
