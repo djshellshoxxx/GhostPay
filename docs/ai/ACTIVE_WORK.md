@@ -530,3 +530,20 @@ coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existin
 artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
 also passes all 19 helper tests. See the source-pinned handoff under
 `docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
+
+# Historical source-sink scanner reconciliation — 2026-11-18
+
+Worker: actions_repair, Caveman investigate-first; parent owns publication and integration.
+Branch: `repair/ghostpay-history-scanner-20261118-local`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
+Owned paths: `apps/web/scripts/scan-bundle.mjs`, its `.d.mts` declaration,
+`apps/web/src/scanBundle.test.ts`, this claim and a source-pinned scanner handoff.
+Acceptance: reproduce the source scanner's false negatives after nested template,
+regex and JSX text; reconcile only the TypeScript AST source-sink check from
+historical `016fa2521f7cd7c1cfbe763aaf658e32f6e27be6`; retain current built-artifact,
+HTML, CSP, deployment and release-boundary checks unchanged. Add behavioral
+regressions, use already-declared TypeScript without dependency changes, fail on
+unparsable source, and independently review before integration.
+Ownership check: open PRs #209 and #238 still contain the old comment stripper;
+their separately owned hosting/HTML/deployment changes are preserved. Original
+branches remain read-only. No workflow, contract, paid-automation or deployment changes.
