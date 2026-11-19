@@ -1,0 +1,378 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-19T11:36:28.813887+00:00",
+  "candidate": "65b550934078c937d16da93d3dbb61ee974e66cb",
+  "original_review_checkpoint": "35978ab796b7c476eb35dd9ed634ca4ff86ff9b9",
+  "runtime_unchanged_between_checkpoints": true,
+  "verdict": "BLOCKED",
+  "scope": "Bounded AI-assisted final review of combined Sweep lifecycle/signing, payment-export network authority, clock revocation, production service enforcement and release gates. Not an independent external audit or complete release qualification.",
+  "reviewed_files": {
+    "apps/web/src/lib/sweep.ts": {
+      "blob": "6d14435b315f38646c30d6406ae358a73210d715",
+      "sha256": "dc4c7d923e17882dca043cb3147ed0c19066eeea3147fae98206628ed69d235e"
+    },
+    "apps/web/src/views/Sweep.tsx": {
+      "blob": "2b04af66b8d6b46898ba2a504527e70f9dd510df",
+      "sha256": "c9d4e3ac6de164f42b13a617baa94e141581308d8da0a598cf840fff12f20cd6"
+    },
+    "apps/web/src/lib/paymentExportRpc.ts": {
+      "blob": "78a2122759db2b1245b74cd965c4c4f20b539a15",
+      "sha256": "b2ee8e2a4881840c4ba89c8c434a47652820200e6ab0d5e209549be7839c0b31"
+    },
+    "apps/web/src/lib/paymentKeyExport.ts": {
+      "blob": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd",
+      "sha256": "3993ddc825b5129447fdfca89d449ecd3db9eaa524e9cc5a682c324daea48d9f"
+    },
+    "apps/web/src/lib/networkAuthorization.ts": {
+      "blob": "04defade63f86886f12a6299f19f46a2e562b680",
+      "sha256": "3bcc735e14fd5245c12ea5d391502affa802cb5c6f7c5ff9b457c2b2b1c060ea"
+    },
+    "apps/web/src/views/Scan.tsx": {
+      "blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+      "sha256": "e4a9a5479ca2fb8079b8f4035beaf9d06fef7493769ed77c0698dcbdc6b9dffd"
+    },
+    "apps/web/src/lib/defaultServices.ts": {
+      "blob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb",
+      "sha256": "5c533a152aeb1f42ce631fd3a1c0531054d884f301fb26728b3e365afd460bb5"
+    },
+    "apps/web/src/lib/jitter.ts": {
+      "blob": "9845576adfb522c17db145b1772276f66523180c",
+      "sha256": "55ed63ac5016b04e53b959e7babf12ed9fbe0ce16589eb9474ef475c3356fba6"
+    },
+    "docs/adr/ADR-0029-github-pages-static-beta.md": {
+      "blob": "18ca7c2d4b6359e28e6c51fe11e476d3d062c5fe",
+      "sha256": "d738534bdda9c87d0b1537e8d76585d31be89ef8da279536b5dfdd0696d738dc"
+    },
+    ".github/workflows/ci.yml": {
+      "blob": "5e7081f57d6a8a50c86f4efe333f967107c32e66",
+      "sha256": "0da24bb67f15e7be366361d90c255fd44cb98414ffe399dfeba1ed1c3c00b57a"
+    },
+    ".github/workflows/release.yml": {
+      "blob": "3c1c276cb45d5b7a337372733ac51ad7ce57158b",
+      "sha256": "e377945e6faf4fd54c8875679a6e90a740692e447158eb738bd333d96b781d88"
+    },
+    ".github/release-signers/allowed_signers": {
+      "blob": "32a243de95dc63801f284c23dd5c999e9a860d27",
+      "sha256": "ef24ed6fdb3cfb7add069f55e76b4d6f323e250f0e0713d74d5a3942a7e8711d"
+    },
+    "scripts/pages/build-pages.sh": {
+      "blob": "087d5ee32ed8f3724b4cce635e2e9702d959068c",
+      "sha256": "394405785542ddac814e5b81e236bfc7318c1ebdad8514480c869d98aa6f94e2"
+    },
+    "packages/contracts/scripts/run-mythril.sh": {
+      "blob": "7ad37efb96f6b5e1f54ffbdfc8a644ef3b03ab4e",
+      "sha256": "9a2a8966bec43b1d971c7c99a4214fef0c3a52570dbd2f0a535874c1d33eb445"
+    }
+  },
+  "source_review": {
+    "new_introduced_blockers_found": 0,
+    "sweep": "Original session and quote checks remain composed with caller review authority before key derivation, signatures and handoff. Native amount must equal the fresh balance the user reviewed. Destination, fee, manifest, zeroization and post-transport outcome journals remain intact.",
+    "exports": "Reauthentication precedes a fresh exact-address eth_getCode grant at the original verified endpoint. Scope, chain, policy and cancellation rechecked after awaits; disposal unconditional. Production createRpc refuses absent or unowned grants. Public export remains offline.",
+    "clock": "Invalid, negative, decreasing or throwing clock samples permanently revoke authority; guard reads do not renew last-used deadline.",
+    "recovery": "SecretBox.copyOf wipes the source by default; recovered payment boxing does wipe source scalars on success. Existing regression confirms boxed key remains usable. No defect asserted.",
+    "independence": "This worker authored the low-level sweep helper changes. A separate provenance reviewer independently reviewed exact helper source and executed14/14 authority tests, then5/5 selected native tests. This worker independently reviewed other workers component/export/clock changes.",
+    "latest_main_merge": "Only historical audit ledger added. GP-AUD-208-01 invalid merchant-clock condition is already guarded by final runtime and existing tests; ledger import does not reintroduce the source defect."
+  },
+  "slither": {
+    "version": "0.11.6",
+    "exit_code": 0,
+    "contracts_analyzed": 34,
+    "detectors": 64,
+    "results": 0,
+    "unchanged_ci_flags": [
+      "--filter-paths",
+      "lib|test|script",
+      "--fail-medium",
+      "--exclude-informational",
+      "--exclude-low"
+    ],
+    "new_suppressions_or_detector_exclusions": [],
+    "compiler": "0.8.28",
+    "optimizer_runs": 200,
+    "evm_version": "cancun",
+    "contract_tree": "0828bcdcd80b0f99dc7a4e6402e9015dc069622a",
+    "compile_scope": "Production sources/imports, matching installed crytic-compile default. FOUNDRY_DYNAMIC_TEST_LINKING=false and test/script compile omission are the tool normal behavior; no required test execution or assertion changed.",
+    "compile_command": "FOUNDRY_DYNAMIC_TEST_LINKING=false FOUNDRY_SOLC=/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28 /workspace/scratch/75c78c17e2fc/contract-tools/forge build --ast --build-info --offline --threads 1 --skip './test/**' './script/**' --out /tmp/ghostpay-security-slither-246ff268d20d/out --cache-path /tmp/ghostpay-security-slither-246ff268d20d/cache --build-info-path /tmp/ghostpay-security-slither-246ff268d20d/out/build-info",
+    "analysis_command": "slither . --ignore-compile --foundry-out-directory /tmp/ghostpay-security-slither-246ff268d20d/out --foundry-build-info-directory /tmp/ghostpay-security-slither-246ff268d20d/out/build-info --filter-paths 'lib|test|script' --fail-medium --exclude-informational --exclude-low",
+    "build_info": "/tmp/ghostpay-security-slither-246ff268d20d/out/build-info/395f1b588eaf5970.json",
+    "build_info_sha256": "8d838a043812a2116bffa9b5b5d3da4aa7487be143410f5c95d5ce1394de0ed4",
+    "compiled_inputs": [
+      {
+        "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC1363.sol",
+        "sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol",
+        "sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol",
+        "sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/interfaces/IERC5267.sol",
+        "sha256": "f89772d2d4fafcbef8b73bb10ee9a3373edec2eedb2f1b302320915b351dc3d1",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+        "sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+        "sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol",
+        "sha256": "c302edfbf7f396e1130be81278c5c994543868f0f5bf0c0fb3f557e166d8d3f2",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/Bytes.sol",
+        "sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/Create2.sol",
+        "sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/Errors.sol",
+        "sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/LowLevelCall.sol",
+        "sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/Panic.sol",
+        "sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+        "sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/ShortStrings.sol",
+        "sha256": "1cfa08d3c551e9ec0b9cd249b09987f04e7e90f352e1a5e3b0d6a3bc426b3de7",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/StorageSlot.sol",
+        "sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/Strings.sol",
+        "sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol",
+        "sha256": "ba7c2d314fcd61c9783e0b3f0c664d004b76b408fda6a84edc8267d17c5012d6",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+        "sha256": "2845caaaf70757b6cce612ae4ffbec2c382cb3d1cb9765c98fa649c0f5f1c794",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/Hashes.sol",
+        "sha256": "ecdbce11c5ecdf32b306e26b8ab1b878327c08154b4ccd04518b6b64b298cf31",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol",
+        "sha256": "fd5635e85da7518bf1a153eaa99d3fad8bb6700f9d5d9cb70ddde75935cb122c",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/cryptography/MessageHashUtils.sol",
+        "sha256": "538a0d7c4f0ec5a8562f58561890f7b49d14580674ecf58bc5f505b45c73df65",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
+        "sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/math/Math.sol",
+        "sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/math/SafeCast.sol",
+        "sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+        "matches_candidate": true
+      },
+      {
+        "path": "lib/openzeppelin-contracts/contracts/utils/math/SignedMath.sol",
+        "sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/GhostPayPolicyRouter.sol",
+        "sha256": "2799f00d68b53d606fa1a146899fe29d056a87bb390d9c2badadc6c8c4ce2a37",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/GhostPayRouter.sol",
+        "sha256": "cc2fbfcc6c221ace6e7b888ca9bb3ca7886d0898dc33d40804dd3839067bffc8",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/GhostPaySweepRelayer.sol",
+        "sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/PolicyAccount.sol",
+        "sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/PolicyAccountFactory.sol",
+        "sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/interfaces/IERC5564Announcer.sol",
+        "sha256": "398af64980d0f52d8a445a83ca3d2a22f73203821554185e1bf118775671968f",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/interfaces/IGhostPayPolicyRouter.sol",
+        "sha256": "e6f9977e522e18f956d06005d40da7530c016ae059ec4d6c189a3d47aba91db5",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/interfaces/IGhostPayRouter.sol",
+        "sha256": "0d9baf16716fc8edbd801af57b9ce08010d8737e415a4ce3bb764f0e4c6425ca",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/interfaces/IGhostPaySweepRelayer.sol",
+        "sha256": "db744507d3d1b063f23e9d0e5bc5504410e67f054869acf0f8ba039958fcffd8",
+        "matches_candidate": true
+      },
+      {
+        "path": "src/interfaces/IPolicyAccount.sol",
+        "sha256": "d4275113091d25c54a79fc5948f00a3df7466b27347661aa93d00b97b5282874",
+        "matches_candidate": true
+      }
+    ],
+    "preflight_failures": [
+      "Coordinator artifacts lacked full compiler output/AST; missing build-info output JSON, zero detectors executed.",
+      "All-test build introduced virtual foundry-pp/DeployHelper59.sol. Parser could not map it; zero detectors executed. Resolved by normal Slither compile scope and dynamic-linking setting."
+    ],
+    "limits": "Original inline suppressions and low/informational exclusions retained. Zero results means the established Medium/High gate passed, not a proof of zero vulnerabilities at every severity."
+  },
+  "observed_evidence": {
+    "helper": "131/131 passed, zero skipped in three original-config scoped files after corrected source; typed ESLint passed. Focused runs disabled coverage, thresholds unchanged.",
+    "independent_native": "Provenance reviewer pinned3f6fcb845320a6d898e996d4a11d6fa22816b671 / blob6d14435b315f38646c30d6406ae358a73210d715;5 selected native tests passed,14 unrelated cases filtered out.",
+    "foundry": "Read coordinator log:34 suites,490 passed,0 failed,0 skipped. This worker did not rerun tests; contract sources match current candidate.",
+    "dependencies": "Read clean npm ci success, production audit0 findings and full audit17 low/0 moderate/high/critical. npm10.9.8 honors unchanged root overrides; npm11.9.0 ls compares raw downstream ranges. Prior-qualified npm10 selection is environment correction, not dependency constraints change.",
+    "browser": "Actual Chromium preflight failed; no browser acceptance pass observed. Later loopback listener pass alone does not qualify browser flows."
+  },
+  "blockers": [
+    {
+      "id": "ADR-0029",
+      "milestone": "demo and testnet",
+      "type": "owner decision",
+      "detail": "ADR is Proposed; owner acceptance and exact deployment approval/configuration absent. ADR0015 prohibition remains."
+    },
+    {
+      "id": "GP-PAGES-01",
+      "milestone": "demo and testnet",
+      "type": "origin decision/configuration",
+      "detail": "Shared github.io origin is not isolated for sensitive keys. Dedicated origin/account unresolved; no shared-origin exception accepted here."
+    },
+    {
+      "id": "EXACT-SOURCE-QUALIFICATION",
+      "milestone": "demo and testnet",
+      "type": "qualification pending",
+      "detail": "Complete exact-candidate CI, coverage/build/artifact/reproducibility and browser acceptance must actually execute and pass. Scoped tests/analyzer passes do not replace them."
+    },
+    {
+      "id": "BROWSER-ACCEPTANCE",
+      "milestone": "demo and testnet",
+      "type": "environment/verification",
+      "detail": "No successful real-browser subpath, desktop/mobile/keyboard, backup/restart/revocation or devnet wallet acceptance established."
+    },
+    {
+      "id": "DIRECT-SWEEP-FEE-REVIEW",
+      "milestone": "testnet",
+      "type": "engineering",
+      "detail": "Exact gas, fee reserve and net received computed inside directSweep are not shown before signing. Native balance binding fixes amount substitution but does not supply explicit fee review."
+    },
+    {
+      "id": "TESTNET-DEPLOYMENT-SIGNERS",
+      "milestone": "testnet",
+      "type": "external authority",
+      "detail": "No deployment JSON committed; allowed_signers is comments only. Authorized bytecode/address verification, signing key/fingerprint and signed manifest absent."
+    },
+    {
+      "id": "REAL-TESTNET-ACCEPTANCE",
+      "milestone": "testnet",
+      "type": "external verification",
+      "detail": "No real-wallet payment, confirmation, scan, native sweep and recovery transaction records produced by this review."
+    },
+    {
+      "id": "MYTHRIL-GATE",
+      "milestone": "tagged beta release",
+      "type": "existing security gate",
+      "detail": "Historical retained report has11 records:3Medium8Low, not11 proven exploits. Strict runner rejects any issue. No exact-candidate full clean scan or owner-approved finding-specific mechanism established; dispositions alone do not close gate."
+    },
+    {
+      "id": "CODEQL-EXTERNAL-REVIEW",
+      "milestone": "testnet release",
+      "type": "external verification",
+      "detail": "Hosted exact-source state of prior High alerts and mandatory independent external review remain unproven. AI-assisted review is not external review."
+    }
+  ],
+  "documentation_observation": "docs/pages/README.md says native payments can always be swept directly. Final user guide should qualify sufficient fee balance, valid manifest/chain/session and fresh reviewed-balance match, and retain fee-preview/acceptance limitations.",
+  "evidence_files": {
+    "final-security-slither.log": {
+      "bytes": 2459,
+      "sha256": "29934115879b291c15d36a4356f87f146f0a4ad192568a52cd17cd6f23dc8aab"
+    },
+    "final-security-slither-build.log": {
+      "bytes": 6033,
+      "sha256": "61e05bc173f43431dae39f01e43d9a56634e017aba2e96cb00287cf2ab1f0b4a"
+    },
+    "final-security-slither-qualified.log": {
+      "bytes": 2782,
+      "sha256": "4b7a3c05b7d28ee6d1f8b1e3f95fefda3ba475c570403e17c276136c5c13adbd"
+    },
+    "final-security-slither-production-build.log": {
+      "bytes": 91,
+      "sha256": "d0150b80f95e6fd89d827b329f33112217101f581bbe0ec69a164bbc88e6c58d"
+    },
+    "final-security-slither-complete.log": {
+      "bytes": 183,
+      "sha256": "4280b10dfa3240bcbb964f8a724138a71efeb7294d982caa671e878d64b5624b"
+    },
+    "final-security-slither-complete.json": {
+      "bytes": 55,
+      "sha256": "3dc292d9cb9d5ddaff4d10d0a85d78418e6f871c4e5278677723214a74a0e2a9"
+    }
+  },
+  "mutations": "Only separate temporary analyzer artifacts and evidence written; no production source, required gate, assertion, remote branch, tag, deployment or approval changed by this final review."
+}
