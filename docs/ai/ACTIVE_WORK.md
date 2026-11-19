@@ -1222,3 +1222,5 @@ focused library/web/type/lint/browser checks available in the exact dependency e
 report remaining combined qualification explicitly. Source review by the coordinator remains required.
 Privacy/recovery workers own their current shared lanes. No remote merge/push, contract change,
 mainnet interaction, dependency upgrade or release action is included in this worker's assignment.
+
+BTC consolidation checkpoint: product head `e741aa8e8228a2099ee5abe3fd73aa14ffb011b8`; merge source and focused evidence are recorded in `docs/consolidation/btc-20261119/QUALIFICATION.md`. Coordinator final review and combined hosted qualification remain pending.
