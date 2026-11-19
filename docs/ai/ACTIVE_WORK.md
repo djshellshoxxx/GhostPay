@@ -323,6 +323,27 @@ PR #238 is a read-only consolidation input; #241 transport modules, Spec 18 form
 dependency inputs, automation branches and unrelated work stay with their existing owners.
 No merge into main, deployment or release is authorized.
 
+# Bitcoin spent-output/private-scan completion — 2026-11-18
+
+Worker: ChatGPT coordinator and three independent engineering/review lanes.
+Branch: `chatgpt/btc-spent-private-scan-20261118`.
+Base: initial main `dfc75ef2087fa6463ae59e0818abec01796c578d`, combined with unchanged PR #219
+`9617e8572f9bc414410bd937b0e7718d0c5bd55c` at `e27ce7f60fb0e21788f09df0f188b3b3490bcad2`.
+Integrated main `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` after independent compatibility
+review; only this registry overlapped, and both ownership records are preserved.
+User explicitly authorizes continuation of #219 only; PR #238 overlaps BTC paths and remains a read-only
+comparison/dependency. PR #235 seller checkpoint architecture and other feature owners are out of scope.
+
+| Lane | Owned paths | Acceptance |
+| --- | --- | --- |
+| btc_state | `apps/web/src/features/btc/scan.ts`, Bitcoin scan/state regressions; `packages/btc-silent-payments/src/scan/{scanner,state,resume}*` as needed | Reproduce/fix incomplete evidence, historical, persisted-match and reorg defects; preserve status contract and bounded local scans; no provider checks without consent. |
+| btc_ui | `apps/web/src/features/btc/BtcView*`, `scanWorker*`, `scan.worker.ts`, Bitcoin e2e; BTC-only locale/security-key additions | Explicit/revocable consent, light-mode constraint, stale-session rejection, accurate unknown/incomplete UI and deterministic browser acceptance. |
+| btc_review | Read-only scanner/source/worker/privacy audit; `docs/handoffs/btc-spent-20261118/INDEPENDENT_REVIEW.md` | Independently identify/reproduce source defects and review final fixes, source-pin evidence; no external-audit claim. |
+| coordinator | Bitcoin Esplora/oracle/header source safeguards and regressions; `docs/ai/ACTIVE_WORK.md`, `docs/handoffs/btc-spent-20261118/*`, Spec 12/BTC deviations/user docs | Acceptance matrix, preserve #219 work, qualified integration, bounded validation and performance evidence, reviewable PR. |
+
+No main merge, deployment, publication, transaction signing/construction changes, unrelated dependencies,
+contracts, general checkpoint architecture, or broad consolidation. Tests retain all release gates.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
@@ -1191,3 +1212,36 @@ records before the runtime correction, then prove zero dispatch after it with on
 dependencies. Preserve same-origin release hashing, scan legacy-field compatibility, current action/session/
 endpoint checks, all gates and dependency versions. No deployment, remote mutation, scanner suppression or
 policy exception. The implementation needs independent review from the integration coordinator.
+
+# Bitcoin PR #244 reconciliation — 2026-11-19
+
+Worker: btc_source_review, delegated by history_census for the authorized master consolidation.
+Branch: `integration/ghostpay-btc244-reconciled-20261119`.
+Base: `435c6e6bca463f83b6c55a2063f8c18c546c3c22`; source PR #244:
+`ef08170a83d86d194b8ce4186299e791027e461e`. Earlier scoped recovery
+`befd696546020abfe2988ed8c49495b4e9a83f23` remains a separate provenance snapshot.
+Owned paths: BTC web feature source/tests, BTC worker and browser fixtures, BTC package scan
+source/tests, related locale/security keys and BTC documentation; this claim and a scoped handoff.
+Acceptance: retain #244's transaction-bound spends, persisted continuous coverage, reorg/header
+ownership checks, explicit revocable consent and unknown-result selection gate. Preserve master's
+TM13 local spend tracking API/tests and fresh selected-output provider check before signing, with
+matching user disclosures. Capture worker consent from the start request for dispatch and result
+validation. Reconcile the current feature, without runtime activation, new protocols, dependencies,
+generic SecretBackup changes or unrelated chain work. Prepare focused regressions; execute only
+coordinator-authorized serialized checks and report unrun or blocked gates explicitly. The lead
+worker owns integration/publication and validation of the final combined candidate.
+
+Scope reconciliation approved by the coordinator: compare alternative PR #254 at
+`8c1d87a2587281c32a5f1326a4f36cfada4384bc`. Select its per-match coverage and canonical
+evidence revalidation, empty-result anchors, conflicting-spend rejection and retained-handler
+checks, while retaining #244's explicit revocable consent, header ownership and worker-result
+validation. Old global coverage markers remain readable as legacy unknown evidence; no automatic
+trust migration. Preserve distinct regression coverage from both source snapshots and identify
+rejected forced-light consent behavior in the final handoff.
+
+Head refresh: PR #244 advanced to `2364284a2717a22b895fcb7badeb2e7ae6bb0e48` during review.
+Its sole runtime tail `4a878e30` adds validated-result callback types; retained in the combined source.
+The coordinator confirmed #249's raw committed-input spend property must also survive: retain
+untweakable input spends and reject contradictory uncommitted coinbase annotations without outpoint queries.
+Later #251 network-operation authorization remains coordinator-owned contextual integration, with immutable
+worker consent and the separate fresh selected-output pre-sign check preserved inside its scopes.

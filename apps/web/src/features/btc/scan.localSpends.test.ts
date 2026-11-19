@@ -19,6 +19,17 @@ function setup(later: (pay: { txid: string }, pay2: { txid: string }) => ReturnT
 }
 
 describe('BTC spend detection from the scanned blocks (TM13)', () => {
+  it('refuses a committed spend mislabeled as coinbase without querying any output', async () => {
+    const f = setup((pay) => [[coinbase(2), spendTx(1, [{ txid: pay.txid, vout: 1 }])]]);
+    const spendingTx = f.chain.blocks[2]?.txs[1];
+    if (spendingTx === undefined) throw new Error('missing spending fixture');
+    // PR #249's annotation attack remains covered; contradictory metadata now fails closed at parsing.
+    spendingTx.vin[0]!.is_coinbase = true;
+    await expect(scanForPayments({ client: f.client, wallet: f.wallet, fromHeight: 0 }))
+      .rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(outspendRequests(f.chain)).toEqual([]);
+  });
+
   it('sees a spend in a later scanned block without asking the server about any output', async () => {
     const f = setup((pay) => [[coinbase(2)], [coinbase(3), spendTx(1, [{ txid: pay.txid, vout: 1 }])], [coinbase(4)]]);
     const res = await scanForPayments({ client: f.client, wallet: f.wallet, fromHeight: 0 });
@@ -76,14 +87,14 @@ describe('BTC spend detection from the scanned blocks (TM13)', () => {
     wipeFound(res.found);
   });
 
-  it('asks the server when the scan stops below the tip, so a spend in an unread block is never missed', async () => {
+  it('asks the server when explicitly selected for a scan below the tip, so it can report a spend in an unread block', async () => {
     const f = setup((pay) => [[coinbase(2)], [coinbase(3), spendTx(1, [{ txid: pay.txid, vout: 1 }])]]);
     f.chain.spent.add(`${f.pay.txid}:1`);
-    const res = await scanForPayments({ client: f.client, wallet: f.wallet, fromHeight: 0, toHeight: 2 });
+    const res = await scanForPayments({ client: f.client, wallet: f.wallet, fromHeight: 0, toHeight: 2, providerSpentCheck: true });
     expect(res.toHeight).toBe(2);
     expect(res.spentCount).toBe(1);
     expect(res.found.map((x) => x.txid)).toEqual([f.pay2.txid]);
-    // Both outputs were settled by the server, because the blocks read end before the tip.
+    // Both outputs were checked by the server under the explicitly selected provider check.
     expect(outspendRequests(f.chain)).toHaveLength(2);
     wipeFound(res.found);
   });

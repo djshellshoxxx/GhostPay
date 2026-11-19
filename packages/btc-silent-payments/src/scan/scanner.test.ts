@@ -277,6 +277,14 @@ describe('local spent tracking (getSpends)', () => {
     return events;
   }
 
+  it('reports a repeated consumed outpoint once and retains its earliest block evidence', async () => {
+    const input = { txid: fakeTxid('watched-once'), vout: 1, spentBy: fakeTxid('first-spender') };
+    const events = await spendsOf({ source: withSpends({ 101: [input, input], 102: [{ ...input, spentBy: fakeTxid('later-spender') }] }),
+      watchOutpoints: new Set([`${input.txid}:1`]),
+    });
+    expect(events).toEqual([{ ...input, height: 101, blockHash: blockHashOf(101) }]);
+  });
+
   it('reports spends of watched outpoints and of outpoints found earlier in this run, ignores the rest', async () => {
     const watched = `${fakeTxid('mine-earlier')}:1`;
     const source = withSpends({
@@ -302,6 +310,34 @@ describe('local spent tracking (getSpends)', () => {
     expect(await collect(scanBlocks({ source, keys, fromHeight: 100 }))).toHaveLength(3);
     expect(asked).toBe(0);
     expect(await spendsOf({ source: chain() })).toEqual([]);
+  });
+
+  it('reports duplicate spend entries once and rejects conflicting consumers of the same outpoint', async () => {
+    const spend = { txid: tx(101, 0), vout: 0, spentBy: fakeTxid('spend-once') };
+    expect(await spendsOf({ source: withSpends({ 102: [spend, spend] }) })).toEqual([
+      { ...spend, height: 102, blockHash: blockHashOf(102) },
+    ]);
+    await expect(spendsOf({ source: withSpends({ 102: [spend, { ...spend, spentBy: fakeTxid('conflicting-spend') }] }) }))
+      .rejects.toSatisfy((e) => codeOf(e) === 'INVALID_RESPONSE');
+    // Validate conflicts even when neither consumer touches this wallet.
+    const unknown = { ...spend, txid: fakeTxid('unwatched') };
+    await expect(spendsOf({ source: withSpends({ 100: [unknown, { ...unknown, spentBy: fakeTxid('conflicting-spend') }] }) }))
+      .rejects.toSatisfy((e) => codeOf(e) === 'INVALID_RESPONSE');
+  });
+
+  it('reports the first spend once across blocks and still validates later duplicate lists', async () => {
+    const first = { txid: tx(101, 0), vout: 0, spentBy: fakeTxid('first-spender') };
+    const later = { ...first, spentBy: fakeTxid('later-spender') };
+    expect(await spendsOf({ source: withSpends({ 102: [first], 103: [first, first] }) })).toEqual([
+      { ...first, height: 102, blockHash: blockHashOf(102) },
+    ]);
+    expect(await spendsOf({ source: withSpends({ 102: [first], 103: [later] }) })).toEqual([
+      { ...first, height: 102, blockHash: blockHashOf(102) },
+    ]);
+    await expect(spendsOf({ source: withSpends({ 102: [first], 103: [first, later] }) }))
+      .rejects.toSatisfy((e) => codeOf(e) === 'INVALID_RESPONSE');
+    await expect(spendsOf({ source: withSpends({ 102: [first], 103: [{ ...first, spentBy: 'invalid' }] }) }))
+      .rejects.toSatisfy((e) => codeOf(e) === 'INVALID_RESPONSE');
   });
 
   it('rejects spends whose block hash or height disagree with the block (REORG_DETECTED)', async () => {

@@ -15,7 +15,7 @@ Like the EVM flow, a seller shares **one reusable address** (`sp1...`) and every
 3. **Chain** carries an ordinary-looking output. Nothing is announced.
 4. **Scan data** in the web view comes from an Esplora-compatible server you choose. The app downloads blocks and computes tweaks locally; the server sees the requested heights, not your keys. The package also has an oracle client, which is not wired into this view.
 5. **Receiver** scans with the scan secret (kept local) and finds outputs.
-6. **Spend** derives the spend key per output and signs a PSBT or raw transaction. Hardware-wallet signing is out of scope.
+6. **Spend** requires current scan evidence and explicit output selection. The browser rechecks selected outpoints with the configured provider before deriving their spend keys and signing; those queries disclose the selected outputs. Hardware-wallet signing is out of scope.
 
 ## Limits to remember
 

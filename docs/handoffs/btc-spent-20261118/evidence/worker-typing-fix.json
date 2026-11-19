@@ -1,0 +1,111 @@
+{
+  "candidateCommit": "10c3993d4d7a215c57b936ee2b1967741d247675",
+  "change": "Three callback parameter type annotations only; all runtime guards and behavioral tests preserved.",
+  "report": {
+    "baseCommit": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+    "changedSource": "apps/web/src/features/btc/scanWorkerClient.ts",
+    "fix": "Only three explicit validated-array callback parameter types; no runtime, guard, test, expectation, or ESLint rule changes.",
+    "lintRed": {
+      "exitCode": 1,
+      "errors": 10,
+      "log": "btc-worker-client-lint-red.log"
+    },
+    "lintGreen": {
+      "baseline": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+      "baseHead": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+      "node": "v22.23.5",
+      "fileCount": 28,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 28294,
+      "defaultConfig": "eslint.config.js",
+      "rulesDisabled": false
+    },
+    "emittedJavaScript": {
+      "file": "apps/web/src/features/btc/scanWorkerClient.ts",
+      "baseCommit": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+      "typescript": "5.9.3",
+      "node": "v22.23.5",
+      "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext"
+      },
+      "beforeSourceSha256": "06c17438dcf3a7993f527a76b05055863b56c12e81c7af0afe5b2bb45e3c9873",
+      "afterSourceSha256": "79354de827abcef8057aa6b14de6b3be88edbd03e4866ccdee07dfbd0811d989",
+      "beforeEmittedSha256": "7d6dd13f1bd0e28209ad0667695045a3a6373d98810a5f9a20caeec572e4d853",
+      "afterEmittedSha256": "7d6dd13f1bd0e28209ad0667695045a3a6373d98810a5f9a20caeec572e4d853",
+      "emittedByteCount": 10176,
+      "emittedEqual": true
+    },
+    "unchangedTests": [
+      {
+        "file": "apps/web/src/features/btc/scanWorker.test.ts",
+        "sha256": "1d9db88a78ad082ca0b2051bd79e6f6df6fb3baba53393327ccf7ca25aa6bb9a",
+        "unchanged": true
+      },
+      {
+        "file": "apps/web/src/features/btc/scanWorkerSource.test.ts",
+        "sha256": "df3a2a2a631bc4ce9c5814904a8f72bd16c4f435aeb1467b9efd67b30b821e85",
+        "unchanged": true
+      }
+    ],
+    "regressions": {
+      "files": 2,
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "success": true,
+      "durationSeconds": 17.8,
+      "singleWorker": true,
+      "exitCode": 0
+    },
+    "prerequisites": {
+      "missingWorkspaceOutputsBuilt": true,
+      "missingImportsAfterBuild": 0,
+      "missingOutputFilesAfterBuild": 0
+    },
+    "logs": [
+      "btc-worker-client-lint-red.log",
+      "btc-focused-lint-green.log",
+      "btc-worker-client-regressions.log",
+      "btc-focused-lint-dependency-build.log"
+    ]
+  },
+  "emittedEquality": {
+    "file": "apps/web/src/features/btc/scanWorkerClient.ts",
+    "baseCommit": "3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a",
+    "typescript": "5.9.3",
+    "node": "v22.23.5",
+    "compilerOptions": {
+      "target": "ES2022",
+      "module": "ESNext"
+    },
+    "beforeSourceSha256": "06c17438dcf3a7993f527a76b05055863b56c12e81c7af0afe5b2bb45e3c9873",
+    "afterSourceSha256": "79354de827abcef8057aa6b14de6b3be88edbd03e4866ccdee07dfbd0811d989",
+    "beforeEmittedSha256": "7d6dd13f1bd0e28209ad0667695045a3a6373d98810a5f9a20caeec572e4d853",
+    "afterEmittedSha256": "7d6dd13f1bd0e28209ad0667695045a3a6373d98810a5f9a20caeec572e4d853",
+    "emittedByteCount": 10176,
+    "emittedEqual": true
+  },
+  "logs": [
+    {
+      "filename": "btc-worker-client-lint-red.log",
+      "bytes": 1616,
+      "sha256": "9cf607bf447e2a00f39e2e9dc0a654f8afaad07cea0d6cd567a412fe92d0611d",
+      "content": "(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n/workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web/src/features/btc/scanWorkerClient.ts\n  41:30  error  Unsafe member access .height on an `any` value                          @typescript-eslint/no-unsafe-member-access\n  41:71  error  Unsafe argument of type `any` assigned to a parameter of type `number`  @typescript-eslint/no-unsafe-argument\n  41:73  error  Unsafe member access .height on an `any` value                          @typescript-eslint/no-unsafe-member-access\n  41:87  error  Unsafe member access .hash on an `any` value                            @typescript-eslint/no-unsafe-member-access\n  42:29  error  Unsafe member access .height on an `any` value                          @typescript-eslint/no-unsafe-member-access\n  42:70  error  Unsafe argument of type `any` assigned to a parameter of type `number`  @typescript-eslint/no-unsafe-argument\n  42:72  error  Unsafe member access .height on an `any` value                          @typescript-eslint/no-unsafe-member-access\n  42:86  error  Unsafe member access .blockHash on an `any` value                       @typescript-eslint/no-unsafe-member-access\n  43:39  error  Unsafe member access .txid on an `any` value                            @typescript-eslint/no-unsafe-member-access\n  43:56  error  Unsafe member access .vout on an `any` value                            @typescript-eslint/no-unsafe-member-access\n\n\u2716 10 problems (10 errors, 0 warnings)\n\n"
+    },
+    {
+      "filename": "btc-focused-lint-green.log",
+      "bytes": 1959,
+      "sha256": "4f91d0cbd4f34d5f0b24a149bf6852c728a83376378276dfae575de020d2ab33",
+      "content": "(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n{\"node\":\"v22.23.5\",\"cwd\":\"/workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web\",\"executable\":\"/workspace/scratch/c20ffc46347e/toolchain/bin/node\",\"args\":[\"--max-old-space-size=1024\",\"../../node_modules/eslint/bin/eslint.js\",\"--config\",\"../../eslint.config.js\",\"e2e/btc-spent-consent.spec.ts\",\"e2e/btc-worker.spec.ts\",\"src/features/btc/BtcView.headerOwnership.test.tsx\",\"src/features/btc/BtcView.headers.test.tsx\",\"src/features/btc/BtcView.oracle.test.tsx\",\"src/features/btc/BtcView.secrets.test.tsx\",\"src/features/btc/BtcView.spentConsent.test.tsx\",\"src/features/btc/BtcView.test.tsx\",\"src/features/btc/BtcView.tsx\",\"src/features/btc/esplora.test.ts\",\"src/features/btc/esplora.ts\",\"src/features/btc/fixtures.testutil.ts\",\"src/features/btc/headers.test.ts\",\"src/features/btc/headers.ts\",\"src/features/btc/oracleSource.test.ts\",\"src/features/btc/oracleSource.ts\",\"src/features/btc/oracleWorker.test.ts\",\"src/features/btc/scan-secrets.hardening.test.ts\",\"src/features/btc/scan.spends.test.ts\",\"src/features/btc/scan.ts\",\"src/features/btc/scanWorker.test.ts\",\"src/features/btc/scanWorkerClient.ts\",\"src/features/btc/scanWorkerMessages.ts\",\"src/features/btc/scanWorkerProtocol.ts\",\"src/features/btc/scanWorkerSource.test.ts\",\"src/features/btc/scanWorkerSource.ts\",\"src/features/btc/verification.ts\",\"src/i18n/securityKeys.ts\"],\"prerequisiteImportsReady\":true}\n(node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n{\"baseline\":\"58d89b39b27a66454ebf392bcd35d5c68b57b2f8\",\"baseHead\":\"3f4811afbfbdd5fa2fd2fbdd9afdac86f976668a\",\"node\":\"v22.23.5\",\"fileCount\":28,\"exitCode\":0,\"signal\":null,\"durationMs\":28294,\"defaultConfig\":\"eslint.config.js\",\"rulesDisabled\":false}\n"
+    },
+    {
+      "filename": "btc-worker-client-regressions.log",
+      "bytes": 2082,
+      "sha256": "1fa0990e21cbcf2423e6f22ed53a2b5c323c589ec5c979f5b52da87da6680d6a",
+      "content": "(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n RUN  v5.0.5 /workspace/scratch/c20ffc46347e/GhostPay-integration/apps/web\n\n(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scanWorker.test.ts (20 tests) 10006ms\n   \u2713 BTC dedicated worker message integration (7)\n     \u2713 requires an injected transport before creating a worker 364ms\n     \u2713 carries the provider spent-check opt-in into the worker and the spent status back out 1702ms\n     \u2713 matches direct scanning through cloned messages without sending spend secrets and wipes worker copies 1070ms\n     \u2713 awaits each checkpoint commit, resumes from committed state and freshly validates old matches 930ms\n   \u2713 BTC worker stale and untrusted boundary (13)\n     \u2713 rejects a provider-labelled result without consent and wipes its transferred tweak 524ms\n     \u2713 binds a same-session worker result to the requested range evidence 715ms\n     \u2713 binds a same-session worker result to the requested chain evidence 648ms\n     \u2713 binds a same-session worker result to the requested duplicate evidence 489ms\n     \u2713 binds a same-session worker result to the requested local-gap evidence 456ms\n     \u2713 binds a same-session worker result to the requested history-page evidence 459ms\n     \u2713 ignores another request and wipes a late result after cancellation 1124ms\n(node:49) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n \u2713 src/features/btc/scanWorkerSource.test.ts (9 tests) 243ms\n\n Test Files  2 passed (2)\n      Tests  29 passed (29)\n   Start at  22:59:06\n   Duration  17.80s (tests 61%, transform 24%, import 15%)\n\nJSON report written to /workspace/scratch/c20ffc46347e/integration-evidence/btc-worker-client-regressions.json\n"
+    }
+  ]
+}
