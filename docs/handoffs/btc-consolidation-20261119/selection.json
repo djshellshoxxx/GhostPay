@@ -288,5 +288,31 @@
   "coordination": "Root owns later master merge; no remote writes by this lane.",
   "distinct_passing_tests": 367,
   "distinct_test_files": 27,
-  "reconciliation_status": "focused source/tests qualified locally; combined master integration and full hosted gates remain coordinator-owned"
+  "reconciliation_status": "focused source/tests qualified locally; combined master integration and full hosted gates remain coordinator-owned",
+  "reconciliation_commit": "7def7ca804d7d45174f3832e7761493441a76b56",
+  "advanced_pr244_integration_commit": "73b6f8d1915e594e368a0737708d8240ebd6d59d",
+  "advanced_merge_changed_paths": [
+    "docs/handoffs/btc-spent-20261118/ACCEPTANCE_MATRIX.md",
+    "docs/handoffs/btc-spent-20261118/FILE_MAP.md",
+    "docs/handoffs/btc-spent-20261118/INDEPENDENT_REVIEW.md",
+    "docs/handoffs/btc-spent-20261118/README.md",
+    "docs/handoffs/btc-spent-20261118/VALIDATION.md",
+    "docs/handoffs/btc-spent-20261118/benchmark.mjs",
+    "docs/handoffs/btc-spent-20261118/evidence/benchmark-before-measurement.json",
+    "docs/handoffs/btc-spent-20261118/evidence/benchmark-final.json",
+    "docs/handoffs/btc-spent-20261118/evidence/btc-node22-final-report.json",
+    "docs/handoffs/btc-spent-20261118/evidence/commit-transport.json",
+    "docs/handoffs/btc-spent-20261118/evidence/hosted-ci.json",
+    "docs/handoffs/btc-spent-20261118/evidence/hosted-integration.json",
+    "docs/handoffs/btc-spent-20261118/evidence/hosted-pages-browser.json",
+    "docs/handoffs/btc-spent-20261118/evidence/hosted-pages.json",
+    "docs/handoffs/btc-spent-20261118/evidence/independent-tests.json",
+    "docs/handoffs/btc-spent-20261118/evidence/local-build-attempt.json",
+    "docs/handoffs/btc-spent-20261118/evidence/local-check-logs.json",
+    "docs/handoffs/btc-spent-20261118/evidence/previous-btc-node24-report.json",
+    "docs/handoffs/btc-spent-20261118/evidence/small-checks.json",
+    "docs/handoffs/btc-spent-20261118/evidence/source-pins.json",
+    "docs/handoffs/btc-spent-20261118/evidence/worker-typing-fix.json"
+  ],
+  "advanced_merge_runtime_and_tests_unchanged": true
 }

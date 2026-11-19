@@ -1,5 +1,8 @@
 # Bitcoin historical and concurrent-source reconciliation — 2026-11-19
 
+Combined source commit: `7def7ca804d7d45174f3832e7761493441a76b56`. Advanced #244 ancestry/evidence merge: `73b6f8d1915e594e368a0737708d8240ebd6d59d`.
+The latter changes only historical handoff documents; runtime and tests are byte-identical to the qualified combined source.
+
 ## Scope and source pins
 
 This is a local reconciliation of existing Bitcoin functionality. It does not enable a new runtime profile,
