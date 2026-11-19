@@ -279,31 +279,43 @@ function useBoxed<T>(box: SecretBox | undefined, fn: (secret: SecretScalar) => T
 /** Decrypted payment keys of an opened `ghostpay-stealth-keypair-v1` file, held boxed until {@link dispose}. */
 export class RecoveredPaymentKeys {
   readonly #boxes: readonly SecretBox[];
+  readonly #unchanged: () => void;
 
-  private constructor(public readonly header: StealthKeypairHeader, boxes: readonly SecretBox[]) {
+  private constructor(public readonly header: StealthKeypairHeader, boxes: readonly SecretBox[], unchanged: () => void) {
     this.#boxes = boxes;
+    this.#unchanged = unchanged;
   }
 
   /** Moves the decrypted scalars into boxes (wiping the scalars, also when boxing fails). */
   public static take(header: StealthKeypairHeader, payments: readonly VerifiedStealthPayment[]): RecoveredPaymentKeys {
     const boxes: SecretBox[] = [];
     try {
+      const unchanged = captureSessionVersionGuard();
       for (const p of payments) boxes.push(SecretBox.copyOf(p.secret, { label: 'payment' }));
+      return new RecoveredPaymentKeys(header, boxes, unchanged);
     } catch (error) {
       for (const b of boxes) b.dispose();
       zeroize(...payments.map((p) => p.secret));
       throw error;
     }
-    return new RecoveredPaymentKeys(header, boxes);
   }
 
   /** Raw private-key text of entry `index`, after the user's second confirmation. */
   public rawKeyFile(index: number, confirmed: true): StealthExportFile {
     if ((confirmed as unknown) !== true) throw new UserFacingError({ key: 'error.paymentKeyExport.confirmRawKey' });
     const record = this.header.payments[index];
-    if (record === undefined) return closed();
-    const text = useBoxed(this.#boxes[index], (secret) => formatRawPrivateKey(record, secret));
-    return { filename: STEALTH_EXPORT_FILENAMES.privateKey, text, type: 'text/plain' };
+    if (record === undefined || this.disposed) return closed();
+    try {
+      // A resumed click or direct caller can precede browser lock events. Check the deadline and the recovery's
+      // original session revision at each secret loan, including a recovery that began without loaded seller keys.
+      this.#unchanged();
+      const text = useBoxed(this.#boxes[index], (secret) => formatRawPrivateKey(record, secret));
+      this.#unchanged();
+      return { filename: STEALTH_EXPORT_FILENAMES.privateKey, text, type: 'text/plain' };
+    } catch (error) {
+      this.dispose();
+      throw error;
+    }
   }
 
   public get disposed(): boolean {
@@ -320,18 +332,21 @@ export class RecoveredPaymentKeys {
 export class RecoveredMasterKeys {
   readonly #spending: SecretBox;
   readonly #viewing: SecretBox;
+  readonly #unchanged: () => void;
 
-  private constructor(public readonly header: StealthMasterHeader, spending: SecretBox, viewing: SecretBox) {
+  private constructor(public readonly header: StealthMasterHeader, spending: SecretBox, viewing: SecretBox, unchanged: () => void) {
     this.#spending = spending;
     this.#viewing = viewing;
+    this.#unchanged = unchanged;
   }
 
   /** Moves the decrypted scalars into boxes (wiping the scalars, also when boxing fails). */
   public static take(header: StealthMasterHeader, spending: SecretScalar, viewing: SecretScalar): RecoveredMasterKeys {
     let spendingBox: SecretBox | undefined;
     try {
+      const unchanged = captureSessionVersionGuard();
       spendingBox = SecretBox.copyOf(spending, { label: 'spending' });
-      return new RecoveredMasterKeys(header, spendingBox, SecretBox.copyOf(viewing, { label: 'viewing' }));
+      return new RecoveredMasterKeys(header, spendingBox, SecretBox.copyOf(viewing, { label: 'viewing' }), unchanged);
     } catch (error) {
       spendingBox?.dispose();
       throw error;
@@ -356,8 +371,11 @@ export class RecoveredMasterKeys {
    */
   public install(): SessionPublic {
     try {
+      if (this.disposed) return closed();
+      this.#unchanged();
       const spendingKeyHex = useBoxed(this.#spending, (s) => bytesToHex(s));
       const viewingKeyHex = useBoxed(this.#viewing, (s) => bytesToHex(s));
+      this.#unchanged();
       return importSession({ spendingKeyHex, viewingKeyHex });
     } finally {
       this.dispose();
@@ -396,6 +414,7 @@ export interface OpenStealthExportOptions {
 export async function openStealthExport(text: string, passphrase: string, options: OpenStealthExportOptions = {}): Promise<OpenedStealthExport> {
   const assertOpen = (): void => { if (options.signal?.aborted === true) throw new UserFacingError(CANCELLED); };
   assertOpen();
+  const unchanged = captureSessionVersionGuard();
   if (text.length > STEALTH_EXPORT_LIMITS.keypairFileBytes) throw new UserFacingError({ key: 'error.stealthExport.tooLarge' });
   const format = detectStealthExportFormat(text);
   if (format === 'public') {
@@ -406,15 +425,27 @@ export async function openStealthExport(text: string, passphrase: string, option
   if (format === 'keypair') {
     const opened = await decryptPaymentKeys(text, passphrase, options.expectedChainId === undefined ? {} : { expectedChainId: options.expectedChainId });
     const keys = RecoveredPaymentKeys.take(opened.header, opened.payments);
-    if (options.signal?.aborted === true) { keys.dispose(); throw new UserFacingError(CANCELLED); }
-    return { kind: 'keypair', keys };
+    try {
+      assertOpen();
+      unchanged();
+      return { kind: 'keypair', keys };
+    } catch (error) {
+      keys.dispose();
+      throw error;
+    }
   }
   if (format === 'master') {
     if (options.expectedChainId !== undefined) throw new UserFacingError({ key: 'error.stealthExport.wrongChain' });
     const opened = await decryptMasterBackup(text, passphrase);
     const keys = RecoveredMasterKeys.take(opened.header, opened.spendingSecret, opened.viewingSecret);
-    if (options.signal?.aborted === true) { keys.dispose(); throw new UserFacingError(CANCELLED); }
-    return { kind: 'master', keys };
+    try {
+      assertOpen();
+      unchanged();
+      return { kind: 'master', keys };
+    } catch (error) {
+      keys.dispose();
+      throw error;
+    }
   }
   throw new UserFacingError({ key: 'error.stealthExport.invalidFile' });
 }

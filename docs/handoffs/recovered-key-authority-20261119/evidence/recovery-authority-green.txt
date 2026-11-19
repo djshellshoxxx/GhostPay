@@ -1,0 +1,8 @@
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-recovery/apps/web
+
+
+ Test Files  3 passed (3)
+      Tests  39 passed (39)
+   Start at  00:06:47
+   Duration  33.23s (tests 66%, import 26%, transform 8%)
