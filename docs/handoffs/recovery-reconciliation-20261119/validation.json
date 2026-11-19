@@ -1,0 +1,202 @@
+{
+  "format": "ghostpay-recovery-reconciliation-validation/1",
+  "recorded_utc": "2026-11-19T08:08:31.424873+00:00",
+  "candidate_local": "3110611e4a49d2b3f426fc0b770a0823109ac3d4",
+  "candidate_published": "789e63501c1628d602006dbd324a36f8a9c50d71",
+  "candidate_tree": "e8c79567504010c91d86655711899e1751133498",
+  "baseline": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+  "unchanged_packages_tree": "0c10c41d6596a39cca2e4dff467a2ac9bf334223",
+  "environment": {
+    "node": "24.22.3",
+    "vitest": "5.1.0",
+    "typescript": "5.9.3",
+    "platform": "linux-x64",
+    "lockfile_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2",
+    "dependency_method": "sequential extraction of original package-lock SHA-512 verified cached tarballs; no install scripts",
+    "cache_tarballs_verified": 288,
+    "other_platform_entries_excluded": 24,
+    "absent_optional_packages": [
+      {
+        "path": "node_modules/@emnapi/core",
+        "version": "2.0.0-beta.2",
+        "optional": true
+      },
+      {
+        "path": "node_modules/@emnapi/runtime",
+        "version": "2.0.0-beta.2",
+        "optional": true
+      },
+      {
+        "path": "node_modules/@emnapi/wasi-threads",
+        "version": "2.2.0",
+        "optional": true
+      },
+      {
+        "path": "node_modules/@napi-rs/wasm-runtime",
+        "version": "1.2.6",
+        "optional": true
+      },
+      {
+        "path": "node_modules/@tybys/wasm-util",
+        "version": "0.10.4",
+        "optional": true
+      }
+    ],
+    "repository_manifest_changes": false,
+    "dependency_install_scripts_executed": false,
+    "qualified_frozen_monorepo_install": false
+  },
+  "red": {
+    "source": "baseline runtime, new test files copied without production patches",
+    "command": "NODE_OPTIONS=--max-old-space-size=384 ../../node_modules/.bin/vitest run src/AppShell.beforeUnload.test.tsx src/components/StealthExportRecovery.test.tsx src/components/StealthExportVerification.test.tsx --maxWorkers=1 --no-file-parallelism --reporter=json --outputFile=/workspace/scratch/4456a7e75d37/recovery-red.json -t 'BOM|UTF-8|only key copy|current external-copy'",
+    "exit_code": 1,
+    "started_utc": "2026-11-19T07:57:47.657000+00:00",
+    "passed": 0,
+    "failed": 5,
+    "deselected_by_name_filter": 34,
+    "test_files": 3,
+    "tests": [
+      {
+        "file": "apps/web/src/AppShell.beforeUnload.test.tsx",
+        "test": "AppShell beforeunload guard (SEC-40) protects the only key copy when another tab deletes the saved vault without notifying this tab",
+        "status": "failed",
+        "duration_ms": 399.95616999999766,
+        "diagnostic": "AssertionError: expected false to be true // Object.is equality"
+      },
+      {
+        "file": "apps/web/src/AppShell.beforeUnload.test.tsx",
+        "test": "AppShell beforeunload guard (SEC-40) uses current external-copy verification even when the cached vault backup summary does not change",
+        "status": "failed",
+        "duration_ms": 357.7220070000003,
+        "diagnostic": "AssertionError: expected false to be true // Object.is equality"
+      },
+      {
+        "file": "apps/web/src/components/StealthExportRecovery.test.tsx",
+        "test": "Open a stealth key export (spec 18 flow 4) rejects actual UTF-8 BOM bytes before Open export can certify a normalized file",
+        "status": "failed",
+        "duration_ms": 7939.303132999998,
+        "diagnostic": "AssertionError: expected '' to match /not a valid GhostPay stealth key expo\u2026/"
+      },
+      {
+        "file": "apps/web/src/components/StealthExportRecovery.test.tsx",
+        "test": "Open a stealth key export (spec 18 flow 4) rejects actual UTF-8 BOM bytes before Verify backup without importing can certify a normalized file",
+        "status": "failed",
+        "duration_ms": 1195.2387540000018,
+        "diagnostic": "AssertionError: expected '' to match /not a valid GhostPay stealth key expo\u2026/"
+      },
+      {
+        "file": "apps/web/src/components/StealthExportVerification.test.tsx",
+        "test": "saved Spec 18 export verification refuses BOM-prefixed saved bytes even when File.text normalizes them to the generated ciphertext",
+        "status": "failed",
+        "duration_ms": 2472.871778999999,
+        "diagnostic": "Error: Unable to find role=\"alert\""
+      }
+    ]
+  },
+  "green": {
+    "source": "candidate runtime and tests",
+    "command": "NODE_OPTIONS=--max-old-space-size=256 ../../node_modules/.bin/vitest run src/AppShell.beforeUnload.test.tsx src/components/StealthExportRecovery.test.tsx src/components/StealthExportVerification.test.tsx --maxWorkers=1 --no-file-parallelism --reporter=dot --reporter=json --outputFile.json=/workspace/scratch/4456a7e75d37/recovery-green-new.json -t 'BOM|UTF-8|only key copy|current external-copy'",
+    "exit_code": 0,
+    "started_utc": "2026-11-19T08:02:29.091000+00:00",
+    "passed": 5,
+    "failed": 0,
+    "deselected_by_name_filter": 34,
+    "test_files": 3,
+    "tests": [
+      {
+        "file": "apps/web/src/AppShell.beforeUnload.test.tsx",
+        "test": "AppShell beforeunload guard (SEC-40) protects the only key copy when another tab deletes the saved vault without notifying this tab",
+        "status": "passed",
+        "duration_ms": 298.8794769999986
+      },
+      {
+        "file": "apps/web/src/AppShell.beforeUnload.test.tsx",
+        "test": "AppShell beforeunload guard (SEC-40) uses current external-copy verification even when the cached vault backup summary does not change",
+        "status": "passed",
+        "duration_ms": 876.0165230000002
+      },
+      {
+        "file": "apps/web/src/components/StealthExportRecovery.test.tsx",
+        "test": "Open a stealth key export (spec 18 flow 4) rejects actual UTF-8 BOM bytes before Open export can certify a normalized file",
+        "status": "passed",
+        "duration_ms": 3603.3721289999958
+      },
+      {
+        "file": "apps/web/src/components/StealthExportRecovery.test.tsx",
+        "test": "Open a stealth key export (spec 18 flow 4) rejects actual UTF-8 BOM bytes before Verify backup without importing can certify a normalized file",
+        "status": "passed",
+        "duration_ms": 1143.1510800000397
+      },
+      {
+        "file": "apps/web/src/components/StealthExportVerification.test.tsx",
+        "test": "saved Spec 18 export verification refuses BOM-prefixed saved bytes even when File.text normalizes them to the generated ciphertext",
+        "status": "passed",
+        "duration_ms": 823.4989850000002
+      }
+    ]
+  },
+  "other_checks": [
+    {
+      "command": "npm run ci:scan-secrets",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run ci:check-actions",
+      "exit_code": 0,
+      "action_references_checked": 113,
+      "scope": "original external pin policy and repository-local-action allowance"
+    },
+    {
+      "command": "git diff --check 4a1b181c..HEAD",
+      "exit_code": 0
+    },
+    {
+      "command": "independent read-only review of a848be30..3110611e by security_audit",
+      "result": "no scoped source blocker; #256 integration caution retained"
+    }
+  ],
+  "incomplete_checks": [
+    {
+      "command": "npm ci --workspace @ghostpay/web --include-workspace-root --ignore-scripts --no-audit --no-fund --maxsockets=1 with heap512",
+      "exit_code": 137
+    },
+    {
+      "command": "reduced 317-package npm ci --ignore-scripts --no-audit --no-fund --maxsockets=1 --prefer-offline with heap384",
+      "exit_code": 137
+    },
+    {
+      "command": "serial original TypeScript library builds with heap512",
+      "exit_code": 247,
+      "stage": "metadata-hardening child killed by SIGKILL; six earlier libraries completed"
+    },
+    {
+      "command": "12-file recovery/session Vitest selection, --maxWorkers=1 --no-file-parallelism, heap384",
+      "exit_code": 137,
+      "aggregate_test_result": "unavailable; no pass claimed"
+    }
+  ],
+  "diagnostic_library_emit": {
+    "command": "tsc -p <library>/tsconfig.build.json --noCheck --declaration false, serially for 19 web dependency libraries",
+    "exit_code": 0,
+    "purpose": "runtime JS for focused unit regressions only",
+    "typecheck_or_production_build_pass": false
+  },
+  "remaining_gates": [
+    "fresh combined hosted CI",
+    "typecheck and lint on a complete frozen installation",
+    "full recovery/session suite and coverage",
+    "full and lean Chromium acceptance, including ten Spec 18 browser cases",
+    "separate inherited #238/#239 qualification and release blockers"
+  ],
+  "raw_output_sha256": {
+    "recovery-red.json": "b1284e10d5ad2f9617d1de0ba3bbfc76ddb8ddb130e9a64435ee049ddff9e2e6",
+    "recovery-red.log": "bd49dba8f95b305b6932c5239a6ae47e3119d18d832421b7eb2b27868dcdfeea",
+    "recovery-green-new.json": "0fdacf9559f1fa1f6cef747d02fc4912bc43e118583a1204d8032d3a9fbcc4c4",
+    "recovery-green-new.log": "2d654275b6507994156a41aae8fefee27b406028a5e1aa09b7c12264603ef8d1",
+    "recovery-green.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "recovery-npm-ci.log": "7125f194612fcff2f454c05d848e7cb71facc1967b4d5017e25b34fdee3ba74f",
+    "recovery-npm-minimal.log": "7125f194612fcff2f454c05d848e7cb71facc1967b4d5017e25b34fdee3ba74f",
+    "recovery-build-libs.log": "d7fba605f2fd3fd185e132eb474a257581ddd41071e93d02f9b8626e131e0e1f",
+    "recovery-transpile-libs.log": "82c30592448dc9ef9dd544f10e275255e08a6d7df80a56fff90d5ff3b84455be"
+  }
+}

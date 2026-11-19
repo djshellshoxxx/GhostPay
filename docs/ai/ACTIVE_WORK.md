@@ -1,3 +1,34 @@
+# Spec 18 complementary recovery reconciliation — 2026-11-19 UTC
+
+Worker: ChatGPT `pages_features`, coordinated by the comprehensive branch-audit root.
+Branch: `integration/ghostpay-recovery-reconciled-20261119`.
+Base: PR #239 at `4a1b181c89e02ee564b5568d4b4b8d689f5e42c5`.
+Read-only source: PR #240 at `38d69832ddc58ec27a19c00dbe3c89347c577495`.
+Both source heads were read from GitHub immediately before this claim. Main was observed at
+`e454de6abfefda70d82784fafc1d8949b277c334`; #238 ancestry is preserved by this base.
+
+Owned paths: the complementary BOM-byte refusal in `StealthExportRecovery` and
+`StealthExportVerification` and their tests; event-time `AppShell` before-unload protection
+and its tests; the corresponding Spec 18 and sweep browser acceptance cases; this claim
+and a new source-pinned reconciliation handoff. The source branches remain unchanged.
+
+Acceptance: preserve #239's atomic session replacement, retryable generated downloads,
+passphrase-verification state invalidation, real-KDF test synchronization and sealing barrier;
+recover #240's actual-byte refusals and event-time external-copy checks; retain every existing
+assertion and security gate; execute focused tests, lint and browser checks where available.
+The root owns publication and subsequent integration after independent review. No deployment,
+main merge, remote source-branch update or unrelated feature work belongs to this lane.
+
+Status: reconciled source `3110611e4a49d2b3f426fc0b770a0823109ac3d4` was independently
+reviewed and published by the root as draft PR #260 at identical-tree remote commit
+`789e63501c1628d602006dbd324a36f8a9c50d71`. All five newly recovered regressions failed
+against the unchanged #239 runtime and passed against the reconciled runtime. The
+broader twelve-file attempt and dependency installation terminated with exit 137;
+full frozen-installation, typecheck/lint, coverage and browser qualification remain
+open. The precise frozen-cache/diagnostic-transpilation environment and the required
+#256 session-integration checks are recorded in
+`docs/handoffs/RECOVERY_RECONCILIATION_20261119.md`. No source branch or main was changed.
+
 # Spec 18 independent completion review — 2026-11-18
 
 Coordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.

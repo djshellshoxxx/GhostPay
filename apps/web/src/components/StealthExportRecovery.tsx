@@ -82,6 +82,9 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
       try {
         const text = await selected.text();
         if (!op.current(controller)) return;
+        // File.text() can strip a UTF-8 BOM. Portable exports are ASCII bytes; never certify a normalized file that the
+        // independent decoder would reject. The codec separately rejects every remaining non-ASCII character.
+        if (selected.size !== text.length) throw new UserFacingError({ key: 'error.stealthExport.invalidFile' });
         if (mode === 'verify') {
           const result = await verifyStealthExport(text, pass, { signal: controller.signal });
           if (!op.current(controller)) return;
