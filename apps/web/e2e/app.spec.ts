@@ -114,7 +114,15 @@ test('egress: parsing and reviewing an invoice makes no request except same-orig
 
 test('hostile text in line items and memo is rendered inert', async ({ page }) => {
   const dialogs: string[] = [];
+  let unloadConfirmations = 0;
   page.on('dialog', (d) => {
+    // The fresh-load journey intentionally leaves unbacked seller keys. Accept that custody warning while still
+    // recording and refusing every script-created dialog; dismissing beforeunload cancels the navigation itself.
+    if (d.type() === 'beforeunload') {
+      unloadConfirmations++;
+      void d.accept();
+      return;
+    }
     dialogs.push(d.message());
     void d.dismiss();
   });
@@ -127,6 +135,7 @@ test('hostile text in line items and memo is rendered inert', async ({ page }) =
   await expect(page.getByText(evil, { exact: true }).first()).toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();
   expect(await page.locator('main img, main script, main svg[onload]').count()).toBe(0);
+  expect(unloadConfirmations).toBe(1);
   expect(dialogs).toEqual([]);
 });
 
