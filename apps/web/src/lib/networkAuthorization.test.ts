@@ -5,6 +5,7 @@ import { DEFAULT_SCAN_PRIVACY } from './scanPrivacy';
 import { DEFAULT_SCAN_LANES } from './scanSpam';
 import { clearSession } from './session';
 import { clearRpcSessionOnly, setRpcSessionOnly, SETTINGS_KEY } from './settings';
+import { readNetworkSelection } from './networkSelection';
 import { createNetworkAuthority, type NetworkAction, type NetworkAuthority, type NetworkAuthorizationRequest, type BrowserNetworkRef } from './networkAuthorization';
 
 const authorities: NetworkAuthority[] = [];
@@ -92,7 +93,7 @@ describe('live settings, session and permissions', () => {
     await expect(text(grant)).rejects.toThrow(); expect(h.fetcher).not.toHaveBeenCalled(); expect(grant.signal.aborted).toBe(true);
   });
   it('refuses permissions deleted while an action is pending', async () => {
-    const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', noticeAcknowledged: true }));
+    const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', rpcProfile: 'direct', relayerProfile: 'direct', noticeAcknowledged: true }));
     const grant = h.authorize({ endpoint: 'http://localhost:8545' }); h.values.delete(WEB_NETWORK_SELECTION_KEY);
     await expect(text(grant, 'http://localhost:8545', jsonRpc())).rejects.toThrow(); expect(h.fetcher).not.toHaveBeenCalled();
     h.authority.invalidate(); expect(() => h.authorize()).toThrow();
@@ -227,12 +228,62 @@ describe('live settings, session and permissions', () => {
   });
 });
 
+describe('strict persisted v1 selection at the common dispatch boundary', () => {
+  const valid = { rpcProfile: 'direct', relayerProfile: 'direct', rpcMode: 'single', noticeAcknowledged: false };
+  const networks: readonly { name: string; action: NetworkAction; network: BrowserNetworkRef; init: RequestInit }[] = [
+    { name: 'EVM', action: 'scan', network: evm, init: jsonRpc() },
+    { name: 'BTC', action: 'btc-scan', network: { kind: 'btc', network: 'regtest' }, init: {} },
+    { name: 'Solana', action: 'solana-scan', network: { kind: 'solana', network: 'devnet' }, init: jsonRpc('getSlot') },
+    { name: 'TRON', action: 'tron-scan', network: { kind: 'tron', network: 'nile' }, init: { method: 'POST', body: '{}' } },
+  ];
+  const incomplete = [
+    { label: 'empty record', value: {} },
+    ...Object.keys(valid).map((field) => {
+      const value: Record<string, unknown> = { ...valid };
+      delete value[field];
+      return { label: `missing ${field}`, value };
+    }),
+    { label: 'lost own-node field', value: { rpcProfile: 'tor-browser', relayerProfile: 'tor-browser', noticeAcknowledged: true } },
+  ];
+  it.each(networks.flatMap((network) => incomplete.map((record) => ({ ...network, ...record }))))(
+    'refuses $name dispatch for a present $label', async ({ action, network, init, value }) => {
+      const h = harness();
+      h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify(value));
+      // The retained browser settings reader already rejects this shape. The new shared authority must agree.
+      expect(readNetworkSelection({ getItem: h.read })).toEqual({ status: 'invalid' });
+      let refused = false;
+      try { await text(h.authorize({ action, network }), rpc, init); } catch { refused = true; }
+      expect({ refused, dispatched: h.fetcher.mock.calls.length }).toEqual({ refused: true, dispatched: 0 });
+    },
+  );
+  it.each(networks)('keeps fresh-install absence and complete valid selection usable for $name', async ({ action, network, init }) => {
+    const h = harness();
+    expect(await text(h.authorize({ action, network }), rpc, init)).toBe('ok');
+    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify(valid));
+    expect(await text(h.authorize({ action, network }), rpc, init)).toBe('ok');
+    expect(h.fetcher).toHaveBeenCalledTimes(2);
+  });
+  it.each(networks)('does not treat a deleted observed selection as a fresh install for $name', async ({ action, network, init }) => {
+    const h = harness();
+    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify(valid));
+    const previous = h.authorize({ action, network });
+    h.values.delete(WEB_NETWORK_SELECTION_KEY);
+    await expect(text(previous, rpc, init)).rejects.toThrow();
+    expect(previous.signal.aborted).toBe(true);
+    let refused = false;
+    try { await text(h.authorize({ action, network }), rpc, init); } catch { refused = true; }
+    expect({ refused, dispatched: h.fetcher.mock.calls.length }).toEqual({ refused: true, dispatched: 0 });
+    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify(valid));
+    expect(await text(h.authorize({ action, network }), rpc, init)).toBe('ok');
+  });
+});
+
 describe('private-path and own-node policy on actual chain categories', () => {
   const refs: readonly [NetworkAction, BrowserNetworkRef][] = [
     ['scan', evm], ['btc-scan', { kind: 'btc', network: 'regtest' }], ['solana-scan', { kind: 'solana', network: 'devnet' }], ['tron-scan', { kind: 'tron', network: 'nile' }],
   ];
   it.each(refs)('applies own-node to %s without authorizing remote fallback', (action, network) => {
-    const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', noticeAcknowledged: true }));
+    const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', rpcProfile: 'direct', relayerProfile: 'direct', noticeAcknowledged: true }));
     expect(() => h.authorize({ action, network })).toThrow(); h.authorize({ action, network, endpoint: 'https://127.0.0.1:8545' }).assertCurrent(); expect(h.fetcher).not.toHaveBeenCalled();
   });
   it('blocks required direct mode and rejects nonloopback endpoints for required local proxy', () => {
@@ -247,7 +298,7 @@ describe('private-path and own-node policy on actual chain categories', () => {
     expect(await text(grant, rpc, jsonRpc('eth_getBalance', [owner, 'latest']))).toBe('ok');
     await expect(text(grant, rpc, jsonRpc('eth_sendRawTransaction', ['0x01']))).rejects.toThrow(); await expect(text(grant, rpc, jsonRpc('eth_getBalance', [token, 'latest']))).rejects.toThrow();
     grant.dispose(); await expect(text(grant, rpc, jsonRpc('eth_getBalance', [owner, 'latest']))).rejects.toThrow(); expect(() => h.authorize()).toThrow();
-    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', noticeAcknowledged: true }));
+    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', rpcProfile: 'direct', relayerProfile: 'direct', noticeAcknowledged: true }));
     expect(() => h.authorize({ action: 'sweep-balance', allowDirectOnce: true, balance: { owner, token: 'native' } })).toThrow(); expect(h.fetcher).toHaveBeenCalledTimes(1);
   });
   it('scopes token balance consent to balanceOf for the reviewed owner/token', async () => {

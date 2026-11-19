@@ -6,6 +6,7 @@ import type { ScanPrivacySettings } from './scanPrivacy';
 import type { ScanLaneSettings } from './scanSpam';
 import { captureSessionVersionGuard, subscribeSession } from './session';
 import { isRpcSessionOnly, SETTINGS_KEY } from './settings';
+import { readNetworkSelection } from './networkSelection';
 
 /** Actions are granted at their existing user interaction, never by merely configuring an endpoint. */
 export type NetworkAction = 'settings-check' | 'scan' | 'payment-preflight' | 'payment-status'
@@ -159,17 +160,11 @@ function snapshot(read: () => StorageReader | undefined, observed: Set<number>):
   if (privacy['source'] !== undefined && privacy['source'] !== 'rpc' && privacy['source'] !== 'indexer') refuse();
   scanEndpointMap(privacy['endpoints'], transport);
   scanEndpointMap(privacy['indexerUrls'], transport, true);
-  const selection = decode(raw[2] ?? null);
-  const keys = ['rpcProfile', 'relayerProfile', 'rpcMode', 'noticeAcknowledged'];
-  if (Object.keys(selection).some((key) => !keys.includes(key))) refuse();
-  const rpcProfile = selection['rpcProfile'] === undefined ? 'direct' : selection['rpcProfile'];
-  const relayerProfile = selection['relayerProfile'] === undefined ? 'direct' : selection['relayerProfile'];
-  const rpcMode = selection['rpcMode'] === undefined ? 'single' : selection['rpcMode'];
-  const notice = selection['noticeAcknowledged'] === undefined ? false : selection['noticeAcknowledged'];
-  if ((rpcProfile !== 'direct' && rpcProfile !== 'tor-browser') || (relayerProfile !== 'direct' && relayerProfile !== 'tor-browser') ||
-      (rpcMode !== 'single' && rpcMode !== 'own-node') || typeof notice !== 'boolean') refuse();
-  if ((rpcProfile !== 'direct' || relayerProfile !== 'direct' || rpcMode !== 'single') && !notice) refuse();
-  return { raw, policy: { ownNode: rpcMode === 'own-node', requireProxy, transport }, settings, scan: privacy };
+  // Reuse the browser's strict v1 schema on the same captured snapshot. Only an absent record has defaults;
+  // a present truncated record must not turn a lost own-node/private-path field into direct authority.
+  const selection = readNetworkSelection({ getItem: () => raw[2] ?? null });
+  if (selection.status !== 'ready') return refuse();
+  return { raw, policy: { ownNode: selection.selection.rpcMode === 'own-node', requireProxy, transport }, settings, scan: privacy };
 }
 function endpoint(raw: string, allowPlainHttp = false): URL {
   let url: URL;

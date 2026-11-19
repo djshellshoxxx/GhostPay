@@ -1,0 +1,82 @@
+{
+  "recorded_utc": "2026-11-19T07:43:57.450718+00:00",
+  "worktree": "/workspace/scratch/9b4050d15a9b/GhostPay-network-selection",
+  "branch": "integration/ghostpay-network-selection-reconciled-20261119",
+  "product_base": "521194c0f2238358061525c2cddf14ee7cc366ea",
+  "claim": "9d3674fdd5d1c1e8b8742d85215a83a24082c711",
+  "files": [
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "baseline_blob": "f6acfb9b4890a8a689bd74d3adba05128f2a1491",
+      "corrected_blob": "e7eeeaa0b172d7ab6fea01abbcd6e58ea9dbf475"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.test.ts",
+      "baseline_blob": "ca7b9984124fd9c639a51513e33ad94f0c484e60",
+      "corrected_blob": "a4a31ae2621053d5f55c28deff2d4c9b390c0244"
+    }
+  ],
+  "retained_canonical_parser": {
+    "path": "apps/web/src/lib/networkSelection.ts",
+    "blob": "cd5803357898b84863f7885c9fb827b28ff2693a"
+  },
+  "commands": {
+    "red": "node /workspace/scratch/9b4050d15a9b/GhostPay-master/node_modules/vitest/vitest.mjs run --config /workspace/scratch/9b4050d15a9b/audit-data/network-selection.vitest.config.mts --root /workspace/scratch/9b4050d15a9b/GhostPay-network-selection/apps/web -t 'strict persisted v1 selection'",
+    "green": "node /workspace/scratch/9b4050d15a9b/GhostPay-master/node_modules/vitest/vitest.mjs run --config /workspace/scratch/9b4050d15a9b/audit-data/network-selection.vitest.config.mts --root /workspace/scratch/9b4050d15a9b/GhostPay-network-selection/apps/web"
+  },
+  "runner": "One worker; borrowed master dependency installation; every GhostPay package aliases this isolated worktree source. No package install, build, test gate or dependency change.",
+  "logs": [
+    {
+      "phase": "red",
+      "path": "docs/consolidation/network-selection-red.txt",
+      "sha256": "a04dd9f3419cbb58815f2dee24118d9012697b6558377984605229c834779758",
+      "exit_code": 1,
+      "passed": 8,
+      "failed": 24,
+      "skipped": 90,
+      "duration_seconds": 3.82,
+      "original_sha256": "0a1d05ddc7e1ee17b89e7ecf49480227f45fe2a67ebb24606b056ad409ac0274",
+      "original_bytes": 6729,
+      "source_commit": "55fc93a2c078ba93e621854b2c1cb852c05e0801",
+      "transformation": "Removed trailing blank lines for repository whitespace checks; test output content and outcome unchanged.",
+      "bytes": 6728
+    },
+    {
+      "phase": "green",
+      "path": "docs/consolidation/network-selection-green.txt",
+      "sha256": "d61fcaa45d8ff5ca00d91a13e410109d289528bbc5d2866eb763c355843d6456",
+      "exit_code": 0,
+      "passed": 122,
+      "failed": 0,
+      "skipped": 0,
+      "duration_seconds": 1.96,
+      "original_sha256": "c064f1d9d2290825eed8c5a4ca37b0e0c53adc345d4ceecdee3a9d0c4183c283",
+      "original_bytes": 221,
+      "source_commit": "55fc93a2c078ba93e621854b2c1cb852c05e0801",
+      "transformation": "Removed trailing blank lines for repository whitespace checks; test output content and outcome unchanged.",
+      "bytes": 220
+    }
+  ],
+  "checks": [
+    {
+      "command": "bash scripts/scan-secrets.sh",
+      "exit_code": 0,
+      "log": "/workspace/scratch/9b4050d15a9b/audit-data/network-selection-secrets.log"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "pending": [
+    "Independent integration-coordinator source review",
+    "Combined exact-head hosted typecheck/lint/coverage/browser/security qualification"
+  ],
+  "result": "Common browser authority now reuses the retained strict v1 reader on its captured raw snapshot. Present empty/truncated records refuse before fetch for EVM/BTC/Solana/TRON; absence remains a valid fresh install; deleting an observed record remains revoked.",
+  "versions": {
+    "vitest": "5.1.0",
+    "vite": "8.3.8",
+    "typescript": "5.9.3",
+    "node": "v24.22.3"
+  }
+}
