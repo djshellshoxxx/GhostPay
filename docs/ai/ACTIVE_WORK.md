@@ -1520,3 +1520,5 @@ dependency upgrade, mainnet request, deployment or remote write.
 - Acceptance: regression-first proof against the prior helper; focused real-signing controls, cancellation and post-handoff outcome tests; preserve all existing journal and uncertainty semantics; independent review by another worker. No contract, relayer server, dependency, gate, deployment or remote changes.
 
 Sweep follow-up: the coordinator additionally assigned native-balance consent binding. Preserve early target-ownership validation, reject an on-chain balance that differs from the reviewed amount before fee work/signing, wipe derived material on refusal, and retain same-balance/replacement/post-handoff controls. Scope remains the same helper and its tests.
+
+Final typecheck follow-up: the coordinator's complete web build reported TS2322 in the two actual-transaction sender-recovery assertions. Narrow captured RPC bytes to the EIP-1559 envelope actually emitted by the helper using a runtime test assertion; preserve all existing assertions and production source. Re-run the focused helper tests, typed lint and web TypeScript check; coordinator re-runs the combined build after integration.

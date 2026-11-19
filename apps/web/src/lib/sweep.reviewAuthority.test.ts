@@ -1,6 +1,6 @@
 import { eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, signDigest, signPermit, signSweep, type Address } from '@ghostpay/chain-adapters';
 import { deriveStealthPayment, deriveStealthSecret, type PublicAnnouncement } from '@ghostpay/core-crypto';
-import { recoverTransactionAddress } from 'viem';
+import { recoverTransactionAddress, type TransactionSerializedEIP1559 } from 'viem';
 import { encodeFunctionResult, keccak256, parseTransaction } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeManifest } from '../test/fakeManifest';
@@ -43,6 +43,10 @@ function review() {
     revoke: () => { current = false; },
     assertCurrent: () => { if (!current) throw new Error('review replaced'); },
   };
+}
+
+function assertEip1559Transaction(value: unknown): asserts value is TransactionSerializedEIP1559 {
+  expect(typeof value === 'string' && value.startsWith('0x02')).toBe(true);
 }
 
 function directInput(onRequest: (method: string) => void = () => undefined) {
@@ -131,7 +135,8 @@ describe('Sweep helper review authority', () => {
     if (outcome === 'submitted') expect((await directSweep(input)).attempt.status).toBe('submitted');
     else await expect(directSweep(input)).rejects.toBeInstanceOf(DirectSweepOutcomeUnknownError);
     expect(h.handoff).toHaveBeenCalledTimes(1); expect(raw).toBeDefined();
-    expect(await recoverTransactionAddress({ serializedTransaction: raw! })).toBe(target.owner);
+    assertEip1559Transaction(raw);
+    expect(await recoverTransactionAddress({ serializedTransaction: raw })).toBe(target.owner);
   });
 
   it('refuses a revoked relayed review before deriving or requesting signatures', async () => {
@@ -236,8 +241,9 @@ describe('native sweep reviewed balance', () => {
     const result = await directSweep(input);
     const maximumGas = 21_000n * 2_000_000_000n;
     expect(chainBalance).toBeGreaterThan(BALANCE); expect(balanceReads).toBe(1);
-    expect(parseTransaction(raw!).value).toBe(BALANCE - maximumGas);
+    assertEip1559Transaction(raw);
+    expect(parseTransaction(raw).value).toBe(BALANCE - maximumGas);
     expect(result.sent).toBe(BALANCE - maximumGas); expect(result.maxGasCost).toBe(maximumGas);
-    expect(await recoverTransactionAddress({ serializedTransaction: raw! })).toBe(target.owner);
+    expect(await recoverTransactionAddress({ serializedTransaction: raw })).toBe(target.owner);
   });
 });
